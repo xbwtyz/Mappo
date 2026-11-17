@@ -1,28 +1,37 @@
 # Mappo
 
-**Mappo** is an offline-first procedural medieval city mapper, distributed as a single HTML file and developed as modular JavaScript.
+**Mappo** is an offline-first procedural medieval city mapper. Its application is developed as modular JavaScript and distributed as **one standalone HTML file**.
 
-## Current release: 0.1-dev.1 — Foundation / survey
+## Current development build: 0.1-dev.2 — City Geometry
 
-This first development milestone is a **functional application shell**, not yet a full city generator. It provides:
+Generate a medieval city plan from a seed, explore it on an interactive canvas, and inspect the structure of its street network. This release adds genuine geometric city data rather than simply drawing a picture.
 
-- A responsive cartography workspace with Canvas 2D drawing, zoom, pan, fit and coordinate readout.
-- Deterministic seeded **site surveys**, with selectable small/medium/large footprints, survey boundaries and planning markers.
-- A working generation form, random seed button, survey details and keyboard shortcuts.
-- Fully offline operation when the built HTML is opened directly from `file://`.
-- A zero-dependency Node build script that generates both `index.html` and `dist/mappo-0.1-dev.1.html`.
+### Features
 
-**Not implemented yet:** city streets, blocks, buildings, walls, districts, real map editing, project import/export, PNG export or 3D. Site-survey marks are not roads or buildings.
+- **Deterministic generation:** the same seed and settlement size produce the same city plan.
+- **Three sizes:** small hamlet, medium town and large city.
+- **Connected street graph:** every road junction is connected; roads are classified as primary streets, secondary streets or lanes.
+- **Irregular city blocks:** uniquely identified polygons bounded by the streets, with cross-block lanes and no disconnected or dangling segments.
+- **Central civic plaza:** a persistent named plaza whose boundary shares real junctions with the street graph.
+- **Cartographic rendering:** drawn on Canvas 2D with zoom, pan, fit-to-view, compass, scale bar and survey-boundary guide.
+- **City data model:** durable IDs for nodes, roads, blocks and the plaza, ready for later selection, building placement and project saving.
+- **Truly standalone release:** complete CSS and JavaScript are compiled into `index.html` and `dist/mappo-0.1-dev.2.html`. No network, external libraries, runtime installation or web server needed.
+
+**Not yet implemented:** building footprints, districts, walls, terrain editing, road editing, project save/load, PNG export, or 3D. The green polygons currently represent **empty city blocks**, not buildings. These are scheduled for later milestones.
 
 ## Try it
 
-Open [`dist/mappo-0.1-dev.1.html`](dist/mappo-0.1-dev.1.html) directly in Firefox/Chromium, no server or install needed. The root `index.html` is identical, for possible static hosting.
+Open [`dist/mappo-0.1-dev.2.html`](dist/mappo-0.1-dev.2.html) directly in your browser. The identical `index.html` exists at the repository root for convenient static hosting.
 
-Controls: drag canvas to pan; scroll to zoom; `0` to fit; `+`/`-` to zoom. Enter a seed, change size or click **Surprise me** to generate another site survey. URL parameters `?seed=my-seed&size=large` also work.
+- **Generate city layout:** enter a seed and press the generation button.
+- **Surprise me:** create a random seed.
+- **Size selector:** generate a small, medium or large settlement.
+- **Navigate:** drag to pan, scroll to zoom, `0` to fit, `+` / `-` to adjust zoom.
+- **Direct linking:** `?seed=my-seed&size=large` provides a reproducible initial layout when hosted.
 
-## Develop and build
+## Development
 
-Requires Node.js 20+ for the build/test scripts; **not** needed to run the finished HTML.
+Node.js 20+ is needed only when working on the source. The output HTML runs without Node or an internet connection. There are no npm dependencies.
 
 ```bash
 npm test
@@ -30,26 +39,36 @@ npm run build
 npm run check
 ```
 
-There are no runtime libraries, CDN requests or npm dependencies. The small build tool resolves the project's simple named ES module imports into one self-contained script. Keep source modules' top-level identifiers distinct; the builder checks unsupported import/export syntax.
+The zero-dependency build script assembles named ES modules and embeds all CSS/JS in the HTML template. It verifies that source imports are local, and the build tests verify distribution parity and inline script syntax. Do not add runtime CDN requests. The build script supports the narrow import/export syntax presently in use, not the full JavaScript module grammar.
 
-## Source structure
+## Project organization
 
-- `src/core/`: deterministic PRNG, geometry, city data model.
-- `src/generators/`: survey footprint generator (future road/building generators live here).
-- `src/renderer/`: Canvas drawing and world-space camera.
-- `src/ui/`: pointer interaction.
-- `src/app.js`: application orchestration.
-- `styles/`: app design system.
-- `scripts/build.mjs`: reproducible standalone HTML builder.
-- `tests/`: regression tests.
+```text
+src/
+  core/                 seeded randomness, geometry, city data model
+  generators/           survey and city layout generation
+  renderer/             canvas drawing and camera
+  ui/                   canvas mouse and pointer controls
+  app.js                generation, navigation, status and UI binding
+styles/app.css          styling
+index.template.html     standalone HTML template
+scripts/build.mjs       reproducible browser distribution builder
+tests/                  deterministic generation, planar geometry, UI and bundle tests
+dist/                   self-contained HTML releases
+index.html              same standalone build, suitable for static hosting
+```
 
-## Mappo 0.1 development milestones
+### Geometry notes
 
-1. **0.1-dev.1** (this release): app foundation, seed and survey, Canvas navigation, modular build.
-2. **0.1-dev.2**: city boundary, connected roads, irregular blocks and central plaza.
-3. **0.1-dev.3**: building footprints, districts and optional fortifications.
-4. **0.1-dev.4**: labels, palettes and procedural visual polish.
-5. **0.1-dev.5**: inspector, basic edits, project JSON and image export.
-6. **0.1.0**: stress testing, documentation, browser validation and release.
+The city generator builds a deterministic irregular ring-and-spoke street lattice and then adds cross-block lanes. All intersections, including lane endpoints, are explicit shared graph vertices. City block polygons refer to the same vertex IDs. This makes it possible to build later editing and placement features without trying to infer network connectivity from rendered pixels. The algorithm intentionally favors geometric reliability and a recognizable city pattern at this stage; later releases can introduce more varied layout structures.
 
-Copyright © 2026 Mappo contributors. New implementation; no code from Watabou/MFCG included.
+## Roadmap to 0.1.0
+
+1. **0.1-dev.1** — Application foundation, seeded site survey and Canvas controls (complete).
+2. **0.1-dev.2** — Connected streets, irregular blocks and civic plaza (this build).
+3. **0.1-dev.3** — Building footprints, district generation and optional fortifications.
+4. **0.1-dev.4** — Visual styles, labels and procedural polish.
+5. **0.1-dev.5** — Inspector, basic editing, editable project JSON, image export.
+6. **0.1.0** — Browser verification, stress tests, documentation and distribution release.
+
+Copyright © 2026 Mappo contributors.

@@ -21,7 +21,9 @@ test('all settlement sizes generate reproducible project data', () => {
     const b = createProject({ seed: 'raven-hill', size });
     assert.deepEqual(a, b);
     assert.equal(a.options.size, size);
-    assert.equal(a.city.roads.length, 0);
+    assert.ok(a.city.roads.length > 40);
+    assert.ok(a.city.blocks.length > 15);
+    assert.ok(a.city.plaza.vertices.length > 8);
     assert.equal(a.city.buildings.length, 0);
     assert.equal(a.city.survey.boundary.length, 64);
     assert.ok(a.city.survey.anchors.length > 3);

@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#131d21">
+  <title>Mappo — City Plan · 0.1-dev.2</title>
+  <style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
+
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.2</span></div>
+      <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span class="header-phase">PHASE 02 / 06</span></div>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar sidebar-left" aria-label="Generation tools">
+        <div class="sidebar-heading"><span class="section-number">01</span><span>GENERATOR</span></div>
+        <div class="sidebar-content">
+          <p class="eyebrow">NEW CITY PLAN</p>
+          <h1>Build your<br><em>next kingdom.</em></h1>
+          <p class="intro">Every city begins with a plan. Carve winding streets and irregular blocks from a fresh seed.</p>
+          <div class="control-group"><label for="seedInput">Generation seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"><p class="hint">Same seed + size = same layout.</p></div>
+          <div class="control-group"><label for="sizeInput">Settlement footprint</label><div class="select-wrap"><select id="sizeInput"><option value="small">Small · Hamlet</option><option value="medium" selected>Medium · Town</option><option value="large">Large · City</option></select><span aria-hidden="true">⌄</span></div></div>
+          <button id="generateButton" class="button-primary">↻ &nbsp; Generate city layout</button>
+          <button id="newSeedButton" class="button-secondary">✦ &nbsp; Surprise me</button>
+          <div class="sidebar-rule"></div>
+          <p class="eyebrow">COMING IN 0.1-DEV.3</p>
+          <div class="upcoming"><span class="upcoming-icon">⌁</span><div><strong>Building footprints</strong><p>Turn empty blocks into busy streets lined with structures.</p></div></div>
+          <div class="upcoming"><span class="upcoming-icon">▦</span><div><strong>Districts & defenses</strong><p>Neighborhood identities, gates, towers and city walls.</p></div></div>
+        </div>
+        <div class="sidebar-footer">MAPPO PROJECT <span>© 2026</span></div>
+      </aside>
+      <main class="map-shell" aria-label="City map workspace">
+        <div class="map-topline"><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong><span class="map-muted">· City plan</span></div><span class="map-draft">● &nbsp; STREET PLAN</span></div>
+        <div id="mapViewport" class="map-viewport"><canvas id="mapCanvas" aria-label="Procedurally generated city streets, blocks and civic plaza. Drag to pan, scroll to zoom." tabindex="0"></canvas>
+          <div class="map-controls" aria-label="Map controls"><button id="zoomInButton" title="Zoom in (+)" aria-label="Zoom in">+</button><button id="zoomOutButton" title="Zoom out (-)" aria-label="Zoom out">−</button><div class="map-controls-divider"></div><button id="fitButton" title="Fit map (0)" aria-label="Fit map">⤢</button></div>
+          <div class="map-legend"><span class="legend-mark"></span><span>CITY EXTENT</span><span class="legend-sep">/</span><span class="legend-point"></span><span>STREET NETWORK</span></div>
+        </div>
+        <div class="map-status"><span id="statusMessage" role="status">Generating city plan…</span><span class="status-readout">POS <strong id="positionValue">0, 0</strong></span><span class="status-readout">ZOOM <strong id="zoomValue">100%</strong></span></div>
+      </main>
+      <aside class="sidebar sidebar-right" aria-label="Project information">
+        <div class="sidebar-heading"><span class="section-number">02</span><span>FIELD NOTES</span></div>
+        <div class="sidebar-content"><p class="eyebrow">CURRENT PROJECT</p><h2>City report<span class="gold-dot">.</span></h2><p class="intro">Your new street network, civic plaza and undeveloped city blocks.</p>
+          <div class="report-label">SETTLEMENT</div><div class="report-primary" id="reportCityName"></div>
+          <div class="stat-row"><span>Seed</span><strong id="citySeed">—</strong></div>
+          <div class="stat-row"><span>Size class</span><strong id="citySize">—</strong></div>
+          <div class="stat-row"><span>Footprint radius</span><strong id="cityRadius">—</strong></div>
+          <div class="stat-row"><span>Road junctions</span><strong id="junctionCount">—</strong></div>
+          <div class="stat-row"><span>Road segments</span><strong id="roadCount">—</strong></div>
+          <div class="stat-row"><span>City blocks</span><strong id="blockCount">—</strong></div>
+          <div class="stat-row"><span>Connecting lanes</span><strong id="laneCount">—</strong></div>
+          <div class="stat-row"><span>Civic plaza</span><strong>1</strong></div>
+          <div class="stat-row"><span>Buildings</span><strong>0 <small>· Milestone 3</small></strong></div>
+          <div class="sidebar-rule"></div>
+          <p class="eyebrow">HOW TO NAVIGATE</p>
+          <div class="shortcut"><span>Drag canvas</span><kbd>PAN</kbd></div><div class="shortcut"><span>Scroll wheel</span><kbd>ZOOM</kbd></div><div class="shortcut"><span>Fit to view</span><kbd>0</kbd></div><div class="shortcut"><span>Zoom in / out</span><kbd>+ / −</kbd></div>
+          <div class="note"><strong>ABOUT THIS BUILD</strong><p>Milestone 2 creates genuine connected roads, irregular blocks and a civic plaza. Blocks are still empty—buildings, districts and walls follow in Milestone 3.</p></div>
+        </div>
+        <div class="sidebar-footer">ACTIVE SEED <span id="currentSeed">—</span></div>
+      </aside>
+    </div>
+  </div>
+  <script>
+(function(){
+'use strict';
+// src/core/prng.js
+// One reproducible pseudo-random stream per seed. Avoid Math.random in generation.
+function normalizeSeed(value) {
+  return String(value ?? '').trim().slice(0, 64) || 'mappo';
+}
+
+function hashSeed(value) {
+  let hash = 2166136261;
+  for (const char of normalizeSeed(value)) {
+    hash ^= char.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function createRng(seed) {
+  let state = hashSeed(seed);
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function randomRange(rng, min, max) {
+  return min + rng() * (max - min);
+}
+
+
+// src/core/geometry.js
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function boundsOf(points) {
+  if (!points.length) return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+  return points.reduce((bounds, p) => ({
+    minX: Math.min(bounds.minX, p.x),
+    minY: Math.min(bounds.minY, p.y),
+    maxX: Math.max(bounds.maxX, p.x),
+    maxY: Math.max(bounds.maxY, p.y)
+  }), { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
+}
+
+function pointInPolygon(point, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const a = polygon[i];
+    const b = polygon[j];
+    if ((a.y > point.y) !== (b.y > point.y) &&
+      point.x < ((b.x - a.x) * (point.y - a.y)) / (b.y - a.y) + a.x) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+function polygonSignedArea(points) {
+  let area = 0;
+  for (let i = 0; i < points.length; i++) {
+    const a = points[i];
+    const b = points[(i + 1) % points.length];
+    area += a.x * b.y - b.x * a.y;
+  }
+  return area / 2;
+}
+
+
+// src/generators/survey.js
+
+
+const SIZE_PRESETS = Object.freeze({ small: 260, medium: 390, large: 560 });
+
+// Milestone 1 only: a deterministic survey footprint, NOT generated city geometry.
+function generateSurvey(seed, size) {
+  const radius = SIZE_PRESETS[size] ?? SIZE_PRESETS.medium;
+  const rng = createRng(`${seed}:survey:v1:${size}`);
+  const phase = randomRange(rng, -Math.PI, Math.PI);
+  const waveA = randomRange(rng, 0.015, 0.065);
+  const waveB = randomRange(rng, 0.012, 0.048);
+  const count = 64;
+  const boundary = Array.from({ length: count }, (_, i) => {
+    const a = (i / count) * Math.PI * 2;
+    const r = radius * (1 + Math.sin(a * 3 + phase) * waveA + Math.cos(a * 7 - phase) * waveB);
+    return { x: Math.cos(a) * r, y: Math.sin(a) * r * 0.86 };
+  });
+
+  const anchors = [{ id: 'SITE-00', kind: 'center', x: 0, y: 0 }];
+  const target = size === 'small' ? 7 : size === 'large' ? 15 : 11;
+  let attempts = 0;
+  while (anchors.length <= target && attempts++ < target * 50) {
+    const a = randomRange(rng, 0, 2 * Math.PI);
+    const r = radius * Math.sqrt(rng()) * 0.79;
+    const candidate = { x: Math.cos(a) * r, y: Math.sin(a) * r * 0.86 };
+    if (!pointInPolygon(candidate, boundary)) continue;
+    if (anchors.some(p => Math.hypot(p.x - candidate.x, p.y - candidate.y) < radius * 0.18)) continue;
+    anchors.push({ id: `SITE-${String(anchors.length).padStart(2, '0')}`, kind: 'survey', ...candidate });
+  }
+  return { boundary, anchors, nominalRadius: radius };
+}
+
+
+// src/generators/layout.js
+
+
+// The road graph, city blocks and central square share the same vertex IDs.
+// All road junctions are explicit, including connections to mid-block lanes.
+const LAYOUT_PRESETS = Object.freeze({
+  small: { sectors: 10, rings: 3, laneRate: 0.48 },
+  medium: { sectors: 14, rings: 4, laneRate: 0.57 },
+  large: { sectors: 19, rings: 5, laneRate: 0.62 }
+});
+
+function edgeKey(a, b) {
+  return a < b ? `${a}:${b}` : `${b}:${a}`;
+}
+
+function boundaryDistance(angle, boundary) {
+  const dx = Math.cos(angle);
+  const dy = Math.sin(angle);
+  let nearest = Infinity;
+  for (let i = 0; i < boundary.length; i++) {
+    const a = boundary[i];
+    const b = boundary[(i + 1) % boundary.length];
+    const sx = b.x - a.x;
+    const sy = b.y - a.y;
+    const denominator = dx * sy - dy * sx;
+    if (Math.abs(denominator) < 1e-10) continue;
+    const t = (a.x * sy - a.y * sx) / denominator;
+    const u = (a.x * dy - a.y * dx) / denominator;
+    if (t > 0 && u >= -1e-9 && u <= 1 + 1e-9) nearest = Math.min(nearest, t);
+  }
+  if (!Number.isFinite(nearest)) throw new Error('Invalid survey boundary: no radial intersection');
+  return nearest;
+}
+
+function walkPolygon(vertices, start, end) {
+  const result = [vertices[start]];
+  for (let i = (start + 1) % vertices.length; i !== end; i = (i + 1) % vertices.length) {
+    result.push(vertices[i]);
+  }
+  result.push(vertices[end]);
+  return result;
+}
+
+function generateLayout(seed, size, survey) {
+  const preset = LAYOUT_PRESETS[size] ?? LAYOUT_PRESETS.medium;
+  const rng = createRng(`${seed}:layout:v1:${size}`);
+  const { sectors, rings, laneRate } = preset;
+  const nodes = [];
+  const nodeById = new Map();
+  const baseEdges = new Map();
+  const faces = [];
+  const ringsOfNodes = [];
+
+  function createNode(x, y) {
+    const node = { id: `N-${String(nodes.length + 1).padStart(4, '0')}`, x, y };
+    nodes.push(node);
+    nodeById.set(node.id, node);
+    return node.id;
+  }
+
+  function addEdge(a, b, kind) {
+    const key = edgeKey(a, b);
+    if (baseEdges.has(key)) return;
+    baseEdges.set(key, { a, b, kind });
+  }
+
+  // A coherent but irregular angular lattice. The small per-ring deflections
+  // yield winding streets without introducing intersecting polylines.
+  const steps = Array.from({ length: sectors }, () => randomRange(rng, 0.79, 1.22));
+  const total = steps.reduce((sum, step) => sum + step, 0);
+  const start = randomRange(rng, -Math.PI, Math.PI);
+  const angles = [start];
+  for (let i = 0; i < sectors - 1; i++) angles.push(angles.at(-1) + steps[i] / total * Math.PI * 2);
+  const angularStep = Math.PI * 2 / sectors;
+
+  for (let ring = 0; ring < rings; ring++) {
+    const fraction = 0.14 + (0.73 * ring) / (rings - 1);
+    const row = [];
+    for (let sector = 0; sector < sectors; sector++) {
+      const angle = angles[sector] + randomRange(rng, -0.12, 0.12) * angularStep;
+      const distance = boundaryDistance(angle, survey.boundary) * fraction * randomRange(rng, 0.967, 1.033);
+      row.push(createNode(Math.cos(angle) * distance, Math.sin(angle) * distance));
+    }
+    ringsOfNodes.push(row);
+  }
+
+  for (let ring = 0; ring < rings; ring++) {
+    for (let sector = 0; sector < sectors; sector++) {
+      const next = (sector + 1) % sectors;
+      // A civic boulevard and a sparse set of outer ring boulevards.
+      addEdge(ringsOfNodes[ring][sector], ringsOfNodes[ring][next],
+        ring === 0 || (ring === rings - 2 && sector % 3 !== 1) ? 'primary' : 'secondary');
+      if (ring === rings - 1) continue;
+      addEdge(ringsOfNodes[ring][sector], ringsOfNodes[ring + 1][sector],
+        sector % 4 === 0 || sector % 4 === 1 && ring === 0 ? 'primary' : 'secondary');
+      faces.push({
+        ring, sector,
+        corners: [
+          ringsOfNodes[ring][sector],
+          ringsOfNodes[ring + 1][sector],
+          ringsOfNodes[ring + 1][next],
+          ringsOfNodes[ring][next]
+        ]
+      });
+    }
+  }
+
+  // Plan some connecting lanes per block. Each lane ends at real street
+  // junctions. Its endpoints become shared vertices in *both* adjacent blocks.
+  const midpoints = new Map();
+  function midpoint(a, b) {
+    const key = edgeKey(a, b);
+    if (midpoints.has(key)) return midpoints.get(key);
+    const first = nodeById.get(a);
+    const second = nodeById.get(b);
+    const id = createNode((first.x + second.x) / 2, (first.y + second.y) / 2);
+    midpoints.set(key, id);
+    return id;
+  }
+  for (const face of faces) {
+    if (rng() >= laneRate) continue;
+    const side = rng() < 0.53 ? 0 : 1;
+    const corners = face.corners;
+    face.split = [
+      midpoint(corners[side], corners[(side + 1) % 4]),
+      midpoint(corners[(side + 2) % 4], corners[(side + 3) % 4])
+    ];
+  }
+
+  const roads = [];
+  function road(a, b, kind) {
+    roads.push({ id: `RD-${String(roads.length + 1).padStart(4, '0')}`, a, b, kind });
+  }
+  for (const edge of baseEdges.values()) {
+    const mid = midpoints.get(edgeKey(edge.a, edge.b));
+    if (mid) {
+      road(edge.a, mid, edge.kind);
+      road(mid, edge.b, edge.kind);
+    } else {
+      road(edge.a, edge.b, edge.kind);
+    }
+  }
+
+  const blocks = [];
+  function addBlock(nodeIds, face) {
+    const polygon = nodeIds.map(id => nodeById.get(id));
+    const area = polygonSignedArea(polygon);
+    if (area <= 0) throw new Error(`Invalid block winding/area: ${face.ring}/${face.sector}`);
+    blocks.push({
+      id: `BLK-${String(blocks.length + 1).padStart(4, '0')}`,
+      vertices: nodeIds,
+      ring: face.ring,
+      sector: face.sector,
+      area: Math.round(area * 100) / 100,
+      usage: 'unassigned'
+    });
+  }
+  for (const face of faces) {
+    const boundary = [];
+    for (let i = 0; i < 4; i++) {
+      const a = face.corners[i];
+      const b = face.corners[(i + 1) % 4];
+      boundary.push(a);
+      const mid = midpoints.get(edgeKey(a, b));
+      if (mid) boundary.push(mid);
+    }
+    if (!face.split) {
+      addBlock(boundary, face);
+      continue;
+    }
+    const a = boundary.indexOf(face.split[0]);
+    const b = boundary.indexOf(face.split[1]);
+    addBlock(walkPolygon(boundary, a, b), face);
+    addBlock(walkPolygon(boundary, b, a), face);
+    road(face.split[0], face.split[1], 'lane');
+  }
+
+  const plazaVertices = ringsOfNodes[0];
+  const plaza = {
+    id: 'PLAZA-0001',
+    name: 'Founders Square',
+    vertices: plazaVertices,
+    area: Math.round(polygonSignedArea(plazaVertices.map(id => nodeById.get(id))) * 100) / 100
+  };
+
+  return { nodes, roads, blocks, plaza };
+}
+
+
+// src/core/city-model.js
+
+
+
+const FIRST = ['Alder', 'Ash', 'Briar', 'Brindle', 'Cinder', 'Elder', 'Fell', 'Grey', 'High', 'Iron', 'Moss', 'Raven', 'Silver', 'Stone', 'Thorn', 'Willow'];
+const LAST = ['bridge', 'bury', 'crest', 'dale', 'ford', 'haven', 'mere', 'mont', 'stead', 'watch', 'wick', 'wood'];
+
+function createProject(options = {}) {
+  const seed = normalizeSeed(options.seed);
+  const size = Object.hasOwn(SIZE_PRESETS, options.size) ? options.size : 'medium';
+  const nameRng = createRng(`${seed}:name:v1`);
+  const name = FIRST[Math.floor(nameRng() * FIRST.length)] + LAST[Math.floor(nameRng() * LAST.length)];
+  const survey = generateSurvey(seed, size);
+  const layout = generateLayout(seed, size, survey);
+  return {
+    schemaVersion: 1,
+    generatorVersion: '0.1-dev.2',
+    seed,
+    options: { size },
+    city: {
+      id: `city-${seed.replace(/[^\w-]/g, '-').toLowerCase().slice(0, 24)}`,
+      name,
+      survey,
+      nodes: layout.nodes,
+      roads: layout.roads,
+      blocks: layout.blocks,
+      plaza: layout.plaza,
+      buildings: [],
+      districts: [],
+      walls: []
+    }
+  };
+}
+
+
+// src/renderer/camera.js
+
+class Camera {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.zoom = 1;
+    this.width = 800;
+    this.height = 600;
+  }
+
+  resize(width, height) {
+    this.width = Math.max(1, width);
+    this.height = Math.max(1, height);
+  }
+
+  worldToScreen(point) {
+    return { x: (point.x - this.x) * this.zoom + this.width / 2,
+      y: (point.y - this.y) * this.zoom + this.height / 2 };
+  }
+
+  screenToWorld(point) {
+    return { x: (point.x - this.width / 2) / this.zoom + this.x,
+      y: (point.y - this.height / 2) / this.zoom + this.y };
+  }
+
+  pan(dx, dy) {
+    this.x -= dx / this.zoom;
+    this.y -= dy / this.zoom;
+  }
+
+  zoomAt(factor, screenPoint = { x: this.width / 2, y: this.height / 2 }) {
+    const before = this.screenToWorld(screenPoint);
+    this.zoom = clamp(this.zoom * factor, 0.18, 12);
+    const after = this.screenToWorld(screenPoint);
+    this.x += before.x - after.x;
+    this.y += before.y - after.y;
+  }
+
+  fit(points, padding = 78) {
+    if (!points.length) return;
+    const minX = Math.min(...points.map(p => p.x));
+    const maxX = Math.max(...points.map(p => p.x));
+    const minY = Math.min(...points.map(p => p.y));
+    const maxY = Math.max(...points.map(p => p.y));
+    this.x = (minX + maxX) / 2;
+    this.y = (minY + maxY) / 2;
+    this.zoom = clamp(Math.min(
+      Math.max(1, this.width - padding * 2) / Math.max(1, maxX - minX),
+      Math.max(1, this.height - padding * 2) / Math.max(1, maxY - minY)
+    ), 0.18, 12);
+  }
+}
+
+
+// src/renderer/canvas.js
+
+const INK = '#34494b';
+const ACCENT = '#ad8054';
+const ROAD_STYLES = Object.freeze({
+  primary: { width: 12, fill: '#fbf6e9', edge: '#a58f73' },
+  secondary: { width: 8.2, fill: '#faf4e6', edge: '#b2a58e' },
+  lane: { width: 4.5, fill: '#f8f1df', edge: '#b6ab93' }
+});
+const BLOCK_FILLS = [
+  ['#cbd3b7', '#d7d5b9', '#d8d3b4', '#c9d2b7'],
+  ['#ced2b5', '#ddd7ba', '#d2d4bb', '#d8d3b4'],
+  ['#d6d3b6', '#cbd0b3', '#dcd6ba', '#d0d4b9'],
+  ['#d2d5bf', '#d8d4b9', '#cdd4ba', '#dfd8c0']
+];
+
+function pathPolygon(ctx, points, camera) {
+  ctx.beginPath();
+  points.forEach((point, i) => {
+    const p = camera.worldToScreen(point);
+    if (i === 0) ctx.moveTo(p.x, p.y);
+    else ctx.lineTo(p.x, p.y);
+  });
+  ctx.closePath();
+}
+
+function drawGrid(ctx, camera) {
+  const width = camera.width;
+  const height = camera.height;
+  const first = camera.screenToWorld({ x: 0, y: 0 });
+  const last = camera.screenToWorld({ x: width, y: height });
+  const intervals = [10, 20, 50, 100, 200, 500, 1000];
+  const gridStep = intervals.find(step => step * camera.zoom >= 27) ?? 1000;
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'rgba(80, 85, 74, 0.065)';
+  ctx.beginPath();
+  const firstX = Math.floor(first.x / gridStep);
+  const firstY = Math.floor(first.y / gridStep);
+  for (let x = firstX; x <= Math.ceil(last.x / gridStep) && x < firstX + 180; x++) {
+    const sx = camera.worldToScreen({ x: x * gridStep, y: 0 }).x;
+    ctx.moveTo(sx, 0);
+    ctx.lineTo(sx, height);
+  }
+  for (let y = firstY; y <= Math.ceil(last.y / gridStep) && y < firstY + 180; y++) {
+    const sy = camera.worldToScreen({ x: 0, y: y * gridStep }).y;
+    ctx.moveTo(0, sy);
+    ctx.lineTo(width, sy);
+  }
+  ctx.stroke();
+  return gridStep;
+}
+
+function drawSurvey(ctx, camera, survey) {
+  pathPolygon(ctx, survey.boundary, camera);
+  ctx.fillStyle = 'rgba(121, 145, 112, 0.065)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(107, 123, 97, 0.60)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([8, 7]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawBlocks(ctx, camera, city, byId) {
+  for (const block of city.blocks) {
+    const points = block.vertices.map(id => byId.get(id));
+    pathPolygon(ctx, points, camera);
+    const palette = BLOCK_FILLS[block.ring % BLOCK_FILLS.length];
+    ctx.fillStyle = palette[(block.sector + block.id.length * 7 + Number(block.id.slice(-2))) % palette.length];
+    ctx.fill();
+    ctx.strokeStyle = '#a9b09c';
+    ctx.lineWidth = 0.9;
+    ctx.stroke();
+  }
+}
+
+function drawRoads(ctx, camera, city, byId) {
+  // Two passes maintain clean junctions even when neighboring streets differ in width.
+  for (const pass of ['edge', 'fill']) {
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (const road of city.roads) {
+      const style = ROAD_STYLES[road.kind];
+      const a = camera.worldToScreen(byId.get(road.a));
+      const b = camera.worldToScreen(byId.get(road.b));
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = style[pass];
+      ctx.lineWidth = (style.width + (pass === 'edge' ? 2.2 : 0)) * camera.zoom;
+      ctx.stroke();
+    }
+  }
+}
+
+function drawPlaza(ctx, camera, plaza, byId) {
+  const points = plaza.vertices.map(id => byId.get(id));
+  pathPolygon(ctx, points, camera);
+  ctx.fillStyle = '#e7d5af';
+  ctx.fill();
+  ctx.strokeStyle = '#a38866';
+  ctx.lineWidth = Math.max(1, 2.2 * camera.zoom);
+  ctx.stroke();
+
+  // Fine, quiet radial paving; these are decorations, not road segments.
+  const center = points.reduce((acc, p) => ({ x: acc.x + p.x / points.length, y: acc.y + p.y / points.length }), { x: 0, y: 0 });
+  const screen = camera.worldToScreen(center);
+  ctx.beginPath();
+  for (const point of points) {
+    const p = camera.worldToScreen(point);
+    ctx.moveTo(screen.x, screen.y);
+    ctx.lineTo(p.x, p.y);
+  }
+  ctx.strokeStyle = 'rgba(148, 123, 82, 0.22)';
+  ctx.lineWidth = 0.8;
+  ctx.stroke();
+  const ring = Math.max(4, 6 * camera.zoom);
+  ctx.beginPath();
+  ctx.arc(screen.x, screen.y, ring, 0, Math.PI * 2);
+  ctx.fillStyle = '#b7a17c';
+  ctx.fill();
+  ctx.strokeStyle = '#f7ead1';
+  ctx.lineWidth = Math.max(1, 2.8 * camera.zoom);
+  ctx.stroke();
+  if (camera.zoom >= 0.4) {
+    ctx.font = '700 11px ui-monospace, SFMono-Regular, Consolas, monospace';
+    ctx.fillStyle = INK;
+    ctx.textAlign = 'center';
+    ctx.fillText(plaza.name.toUpperCase(), screen.x, screen.y - Math.max(13, 18 * camera.zoom));
+  }
+}
+
+function drawCompassAndScale(ctx, camera, step) {
+  const width = camera.width;
+  const height = camera.height;
+  ctx.strokeStyle = 'rgba(52, 73, 75, 0.45)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(width - 44, 56); ctx.lineTo(width - 44, 94);
+  ctx.moveTo(width - 50, 63); ctx.lineTo(width - 44, 53); ctx.lineTo(width - 38, 63);
+  ctx.stroke();
+  ctx.font = '700 11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = INK;
+  ctx.fillText('N', width - 44, 44);
+  const scaleWidth = clamp(step * camera.zoom, 25, 240);
+  const barY = height - 34;
+  const barX = width - scaleWidth - 24;
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(barX, barY); ctx.lineTo(barX + scaleWidth, barY);
+  ctx.moveTo(barX, barY - 4); ctx.lineTo(barX, barY + 4);
+  ctx.moveTo(barX + scaleWidth, barY - 4); ctx.lineTo(barX + scaleWidth, barY + 4);
+  ctx.stroke();
+  ctx.font = '10px ui-monospace, SFMono-Regular, Consolas, monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText(`${step} survey units`, width - 24, barY - 9);
+}
+
+function renderMap(canvas, camera, project) {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  const dpr = Math.min(3, window.devicePixelRatio || 1);
+  const width = camera.width;
+  const height = camera.height;
+  const physicalW = Math.max(1, Math.round(width * dpr));
+  const physicalH = Math.max(1, Math.round(height * dpr));
+  if (canvas.width !== physicalW || canvas.height !== physicalH) {
+    canvas.width = physicalW;
+    canvas.height = physicalH;
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = '#efeadc';
+  ctx.fillRect(0, 0, width, height);
+  const gridStep = drawGrid(ctx, camera);
+  const city = project.city;
+  const byId = new Map(city.nodes.map(node => [node.id, node]));
+  drawSurvey(ctx, camera, city.survey);
+  drawBlocks(ctx, camera, city, byId);
+  drawRoads(ctx, camera, city, byId);
+  drawPlaza(ctx, camera, city.plaza, byId);
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(52, 73, 75, 0.67)';
+  ctx.font = '700 10px ui-monospace, SFMono-Regular, Consolas, monospace';
+  ctx.fillText('CITY PLAN  /  STREET NETWORK & BLOCKS', 22, 31);
+  drawCompassAndScale(ctx, camera, gridStep);
+}
+
+
+// src/ui/controllers.js
+function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport) {
+  let dragging = false;
+  let lastX = 0;
+  let lastY = 0;
+  canvas.addEventListener('pointerdown', event => {
+    if (event.button !== 0) return;
+    dragging = true;
+    lastX = event.clientX;
+    lastY = event.clientY;
+    canvas.setPointerCapture(event.pointerId);
+    canvas.classList.add('is-dragging');
+  });
+  canvas.addEventListener('pointermove', event => {
+    if (!dragging) return;
+    camera.pan(event.clientX - lastX, event.clientY - lastY);
+    lastX = event.clientX;
+    lastY = event.clientY;
+    requestDraw();
+    updateViewport();
+  });
+  const finish = () => { dragging = false; canvas.classList.remove('is-dragging'); };
+  canvas.addEventListener('pointerup', finish);
+  canvas.addEventListener('pointercancel', finish);
+  canvas.addEventListener('lostpointercapture', finish);
+  canvas.addEventListener('wheel', event => {
+    event.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    camera.zoomAt(Math.exp(-event.deltaY * 0.0013), point);
+    requestDraw();
+    updateViewport();
+  }, { passive: false });
+}
+
+
+// src/app.js
+
+
+
+
+const $ = id => document.getElementById(id);
+const canvas = $('mapCanvas');
+const viewport = $('mapViewport');
+const camera = new Camera();
+let project;
+let drawPending = false;
+
+function requestDraw() {
+  if (drawPending) return;
+  drawPending = true;
+  requestAnimationFrame(() => {
+    drawPending = false;
+    if (project) renderMap(canvas, camera, project);
+  });
+}
+
+function updateViewport() {
+  $('zoomValue').textContent = `${Math.round(camera.zoom * 100)}%`;
+  $('positionValue').textContent = `${Math.round(camera.x)}, ${Math.round(camera.y)}`;
+}
+
+function updateDetails() {
+  const city = project.city;
+  $('cityName').textContent = city.name;
+  $('reportCityName').textContent = city.name;
+  $('citySeed').textContent = project.seed;
+  $('citySize').textContent = project.options.size;
+  $('junctionCount').textContent = city.nodes.length;
+  $('roadCount').textContent = city.roads.length;
+  $('blockCount').textContent = city.blocks.length;
+  $('laneCount').textContent = city.roads.filter(road => road.kind === 'lane').length;
+  $('cityRadius').textContent = `${city.survey.nominalRadius} units`;
+  $('currentSeed').textContent = project.seed;
+}
+
+function setMessage(text) {
+  $('statusMessage').textContent = text;
+}
+
+function fitMap() {
+  if (!project) return;
+  camera.fit(project.city.survey.boundary);
+  requestDraw();
+  updateViewport();
+}
+
+function generate() {
+  project = createProject({ seed: $('seedInput').value, size: $('sizeInput').value });
+  $('seedInput').value = project.seed;
+  fitMap();
+  updateDetails();
+  setMessage(`${project.city.roads.length} connected road segments · ${project.city.blocks.length} city blocks`);
+}
+
+function newSeed() {
+  const values = new Uint32Array(2);
+  if (globalThis.crypto?.getRandomValues) globalThis.crypto.getRandomValues(values);
+  else { values[0] = Date.now() >>> 0; values[1] = Math.floor(Math.random() * 2 ** 32); }
+  $('seedInput').value = `${values[0].toString(36)}-${values[1].toString(36)}`;
+  generate();
+}
+
+function resize() {
+  const rect = viewport.getBoundingClientRect();
+  camera.resize(Math.max(1, Math.round(rect.width)), Math.max(1, Math.round(rect.height)));
+  requestDraw();
+  updateViewport();
+}
+
+$('generateButton').addEventListener('click', generate);
+$('newSeedButton').addEventListener('click', newSeed);
+$('fitButton').addEventListener('click', fitMap);
+$('zoomInButton').addEventListener('click', () => { camera.zoomAt(1.25); requestDraw(); updateViewport(); });
+$('zoomOutButton').addEventListener('click', () => { camera.zoomAt(0.8); requestDraw(); updateViewport(); });
+$('seedInput').addEventListener('keydown', event => { if (event.key === 'Enter') generate(); });
+$('sizeInput').addEventListener('change', generate);
+window.addEventListener('keydown', event => {
+  const tag = document.activeElement?.tagName;
+  if (tag === 'INPUT' || tag === 'SELECT' || event.ctrlKey || event.metaKey || event.altKey) return;
+  if (event.key === '0') { fitMap(); event.preventDefault(); }
+  if (event.key === '+' || event.key === '=') { camera.zoomAt(1.25); requestDraw(); updateViewport(); event.preventDefault(); }
+  if (event.key === '-') { camera.zoomAt(0.8); requestDraw(); updateViewport(); event.preventDefault(); }
+});
+
+bindCanvasInteraction(canvas, camera, requestDraw, updateViewport);
+if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
+else window.addEventListener('resize', resize);
+resize();
+const url = new URL(window.location.href);
+$('seedInput').value = url.searchParams.get('seed') || 'mappo-001';
+const size = url.searchParams.get('size');
+if (['small', 'medium', 'large'].includes(size)) $('sizeInput').value = size;
+generate();
+
+})();
+</script>
+</body>
+</html>

@@ -1,13 +1,13 @@
 {
   "name": "mappo",
-  "version": "0.1.0-dev.1",
+  "version": "0.1.0-dev.2",
   "private": true,
   "type": "module",
   "description": "Offline-first procedural medieval city mapper",
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test tests/*.test.js",
-    "check": "npm run test && npm run build"
+    "check": "npm run build && npm run test"
   },
   "engines": { "node": ">=20" }
 }

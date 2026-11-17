@@ -7,7 +7,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.1.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.2.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -15,6 +15,7 @@ test('compiled HTML is standalone with all styles and script embedded', async ()
   assert.doesNotMatch(bundled, /<script[^>]+src=/i);
   assert.doesNotMatch(bundled, /<link[^>]+href=/i);
   assert.doesNotMatch(bundled, /https?:\/\//i);
+  assert.doesNotMatch(bundled, /watabou|MFCG|competitor/i);
   const script = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
   new vm.Script(script, { filename: 'mappo-bundle.js' });
 });
@@ -48,7 +49,10 @@ test('compiled HTML initializes and responds to UI events with stubbed Canvas', 
   vm.runInNewContext(script, context);
   assert.equal(el('citySeed').textContent, 'test-seed');
   assert.equal(el('citySize').textContent, 'large');
-  assert.equal(el('anchorCount').textContent, 16);
+  assert.ok(el('junctionCount').textContent > 50);
+  assert.ok(el('blockCount').textContent > 30);
+  assert.ok(el('roadCount').textContent > 70);
+  assert.ok(el('laneCount').textContent > 0);
   assert.ok(el('mapCanvas').width > 0);
   const firstName = el('cityName').textContent;
   assert.ok(firstName.length > 3);

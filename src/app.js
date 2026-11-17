@@ -30,7 +30,10 @@ function updateDetails() {
   $('reportCityName').textContent = city.name;
   $('citySeed').textContent = project.seed;
   $('citySize').textContent = project.options.size;
-  $('anchorCount').textContent = city.survey.anchors.length;
+  $('junctionCount').textContent = city.nodes.length;
+  $('roadCount').textContent = city.roads.length;
+  $('blockCount').textContent = city.blocks.length;
+  $('laneCount').textContent = city.roads.filter(road => road.kind === 'lane').length;
   $('cityRadius').textContent = `${city.survey.nominalRadius} units`;
   $('currentSeed').textContent = project.seed;
 }
@@ -51,7 +54,7 @@ function generate() {
   $('seedInput').value = project.seed;
   fitMap();
   updateDetails();
-  setMessage('Survey generated · streets and buildings arrive in Milestone 2');
+  setMessage(`${project.city.roads.length} connected road segments · ${project.city.blocks.length} city blocks`);
 }
 
 function newSeed() {
