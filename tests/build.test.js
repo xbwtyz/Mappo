@@ -14,7 +14,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e1.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e2.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -713,14 +713,16 @@ test('standalone app downloads, previews and restores complete projects and reco
   reloaded.el('undoWaterButton').handlers.click();
   assert.equal(reloaded.state().waterPanel.editor.bridges.length, 1);
   reloaded.el('coastDirectionInput').value = 'east';
-  reloaded.el('waterSeedInput').value = 'coast-stress';
+  reloaded.el('coastSeedInput').value = 'coast-stress';
   reloaded.el('generateCoastButton').handlers.click();
-  assert.equal(reloaded.state().waterPanel.editor.features[0].kind, 'coast');
+  assert.equal(reloaded.state().waterPanel.editor.features.length, 2);
+  assert.equal(reloaded.state().waterPanel.editor.activeFeature().kind, 'coast');
+  assert.deepEqual(copy(reloaded.state().waterPanel.editor.features.find(f => f.kind === 'river')), wetProject.city.waterFeatures[0]);
   assert.deepEqual(copy(reloaded.state().project), wetProject);
-  assert.equal(reloaded.el('addBridgeButton').disabled, true);
-  assert.equal(reloaded.el('riverWidthInput').disabled, true);
+  assert.equal(reloaded.el('addBridgeButton').disabled, false);
+  assert.notEqual(reloaded.el('riverWidthInput').disabled, true);
   const shoreEditor = reloaded.state().waterPanel.editor,
-    shorePoint = shoreEditor.features[0].path[4];
+    shorePoint = shoreEditor.activeFeature().path[4];
   const a = reloaded.state().camera.worldToScreen(shorePoint),
     b = {
       x: a.x + 3 * reloaded.state().camera.zoom,
@@ -730,8 +732,8 @@ test('standalone app downloads, previews and restores complete projects and reco
   fire('pointermove', b);
   fire('pointerup', b);
   reloaded.el('generateButton').handlers.click();
-  assert.equal(reloaded.state().project.city.waterState.status, 'coast', reloaded.el('waterMessage').textContent);
-  assert.equal(reloaded.state().project.city.bridges.length, 0);
+  assert.equal(reloaded.state().project.city.waterState.status, 'mixed', reloaded.el('waterMessage').textContent);
+  assert.equal(reloaded.state().project.city.bridges.length, 1);
   const coastProject = copy(reloaded.state().project);
   reloaded.el('flipCoastButton').handlers.click();
   assert.match(reloaded.el('waterMessage').textContent, /square/);
@@ -750,6 +752,35 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.deepEqual(copy(reloaded.state().project), coastProject);
   assert.equal(reloaded.el('coastDirectionInput').value, 'south');
   reloaded.el('undoWaterButton').handlers.click();
-  assert.equal(reloaded.state().waterPanel.editor.features[0].waterSide, coastProject.city.waterFeatures[0].waterSide);
+  assert.equal(reloaded.state().waterPanel.editor.features.find(f => f.kind === 'coast').waterSide, coastProject.city.waterFeatures.find(f => f.kind === 'coast').waterSide);
+  const preservedRiver = copy(reloaded.state().waterPanel.editor.features.find(f => f.kind === 'river'));
+  reloaded.el('removeCoastButton').handlers.click();
+  assert.deepEqual(copy(reloaded.state().waterPanel.editor.features), [preservedRiver]);
+  reloaded.el('undoWaterButton').handlers.click();
+  assert.equal(reloaded.state().waterPanel.editor.features.length, 2);
+  const preservedCoast = copy(reloaded.state().waterPanel.editor.features.find(f => f.kind === 'coast'));
+  reloaded.el('removeRiverButton').handlers.click();
+  assert.deepEqual(copy(reloaded.state().waterPanel.editor.features), [preservedCoast]);
+  assert.equal(reloaded.state().waterPanel.editor.bridges.length, 0);
+  reloaded.el('undoWaterButton').handlers.click();
+  reloaded.el('editRiverButton').handlers.click();
+  assert.equal(reloaded.state().waterPanel.editor.activeFeature().kind, 'river');
+  reloaded.el('editCoastButton').handlers.click();
+  assert.equal(reloaded.state().waterPanel.editor.activeFeature().kind, 'coast');
+  reloaded.el('waterSeedInput').value = 'only-the-river';
+  reloaded.el('coastSeedInput').value = 'only-the-coast';
+  assert.ok(await reloaded.el('saveProjectButton').handlers.click());
+  const independentFile = downloaded.at(-1),
+    independentText = await independentFile.blob.text();
+  reloaded.el('waterSeedInput').value = 'changed';
+  reloaded.el('coastSeedInput').value = 'changed';
+  await reloaded.state().files.stageFile({
+    size: independentFile.blob.size,
+    text: async () => independentText
+  });
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.equal(reloaded.el('waterSeedInput').value, 'only-the-river');
+  assert.equal(reloaded.el('coastSeedInput').value, 'only-the-coast');
+
 
 });

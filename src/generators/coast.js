@@ -1,4 +1,7 @@
 import {
+  waterShoreComponents
+} from '../core/water-shore-topology.js';
+import {
   waterLandRegions
 } from '../core/water-regions.js';
 import {
@@ -13,6 +16,7 @@ import {
 } from '../core/prng.js';
 import {
   waterFeaturePolygon,
+  waterBridgeClearOfFeatures,
   WATER_BANK
 } from '../core/water-geometry.js';
 
@@ -35,12 +39,12 @@ export function generateCoast(boundary, center, options = {}) {
   const waterSide = sign === 1 ? 'left' : 'right',
     rng = createRng(`${seed}:coast:v1:${direction}`);
   const towardHigh = direction === 'south' || direction === 'east';
-  for (let attempt = 0; attempt < 24; attempt++) {
-    const fraction = .20 + rng() * .12,
+  for (let attempt = 0; attempt < 40; attempt++) {
+    const fraction = attempt < 24 ? .20 + rng() * .12 : .06 + rng() * .12,
       base = towardHigh ? Math.max(centerSide + 58, sideHigh - sideSpan * fraction) : Math.min(centerSide - 58, sideLow + sideSpan * fraction);
     if (base <= sideLow + 16 || base >= sideHigh - 16) continue;
     const phase = rng() * Math.PI * 2,
-      amplitude = Math.min(24, sideSpan * .055),
+      amplitude = Math.min(attempt < 24 ? 24 : 10, sideSpan * .055),
       path = Array.from({
         length: 9
       }, (_, i) => {
@@ -56,13 +60,17 @@ export function generateCoast(boundary, center, options = {}) {
         };
       });
     const feature = {
-      id: 'WATER-001',
+      id: 'WATER-COAST-001',
       dataVersion: 1,
       kind: 'coast',
       path,
       waterSide,
       seaDepth: Math.min(20000, Math.max(2000, span * 5)),
       direction,
+      generation: {
+        seed,
+        algorithm: 'shore-v1'
+      },
       extensions: {}
     };
     feature.polygon = waterFeaturePolygon(feature);
@@ -70,6 +78,11 @@ export function generateCoast(boundary, center, options = {}) {
     if (pointInPolygon(center, feature.corridor) || clearance(center, feature.corridor) < 38) continue;
     if (!boundary.some(p => pointInPolygon(p, feature.polygon))) continue;
     if (waterLandRegions(boundary, feature.corridor).landCount !== 1) continue;
+    if ((options.bridges ?? []).some(b => {
+        const river = (options.otherFeatures ?? []).find(f => f.id === b.waterId);
+        return river && !waterBridgeClearOfFeatures(river, b, boundary, [feature]);
+      })) continue;
+    if ((options.otherFeatures ?? []).length && waterShoreComponents(boundary, [feature, ...options.otherFeatures], options.bridges ?? []) !== 1) continue;
     return {
       features: [feature],
       bridges: [],

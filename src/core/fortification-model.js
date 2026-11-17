@@ -68,7 +68,7 @@ export function validateFortifications(city) {
   if (!simpleWallPath(wall.path)) throw new Error('The wall crosses itself or is not a simple ring.');
   if (!wallEnclosesCity(wall.path, boundary, WALL_CLEARANCE)) throw new Error('The wall fails to enclose the city with safe street clearance.');
   const expectedWaterOpenings = waterWallOpenings(wall, city.waterFeatures);
-  if (!Array.isArray(wall.waterOpenings ?? []) || (wall.waterOpenings ?? []).length !== expectedWaterOpenings.length || (wall.waterOpenings ?? []).some((o, i) => !o || o.waterId !== expectedWaterOpenings[i].waterId || !Number.isFinite(o.start) || !Number.isFinite(o.end) || Math.abs(o.start - expectedWaterOpenings[i].start) > 1e-5 || Math.abs(o.end - expectedWaterOpenings[i].end) > 1e-5)) throw new Error('Wall water openings disagree with the saved river.');
+  if (!Array.isArray(wall.waterOpenings ?? []) || (wall.waterOpenings ?? []).length !== expectedWaterOpenings.length || (wall.waterOpenings ?? []).some((o, i) => !o || JSON.stringify([...(o.waterIds ?? [o.waterId])].sort()) !== JSON.stringify([...(expectedWaterOpenings[i].waterIds ?? [expectedWaterOpenings[i].waterId])].sort()) || !Number.isFinite(o.start) || !Number.isFinite(o.end) || Math.abs(o.start - expectedWaterOpenings[i].start) > 1e-5 || Math.abs(o.end - expectedWaterOpenings[i].end) > 1e-5)) throw new Error('Wall water openings disagree with the saved river.');
   const measure = measureWall(wall.path);
   for (const gate of city.gates) {
     if (gate.dataVersion !== 1 || gate.kind !== 'street-gate') throw new Error('Unsupported gate data version or kind.');

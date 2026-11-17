@@ -1,10 +1,21 @@
-# Mappo 0.1-dev.3e1 validation
+# Mappo 0.1-dev.3e2 validation
 
 ## Automated checks
 
-**88 automated tests passed**, covering coasts, rivers, bridges, fortifications, districts, persistence and existing city generation.
+**94 automated tests passed**, covering combined water, coasts, rivers, bridges, fortifications, districts, persistence and existing city generation.
 
 Run `npm run check` to rebuild and run the complete suite. All road-crossing checks remain enabled.
+
+### Independent river/coast composition
+
+- 64 combinations cover eight city outlines, four street/ocean-direction settings and both river-first and coast-first generation orders.
+- Dry property setbacks from both features, exact union face coverage, real bridge connectivity and bank edges restricted to exposed union boundaries.
+- River mouths merge without internal shoreline edges, including exactly touching water boundaries; wet faces and merged wall openings retain contributor references.
+- Regenerating, moving points or removing either feature preserves the other feature and compatible metadata. Coast removal retains river bridges; river removal retains the coast.
+- Combined save/load retains accepted geometry, invalid drafts, independent pending seeds, active shoreline selection and undo history.
+- Invalid combined face references, ocean bridges, unknown water algorithms, excess features and corrupted merged wall references are rejected.
+- A frozen native 3E.1 coast migrates exactly and can gain a river without changing its coastal record.
+- Compiled-app tests generate a coast alongside an existing river, drag its handles, apply a combined city, reject a submerged square, remove either feature independently, undo, switch active tools and reload separate pending river/coast seeds.
 
 ### Coastline coverage
 
@@ -16,7 +27,7 @@ Run `npm run check` to rebuild and run the complete suite. All road-crossing che
 - Coast files preserve exact ocean geometry, invalid side-swapped drafts, history and pending generator direction.
 - Invalid water sides, incompatible versions/algorithms, undersized ocean extents, changed bank geometry and bridges on coasts are rejected.
 - A frozen native 3E river file migrates without changing accepted geometry, view or water history.
-- Compiled-app checks generate a coast over an existing river draft, drag a shoreline handle, disable river-only controls, apply a coastal city, reject a submerged square, save/load the invalid draft and undo the side swap.
+- Compiled-app checks generate a coast over an existing river draft, drag a shoreline handle, retain river-only controls when a river is present, apply a combined city, reject a submerged square, save/load the invalid draft and undo the side swap.
 
 ### River and bridge coverage
 
@@ -104,7 +115,7 @@ Additional tests check 1,200 survey configurations, reproducible IDs, invalid in
 
 ## Rendering checks
 
-The production Canvas renderer was used with a native Canvas implementation to inspect full-city views for all four street patterns and a zoomed view of individual roofs. For this milestone it also rendered fortified organic, planned, branching and horseshoe cities, plus a gate closeup; wall gaps, street connections and tower placement were visually inspected. This checks generated geometry, building forms and drawing, not browser layout or native browser pointer delivery. Coastal rendering was inspected for organic, planned, branching and horseshoe cities with west/north/south/east oceans, plus a waterfront closeup. Ocean fill, shoreline roads and dry defenses were checked. Water rendering was additionally inspected for organic, planned, branching and horseshoe cities, plus a bridge closeup with actual connected roads, clear banks and wall passages.
+The production Canvas renderer was used with a native Canvas implementation to inspect full-city views for all four street patterns and a zoomed view of individual roofs. For this milestone it also rendered fortified organic, planned, branching and horseshoe cities, plus a gate closeup; wall gaps, street connections and tower placement were visually inspected. This checks generated geometry, building forms and drawing, not browser layout or native browser pointer delivery. Coastal rendering was inspected for organic, planned, branching and horseshoe cities with west/north/south/east oceans, plus a waterfront closeup. Ocean fill, shoreline roads and dry defenses were checked. Combined river/coast views were also inspected for organic, planned, twin-core and horseshoe cities, including a closeup of an unobstructed river mouth. Water rendering was additionally inspected for organic, planned, branching and horseshoe cities, plus a bridge closeup with actual connected roads, clear banks and wall passages.
 
 ## Graphical browser limitation
 
@@ -112,11 +123,14 @@ The host previously denied Chromium's process-singleton socket. No full graphica
 
 ## Manual Firefox checklist
 
-Open `dist/mappo-0.1-dev.3e1.html` directly from disk.
+Open `dist/mappo-0.1-dev.3e2.html` directly from disk.
 
 - Generate a coast in each ocean direction. Drag/add/remove shoreline points, reroll water and confirm only a draft changes until Generate city.
 - Swap land/water; check submerged-square feedback and retention of the previous city. Undo and regenerate.
-- Confirm river width and bridge tools are disabled on a coast. Save/load a coast with an unfinished invalid draft and pending ocean direction.
+- Generate a river then a coast, and repeat in reverse order. Check each feature and its seed survives changes to the other.
+- Move/remove each feature separately, undo, and save/load both with separate pending seeds and selected shoreline handles.
+- Inspect river mouths for an open channel and no road across the opening; move a bridge into ocean and check rejection.
+- Confirm river width and bridge tools remain available when both features exist. Save/load a coast with an unfinished invalid draft and pending ocean direction.
 - Inspect shoreline roads, building setbacks, outer wall termination and absence of streets/towers in ocean. Test a concave outline and a disconnected-island draft.
 - Load a native 3E river project; compare its accepted map, unfinished edits and water undo history.
 - Generate a river; verify the current city stays intact until Generate city. Drag points, change width and reroll only water.

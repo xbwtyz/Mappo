@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current release is **0.1-dev.3e1**. Its container format is **1**, project-data schema is **6**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current release is **0.1-dev.3e2**. Its container format is **1**, project-data schema is **7**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.3e1",
+  "appVersion": "0.1-dev.3e2",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -30,7 +30,7 @@ The empty objects illustrate envelope locations; they are not a valid complete c
 
 Names, notes and unknown JSON fields on records are retained. `project.generatorVersion` describes the original generator; loading and exporting does not rewrite it to the current app version.
 
-Schemas 2–6 share these geometry contracts: polygon coordinates are ordinary finite JSON numbers. Polygons use a counterclockwise outer boundary. Building holes are separate counterclockwise polygons inside the footprint. Base plots are convex; properties and building footprints may be concave. A property’s plots partition its area. Buildings reference only the plots their actual footprint occupies. Attached rows may share walls, with no positive-area footprint overlap.
+Schemas 2–7 share these geometry contracts: polygon coordinates are ordinary finite JSON numbers. Polygons use a counterclockwise outer boundary. Building holes are separate counterclockwise polygons inside the footprint. Base plots are convex; properties and building footprints may be concave. A property’s plots partition its area. Buildings reference only the plots their actual footprint occupies. Attached rows may share walls, with no positive-area footprint overlap.
 
 The current reader additionally validates fortification clearance, gate connectivity, tower placement and defense history, plus district coverage, connected membership, block inheritance, names/colors and saved district undo history. It validates structure, unique IDs, references, street planarity/connectivity, block coverage, street-width setbacks, polygon containment, plot ownership/area, roof geometry and rendering fields. It rejects incomplete or inconsistent core geometry before changing the open city.
 
@@ -70,7 +70,7 @@ Future developers should:
 
 A newer unsupported container, project schema or workspace schema is rejected with a compatible-build message. The reader does not guess how to downgrade it. Compatible unknown fields are preserved; arbitrary future formats are not promised to be readable by old apps.
 
-Raw schema-1 projects captured from the released 3A.2 and 3B builds are supported. The first migration adds missing empty property/plot/open-space collections where appropriate and advances schema 1 to 2; the district migration advances it to schema 3, the fortification migration advances it to schema 4, the water migration advances it to schema 5, then the coast compatibility migration advances it to schema 6. It preserves original geometry, IDs and generator metadata. Those earlier HTML builds did not have a save button; raw JSON compatibility supports existing model snapshots.
+Raw schema-1 projects captured from the released 3A.2 and 3B builds are supported. The first migration adds missing empty property/plot/open-space collections where appropriate and advances schema 1 to 2; the district migration advances it to schema 3, the fortification migration advances it to schema 4, the water migration advances it to schema 5, the coast compatibility migration advances it to schema 6, then the composition migration advances it to schema 7. It preserves original geometry, IDs and generator metadata. Those earlier HTML builds did not have a save button; raw JSON compatibility supports existing model snapshots.
 
 ## District schema 3
 
@@ -130,7 +130,23 @@ Coasts use the same land/wet face partition, `bank` streets and hidden virtual `
 
 Workspace schema stays 1. The shared course editor retains its historical `mode: "river"` enum for editing either river or shoreline points. Optional `workspace.waterEditor.controls.coastDirection` saves the pending generator direction separately from the current shoreline. Side swaps edit only the draft; a temporarily submerged square or otherwise invalid draft can still be saved. Unknown compatible workspace and feature fields remain preserved.
 
-Migration 5→6 advances only `project.schemaVersion`. It never changes existing water, bridges, streets, buildings, defenses, districts, history or view. `tests/fixtures/save-3e-format1-schema5.json` is a frozen native river project captured from the released 3E HTML. The current reader accepts one river **or** one coast; connected river mouths, multiple water features and lakes need later contracts.
+Migration 5→6 advances only `project.schemaVersion`. It never changes existing water, bridges, streets, buildings, defenses, districts, history or view. `tests/fixtures/save-3e-format1-schema5.json` is a frozen native river project captured from the released 3E HTML. Schema 6 admitted one river **or** one coast. Schema 7 extends that contract as described below.
+
+## Water composition schema 7
+
+`city.waterFeatures` accepts up to two features: one `river` and one `coast`. Each retains its own ID, exact geometry and compatible metadata. New generated records include `generation: {seed, algorithm}` for per-feature provenance; older records need no added fields. New IDs use kind-specific prefixes, while imported IDs are retained. Regenerating one kind preserves the other record; removing a river removes only bridges referencing it.
+
+Existing `waterState` version-1 dry/river/coast states remain valid. A combined city uses `status: "mixed"`, `algorithm: "union-v1"` and the existing bounded seed metadata. Per-feature generation metadata and independent workspace seed controls carry each generator's settings; the legacy root seed is not a replacement for those controls.
+
+Land calculations use the union of all bank corridors. Streets are clipped against every corridor. Bank edges inside another water feature are removed before street arrangement construction, including at river mouths. Wet faces cover the union once and use `waterIds` to name every feature contributing positive area to that face. Old single-feature `waterId` records remain readable unchanged. Face area, planarity, positive winding and original-outline coverage checks still apply.
+
+Bridge records continue referencing a specific river ID. Crossings and their rendered width must clear the coast, and traversable roads must connect all banks. A shoreline-only graph helps propose additional inland bridges when concave geography creates more land regions. New river proposals can orient toward an existing coast; proposing a coast preserves existing river and bridge records and tries placements keeping them dry.
+
+Wall openings merge overlapping corridor cuts. New combined openings carry `waterIds`; single-feature openings retain their existing `waterId` representation. Rendering fills all bank reserves before filling the water union and draws only exposed shore edges, avoiding a road, bank strip or shoreline across the river mouth.
+
+Workspace schema stays 1. Optional `waterEditor.activeWaterId` identifies which feature's points are being edited. Optional `controls.coastSeed` is independent from `controls.seed` (the river seed), `width` and `coastDirection`. Existing single-feature saves map their legacy seed to the appropriate section. Water undo remains chronological across both feature editors and preserves snapshots of the complete water definition.
+
+Migration 6→7 advances only the project schema. Geometry, IDs, district/defense data, existing water states, drafts and history remain unchanged. `tests/fixtures/save-3e1-format1-schema6.json` is a native coastal save captured from the released 3E.1 HTML and tested for exact migration and subsequent river addition.
 
 ## Browser recovery
 

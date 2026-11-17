@@ -46,7 +46,7 @@ export const MAX_VALIDATION_WORK = 6000000;
 export const DENSITIES = Object.freeze(['small', 'medium', 'large']);
 export const PATTERNS = Object.freeze(['radial', 'organic', 'linear', 'planned']);
 const LIMITS = {
-  waterFeatures: 1,
+  waterFeatures: 2,
   bridges: 8,
   waterFaces: 256,
   nodes: 20000,

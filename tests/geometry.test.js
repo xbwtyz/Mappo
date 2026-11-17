@@ -117,7 +117,7 @@ test('layout has repeatable graph IDs and geometry and varies with different see
       seed: 'changed-layout',
       size
     }).city.nodes);
-    assert.equal(left.generatorVersion, '0.1-dev.3e1');
+    assert.equal(left.generatorVersion, '0.1-dev.3e2');
     assert.ok(left.city.blocks[0].vertices.map(id => left.city.nodes.find(node => node.id === id)).every(Boolean));
   }
 });

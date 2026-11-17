@@ -97,7 +97,7 @@ const editor = new OutlineEditor(editorChanged, (message, error) => {
 
 function fitMap() {
   const points = !editor.dirty && project ? fortificationViewPoints(project.city) : editor.boundary.length > 2 ? editor.boundary : project?.city.survey.boundary;
-  if (points) camera.fit(waterPanel?.editor.features.length && (waterPanel.editor.dirty || waterPanel.editor.mode !== 'pan') ? [...points, ...waterPanel.editor.features[0].path] : points);
+  if (points) camera.fit(waterPanel?.editor.features.length && (waterPanel.editor.dirty || waterPanel.editor.mode !== 'pan') ? [...points, ...waterPanel.editor.features.flatMap(f => f.path)] : points);
   requestDraw();
   updateViewport();
 }
@@ -125,7 +125,7 @@ function updateDetails() {
 function generate() {
   try {
     editor.validate();
-    if (waterPanel?.editor.features[0]?.kind === 'river') waterPanel.editor.width($('riverWidthInput').value);
+    if (waterPanel?.editor.features.some(f => f.kind === 'river')) waterPanel.editor.width($('riverWidthInput').value);
     const next = createProject({
       seed: $('seedInput').value,
       size: $('sizeInput').value,
@@ -399,7 +399,8 @@ function captureWorkspace() {
         controls: {
           seed: String($('waterSeedInput').value),
           width: String($('riverWidthInput').value),
-          coastDirection: $('coastDirectionInput').value || 'east'
+          coastDirection: $('coastDirectionInput').value || 'east',
+          coastSeed: String($('coastSeedInput').value)
         }
       },
       fortificationEditor: {
@@ -474,10 +475,16 @@ function applyProjectDocument(document) {
   camera.x = workspace.view.camera.x;
   camera.y = workspace.view.camera.y;
   camera.zoom = workspace.view.camera.zoom;
+  $('waterSeedInput').value = 'river';
+  $('coastSeedInput').value = 'coast';
+  $('riverWidthInput').value = '28';
+  $('coastDirectionInput').value = 'east';
   waterPanel.editor.load(workspace.waterEditor, next.city);
   waterPanel.refresh(true);
   if (workspace.waterEditor?.controls) {
-    $('waterSeedInput').value = workspace.waterEditor.controls.seed;
+    if (workspace.waterEditor.controls.coastSeed === undefined && next.city.waterFeatures.length === 1 && next.city.waterFeatures[0].kind === 'coast') $('coastSeedInput').value = workspace.waterEditor.controls.seed;
+    else $('waterSeedInput').value = workspace.waterEditor.controls.seed;
+    if (workspace.waterEditor.controls.coastSeed !== undefined) $('coastSeedInput').value = workspace.waterEditor.controls.coastSeed;
     $('riverWidthInput').value = workspace.waterEditor.controls.width;
     $('coastDirectionInput').value = workspace.waterEditor.controls.coastDirection ?? 'east';
   }

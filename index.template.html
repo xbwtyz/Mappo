@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — Coastlines & Rivers · {{APP_VERSION}}</title>
+  <title>Mappo — Rivers + Coastlines · {{APP_VERSION}}</title>
   <!-- INLINE_CSS -->
 </head>
 <body>
 <div class="app">
   <header class="topbar">
     <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">{{APP_VERSION}}</span></div>
-    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>COASTLINES &amp; RIVERS</span></div>
+    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>RIVERS + COASTLINES</span></div>
   </header>
   <div class="workspace">
     <aside class="sidebar sidebar-left" aria-label="City design tools">
@@ -27,16 +27,22 @@
         </section>
         <details id="waterPanel" class="water-panel" open>
           <summary>WATER &amp; BRIDGES</summary>
-          <p id="waterStats" class="hint">Generate a river or coastline, then edit the water preview.</p>
-          <div class="control-group"><label for="waterSeedInput">Water seed</label><input id="waterSeedInput" maxlength="64" value="river" spellcheck="false"></div>
+          <p id="waterStats" class="hint">Generate a river and coastline independently, then edit either preview.</p>
+          <fieldset class="water-feature"><legend>RIVER</legend>
+          <div class="control-group"><label for="waterSeedInput">River seed</label><input id="waterSeedInput" maxlength="64" value="river" spellcheck="false"></div>
           <div class="control-group"><label for="riverWidthInput">River width · survey units</label><input id="riverWidthInput" type="number" min="10" max="90" step="1" value="28"></div>
-          <div class="tool-grid"><button id="generateRiverButton" class="tool-button">Generate river</button><button id="rerollRiverButton" class="minor-button">New water seed</button></div>
-          <div class="control-group coast-direction"><label for="coastDirectionInput">Ocean direction · new coastline</label><select id="coastDirectionInput"><option value="north">North</option><option value="east" selected>East</option><option value="south">South</option><option value="west">West</option></select></div>
-          <div class="tool-grid"><button id="generateCoastButton" class="tool-button">Generate coastline</button><button id="flipCoastButton" class="minor-button" disabled>Swap land / water</button></div>
-          <p class="hint">Generate river or coastline replaces the water draft. Direction applies when generating a new coast; Swap changes the current draft.</p>
-          <div class="tool-grid actions"><button id="editRiverButton" class="tool-button" aria-pressed="false">Edit river points</button><button id="editBridgesButton" class="tool-button" aria-pressed="false">Move bridges</button><button id="addBridgeButton" class="minor-button" aria-pressed="false">Add bridge</button><button id="removeWaterItemButton" class="minor-button">Remove selected</button></div>
+          <div class="tool-grid"><button id="generateRiverButton" class="tool-button">Generate river</button><button id="rerollRiverButton" class="minor-button">New river seed</button><button id="editRiverButton" class="tool-button" aria-pressed="false">Edit river points</button><button id="removeRiverButton" class="minor-button">Remove river</button></div>
+          <div class="tool-grid actions"><button id="editBridgesButton" class="tool-button" aria-pressed="false">Move bridges</button><button id="addBridgeButton" class="minor-button" aria-pressed="false">Add bridge</button></div>
+          </fieldset>
+          <fieldset class="water-feature"><legend>COASTLINE</legend>
+          <div class="control-group"><label for="coastSeedInput">Coast seed</label><input id="coastSeedInput" maxlength="64" value="coast" spellcheck="false"></div>
+          <div class="control-group"><label for="coastDirectionInput">Ocean direction · new coastline</label><select id="coastDirectionInput"><option value="north">North</option><option value="east" selected>East</option><option value="south">South</option><option value="west">West</option></select></div>
+          <div class="tool-grid"><button id="generateCoastButton" class="tool-button">Generate coastline</button><button id="rerollCoastButton" class="minor-button">New coast seed</button><button id="editCoastButton" class="tool-button" aria-pressed="false">Edit shoreline</button><button id="flipCoastButton" class="minor-button">Swap land / water</button></div>
+          <button id="removeCoastButton" class="minor-button full-width actions">Remove coastline</button>
+          </fieldset>
+          <p class="hint">River and coast controls are independent. Generating, editing or removing one retains the other. Water joins where the river meets the ocean.</p>
+          <button id="removeWaterItemButton" class="minor-button full-width">Remove selected point / bridge</button>
           <div class="tool-grid actions"><button id="undoWaterButton" class="minor-button">Undo water edit</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
-          <button id="removeRiverButton" class="minor-button full-width">Remove water from draft</button>
           <p id="waterMessage" class="file-status" role="status" aria-live="polite">Water edits are previews. Generate city below to rebuild streets, buildings, districts and defenses around them. The last valid city stays open if a crossing cannot connect.</p>
         </details>
         <details id="fortificationPanel" class="fortification-panel" open>
@@ -116,7 +122,7 @@
         <div class="sidebar-rule"></div><p class="eyebrow">WORKSPACE GUIDE</p>
         <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
         <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
-        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts group whole blocks. Moving a block keeps both neighborhoods connected. Generate an editable river or coastline in Water &amp; Bridges. Water drafts apply when you generate the city. Perimeter walls stay clear of water. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
+        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts group whole blocks. Moving a block keeps both neighborhoods connected. Generate an editable river and coastline in Water &amp; Bridges. Water drafts apply when you generate the city. Perimeter walls stay clear of water. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
       </div>
     </aside>
   </div>

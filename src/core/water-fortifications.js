@@ -37,7 +37,20 @@ export function waterWallOpenings(wall, features) {
       ...c
     });
   }
-  return merged;
+  if ((features ?? []).length <= 1) return merged;
+  const union = [];
+  for (const c of cuts) {
+    const last = union.at(-1);
+    if (last && c.start <= last.end + 1e-5) {
+      last.end = Math.max(last.end, c.end);
+      last.waterIds = [...new Set([...last.waterIds, c.waterId])].sort();
+    } else union.push({
+      start: c.start,
+      end: c.end,
+      waterIds: [c.waterId]
+    });
+  }
+  return union;
 }
 export function waterGateIsDry(gate, features, measure) {
   for (const f of features ?? []) {

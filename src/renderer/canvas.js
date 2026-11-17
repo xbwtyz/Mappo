@@ -250,7 +250,7 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
   drawFortifications(ctx, camera, city, layers);
 
   ctx.globalAlpha = 1;
-  if (editor && !(city.waterFeatures?.[0]?.kind === 'coast' && !editor.dirty && editor.mode === 'pan')) drawOutline(ctx, camera, editor);
+  if (editor && !(city.waterFeatures?.some(f => f.kind === 'coast') && !editor.dirty && editor.mode === 'pan')) drawOutline(ctx, camera, editor);
   drawWaterDraft(ctx, camera, waterEditor, editor?.boundary ?? city.survey.boundary);
 
   ctx.textAlign = 'left';

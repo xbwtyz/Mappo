@@ -1,5 +1,9 @@
 import {
   waterBridgeGeometry,
+  waterSetContains,
+  waterSetIntervals,
+  waterUnionSegments,
+  waterFaceFeatureIds,
   waterFaceInterior
 } from '../core/water-geometry.js';
 import {
@@ -44,9 +48,9 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
     x: center.x - half,
     y: center.y + half
   }];
-  const river = water.features[0],
-    corridor = river?.corridor;
-  if (corridor && square.some(p => insideOrOn(p, corridor))) throw new Error('Move the river farther from the main square.');
+  const features = water.features,
+    hasWater = features.length > 0;
+  if (features.some(f => square.some(p => insideOrOn(p, f.corridor)))) throw new Error('Move the water farther from the main square.');
   const segments = [];
   const push = (a, b, kind, tag = 'street') => {
     if (Math.hypot(a.x - b.x, a.y - b.y) > 1e-6) segments.push({
@@ -61,13 +65,17 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
 
   function clip(a, b, kind, tag = 'street') {
     const ts = [0, 1];
-    for (const polygon of [boundary, square, ...(corridor ? [corridor] : [])])
+    for (const polygon of [boundary, square, ...features.map(f => f.corridor)])
       for (let i = 0; i < polygon.length; i++) ts.push(...segmentCuts(a, b, polygon[i], polygon[(i + 1) % polygon.length]));
     ts.sort((a, b) => a - b);
     for (let i = 1; i < ts.length; i++) {
       if (ts[i] - ts[i - 1] < 1e-9) continue;
       const p = lerpPoint(a, b, (ts[i] + ts[i - 1]) / 2);
-      if (insideOrOn(p, boundary) && !pointInPolygon(p, square) && (!corridor || !pointInPolygon(p, corridor) || tag !== 'street')) push(lerpPoint(a, b, ts[i - 1]), lerpPoint(a, b, ts[i]), kind, tag);
+      const bridge = water.bridges.find(g => g.id === tag),
+        wet = waterSetContains(p, features),
+        bridgeRiver = bridge && features.find(f => f.id === bridge.waterId),
+        allowedWet = bridgeRiver && pointInPolygon(p, bridgeRiver.corridor) && !waterSetContains(p, features.filter(f => f !== bridgeRiver));
+      if (insideOrOn(p, boundary) && !pointInPolygon(p, square) && (!wet || tag === 'bank' || allowedWet)) push(lerpPoint(a, b, ts[i - 1]), lerpPoint(a, b, ts[i]), kind, tag);
     }
   }
   if (morphology === 'radial') {
@@ -125,10 +133,11 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
       y: center.y
     }, 'primary');
   }
-  if (river) {
-    for (let i = 0; i < corridor.length; i++) clip(corridor[i], corridor[(i + 1) % corridor.length], 'secondary', 'bank');
+  if (hasWater) {
+    for (const section of waterUnionSegments(features)) clip(section.a, section.b, 'secondary', 'bank');
     for (const bridge of water.bridges) {
-      const g = waterBridgeGeometry(river, bridge, boundary);
+      const river = features.find(f => f.id === bridge.waterId),
+        g = waterBridgeGeometry(river, bridge, boundary);
       clip(...g.approach, 'primary', bridge.id);
     }
   }
@@ -149,7 +158,7 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
     // Microunit snapping coalesces independently computed multi-way junctions.
     const key = `${Math.round(p.x*1e6)},${Math.round(p.y*1e6)}`;
     if (byCoordinate.has(key)) return byCoordinate.get(key);
-    if (river) {
+    if (hasWater) {
       const ix = Math.round(p.x * 1e6),
         iy = Math.round(p.y * 1e6);
       for (let dx = -1; dx <= 1; dx++)
@@ -193,10 +202,10 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
         kind: segment.kind,
         boundary: segment.tag === 'boundary',
         plaza: segment.tag === 'plaza',
-        ...(river ? {
+        ...(hasWater ? {
           bank: segment.tag === 'bank',
-          waterBoundary: segment.tag === 'boundary' && pointInPolygon(lerpPoint(a, b, .5), corridor),
-          ...(water.bridges.some(g => g.id === segment.tag) && pointInPolygon(lerpPoint(a, b, .5), corridor) ? {
+          waterBoundary: segment.tag === 'boundary' && waterSetContains(lerpPoint(a, b, .5), features),
+          ...(water.bridges.some(g => g.id === segment.tag) && waterSetContains(lerpPoint(a, b, .5), features) ? {
             bridgeId: segment.tag
           } : {})
         } : {})
@@ -251,7 +260,7 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
   // Tangencies at the boundary can leave tiny slivers. Merge them into a
   // neighbor by removing a shared street, never a city boundary or plaza edge.
   for (let pass = 0; pass < roads.length; pass++) {
-    const small = faces.find(f => f.area < minimumArea && (!corridor || !pointInPolygon(waterFaceInterior(f.vertices, new Map(nodes.map(n => [n.id, n]))), corridor)));
+    const small = faces.find(f => f.area < minimumArea && (!hasWater || !waterSetContains(waterFaceInterior(f.vertices, new Map(nodes.map(n => [n.id, n]))), features)));
     if (!small) break;
     const keys = new Set(small.vertices.map((a, i) => [a, small.vertices[(i + 1) % small.vertices.length]].sort().join(':')));
     let longest = -1,
@@ -294,9 +303,13 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
   const byId = new Map(nodes.map(n => [n.id, n]));
   const plazaFace = faces.find(f => pointInPolygon(center, f.vertices.map(id => byId.get(id))));
   if (!plazaFace) throw new Error('Could not create a plaza at this location. Move the center and try again.');
-  const waterFaces = river ? faces.filter(f => pointInPolygon(waterFaceInterior(f.vertices, byId), corridor)).map((f, i) => ({
+  const waterFaces = hasWater ? faces.filter(f => waterSetContains(waterFaceInterior(f.vertices, byId), features)).map((f, i) => ({
     id: `WET-${String(i+1).padStart(3,'0')}`,
-    waterId: river.id,
+    ...(features.length === 1 ? {
+      waterId: features[0].id
+    } : {
+      waterIds: waterFaceFeatureIds(f.vertices, byId, features)
+    }),
     vertices: f.vertices,
     area: Math.round(f.area * 100) / 100
   })) : [];

@@ -1,5 +1,7 @@
 import {
   waterFeaturePolygon,
+  waterUnionSegments,
+  waterSetIntervals,
   waterFrame,
   waterAt,
   waterBridgeGeometry,
@@ -22,37 +24,42 @@ function waterDrawPolygon(ctx, camera, polygon, fill, stroke) {
     ctx.stroke();
   }
 }
-export function drawWater(ctx, camera, features) {
-  for (const feature of features ?? []) {
-    waterDrawPolygon(ctx, camera, feature.corridor, '#c8c7ac');
-    waterDrawPolygon(ctx, camera, feature.polygon, feature.kind === 'coast' ? '#9bbec8' : '#94bbc2', feature.kind === 'coast' ? null : '#6d99a5');
-    ctx.beginPath();
-    feature.path.forEach((p, i) => {
-      const q = camera.worldToScreen(p);
-      if (i) ctx.lineTo(q.x, q.y);
-      else ctx.moveTo(q.x, q.y);
-    });
-    ctx.strokeStyle = 'rgba(231,245,236,.38)';
-    ctx.lineWidth = feature.kind === 'coast' ? Math.max(1, 2 * camera.zoom) : Math.max(.7, feature.width * .10 * camera.zoom);
-    if (feature.kind === 'coast') ctx.strokeStyle = '#f1edcf';
-    ctx.stroke();
-    if (feature.kind === 'coast') {
+
+function waterDrawSegment(ctx, camera, a, b, color, width) {
+  const p = camera.worldToScreen(a),
+    q = camera.worldToScreen(b);
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
+  ctx.lineTo(q.x, q.y);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.stroke();
+}
+export function drawWater(ctx, camera, features = []) {
+  for (const f of features) waterDrawPolygon(ctx, camera, f.corridor, '#c8c7ac');
+  for (const f of features) waterDrawPolygon(ctx, camera, f.polygon, '#94bbc2');
+  for (const s of waterUnionSegments(features, 'polygon')) {
+    const f = features.find(f => f.id === s.featureId);
+    waterDrawSegment(ctx, camera, s.a, s.b, f.kind === 'coast' ? '#f1edcf' : '#6d99a5', f.kind === 'coast' ? Math.max(1, 2 * camera.zoom) : 1.2);
+  }
+  for (const f of features) {
+    const others = features.filter(other => other !== f);
+    if (f.kind === 'river') {
+      for (let i = 1; i < f.path.length; i++)
+        for (const s of waterSetIntervals(f.path[i - 1], f.path[i], others, 'polygon'))
+          if (!s.inside) waterDrawSegment(ctx, camera, s.a, s.b, 'rgba(231,245,236,.38)', Math.max(.7, f.width * .10 * camera.zoom));
+    } else {
       const {
         v
-      } = waterFrame(feature), sign = feature.waterSide === 'left' ? 1 : -1;
+      } = waterFrame(f), sign = f.waterSide === 'left' ? 1 : -1;
       for (const distance of [4, 11]) {
-        ctx.beginPath();
-        feature.path.forEach((p, i) => {
-          const q = camera.worldToScreen({
-            x: p.x + v.x * sign * distance,
-            y: p.y + v.y * sign * distance
-          });
-          if (i) ctx.lineTo(q.x, q.y);
-          else ctx.moveTo(q.x, q.y);
-        });
-        ctx.lineWidth = Math.max(.6, .8 * camera.zoom);
-        ctx.strokeStyle = distance === 4 ? 'rgba(241,239,212,.65)' : 'rgba(224,237,230,.28)';
-        ctx.stroke();
+        const path = f.path.map(p => ({
+          x: p.x + v.x * sign * distance,
+          y: p.y + v.y * sign * distance
+        }));
+        for (let i = 1; i < path.length; i++)
+          for (const s of waterSetIntervals(path[i - 1], path[i], others, 'polygon'))
+            if (!s.inside) waterDrawSegment(ctx, camera, s.a, s.b, distance === 4 ? 'rgba(241,239,212,.65)' : 'rgba(224,237,230,.28)', Math.max(.6, .8 * camera.zoom));
       }
     }
   }
@@ -89,16 +96,16 @@ export function drawBridges(ctx, camera, city) {
 }
 export function drawWaterDraft(ctx, camera, editor, boundary) {
   if (!editor || (!editor.dirty && editor.mode === 'pan')) return;
-  const f = editor.features[0];
+  const f = editor.activeFeature();
   if (!f) return;
   if (editor.dirty) {
     ctx.globalAlpha = .82;
     try {
-      drawWater(ctx, camera, [{
+      drawWater(ctx, camera, editor.features.map(f => ({
         ...f,
         polygon: waterFeaturePolygon(f),
         corridor: waterFeaturePolygon(f, WATER_BANK)
-      }]);
+      })));
     } catch {}
     ctx.globalAlpha = 1;
   }
@@ -124,8 +131,10 @@ export function drawWaterDraft(ctx, camera, editor, boundary) {
     ctx.stroke();
   });
   for (const bridge of editor.bridges) {
+    const river = editor.features.find(r => r.id === bridge.waterId);
+    if (!river) continue;
     try {
-      const g = waterBridgeGeometry(f, bridge, boundary),
+      const g = waterBridgeGeometry(river, bridge, boundary),
         a = camera.worldToScreen(g.ends[0]),
         b = camera.worldToScreen(g.ends[1]);
       ctx.beginPath();
@@ -136,7 +145,7 @@ export function drawWaterDraft(ctx, camera, editor, boundary) {
       ctx.stroke();
     } catch {}
     try {
-      const q = camera.worldToScreen(waterAt(f, bridge.t));
+      const q = camera.worldToScreen(waterAt(river, bridge.t));
       ctx.beginPath();
       ctx.arc(q.x, q.y, 7, 0, Math.PI * 2);
       ctx.fillStyle = bridge.id === editor.selectedBridge ? '#d8a16a' : '#fff9e9';

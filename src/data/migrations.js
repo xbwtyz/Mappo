@@ -54,5 +54,7 @@ export function migrateProjectData(project) {
   }
   // Schema 6 admits coasts; existing river and dry models require no edits.
   if (project.schemaVersion === 5) project.schemaVersion = 6;
+  // Composition is additive: keep old features, geometry and drafts intact.
+  if (project.schemaVersion === 6) project.schemaVersion = 7;
   return project;
 }

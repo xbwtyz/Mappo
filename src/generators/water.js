@@ -1,4 +1,7 @@
 import {
+  waterShoreComponents
+} from '../core/water-shore-topology.js';
+import {
   boundsOf,
   pointInPolygon
 } from '../core/geometry.js';
@@ -13,6 +16,9 @@ import {
   waterFeaturePolygon,
   waterBridgeGeometry,
   waterDryState,
+  waterCompositionState,
+  waterBridgeClearOfFeatures,
+  waterFrame,
   WATER_BANK
 } from '../core/water-geometry.js';
 
@@ -22,7 +28,9 @@ export function generateRiver(boundary, center, options = {}) {
   if (!Number.isFinite(width) || width < 10 || width > 90) throw new Error('River width must be 10–90 survey units.');
   const rng = createRng(`${seed}:river:v1`),
     b = boundsOf(boundary),
-    horizontal = (b.maxX - b.minX) >= (b.maxY - b.minY);
+    coast = (options.otherFeatures ?? []).find(f => f.kind === 'coast'),
+    normal = coast ? waterFrame(coast).v : null,
+    horizontal = normal ? Math.abs(normal.x) >= Math.abs(normal.y) : (b.maxX - b.minX) >= (b.maxY - b.minY);
   const low = horizontal ? b.minX : b.minY,
     high = horizontal ? b.maxX : b.maxY,
     sideLow = horizontal ? b.minY : b.minX,
@@ -48,12 +56,17 @@ export function generateRiver(boundary, center, options = {}) {
         y: u
       };
     });
+    if (coast && pointInPolygon(path[0], coast.polygon) && !pointInPolygon(path.at(-1), coast.polygon)) path.reverse();
     const feature = {
-      id: 'WATER-001',
+      id: 'WATER-RIVER-001',
       dataVersion: 1,
       kind: 'river',
       width,
       path,
+      generation: {
+        seed,
+        algorithm: 'ribbon-v1'
+      },
       extensions: {}
     };
     feature.polygon = waterRibbon(feature);
@@ -73,11 +86,32 @@ export function generateRiver(boundary, center, options = {}) {
       try {
         const g = waterBridgeGeometry(feature, bridge, boundary);
         if (Math.hypot(g.center.x - center.x, g.center.y - center.y) < 40) continue;
+        if (!waterBridgeClearOfFeatures(feature, bridge, boundary, options.otherFeatures ?? [])) continue;
         possible.push(bridge);
       } catch {}
     }
     if (!possible.length) continue;
     const chosen = [possible[Math.floor(possible.length * .3)], possible[Math.floor(possible.length * .72)]].filter((p, i, a) => !i || Math.abs(p.t - a[0].t) * span * 1.7 > 65);
+    if ((options.otherFeatures ?? []).length) {
+      const all = [feature, ...options.otherFeatures];
+      let components = waterShoreComponents(boundary, all, chosen);
+      while (components > 1 && chosen.length < 8) {
+        let best = null,
+          bestCount = components;
+        for (const candidate of possible) {
+          if (chosen.includes(candidate) || chosen.some(b => Math.abs(candidate.t - b.t) * span * 1.7 < 65)) continue;
+          const count = waterShoreComponents(boundary, all, [...chosen, candidate]);
+          if (count < bestCount) {
+            best = candidate;
+            bestCount = count;
+          }
+        }
+        if (!best) break;
+        chosen.push(best);
+        components = bestCount;
+      }
+      if (components !== 1) continue;
+    }
     return {
       features: [feature],
       bridges: chosen.map((p, i) => ({
@@ -102,11 +136,6 @@ export function prepareWater(water) {
   return {
     features,
     bridges: JSON.parse(JSON.stringify(water?.bridges ?? [])),
-    state: {
-      ...waterDryState(),
-      ...(water?.state ?? {}),
-      status: features[0]?.kind ?? 'dry',
-      algorithm: features[0]?.kind === 'coast' ? 'shore-v1' : 'ribbon-v1'
-    }
+    state: waterCompositionState(features, water?.state)
   };
 }

@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.3e1 — Editable coastlines
+## Current build: 0.1-dev.3e2 — Rivers and coasts together
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3e1.html`](dist/mappo-0.1-dev.3e1.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3e2.html`](dist/mappo-0.1-dev.3e2.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### Workflow
 
@@ -45,35 +45,35 @@ Newly generated cities receive connected neighborhoods automatically. The **Neig
 
 Districts are geographic neighborhoods. Names do not replace buildings or simulate occupations, wealth or trade. Rules and themes can be added later without coupling neighborhood identity to geometry generation.
 
-Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 6 explicitly migrates older files; older apps that cannot read schema 6 should request a newer build rather than partially load it.
+Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 7 explicitly migrates older files; older apps that cannot read schema 7 should request a newer build rather than partially load it.
 
 See [`DISTRICTS.md`](DISTRICTS.md) for the module boundaries and extension points.
 
 ### Coastlines
 
-**Water & Bridges** now generates either a river or a coastline. A coastline has open ocean on one side and buildable land on the other. Generating a new water feature replaces only the water draft; the accepted city stays open until Generate city succeeds. Water undo can restore the previous river or coast draft.
+**Water & Bridges** has independent **River** and **Coastline** sections. A city can contain both at once. A coastline has open ocean on one side and buildable land on the other. Generating, rerolling, editing or removing a river retains the coast; the same applies in reverse. Each has its own seed and controls. The accepted city stays open until Generate city succeeds. Water undo restores the last water edit.
 
-1. Choose a **water seed** and **Ocean direction**: north, east, south or west. Click **Generate coastline** for an editable preview. **New water seed** rerolls the current water kind using the pending direction for a coast.
-2. Drag shoreline handles. Double-click near the shoreline to add a point; select an interior point and Delete or **Remove selected** to remove it. The existing course tool is labeled **Edit shoreline** in coastal mode.
+1. Choose a **coast seed** and **Ocean direction**: north, east, south or west. Click **Generate coastline** for an editable preview. **New coast seed** rerolls only the coastline using the pending ocean direction.
+2. Drag shoreline handles. Double-click near the shoreline to add a point; select an interior point and Delete or **Remove selected** to remove it. Use **Edit shoreline** for coast handles and **Edit river points** for river handles.
 3. **Swap land / water** reverses the current coast's ocean side. Keep the main square on land; move the shore or square if the preview reports it would be submerged. Ocean direction controls the next generated coastline, while Swap edits the existing draft.
 4. Click **Generate city** to build around the coast. Waterfront roads follow the land side, properties retain shoreline setbacks, and defenses are removed from submerged portions of the outer perimeter. An invalid shoreline retains the last valid city.
 
-The shoreline connectivity check prevents unconnected islands, including in concave outlines. River width and bridge tools are disabled for coasts. Shoreline edits, side swaps, pending direction and undo history travel with project files and browser recovery. Existing 3E river files load with their exact accepted geometry and drafts.
+The shoreline connectivity check prevents unconnected islands, including in concave outlines. River width and bridge tools stay available whenever a river exists, including in a coastal city. Bridges need two dry banks and cannot extend into the ocean. Shoreline edits, side swaps, pending direction and undo history travel with project files and browser recovery. Existing 3E river files load with their exact accepted geometry and drafts.
 
-This release supports **one river or one coast** per city. River mouths joining coasts, multiple water features, lakes, islands, docks and custom beach styles are future additions. Course points still progress between endpoints without loops or sharp backtracking. See [`WATER.md`](WATER.md) for the shared shape adapters and independent coastline generator.
+This release supports **one river and one coast together** per city. Joined water is treated as a union: waterfront roads stop at the river mouth and water draws without an internal shoreline across the opening. Multiple rivers/coasts, lakes, islands, docks and custom beach styles are future additions. Course points still progress between endpoints without loops or sharp backtracking. See [`WATER.md`](WATER.md) for the shared shape adapters and independent coastline generator.
 
 ### Rivers and editable bridges
 
-Water is optional. Existing and fresh cities start on dry land until you choose a water feature in **Water & Bridges**. Generation uses an independent water seed and proposes a river course with bridge locations. It creates a preview; the current city stays open.
+Water is optional. Existing and fresh cities start on dry land until you choose a water feature in **Water & Bridges**. Generation uses the river seed and proposes a river course with bridge locations, keeping any coast intact. When a coast exists, new rivers favor a course toward its ocean and bridge suggestions remain inland. It creates a preview; the current city stays open.
 
-1. Choose a water seed and a river width of **10–90 survey units**, then **Generate river**. **New water seed** proposes another course without changing the street seed.
+1. Choose a river seed and a river width of **10–90 survey units**, then **Generate river**. **New river seed** proposes another course without changing the street seed.
 2. Choose **Edit river points**. Drag the handles, including endpoints; double-click near the course to add an interior point. Select an interior point and press Delete or **Remove selected** to remove it. Endpoints must remain beyond the city.
 3. Choose **Move bridges** and drag a bridge marker along the river. The crossing snaps to the course and adjusts its angle to the local river segment. **Add bridge** places a marker near a clicked river location. Select a bridge and Delete or **Remove selected** to remove it.
 4. Click **Generate city** to apply the draft. Streets, buildings, neighborhoods and enabled defenses regenerate around the accepted water and crossings. Download a project copy before rebuilding a customized city.
 
 Bridges create actual street connections to both banks. Waterfront streets follow a reserved bank corridor; buildings stay on land. Water boundary edges close the planar arrangement without appearing as roads. Walls leave river openings and keep towers and street gates clear of the water.
 
-Water edits are independent of outline edits. **Undo water edit** keeps up to 20 previous water definitions; **Revert water draft** restores the current city's accepted water. **Remove water from draft** previews dry land and applies only after Generate city. The map's fit control includes river handles while water is being edited. Escape or **Pan map** leaves the water tool; Space-drag and middle-button drag pan in every tool.
+Water edits are independent of outline edits. **Undo water edit** keeps up to 20 previous water definitions; **Revert water draft** restores the current city's accepted water. **Remove river** removes only the river and its bridges from the draft; **Remove coastline** removes only the coast. Apply either removal with Generate city. The map's fit control includes river handles while water is being edited. Escape or **Pan map** leaves the water tool; Space-drag and middle-button drag pan in every tool.
 
 Invalid bridge locations, overlapping crossings, sharp/backtracking river bends, water at the square and disconnected banks retain the last valid city and show an explanation. A draft may temporarily have no bridges or invalid river geometry and can still be saved for later correction. Saving/loading never applies or regenerates a draft.
 
@@ -161,7 +161,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e1.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e2.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -183,6 +183,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3d:** Independent exterior fortifications, connected gates, round towers, visibility, undo and schema-4 persistence.
 - **0.1-dev.3e:** Generated/editable rivers, land-aware streets and buildings, editable connected bridges and schema-5 persistence.
 - **0.1-dev.3e1:** Generated/editable coastlines, ocean-side control, connected coastal land and schema-6 compatibility.
+- **0.1-dev.3e2:** Independent river/coast controls and seeds, joined water geometry, inland bridges and schema-7 compatibility.
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 
