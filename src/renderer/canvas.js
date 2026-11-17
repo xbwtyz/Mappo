@@ -1,3 +1,4 @@
+import { drawDistrictColors, drawDistrictOverlay } from './districts.js';
 import {
   drawDevelopment
 } from './buildings.js';
@@ -203,7 +204,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-export function renderMap(canvas, camera, project, editor, layers = {}) {
+export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -225,9 +226,11 @@ export function renderMap(canvas, camera, project, editor, layers = {}) {
   ctx.globalAlpha = editor?.dirty ? 0.20 : 1;
   drawSurvey(ctx, camera, city.survey);
   drawBlocks(ctx, camera, city, byId);
+  drawDistrictColors(ctx,camera,city,layers,districtSelection);
   drawDevelopment(ctx, camera, city, layers);
   drawRoads(ctx, camera, city, byId);
   drawPlaza(ctx, camera, city.plaza, byId);
+  drawDistrictOverlay(ctx,camera,city,layers,districtSelection);
 
   ctx.globalAlpha = 1;
   if (editor) drawOutline(ctx, camera, editor);

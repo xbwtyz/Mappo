@@ -53,7 +53,10 @@ export function defaultWorkspace(project) {
       layers: {
         buildings: true,
         properties: false,
-        plots: false
+        plots: false,
+        districtColors: project.city.districtState?.status === 'assigned',
+        districtBorders: project.city.districtState?.status === 'assigned',
+        districtLabels: project.city.districtState?.status === 'assigned'
       },
       fitOnLoad: true
     }
@@ -83,6 +86,16 @@ export function createProjectDocument(project, workspace = defaultWorkspace(proj
       ...(previous.controls || {}),
       ...copyJson(workspace.controls)
     },
+    districtEditor: {
+      ...(previous.districtEditor || {}),
+      ...(copyJson(workspace.districtEditor || {})),
+      ...((workspace.districtEditor?.controls !== undefined || previous.districtEditor?.controls !== undefined) ? {
+        controls: {
+          ...(previous.districtEditor?.controls || {}),
+          ...(copyJson(workspace.districtEditor?.controls || {}))
+        }
+      } : {})
+    },
     view: {
       ...(previous.view || {}),
       ...copyJson(workspace.view),
@@ -96,6 +109,7 @@ export function createProjectDocument(project, workspace = defaultWorkspace(proj
       }
     }
   };
+  if (workspace.districtEditor === undefined && previous.districtEditor === undefined) delete document.workspace.districtEditor;
   return document;
 }
 
@@ -108,7 +122,7 @@ function validateDocument(document) {
   for (const key of ['createdAt', 'savedAt'])
     if (typeof document[key] !== 'string' || !Number.isFinite(Date.parse(document[key]))) throw new Error(`Invalid ${key} timestamp.`);
   validateStoredProject(document.project);
-  validateWorkspace(document.workspace);
+  validateWorkspace(document.workspace, document.project);
   if (document.extensions !== undefined) requireRecord(document.extensions, 'Extensions');
   return document;
 }

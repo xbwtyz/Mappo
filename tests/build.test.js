@@ -11,7 +11,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3b1.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3c.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -48,6 +48,9 @@ test('compiled HTML initializes and responds to UI events with stubbed Canvas', 
         remove() {},
         toggle() {}
       },
+      replaceChildren(...items) {
+        this.options = items;
+      },
       setAttribute() {},
       focus() {},
       addEventListener(name, cb) {
@@ -75,6 +78,10 @@ test('compiled HTML initializes and responds to UI events with stubbed Canvas', 
   const context = {
     document: {
       getElementById: el,
+      createElement: () => ({
+        value: '',
+        textContent: ''
+      }),
       activeElement: {
         tagName: 'BODY'
       }
@@ -130,7 +137,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
   const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
   let script = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
   // Test-only observation of private application state, without adding product globals.
-  script = script.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectState = () => ({ project, editor, camera, layers });\n})();');
+  script = script.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectState = () => ({ project, editor, camera, layers, districtPanel });\n})();');
   const elements = new Map(),
     windowEvents = new Map();
   const noopContext = new Proxy({}, {
@@ -140,7 +147,11 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
     activeElement: {
       tagName: 'BODY'
     },
-    getElementById: el
+    getElementById: el,
+    createElement: () => ({
+      value: '',
+      textContent: ''
+    })
   };
 
   function el(id) {
@@ -155,6 +166,9 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
       disabled: false,
       addEventListener(name, cb) {
         this.handlers[name] = cb;
+      },
+      replaceChildren(...items) {
+        this.options = items;
       },
       setAttribute(name, value) {
         this[name] = value;
@@ -253,6 +267,50 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
     const s = state().camera.worldToScreen(p);
     click(s.x, s.y);
   };
+  const {
+    buildDistrictTopology
+  } = await import('../src/core/district-topology.js');
+  const {
+    moveDistrictBlock
+  } = await import('../src/core/district-model.js');
+  const topology = buildDistrictTopology(state().project.city);
+  let candidate = null;
+  for (const block of state().project.city.blocks) {
+    for (const neighbor of topology.neighbors.get(block.id)) {
+      const target = topology.blocks.get(neighbor).districtId;
+      if (target === block.districtId) continue;
+      try {
+        moveDistrictBlock(state().project.city, block.id, target);
+        candidate = {
+          block,
+          target
+        };
+        break;
+      } catch {}
+    }
+    if (candidate) break;
+  }
+  assert.ok(candidate);
+  worldClick(topology.centers.get(candidate.block.id));
+  assert.equal(state().districtPanel.editor.selectedBlockId, candidate.block.id);
+  assert.equal(el('districtSelect').value, candidate.block.districtId);
+  el('districtNameInput').value = 'Test Quarter';
+  el('districtColorInput').value = '#123abc';
+  el('applyDistrictButton').handlers.click();
+  assert.equal(state().project.city.districts.find(d => d.id === candidate.block.districtId).name, 'Test Quarter');
+  el('districtTargetInput').value = candidate.target;
+  assert.equal(el('moveDistrictButton').handlers.click(), true);
+  assert.equal(state().project.city.blocks.find(b => b.id === candidate.block.id).districtId, candidate.target);
+  el('undoDistrictButton').handlers.click();
+  assert.equal(state().project.city.blocks.find(b => b.id === candidate.block.id).districtId, candidate.block.districtId);
+  el('undoDistrictButton').handlers.click();
+  const beforeDistrictLayers = copy(state().project);
+  for (const key of ['districtColors', 'districtBorders', 'districtLabels']) el(key + 'Layer').handlers.change({
+    target: {
+      checked: false
+    }
+  });
+  assert.deepEqual(copy(state().project), beforeDistrictLayers);
   el('pointsButton').handlers.click();
   for (const p of [
       [120, 130],
@@ -332,7 +390,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
 test('standalone app downloads, previews and restores complete projects and recovers them after a reload', async () => {
   const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
   const originalScript = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
-  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files });\n})();');
+  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel });\n})();');
   const memory = new Map(),
     downloaded = [];
   const storage = {
@@ -384,6 +442,9 @@ test('standalone app downloads, previews and restores complete projects and reco
           add() {},
           remove() {},
           toggle() {}
+        },
+        replaceChildren(...items) {
+          this.options = items;
         },
         setAttribute() {},
         setPointerCapture() {},
@@ -456,7 +517,15 @@ test('standalone app downloads, previews and restores complete projects and reco
   }
   const copy = value => JSON.parse(JSON.stringify(value));
   const first = await app();
-  const s = first.state();
+  let s = first.state();
+  const selectedDistrict = s.project.city.districts[0];
+  first.el('districtSelect').value = selectedDistrict.id;
+  first.el('districtSelect').handlers.change();
+  first.el('districtNameInput').value = 'Portable District';
+  first.el('districtColorInput').value = '#654abc';
+  first.el('applyDistrictButton').handlers.click();
+  s = first.state();
+  first.el('districtNameInput').value = 'Unapplied district name';
   s.project.city.name = 'Exact Saved City';
   s.project.city.buildings[0].name = 'Copper Fox';
   s.editor.start('points');
@@ -503,6 +572,8 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(first.el('seedInput').value, 'unfinished-next-seed');
   assert.equal(first.state().camera.x, 77);
   assert.equal(first.state().layers.plots, true);
+  assert.equal(first.el('districtNameInput').value, 'Unapplied district name');
+  assert.ok(first.state().districtPanel.editor.history.length > 0);
   await first.state().files.flush();
   const beforeReload = [...memory.values()][0];
   const reloaded = await app();
@@ -512,6 +583,9 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
   assert.deepEqual(copy(reloaded.state().project), expectedProject);
   assert.deepEqual(copy(reloaded.state().editor.snapshot()), expectedDraft);
+  assert.equal(reloaded.el('districtNameInput').value, 'Unapplied district name');
+  reloaded.el('undoDistrictButton').handlers.click();
+  assert.notEqual(reloaded.state().project.city.districts[0].name, 'Portable District');
   const loadedBefore = copy(reloaded.state().project);
   await reloaded.state().files.stageFile({
     size: 5,
@@ -519,4 +593,22 @@ test('standalone app downloads, previews and restores complete projects and reco
   });
   assert.deepEqual(copy(reloaded.state().project), loadedBefore);
   assert.match(reloaded.el('fileStatus').textContent, /standalone HTML/);
+  const legacyText = await readFile(resolve(root, 'tests/fixtures/save-3b1-format1-schema2.json'), 'utf8');
+  const legacyCity = JSON.parse(legacyText).project.city;
+  await reloaded.state().files.stageFile({
+    size: legacyText.length,
+    text: async () => legacyText
+  });
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.equal(reloaded.state().project.city.districtState.status, 'unassigned');
+  assert.equal(reloaded.state().layers.districtColors, false);
+  assert.equal(reloaded.el('generateDistrictButton').handlers.click(), true);
+  assert.equal(reloaded.state().project.city.districtState.status, 'assigned');
+  for (const key of ['districtColors', 'districtBorders', 'districtLabels']) assert.equal(reloaded.state().layers[key], true);
+  for (const key of ['nodes', 'roads', 'plaza', 'plots']) assert.deepEqual(copy(reloaded.state().project.city[key]), legacyCity[key]);
+  reloaded.el('undoDistrictButton').handlers.click();
+  const restored = copy(reloaded.state().project.city);
+  delete restored.districtState;
+  assert.deepEqual(restored, legacyCity);
+
 });

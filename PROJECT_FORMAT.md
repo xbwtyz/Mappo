@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current release is **0.1-dev.3b1**. Its container format is **1**, project-data schema is **2**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current release is **0.1-dev.3c**. Its container format is **1**, project-data schema is **3**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.3b1",
+  "appVersion": "0.1-dev.3c",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -30,9 +30,9 @@ The empty objects illustrate envelope locations; they are not a valid complete c
 
 Names, notes and unknown JSON fields on records are retained. `project.generatorVersion` describes the original generator; loading and exporting does not rewrite it to the current app version.
 
-Within schema 2, polygon coordinates are ordinary finite JSON numbers. Polygons use a counterclockwise outer boundary. Building holes are separate counterclockwise polygons inside the footprint. Base plots are convex; properties and building footprints may be concave. A property’s plots partition its area. Buildings reference only the plots their actual footprint occupies. Attached rows may share walls, with no positive-area footprint overlap.
+Schemas 2 and 3 share these geometry contracts: polygon coordinates are ordinary finite JSON numbers. Polygons use a counterclockwise outer boundary. Building holes are separate counterclockwise polygons inside the footprint. Base plots are convex; properties and building footprints may be concave. A property’s plots partition its area. Buildings reference only the plots their actual footprint occupies. Attached rows may share walls, with no positive-area footprint overlap.
 
-The current reader validates structure, unique IDs, references, street planarity/connectivity, block coverage, street-width setbacks, polygon containment, plot ownership/area, roof geometry and rendering fields. It rejects incomplete or inconsistent core geometry before changing the open city.
+The current reader additionally validates district coverage, connected membership, block inheritance, names/colors and saved district undo history. It validates structure, unique IDs, references, street planarity/connectivity, block coverage, street-width setbacks, polygon containment, plot ownership/area, roof geometry and rendering fields. It rejects incomplete or inconsistent core geometry before changing the open city.
 
 ## Workspace and unfinished edits
 
@@ -44,6 +44,10 @@ The current reader validates structure, unique IDs, references, street planarity
 - `view`: camera position/zoom and layer visibility.
 
 An unfinished or crossed draft can be saved. It is separate from the validated generated city, so it can be reopened for correction. An active freehand gesture reopens as a point-editable draft rather than resuming pointer capture. Only known editor data is restored into the editor instance; imported history cannot replace callbacks or methods.
+
+The optional `workspace.districtEditor` stores selected district/block IDs, pending district controls and up to 20 district undo snapshots. History snapshots store district records and their block memberships; membership on properties and buildings is derived when undo is applied. Undoing a first district generation can restore a migrated unassigned city, including opaque older district annotations.
+
+District layer flags are additive optional fields in workspace schema 1. Older files without them display their original map until the user turns layers on. New native cities default to district colors, borders and labels enabled.
 
 Viewport dimensions and active pointer capture are transient. New native saves restore camera coordinates and zoom; migrated raw projects initially fit the current viewport.
 
@@ -62,7 +66,17 @@ Future developers should:
 
 A newer unsupported container, project schema or workspace schema is rejected with a compatible-build message. The reader does not guess how to downgrade it. Compatible unknown fields are preserved; arbitrary future formats are not promised to be readable by old apps.
 
-Raw schema-1 projects captured from the released 3A.2 and 3B builds are supported. Migration adds missing empty property/plot/open-space collections where appropriate and advances the schema to 2. It preserves original geometry, IDs and generator metadata. Those earlier HTML builds did not have a save button; raw JSON compatibility supports existing model snapshots.
+Raw schema-1 projects captured from the released 3A.2 and 3B builds are supported. The first migration adds missing empty property/plot/open-space collections where appropriate and advances schema 1 to 2; the district migration then advances it to schema 3. It preserves original geometry, IDs and generator metadata. Those earlier HTML builds did not have a save button; raw JSON compatibility supports existing model snapshots.
+
+## District schema 3
+
+`city.districtState` has `version: 1` and `status: "assigned"` or `"unassigned"`. Assigned cities contain neighborhood records with stable `id`, `dataVersion: 1`, `kind: "neighborhood"`, `name`, six-digit hex `color`, `blockIds` and an optional JSON `extensions` object. Generator metadata records the district seed, algorithm and requested/actual count.
+
+Each block belongs to exactly one assigned district. A district contains unique blocks connected by shared street edges; sharing only a junction does not count. Properties and buildings carry the same `districtId` as their containing block. Borders, label placement and inspector counts are derived from blocks rather than duplicated as authoritative geometry.
+
+Migration from project schema 2 adds an **unassigned** district state and preserves all existing geometry and annotations. Old opaque district records and membership fields are retained without activating an inferred layout. Generating districts is explicit for an imported old project. The migration does not call a generator. The older schema-1 migration runs before this migration when needed.
+
+Current assigned district records are validated strictly. Unknown compatible extension fields survive rename/recolor and block reassignment. Incompatible district kinds or data versions require an updated reader. `tests/fixtures/save-3b1-format1-schema2.json` is a frozen native file captured from the released 3B.1 HTML and is tested for geometry-preserving migration.
 
 ## Browser recovery
 

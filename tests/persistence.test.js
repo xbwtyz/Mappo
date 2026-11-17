@@ -202,21 +202,15 @@ test('unknown extension fields, future building types, district records and wall
       }]
     }
   };
-  document.project.city.districts = [{
-    id: 'DIST-1',
-    name: 'Old Market',
-    color: '#aabbcc',
-    futureRules: {
-      trade: 3
-    }
-  }];
+  document.project.city.districts[0].futureRules = {
+    trade: 3
+  };
   document.project.city.walls = [{
     id: 'WALL-1',
     futureGeometry: {
       nodes: ['a', 'b']
     }
   }];
-  document.project.city.properties[0].districtId = 'DIST-1';
   document.project.city.buildings[0].type = 'future-observatory';
   document.project.city.buildings[0].custom = {
     height: 40,
@@ -250,7 +244,7 @@ test('legacy schema-1 projects migrate in memory while preserving their source g
     }
     const text = JSON.stringify(raw),
       loaded = decodeProjectDocument(text);
-    assert.equal(loaded.project.schemaVersion, 2);
+    assert.equal(loaded.project.schemaVersion, 3);
     for (const key of ['nodes', 'roads', 'blocks', 'plaza']) assert.deepEqual(loaded.project.city[key], raw.city[key]);
     assert.equal(loaded.project.generatorVersion, raw.generatorVersion);
     assert.equal(raw.schemaVersion, 1);
@@ -755,8 +749,37 @@ test('frozen projects captured from the released 3A.2 and 3B HTML builds remain 
     const raw = JSON.parse(text),
       document = decodeProjectDocument(text);
     assert.equal(raw.generatorVersion, `0.1-dev.${version}`);
-    assert.equal(document.project.schemaVersion, 2);
+    assert.equal(document.project.schemaVersion, 3);
     for (const key of ['nodes', 'roads', 'blocks', 'plaza', 'buildings']) assert.deepEqual(document.project.city[key], raw.city[key]);
     assert.deepEqual(decodeProjectDocument(encodeProjectDocument(document)), document);
   }
+});
+
+test('native 3B.1 schema-2 files migrate to unassigned districts without changing any saved city data', async () => {
+  const {
+    readFile
+  } = await import('node:fs/promises');
+  const raw = JSON.parse(await readFile(new URL('./fixtures/save-3b1-format1-schema2.json', import.meta.url), 'utf8'));
+  const loaded = decodeProjectDocument(JSON.stringify(raw));
+  assert.equal(loaded.project.schemaVersion, 3);
+  assert.equal(loaded.project.city.districtState.status, 'unassigned');
+  const {
+    districtState,
+    ...city
+  } = loaded.project.city;
+  assert.deepEqual(city, raw.project.city);
+  assert.deepEqual(loaded.workspace, raw.workspace);
+  assert.equal(loaded.documentId, raw.documentId);
+  // Prior readers preserved opaque future annotations; migration retains them.
+  raw.project.city.districts = [{
+    id: 'OPAQUE',
+    future: {
+      rule: 'retain'
+    }
+  }];
+  raw.project.city.properties[0].districtId = 'OPAQUE';
+  const annotated = decodeProjectDocument(JSON.stringify(raw));
+  assert.deepEqual(annotated.project.city.districts, raw.project.city.districts);
+  assert.equal(annotated.project.city.properties[0].districtId, 'OPAQUE');
+  assert.deepEqual(decodeProjectDocument(encodeProjectDocument(annotated)), annotated);
 });

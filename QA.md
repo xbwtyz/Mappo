@@ -1,10 +1,22 @@
-# Mappo 0.1-dev.3b1 validation
+# Mappo 0.1-dev.3c validation
 
 ## Automated checks
 
-**56 automated tests passed**, including persistence and prior city-generation checks.
+**66 automated tests passed**, covering districts, persistence and existing city generation.
 
 Run `npm run check` to rebuild and run the complete suite. All road-crossing checks remain enabled.
+
+### District coverage
+
+- Connected, complete, unique neighborhood coverage across 96 outlines × density × street-pattern configurations.
+- Deterministic district seeds, automatic count and explicit counts of 1, 2, 4, 8 and 12.
+- Independent geometry checks: district generation and every editing operation preserve streets, block polygons, properties, roofs, plaza, plots, open spaces and walls.
+- Block transfers update all child properties/buildings and reject split sources, non-neighbor targets and empty districts.
+- Name/color changes retain IDs and future extension metadata.
+- Undo includes rebuilds, renaming and block moves; migrated legacy annotations survive undoing their first district generation.
+- Save/load retains district identities, layers, selections, pending inspector text and history. Invalid district coverage, colors, references and history are rejected.
+- The embedded app test exercises map selection, rename/recolor, block move, district undo, layer toggles and restored history after recovery.
+- A frozen native 3B.1 project migrates to unassigned districts without changing city data. Earlier 3A.2 and 3B fixtures remain supported.
 
 ### Persistence coverage
 
@@ -62,7 +74,7 @@ The host previously denied Chromium's process-singleton socket. No full graphica
 
 ## Manual Firefox checklist
 
-Open `dist/mappo-0.1-dev.3b1.html` directly from disk.
+Open `dist/mappo-0.1-dev.3c.html` directly from disk.
 
 - Generate all four street patterns. Confirm variation in building sizes, shapes, spacing and open ground.
 - Zoom in on an L-shaped building, courtyard, compound and attached row. Confirm streets and the main square remain unobstructed.
@@ -77,4 +89,8 @@ Open `dist/mappo-0.1-dev.3b1.html` directly from disk.
 - Save an incomplete clicked outline, then reload it and continue editing.
 - Reload the HTML. Restore latest recovery, then test previous recovery. Check that the startup default city does not overwrite recovery before a choice.
 - Disable browser storage and confirm that a visible warning appears while file download/load still works.
+- Click a neighborhood in Pan map mode. Rename/recolor it; move a boundary block to a neighbor; test district undo and all three district layers.
+- Try moving a connecting block that would split a district and check the explanation.
+- Save a renamed district, an unfinished inspector name and undo history. Reload, then undo the district edit.
+- Load a 3B.1 project; confirm its original map remains unassigned until Generate districts is chosen.
 - Test Ctrl/Cmd + S and the browser’s JSON file picker. Keep portable files when updating the HTML build.

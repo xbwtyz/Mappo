@@ -137,7 +137,7 @@ function assertDevelopment(city, context) {
     open = city.openSpaces.reduce((s, p) => s + p.area, 0);
   assert.ok(Math.abs(blockArea - usedArea - open) < .02);
   assert.ok(open > blockArea * .1, `${context}: no open ground left`);
-  assert.equal(city.districts.length, 0);
+  assert.ok(city.districts.length > 0);
   assert.equal(city.walls.length, 0);
 }
 
@@ -185,7 +185,11 @@ test('development is deterministic, data is independent of rendering, and street
     b = createProject(options);
   assert.deepEqual(a, b);
   const layout = generateLayout(a.seed, a.options.size, a.city.survey, a.options.morphology);
-  for (const key of ['nodes', 'roads', 'blocks', 'plaza']) assert.deepEqual(a.city[key], layout[key]);
+  for (const key of ['nodes', 'roads', 'plaza']) assert.deepEqual(a.city[key], layout[key]);
+  assert.deepEqual(a.city.blocks.map(({
+    districtId,
+    ...block
+  }) => block), layout.blocks);
   assert.deepEqual(a, createProject({
     ...a.options,
     seed: a.seed

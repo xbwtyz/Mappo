@@ -65,7 +65,7 @@ test('morphology is validated and persisted in reproducible projects', () => {
     const project = createProject({ seed: 'growth-123', size: 'medium', morphology });
     assert.equal(project.options.morphology, morphology);
     assert.equal(project.city.survey.morphology, morphology);
-    assert.equal(project.generatorVersion, '0.1-dev.3b1');
+    assert.equal(project.generatorVersion, '0.1-dev.3c');
     assert.deepEqual(project, createProject({ seed: 'growth-123', size: 'medium', morphology }));
   }
   assert.equal(createProject({ morphology: 'unknown' }).options.morphology, 'radial');

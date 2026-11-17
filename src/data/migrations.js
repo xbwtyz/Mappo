@@ -19,5 +19,15 @@ export function migrateProjectData(project) {
       if (project.city[key] === undefined) project.city[key] = [];
     project.schemaVersion = 2;
   }
+  if (project.schemaVersion === 2) {
+    // Old cities remain unassigned; district generation is an explicit action.
+    // Preserve opaque district metadata that earlier readers retained.
+    project.city.districtState = {
+      ...(project.city.districtState || {}),
+      version: 1,
+      status: 'unassigned'
+    };
+    project.schemaVersion = 3;
+  }
   return project;
 }

@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.3b1 — Save & Restore
+## Current build: 0.1-dev.3c — Neighborhoods
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3b1.html`](dist/mappo-0.1-dev.3b1.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3c.html`](dist/mappo-0.1-dev.3c.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### Workflow
 
@@ -32,6 +32,22 @@ Loading restores saved geometry directly. It does not regenerate from the seed, 
 Browser recovery uses IndexedDB where available and falls back to localStorage. Blocked storage, exhausted quota and recovery conflicts show a warning; portable downloads and file loading still work. Recovery is local to browser storage and can vary by file/origin. **Download project files to keep versions and move between standalone builds.** The app cannot confirm whether a requested download was ultimately saved on disk.
 
 The current file limit is 20 MiB. Unsupported newer schemas are rejected rather than partially loaded. Unknown compatible JSON fields are retained.
+
+### Districts
+
+Newly generated cities receive connected neighborhoods automatically. The **Neighborhoods** panel lets you choose an automatic count or 1–12 districts and an independent district seed, then **Generate / rebuild districts**. Only district data changes; streets, block shapes, properties and building footprints remain fixed. A separate connected block group receives at least one district if it cannot share a region with the rest of the city.
+
+- Click a block in **Pan map** mode to select its neighborhood and inspect its block, property and building counts. Dragging the map does not select a block.
+- Select a neighborhood from the district inspector list, edit its name and color, and click **Apply name & color**.
+- With a block selected, choose a neighboring district and click **Move selected block**. The receiving district must share a street edge. Moving a block cannot split its source district or leave a district empty. All properties and buildings in the block inherit the new district.
+- Toggle district **Colors**, **Borders** and **Labels** independently of roof/property/plot layers.
+- **Undo district edit** restores the last district generation, rename, color change or block move. Up to 20 district edits, selections, pending inspector values and district layer settings are saved with the project.
+
+Districts are geographic neighborhoods. Names do not replace buildings or simulate occupations, wealth or trade. Rules and themes can be added later without coupling neighborhood identity to geometry generation.
+
+Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 3 explicitly migrates older files; older apps that cannot read schema 3 should request a newer build rather than partially load it.
+
+See [`DISTRICTS.md`](DISTRICTS.md) for the module boundaries and extension points.
 
 ### Buildings and properties
 
@@ -63,7 +79,7 @@ Hosted URLs can initialize a preset with `?seed=demo&size=large&shape=organic`. 
 - One continuous boundary without interior holes. Concave and branching boundaries are supported.
 - Crossed or self-touching outlines are rejected. Freehand drawing is simplified before point editing. Boundaries must have enough area for streets and a town center; very narrow necks are rejected with a correction message.
 - Project save/load and browser recovery are available. PNG export remains a later milestone. Keep portable project downloads as backups; clearing browser data can remove recovery.
-- Green ground includes the open portions of city blocks. Individual building selection, renaming, manual footprint editing, districts, fortifications, terrain, interiors and 3D remain later phases.
+- Green ground includes the open portions of city blocks. Individual building selection, renaming, manual footprint editing, functional district themes, fortifications, terrain, interiors and 3D remain later phases.
 - Road centerlines and blocks respect the boundary. Rendered street strokes have width and may extend slightly beyond it along the perimeter.
 - The 3B population stage leaves the 3A.2 street graph, block geometry, plaza and outline intact for the same settings. Building generation is reproducible within this version; future generator revisions may change results.
 
@@ -80,7 +96,7 @@ The perimeter has a connected street following the boundary. It is not a city wa
 ```text
 src/
   core/           Version constants, random, geometry, placement and city model
-  generators/     Survey, streets, properties, plots and building footprints
+  generators/     Survey, streets, buildings and independent district generation
   data/           Project format, migrations, validation, files and recovery
   editor/         Outline drawing, cleanup, point editing and undo
   renderer/       Map, roof and plot-layer drawing, camera
@@ -101,7 +117,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.3b1.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.3c.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -119,7 +135,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3a2:** Drawn outlines, point editing and boundary-constrained street generation.
 - **0.1-dev.3b:** Varied properties, multi-plot buildings, courtyards, compounds and attached rows.
 - **0.1-dev.3b1:** Portable versioned project files, load preview, recovery and compatibility validation.
-- **3C:** Districts — future.
+- **0.1-dev.3c:** Connected, editable, persistent neighborhoods with district layers and undo.
 - **3D:** Fortifications — future.
 - Later 0.1 phases: rendering polish, inspector, PNG export and release hardening.
 

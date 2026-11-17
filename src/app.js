@@ -1,4 +1,7 @@
 import {
+  DistrictPanel
+} from './ui/districts.js';
+import {
   ProjectFiles
 } from './ui/project-files.js';
 import {
@@ -32,7 +35,7 @@ const SHAPE_DESCRIPTIONS = {
   linear: 'Long corridors with cross streets.'
 };
 const TOOL_HINTS = {
-  pan: 'Drag to pan · Scroll to zoom',
+  pan: 'Drag to pan · Click a block to inspect districts · Scroll to zoom',
   freehand: 'Drag an outline · Release to close · Space + drag to pan',
   points: 'Click corners · Click first point or press Enter to close',
   edit: 'Drag corners · Double-click an edge to add a point · Delete to remove',
@@ -40,10 +43,14 @@ const TOOL_HINTS = {
 };
 let project, drawPending = false;
 let files;
+let districtPanel;
 const layers = {
   buildings: true,
   properties: false,
-  plots: false
+  plots: false,
+  districtColors: true,
+  districtBorders: true,
+  districtLabels: true
 };
 
 function requestDraw() {
@@ -51,7 +58,7 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers);
+    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId);
   });
 }
 
@@ -110,9 +117,12 @@ function generate() {
       size: $('sizeInput').value,
       morphology: $('morphologyInput').value,
       boundary: editor.boundary,
-      center: editor.center
+      center: editor.center,
+      districtCount: $('districtNumberInput').value || 'auto'
     });
     project = next;
+    districtPanel?.editor.load();
+    districtPanel?.refresh(true);
     $('seedInput').value = project.seed;
     editor.load(project.city.survey.boundary, project.options.center, false);
     updateDetails();
@@ -139,7 +149,7 @@ function updatePattern() {
   editor.dirty = true;
   editor.notify('Street settings changed. Generate to apply them to this outline.');
 }
-for (const key of ['buildings', 'properties', 'plots']) {
+for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels']) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
     requestDraw();
@@ -238,7 +248,33 @@ function resize() {
   requestDraw();
   updateViewport();
 }
-bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor);
+districtPanel = new DistrictPanel({
+  getElement: $,
+  getCity: () => project.city,
+  activateLayers: () => {
+    for (const key of ['districtColors', 'districtBorders', 'districtLabels']) {
+      layers[key] = true;
+      $(key + 'Layer').checked = true;
+    }
+    requestDraw();
+    files?.changed();
+  },
+  commit: city => {
+    project = {
+      ...project,
+      city
+    };
+    updateDetails();
+    requestDraw();
+    files?.changed();
+  },
+  changed: () => {
+    requestDraw();
+    files?.changed();
+  }
+});
+districtPanel.bind();
+bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, point => districtPanel.selectAt(point));
 if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
 else window.addEventListener('resize', resize);
 resize();
@@ -261,6 +297,16 @@ function captureWorkspace() {
     project,
     workspace: {
       schemaVersion: 1,
+      districtEditor: {
+        ...districtPanel.editor.snapshot(),
+        controls: {
+          count: $('districtNumberInput').value,
+          seed: $('districtSeedInput').value,
+          name: $('districtNameInput').value,
+          color: $('districtColorInput').value,
+          target: $('districtTargetInput').value
+        }
+      },
       editor: {
         ...editor.snapshot(),
         history: copyJson(editor.history),
@@ -308,13 +354,24 @@ function applyProjectDocument(document) {
       morphologyInput: workspace.controls.morphology,
       presetInput: workspace.controls.preset
     })) $(id).value = value;
-  for (const key of ['buildings', 'properties', 'plots']) {
-    layers[key] = workspace.view.layers[key];
+  for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels']) {
+    layers[key] = workspace.view.layers[key] ?? false;
     $(key + 'Layer').checked = layers[key];
   }
   camera.x = workspace.view.camera.x;
   camera.y = workspace.view.camera.y;
   camera.zoom = workspace.view.camera.zoom;
+  districtPanel.editor.load(workspace.districtEditor);
+  districtPanel.refresh(true);
+  const districtControls = workspace.districtEditor?.controls;
+  if (districtControls)
+    for (const [id, value] of Object.entries({
+        districtNumberInput: districtControls.count,
+        districtSeedInput: districtControls.seed,
+        districtNameInput: districtControls.name,
+        districtColorInput: districtControls.color,
+        districtTargetInput: districtControls.target
+      })) $(id).value = value;
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[workspace.controls.morphology];
   editor.notify(draft.dirty ? 'Loaded city and unfinished outline edits. Generate only when ready to rebuild.' : 'Loaded city. Its exact saved geometry is ready to use.', Boolean(draft.error));
   updateDetails();

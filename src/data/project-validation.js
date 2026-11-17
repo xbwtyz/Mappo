@@ -1,4 +1,10 @@
 import {
+  validateDistricts
+} from '../core/district-model.js';
+import {
+  validateDistrictEditorState
+} from '../editor/districts.js';
+import {
   PROJECT_SCHEMA_VERSION
 } from '../core/version.js';
 import {
@@ -378,10 +384,11 @@ export function validateStoredProject(project) {
     reference(maps.blocks, open.blockId, 'Open-space block');
     if (!Number.isFinite(open.area) || open.area < 0) throw new Error('Open-space area is invalid.');
   }
+  validateDistricts(city);
   return project;
 }
 
-export function validateWorkspace(workspace) {
+export function validateWorkspace(workspace, project) {
   requireRecord(workspace, 'Workspace');
   if (workspace.schemaVersion !== 1) throw new Error('Unsupported workspace version. Use a newer Mappo build.');
   const draft = requireRecord(workspace.editor, 'Outline draft');
@@ -405,5 +412,8 @@ export function validateWorkspace(workspace) {
   requireRecord(view.layers, 'Map layers');
   for (const name of ['buildings', 'properties', 'plots'])
     if (typeof view.layers[name] !== 'boolean') throw new Error('Invalid layer visibility.');
+  for (const name of ['districtColors', 'districtBorders', 'districtLabels'])
+    if (view.layers[name] !== undefined && typeof view.layers[name] !== 'boolean') throw new Error('Invalid district layer visibility.');
+  if (project) validateDistrictEditorState(workspace.districtEditor, project.city);
   return workspace;
 }

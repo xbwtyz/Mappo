@@ -1,4 +1,7 @@
 import {
+  generateDistricts
+} from '../generators/districts.js';
+import {
   APP_VERSION,
   PROJECT_SCHEMA_VERSION
 } from './version.js';
@@ -60,7 +63,7 @@ export function createProject(options = {}) {
   validateLayout(layout, survey.boundary);
   const development = generateBuildings(seed, layout);
   validateDevelopment(layout, development);
-  return {
+  const project = {
     schemaVersion: PROJECT_SCHEMA_VERSION,
     generatorVersion: APP_VERSION,
     seed,
@@ -84,7 +87,16 @@ export function createProject(options = {}) {
       plaza: layout.plaza,
       ...development,
       districts: [],
+      districtState: {
+        version: 1,
+        status: 'unassigned'
+      },
       walls: []
     }
   };
+  project.city = generateDistricts(project.city, {
+    seed,
+    count: options.districtCount ?? 'auto'
+  });
+  return project;
 }
