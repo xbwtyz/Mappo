@@ -1,0 +1,1765 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
+  <title>Mappo — Draw Your City · 0.1-dev.3a2</title>
+  <style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
+
+/* Outline workspace */
+.sidebar-content{padding-top:24px}.sidebar-left .intro{margin-bottom:21px}.step-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em;color:#d3a676;margin:24px 0 12px}.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.tool-button,.minor-button{border:1px solid #4b6060;border-radius:5px;background:#152328;color:#d9e4dc;font-size:11px;min-height:37px;padding:8px 6px}.tool-button:hover,.minor-button:hover{background:#30443f}.tool-button[aria-pressed=true]{background:#d1a579;color:#162426;border-color:#e0b88a;font-weight:750}.full-width{width:100%}.actions{margin-top:8px}.minor-button{background:transparent;color:#adc1b6;min-height:32px;font-size:10px}.preset-row{display:grid;grid-template-columns:1fr 42px;gap:7px;margin-top:17px}.preset-row select{font-size:11px;height:35px;padding:0 8px;appearance:auto}.hint{line-height:1.6}.tool-hint{position:absolute;left:18px;top:15px;max-width:calc(100% - 95px);background:#f9f6ebed;border:1px solid #d4cbb9;border-radius:5px;padding:9px 12px;color:#465d56;font:11px/1.5 ui-monospace,Consolas,monospace;pointer-events:none}.draft-message{font-size:11px;color:#a9bfb0;line-height:1.65;margin:14px 0 0;min-height:36px}.draft-message.error{color:#ffb6a3}.center-mark{font-size:18px;color:#a16a3e}.map-viewport canvas.drawing{cursor:crosshair}.map-status [role=status]{white-space:normal;line-height:1.4}.map-status{min-height:44px;height:auto;padding-top:8px;padding-bottom:8px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}button:disabled{opacity:.4;cursor:default}
+@media(max-width:670px){.sidebar-left .sidebar-content{overflow:visible}.map-shell{height:72vh;min-height:460px}.tool-hint{font-size:10px}.map-status [role=status]{max-width:none}.sidebar-left .intro{max-width:none}.workspace{display:flex}.sidebar-left{max-height:none}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3a2</span></div>
+    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>DRAW YOUR CITY</span></div>
+  </header>
+  <div class="workspace">
+    <aside class="sidebar sidebar-left" aria-label="City design tools">
+      <div class="sidebar-heading"><span class="section-number">01</span><span>CITY DESIGN</span></div>
+      <div class="sidebar-content">
+        <p class="eyebrow">YOUR OUTLINE. YOUR CITY.</p><h1>Give your city<br><em>its own shape.</em></h1>
+        <p class="intro">Draw the edge, place the square, then let streets grow inside.</p>
+        <div class="outline-tools">
+          <p class="step-label">1 / SHAPE THE BOUNDARY</p>
+          <div class="tool-grid" role="group" aria-label="Outline tools">
+            <button id="freehandButton" class="tool-button" aria-pressed="false">✎ Freehand</button><button id="pointsButton" class="tool-button" aria-pressed="false">◇ Click points</button>
+            <button id="editButton" class="tool-button" aria-pressed="false">⌘ Edit points</button><button id="panButton" class="tool-button" aria-pressed="true">✥ Pan map</button>
+          </div>
+          <div class="tool-grid actions"><button id="finishButton" class="minor-button">Close outline</button><button id="undoButton" class="minor-button">Undo edit</button></div>
+          <p class="hint">Freehand starts a new outline. Release to close it. Click points: place corners, then close.</p>
+          <div class="preset-row"><label class="sr-only" for="presetInput">Starting outline</label><select id="presetInput"><option value="organic">Organic outline</option><option value="radial">Rounded outline</option><option value="linear">Long outline</option><option value="planned">Rectangular outline</option><option value="wedge">Wedge outline</option><option value="twin">Twin-core outline</option><option value="branching">Branching outline</option><option value="crescent">Horseshoe outline</option></select><button id="presetButton" class="minor-button">Use</button></div>
+          <p class="step-label">2 / PLACE THE TOWN CENTER</p>
+          <button id="centerButton" class="tool-button full-width" aria-pressed="false">⊙ Place main square</button>
+          <p class="hint">Click inside the boundary. Keep room between the square and the edge.</p>
+        </div>
+        <p class="step-label">3 / GENERATE THE STREETS</p>
+        <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
+        <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div><p class="hint">Changes block spacing. Your outline stays fixed.</p></div>
+        <div class="control-group"><label for="seedInput">Street seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"><p class="hint">Same outline, center, pattern, density and seed = same city.</p></div>
+        <button id="generateButton" class="button-primary">↻ Generate inside outline</button>
+        <div class="tool-grid"><button id="newSeedButton" class="minor-button">New street seed</button><button id="cancelButton" class="minor-button">Revert edits</button></div>
+        <p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p>
+      </div>
+      <div class="sidebar-footer">MAPPO PROJECT <span>© 2026</span></div>
+    </aside>
+    <main class="map-shell" aria-label="City map workspace">
+      <div class="map-topline"><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><span id="draftBadge" class="map-draft">● STREET PLAN</span></div>
+      <div id="mapViewport" class="map-viewport">
+        <canvas id="mapCanvas" tabindex="0" aria-label="City map and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
+        <div id="toolHint" class="tool-hint">Drag to pan · Scroll to zoom</div>
+        <div class="map-controls" aria-label="Map controls"><button id="zoomInButton" title="Zoom in (+)" aria-label="Zoom in">+</button><button id="zoomOutButton" title="Zoom out (-)" aria-label="Zoom out">−</button><div class="map-controls-divider"></div><button id="fitButton" title="Fit outline (0)" aria-label="Fit outline">⤢</button></div>
+        <div class="map-legend"><span class="legend-mark"></span><span>CITY BOUNDARY</span><span class="legend-sep">/</span><span class="center-mark">⊙</span><span>TOWN CENTER</span></div>
+      </div>
+      <div class="map-status"><span id="statusMessage" role="status">Generating city plan…</span><span class="status-readout">ZOOM <strong id="zoomValue">100%</strong></span></div>
+    </main>
+    <aside class="sidebar sidebar-right" aria-label="Project information">
+      <div class="sidebar-heading"><span class="section-number">02</span><span>FIELD NOTES</span></div>
+      <div class="sidebar-content">
+        <p class="eyebrow">CURRENT GENERATED CITY</p><h2>City report<span class="gold-dot">.</span></h2><p class="intro">A street plan shaped by your boundary. Tinted areas are empty city blocks.</p>
+        <div class="report-label">SETTLEMENT</div><div class="report-primary" id="reportCityName"></div>
+        <div class="stat-row"><span>Seed</span><strong id="citySeed">—</strong></div><div class="stat-row"><span>Density</span><strong id="citySize">—</strong></div>
+        <div class="stat-row"><span>Street pattern</span><strong id="cityMorphology">—</strong></div><div class="stat-row"><span>Boundary points</span><strong id="boundaryCount">—</strong></div>
+        <div class="stat-row"><span>Road junctions</span><strong id="junctionCount">—</strong></div><div class="stat-row"><span>Road segments</span><strong id="roadCount">—</strong></div>
+        <div class="stat-row"><span>City blocks</span><strong id="blockCount">—</strong></div><div class="stat-row"><span>Lanes</span><strong id="laneCount">—</strong></div>
+        <div class="sidebar-rule"></div><p class="eyebrow">WORKSPACE GUIDE</p>
+        <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
+        <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
+        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings, districts and fortifications come in later phases. Draft edits apply when you generate. Keep this page open to retain a custom outline; project saving is a later milestone.</p></div>
+      </div>
+    </aside>
+  </div>
+</div>
+<script>
+(function(){
+'use strict';
+// src/core/prng.js
+// One reproducible pseudo-random stream per seed. Avoid Math.random in generation.
+function normalizeSeed(value) {
+  return String(value ?? '').trim().slice(0, 64) || 'mappo';
+}
+
+function hashSeed(value) {
+  let hash = 2166136261;
+  for (const char of normalizeSeed(value)) {
+    hash ^= char.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function createRng(seed) {
+  let state = hashSeed(seed);
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function randomRange(rng, min, max) {
+  return min + rng() * (max - min);
+}
+
+
+// src/core/geometry.js
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function boundsOf(points) {
+  if (!points.length) return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+  return points.reduce((bounds, p) => ({
+    minX: Math.min(bounds.minX, p.x),
+    minY: Math.min(bounds.minY, p.y),
+    maxX: Math.max(bounds.maxX, p.x),
+    maxY: Math.max(bounds.maxY, p.y)
+  }), { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
+}
+
+function pointInPolygon(point, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const a = polygon[i];
+    const b = polygon[j];
+    if ((a.y > point.y) !== (b.y > point.y) &&
+      point.x < ((b.x - a.x) * (point.y - a.y)) / (b.y - a.y) + a.x) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+function polygonSignedArea(points) {
+  let area = 0;
+  for (let i = 0; i < points.length; i++) {
+    const a = points[i];
+    const b = points[(i + 1) % points.length];
+    area += a.x * b.y - b.x * a.y;
+  }
+  return area / 2;
+}
+
+
+// src/generators/survey.js
+
+
+const SIZE_PRESETS = Object.freeze({
+  small: 260,
+  medium: 390,
+  large: 560
+});
+const MORPHOLOGY_PRESETS = Object.freeze(['radial', 'organic', 'linear', 'planned']);
+const SHAPE_PROFILES = Object.freeze(['balanced', 'wedge', 'crescent', 'twin', 'branching']);
+
+const DEFAULT_SHAPE_OPTIONS = Object.freeze({
+  radial: {
+    profile: 'balanced',
+    stretch: 34,
+    asymmetry: 28,
+    bend: 18
+  },
+  organic: {
+    profile: 'balanced',
+    stretch: 30,
+    asymmetry: 58,
+    bend: 44
+  },
+  linear: {
+    profile: 'balanced',
+    stretch: 78,
+    asymmetry: 30,
+    bend: 42
+  },
+  planned: {
+    profile: 'balanced',
+    stretch: 42,
+    asymmetry: 16,
+    bend: 12
+  }
+});
+
+function clampPercent(value, fallback) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? Math.round(clamp(numeric, 0, 100)) : fallback;
+}
+
+function normalizeShapeOptions(options = {}, morphology = 'radial') {
+  const defaults = DEFAULT_SHAPE_OPTIONS[morphology] ?? DEFAULT_SHAPE_OPTIONS.radial;
+  const profile = SHAPE_PROFILES.includes(options.profile) ? options.profile : defaults.profile;
+  return {
+    profile,
+    stretch: clampPercent(options.stretch, defaults.stretch),
+    asymmetry: clampPercent(options.asymmetry, defaults.asymmetry),
+    bend: clampPercent(options.bend, defaults.bend)
+  };
+}
+
+function buildBoundaryPoint(angle, radius, morphology, shapeOptions, phase, bendPhase, orientation) {
+  const stretch = shapeOptions.stretch / 100;
+  const asymmetry = shapeOptions.asymmetry / 100;
+  const bend = shapeOptions.bend / 100;
+  const local = angle - orientation;
+  const ca = Math.cos(local);
+  const sa = Math.sin(local);
+  const profileAngle = local - phase * 0.37;
+  let profileScale = 1;
+  const profileStrength = (0.16 + asymmetry * 0.18) * (morphology === 'organic' ? 0.72 : 1);
+  switch (shapeOptions.profile) {
+    case 'wedge':
+      profileScale *= 1 - profileStrength * 0.65 * Math.cos(profileAngle) + profileStrength * 0.18 * Math.cos(profileAngle * 2);
+      break;
+    case 'crescent':
+      profileScale *= 0.93 + profileStrength * 0.58 * Math.sin(profileAngle - 0.5) - profileStrength * 0.28 * Math.cos(profileAngle * 2);
+      break;
+    case 'twin':
+      profileScale *= 0.95 + profileStrength * 0.60 * Math.cos(profileAngle * 2);
+      break;
+    case 'branching':
+      profileScale *= 0.90 + profileStrength * 0.55 * Math.cos(profileAngle * 3) + profileStrength * 0.08 * Math.sin(profileAngle);
+      break;
+    default:
+      break;
+  }
+
+  profileScale = Math.max(0.7, profileScale);
+
+  let aspectX = 1 + stretch * 0.38;
+  let aspectY = 0.86 - stretch * 0.08;
+  let irregular = 0;
+  let base = 1;
+
+  if (morphology === 'linear') {
+    aspectX = 1.8 + stretch * 0.95;
+    aspectY = 0.48 - stretch * 0.08;
+    irregular = 0.02 + asymmetry * 0.02;
+    base += (0.05 + bend * 0.16) * Math.sin(ca * 2.25 + bendPhase) * (0.35 + 0.65 * Math.abs(ca));
+  } else if (morphology === 'planned') {
+    aspectX = 0.96 + stretch * 0.32;
+    aspectY = 0.76 - stretch * 0.06;
+    irregular = 0.01 + asymmetry * 0.015;
+    const power = 0.27 + bend * 0.04;
+    const sx = Math.sign(ca) * Math.pow(Math.abs(ca), power) * radius * aspectX * profileScale;
+    const sy = Math.sign(sa) * Math.pow(Math.abs(sa), power) * radius * aspectY * profileScale;
+    return {
+      x: sx * Math.cos(orientation) - sy * Math.sin(orientation),
+      y: sx * Math.sin(orientation) + sy * Math.cos(orientation)
+    };
+  } else if (morphology === 'organic') {
+    aspectX = 1.03 + stretch * 0.22;
+    aspectY = 0.90 - stretch * 0.05;
+    irregular = 0.08 + asymmetry * 0.08;
+    base += 0.15 * Math.sin(2 * local + phase) + 0.09 * Math.cos(5 * local - 0.55 * phase) + 0.08 * Math.sin(3 * local + bendPhase);
+  } else {
+    irregular = 0.03 + asymmetry * 0.03;
+    base += 0.05 * Math.sin(3 * local + phase) + 0.03 * Math.cos(7 * local - phase);
+  }
+
+  base += irregular * Math.sin(4 * local + phase * 1.2) + irregular * 0.55 * Math.cos(7 * local - bendPhase);
+  const r = radius * base * profileScale;
+  const rawX = ca * r * aspectX;
+  const rawY = sa * r * aspectY;
+  return {
+    x: rawX * Math.cos(orientation) - rawY * Math.sin(orientation),
+    y: rawX * Math.sin(orientation) + rawY * Math.cos(orientation)
+  };
+}
+
+// Plan boundaries remain star-shaped from the origin so downstream radial
+// queries always intersect the city edge exactly once.
+function generateSurvey(seed, size, morphology = 'radial', shapeOverrides = {}) {
+  const radius = SIZE_PRESETS[size] ?? SIZE_PRESETS.medium;
+  const shape = MORPHOLOGY_PRESETS.includes(morphology) ? morphology : 'radial';
+  const shapeOptions = normalizeShapeOptions(shapeOverrides, shape);
+  const rng = createRng(`${seed}:survey:v3:${size}:${shape}:${shapeOptions.profile}:${shapeOptions.stretch}:${shapeOptions.asymmetry}:${shapeOptions.bend}`);
+  const phase = randomRange(rng, -Math.PI, Math.PI);
+  const bendPhase = randomRange(rng, -1.1, 1.1);
+  const orientation = shape === 'planned' ?
+    randomRange(rng, -0.085, 0.085) :
+    randomRange(rng, -0.55, 0.55) * (shapeOptions.bend / 100);
+  const count = 64;
+  const boundary = Array.from({
+    length: count
+  }, (_, i) => {
+    const a = (i / count) * Math.PI * 2;
+    return buildBoundaryPoint(a, radius, shape, shapeOptions, phase, bendPhase, orientation);
+  });
+
+  const anchors = [{
+    id: 'SITE-00',
+    kind: 'center',
+    x: 0,
+    y: 0
+  }];
+  const target = size === 'small' ? 7 : size === 'large' ? 15 : 11;
+  const bounds = boundsOf(boundary);
+  const minimumGap = Math.min(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY) * 0.12;
+  let attempts = 0;
+  while (anchors.length <= target && attempts++ < target * 120) {
+    let candidate;
+    if (shape === 'radial') {
+      const a = randomRange(rng, 0, 2 * Math.PI);
+      const r = radius * Math.sqrt(rng()) * 0.79;
+      candidate = {
+        x: Math.cos(a) * r,
+        y: Math.sin(a) * r * 0.86
+      };
+    } else {
+      candidate = {
+        x: randomRange(rng, bounds.minX * 0.87, bounds.maxX * 0.87),
+        y: randomRange(rng, bounds.minY * 0.87, bounds.maxY * 0.87)
+      };
+    }
+    if (!pointInPolygon(candidate, boundary)) continue;
+    if (anchors.some(p => Math.hypot(p.x - candidate.x, p.y - candidate.y) < minimumGap)) continue;
+    anchors.push({
+      id: `SITE-${String(anchors.length).padStart(2, '0')}`,
+      kind: 'survey',
+      ...candidate
+    });
+  }
+
+  return {
+    boundary,
+    anchors,
+    nominalRadius: radius,
+    morphology: shape,
+    plannedAngle: orientation,
+    linearBendPhase: bendPhase,
+    axisAngle: orientation,
+    shapeOptions
+  };
+}
+
+
+// src/core/boundary.js
+
+function cross2(a, b) {
+  return a.x * b.y - a.y * b.x;
+}
+function lerpPoint(a, b, t) {
+  return {
+    x: a.x + (b.x - a.x) * t,
+    y: a.y + (b.y - a.y) * t
+  };
+}
+function distanceToSegment(p, a, b) {
+  const dx = b.x - a.x,
+    dy = b.y - a.y;
+  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
+  return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy);
+}
+function insideOrOn(p, polygon) {
+  return pointInPolygon(p, polygon) || polygon.some((a, i) => distanceToSegment(p, a, polygon[(i + 1) % polygon.length]) < 1e-6);
+}
+
+// Includes endpoint contacts and collinear overlaps. Both generators and
+// validation use the same segment predicates, with dimensionless parameters.
+function segmentCuts(a, b, c, d) {
+  const r = {
+      x: b.x - a.x,
+      y: b.y - a.y
+    },
+    s = {
+      x: d.x - c.x,
+      y: d.y - c.y
+    };
+  const q = {
+      x: c.x - a.x,
+      y: c.y - a.y
+    },
+    denominator = cross2(r, s);
+  if (Math.abs(denominator) > 1e-9) {
+    const t = cross2(q, s) / denominator,
+      u = cross2(q, r) / denominator;
+    return t >= -1e-9 && t <= 1 + 1e-9 && u >= -1e-9 && u <= 1 + 1e-9 ? [Math.max(0, Math.min(1, t))] : [];
+  }
+  if (Math.abs(cross2(q, r)) > 1e-7) return [];
+  const length2 = r.x * r.x + r.y * r.y;
+  if (length2 < 1e-12) return [];
+  return [c, d].map(p => ((p.x - a.x) * r.x + (p.y - a.y) * r.y) / length2).filter(t => t >= -1e-9 && t <= 1 + 1e-9).map(t => Math.max(0, Math.min(1, t)));
+}
+
+function validateBoundary(points) {
+  if (!Array.isArray(points) || points.length < 3) throw new Error('Place at least three outline points.');
+  if (points.length > 1200) throw new Error('The outline has too many points. Try a shorter stroke.');
+  if (!points.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 10000 && Math.abs(p.y) < 10000)) throw new Error('The outline contains invalid coordinates.');
+  for (let i = 0; i < points.length; i++) {
+    const a = points[i],
+      b = points[(i + 1) % points.length];
+    if (Math.hypot(a.x - b.x, a.y - b.y) < 1e-5) throw new Error('Remove duplicate outline points.');
+    for (let j = i + 1; j < points.length; j++) {
+      if (j === i + 1 || (i === 0 && j === points.length - 1)) continue;
+      if (segmentCuts(a, b, points[j], points[(j + 1) % points.length]).length) throw new Error('The outline crosses or touches itself. Move the highlighted shape points apart.');
+    }
+  }
+  const b = boundsOf(points);
+  if (Math.min(b.maxX - b.minX, b.maxY - b.minY) < 100 || Math.abs(polygonSignedArea(points)) < 8000) throw new Error('Draw a larger city outline: at least 100 units across with room for streets.');
+  return points;
+}
+
+function simplifyLine(points, tolerance) {
+  if (points.length <= 2) return points;
+  let distance = tolerance,
+    index = -1;
+  for (let i = 1; i < points.length - 1; i++) {
+    const d = distanceToSegment(points[i], points[0], points.at(-1));
+    if (d > distance) {
+      distance = d;
+      index = i;
+    }
+  }
+  if (index < 0) return [points[0], points.at(-1)];
+  return [...simplifyLine(points.slice(0, index + 1), tolerance).slice(0, -1), ...simplifyLine(points.slice(index), tolerance)];
+}
+function cleanOutline(raw, tolerance = 3) {
+  let points = raw.filter((p, i) => !i || Math.hypot(p.x - raw[i - 1].x, p.y - raw[i - 1].y) > 1e-4).map(p => ({
+    x: p.x,
+    y: p.y
+  }));
+  if (points.length > 2 && Math.hypot(points[0].x - points.at(-1).x, points[0].y - points.at(-1).y) < 1e-4) points.pop();
+  validateBoundary(points);
+  let far = 1;
+  for (let i = 2; i < points.length; i++)
+    if (Math.hypot(points[i].x - points[0].x, points[i].y - points[0].y) > Math.hypot(points[far].x - points[0].x, points[far].y - points[0].y)) far = i;
+  const simple = [...simplifyLine(points.slice(0, far + 1), tolerance).slice(0, -1), ...simplifyLine([...points.slice(far), points[0]], tolerance).slice(0, -1)];
+  validateBoundary(simple);
+  if (simple.length > 160) throw new Error('Simplify this outline to fewer than 160 corners.');
+  if (polygonSignedArea(simple) < 0) simple.reverse();
+  return simple;
+}
+
+function clearance(p, boundary) {
+  return Math.min(...boundary.map((a, i) => distanceToSegment(p, a, boundary[(i + 1) % boundary.length])));
+}
+function findCityCenter(boundary) {
+  const b = boundsOf(boundary);
+  let best = null,
+    bestDistance = -1;
+  for (let y = 0; y <= 24; y++)
+    for (let x = 0; x <= 24; x++) {
+      const p = {
+        x: b.minX + (b.maxX - b.minX) * (x + .5) / 25,
+        y: b.minY + (b.maxY - b.minY) * (y + .5) / 25
+      };
+      if (pointInPolygon(p, boundary)) {
+        const d = clearance(p, boundary);
+        if (d > bestDistance) {
+          best = p;
+          bestDistance = d;
+        }
+      }
+    }
+  if (!best || bestDistance < 18) throw new Error('This outline is too narrow for a town center. Widen part of it.');
+  return best;
+}
+
+function checkNarrowSections(boundary) {
+  const cumulative = [0];
+  for (let i = 0; i < boundary.length; i++) cumulative.push(cumulative.at(-1) + Math.hypot(boundary[i].x - boundary[(i + 1) % boundary.length].x, boundary[i].y - boundary[(i + 1) % boundary.length].y));
+  const total = cumulative.at(-1);
+  for (let i = 0; i < boundary.length; i++)
+    for (let j = i + 2; j < boundary.length; j++) {
+      if (i === 0 && j === boundary.length - 1) continue;
+      const first = [boundary[i], boundary[(i + 1) % boundary.length]],
+        second = [boundary[j], boundary[(j + 1) % boundary.length]];
+      for (const fraction of [0, .5, 1]) {
+        const a = lerpPoint(first[0], first[1], fraction),
+          dx = second[1].x - second[0].x,
+          dy = second[1].y - second[0].y;
+        const t = Math.max(0, Math.min(1, ((a.x - second[0].x) * dx + (a.y - second[0].y) * dy) / (dx * dx + dy * dy)));
+        const b = lerpPoint(second[0], second[1], t),
+          gap = Math.hypot(a.x - b.x, a.y - b.y);
+        const positionA = cumulative[i] + fraction * (cumulative[i + 1] - cumulative[i]),
+          positionB = cumulative[j] + t * (cumulative[j + 1] - cumulative[j]);
+        const path = Math.abs(positionA - positionB);
+        if (gap < 18 && Math.min(path, total - path) > 90 && pointInPolygon(lerpPoint(a, b, .5), boundary)) throw new Error('A section is too narrow for streets. Widen the neck to at least 18 units.');
+      }
+    }
+}
+
+
+// src/core/validate-layout.js
+
+// Fail closed if a numerical edge case would otherwise publish malformed city
+// data. Draft outlines and the last good city remain available for correction.
+function validateLayout(layout, boundary) {
+  const {
+    nodes,
+    roads,
+    blocks,
+    plaza
+  } = layout;
+  const byId = new Map(nodes.map(n => [n.id, n])),
+    graph = new Map(nodes.map(n => [n.id, []]));
+  for (const road of roads) {
+    graph.get(road.a).push(road.b);
+    graph.get(road.b).push(road.a);
+  }
+  const reached = new Set([nodes[0]?.id]),
+    queue = [nodes[0]?.id];
+  for (let i = 0; i < queue.length; i++)
+    for (const id of graph.get(queue[i]) || [])
+      if (!reached.has(id)) {
+        reached.add(id);
+        queue.push(id);
+      }
+  if (reached.size !== nodes.length) throw new Error('The outline produced disconnected streets. Adjust its narrow sections or try another street pattern.');
+  let total = 0;
+  for (const face of [...blocks, plaza]) {
+    if (new Set(face.vertices).size !== face.vertices.length) throw new Error('A street creates a pinched block. Adjust the outline or choose another street seed.');
+    const area = polygonSignedArea(face.vertices.map(id => byId.get(id)));
+    if (area <= 1) throw new Error('A section is too narrow to form usable blocks. Widen it and generate again.');
+    total += area;
+  }
+  if (Math.abs(total - Math.abs(polygonSignedArea(boundary))) > .02) throw new Error('Streets could not cover this outline completely. Adjust its narrow sections or choose another pattern.');
+}
+
+
+// src/generators/layout.js
+
+
+
+// Construct a planar arrangement, rather than warping a finished mesh. Every
+// clipped street crossing becomes a shared node before faces are extracted.
+function generateLayout(seed, size, survey, morphology = 'radial') {
+  const boundary = survey.boundary,
+    center = survey.anchors[0];
+  const rng = createRng(`${seed}:streets:v5:${size}:${morphology}`);
+  const bounds = boundsOf(boundary);
+  const spacing = Math.sqrt(Math.abs(polygonSignedArea(boundary))) / (size === 'small' ? 7 : size === 'large' ? 13 : 10);
+  const half = Math.min(spacing * .28, clearance(center, boundary) * .40);
+  if (half < 6) throw new Error('Move the town center farther from the edge to make room for its plaza.');
+  const square = [{
+    x: center.x - half,
+    y: center.y - half
+  }, {
+    x: center.x + half,
+    y: center.y - half
+  }, {
+    x: center.x + half,
+    y: center.y + half
+  }, {
+    x: center.x - half,
+    y: center.y + half
+  }];
+  const segments = [];
+  const push = (a, b, kind, tag = 'street') => {
+    if (Math.hypot(a.x - b.x, a.y - b.y) > 1e-6) segments.push({
+      a,
+      b,
+      kind,
+      tag
+    });
+  };
+  for (let i = 0; i < boundary.length; i++) push(boundary[i], boundary[(i + 1) % boundary.length], 'secondary', 'boundary');
+  for (let i = 0; i < 4; i++) push(square[i], square[(i + 1) % 4], 'primary', 'plaza');
+
+  function clip(a, b, kind) {
+    const ts = [0, 1];
+    for (const polygon of [boundary, square])
+      for (let i = 0; i < polygon.length; i++) ts.push(...segmentCuts(a, b, polygon[i], polygon[(i + 1) % polygon.length]));
+    ts.sort((a, b) => a - b);
+    for (let i = 1; i < ts.length; i++) {
+      if (ts[i] - ts[i - 1] < 1e-9) continue;
+      const p = lerpPoint(a, b, (ts[i] + ts[i - 1]) / 2);
+      if (insideOrOn(p, boundary) && !pointInPolygon(p, square)) push(lerpPoint(a, b, ts[i - 1]), lerpPoint(a, b, ts[i]), kind);
+    }
+  }
+  if (morphology === 'radial') {
+    const reach = Math.max(...boundary.map(p => Math.hypot(p.x - center.x, p.y - center.y))) + spacing;
+    const sectors = size === 'small' ? 12 : size === 'large' ? 22 : 16;
+    const phase = randomRange(rng, -.15, .15);
+    for (let i = 0; i < sectors; i++) {
+      const angle = phase + i * 2 * Math.PI / sectors;
+      clip(center, {
+        x: center.x + Math.cos(angle) * reach,
+        y: center.y + Math.sin(angle) * reach
+      }, i % 4 === 0 ? 'primary' : 'secondary');
+    }
+    for (let radius = spacing; radius < reach; radius += spacing) {
+      const count = sectors * 3;
+      for (let i = 0; i < count; i++) {
+        const a = phase + i * 2 * Math.PI / count,
+          b = phase + (i + 1) * 2 * Math.PI / count;
+        clip({
+          x: center.x + Math.cos(a) * radius,
+          y: center.y + Math.sin(a) * radius
+        }, {
+          x: center.x + Math.cos(b) * radius,
+          y: center.y + Math.sin(b) * radius
+        }, 'secondary');
+      }
+    }
+  } else {
+    // Shared rows form continuous, gently winding corridors. Seeded monotonic
+    // spacing changes blocks without changing the user's boundary or center.
+    const organic = morphology === 'organic',
+      linear = morphology === 'linear';
+    const sx = spacing * (linear ? 1.5 : 1),
+      sy = spacing * (linear ? .65 : 1);
+    const xs = [bounds.minX - spacing],
+      ys = [bounds.minY - spacing];
+    while (xs.at(-1) < bounds.maxX + spacing) xs.push(xs.at(-1) + sx * randomRange(rng, .82, 1.18));
+    while (ys.at(-1) < bounds.maxY + spacing) ys.push(ys.at(-1) + sy * randomRange(rng, .82, 1.18));
+    const mesh = ys.map((y, row) => xs.map((x, col) => ({
+      x: x + (organic ? randomRange(rng, -.21, .21) * sx : 0),
+      y: y + (organic ? randomRange(rng, -.21, .21) * sy : 0)
+    })));
+    for (let row = 0; row < ys.length; row++)
+      for (let col = 0; col < xs.length; col++) {
+        if (col + 1 < xs.length) clip(mesh[row][col], mesh[row][col + 1], row === Math.floor(ys.length / 2) ? 'primary' : 'secondary');
+        if (row + 1 < ys.length) clip(mesh[row][col], mesh[row + 1][col], col === Math.floor(xs.length / 2) && !linear ? 'primary' : 'lane');
+      }
+    // An explicit approach through the chosen center connects the square even
+    // when it lies entirely within one otherwise unsplit grid cell.
+    clip({
+      x: bounds.minX - spacing,
+      y: center.y
+    }, {
+      x: bounds.maxX + spacing,
+      y: center.y
+    }, 'primary');
+  }
+  const cuts = segments.map(() => [0, 1]);
+  for (let i = 0; i < segments.length; i++)
+    for (let j = i + 1; j < segments.length; j++) {
+      const a = segments[i],
+        b = segments[j];
+      cuts[i].push(...segmentCuts(a.a, a.b, b.a, b.b));
+      cuts[j].push(...segmentCuts(b.a, b.b, a.a, a.b));
+    }
+  const nodes = [],
+    roads = [],
+    byCoordinate = new Map(),
+    edges = new Map();
+
+  function node(p) {
+    // Microunit snapping coalesces independently computed multi-way junctions.
+    const key = `${Math.round(p.x*1e6)},${Math.round(p.y*1e6)}`;
+    if (byCoordinate.has(key)) return byCoordinate.get(key);
+    const n = {
+      id: `N-${String(nodes.length+1).padStart(4,'0')}`,
+      x: p.x,
+      y: p.y
+    };
+    nodes.push(n);
+    byCoordinate.set(key, n);
+    return n;
+  }
+  const rank = {
+    lane: 0,
+    secondary: 1,
+    primary: 2
+  };
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i],
+      ts = cuts[i].sort((a, b) => a - b);
+    for (let k = 1; k < ts.length; k++) {
+      if (ts[k] - ts[k - 1] < 1e-9) continue;
+      const a = node(lerpPoint(segment.a, segment.b, ts[k - 1])),
+        b = node(lerpPoint(segment.a, segment.b, ts[k]));
+      if (a === b) continue;
+      const key = [a.id, b.id].sort().join(':');
+      if (edges.has(key)) {
+        const r = edges.get(key);
+        if (rank[segment.kind] > rank[r.kind]) r.kind = segment.kind;
+        continue;
+      }
+      const r = {
+        id: `RD-${String(roads.length+1).padStart(4,'0')}`,
+        a: a.id,
+        b: b.id,
+        kind: segment.kind,
+        boundary: segment.tag === 'boundary',
+        plaza: segment.tag === 'plaza'
+      };
+      edges.set(key, r);
+      roads.push(r);
+    }
+  }
+
+  function extractFaces() {
+    const byId = new Map(nodes.map(n => [n.id, n])),
+      adjacency = new Map(nodes.map(n => [n.id, []]));
+    for (const r of roads) {
+      adjacency.get(r.a).push(r.b);
+      adjacency.get(r.b).push(r.a);
+    }
+    for (const [id, neighbors] of adjacency) {
+      const a = byId.get(id);
+      neighbors.sort((b, c) => Math.atan2(byId.get(b).y - a.y, byId.get(b).x - a.x) - Math.atan2(byId.get(c).y - a.y, byId.get(c).x - a.x));
+    }
+    const visited = new Set(),
+      faces = [];
+    for (const road of roads)
+      for (const pair of [
+          [road.a, road.b],
+          [road.b, road.a]
+        ]) {
+        if (visited.has(pair.join(':'))) continue;
+        let [a, b] = pair;
+        const vertices = [];
+        for (let steps = 0; steps <= roads.length * 2; steps++) {
+          const key = `${a}:${b}`;
+          if (visited.has(key)) break;
+          visited.add(key);
+          vertices.push(a);
+          const neighbors = adjacency.get(b),
+            next = neighbors[(neighbors.indexOf(a) + neighbors.length - 1) % neighbors.length];
+          a = b;
+          b = next;
+        }
+        const polygon = vertices.map(id => byId.get(id)),
+          area = polygonSignedArea(polygon);
+        if (area > 1e-6) faces.push({
+          vertices,
+          area
+        });
+      }
+    return faces;
+  }
+  let faces = extractFaces();
+  const minimumArea = Math.max(1.01, spacing * spacing * .012);
+  // Tangencies at the boundary can leave tiny slivers. Merge them into a
+  // neighbor by removing a shared street, never a city boundary or plaza edge.
+  for (let pass = 0; pass < roads.length; pass++) {
+    const small = faces.find(f => f.area < minimumArea);
+    if (!small) break;
+    const keys = new Set(small.vertices.map((a, i) => [a, small.vertices[(i + 1) % small.vertices.length]].sort().join(':')));
+    let longest = -1,
+      index = -1;
+    const lookup = new Map(nodes.map(n => [n.id, n]));
+    roads.forEach((r, i) => {
+      if (r.boundary || r.plaza || !keys.has([r.a, r.b].sort().join(':'))) return;
+      const a = lookup.get(r.a),
+        b = lookup.get(r.b),
+        length = Math.hypot(a.x - b.x, a.y - b.y);
+      if (length > longest) {
+        longest = length;
+        index = i;
+      }
+    });
+    if (index < 0) throw new Error('A narrow outline section leaves no usable city block. Widen that section.');
+    roads.splice(index, 1);
+    let pruned = true;
+    while (pruned) {
+      pruned = false;
+      const degrees = new Map();
+      for (const r of roads) {
+        degrees.set(r.a, (degrees.get(r.a) || 0) + 1);
+        degrees.set(r.b, (degrees.get(r.b) || 0) + 1);
+      }
+      for (let i = roads.length - 1; i >= 0; i--) {
+        const r = roads[i];
+        if (!r.boundary && !r.plaza && (degrees.get(r.a) === 1 || degrees.get(r.b) === 1)) {
+          roads.splice(i, 1);
+          pruned = true;
+        }
+      }
+    }
+    faces = extractFaces();
+  }
+  // Remove junctions no longer used after merging small faces.
+  const usedNodes = new Set(roads.flatMap(r => [r.a, r.b]));
+  for (let i = nodes.length - 1; i >= 0; i--)
+    if (!usedNodes.has(nodes[i].id)) nodes.splice(i, 1);
+  const byId = new Map(nodes.map(n => [n.id, n]));
+  const plazaFace = faces.find(f => pointInPolygon(center, f.vertices.map(id => byId.get(id))));
+  if (!plazaFace) throw new Error('Could not create a plaza at this location. Move the center and try again.');
+  const blocks = faces.filter(f => f !== plazaFace).map((f, i) => ({
+    id: `BLK-${String(i+1).padStart(4,'0')}`,
+    vertices: f.vertices,
+    area: Math.round(f.area * 100) / 100,
+    ring: i % 4,
+    sector: i,
+    usage: 'unassigned'
+  }));
+  return {
+    nodes,
+    roads,
+    blocks,
+    plaza: {
+      id: 'PLAZA-0001',
+      name: 'Founders Square',
+      center: { x: center.x, y: center.y },
+      vertices: plazaFace.vertices,
+      area: Math.round(plazaFace.area * 100) / 100
+    }
+  };
+}
+
+
+// src/core/city-model.js
+
+
+
+
+
+const FIRST = ['Alder', 'Ash', 'Briar', 'Brindle', 'Cinder', 'Elder', 'Fell', 'Grey', 'High', 'Iron', 'Moss', 'Raven', 'Silver', 'Stone', 'Thorn', 'Willow'];
+const LAST = ['bridge', 'bury', 'crest', 'dale', 'ford', 'haven', 'mere', 'mont', 'stead', 'watch', 'wick', 'wood'];
+
+function createProject(options = {}) {
+  const seed = normalizeSeed(options.seed);
+  const size = Object.hasOwn(SIZE_PRESETS, options.size) ? options.size : 'medium';
+  const morphology = MORPHOLOGY_PRESETS.includes(options.morphology) ? options.morphology : 'radial';
+  const nameRng = createRng(`${seed}:name:v1`);
+  const name = FIRST[Math.floor(nameRng() * FIRST.length)] + LAST[Math.floor(nameRng() * LAST.length)];
+  const survey = generateSurvey(seed, size, morphology, options.shapeOptions);
+  if (options.boundary) {
+    survey.boundary = cleanOutline(options.boundary, 0);
+    checkNarrowSections(survey.boundary);
+  }
+  const center = options.center ? {
+    x: options.center.x,
+    y: options.center.y
+  } : findCityCenter(survey.boundary);
+  if (!insideOrOn(center, survey.boundary) || clearance(center, survey.boundary) < 18) throw new Error('Place the town center inside the outline, at least 18 units from its edge.');
+  survey.anchors = [{
+    id: 'SITE-00',
+    kind: 'center',
+    ...center
+  }, ...survey.anchors.slice(1).filter(p => insideOrOn(p, survey.boundary))];
+  const layout = generateLayout(seed, size, survey, morphology);
+  validateLayout(layout, survey.boundary);
+  return {
+    schemaVersion: 1,
+    generatorVersion: '0.1-dev.3a2',
+    seed,
+    options: {
+      size,
+      morphology,
+      boundary: survey.boundary.map(p => ({
+        ...p
+      })),
+      center: {
+        ...center
+      }
+    },
+    city: {
+      id: `city-${seed.replace(/[^\w-]/g, '-').toLowerCase().slice(0, 24)}`,
+      name,
+      survey,
+      nodes: layout.nodes,
+      roads: layout.roads,
+      blocks: layout.blocks,
+      plaza: layout.plaza,
+      buildings: [],
+      districts: [],
+      walls: []
+    }
+  };
+}
+
+
+// src/renderer/camera.js
+
+class Camera {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.zoom = 1;
+    this.width = 800;
+    this.height = 600;
+  }
+
+  resize(width, height) {
+    this.width = Math.max(1, width);
+    this.height = Math.max(1, height);
+  }
+
+  worldToScreen(point) {
+    return { x: (point.x - this.x) * this.zoom + this.width / 2,
+      y: (point.y - this.y) * this.zoom + this.height / 2 };
+  }
+
+  screenToWorld(point) {
+    return { x: (point.x - this.width / 2) / this.zoom + this.x,
+      y: (point.y - this.height / 2) / this.zoom + this.y };
+  }
+
+  pan(dx, dy) {
+    this.x -= dx / this.zoom;
+    this.y -= dy / this.zoom;
+  }
+
+  zoomAt(factor, screenPoint = { x: this.width / 2, y: this.height / 2 }) {
+    const before = this.screenToWorld(screenPoint);
+    this.zoom = clamp(this.zoom * factor, 0.18, 12);
+    const after = this.screenToWorld(screenPoint);
+    this.x += before.x - after.x;
+    this.y += before.y - after.y;
+  }
+
+  fit(points, padding = 78) {
+    if (!points.length) return;
+    const minX = Math.min(...points.map(p => p.x));
+    const maxX = Math.max(...points.map(p => p.x));
+    const minY = Math.min(...points.map(p => p.y));
+    const maxY = Math.max(...points.map(p => p.y));
+    this.x = (minX + maxX) / 2;
+    this.y = (minY + maxY) / 2;
+    this.zoom = clamp(Math.min(
+      Math.max(1, this.width - padding * 2) / Math.max(1, maxX - minX),
+      Math.max(1, this.height - padding * 2) / Math.max(1, maxY - minY)
+    ), 0.18, 12);
+  }
+}
+
+
+// src/renderer/canvas.js
+
+const INK = '#34494b';
+const ACCENT = '#ad8054';
+const ROAD_STYLES = Object.freeze({
+  primary: {
+    width: 12,
+    fill: '#fbf6e9',
+    edge: '#a58f73'
+  },
+  secondary: {
+    width: 8.2,
+    fill: '#faf4e6',
+    edge: '#b2a58e'
+  },
+  lane: {
+    width: 4.5,
+    fill: '#f8f1df',
+    edge: '#b6ab93'
+  }
+});
+const BLOCK_FILLS = [
+  ['#cbd3b7', '#d7d5b9', '#d8d3b4', '#c9d2b7'],
+  ['#ced2b5', '#ddd7ba', '#d2d4bb', '#d8d3b4'],
+  ['#d6d3b6', '#cbd0b3', '#dcd6ba', '#d0d4b9'],
+  ['#d2d5bf', '#d8d4b9', '#cdd4ba', '#dfd8c0']
+];
+
+function pathPolygon(ctx, points, camera) {
+  ctx.beginPath();
+  points.forEach((point, i) => {
+    const p = camera.worldToScreen(point);
+    if (i === 0) ctx.moveTo(p.x, p.y);
+    else ctx.lineTo(p.x, p.y);
+  });
+  ctx.closePath();
+}
+
+function drawGrid(ctx, camera) {
+  const width = camera.width;
+  const height = camera.height;
+  const first = camera.screenToWorld({
+    x: 0,
+    y: 0
+  });
+  const last = camera.screenToWorld({
+    x: width,
+    y: height
+  });
+  const intervals = [10, 20, 50, 100, 200, 500, 1000];
+  const gridStep = intervals.find(step => step * camera.zoom >= 27) ?? 1000;
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'rgba(80, 85, 74, 0.065)';
+  ctx.beginPath();
+  const firstX = Math.floor(first.x / gridStep);
+  const firstY = Math.floor(first.y / gridStep);
+  for (let x = firstX; x <= Math.ceil(last.x / gridStep) && x < firstX + 180; x++) {
+    const sx = camera.worldToScreen({
+      x: x * gridStep,
+      y: 0
+    }).x;
+    ctx.moveTo(sx, 0);
+    ctx.lineTo(sx, height);
+  }
+  for (let y = firstY; y <= Math.ceil(last.y / gridStep) && y < firstY + 180; y++) {
+    const sy = camera.worldToScreen({
+      x: 0,
+      y: y * gridStep
+    }).y;
+    ctx.moveTo(0, sy);
+    ctx.lineTo(width, sy);
+  }
+  ctx.stroke();
+  return gridStep;
+}
+
+function drawSurvey(ctx, camera, survey) {
+  pathPolygon(ctx, survey.boundary, camera);
+  ctx.fillStyle = 'rgba(121, 145, 112, 0.065)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(107, 123, 97, 0.60)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([8, 7]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawBlocks(ctx, camera, city, byId) {
+  for (const block of city.blocks) {
+    const points = block.vertices.map(id => byId.get(id));
+    pathPolygon(ctx, points, camera);
+    const palette = BLOCK_FILLS[block.ring % BLOCK_FILLS.length];
+    ctx.fillStyle = palette[(block.sector + block.id.length * 7 + Number(block.id.slice(-2))) % palette.length];
+    ctx.fill();
+    ctx.strokeStyle = '#a9b09c';
+    ctx.lineWidth = 0.9;
+    ctx.stroke();
+  }
+}
+
+function drawRoads(ctx, camera, city, byId) {
+  // Two passes maintain clean junctions even when neighboring streets differ in width.
+  for (const pass of ['edge', 'fill']) {
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (const road of city.roads) {
+      const style = ROAD_STYLES[road.kind];
+      const a = camera.worldToScreen(byId.get(road.a));
+      const b = camera.worldToScreen(byId.get(road.b));
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = style[pass];
+      ctx.lineWidth = (style.width + (pass === 'edge' ? 2.2 : 0)) * camera.zoom;
+      ctx.stroke();
+    }
+  }
+}
+
+function drawPlaza(ctx, camera, plaza, byId) {
+  const points = plaza.vertices.map(id => byId.get(id));
+  pathPolygon(ctx, points, camera);
+  ctx.fillStyle = '#e7d5af';
+  ctx.fill();
+  ctx.strokeStyle = '#a38866';
+  ctx.lineWidth = Math.max(1, 2.2 * camera.zoom);
+  ctx.stroke();
+
+  // Fine, quiet radial paving; these are decorations, not road segments.
+  const center = plaza.center ?? points.reduce((acc, p) => ({
+    x: acc.x + p.x / points.length,
+    y: acc.y + p.y / points.length
+  }), {
+    x: 0,
+    y: 0
+  });
+  const screen = camera.worldToScreen(center);
+  ctx.beginPath();
+  for (const point of points) {
+    const p = camera.worldToScreen(point);
+    ctx.moveTo(screen.x, screen.y);
+    ctx.lineTo(p.x, p.y);
+  }
+  ctx.strokeStyle = 'rgba(148, 123, 82, 0.22)';
+  ctx.lineWidth = 0.8;
+  ctx.stroke();
+  const ring = Math.max(4, 6 * camera.zoom);
+  ctx.beginPath();
+  ctx.arc(screen.x, screen.y, ring, 0, Math.PI * 2);
+  ctx.fillStyle = '#b7a17c';
+  ctx.fill();
+  ctx.strokeStyle = '#f7ead1';
+  ctx.lineWidth = Math.max(1, 2.8 * camera.zoom);
+  ctx.stroke();
+  if (camera.zoom >= 0.4) {
+    ctx.font = '700 11px ui-monospace, SFMono-Regular, Consolas, monospace';
+    ctx.fillStyle = INK;
+    ctx.textAlign = 'center';
+    ctx.fillText(plaza.name.toUpperCase(), screen.x, screen.y - Math.max(13, 18 * camera.zoom));
+  }
+}
+
+function drawCompassAndScale(ctx, camera, step) {
+  const width = camera.width;
+  const height = camera.height;
+  ctx.strokeStyle = 'rgba(52, 73, 75, 0.45)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(width - 44, 56);
+  ctx.lineTo(width - 44, 94);
+  ctx.moveTo(width - 50, 63);
+  ctx.lineTo(width - 44, 53);
+  ctx.lineTo(width - 38, 63);
+  ctx.stroke();
+  ctx.font = '700 11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = INK;
+  ctx.fillText('N', width - 44, 44);
+  const scaleWidth = clamp(step * camera.zoom, 25, 240);
+  const barY = height - 34;
+  const barX = width - scaleWidth - 24;
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(barX, barY);
+  ctx.lineTo(barX + scaleWidth, barY);
+  ctx.moveTo(barX, barY - 4);
+  ctx.lineTo(barX, barY + 4);
+  ctx.moveTo(barX + scaleWidth, barY - 4);
+  ctx.lineTo(barX + scaleWidth, barY + 4);
+  ctx.stroke();
+  ctx.font = '10px ui-monospace, SFMono-Regular, Consolas, monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText(`${step} survey units`, width - 24, barY - 9);
+}
+
+function renderMap(canvas, camera, project, editor) {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  const dpr = Math.min(3, window.devicePixelRatio || 1);
+  const width = camera.width;
+  const height = camera.height;
+  const physicalW = Math.max(1, Math.round(width * dpr));
+  const physicalH = Math.max(1, Math.round(height * dpr));
+  if (canvas.width !== physicalW || canvas.height !== physicalH) {
+    canvas.width = physicalW;
+    canvas.height = physicalH;
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = '#efeadc';
+  ctx.fillRect(0, 0, width, height);
+  const gridStep = drawGrid(ctx, camera);
+  const city = project.city;
+  const byId = new Map(city.nodes.map(node => [node.id, node]));
+  ctx.globalAlpha = editor?.dirty ? 0.20 : 1;
+  drawSurvey(ctx, camera, city.survey);
+  drawBlocks(ctx, camera, city, byId);
+  drawRoads(ctx, camera, city, byId);
+  drawPlaza(ctx, camera, city.plaza, byId);
+
+  ctx.globalAlpha = 1;
+  if (editor) drawOutline(ctx, camera, editor);
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(52, 73, 75, 0.67)';
+  ctx.font = '700 10px ui-monospace, SFMono-Regular, Consolas, monospace';
+  drawCompassAndScale(ctx, camera, gridStep);
+}
+
+function drawOutline(ctx, camera, editor) {
+  const points = editor.boundary;
+  if (!points.length) return;
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    const s = camera.worldToScreen(p);
+    if (!i) ctx.moveTo(s.x, s.y);
+    else ctx.lineTo(s.x, s.y);
+  });
+  if (editor.closed) ctx.closePath();
+  ctx.strokeStyle = editor.error ? '#b94436' : '#967044';
+  ctx.lineWidth = 2;
+  ctx.setLineDash(editor.dirty ? [7, 4] : []);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  if (editor.closed && editor.dirty) {
+    ctx.fillStyle = editor.error ? 'rgba(180,60,40,.07)' : 'rgba(192,146,77,.05)';
+    ctx.fill();
+  }
+  if (editor.mode === 'edit' || editor.mode === 'points' || editor.stroke) {
+    points.forEach((p, i) => {
+      const s = camera.worldToScreen(p);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, i === editor.selected ? 6 : 4, 0, Math.PI * 2);
+      ctx.fillStyle = i === editor.selected ? '#d8a16a' : '#fffaf0';
+      ctx.fill();
+      ctx.strokeStyle = editor.error ? '#b94436' : '#7f623f';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    });
+  }
+  if (editor.center && !editor.stroke) {
+    const s = camera.worldToScreen(editor.center);
+    ctx.strokeStyle = '#9b6137';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, 10, 0, Math.PI * 2);
+    ctx.moveTo(s.x - 16, s.y);
+    ctx.lineTo(s.x + 16, s.y);
+    ctx.moveTo(s.x, s.y - 16);
+    ctx.lineTo(s.x, s.y + 16);
+    ctx.stroke();
+  }
+}
+
+
+// src/ui/controllers.js
+function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor) {
+  let active = false,
+    panning = false,
+    lastX = 0,
+    lastY = 0,
+    space = false;
+  window.addEventListener('keydown', e => {
+    if (e.code === 'Space' && !['INPUT', 'SELECT', 'BUTTON'].includes(document.activeElement?.tagName)) {
+      space = true;
+      e.preventDefault();
+    }
+  });
+  window.addEventListener('keyup', e => {
+    if (e.code === 'Space') space = false;
+  });
+  const world = e => {
+    const r = canvas.getBoundingClientRect();
+    return camera.screenToWorld({
+      x: e.clientX - r.left,
+      y: e.clientY - r.top
+    });
+  };
+
+  function finish(cancelled = false) {
+    if (!active) return;
+    active = false;
+    if (!panning) editor.up(camera.zoom, cancelled);
+    panning = false;
+    canvas.classList.remove('is-dragging');
+  }
+  window.addEventListener('blur', () => {
+    space = false;
+    finish(true);
+  });
+  canvas.addEventListener('pointerdown', event => {
+    if (event.button !== 0 && event.button !== 1) return;
+    event.preventDefault();
+    canvas.focus();
+    active = true;
+    panning = space || event.button === 1 || editor.mode === 'pan';
+    lastX = event.clientX;
+    lastY = event.clientY;
+    canvas.setPointerCapture(event.pointerId);
+    if (panning) canvas.classList.add('is-dragging');
+    else editor.down(world(event), camera.zoom);
+  });
+  canvas.addEventListener('pointermove', event => {
+    if (!active) return;
+    if (panning) {
+      camera.pan(event.clientX - lastX, event.clientY - lastY);
+      lastX = event.clientX;
+      lastY = event.clientY;
+      requestDraw();
+      updateViewport();
+    } else editor.move(world(event), camera.zoom);
+  });
+  canvas.addEventListener('pointerup', () => finish());
+  canvas.addEventListener('pointercancel', () => finish(true));
+  canvas.addEventListener('lostpointercapture', () => finish(true));
+  canvas.addEventListener('dblclick', event => {
+    editor.addPoint(world(event), camera.zoom);
+    event.preventDefault();
+  });
+  canvas.addEventListener('wheel', event => {
+    event.preventDefault();
+    if (active) return;
+    const r = canvas.getBoundingClientRect();
+    camera.zoomAt(Math.exp(-event.deltaY * .0013), {
+      x: event.clientX - r.left,
+      y: event.clientY - r.top
+    });
+    requestDraw();
+    updateViewport();
+  }, {
+    passive: false
+  });
+}
+
+
+// src/editor/outline.js
+
+
+function makeStartingOutline(kind, seed, size) {
+  if (['radial', 'organic', 'linear', 'planned'].includes(kind)) return generateSurvey(seed, size, kind).boundary;
+  const radius = size === 'small' ? 260 : size === 'large' ? 560 : 390;
+  const shapes = {
+    wedge: [
+      [-1, -.9],
+      [.65, -.6],
+      [1.2, 0],
+      [.6, .7],
+      [-1, 1]
+    ],
+    twin: [
+      [-1.35, -.65],
+      [-.4, -.65],
+      [-.25, -.2],
+      [.25, -.2],
+      [.4, -.65],
+      [1.35, -.65],
+      [1.35, .65],
+      [.4, .65],
+      [.25, .2],
+      [-.25, .2],
+      [-.4, .65],
+      [-1.35, .65]
+    ],
+    branching: [
+      [-.28, -.1],
+      [-1.1, -.8],
+      [-.8, -1.1],
+      [0, -.35],
+      [.8, -1.1],
+      [1.1, -.8],
+      [.28, -.1],
+      [.28, 1.1],
+      [-.28, 1.1]
+    ],
+    crescent: [
+      [-1, -1],
+      [1, -1],
+      [1, 1],
+      [.45, 1],
+      [.45, -.4],
+      [-.45, -.4],
+      [-.45, 1],
+      [-1, 1]
+    ]
+  };
+  return cleanOutline(shapes[kind].map(([x, y]) => ({
+    x: x * radius,
+    y: y * radius
+  })), 0);
+}
+
+class OutlineEditor {
+  constructor(onChange, onMessage) {
+    this.onChange = onChange;
+    this.onMessage = onMessage;
+    this.mode = 'pan';
+    this.boundary = [];
+    this.center = null;
+    this.closed = true;
+    this.dirty = false;
+    this.error = false;
+    this.selected = -1;
+    this.history = [];
+    this.stroke = false;
+    this.dragging = -1;
+  }
+  snapshot() {
+    return {
+      boundary: this.boundary.map(p => ({
+        ...p
+      })),
+      center: this.center ? {
+        ...this.center
+      } : null,
+      closed: this.closed,
+      dirty: this.dirty
+    };
+  }
+  remember() {
+    this.history.push(this.snapshot());
+    if (this.history.length > 40) this.history.shift();
+  }
+  notify(message, error = false) {
+    this.error = error;
+    this.onMessage(message, error);
+    this.onChange();
+  }
+  setMode(mode) {
+    this.mode = mode;
+    this.selected = -1;
+    this.onChange();
+  }
+  start(mode) {
+    this.remember();
+    this.boundary = [];
+    this.center = null;
+    this.closed = false;
+    this.dirty = true;
+    this.setMode(mode);
+    this.notify(mode === 'freehand' ? 'Drag a continuous outline. Release to close it.' : 'Click to place corners. Press Enter or Close outline to finish.');
+  }
+  load(boundary, center = null, dirty = true) {
+    this.boundary = boundary.map(p => ({
+      ...p
+    }));
+    this.center = center ? {
+      ...center
+    } : findCityCenter(boundary);
+    this.closed = true;
+    this.dirty = dirty;
+    this.error = false;
+    this.selected = -1;
+    this.setMode(dirty ? 'edit' : 'pan');
+    this.notify(dirty ? 'Outline ready. Adjust points or place the square, then generate.' : 'City generated. Draw a new outline or edit this one.');
+  }
+  undo() {
+    const state = this.history.pop();
+    if (!state) return;
+    Object.assign(this, state);
+    this.selected = -1;
+    this.error = false;
+    this.mode = this.closed ? 'edit' : 'points';
+    this.notify('Last outline edit undone.');
+  }
+  finish(tolerance = 0) {
+    this.closed = true;
+    this.stroke = false;
+    this.mode = 'edit';
+    try {
+      this.boundary = cleanOutline(this.boundary, tolerance);
+      checkNarrowSections(this.boundary);
+      if (!this.center || !insideOrOn(this.center, this.boundary) || clearance(this.center, this.boundary) < 18) this.center = findCityCenter(this.boundary);
+      this.notify('Outline ready. Drag corners to refine it, then generate.');
+      return true;
+    } catch (error) {
+      this.notify(error.message, true);
+      return false;
+    }
+  }
+  validate() {
+    if (!this.closed) throw new Error('Close your outline before generating.');
+    validateBoundary(this.boundary);
+    checkNarrowSections(this.boundary);
+    if (!this.center) this.center = findCityCenter(this.boundary);
+    if (!insideOrOn(this.center, this.boundary) || clearance(this.center, this.boundary) < 18) throw new Error('Place the town center inside the outline, at least 18 units from the edge.');
+  }
+  down(point, zoom) {
+    if (this.mode === 'pan') return false;
+    if (this.mode === 'freehand') {
+      if (this.boundary.length) this.remember();
+      this.boundary = [point];
+      this.center = null;
+      this.closed = false;
+      this.dirty = true;
+      this.stroke = true;
+      this.onChange();
+      return true;
+    }
+    if (this.mode === 'points') {
+      if (this.boundary.length >= 3 && Math.hypot(point.x - this.boundary[0].x, point.y - this.boundary[0].y) * zoom < 12) {
+        this.finish();
+        return true;
+      }
+      this.remember();
+      this.boundary.push(point);
+      this.dirty = true;
+      this.onChange();
+      return true;
+    }
+    if (this.mode === 'center') {
+      if (!this.closed || !insideOrOn(point, this.boundary) || clearance(point, this.boundary) < 18) {
+        this.notify('Choose a center inside the outline, at least 18 units from its edge.', true);
+        return true;
+      }
+      this.remember();
+      this.center = point;
+      this.dirty = true;
+      this.notify('Town center placed. Generate to move the main square here.');
+      return true;
+    }
+    if (this.mode === 'edit') {
+      let distance = 14 / zoom,
+        index = -1;
+      this.boundary.forEach((p, i) => {
+        const d = Math.hypot(p.x - point.x, p.y - point.y);
+        if (d < distance) {
+          distance = d;
+          index = i;
+        }
+      });
+      this.selected = index;
+      this.dragging = index;
+      if (index >= 0) this.remember();
+      this.onChange();
+      return true;
+    }
+    return false;
+  }
+  move(point, zoom) {
+    if (this.stroke) {
+      const last = this.boundary.at(-1);
+      if (Math.hypot(last.x - point.x, last.y - point.y) * zoom > 5 && this.boundary.length < 1200) {
+        this.boundary.push(point);
+        this.onChange();
+      }
+    } else if (this.dragging >= 0) {
+      this.boundary[this.dragging] = point;
+      this.dirty = true;
+      this.error = false;
+      this.onChange();
+    }
+  }
+  up(zoom, cancelled = false) {
+    if (cancelled) {
+      if (this.stroke || this.dragging >= 0) this.undo();
+      this.stroke = false;
+      this.dragging = -1;
+      return;
+    }
+    if (this.stroke) this.finish(3 / zoom);
+    if (this.dragging >= 0) {
+      this.dragging = -1;
+      try {
+        this.validate();
+        this.notify('Boundary updated. Generate to rebuild the streets.');
+      } catch (error) {
+        this.notify(error.message, true);
+      }
+    }
+  }
+  addPoint(point, zoom) {
+    if (this.mode !== 'edit' || !this.closed) return;
+    let nearest = 12 / zoom,
+      index = -1;
+    this.boundary.forEach((a, i) => {
+      const d = distanceToSegment(point, a, this.boundary[(i + 1) % this.boundary.length]);
+      if (d < nearest) {
+        nearest = d;
+        index = i;
+      }
+    });
+    if (index >= 0) {
+      this.remember();
+      this.boundary.splice(index + 1, 0, point);
+      this.selected = index + 1;
+      this.dirty = true;
+      this.notify('Corner added. Drag to reshape the boundary.');
+    }
+  }
+  removePoint() {
+    if (this.mode !== 'edit' || this.selected < 0) return;
+    if (this.boundary.length <= 3) {
+      this.notify('Keep at least three outline points.', true);
+      return;
+    }
+    this.remember();
+    this.boundary.splice(this.selected, 1);
+    this.selected = -1;
+    this.dirty = true;
+    this.finish();
+  }
+}
+
+
+// src/app.js
+
+
+
+
+
+const $ = id => document.getElementById(id),
+  canvas = $('mapCanvas'),
+  viewport = $('mapViewport'),
+  camera = new Camera();
+const SHAPE_DESCRIPTIONS = {
+  organic: 'Curving corridors and irregular blocks.',
+  planned: 'Straight streets with seeded grid spacing.',
+  radial: 'Rings and spokes centered on your main square.',
+  linear: 'Long corridors with cross streets.'
+};
+const TOOL_HINTS = {
+  pan: 'Drag to pan · Scroll to zoom',
+  freehand: 'Drag an outline · Release to close · Space + drag to pan',
+  points: 'Click corners · Click first point or press Enter to close',
+  edit: 'Drag corners · Double-click an edge to add a point · Delete to remove',
+  center: 'Click inside the outline to place the main square'
+};
+let project, drawPending = false;
+
+function requestDraw() {
+  if (drawPending) return;
+  drawPending = true;
+  requestAnimationFrame(() => {
+    drawPending = false;
+    if (project) renderMap(canvas, camera, project, editor);
+  });
+}
+
+function updateViewport() {
+  $('zoomValue').textContent = `${Math.round(camera.zoom*100)}%`;
+}
+
+function editorChanged() {
+  for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(editor.mode === mode));
+  $('toolHint').textContent = TOOL_HINTS[editor.mode];
+  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : '● STREET PLAN';
+  canvas.classList.toggle('drawing', editor.mode !== 'pan');
+  $('undoButton').disabled = editor.history.length === 0;
+  $('finishButton').disabled = editor.closed || editor.boundary.length < 3;
+  requestDraw();
+}
+const editor = new OutlineEditor(editorChanged, (message, error) => {
+  $('draftMessage').textContent = message;
+  $('draftMessage').classList.toggle('error', error);
+});
+
+function fitMap() {
+  const points = editor.boundary.length > 2 ? editor.boundary : project?.city.survey.boundary;
+  if (points) camera.fit(points);
+  requestDraw();
+  updateViewport();
+}
+
+function updateDetails() {
+  const c = project.city;
+  for (const [id, value] of Object.entries({
+      cityName: c.name,
+      reportCityName: c.name,
+      citySeed: project.seed,
+      citySize: project.options.size,
+      cityMorphology: project.options.morphology,
+      boundaryCount: c.survey.boundary.length,
+      junctionCount: c.nodes.length,
+      roadCount: c.roads.length,
+      blockCount: c.blocks.length,
+      laneCount: c.roads.filter(r => r.kind === 'lane').length
+    })) $(id).textContent = value;
+}
+
+function generate() {
+  try {
+    editor.validate();
+    const next = createProject({
+      seed: $('seedInput').value,
+      size: $('sizeInput').value,
+      morphology: $('morphologyInput').value,
+      boundary: editor.boundary,
+      center: editor.center
+    });
+    project = next;
+    $('seedInput').value = project.seed;
+    editor.load(project.city.survey.boundary, project.options.center, false);
+    updateDetails();
+    updateViewport();
+    $('statusMessage').textContent = `${project.city.roads.length} road segments · ${project.city.blocks.length} blocks · outline preserved`;
+  } catch (error) {
+    editor.notify(error.message, true);
+    $('statusMessage').textContent = 'Generation paused — correct the outline or center.';
+  }
+}
+
+function loadPreset() {
+  try {
+    editor.remember();
+    editor.load(makeStartingOutline($('presetInput').value, $('seedInput').value, $('sizeInput').value));
+    fitMap();
+  } catch (error) {
+    editor.notify(error.message, true);
+  }
+}
+
+function updatePattern() {
+  $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[$('morphologyInput').value];
+  editor.dirty = true;
+  editor.notify('Street settings changed. Generate to apply them to this outline.');
+}
+$('freehandButton').addEventListener('click', () => editor.start('freehand'));
+$('pointsButton').addEventListener('click', () => editor.start('points'));
+$('editButton').addEventListener('click', () => {
+  editor.setMode('edit');
+  editor.notify('Drag outline points. Double-click an edge to add a point.');
+});
+$('panButton').addEventListener('click', () => editor.setMode('pan'));
+$('centerButton').addEventListener('click', () => editor.setMode('center'));
+$('finishButton').addEventListener('click', () => editor.finish());
+$('undoButton').addEventListener('click', () => editor.undo());
+$('cancelButton').addEventListener('click', () => {
+  if (!project) return;
+  editor.remember();
+  editor.load(project.city.survey.boundary, project.options.center, false);
+  $('seedInput').value = project.seed;
+  $('sizeInput').value = project.options.size;
+  $('morphologyInput').value = project.options.morphology;
+  $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[project.options.morphology];
+});
+$('presetButton').addEventListener('click', loadPreset);
+$('generateButton').addEventListener('click', generate);
+$('newSeedButton').addEventListener('click', () => {
+  const v = new Uint32Array(2);
+  if (globalThis.crypto?.getRandomValues) globalThis.crypto.getRandomValues(v);
+  else {
+    v[0] = Date.now() >>> 0;
+    v[1] = Math.random() * 2 ** 32;
+  }
+  $('seedInput').value = `${v[0].toString(36)}-${v[1].toString(36)}`;
+  generate();
+});
+$('fitButton').addEventListener('click', fitMap);
+$('zoomInButton').addEventListener('click', () => {
+  camera.zoomAt(1.25);
+  requestDraw();
+  updateViewport();
+});
+$('zoomOutButton').addEventListener('click', () => {
+  camera.zoomAt(.8);
+  requestDraw();
+  updateViewport();
+});
+$('morphologyInput').addEventListener('change', updatePattern);
+$('sizeInput').addEventListener('change', updatePattern);
+$('seedInput').addEventListener('input', updatePattern);
+$('seedInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') generate();
+});
+window.addEventListener('keydown', e => {
+  if (['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(document.activeElement?.tagName)) return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+    e.preventDefault();
+    editor.undo();
+    return;
+  }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'Enter' && editor.mode === 'points') {
+    e.preventDefault();
+    editor.finish();
+  }
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    e.preventDefault();
+    editor.removePoint();
+  }
+  if (e.key === 'Escape') {
+    editor.setMode('pan');
+  }
+  if (e.key === '0') {
+    fitMap();
+    e.preventDefault();
+  }
+  if (e.key === '+' || e.key === '=') {
+    camera.zoomAt(1.25);
+    requestDraw();
+    updateViewport();
+    e.preventDefault();
+  }
+  if (e.key === '-') {
+    camera.zoomAt(.8);
+    requestDraw();
+    updateViewport();
+    e.preventDefault();
+  }
+});
+
+function resize() {
+  const rect = viewport.getBoundingClientRect();
+  camera.resize(Math.max(1, Math.round(rect.width)), Math.max(1, Math.round(rect.height)));
+  requestDraw();
+  updateViewport();
+}
+bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor);
+if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
+else window.addEventListener('resize', resize);
+resize();
+const url = new URL(window.location.href);
+$('seedInput').value = url.searchParams.get('seed') || 'mappo-001';
+const size = url.searchParams.get('size');
+if (['small', 'medium', 'large'].includes(size)) $('sizeInput').value = size;
+const shape = url.searchParams.get('shape') || url.searchParams.get('morphology');
+if (Object.hasOwn(SHAPE_DESCRIPTIONS, shape)) {
+  $('morphologyInput').value = shape;
+  $('presetInput').value = shape;
+}
+$('shapeDescription').textContent = SHAPE_DESCRIPTIONS[$('morphologyInput').value];
+loadPreset();
+generate();
+fitMap();
+
+})();
+</script>
+</body>
+</html>

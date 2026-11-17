@@ -1,33 +1,77 @@
-export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport) {
-  let dragging = false;
-  let lastX = 0;
-  let lastY = 0;
+export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor) {
+  let active = false,
+    panning = false,
+    lastX = 0,
+    lastY = 0,
+    space = false;
+  window.addEventListener('keydown', e => {
+    if (e.code === 'Space' && !['INPUT', 'SELECT', 'BUTTON'].includes(document.activeElement?.tagName)) {
+      space = true;
+      e.preventDefault();
+    }
+  });
+  window.addEventListener('keyup', e => {
+    if (e.code === 'Space') space = false;
+  });
+  const world = e => {
+    const r = canvas.getBoundingClientRect();
+    return camera.screenToWorld({
+      x: e.clientX - r.left,
+      y: e.clientY - r.top
+    });
+  };
+
+  function finish(cancelled = false) {
+    if (!active) return;
+    active = false;
+    if (!panning) editor.up(camera.zoom, cancelled);
+    panning = false;
+    canvas.classList.remove('is-dragging');
+  }
+  window.addEventListener('blur', () => {
+    space = false;
+    finish(true);
+  });
   canvas.addEventListener('pointerdown', event => {
-    if (event.button !== 0) return;
-    dragging = true;
+    if (event.button !== 0 && event.button !== 1) return;
+    event.preventDefault();
+    canvas.focus();
+    active = true;
+    panning = space || event.button === 1 || editor.mode === 'pan';
     lastX = event.clientX;
     lastY = event.clientY;
     canvas.setPointerCapture(event.pointerId);
-    canvas.classList.add('is-dragging');
+    if (panning) canvas.classList.add('is-dragging');
+    else editor.down(world(event), camera.zoom);
   });
   canvas.addEventListener('pointermove', event => {
-    if (!dragging) return;
-    camera.pan(event.clientX - lastX, event.clientY - lastY);
-    lastX = event.clientX;
-    lastY = event.clientY;
-    requestDraw();
-    updateViewport();
+    if (!active) return;
+    if (panning) {
+      camera.pan(event.clientX - lastX, event.clientY - lastY);
+      lastX = event.clientX;
+      lastY = event.clientY;
+      requestDraw();
+      updateViewport();
+    } else editor.move(world(event), camera.zoom);
   });
-  const finish = () => { dragging = false; canvas.classList.remove('is-dragging'); };
-  canvas.addEventListener('pointerup', finish);
-  canvas.addEventListener('pointercancel', finish);
-  canvas.addEventListener('lostpointercapture', finish);
+  canvas.addEventListener('pointerup', () => finish());
+  canvas.addEventListener('pointercancel', () => finish(true));
+  canvas.addEventListener('lostpointercapture', () => finish(true));
+  canvas.addEventListener('dblclick', event => {
+    editor.addPoint(world(event), camera.zoom);
+    event.preventDefault();
+  });
   canvas.addEventListener('wheel', event => {
     event.preventDefault();
-    const rect = canvas.getBoundingClientRect();
-    const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
-    camera.zoomAt(Math.exp(-event.deltaY * 0.0013), point);
+    if (active) return;
+    const r = canvas.getBoundingClientRect();
+    camera.zoomAt(Math.exp(-event.deltaY * .0013), {
+      x: event.clientX - r.left,
+      y: event.clientY - r.top
+    });
     requestDraw();
     updateViewport();
-  }, { passive: false });
+  }, {
+    passive: false
+  });
 }

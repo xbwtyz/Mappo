@@ -1,356 +1,284 @@
-import { createRng, randomRange } from '../core/prng.js';
-import { polygonSignedArea } from '../core/geometry.js';
+import {
+  createRng,
+  randomRange
+} from '../core/prng.js';
+import {
+  boundsOf,
+  polygonSignedArea,
+  pointInPolygon
+} from '../core/geometry.js';
+import {
+  segmentCuts,
+  lerpPoint,
+  insideOrOn,
+  clearance
+} from '../core/boundary.js';
 
-// The road graph, city blocks and central square share the same vertex IDs.
-// All road junctions are explicit, including connections to mid-block lanes.
-const LAYOUT_PRESETS = Object.freeze({
-  small: { sectors: 10, rings: 3, laneRate: 0.48 },
-  medium: { sectors: 14, rings: 4, laneRate: 0.57 },
-  large: { sectors: 19, rings: 5, laneRate: 0.62 }
-});
-
-function edgeKey(a, b) {
-  return a < b ? `${a}:${b}` : `${b}:${a}`;
-}
-
-function boundaryDistance(angle, boundary) {
-  const dx = Math.cos(angle);
-  const dy = Math.sin(angle);
-  let nearest = Infinity;
-  for (let i = 0; i < boundary.length; i++) {
-    const a = boundary[i];
-    const b = boundary[(i + 1) % boundary.length];
-    const sx = b.x - a.x;
-    const sy = b.y - a.y;
-    const denominator = dx * sy - dy * sx;
-    if (Math.abs(denominator) < 1e-10) continue;
-    const t = (a.x * sy - a.y * sx) / denominator;
-    const u = (a.x * dy - a.y * dx) / denominator;
-    if (t > 0 && u >= -1e-9 && u <= 1 + 1e-9) nearest = Math.min(nearest, t);
-  }
-  if (!Number.isFinite(nearest)) throw new Error('Invalid survey boundary: no radial intersection');
-  return nearest;
-}
-
-function walkPolygon(vertices, start, end) {
-  const result = [vertices[start]];
-  for (let i = (start + 1) % vertices.length; i !== end; i = (i + 1) % vertices.length) {
-    result.push(vertices[i]);
-  }
-  result.push(vertices[end]);
-  return result;
-}
-
-function generateRadialLayout(seed, size, survey) {
-  const preset = LAYOUT_PRESETS[size] ?? LAYOUT_PRESETS.medium;
-  const rng = createRng(`${seed}:layout:v1:${size}`);
-  const { sectors, rings, laneRate } = preset;
-  const nodes = [];
-  const nodeById = new Map();
-  const baseEdges = new Map();
-  const faces = [];
-  const ringsOfNodes = [];
-
-  function createNode(x, y) {
-    const node = { id: `N-${String(nodes.length + 1).padStart(4, '0')}`, x, y };
-    nodes.push(node);
-    nodeById.set(node.id, node);
-    return node.id;
-  }
-
-  function addEdge(a, b, kind) {
-    const key = edgeKey(a, b);
-    if (baseEdges.has(key)) return;
-    baseEdges.set(key, { a, b, kind });
-  }
-
-  // A coherent but irregular angular lattice. The small per-ring deflections
-  // yield winding streets without introducing intersecting polylines.
-  const steps = Array.from({ length: sectors }, () => randomRange(rng, 0.79, 1.22));
-  const total = steps.reduce((sum, step) => sum + step, 0);
-  const start = randomRange(rng, -Math.PI, Math.PI);
-  const angles = [start];
-  for (let i = 0; i < sectors - 1; i++) angles.push(angles.at(-1) + steps[i] / total * Math.PI * 2);
-  const angularStep = Math.PI * 2 / sectors;
-
-  for (let ring = 0; ring < rings; ring++) {
-    const fraction = 0.14 + (0.73 * ring) / (rings - 1);
-    const row = [];
-    for (let sector = 0; sector < sectors; sector++) {
-      const angle = angles[sector] + randomRange(rng, -0.12, 0.12) * angularStep;
-      const distance = boundaryDistance(angle, survey.boundary) * fraction * randomRange(rng, 0.967, 1.033);
-      row.push(createNode(Math.cos(angle) * distance, Math.sin(angle) * distance));
-    }
-    ringsOfNodes.push(row);
-  }
-
-  for (let ring = 0; ring < rings; ring++) {
-    for (let sector = 0; sector < sectors; sector++) {
-      const next = (sector + 1) % sectors;
-      // A civic boulevard and a sparse set of outer ring boulevards.
-      addEdge(ringsOfNodes[ring][sector], ringsOfNodes[ring][next],
-        ring === 0 || (ring === rings - 2 && sector % 3 !== 1) ? 'primary' : 'secondary');
-      if (ring === rings - 1) continue;
-      addEdge(ringsOfNodes[ring][sector], ringsOfNodes[ring + 1][sector],
-        sector % 4 === 0 || sector % 4 === 1 && ring === 0 ? 'primary' : 'secondary');
-      faces.push({
-        ring, sector,
-        corners: [
-          ringsOfNodes[ring][sector],
-          ringsOfNodes[ring + 1][sector],
-          ringsOfNodes[ring + 1][next],
-          ringsOfNodes[ring][next]
-        ]
-      });
-    }
-  }
-
-  // Plan some connecting lanes per block. Each lane ends at real street
-  // junctions. Its endpoints become shared vertices in *both* adjacent blocks.
-  const midpoints = new Map();
-  function midpoint(a, b) {
-    const key = edgeKey(a, b);
-    if (midpoints.has(key)) return midpoints.get(key);
-    const first = nodeById.get(a);
-    const second = nodeById.get(b);
-    const id = createNode((first.x + second.x) / 2, (first.y + second.y) / 2);
-    midpoints.set(key, id);
-    return id;
-  }
-  for (const face of faces) {
-    if (rng() >= laneRate) continue;
-    const side = rng() < 0.53 ? 0 : 1;
-    const corners = face.corners;
-    face.split = [
-      midpoint(corners[side], corners[(side + 1) % 4]),
-      midpoint(corners[(side + 2) % 4], corners[(side + 3) % 4])
-    ];
-  }
-
-  const roads = [];
-  function road(a, b, kind) {
-    roads.push({ id: `RD-${String(roads.length + 1).padStart(4, '0')}`, a, b, kind });
-  }
-  for (const edge of baseEdges.values()) {
-    const mid = midpoints.get(edgeKey(edge.a, edge.b));
-    if (mid) {
-      road(edge.a, mid, edge.kind);
-      road(mid, edge.b, edge.kind);
-    } else {
-      road(edge.a, edge.b, edge.kind);
-    }
-  }
-
-  const blocks = [];
-  function addBlock(nodeIds, face) {
-    const polygon = nodeIds.map(id => nodeById.get(id));
-    const area = polygonSignedArea(polygon);
-    if (area <= 0) throw new Error(`Invalid block winding/area: ${face.ring}/${face.sector}`);
-    blocks.push({
-      id: `BLK-${String(blocks.length + 1).padStart(4, '0')}`,
-      vertices: nodeIds,
-      ring: face.ring,
-      sector: face.sector,
-      area: Math.round(area * 100) / 100,
-      usage: 'unassigned'
-    });
-  }
-  for (const face of faces) {
-    const boundary = [];
-    for (let i = 0; i < 4; i++) {
-      const a = face.corners[i];
-      const b = face.corners[(i + 1) % 4];
-      boundary.push(a);
-      const mid = midpoints.get(edgeKey(a, b));
-      if (mid) boundary.push(mid);
-    }
-    if (!face.split) {
-      addBlock(boundary, face);
-      continue;
-    }
-    const a = boundary.indexOf(face.split[0]);
-    const b = boundary.indexOf(face.split[1]);
-    addBlock(walkPolygon(boundary, a, b), face);
-    addBlock(walkPolygon(boundary, b, a), face);
-    road(face.split[0], face.split[1], 'lane');
-  }
-
-  const plazaVertices = ringsOfNodes[0];
-  const plaza = {
-    id: 'PLAZA-0001',
-    name: 'Founders Square',
-    vertices: plazaVertices,
-    area: Math.round(polygonSignedArea(plazaVertices.map(id => nodeById.get(id))) * 100) / 100
-  };
-
-  return { nodes, roads, blocks, plaza };
-}
-
-
-// Linear, organic and planned cities use topologically different street meshes
-// from the radial ring-and-spoke city. A shared vertex grid provides robust
-// intersections and stable block boundaries, and is shaped by the chosen
-// settlement's development pattern.
-const GRID_PRESETS = Object.freeze({
-  organic: { small: [8, 8], medium: [10, 10], large: [13, 12] },
-  linear: { small: [12, 5], medium: [16, 6], large: [21, 7] },
-  planned: { small: [9, 7], medium: [12, 9], large: [16, 12] }
-});
-
-function generateGridLayout(seed, size, survey, morphology) {
-  const rng = createRng(`${seed}:layout:v2:${size}:${morphology}`);
-  const [columns, rows] = GRID_PRESETS[morphology][size] ?? GRID_PRESETS[morphology].medium;
-  const nodes = [];
-  const byId = new Map();
-  const baseEdges = new Map();
-  const faces = [];
-  const mesh = [];
-  const radius = survey.nominalRadius;
-  const bendPhase = survey.linearBendPhase;
-  const angle = survey.plannedAngle;
-  const organicPhase = randomRange(rng, -Math.PI, Math.PI);
-  const sin = Math.sin, cos = Math.cos;
-
-  function createNode(x, y) {
-    const node = { id: `N-${String(nodes.length + 1).padStart(4, '0')}`, x, y };
-    nodes.push(node);
-    byId.set(node.id, node);
-    return node.id;
-  }
-  function addEdge(a, b, kind) {
-    const key = edgeKey(a, b);
-    if (!baseEdges.has(key)) baseEdges.set(key, { a, b, kind });
-  }
-
-  // Monotonic, seeded axis coordinates prevent near-identical blocks without
-  // introducing unconnected roads or randomly crossing street edges.
-  function axisPositions(count, jitterRate) {
-    const steps = Array.from({ length: count - 1 }, () => randomRange(rng, 1 - jitterRate, 1 + jitterRate));
-    const total = steps.reduce((acc, value) => acc + value, 0);
-    const values = [-1];
-    let current = -1;
-    for (const step of steps) { current += step * 2 / total; values.push(current); }
-    return values;
-  }
-  const xs = axisPositions(columns, morphology === 'planned' ? 0.06 : 0.30);
-  const ys = axisPositions(rows, morphology === 'planned' ? 0.06 : 0.30);
-  const dx = 2 / (columns - 1), dy = 2 / (rows - 1);
-  for (let row = 0; row < rows; row++) {
-    const ids = [];
-    for (let column = 0; column < columns; column++) {
-      const u = xs[column];
-      const v = ys[row];
-      let x, y;
-      if (morphology === 'linear') {
-        // Main road and side streets follow a bending travel corridor.
-        const drift = randomRange(rng, -0.10, 0.10);
-        x = radius * (1.77 * u + drift * dx);
-        y = radius * (0.35 * v + 0.12 * sin(x / radius * 1.05 + bendPhase) +
-          randomRange(rng, -0.08, 0.08) * dy);
-      } else if (morphology === 'planned') {
-        const rawX = radius * (0.77 * u + randomRange(rng, -0.035, 0.035) * dx);
-        const rawY = radius * (0.57 * v + randomRange(rng, -0.035, 0.035) * dy);
-        x = rawX * cos(angle) - rawY * sin(angle);
-        y = rawX * sin(angle) + rawY * cos(angle);
-      } else {
-        // Curving, staggered streets arranged inside an asymmetric footprint.
-        // The square-to-disk transform leaves an interior margin for future walls.
-        const ux = u * 0.81 + randomRange(rng, -0.17, 0.17) * dx;
-        const vy = v * 0.81 + randomRange(rng, -0.17, 0.17) * dy;
-        const px = ux * Math.sqrt(1 - vy * vy / 2) + 0.06 * sin(2.3 * vy + organicPhase);
-        const py = vy * Math.sqrt(1 - ux * ux / 2) + 0.05 * sin(2.1 * ux - organicPhase);
-        const theta = Math.atan2(py, px);
-        const dist = Math.min(0.83, Math.hypot(px, py) * 0.88);
-        const outer = boundaryDistance(theta, survey.boundary);
-        x = cos(theta) * outer * dist;
-        y = sin(theta) * outer * dist;
-      }
-      ids.push(createNode(x, y));
-    }
-    mesh.push(ids);
-  }
-
-  // Every grid cell is a face bounded by graph edges. Mid-block lanes split
-  // existing streets at shared junctions; the plaza is never crossed by lanes.
-  const plazaRow = Math.floor((rows - 2) / 2);
-  const plazaCol = Math.floor((columns - 2) / 2);
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < columns; col++) {
-      if (col < columns - 1) addEdge(mesh[row][col], mesh[row][col + 1],
-        row === Math.floor(rows / 2) ? 'primary' : 'secondary');
-      if (row < rows - 1) addEdge(mesh[row][col], mesh[row + 1][col],
-        morphology === 'planned' && col === Math.floor(columns / 2) ? 'primary' :
-          morphology === 'linear' && col % 4 === 1 ? 'primary' : 'secondary');
-      if (row < rows - 1 && col < columns - 1) {
-        faces.push({ row, col, ring: row, sector: col,
-          plaza: row === plazaRow && col === plazaCol,
-          corners: [mesh[row][col], mesh[row][col + 1], mesh[row + 1][col + 1], mesh[row + 1][col]] });
-      }
-    }
-  }
-
-  const midpoints = new Map();
-  function midpoint(a, b) {
-    const key = edgeKey(a, b);
-    if (midpoints.has(key)) return midpoints.get(key);
-    const p = byId.get(a), q = byId.get(b);
-    const id = createNode((p.x + q.x) / 2, (p.y + q.y) / 2);
-    midpoints.set(key, id);
-    return id;
-  }
-  for (const face of faces) {
-    if (face.plaza || rng() >= (morphology === 'planned' ? 0.27 : 0.44)) continue;
-    const side = rng() < 0.5 ? 0 : 1;
-    face.split = [midpoint(face.corners[side], face.corners[(side + 1) % 4]),
-      midpoint(face.corners[(side + 2) % 4], face.corners[(side + 3) % 4])];
-  }
-
-  const roads = [];
-  function road(a, b, kind) {
-    roads.push({ id: `RD-${String(roads.length + 1).padStart(4, '0')}`, a, b, kind });
-  }
-  for (const edge of baseEdges.values()) {
-    const mid = midpoints.get(edgeKey(edge.a, edge.b));
-    if (mid) { road(edge.a, mid, edge.kind); road(mid, edge.b, edge.kind); }
-    else road(edge.a, edge.b, edge.kind);
-  }
-
-  const blocks = [];
-  let plaza;
-  for (const face of faces) {
-    const boundary = [];
-    for (let i = 0; i < 4; i++) {
-      const a = face.corners[i], b = face.corners[(i + 1) % 4];
-      boundary.push(a);
-      const mid = midpoints.get(edgeKey(a, b));
-      if (mid) boundary.push(mid);
-    }
-    function addBlock(vertices) {
-      const area = polygonSignedArea(vertices.map(id => byId.get(id)));
-      if (area <= 1) throw new Error(`Invalid ${morphology} block at ${face.row}/${face.col}: ${area}`);
-      blocks.push({ id: `BLK-${String(blocks.length + 1).padStart(4, '0')}`,
-        vertices, ring: face.ring, sector: face.sector,
-        area: Math.round(area * 100) / 100, usage: 'unassigned' });
-    }
-    if (face.plaza) {
-      const area = polygonSignedArea(boundary.map(id => byId.get(id)));
-      if (area <= 1) throw new Error('Invalid civic plaza');
-      plaza = { id: 'PLAZA-0001', name: 'Founders Square', vertices: boundary, area: Math.round(area * 100) / 100 };
-    } else if (!face.split) {
-      addBlock(boundary);
-    } else {
-      const a = boundary.indexOf(face.split[0]), b = boundary.indexOf(face.split[1]);
-      addBlock(walkPolygon(boundary, a, b));
-      addBlock(walkPolygon(boundary, b, a));
-      road(face.split[0], face.split[1], 'lane');
-    }
-  }
-  if (!plaza) throw new Error('Civic plaza not generated');
-  return { nodes, roads, blocks, plaza };
-}
-
+// Construct a planar arrangement, rather than warping a finished mesh. Every
+// clipped street crossing becomes a shared node before faces are extracted.
 export function generateLayout(seed, size, survey, morphology = 'radial') {
-  if (morphology === 'radial') return generateRadialLayout(seed, size, survey);
-  if (!Object.hasOwn(GRID_PRESETS, morphology)) throw new Error(`Unsupported morphology: ${morphology}`);
-  return generateGridLayout(seed, size, survey, morphology);
+  const boundary = survey.boundary,
+    center = survey.anchors[0];
+  const rng = createRng(`${seed}:streets:v5:${size}:${morphology}`);
+  const bounds = boundsOf(boundary);
+  const spacing = Math.sqrt(Math.abs(polygonSignedArea(boundary))) / (size === 'small' ? 7 : size === 'large' ? 13 : 10);
+  const half = Math.min(spacing * .28, clearance(center, boundary) * .40);
+  if (half < 6) throw new Error('Move the town center farther from the edge to make room for its plaza.');
+  const square = [{
+    x: center.x - half,
+    y: center.y - half
+  }, {
+    x: center.x + half,
+    y: center.y - half
+  }, {
+    x: center.x + half,
+    y: center.y + half
+  }, {
+    x: center.x - half,
+    y: center.y + half
+  }];
+  const segments = [];
+  const push = (a, b, kind, tag = 'street') => {
+    if (Math.hypot(a.x - b.x, a.y - b.y) > 1e-6) segments.push({
+      a,
+      b,
+      kind,
+      tag
+    });
+  };
+  for (let i = 0; i < boundary.length; i++) push(boundary[i], boundary[(i + 1) % boundary.length], 'secondary', 'boundary');
+  for (let i = 0; i < 4; i++) push(square[i], square[(i + 1) % 4], 'primary', 'plaza');
+
+  function clip(a, b, kind) {
+    const ts = [0, 1];
+    for (const polygon of [boundary, square])
+      for (let i = 0; i < polygon.length; i++) ts.push(...segmentCuts(a, b, polygon[i], polygon[(i + 1) % polygon.length]));
+    ts.sort((a, b) => a - b);
+    for (let i = 1; i < ts.length; i++) {
+      if (ts[i] - ts[i - 1] < 1e-9) continue;
+      const p = lerpPoint(a, b, (ts[i] + ts[i - 1]) / 2);
+      if (insideOrOn(p, boundary) && !pointInPolygon(p, square)) push(lerpPoint(a, b, ts[i - 1]), lerpPoint(a, b, ts[i]), kind);
+    }
+  }
+  if (morphology === 'radial') {
+    const reach = Math.max(...boundary.map(p => Math.hypot(p.x - center.x, p.y - center.y))) + spacing;
+    const sectors = size === 'small' ? 12 : size === 'large' ? 22 : 16;
+    const phase = randomRange(rng, -.15, .15);
+    for (let i = 0; i < sectors; i++) {
+      const angle = phase + i * 2 * Math.PI / sectors;
+      clip(center, {
+        x: center.x + Math.cos(angle) * reach,
+        y: center.y + Math.sin(angle) * reach
+      }, i % 4 === 0 ? 'primary' : 'secondary');
+    }
+    for (let radius = spacing; radius < reach; radius += spacing) {
+      const count = sectors * 3;
+      for (let i = 0; i < count; i++) {
+        const a = phase + i * 2 * Math.PI / count,
+          b = phase + (i + 1) * 2 * Math.PI / count;
+        clip({
+          x: center.x + Math.cos(a) * radius,
+          y: center.y + Math.sin(a) * radius
+        }, {
+          x: center.x + Math.cos(b) * radius,
+          y: center.y + Math.sin(b) * radius
+        }, 'secondary');
+      }
+    }
+  } else {
+    // Shared rows form continuous, gently winding corridors. Seeded monotonic
+    // spacing changes blocks without changing the user's boundary or center.
+    const organic = morphology === 'organic',
+      linear = morphology === 'linear';
+    const sx = spacing * (linear ? 1.5 : 1),
+      sy = spacing * (linear ? .65 : 1);
+    const xs = [bounds.minX - spacing],
+      ys = [bounds.minY - spacing];
+    while (xs.at(-1) < bounds.maxX + spacing) xs.push(xs.at(-1) + sx * randomRange(rng, .82, 1.18));
+    while (ys.at(-1) < bounds.maxY + spacing) ys.push(ys.at(-1) + sy * randomRange(rng, .82, 1.18));
+    const mesh = ys.map((y, row) => xs.map((x, col) => ({
+      x: x + (organic ? randomRange(rng, -.21, .21) * sx : 0),
+      y: y + (organic ? randomRange(rng, -.21, .21) * sy : 0)
+    })));
+    for (let row = 0; row < ys.length; row++)
+      for (let col = 0; col < xs.length; col++) {
+        if (col + 1 < xs.length) clip(mesh[row][col], mesh[row][col + 1], row === Math.floor(ys.length / 2) ? 'primary' : 'secondary');
+        if (row + 1 < ys.length) clip(mesh[row][col], mesh[row + 1][col], col === Math.floor(xs.length / 2) && !linear ? 'primary' : 'lane');
+      }
+    // An explicit approach through the chosen center connects the square even
+    // when it lies entirely within one otherwise unsplit grid cell.
+    clip({
+      x: bounds.minX - spacing,
+      y: center.y
+    }, {
+      x: bounds.maxX + spacing,
+      y: center.y
+    }, 'primary');
+  }
+  const cuts = segments.map(() => [0, 1]);
+  for (let i = 0; i < segments.length; i++)
+    for (let j = i + 1; j < segments.length; j++) {
+      const a = segments[i],
+        b = segments[j];
+      cuts[i].push(...segmentCuts(a.a, a.b, b.a, b.b));
+      cuts[j].push(...segmentCuts(b.a, b.b, a.a, a.b));
+    }
+  const nodes = [],
+    roads = [],
+    byCoordinate = new Map(),
+    edges = new Map();
+
+  function node(p) {
+    // Microunit snapping coalesces independently computed multi-way junctions.
+    const key = `${Math.round(p.x*1e6)},${Math.round(p.y*1e6)}`;
+    if (byCoordinate.has(key)) return byCoordinate.get(key);
+    const n = {
+      id: `N-${String(nodes.length+1).padStart(4,'0')}`,
+      x: p.x,
+      y: p.y
+    };
+    nodes.push(n);
+    byCoordinate.set(key, n);
+    return n;
+  }
+  const rank = {
+    lane: 0,
+    secondary: 1,
+    primary: 2
+  };
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i],
+      ts = cuts[i].sort((a, b) => a - b);
+    for (let k = 1; k < ts.length; k++) {
+      if (ts[k] - ts[k - 1] < 1e-9) continue;
+      const a = node(lerpPoint(segment.a, segment.b, ts[k - 1])),
+        b = node(lerpPoint(segment.a, segment.b, ts[k]));
+      if (a === b) continue;
+      const key = [a.id, b.id].sort().join(':');
+      if (edges.has(key)) {
+        const r = edges.get(key);
+        if (rank[segment.kind] > rank[r.kind]) r.kind = segment.kind;
+        continue;
+      }
+      const r = {
+        id: `RD-${String(roads.length+1).padStart(4,'0')}`,
+        a: a.id,
+        b: b.id,
+        kind: segment.kind,
+        boundary: segment.tag === 'boundary',
+        plaza: segment.tag === 'plaza'
+      };
+      edges.set(key, r);
+      roads.push(r);
+    }
+  }
+
+  function extractFaces() {
+    const byId = new Map(nodes.map(n => [n.id, n])),
+      adjacency = new Map(nodes.map(n => [n.id, []]));
+    for (const r of roads) {
+      adjacency.get(r.a).push(r.b);
+      adjacency.get(r.b).push(r.a);
+    }
+    for (const [id, neighbors] of adjacency) {
+      const a = byId.get(id);
+      neighbors.sort((b, c) => Math.atan2(byId.get(b).y - a.y, byId.get(b).x - a.x) - Math.atan2(byId.get(c).y - a.y, byId.get(c).x - a.x));
+    }
+    const visited = new Set(),
+      faces = [];
+    for (const road of roads)
+      for (const pair of [
+          [road.a, road.b],
+          [road.b, road.a]
+        ]) {
+        if (visited.has(pair.join(':'))) continue;
+        let [a, b] = pair;
+        const vertices = [];
+        for (let steps = 0; steps <= roads.length * 2; steps++) {
+          const key = `${a}:${b}`;
+          if (visited.has(key)) break;
+          visited.add(key);
+          vertices.push(a);
+          const neighbors = adjacency.get(b),
+            next = neighbors[(neighbors.indexOf(a) + neighbors.length - 1) % neighbors.length];
+          a = b;
+          b = next;
+        }
+        const polygon = vertices.map(id => byId.get(id)),
+          area = polygonSignedArea(polygon);
+        if (area > 1e-6) faces.push({
+          vertices,
+          area
+        });
+      }
+    return faces;
+  }
+  let faces = extractFaces();
+  const minimumArea = Math.max(1.01, spacing * spacing * .012);
+  // Tangencies at the boundary can leave tiny slivers. Merge them into a
+  // neighbor by removing a shared street, never a city boundary or plaza edge.
+  for (let pass = 0; pass < roads.length; pass++) {
+    const small = faces.find(f => f.area < minimumArea);
+    if (!small) break;
+    const keys = new Set(small.vertices.map((a, i) => [a, small.vertices[(i + 1) % small.vertices.length]].sort().join(':')));
+    let longest = -1,
+      index = -1;
+    const lookup = new Map(nodes.map(n => [n.id, n]));
+    roads.forEach((r, i) => {
+      if (r.boundary || r.plaza || !keys.has([r.a, r.b].sort().join(':'))) return;
+      const a = lookup.get(r.a),
+        b = lookup.get(r.b),
+        length = Math.hypot(a.x - b.x, a.y - b.y);
+      if (length > longest) {
+        longest = length;
+        index = i;
+      }
+    });
+    if (index < 0) throw new Error('A narrow outline section leaves no usable city block. Widen that section.');
+    roads.splice(index, 1);
+    let pruned = true;
+    while (pruned) {
+      pruned = false;
+      const degrees = new Map();
+      for (const r of roads) {
+        degrees.set(r.a, (degrees.get(r.a) || 0) + 1);
+        degrees.set(r.b, (degrees.get(r.b) || 0) + 1);
+      }
+      for (let i = roads.length - 1; i >= 0; i--) {
+        const r = roads[i];
+        if (!r.boundary && !r.plaza && (degrees.get(r.a) === 1 || degrees.get(r.b) === 1)) {
+          roads.splice(i, 1);
+          pruned = true;
+        }
+      }
+    }
+    faces = extractFaces();
+  }
+  // Remove junctions no longer used after merging small faces.
+  const usedNodes = new Set(roads.flatMap(r => [r.a, r.b]));
+  for (let i = nodes.length - 1; i >= 0; i--)
+    if (!usedNodes.has(nodes[i].id)) nodes.splice(i, 1);
+  const byId = new Map(nodes.map(n => [n.id, n]));
+  const plazaFace = faces.find(f => pointInPolygon(center, f.vertices.map(id => byId.get(id))));
+  if (!plazaFace) throw new Error('Could not create a plaza at this location. Move the center and try again.');
+  const blocks = faces.filter(f => f !== plazaFace).map((f, i) => ({
+    id: `BLK-${String(i+1).padStart(4,'0')}`,
+    vertices: f.vertices,
+    area: Math.round(f.area * 100) / 100,
+    ring: i % 4,
+    sector: i,
+    usage: 'unassigned'
+  }));
+  return {
+    nodes,
+    roads,
+    blocks,
+    plaza: {
+      id: 'PLAZA-0001',
+      name: 'Founders Square',
+      center: { x: center.x, y: center.y },
+      vertices: plazaFace.vertices,
+      area: Math.round(plazaFace.area * 100) / 100
+    }
+  };
 }
