@@ -40,6 +40,8 @@
           <div class="control-group"><label for="coastSeedInput">Coast seed</label><input id="coastSeedInput" maxlength="64" value="coast" spellcheck="false"></div>
           <div class="control-group"><label for="coastDirectionInput">Ocean direction · new coastline</label><select id="coastDirectionInput"><option value="north">North</option><option value="east" selected>East</option><option value="south">South</option><option value="west">West</option></select></div>
           <div class="tool-grid"><button id="generateCoastButton" class="tool-button">Generate coastline</button><button id="rerollCoastButton" class="minor-button">New coast seed</button><button id="editCoastButton" class="tool-button" aria-pressed="false">Edit shoreline</button><button id="flipCoastButton" class="minor-button">Swap land / water</button></div>
+          <button id="tidyCoastButton" class="minor-button full-width actions">Tidy shoreline bends</button>
+          <p class="hint">Shoreline handles self-adjust like river handles. Tidy repairs older drafts; Generate city tidies both water features before applying.</p>
           <button id="removeCoastButton" class="minor-button full-width actions">Remove coastline</button>
           </fieldset>
           <p class="hint">River and coast controls are independent. Generating, editing or removing one retains the other. Water joins where the river meets the ocean.</p>

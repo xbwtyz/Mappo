@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.3e3 — More forgiving river editing
+## Current build: 0.1-dev.3e4 — Guided shoreline editing
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3e3.html`](dist/mappo-0.1-dev.3e3.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3e4.html`](dist/mappo-0.1-dev.3e4.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### Workflow
 
@@ -54,9 +54,11 @@ See [`DISTRICTS.md`](DISTRICTS.md) for the module boundaries and extension point
 **Water & Bridges** has independent **River** and **Coastline** sections. A city can contain both at once. A coastline has open ocean on one side and buildable land on the other. Generating, rerolling, editing or removing a river retains the coast; the same applies in reverse. Each has its own seed and controls. The accepted city stays open until Generate city succeeds. Water undo restores the last water edit.
 
 1. Choose a **coast seed** and **Ocean direction**: north, east, south or west. Click **Generate coastline** for an editable preview. **New coast seed** rerolls only the coastline using the pending ocean direction.
-2. Drag shoreline handles. Double-click near the shoreline to add a point; select an interior point and Delete or **Remove selected** to remove it. Use **Edit shoreline** for coast handles and **Edit river points** for river handles.
+2. Drag shoreline handles. Handles stay ordered and neighboring handles ease tight bends automatically. Double-click near the shoreline to add a point; select an interior point and Delete or **Remove selected** to remove it. Use **Edit shoreline** for coast handles and **Edit river points** for river handles.
 3. **Swap land / water** reverses the current coast's ocean side. Keep the main square on land; move the shore or square if the preview reports it would be submerged. Ocean direction controls the next generated coastline, while Swap edits the existing draft.
 4. Click **Generate city** to build around the coast. Waterfront roads follow the land side, properties retain shoreline setbacks, and defenses are removed from submerged portions of the outer perimeter. An invalid shoreline retains the last valid city.
+
+**Tidy shoreline bends** repairs overlapping points and tight bends in older coastal drafts. Generate city also tidies river and coast drafts together, recording one water-undo entry. Double-click insertion snaps onto the shoreline and selects an existing nearby handle rather than duplicating it. Endpoints and the ocean extent adjust when needed to keep covering the city; the chosen ocean side and other water records are preserved.
 
 The shoreline connectivity check prevents unconnected islands, including in concave outlines. River width and bridge tools stay available whenever a river exists, including in a coastal city. Bridges need two dry banks and cannot extend into the ocean. Shoreline edits, side swaps, pending direction and undo history travel with project files and browser recovery. Existing 3E river files load with their exact accepted geometry and drafts.
 
@@ -167,7 +169,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e3.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e4.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -191,6 +193,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3e1:** Generated/editable coastlines, ocean-side control, connected coastal land and schema-6 compatibility.
 - **0.1-dev.3e2:** Independent river/coast controls and seeds, joined water geometry, inland bridges and schema-7 compatibility.
 - **0.1-dev.3e3:** Guided river handles, snapped point insertion, undoable draft tidying and validated river proposals.
+- **0.1-dev.3e4:** Shared river/coast guidance, snapped shoreline insertion, undoable coastline tidying and validated coast proposals.
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 

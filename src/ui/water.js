@@ -56,6 +56,7 @@ export class WaterPanel {
     this.$('removeWaterItemButton').disabled = e.selectedPoint < 0 && !e.selectedBridge;
     this.$('editRiverButton').disabled = !river;
     this.$('tidyRiverButton').disabled = !river;
+    this.$('tidyCoastButton').disabled = !coast;
     this.$('editCoastButton').disabled = !coast;
     this.$('flipCoastButton').disabled = !coast;
     this.$('removeRiverButton').disabled = !river;
@@ -92,6 +93,12 @@ export class WaterPanel {
     this.message(mode === 'river' ? `Drag ${kind==='coast'?'shoreline':'river'} points. Double-click to add; Delete removes a selected interior point.` : mode === 'bridge' ? 'Drag a bridge marker along the river. Keep both banks out of the ocean.' : 'Click near the river to add a bridge.');
   }
   bind() {
+    this.$('tidyCoastButton').addEventListener('click', () => this.run(() => {
+      if (!this.editor.selectFeature('coast')) return;
+      this.editor.setMode('river');
+      this.editor.tidyCoast(this.getBoundary());
+      this.activate();
+    }));
     this.$('tidyRiverButton').addEventListener('click', () => this.run(() => {
       if (!this.editor.selectFeature('river')) return;
       this.editor.setMode('river');

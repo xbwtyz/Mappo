@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current release is **0.1-dev.3e3**. Its container format is **1**, project-data schema is **7**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current release is **0.1-dev.3e4**. Its container format is **1**, project-data schema is **7**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.3e3",
+  "appVersion": "0.1-dev.3e4",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -152,7 +152,15 @@ Migration 6→7 advances only the project schema. Geometry, IDs, district/defens
 
 The data schema remains **7**: accepted geometry uses the existing ribbon, point-order and bank-slope contracts. The editor now guides river handle positions to those contracts during gestures. It may move neighboring river points to ease a bend, keeps longitudinal order, and extends an endpoint outside city land when needed. New point insertion snaps to the course and avoids duplicate handles.
 
-A pure `core/river-editing.js` helper returns adjusted draft points; it does not alter accepted city geometry, the coast, bridge location records or record metadata. Gesture cancellation restores the prior draft and complete bounded undo history. Explicit Tidy river bends and Generate city can repair an older invalid river draft, recording the change in water undo. File decoding and workspace restoration never tidy a draft. New river proposals pass the same feature and complete-definition validation before being offered.
+A pure course-editing helper (now shared in `core/water-editing.js`, with the river API retained) returns adjusted draft points; it does not alter accepted city geometry, the coast, bridge location records or record metadata. Gesture cancellation restores the prior draft and complete bounded undo history. Explicit Tidy river bends and Generate city can repair an older invalid river draft, recording the change in water undo. File decoding and workspace restoration never tidy a draft. New river proposals pass the same feature and complete-definition validation before being offered.
+
+## Guided coastline editing in 3E.4
+
+The schema remains **7**, with unchanged accepted coast, river, bank-slope and point-order contracts. `core/water-editing.js` now handles both river and coastline guidance; `core/river-editing.js` retains its public river wrapper. Coast dragging keeps handles in order and eases tight bends without changing the chosen water side, river data, bridge records or compatible metadata.
+
+Unlike a river, a coast must cover the full city in its longitudinal frame. Guided endpoints extend past the city projection when needed; the saved ocean `seaDepth` can grow within its existing allowed range to keep its closure beyond city land and shoreline bends. Endpoint guidance prevents an accidental reversal of the course within a gesture. Point insertion snaps to the course and avoids duplicates.
+
+Explicit Tidy shoreline bends repairs a coast draft. Generate city tidies both supported water features atomically with one water-history snapshot, then runs the existing placement and street validators. Loading and decoding never tidy or regenerate saved data. New coast proposals are guided and checked with the shared feature and complete-definition validators before being presented.
 
 ## Browser recovery
 

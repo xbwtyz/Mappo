@@ -1,10 +1,20 @@
-# Mappo 0.1-dev.3e3 validation
+# Mappo 0.1-dev.3e4 validation
 
 ## Automated checks
 
-**100 automated tests passed**, covering guided river editing, combined water, coasts, rivers, bridges, fortifications, districts, persistence and existing city generation.
+**106 automated tests passed**, covering guided shoreline/river editing, combined water, coasts, rivers, bridges, fortifications, districts, persistence and existing city generation.
 
 Run `npm run check` to rebuild and run the complete suite. All road-crossing checks remain enabled.
+
+### Guided coastline editing
+
+- 225 large shoreline gestures retain ordered courses and simple ocean polygons while preserving the ocean side.
+- Coast endpoints cover the complete city projection; ocean depth expands within its existing bounds when needed. Cancel restores the full 20-entry history and exact draft.
+- 1,000 narrow-city coast seeds pass the shared feature and complete-definition validators.
+- Shoreline insertion snaps to the course, selecting an existing nearby handle instead of adding a duplicate.
+- Coastal tidying preserves river records, bridges, ocean side and compatible metadata. Combined river/coast tidying creates one undo entry.
+- Valid coast geometry stays exact. Old invalid coastline drafts save/load without repair until requested.
+- Compiled-app checks guide a shoreline handle past its neighbor, retain the river and bridges, apply an older invalid coastline with auto-tidying, undo, and use Tidy shoreline bends.
 
 ### Forgiving river editing
 
@@ -133,8 +143,11 @@ The host previously denied Chromium's process-singleton socket. No full graphica
 
 ## Manual Firefox checklist
 
-Open `dist/mappo-0.1-dev.3e3.html` directly from disk.
+Open `dist/mappo-0.1-dev.3e4.html` directly from disk.
 
+- Drag a coastline handle past its neighbor and into a tight bend. Confirm guided movement replaces bend/order errors. Test endpoint dragging, insertion, undo and cancellation.
+- Load an older invalid coastline draft. Test Tidy shoreline bends, automatic tidying on Generate city and water undo.
+- Confirm the river, bridge records and chosen ocean side survive coastal tidying; real square or disconnected-island conflicts should still explain the placement issue.
 - Drag a river handle past its neighbor and into a tight bend. Check handles respond gently without sharp/tangled-draft errors. Test undo and pointer cancellation.
 - Double-click near the river and on an existing handle; check insertion snaps and no duplicate appears.
 - Load an older invalid river draft. Confirm it loads exactly, then test Tidy river bends, Generate city and water undo.

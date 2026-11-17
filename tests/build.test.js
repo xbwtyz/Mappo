@@ -1,4 +1,7 @@
 import {
+  waterPathIsOrdered
+} from '../src/core/water-editing.js';
+import {
   riverPathIsOrdered
 } from '../src/core/river-editing.js';
 import {
@@ -20,7 +23,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e3.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e4.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -821,6 +824,38 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(riverPathIsOrdered(guidedEditor.features.find(f => f.kind === 'river').path), false);
   reloaded.el('tidyRiverButton').handlers.click();
   assert.equal(riverPathIsOrdered(guidedEditor.features.find(f => f.kind === 'river').path), true);
+  reloaded.el('revertWaterButton').handlers.click();
+  reloaded.el('editCoastButton').handlers.click();
+  const shoreGuide = guidedEditor.activeFeature(),
+    riverBeforeCoastGuide = copy(guidedEditor.features.find(f => f.kind === 'river')),
+    bridgesBeforeCoastGuide = copy(guidedEditor.bridges),
+    shoreFrame = waterFrame(shoreGuide),
+    shoreStart = reloaded.state().camera.worldToScreen(shoreGuide.path[3]),
+    shoreEnd = reloaded.state().camera.worldToScreen({
+      x: shoreGuide.path[4].x + shoreFrame.u.x * 40,
+      y: shoreGuide.path[4].y + shoreFrame.u.y * 40
+    });
+  fire('pointerdown', shoreStart);
+  fire('pointermove', shoreEnd);
+  fire('pointerup', shoreEnd);
+  assert.equal(waterPathIsOrdered(shoreGuide.path), true);
+  assert.doesNotMatch(reloaded.el('waterMessage').textContent, /too sharply|untangle/);
+  assert.deepEqual(copy(guidedEditor.features.find(f => f.kind === 'river')), riverBeforeCoastGuide);
+  assert.deepEqual(copy(guidedEditor.bridges), bridgesBeforeCoastGuide);
+  reloaded.el('undoWaterButton').handlers.click();
+  const oldCoastDraft = guidedEditor.features.find(f => f.kind === 'coast');
+  oldCoastDraft.path[4] = {
+    ...oldCoastDraft.path[3]
+  };
+  guidedEditor.dirty = true;
+  reloaded.el('generateButton').handlers.click();
+  assert.equal(guidedEditor.dirty, false, reloaded.el('waterMessage').textContent);
+  assert.match(reloaded.el('waterMessage').textContent, /Coastline handles were tidied/);
+  reloaded.el('undoWaterButton').handlers.click();
+  assert.equal(waterPathIsOrdered(guidedEditor.features.find(f => f.kind === 'coast').path), false);
+  reloaded.el('tidyCoastButton').handlers.click();
+  assert.equal(waterPathIsOrdered(guidedEditor.features.find(f => f.kind === 'coast').path), true);
+
 
 
 

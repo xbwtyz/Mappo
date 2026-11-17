@@ -12,7 +12,8 @@ Milestone 3E implements generated/editable rivers and connected bridges. The 3E.
 | `core/water-shore-topology.js` | Dry perimeter/quay/crossing connectivity before street generation |
 | `core/water-regions.js` | Shoreline-only planar arrangement and dry-region counting before streets exist |
 | `core/water-model.js` | Supported record contracts, shoreline agreement, bridge spans, face classification and traversable connectivity |
-| `core/river-editing.js` | Pure ordered-handle guidance, gentle bend propagation and draft tidying |
+| `core/water-editing.js` | Shared ordered-handle guidance, gentle bend propagation and river/coast draft tidying |
+| `core/river-editing.js` | Stable river guidance wrapper for existing callers |
 | `editor/water.js` | Independent definition drafts, point/bridge selection, gestures and 20-step undo |
 | `ui/water.js` | Water controls, tool selection, feedback and pending inputs |
 | `renderer/water.js` | Water/bank fills, bridge decks and interactive preview handles |
@@ -64,3 +65,9 @@ The model retains its existing monotonic-course and bank-slope invariants. Guide
 Tidy river bends and explicit city generation can repair older invalid drafts, with a snapshot for undo. The helper preserves already-valid coordinates. Water file loading, migrations and exact geometry restoration do not invoke it. Coast and bridge location records are retained. River generation guides or retries candidates and runs the shared feature and full water-definition validators before returning a proposal.
 
 Regression coverage includes the narrow coastal-city case where the previous standalone build returned 42 invalid courses across 1,000 seeds. The same 1,000 seeds now all pass the common water-definition validator. This does not imply every possible river fits every outline; square clearance, dry bridge banks and traversable connectivity remain required.
+
+## Guided coastlines in 3E.4
+
+The same pure course-guidance engine now serves rivers and coasts. Coastal endpoints must span the full city projection, and ocean closure must remain beyond both city land and seaward bends. Guidance extends endpoints and increases the existing sea-depth field when necessary, within its existing bounds. The stored left/right ocean side is preserved; endpoint movement is constrained against accidentally reversing course within a gesture.
+
+`tidyFeature` handles the explicit river and coastline actions. `tidyWater` computes both results first, then applies them with a single undo snapshot when Generate city is chosen. Already valid records remain exact, and file loading never invokes tidying. Coast insertion snaps onto its course with duplicate-handle selection. Generated coasts pass guidance and common feature/definition validation before returning a preview. Square clearance, dry bridge banks and connected land remain separate required placement checks.

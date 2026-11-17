@@ -1,4 +1,11 @@
 import {
+  guideWaterPath
+} from '../core/water-editing.js';
+import {
+  validateWaterFeature,
+  validateWaterDefinition
+} from '../core/water-model.js';
+import {
   waterShoreComponents
 } from '../core/water-shore-topology.js';
 import {
@@ -60,7 +67,12 @@ export function generateCoast(boundary, center, options = {}) {
         };
       });
     const feature = {
-      id: 'WATER-COAST-001',
+      id: (() => {
+        let id = 'WATER-COAST-001',
+          i = 2;
+        while ((options.otherFeatures ?? []).some(f => f.id === id)) id = `WATER-COAST-001-${i++}`;
+        return id;
+      })(),
       dataVersion: 1,
       kind: 'coast',
       path,
@@ -73,6 +85,15 @@ export function generateCoast(boundary, center, options = {}) {
       },
       extensions: {}
     };
+    try {
+      const guided = guideWaterPath(feature, {
+        boundary
+      });
+      feature.path = guided.path;
+      feature.seaDepth = guided.seaDepth;
+    } catch {
+      continue;
+    }
     feature.polygon = waterFeaturePolygon(feature);
     feature.corridor = waterFeaturePolygon(feature, WATER_BANK);
     if (pointInPolygon(center, feature.corridor) || clearance(center, feature.corridor) < 38) continue;
@@ -83,6 +104,12 @@ export function generateCoast(boundary, center, options = {}) {
         return river && !waterBridgeClearOfFeatures(river, b, boundary, [feature]);
       })) continue;
     if ((options.otherFeatures ?? []).length && waterShoreComponents(boundary, [feature, ...options.otherFeatures], options.bridges ?? []) !== 1) continue;
+    try {
+      validateWaterFeature(feature, boundary, center);
+      validateWaterDefinition([feature, ...(options.otherFeatures ?? [])], options.bridges ?? [], boundary, center);
+    } catch {
+      continue;
+    }
     return {
       features: [feature],
       bridges: [],
