@@ -1,4 +1,7 @@
 import {
+  terrainGateIsClear
+} from '../core/terrain-fortifications.js';
+import {
   waterGateIsDry
 } from '../core/water-fortifications.js';
 import {
@@ -146,7 +149,7 @@ export function choosePerimeterGates(city, wall, {
         },
         extensions: {}
       };
-      if (!gateIsClear(gate, wall, measure) || !waterGateIsDry(gate, city.waterFeatures, measure)) continue;
+      if (!gateIsClear(gate, wall, measure) || !waterGateIsDry(gate, city.waterFeatures, measure) || !terrainGateIsClear(gate, city.terrainFeatures, measure)) continue;
       const quality = priority + hit.alignment * .25 + rng() * .15;
       if (!best || quality > best.quality) best = {
         gate,

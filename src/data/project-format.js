@@ -114,6 +114,16 @@ export function createProjectDocument(project, workspace = defaultWorkspace(proj
     ...(previous.panels || {}),
     ...(copyJson(workspace.panels || {}))
   };
+  if (workspace.terrainEditor !== undefined || previous.terrainEditor !== undefined) {
+    document.workspace.terrainEditor = {
+      ...(previous.terrainEditor ?? {}),
+      ...copyJson(workspace.terrainEditor ?? {})
+    };
+    if (workspace.terrainEditor?.controls || previous.terrainEditor?.controls) document.workspace.terrainEditor.controls = {
+      ...(previous.terrainEditor?.controls ?? {}),
+      ...copyJson(workspace.terrainEditor?.controls ?? {})
+    };
+  }
   if (workspace.waterEditor !== undefined || previous.waterEditor !== undefined) {
     document.workspace.waterEditor = {
       ...(previous.waterEditor || {}),

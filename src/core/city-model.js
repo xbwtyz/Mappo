@@ -1,4 +1,11 @@
 import {
+  terrainPrepare
+} from './terrain-geometry.js';
+import {
+  validateTerrainDefinition,
+  validateTerrainCity
+} from './terrain-model.js';
+import {
   prepareWater
 } from '../generators/water.js';
 import {
@@ -71,7 +78,9 @@ export function createProject(options = {}) {
   }, ...survey.anchors.slice(1).filter(p => insideOrOn(p, survey.boundary))];
   const water = prepareWater(options.water);
   validateWaterDefinition(water.features, water.bridges, survey.boundary, center);
-  const layout = generateLayout(seed, size, survey, morphology, water);
+  const terrain = terrainPrepare(options.terrain);
+  validateTerrainDefinition(terrain.features, terrain.passes, survey.boundary, center, water);
+  const layout = generateLayout(seed, size, survey, morphology, water, terrain);
   validateLayout(layout, survey.boundary);
   const development = generateBuildings(seed, layout);
   validateDevelopment(layout, development);
@@ -97,6 +106,9 @@ export function createProject(options = {}) {
       waterFeatures: water.features,
       bridges: water.bridges,
       waterFaces: layout.waterFaces,
+      terrainFeatures: terrain.features,
+      terrainPasses: terrain.passes,
+      terrainFaces: layout.terrainFaces,
       nodes: layout.nodes,
       roads: layout.roads,
       blocks: layout.blocks,
@@ -118,6 +130,7 @@ export function createProject(options = {}) {
     }
   };
   validateWaterCity(project.city);
+  validateTerrainCity(project.city);
   project.city = generateDistricts(project.city, {
     seed,
     count: options.districtCount ?? 'auto'

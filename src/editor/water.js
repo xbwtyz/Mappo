@@ -36,8 +36,9 @@ export function waterCopy(value) {
   return JSON.parse(JSON.stringify(value));
 }
 export class WaterEditor {
-  constructor(changed = () => {}, notify = () => {}, getBoundary = () => []) {
+  constructor(changed = () => {}, notify = () => {}, getBoundary = () => [], validateComposition = () => {}) {
     this.getBoundary = getBoundary;
+    this.validateComposition = validateComposition;
     this.changed = changed;
     this.notify = notify;
     this.mode = 'pan';
@@ -137,6 +138,7 @@ export class WaterEditor {
   }
   generate(boundary, center, options = {}) {
     const next = generateRiver(boundary, center, {
+      validateComposition: this.validateComposition,
       ...options,
       otherFeatures: prepareWater({
         features: this.features.filter(f => f.kind !== 'river')
@@ -147,6 +149,7 @@ export class WaterEditor {
   }
   generateCoastline(boundary, center, options = {}) {
     const next = generateCoast(boundary, center, {
+      validateComposition: this.validateComposition,
       ...options,
       otherFeatures: prepareWater({
         features: this.features.filter(f => f.kind !== 'coast')
@@ -159,6 +162,7 @@ export class WaterEditor {
   generateLakeDraft(boundary, center, options = {}, targetId = null) {
     const existing = this.features.find(f => f.kind === 'lake' && f.id === targetId);
     const next = generateLake(boundary, center, {
+      validateComposition: this.validateComposition,
       ...options,
       id: existing?.id,
       center: existing?.center,

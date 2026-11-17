@@ -23,7 +23,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e5.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e6.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -404,7 +404,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
 test('standalone app downloads, previews and restores complete projects and recovers them after a reload', async () => {
   const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
   const originalScript = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
-  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel, waterPanel });\n})();');
+  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel, waterPanel, terrainPanel });\n})();');
   const memory = new Map(),
     downloaded = [];
   const storage = {
@@ -910,5 +910,62 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.ok(!guidedEditor.features.some(f => f.id === firstLake.id));
   reloaded.el('undoWaterButton').handlers.click();
   assert.equal(guidedEditor.features.filter(f => f.kind === 'lake').length, 2);
+
+  // Mountain controls use a separate editor and persist accepted geometry and drafts.
+  reloaded.el('revertWaterButton').handlers.click();
+  reloaded.el('terrainSeedInput').value = 'bundle-mountains';
+  reloaded.el('terrainSizeInput').value = '45';
+  reloaded.el('terrainHeightInput').value = '1100';
+  reloaded.el('terrainPlacementInput').value = 'inside';
+  const waterBeforeMountain = copy(reloaded.state().project.city.waterFeatures);
+  reloaded.el('addTerrainButton').handlers.click();
+  const terrainEditor = reloaded.state().terrainPanel.editor;
+  assert.equal(terrainEditor.features.length, 1, reloaded.el('terrainMessage').textContent);
+  assert.equal(terrainEditor.dirty, true);
+  assert.equal(reloaded.state().waterPanel.editor.mode, 'pan');
+  const mountainId = terrainEditor.activeTerrainId,
+    mountainBeforeMove = copy(terrainEditor.activeFeature());
+  reloaded.el('moveTerrainButton').handlers.click();
+  const mstart = reloaded.state().camera.worldToScreen(mountainBeforeMove.center),
+    mend = reloaded.state().camera.worldToScreen({
+      x: mountainBeforeMove.center.x + 3,
+      y: mountainBeforeMove.center.y + 2
+    });
+  fire('pointerdown', mstart);
+  fire('pointermove', mend);
+  fire('pointerup', mend);
+  assert.notDeepEqual(copy(terrainEditor.activeFeature().center), mountainBeforeMove.center);
+  reloaded.el('undoTerrainButton').handlers.click();
+  assert.deepEqual(copy(terrainEditor.activeFeature()), mountainBeforeMove);
+  reloaded.el('editRidgeButton').handlers.click();
+  reloaded.el('terrainHeightInput').value = '1450';
+  reloaded.el('terrainHeightInput').handlers.change();
+  assert.equal(terrainEditor.activeFeature().ridge[1].height, 1450);
+  reloaded.el('generateButton').handlers.click();
+  assert.equal(terrainEditor.dirty, false, reloaded.el('terrainMessage').textContent);
+  assert.equal(reloaded.state().project.city.terrainFeatures.length, 1);
+  assert.deepEqual(copy(reloaded.state().project.city.waterFeatures), waterBeforeMountain);
+  reloaded.el('editTerrainButton').handlers.click();
+  reloaded.el('terrainSeedInput').value = 'pending-terrain';
+  reloaded.el('terrainSizeInput').value = '62';
+  assert.ok(await reloaded.el('saveProjectButton').handlers.click());
+  const terrainText = await downloaded.at(-1).blob.text(),
+    terrainSaved = JSON.parse(terrainText);
+  assert.equal(terrainSaved.workspace.terrainEditor.controls.seed, 'pending-terrain');
+  assert.equal(terrainSaved.workspace.terrainEditor.activeTerrainId, mountainId);
+  reloaded.el('removeTerrainButton').handlers.click();
+  assert.equal(terrainEditor.features.length, 0);
+  await reloaded.state().files.stageFile({
+    size: terrainText.length,
+    text: async () => terrainText
+  });
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.equal(terrainEditor.activeTerrainId, mountainId);
+  assert.equal(terrainEditor.mode, 'shape');
+  assert.equal(reloaded.el('terrainSeedInput').value, 'pending-terrain');
+  assert.equal(reloaded.el('terrainSizeInput').value, '62');
+  assert.deepEqual(copy(reloaded.state().project.city.terrainFeatures), terrainSaved.project.city.terrainFeatures);
+  reloaded.el('editRiverButton').handlers.click();
+  assert.equal(terrainEditor.mode, 'pan');
 
 });

@@ -133,7 +133,7 @@ export function validateWaterCity(city) {
     ids = new Set(city.bridges.map(b => b.id)),
     wetEdges = new Map();
   if (!city.waterFaces.length) throw new Error('The water feature has no reserved area.');
-  for (const face of [...city.blocks, city.plaza, ...city.waterFaces]) {
+  for (const face of [...city.blocks, city.plaza, ...city.waterFaces, ...(city.terrainFaces ?? [])]) {
     const wet = city.waterFaces.includes(face),
       p = waterFaceInterior(face.vertices, nodes);
     if (waterSetContains(p, features) !== wet) throw new Error('Land and river faces disagree with the saved shoreline.');
@@ -183,7 +183,7 @@ export function validateWaterCity(city) {
     if (Math.abs((wetEdges.get(bridge.id) || 0) - Math.hypot(g.ends[1].x - g.ends[0].x, g.ends[1].y - g.ends[0].y)) > .02) throw new Error('A bridge does not span both banks.');
   }
   // Boundary edges across water close the planar arrangement; they are never streets.
-  const active = city.roads.filter(r => !r.waterBoundary),
+  const active = city.roads.filter(r => !r.waterBoundary && !r.terrainBoundary),
     graph = new Map();
   for (const r of active) {
     if (!graph.has(r.a)) graph.set(r.a, []);

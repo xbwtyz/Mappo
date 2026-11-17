@@ -12,11 +12,11 @@ import {
   segmentDistance
 } from './placement.js';
 
-export function waterWallOpenings(wall, features) {
+export function waterWallOpenings(wall, features, polygonBuilder = waterFeaturePolygon) {
   const measure = measureWall(wall.path),
     cuts = [];
   for (const f of features ?? []) {
-    const corridor = waterFeaturePolygon(f, WATER_BANK + 10);
+    const corridor = polygonBuilder(f, WATER_BANK + 10);
     for (let i = 0; i < wall.path.length; i++)
       for (const s of waterLineIntervals(wall.path[i], wall.path[(i + 1) % wall.path.length], corridor)) {
         if (!s.inside) continue;
@@ -52,9 +52,9 @@ export function waterWallOpenings(wall, features) {
   }
   return union;
 }
-export function waterGateIsDry(gate, features, measure) {
+export function waterGateIsDry(gate, features, measure, polygonBuilder = waterFeaturePolygon) {
   for (const f of features ?? []) {
-    const polygon = waterFeaturePolygon(f, WATER_BANK + 12),
+    const polygon = polygonBuilder(f, WATER_BANK + 12),
       points = gate.connection.points;
     if (points.some(p => waterDistance(p, polygon) < 8)) return false;
     for (let i = 1; i < points.length; i++)

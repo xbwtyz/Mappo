@@ -142,6 +142,10 @@ export function generateRiver(boundary, center, options = {}) {
     }));
     try {
       validateWaterDefinition([feature, ...(options.otherFeatures ?? [])], bridges, boundary, center);
+      options.validateComposition?.({
+        features: [feature, ...(options.otherFeatures ?? [])],
+        bridges
+      });
     } catch {
       continue;
     }

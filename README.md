@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.3e5 — Multiple editable lakes
+## Current build: 0.1-dev.3e6 — Mountain ranges and road passes
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3e5.html`](dist/mappo-0.1-dev.3e5.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3e6.html`](dist/mappo-0.1-dev.3e6.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### Workflow
 
@@ -45,9 +45,23 @@ Newly generated cities receive connected neighborhoods automatically. The **Neig
 
 Districts are geographic neighborhoods. Names do not replace buildings or simulate occupations, wealth or trade. Rules and themes can be added later without coupling neighborhood identity to geometry generation.
 
-Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 8 explicitly migrates older files; older apps that cannot read schema 8 should request a newer build rather than partially load it.
+Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 9 explicitly migrates older files; older apps that cannot read schema 9 should request a newer build rather than partially load it.
 
 See [`DISTRICTS.md`](DISTRICTS.md) for the module boundaries and extension points.
+
+### Mountain ranges and passes
+
+**Mountains & Passes** supports up to **six independent mountain ranges**, both around the settlement and inside its outline. Choose **Surrounding landscape**, **Inside the city**, or **Across the city edge**, set a seed, size and peak height, then **Add mountain range**. Repeat to add more. Terrain starts empty in fresh and older cities.
+
+- **Edit foothills** reshapes the closed footprint. Drag handles, double-click any edge to add a handle, and Delete a selected handle when the ridge and banks remain safe. Sharp edits self-adjust. Up to 32 footprint handles are supported.
+- **Edit ridge / peaks** moves three ridge handles. Select a handle and change **Peak height** to set its elevation. Heights affect contour detail and peak symbols; this release uses a reserved steep-ground footprint rather than calculating a continuous slope simulation.
+- **Move range** translates the entire footprint and ridge using the center marker. **Regenerate selected** preserves its identity, name, center and compatible metadata. **Remove selected range** removes only that range and its passes.
+- **Move passes** drags a road crossing along the ridge; **Add road pass** adds another. Passes must have two foothills inside the city and remain clear of water and other ranges. Up to twelve passes are supported. Suitable inland ranges receive an initial crossing automatically. A range dividing neighborhoods needs a valid pass before generation can succeed.
+- **Generate city** applies terrain edits. Streets connect along foothills and through designated passes, buildings avoid reserved mountain ground, and walls/towers/gates leave mountain openings. Outside ranges remain visible as surrounding landscape. **Fit map** includes their full extent.
+
+Terrain and water have separate editors, controls and undo histories. Project files and browser recovery preserve accepted terrain geometry, ridges, peak heights, passes, selection, pending inputs and unfinished edits. Loading never regenerates or repairs saved geometry. Mountain ranges and water need separated footprints in this version; rivers cutting through mountains, merged ranges, hillside construction and tunnels are future extensions.
+
+See [`TERRAIN.md`](TERRAIN.md) for the separate geometry, guidance, generation, validation, editor, rendering and defense adapters.
 
 ### Lakes
 
@@ -180,7 +194,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e5.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e6.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -204,7 +218,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3e1:** Generated/editable coastlines, ocean-side control, connected coastal land and schema-6 compatibility.
 - **0.1-dev.3e2:** Independent river/coast controls and seeds, joined water geometry, inland bridges and schema-7 compatibility.
 - **0.1-dev.3e3:** Guided river handles, snapped point insertion, undoable draft tidying and validated river proposals.
-- **0.1-dev.3e5:** Shared river/coast guidance, snapped shoreline insertion, undoable coastline tidying and validated coast proposals.
+- **0.1-dev.3e6:** Shared river/coast guidance, snapped shoreline insertion, undoable coastline tidying and validated coast proposals.
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 

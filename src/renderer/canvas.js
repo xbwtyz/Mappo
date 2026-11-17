@@ -1,4 +1,8 @@
 import {
+  drawMountains,
+  drawTerrainDraft
+} from './terrain.js';
+import {
   drawWater,
   drawBridges,
   drawWaterDraft
@@ -126,7 +130,7 @@ function drawRoads(ctx, camera, city, byId) {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     for (const road of city.roads) {
-      if (road.waterBoundary || road.bridgeId) continue;
+      if (road.waterBoundary || road.terrainBoundary || road.bridgeId) continue;
       const style = ROAD_STYLES[road.kind];
       const a = camera.worldToScreen(byId.get(road.a));
       const b = camera.worldToScreen(byId.get(road.b));
@@ -217,7 +221,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null) {
+export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -236,8 +240,9 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
   const gridStep = drawGrid(ctx, camera);
   const city = project.city;
   const byId = new Map(city.nodes.map(node => [node.id, node]));
-  ctx.globalAlpha = editor?.dirty || waterEditor?.dirty ? 0.20 : 1;
+  ctx.globalAlpha = editor?.dirty || waterEditor?.dirty || terrainEditor?.dirty ? 0.20 : 1;
   drawSurvey(ctx, camera, city.survey);
+  drawMountains(ctx, camera, city.terrainFeatures);
   drawWater(ctx, camera, city.waterFeatures);
   drawBlocks(ctx, camera, city, byId);
   drawDistrictColors(ctx, camera, city, layers, districtSelection);
@@ -252,6 +257,7 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
   ctx.globalAlpha = 1;
   if (editor && !(city.waterFeatures?.some(f => f.kind === 'coast') && !editor.dirty && editor.mode === 'pan')) drawOutline(ctx, camera, editor);
   drawWaterDraft(ctx, camera, waterEditor, editor?.boundary ?? city.survey.boundary);
+  drawTerrainDraft(ctx, camera, terrainEditor);
 
   ctx.textAlign = 'left';
   ctx.fillStyle = 'rgba(52, 73, 75, 0.67)';

@@ -1,4 +1,8 @@
 import {
+  terrainAccessSegments,
+  terrainPassGeometry
+} from '../core/terrain-geometry.js';
+import {
   lakeAccessSegments
 } from '../core/lake-geometry.js';
 import {
@@ -30,6 +34,9 @@ import {
 export function generateLayout(seed, size, survey, morphology = 'radial', water = {
   features: [],
   bridges: []
+}, terrain = {
+  features: [],
+  passes: []
 }) {
   const boundary = survey.boundary,
     center = survey.anchors[0];
@@ -52,8 +59,12 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
     y: center.y + half
   }];
   const features = water.features,
-    hasWater = features.length > 0;
+    hasWater = features.length > 0,
+    mountains = terrain.features,
+    obstacles = [...features, ...mountains],
+    hasObstacles = obstacles.length > 0;
   if (features.some(f => square.some(p => insideOrOn(p, f.corridor)))) throw new Error('Move the water farther from the main square.');
+  if (mountains.some(f => square.some(p => insideOrOn(p, f.corridor)))) throw new Error('Move the mountains farther from the main square.');
   const segments = [];
   const push = (a, b, kind, tag = 'street') => {
     if (Math.hypot(a.x - b.x, a.y - b.y) > 1e-6) segments.push({
@@ -68,7 +79,7 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
 
   function clip(a, b, kind, tag = 'street') {
     const ts = [0, 1];
-    for (const polygon of [boundary, square, ...features.map(f => f.corridor)])
+    for (const polygon of [boundary, square, ...obstacles.map(f => f.corridor)])
       for (let i = 0; i < polygon.length; i++) ts.push(...segmentCuts(a, b, polygon[i], polygon[(i + 1) % polygon.length]));
     ts.sort((a, b) => a - b);
     for (let i = 1; i < ts.length; i++) {
@@ -78,7 +89,11 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
         wet = waterSetContains(p, features),
         bridgeRiver = bridge && features.find(f => f.id === bridge.waterId),
         allowedWet = bridgeRiver && pointInPolygon(p, bridgeRiver.corridor) && !waterSetContains(p, features.filter(f => f !== bridgeRiver));
-      if (insideOrOn(p, boundary) && !pointInPolygon(p, square) && (!wet || tag === 'bank' || allowedWet)) push(lerpPoint(a, b, ts[i - 1]), lerpPoint(a, b, ts[i]), kind, tag);
+      const pass = terrain.passes.find(g => g.id === tag),
+        mountain = pass && mountains.find(f => f.id === pass.terrainId),
+        blocked = waterSetContains(p, mountains),
+        allowedMountain = mountain && pointInPolygon(p, mountain.corridor);
+      if (insideOrOn(p, boundary) && !pointInPolygon(p, square) && (!wet || tag === 'bank' || allowedWet) && (!blocked || tag === 'foothill' || allowedMountain)) push(lerpPoint(a, b, ts[i - 1]), lerpPoint(a, b, ts[i]), kind, tag);
     }
   }
   if (morphology === 'radial') {
@@ -145,6 +160,9 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
       clip(...g.approach, 'primary', bridge.id);
     }
   }
+  for (const access of terrainAccessSegments(mountains, boundary)) clip(access.a, access.b, 'lane');
+  for (const s of waterUnionSegments(mountains)) clip(s.a, s.b, 'secondary', 'foothill');
+  for (const p of terrain.passes) clip(...terrainPassGeometry(mountains.find(f => f.id === p.terrainId), p, boundary).approach, 'primary', p.id);
   const cuts = segments.map(() => [0, 1]);
   for (let i = 0; i < segments.length; i++)
     for (let j = i + 1; j < segments.length; j++) {
@@ -162,7 +180,7 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
     // Microunit snapping coalesces independently computed multi-way junctions.
     const key = `${Math.round(p.x*1e6)},${Math.round(p.y*1e6)}`;
     if (byCoordinate.has(key)) return byCoordinate.get(key);
-    if (hasWater) {
+    if (hasObstacles) {
       const ix = Math.round(p.x * 1e6),
         iy = Math.round(p.y * 1e6);
       for (let dx = -1; dx <= 1; dx++)
@@ -206,6 +224,13 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
         kind: segment.kind,
         boundary: segment.tag === 'boundary',
         plaza: segment.tag === 'plaza',
+        ...(mountains.length ? {
+          foothill: segment.tag === 'foothill',
+          terrainBoundary: segment.tag === 'boundary' && waterSetContains(lerpPoint(a, b, .5), mountains),
+          ...(terrain.passes.some(p => p.id === segment.tag) && waterSetContains(lerpPoint(a, b, .5), mountains) ? {
+            passId: segment.tag
+          } : {})
+        } : {}),
         ...(hasWater ? {
           bank: segment.tag === 'bank',
           waterBoundary: segment.tag === 'boundary' && waterSetContains(lerpPoint(a, b, .5), features),
@@ -264,14 +289,14 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
   // Tangencies at the boundary can leave tiny slivers. Merge them into a
   // neighbor by removing a shared street, never a city boundary or plaza edge.
   for (let pass = 0; pass < roads.length; pass++) {
-    const small = faces.find(f => f.area < minimumArea && (!hasWater || !waterSetContains(waterFaceInterior(f.vertices, new Map(nodes.map(n => [n.id, n]))), features)));
+    const small = faces.find(f => f.area < minimumArea && (!hasObstacles || !waterSetContains(waterFaceInterior(f.vertices, new Map(nodes.map(n => [n.id, n]))), obstacles)));
     if (!small) break;
     const keys = new Set(small.vertices.map((a, i) => [a, small.vertices[(i + 1) % small.vertices.length]].sort().join(':')));
     let longest = -1,
       index = -1;
     const lookup = new Map(nodes.map(n => [n.id, n]));
     roads.forEach((r, i) => {
-      if (r.boundary || r.plaza || r.bank || r.bridgeId || !keys.has([r.a, r.b].sort().join(':'))) return;
+      if (r.boundary || r.plaza || r.bank || r.bridgeId || r.foothill || r.passId || !keys.has([r.a, r.b].sort().join(':'))) return;
       const a = lookup.get(r.a),
         b = lookup.get(r.b),
         length = Math.hypot(a.x - b.x, a.y - b.y);
@@ -292,7 +317,7 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
       }
       for (let i = roads.length - 1; i >= 0; i--) {
         const r = roads[i];
-        if (!r.boundary && !r.plaza && !r.bank && !r.bridgeId && (degrees.get(r.a) === 1 || degrees.get(r.b) === 1)) {
+        if (!r.boundary && !r.plaza && !r.bank && !r.bridgeId && !r.foothill && !r.passId && (degrees.get(r.a) === 1 || degrees.get(r.b) === 1)) {
           roads.splice(i, 1);
           pruned = true;
         }
@@ -317,7 +342,13 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
     vertices: f.vertices,
     area: Math.round(f.area * 100) / 100
   })) : [];
-  const wetKeys = new Set(waterFaces.map(f => f.vertices.join(':')));
+  const terrainFaces = faces.filter(f => waterSetContains(waterFaceInterior(f.vertices, byId), mountains)).map((f, i) => ({
+    id: `MTFACE-${String(i+1).padStart(3,'0')}`,
+    terrainIds: waterFaceFeatureIds(f.vertices, byId, mountains),
+    vertices: f.vertices,
+    area: Math.round(f.area * 100) / 100
+  }));
+  const wetKeys = new Set([...terrainFaces, ...waterFaces].map(f => f.vertices.join(':')));
   const blocks = faces.filter(f => f !== plazaFace && !wetKeys.has(f.vertices.join(':'))).map((f, i) => ({
     id: `BLK-${String(i+1).padStart(4,'0')}`,
     vertices: f.vertices,
@@ -331,6 +362,7 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
     roads,
     blocks,
     waterFaces,
+    terrainFaces,
     plaza: {
       id: 'PLAZA-0001',
       name: 'Founders Square',

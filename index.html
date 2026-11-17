@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — Rivers + Coastlines · 0.1-dev.3e5</title>
+  <title>Mappo — Rivers + Coastlines · 0.1-dev.3e6</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -28,7 +28,7 @@
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3e5</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3e6</span></div>
     <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>RIVERS + COASTLINES</span></div>
   </header>
   <div class="workspace">
@@ -76,6 +76,19 @@
           <button id="removeWaterItemButton" class="minor-button full-width">Remove selected point / bridge</button>
           <div class="tool-grid actions"><button id="undoWaterButton" class="minor-button">Undo water edit</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
           <p id="waterMessage" class="file-status" role="status" aria-live="polite">Water edits are previews. Generate city below to rebuild streets, buildings, districts and defenses around them. The last valid city stays open if a crossing cannot connect.</p>
+        </details>
+        <details id="terrainPanel" class="water-panel" open>
+          <summary>MOUNTAINS &amp; PASSES</summary>
+          <p id="terrainStats" class="hint">Generate editable mountain ranges around or inside the city.</p>
+          <div class="control-group"><label for="terrainSelect">Selected mountain range</label><select id="terrainSelect"><option value="">No mountain ranges yet</option></select></div>
+          <div class="control-group"><label for="terrainSeedInput">Mountain seed</label><input id="terrainSeedInput" maxlength="64" value="mountains" spellcheck="false"></div>
+          <div class="control-group"><label for="terrainPlacementInput">Placement · new / regenerated range</label><select id="terrainPlacementInput"><option value="surrounding">Surrounding landscape</option><option value="inside">Inside the city</option><option value="crossing">Across the city edge</option></select></div>
+          <div class="tool-grid"><div class="control-group"><label for="terrainSizeInput">Range size</label><input id="terrainSizeInput" type="number" min="40" max="220" value="70"></div><div class="control-group"><label for="terrainHeightInput">Peak height · selected / new</label><input id="terrainHeightInput" type="number" min="50" max="3000" value="900"></div></div>
+          <div class="tool-grid"><button id="addTerrainButton" class="tool-button">Add mountain range</button><button id="regenerateTerrainButton" class="minor-button">Regenerate selected</button><button id="editTerrainButton" class="tool-button" aria-pressed="false">Edit foothills</button><button id="moveTerrainButton" class="tool-button" aria-pressed="false">Move range</button><button id="editRidgeButton" class="tool-button" aria-pressed="false">Edit ridge / peaks</button><button id="removeTerrainButton" class="minor-button">Remove selected range</button><button id="editPassButton" class="tool-button" aria-pressed="false">Move passes</button><button id="addPassButton" class="minor-button" aria-pressed="false">Add road pass</button></div>
+          <button id="removeTerrainItemButton" class="minor-button full-width actions">Remove selected foothill point / pass</button>
+          <div class="tool-grid actions"><button id="undoTerrainButton" class="minor-button">Undo terrain edit</button><button id="revertTerrainButton" class="minor-button">Revert terrain draft</button></div>
+          <p class="hint">Up to six ranges, inside or outside the outline. Footprint and ridge handles self-adjust. Buildings avoid steep ground; roads cross through designated passes. Keep mountains and water separated. Heights control map contours and peak symbols.</p>
+          <p id="terrainMessage" class="file-status" role="status" aria-live="polite">Terrain edits are previews. Generate city applies the draft and rebuilds streets, buildings, districts and defenses.</p>
         </details>
         <details id="fortificationPanel" class="fortification-panel" open>
           <summary>FORTIFICATIONS</summary>
@@ -830,14 +843,151 @@ function waterFaceFeatureIds(vertices, nodes, features) {
 }
 
 
+// src/core/terrain-geometry.js
+
+
+
+
+
+const TERRAIN_LIMIT = 6;
+const TERRAIN_HISTORY_LIMIT = 20;
+function terrainPolygon(feature, margin = 0) {
+  return lakePolygon(feature, margin);
+}
+function terrainCopy(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+function terrainPrepare(definition = {}) {
+  return {
+    features: terrainCopy(definition.features ?? []).map(f => ({
+      ...f,
+      polygon: terrainPolygon(f),
+      corridor: terrainPolygon(f, 9)
+    })),
+    passes: terrainCopy(definition.passes ?? [])
+  };
+}
+function terrainPoint(p) {
+  return p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 100000 && Math.abs(p.y) < 100000;
+}
+function terrainShapeSafe(feature) {
+  const {
+    path,
+    center
+  } = feature;
+  if (!terrainPoint(center) || !Array.isArray(path) || path.length < 4 || path.length > 32 || !path.every(terrainPoint)) return false;
+  let total = 0;
+  for (let i = 0; i < path.length; i++) {
+    const p = path[i],
+      q = path[(i + 1) % path.length],
+      radius = Math.hypot(p.x - center.x, p.y - center.y),
+      angle = (Math.atan2(q.y - center.y, q.x - center.x) - Math.atan2(p.y - center.y, p.x - center.x) + Math.PI * 2) % (Math.PI * 2);
+    if (radius < 14 || radius > 3000 || angle < .025 || angle > Math.PI * .85) return false;
+    total += angle;
+  }
+  if (Math.abs(total - Math.PI * 2) > 1e-5 || !lakeSimpleRing(path) || !pointInPolygon(center, path)) return false;
+  const bank = terrainPolygon(feature, 9);
+  if (!bank.every(terrainPoint) || !lakeSimpleRing(bank) || path.some(p => !insideOrOn(p, bank))) return false;
+  for (let i = 0; i < path.length; i++)
+    for (let j = 0; j < bank.length; j++)
+      if (segmentDistance(path[i], path[(i + 1) % path.length], bank[j], bank[(j + 1) % bank.length]) < 6) return false;
+  return true;
+}
+function terrainRidgeSafe(feature) {
+  const path = feature.ridge;
+  if (!Array.isArray(path) || path.length !== 3 || path.some(p => !terrainPoint(p) || !Number.isFinite(p.height) || p.height < 50 || p.height > 3000 || !pointInPolygon(p, feature.path))) return false;
+  const a = path[0],
+    b = path[2],
+    length = Math.hypot(b.x - a.x, b.y - a.y);
+  if (length < 40) return false;
+  const u = {
+    x: (b.x - a.x) / length,
+    y: (b.y - a.y) / length
+  };
+  for (let i = 1; i < path.length; i++) {
+    const p = path[i - 1],
+      q = path[i],
+      du = (q.x - p.x) * u.x + (q.y - p.y) * u.y,
+      dv = -(q.x - p.x) * u.y + (q.y - p.y) * u.x;
+    if (du < 2 || Math.abs(dv) > du * .8 || waterLineIntervals(p, q, feature.path).some(s => !s.inside)) return false;
+  }
+  return true;
+}
+function terrainAccessSegments(features, boundary) {
+  return lakeAccessSegments(features.filter(f => waterPolygonsOverlap(f.corridor ?? terrainPolygon(f, 9), boundary)).map(f => ({
+    ...f,
+    kind: 'lake'
+  })), boundary);
+}
+function terrainPassAt(feature, t) {
+  // The ridge frame is independent of its editable outer mountain footprint.
+  const path = feature.ridge,
+    a = path[0],
+    b = path.at(-1),
+    length = Math.hypot(b.x - a.x, b.y - a.y),
+    u = {
+      x: (b.x - a.x) / length,
+      y: (b.y - a.y) / length
+    },
+    target = t * length;
+  for (let i = 1; i < path.length; i++) {
+    const p = path[i - 1],
+      q = path[i],
+      lo = (p.x - a.x) * u.x + (p.y - a.y) * u.y,
+      hi = (q.x - a.x) * u.x + (q.y - a.y) * u.y;
+    if (target <= hi + 1e-7) {
+      const d = Math.hypot(q.x - p.x, q.y - p.y);
+      return {
+        ...lerpPoint(p, q, Math.max(0, Math.min(1, (target - lo) / (hi - lo)))),
+        normal: {
+          x: -(q.y - p.y) / d,
+          y: (q.x - p.x) / d
+        }
+      };
+    }
+  }
+  throw new Error('Invalid mountain pass position.');
+}
+function terrainNearestT(feature, p) {
+  const a = feature.ridge[0],
+    b = feature.ridge.at(-1),
+    dx = b.x - a.x,
+    dy = b.y - a.y;
+  return Math.max(.02, Math.min(.98, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy)));
+}
+function terrainPassGeometry(feature, pass, boundary) {
+  const p = terrainPassAt(feature, pass.t),
+    b = boundsOf([...boundary, ...feature.path]),
+    reach = Math.hypot(b.maxX - b.minX, b.maxY - b.minY) * 3;
+  const a = {
+      x: p.x - p.normal.x * reach,
+      y: p.y - p.normal.y * reach
+    },
+    end = {
+      x: p.x + p.normal.x * reach,
+      y: p.y + p.normal.y * reach
+    };
+  const span = waterLineIntervals(a, end, terrainPolygon(feature, 9)).find(s => s.inside && distanceToSegment(p, s.a, s.b) < 1e-5);
+  if (!span || !insideOrOn(span.a, boundary) || !insideOrOn(span.b, boundary)) throw new Error('Move this pass along the ridge until both foothills lie inside the city.');
+  return {
+    center: {
+      x: p.x,
+      y: p.y
+    },
+    ends: [span.a, span.b],
+    approach: [a, end]
+  };
+}
+
+
 // src/core/water-shore-topology.js
 
 
 
 // Connectivity of dry perimeter/quays plus proposed crossings, before a street
 // pattern is generated. Virtual edges across water are deliberately excluded.
-function waterShoreComponents(boundary, features, bridges) {
-  const segments = [...lakeAccessSegments(features, boundary), ...boundary.map((a, i) => ({
+function waterShoreComponents(boundary, features, bridges, extra = {}) {
+  const segments = [...(extra.access ?? []), ...(extra.crossings ?? []), ...lakeAccessSegments(features, boundary), ...boundary.map((a, i) => ({
     a,
     b: boundary[(i + 1) % boundary.length],
     kind: 'boundary'
@@ -911,6 +1061,832 @@ function waterShoreComponents(boundary, features, bridges) {
           }
     }
   return count;
+}
+
+
+// src/core/terrain-model.js
+
+
+
+
+
+function validateTerrainDefinition(features, passes, boundary, center, water = {
+  features: [],
+  bridges: []
+}) {
+  if (!Array.isArray(features) || features.length > TERRAIN_LIMIT || !Array.isArray(passes) || passes.length > 12) throw new Error('This build supports six mountain ranges and twelve passes.');
+  const ids = new Set();
+  for (const record of [...features, ...passes]) {
+    if (!record || typeof record.id !== 'string' || !record.id || record.id.length > 128 || ids.has(record.id) || record.dataVersion !== 1) throw new Error('Invalid or duplicate terrain ID/version.');
+    ids.add(record.id);
+  }
+  for (const f of features) {
+    if (f.kind !== 'mountain' || typeof f.name !== 'string' || !f.name || f.name.length > 80 || !terrainShapeSafe(f) || !terrainRidgeSafe(f)) throw new Error('Invalid mountain footprint, ridge or peak height.');
+    for (const [key, margin] of [
+        ['polygon', 0],
+        ['corridor', 9]
+      ]) {
+      const expected = terrainPolygon(f, margin);
+      if (!Array.isArray(f[key]) || f[key].length !== expected.length || expected.some((p, i) => !terrainPoint(f[key][i]) || Math.hypot(p.x - f[key][i].x, p.y - f[key][i].y) > 1e-5)) throw new Error('Saved mountain footprint disagrees with its handles.');
+    }
+    if (waterDistance(center, f.corridor) < 28) throw new Error('Move the mountain foothills away from the main square.');
+    for (const other of [...features.filter(o => o !== f), ...(water.features ?? [])]) {
+      if (waterPolygonsOverlap(f.corridor, other.corridor) || f.corridor.some((p, i) => other.corridor.some((q, j) => segmentDistance(p, f.corridor[(i + 1) % f.corridor.length], q, other.corridor[(j + 1) % other.corridor.length]) < 10))) throw new Error('Keep mountain ranges and water separated with room for foothill streets.');
+    }
+  }
+  const spans = [];
+  for (const p of passes) {
+    const f = features.find(f => f.id === p.terrainId);
+    if (p.kind !== 'pass' || !f || !Number.isFinite(p.t) || p.t <= .01 || p.t >= .99 || p.width !== 12) throw new Error('Invalid mountain pass reference or position.');
+    const g = terrainPassGeometry(f, p, boundary);
+    for (const other of [...features.filter(o => o !== f), ...(water.features ?? [])])
+      if (waterSetIntervals(...g.ends, [other]).some(s => s.inside) || other.corridor.some((q, j) => segmentDistance(...g.ends, q, other.corridor[(j + 1) % other.corridor.length]) < 9)) throw new Error('Move the mountain pass clear of other ranges and water.');
+    if (spans.some(other => segmentDistance(...g.ends, ...other.ends) < 24)) throw new Error('Move mountain passes farther apart.');
+    spans.push(g);
+  }
+  if (features.length && waterShoreComponents(boundary, [...(water.features ?? []), ...features], water.bridges ?? [], {
+      access: terrainAccessSegments(features, boundary),
+      crossings: spans.map(g => ({
+        a: g.ends[0],
+        b: g.ends[1],
+        kind: 'bridge'
+      }))
+    }) !== 1) throw new Error('The mountains divide the city. Add or move a pass to connect its neighborhoods.');
+}
+function validateTerrainCity(city) {
+  const features = city.terrainFeatures ?? [],
+    passes = city.terrainPasses ?? [],
+    faces = city.terrainFaces ?? [];
+  if (!features.length) {
+    if (passes.length || faces.length || city.roads.some(r => r.foothill || r.terrainBoundary || r.passId)) throw new Error('Mountain topology has no owning range.');
+    return city;
+  }
+  validateTerrainDefinition(features, passes, city.survey.boundary, city.plaza.center, {
+    features: city.waterFeatures,
+    bridges: city.bridges
+  });
+  if (faces.length > 256) throw new Error('Too many mountain faces.');
+  const nodes = new Map(city.nodes.map(n => [n.id, n])),
+    lengths = new Map();
+  let work = 4000000;
+  for (const face of [...city.blocks, city.plaza, ...city.waterFaces, ...faces]) {
+    const blocked = faces.includes(face);
+    if (waterSetContains(waterFaceInterior(face.vertices, nodes), features) !== blocked) throw new Error('Mountain and land faces disagree.');
+    for (let i = 0; i < face.vertices.length; i++) {
+      if ((work -= features.reduce((n, f) => n + f.corridor.length, 0)) < 0) throw new Error('Mountain topology is too complex.');
+      for (const s of waterSetIntervals(nodes.get(face.vertices[i]), nodes.get(face.vertices[(i + 1) % face.vertices.length]), features)) {
+        const mid = {
+          x: (s.a.x + s.b.x) / 2,
+          y: (s.a.y + s.b.y) / 2
+        };
+        if (!waterSetBoundary(mid, features) && s.inside !== blocked) throw new Error('A city face crosses mountain ground.');
+      }
+    }
+    if (blocked) {
+      const expected = waterFaceFeatureIds(face.vertices, nodes, features);
+      if (!Array.isArray(face.terrainIds) || JSON.stringify(face.terrainIds) !== JSON.stringify(expected)) throw new Error('Invalid mountain face reference.');
+    }
+  }
+  for (const road of city.roads) {
+    if ((work -= features.reduce((n, f) => n + f.corridor.length, 0)) < 0) throw new Error('Mountain topology is too complex.');
+    const a = nodes.get(road.a),
+      b = nodes.get(road.b),
+      mid = {
+        x: (a.x + b.x) / 2,
+        y: (a.y + b.y) / 2
+      },
+      blocked = waterSetContains(mid, features),
+      on = waterSetBoundary(mid, features);
+    for (const key of ['foothill', 'terrainBoundary'])
+      if (road[key] !== undefined && typeof road[key] !== 'boolean') throw new Error('Invalid mountain street flags.');
+    if (road.foothill && !on) throw new Error('A foothill street is detached from its mountain.');
+    if (road.terrainBoundary && (!road.boundary || !blocked)) throw new Error('Invalid virtual mountain boundary.');
+    if (road.passId) {
+      const p = passes.find(p => p.id === road.passId);
+      if (!p || !blocked) throw new Error('Invalid pass street reference.');
+      const g = terrainPassGeometry(features.find(f => f.id === p.terrainId), p, city.survey.boundary);
+      if (distanceToSegment(a, ...g.ends) > 1e-4 || distanceToSegment(b, ...g.ends) > 1e-4) throw new Error('A mountain pass is detached from its route.');
+      lengths.set(p.id, (lengths.get(p.id) ?? 0) + Math.hypot(b.x - a.x, b.y - a.y));
+    } else if (blocked && !on && !road.terrainBoundary) throw new Error('An ordinary street crosses steep mountain ground.');
+  }
+  for (const p of passes) {
+    const g = terrainPassGeometry(features.find(f => f.id === p.terrainId), p, city.survey.boundary);
+    if (Math.abs((lengths.get(p.id) ?? 0) - Math.hypot(g.ends[1].x - g.ends[0].x, g.ends[1].y - g.ends[0].y)) > .02) throw new Error('A pass does not connect both foothills.');
+  }
+  const graph = new Map();
+  for (const road of city.roads.filter(r => !r.waterBoundary && !r.terrainBoundary)) {
+    if (!graph.has(road.a)) graph.set(road.a, []);
+    if (!graph.has(road.b)) graph.set(road.b, []);
+    graph.get(road.a).push(road.b);
+    graph.get(road.b).push(road.a);
+  }
+  const q = [graph.keys().next().value],
+    seen = new Set(q);
+  for (let i = 0; i < q.length; i++)
+    for (const n of graph.get(q[i]) ?? [])
+      if (!seen.has(n)) {
+        seen.add(n);
+        q.push(n);
+      } if (seen.size !== graph.size) throw new Error('Mountain streets are disconnected. Add or move a pass.');
+  return city;
+}
+
+
+// src/core/terrain-editing.js
+
+function guideTerrainFeature(feature, {
+  index = -1,
+  point = null,
+  moveCenter = null,
+  ridge = false
+} = {}) {
+  if ((point && (!Number.isFinite(point.x) || !Number.isFinite(point.y))) || (moveCenter && (!Number.isFinite(moveCenter.x) || !Number.isFinite(moveCenter.y)))) throw new Error('Invalid terrain handle position.');
+  const original = terrainCopy(feature),
+    requested = terrainCopy(feature);
+  if (!terrainShapeSafe(original) || !terrainRidgeSafe(original)) throw new Error('Regenerate this mountain range to repair its draft shape.');
+  if (moveCenter) {
+    const dx = moveCenter.x - feature.center.x,
+      dy = moveCenter.y - feature.center.y;
+    requested.center = {
+      ...feature.center,
+      x: moveCenter.x,
+      y: moveCenter.y
+    };
+    for (const key of ['path', 'ridge']) requested[key] = feature[key].map(p => ({
+      ...p,
+      x: p.x + dx,
+      y: p.y + dy
+    }));
+  } else if (index >= 0 && point) {
+    const key = ridge ? 'ridge' : 'path';
+    if (!requested[key][index]) throw new Error('Select a mountain handle.');
+    requested[key][index] = {
+      ...requested[key][index],
+      x: point.x,
+      y: point.y
+    };
+  }
+  const safe = f => terrainShapeSafe(f) && terrainRidgeSafe(f);
+  const interpolate = t => ({
+    ...original,
+    center: {
+      ...original.center,
+      x: original.center.x + (requested.center.x - original.center.x) * t,
+      y: original.center.y + (requested.center.y - original.center.y) * t
+    },
+    path: original.path.map((p, i) => ({
+      ...p,
+      x: p.x + (requested.path[i].x - p.x) * t,
+      y: p.y + (requested.path[i].y - p.y) * t
+    })),
+    ridge: original.ridge.map((p, i) => ({
+      ...p,
+      x: p.x + (requested.ridge[i].x - p.x) * t,
+      y: p.y + (requested.ridge[i].y - p.y) * t
+    }))
+  });
+  let result = requested,
+    adjusted = false;
+  if (!safe(requested)) {
+    let lo = 0,
+      hi = 1;
+    for (let n = 1; n <= 24; n++) {
+      const t = n / 24;
+      if (!safe(interpolate(t))) {
+        hi = t;
+        break;
+      }
+      lo = t;
+    }
+    for (let n = 0; n < 22; n++) {
+      const t = (lo + hi) / 2;
+      if (safe(interpolate(t))) lo = t;
+      else hi = t;
+    }
+    result = interpolate(lo);
+    adjusted = true;
+  }
+  return {
+    feature: result,
+    adjusted
+  };
+}
+
+
+// src/core/prng.js
+// One reproducible pseudo-random stream per seed. Avoid Math.random in generation.
+function normalizeSeed(value) {
+  return String(value ?? '').trim().slice(0, 64) || 'mappo';
+}
+
+function hashSeed(value) {
+  let hash = 2166136261;
+  for (const char of normalizeSeed(value)) {
+    hash ^= char.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function createRng(seed) {
+  let state = hashSeed(seed);
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function randomRange(rng, min, max) {
+  return min + rng() * (max - min);
+}
+
+
+// src/generators/terrain.js
+
+
+
+
+function generateMountain(boundary, center, options = {}) {
+  const others = options.otherFeatures ?? [],
+    oldPasses = options.passes ?? [],
+    water = options.water ?? {
+      features: [],
+      bridges: []
+    };
+  if (others.length >= TERRAIN_LIMIT) throw new Error('Remove a range before adding another; this build supports six ranges.');
+  const seed = String(options.seed || 'mountains').slice(0, 64),
+    placement = options.placement ?? 'surrounding',
+    size = Number(options.size ?? 70),
+    height = Number(options.height ?? 900);
+  if (!['surrounding', 'inside', 'crossing'].includes(placement) || !Number.isFinite(size) || size < 40 || size > 220 || !Number.isFinite(height) || height < 50 || height > 3000) throw new Error('Choose mountain size 40–220 and peak height 50–3000.');
+  const rng = createRng(`${seed}:mountains:v1:${others.length}`),
+    bounds = boundsOf(boundary),
+    cx = (bounds.minX + bounds.maxX) / 2,
+    cy = (bounds.minY + bounds.maxY) / 2;
+  let n = 1;
+  while (others.some(f => f.id === `MTN-${String(n).padStart(3,'0')}`)) n++;
+  let pn = 1;
+  while (oldPasses.some(p => p.id === `PASS-${String(pn).padStart(3,'0')}`)) pn++;
+  for (let attempt = 0; attempt < 180; attempt++) {
+    const horizontal = rng() < .5,
+      sign = rng() < .5 ? -1 : 1,
+      angle = placement === 'inside' ? rng() * Math.PI : horizontal ? 0 : Math.PI / 2;
+    const c = options.center ?? (placement === 'inside' ? {
+      x: bounds.minX + rng() * (bounds.maxX - bounds.minX),
+      y: bounds.minY + rng() * (bounds.maxY - bounds.minY)
+    } : horizontal ? {
+      x: cx + (rng() - .5) * (bounds.maxX - bounds.minX) * .5,
+      y: (sign < 0 ? bounds.minY : bounds.maxY) + (placement === 'surrounding' ? 1 : -1) * sign * size * .72
+    } : {
+      x: (sign < 0 ? bounds.minX : bounds.maxX) + (placement === 'surrounding' ? 1 : -1) * sign * size * .72,
+      y: cy + (rng() - .5) * (bounds.maxY - bounds.minY) * .5
+    });
+    const length = size * (placement === 'crossing' ? 2.5 : 1.45),
+      width = size * (placement === 'inside' ? .50 : .72),
+      phase = rng() * 6.28,
+      u = {
+        x: Math.cos(angle),
+        y: Math.sin(angle)
+      },
+      v = {
+        x: -Math.sin(angle),
+        y: Math.cos(angle)
+      };
+    const f = {
+      id: options.id ?? `MTN-${String(n).padStart(3,'0')}`,
+      dataVersion: 1,
+      kind: 'mountain',
+      name: `Range ${n}`,
+      center: {
+        ...c
+      },
+      path: Array.from({
+        length: 12
+      }, (_, i) => {
+        const a = i * Math.PI / 6,
+          factor = 1 + .08 * Math.sin(a * 3 + phase);
+        return {
+          x: c.x + (u.x * Math.cos(a) * length + v.x * Math.sin(a) * width) * factor,
+          y: c.y + (u.y * Math.cos(a) * length + v.y * Math.sin(a) * width) * factor
+        };
+      }),
+      ridge: [-.52, 0, .52].map((t, i) => ({
+        x: c.x + u.x * length * t,
+        y: c.y + u.y * length * t,
+        height: Math.max(50, Math.round(height * (i === 1 ? 1 : .7)))
+      })),
+      generation: {
+        seed,
+        algorithm: 'mountain-v1',
+        placement,
+        size
+      },
+      extensions: {}
+    };
+    const next = terrainPrepare({
+      features: [f]
+    });
+    if (placement === 'inside' && !next.features[0].corridor.every(p => pointInPolygon(p, boundary))) continue;
+    if (placement === 'surrounding' && f.path.every(p => pointInPolygon(p, boundary))) continue;
+    if (placement === 'crossing' && (!f.path.some(p => pointInPolygon(p, boundary)) || f.path.every(p => pointInPolygon(p, boundary)))) continue;
+    const features = [...others, ...next.features],
+      passes = [];
+    if (placement !== 'surrounding')
+      for (const t of [.5, .35, .65, .2, .8]) {
+        const pass = {
+          id: `PASS-${String(pn).padStart(3,'0')}`,
+          dataVersion: 1,
+          kind: 'pass',
+          terrainId: f.id,
+          t,
+          width: 12,
+          extensions: {}
+        };
+        try {
+          terrainPassGeometry(next.features[0], pass, boundary);
+          validateTerrainDefinition(features, [...oldPasses, pass], boundary, center, water);
+          passes.push(pass);
+          break;
+        } catch {}
+      }
+    try {
+      validateTerrainDefinition(features, [...oldPasses, ...passes], boundary, center, water);
+    } catch {
+      continue;
+    }
+    return {
+      features: next.features,
+      passes
+    };
+  }
+  throw new Error('No mountain range fits here with connected land and clear water. Try a smaller size, another seed or placement.');
+}
+
+
+// src/editor/terrain.js
+
+
+
+
+class TerrainEditor {
+  constructor(changed = () => {}, notify = () => {}) {
+    this.changed = changed;
+    this.notify = notify;
+    this.history = [];
+    this.mode = 'pan';
+    this.loadCity();
+  }
+  definition() {
+    return terrainCopy({
+      features: this.features,
+      passes: this.passes,
+      activeTerrainId: this.activeTerrainId
+    });
+  }
+  loadCity(city = {}) {
+    this.features = terrainCopy(city.terrainFeatures ?? []);
+    this.passes = terrainCopy(city.terrainPasses ?? []);
+    this.activeTerrainId = this.features.some(f => f.id === this.activeTerrainId) ? this.activeTerrainId : this.features[0]?.id ?? null;
+    this.dirty = false;
+    this.dragging = null;
+    this.selectedPoint = -1;
+    this.selectedPass = null;
+  }
+  activeFeature() {
+    return this.features.find(f => f.id === this.activeTerrainId);
+  }
+  remember() {
+    this.history.push(this.definition());
+    if (this.history.length > TERRAIN_HISTORY_LIMIT) this.history.shift();
+  }
+  restore(d) {
+    this.features = terrainCopy(d.features);
+    this.passes = terrainCopy(d.passes);
+    this.activeTerrainId = d.activeTerrainId ?? this.features[0]?.id ?? null;
+    this.dragging = null;
+    this.selectedPoint = -1;
+    this.selectedPass = null;
+  }
+  mark() {
+    this.dirty = true;
+    this.changed();
+  }
+  setMode(mode) {
+    this.mode = mode;
+    this.selectedPoint = mode === 'ridge' ? 1 : -1;
+    this.selectedPass = null;
+    this.changed();
+  }
+  select(id) {
+    if (!this.features.some(f => f.id === id)) return false;
+    this.activeTerrainId = id;
+    this.selectedPoint = -1;
+    this.selectedPass = null;
+    return true;
+  }
+  generate(boundary, center, options = {}, targetId = null) {
+    const old = this.features.find(f => f.id === targetId),
+      next = generateMountain(boundary, center, {
+        ...options,
+        id: old?.id,
+        center: old?.center,
+        otherFeatures: terrainPrepare({
+          features: this.features.filter(f => f !== old)
+        }).features,
+        passes: this.passes.filter(p => p.terrainId !== old?.id)
+      });
+    const fresh = next.features[0],
+      f = {
+        ...old,
+        ...fresh,
+        name: old?.name ?? fresh.name,
+        generation: {
+          ...old?.generation,
+          ...fresh.generation
+        },
+        extensions: terrainCopy(old?.extensions ?? {})
+      };
+    this.remember();
+    this.features = old ? this.features.map(o => o === old ? f : o) : [...this.features, f];
+    this.passes = [...this.passes.filter(p => p.terrainId !== old?.id), ...next.passes];
+    this.activeTerrainId = f.id;
+    this.mode = 'shape';
+    this.selectedPoint = -1;
+    this.selectedPass = null;
+    this.mark();
+    this.notify('Mountain preview ready. Generate city to rebuild around its foothills and passes.');
+  }
+  remove() {
+    const f = this.activeFeature();
+    if (!f) return;
+    this.remember();
+    this.features = this.features.filter(o => o !== f);
+    this.passes = this.passes.filter(p => p.terrainId !== f.id);
+    this.activeTerrainId = this.features[0]?.id ?? null;
+    this.selectedPoint = -1;
+    this.selectedPass = null;
+    this.mark();
+    this.notify('Selected mountain range removed from the draft.');
+  }
+  undo() {
+    if (!this.history.length) return;
+    this.restore(this.history.pop());
+    this.mark();
+    this.notify('Terrain edit undone in the draft. Generate city to apply.');
+  }
+  revert(city) {
+    this.remember();
+    this.loadCity(city);
+    this.changed();
+    this.notify('Restored the city’s saved mountains.');
+  }
+  height(value) {
+    const f = this.activeFeature(),
+      n = Number(value);
+    if (!f || this.mode !== 'ridge' || this.selectedPoint < 0) return;
+    if (!Number.isFinite(n) || n < 50 || n > 3000) throw new Error('Peak height must be 50–3000 elevation units.');
+    if (f.ridge[this.selectedPoint].height === n) return;
+    this.remember();
+    f.ridge[this.selectedPoint].height = n;
+    this.mark();
+    this.notify('Peak height updated in the draft. Generate city to apply.');
+  }
+  down(p, zoom) {
+    const f = this.activeFeature();
+    if (!f) return;
+    if (this.mode === 'addpass') {
+      if (this.passes.length >= 12) throw new Error('This build supports twelve passes.');
+      const t = terrainNearestT(f, p),
+        at = terrainPassAt(f, t);
+      if (Math.hypot(at.x - p.x, at.y - p.y) > 24 / zoom) throw new Error('Click near the ridge to add a pass.');
+      let n = 1;
+      while (this.passes.some(p => p.id === `PASS-${String(n).padStart(3,'0')}`)) n++;
+      const id = `PASS-${String(n).padStart(3,'0')}`;
+      this.remember();
+      this.passes.push({
+        id,
+        dataVersion: 1,
+        kind: 'pass',
+        terrainId: f.id,
+        t,
+        width: 12,
+        extensions: {}
+      });
+      this.selectedPass = id;
+      this.mode = 'pass';
+      this.mark();
+      this.notify('Pass added. Keep both foothills inside the city before applying.');
+      return;
+    }
+    let drag = null;
+    if (this.mode === 'move') {
+      if (Math.hypot(f.center.x - p.x, f.center.y - p.y) < 16 / zoom) drag = {
+        kind: 'move'
+      };
+    } else if (this.mode === 'pass') {
+      const pass = this.passes.find(pass => {
+        if (pass.terrainId !== f.id) return false;
+        const at = terrainPassAt(f, pass.t);
+        return Math.hypot(at.x - p.x, at.y - p.y) < 16 / zoom;
+      });
+      this.selectedPass = pass?.id ?? null;
+      if (pass) drag = {
+        kind: 'pass',
+        id: pass.id
+      };
+    } else if (['shape', 'ridge'].includes(this.mode)) {
+      const key = this.mode === 'ridge' ? 'ridge' : 'path',
+        index = f[key].findIndex(q => Math.hypot(q.x - p.x, q.y - p.y) < 12 / zoom);
+      this.selectedPoint = index;
+      if (index >= 0) drag = {
+        kind: this.mode,
+        index
+      };
+    }
+    if (drag) {
+      this.gesture = this.definition();
+      this.gestureHistory = this.history.slice();
+      this.gestureDirty = this.dirty;
+      this.remember();
+      this.dragging = drag;
+      this.adjusted = false;
+    }
+    this.changed();
+  }
+  move(p) {
+    if (!this.dragging) return;
+    const f = this.activeFeature(),
+      base = this.gesture.features.find(o => o.id === f.id),
+      d = this.dragging;
+    if (d.kind === 'pass') this.passes.find(p => p.id === d.id).t = terrainNearestT(f, p);
+    else {
+      const result = guideTerrainFeature(base, {
+        index: d.index,
+        point: p,
+        moveCenter: d.kind === 'move' ? p : null,
+        ridge: d.kind === 'ridge'
+      });
+      this.features = this.features.map(o => o === f ? result.feature : o);
+      this.adjusted = result.adjusted;
+    }
+    this.mark();
+  }
+  up(zoom, cancelled = false) {
+    if (!this.dragging) return;
+    if (cancelled) {
+      this.restore(this.gesture);
+      this.history = this.gestureHistory;
+      this.dirty = this.gestureDirty;
+    } else this.notify(this.adjusted ? 'Mountain handles adjusted to keep a safe footprint and ridge. Generate city to apply.' : 'Terrain draft changed. Generate city to connect streets around it.');
+    this.dragging = null;
+    this.gesture = null;
+    this.gestureHistory = null;
+    this.changed();
+  }
+  addPoint(p, zoom) {
+    const f = this.activeFeature();
+    if (this.mode !== 'shape' || !f || f.path.length >= 32) return;
+    let best = -1,
+      d = 18 / zoom;
+    for (let i = 0; i < f.path.length; i++) {
+      const n = distanceToSegment(p, f.path[i], f.path[(i + 1) % f.path.length]);
+      if (n < d) {
+        d = n;
+        best = i;
+      }
+    }
+    if (best < 0) return;
+    const a = f.path[best],
+      b = f.path[(best + 1) % f.path.length],
+      dx = b.x - a.x,
+      dy = b.y - a.y,
+      t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy))),
+      q = {
+        x: a.x + dx * t,
+        y: a.y + dy * t
+      };
+    if (Math.min(Math.hypot(q.x - a.x, q.y - a.y), Math.hypot(q.x - b.x, q.y - b.y)) < 2) {
+      this.selectedPoint = t < .5 ? best : (best + 1) % f.path.length;
+      this.changed();
+      return;
+    }
+    const next = {
+      ...f,
+      path: f.path.toSpliced(best + 1, 0, q)
+    };
+    if (!terrainShapeSafe(next) || !terrainRidgeSafe(next)) return;
+    this.remember();
+    f.path = next.path;
+    this.selectedPoint = best + 1;
+    this.mark();
+  }
+  removePoint() {
+    const f = this.activeFeature();
+    if (this.mode === 'pass' && this.selectedPass) {
+      this.remember();
+      this.passes = this.passes.filter(p => p.id !== this.selectedPass);
+      this.selectedPass = null;
+      this.mark();
+      this.notify('Pass removed from the draft. Keep every neighborhood connected.');
+    } else if (this.mode === 'shape' && f && this.selectedPoint >= 0 && f.path.length > 4) {
+      const next = {
+        ...f,
+        path: f.path.toSpliced(this.selectedPoint, 1)
+      };
+      if (!terrainShapeSafe(next) || !terrainRidgeSafe(next)) {
+        this.notify('Keep this foothill handle to preserve a safe ridge and footprint.');
+        return;
+      }
+      this.remember();
+      f.path = next.path;
+      this.selectedPoint = -1;
+      this.mark();
+    }
+  }
+  snapshot() {
+    return {
+      ...this.definition(),
+      history: terrainCopy(this.history),
+      dirty: this.dirty,
+      mode: this.mode,
+      selectedPoint: this.selectedPoint,
+      selectedPass: this.selectedPass
+    };
+  }
+  load(snapshot, city) {
+    this.history = [];
+    this.loadCity(city);
+    this.mode = 'pan';
+    if (snapshot) {
+      this.restore(snapshot);
+      this.history = terrainCopy(snapshot.history);
+      this.dirty = snapshot.dirty;
+      this.mode = snapshot.mode;
+      this.selectedPoint = snapshot.selectedPoint;
+      this.selectedPass = snapshot.selectedPass;
+    }
+  }
+}
+function validateTerrainEditor(snapshot) {
+  if (!snapshot || typeof snapshot.dirty !== 'boolean' || !['pan', 'shape', 'ridge', 'move', 'pass', 'addpass'].includes(snapshot.mode) || !Number.isInteger(snapshot.selectedPoint) || snapshot.selectedPoint < -1 || snapshot.selectedPoint > 31 || (snapshot.selectedPass !== null && typeof snapshot.selectedPass !== 'string') || !Array.isArray(snapshot.history) || snapshot.history.length > TERRAIN_HISTORY_LIMIT) throw new Error('Invalid terrain editor state.');
+  for (const d of [snapshot, ...snapshot.history]) {
+    if (!Array.isArray(d.features) || d.features.length > TERRAIN_LIMIT || !Array.isArray(d.passes) || d.passes.length > 12) throw new Error('Invalid terrain draft.');
+    const ids = new Set();
+    for (const f of [...d.features, ...d.passes]) {
+      if (!f || typeof f.id !== 'string' || !f.id || f.id.length > 128 || ids.has(f.id) || f.dataVersion !== 1) throw new Error('Invalid terrain draft identity.');
+      ids.add(f.id);
+    }
+    for (const f of d.features)
+      if (f.kind !== 'mountain' || typeof f.name !== 'string' || !f.name || f.name.length > 80 || !terrainPoint(f.center) || !Array.isArray(f.path) || f.path.length < 4 || f.path.length > 32 || !f.path.every(terrainPoint) || !Array.isArray(f.ridge) || f.ridge.length !== 3 || f.ridge.some(p => !terrainPoint(p) || !Number.isFinite(p.height) || p.height < 50 || p.height > 3000)) throw new Error('Invalid mountain draft structure.');
+    for (const p of d.passes)
+      if (p.kind !== 'pass' || !d.features.some(f => f.id === p.terrainId) || !Number.isFinite(p.t) || p.t < 0 || p.t > 1 || p.width !== 12) throw new Error('Invalid mountain pass draft.');
+    if (d.activeTerrainId !== null && !d.features.some(f => f.id === d.activeTerrainId)) throw new Error('Invalid selected mountain range.');
+  }
+  if (snapshot.controls !== undefined) {
+    const c = snapshot.controls;
+    if (!c || ['seed', 'size', 'height', 'placement'].some(key => typeof c[key] !== 'string' || c[key].length > 64) || !['inside', 'surrounding', 'crossing'].includes(c.placement)) throw new Error('Invalid mountain controls.');
+  }
+}
+
+
+// src/ui/terrain.js
+
+
+
+class TerrainPanel {
+  constructor({
+    getElement,
+    getCity,
+    getBoundary,
+    getCenter,
+    getWater,
+    changed,
+    activate
+  }) {
+    this.$ = getElement;
+    this.getCity = getCity;
+    this.getBoundary = getBoundary;
+    this.getCenter = getCenter;
+    this.getWater = getWater;
+    this.changed = changed;
+    this.activate = activate;
+    this.editor = new TerrainEditor(() => {
+      this.refresh();
+      changed();
+    }, (text, error) => this.message(text, error));
+  }
+  message(text, error = false) {
+    if (!error && this.editor.dirty) try {
+      const t = terrainPrepare(this.editor.definition());
+      validateTerrainDefinition(t.features, t.passes, this.getBoundary(), this.getCenter(), this.getWater());
+    } catch (e) {
+      text = e.message;
+      error = true;
+    }
+    this.$('terrainMessage').textContent = text;
+    this.$('terrainMessage').classList.toggle('error', Boolean(error));
+  }
+  run(fn) {
+    try {
+      return fn();
+    } catch (e) {
+      this.message(e.message, true);
+      return false;
+    }
+  }
+  controls() {
+    return {
+      seed: String(this.$('terrainSeedInput').value),
+      size: String(this.$('terrainSizeInput').value),
+      height: String(this.$('terrainHeightInput').value),
+      placement: this.$('terrainPlacementInput').value || 'surrounding'
+    };
+  }
+  refresh(reset = false) {
+    const e = this.editor,
+      f = e.activeFeature(),
+      select = this.$('terrainSelect');
+    select.replaceChildren(...(e.features.length ? e.features : [{
+      id: '',
+      name: 'No mountain ranges yet'
+    }]).map(f => {
+      const o = document.createElement('option');
+      o.value = f.id;
+      o.textContent = f.name;
+      return o;
+    }));
+    select.value = f?.id ?? '';
+    this.$('terrainStats').textContent = `${e.features.length}/${TERRAIN_LIMIT} ranges · ${e.passes.length} passes${e.dirty?' · Pending regeneration':''}`;
+    this.$('addTerrainButton').disabled = e.features.length >= TERRAIN_LIMIT;
+    this.$('undoTerrainButton').disabled = !e.history.length;
+    this.$('removeTerrainItemButton').disabled = e.selectedPoint < 0 && !e.selectedPass;
+    for (const [id, mode] of [
+        ['editTerrainButton', 'shape'],
+        ['editRidgeButton', 'ridge'],
+        ['moveTerrainButton', 'move'],
+        ['editPassButton', 'pass'],
+        ['addPassButton', 'addpass']
+      ]) {
+      this.$(id).disabled = !f;
+      this.$(id).setAttribute('aria-pressed', String(e.mode === mode));
+    }
+    for (const id of ['regenerateTerrainButton', 'removeTerrainButton']) this.$(id).disabled = !f;
+    if (reset) {
+      this.$('terrainSeedInput').value = f?.generation?.seed ?? 'mountains';
+      this.$('terrainSizeInput').value = String(f?.generation?.size ?? 70);
+      this.$('terrainPlacementInput').value = f?.generation?.placement ?? 'surrounding';
+      this.$('terrainHeightInput').value = String(f ? Math.max(...f.ridge.map(p => p.height)) : 900);
+    }
+    const selection = e.mode === 'ridge' && e.selectedPoint >= 0 ? `${e.activeTerrainId}:${e.selectedPoint}` : null;
+    if (selection && selection !== this.peakSelection) this.$('terrainHeightInput').value = String(f.ridge[e.selectedPoint].height);
+    this.peakSelection = selection;
+  }
+  bind() {
+    this.$('terrainSelect').addEventListener('change', () => {
+      if (this.editor.select(this.$('terrainSelect').value)) {
+        this.editor.setMode('shape');
+        this.activate();
+        this.refresh(true);
+      }
+    });
+    for (const [id, target] of [
+        ['addTerrainButton', false],
+        ['regenerateTerrainButton', true]
+      ]) this.$(id).addEventListener('click', () => this.run(() => {
+      const c = this.controls();
+      this.editor.generate(this.getBoundary(), this.getCenter(), {
+        ...c,
+        water: this.getWater()
+      }, target ? this.editor.activeTerrainId : null);
+      this.activate();
+    }));
+    for (const [id, mode] of [
+        ['editTerrainButton', 'shape'],
+        ['editRidgeButton', 'ridge'],
+        ['moveTerrainButton', 'move'],
+        ['editPassButton', 'pass'],
+        ['addPassButton', 'addpass']
+      ]) this.$(id).addEventListener('click', () => {
+      this.editor.setMode(mode);
+      this.activate();
+      this.message(mode === 'shape' ? 'Drag foothill handles. Double-click an edge to add a handle; Delete removes the selection. Sharp edits self-adjust.' : mode === 'ridge' ? 'Drag a ridge or peak handle. Peak height changes the selected handle.' : mode === 'move' ? 'Drag the center marker to move this entire mountain range.' : mode === 'pass' ? 'Drag a pass marker along the ridge. Both foothills must stay inside the city.' : 'Click near the ridge to add a road pass.');
+    });
+    this.$('removeTerrainButton').addEventListener('click', () => this.editor.remove());
+    this.$('undoTerrainButton').addEventListener('click', () => {
+      this.editor.undo();
+      this.refresh(true);
+    });
+    this.$('revertTerrainButton').addEventListener('click', () => {
+      this.editor.revert(this.getCity());
+      this.refresh(true);
+    });
+    this.$('removeTerrainItemButton').addEventListener('click', () => this.editor.removePoint());
+    for (const id of ['terrainSeedInput', 'terrainSizeInput', 'terrainHeightInput', 'terrainPlacementInput']) this.$(id).addEventListener('input', () => this.changed());
+    this.$('terrainHeightInput').addEventListener('change', () => this.run(() => this.editor.height(this.$('terrainHeightInput').value)));
+  }
 }
 
 
@@ -1117,7 +2093,7 @@ function validateWaterCity(city) {
     ids = new Set(city.bridges.map(b => b.id)),
     wetEdges = new Map();
   if (!city.waterFaces.length) throw new Error('The water feature has no reserved area.');
-  for (const face of [...city.blocks, city.plaza, ...city.waterFaces]) {
+  for (const face of [...city.blocks, city.plaza, ...city.waterFaces, ...(city.terrainFaces ?? [])]) {
     const wet = city.waterFaces.includes(face),
       p = waterFaceInterior(face.vertices, nodes);
     if (waterSetContains(p, features) !== wet) throw new Error('Land and river faces disagree with the saved shoreline.');
@@ -1167,7 +2143,7 @@ function validateWaterCity(city) {
     if (Math.abs((wetEdges.get(bridge.id) || 0) - Math.hypot(g.ends[1].x - g.ends[0].x, g.ends[1].y - g.ends[0].y)) > .02) throw new Error('A bridge does not span both banks.');
   }
   // Boundary edges across water close the planar arrangement; they are never streets.
-  const active = city.roads.filter(r => !r.waterBoundary),
+  const active = city.roads.filter(r => !r.waterBoundary && !r.terrainBoundary),
     graph = new Map();
   for (const r of active) {
     if (!graph.has(r.a)) graph.set(r.a, []);
@@ -1508,37 +2484,6 @@ function guideRiverPath(feature, options = {}) {
 }
 
 
-// src/core/prng.js
-// One reproducible pseudo-random stream per seed. Avoid Math.random in generation.
-function normalizeSeed(value) {
-  return String(value ?? '').trim().slice(0, 64) || 'mappo';
-}
-
-function hashSeed(value) {
-  let hash = 2166136261;
-  for (const char of normalizeSeed(value)) {
-    hash ^= char.codePointAt(0);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-function createRng(seed) {
-  let state = hashSeed(seed);
-  return () => {
-    state = (state + 0x6D2B79F5) >>> 0;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function randomRange(rng, min, max) {
-  return min + rng() * (max - min);
-}
-
-
 // src/generators/water.js
 
 
@@ -1660,6 +2605,10 @@ function generateRiver(boundary, center, options = {}) {
     }));
     try {
       validateWaterDefinition([feature, ...(options.otherFeatures ?? [])], bridges, boundary, center);
+      options.validateComposition?.({
+        features: [feature, ...(options.otherFeatures ?? [])],
+        bridges
+      });
     } catch {
       continue;
     }
@@ -1743,6 +2692,10 @@ function generateLake(boundary, center, options = {}) {
     if (others.some(f => waterPolygonsOverlap(f.corridor, feature.corridor))) continue;
     try {
       validateWaterDefinition([...others, feature], bridges, boundary, center);
+      options.validateComposition?.({
+        features: [...others, feature],
+        bridges
+      });
     } catch {
       continue;
     }
@@ -1850,6 +2803,10 @@ function generateCoast(boundary, center, options = {}) {
     try {
       validateWaterFeature(feature, boundary, center);
       validateWaterDefinition([feature, ...(options.otherFeatures ?? [])], options.bridges ?? [], boundary, center);
+      options.validateComposition?.({
+        features: [feature, ...(options.otherFeatures ?? [])],
+        bridges: options.bridges ?? []
+      });
     } catch {
       continue;
     }
@@ -1883,8 +2840,9 @@ function waterCopy(value) {
   return JSON.parse(JSON.stringify(value));
 }
 class WaterEditor {
-  constructor(changed = () => {}, notify = () => {}, getBoundary = () => []) {
+  constructor(changed = () => {}, notify = () => {}, getBoundary = () => [], validateComposition = () => {}) {
     this.getBoundary = getBoundary;
+    this.validateComposition = validateComposition;
     this.changed = changed;
     this.notify = notify;
     this.mode = 'pan';
@@ -1984,6 +2942,7 @@ class WaterEditor {
   }
   generate(boundary, center, options = {}) {
     const next = generateRiver(boundary, center, {
+      validateComposition: this.validateComposition,
       ...options,
       otherFeatures: prepareWater({
         features: this.features.filter(f => f.kind !== 'river')
@@ -1994,6 +2953,7 @@ class WaterEditor {
   }
   generateCoastline(boundary, center, options = {}) {
     const next = generateCoast(boundary, center, {
+      validateComposition: this.validateComposition,
       ...options,
       otherFeatures: prepareWater({
         features: this.features.filter(f => f.kind !== 'coast')
@@ -2006,6 +2966,7 @@ class WaterEditor {
   generateLakeDraft(boundary, center, options = {}, targetId = null) {
     const existing = this.features.find(f => f.kind === 'lake' && f.id === targetId);
     const next = generateLake(boundary, center, {
+      validateComposition: this.validateComposition,
       ...options,
       id: existing?.id,
       center: existing?.center,
@@ -2354,6 +3315,7 @@ class WaterPanel {
     getCity,
     getBoundary,
     getCenter,
+    validateComposition = () => {},
     changed,
     activate
   }) {
@@ -2372,13 +3334,14 @@ class WaterPanel {
       } catch {
         return this.getCity()?.survey.boundary ?? [];
       }
-    });
+    }, validateComposition);
   }
   message(text, error = false) {
     if (!error && this.editor?.dirty) {
       try {
         const d = prepareWater(this.editor.definition());
         validateWaterDefinition(d.features, d.bridges, this.getBoundary(), this.getCenter());
+        this.editor.validateComposition(d);
       } catch (issue) {
         text = issue.message;
         error = true;
@@ -2581,7 +3544,7 @@ function wallArcGap(a, b, length) {
 }
 function solidWallSegments(wall, gates) {
   const measure = measureWall(wall.path),
-    cuts = (wall.waterOpenings ?? []).map(o => [o.start, o.end]);
+    cuts = [...(wall.waterOpenings ?? []), ...(wall.terrainOpenings ?? [])].map(o => [o.start, o.end]);
   for (const gate of gates.filter(g => g.wallId === wall.id)) {
     const a = gate.arc - gate.opening / 2,
       b = gate.arc + gate.opening / 2;
@@ -2783,11 +3746,11 @@ function distanceContourWall(boundary) {
 
 
 
-function waterWallOpenings(wall, features) {
+function waterWallOpenings(wall, features, polygonBuilder = waterFeaturePolygon) {
   const measure = measureWall(wall.path),
     cuts = [];
   for (const f of features ?? []) {
-    const corridor = waterFeaturePolygon(f, WATER_BANK + 10);
+    const corridor = polygonBuilder(f, WATER_BANK + 10);
     for (let i = 0; i < wall.path.length; i++)
       for (const s of waterLineIntervals(wall.path[i], wall.path[(i + 1) % wall.path.length], corridor)) {
         if (!s.inside) continue;
@@ -2823,9 +3786,9 @@ function waterWallOpenings(wall, features) {
   }
   return union;
 }
-function waterGateIsDry(gate, features, measure) {
+function waterGateIsDry(gate, features, measure, polygonBuilder = waterFeaturePolygon) {
   for (const f of features ?? []) {
-    const polygon = waterFeaturePolygon(f, WATER_BANK + 12),
+    const polygon = polygonBuilder(f, WATER_BANK + 12),
       points = gate.connection.points;
     if (points.some(p => waterDistance(p, polygon) < 8)) return false;
     for (let i = 1; i < points.length; i++)
@@ -2835,6 +3798,21 @@ function waterGateIsDry(gate, features, measure) {
       if (waterDistance(wallPoint(measure, arc), polygon) < gate.postRadius + 1) return false;
   }
   return true;
+}
+
+
+// src/core/terrain-fortifications.js
+
+
+function terrainWallOpenings(wall, features = []) {
+  return waterWallOpenings(wall, features, terrainPolygon).map(o => ({
+    start: o.start,
+    end: o.end,
+    terrainIds: o.waterIds ?? [o.waterId]
+  }));
+}
+function terrainGateIsClear(gate, features, measure) {
+  return waterGateIsDry(gate, features, measure, terrainPolygon);
 }
 
 
@@ -2870,6 +3848,7 @@ function gateIsClear(gate, wall, measure = measureWall(wall.path)) {
 
 
 // src/generators/gates.js
+
 
 
 
@@ -2991,7 +3970,7 @@ function choosePerimeterGates(city, wall, {
         },
         extensions: {}
       };
-      if (!gateIsClear(gate, wall, measure) || !waterGateIsDry(gate, city.waterFeatures, measure)) continue;
+      if (!gateIsClear(gate, wall, measure) || !waterGateIsDry(gate, city.waterFeatures, measure) || !terrainGateIsClear(gate, city.terrainFeatures, measure)) continue;
       const quality = priority + hit.alignment * .25 + rng() * .15;
       if (!best || quality > best.quality) best = {
         gate,
@@ -3049,7 +4028,7 @@ function placePerimeterTowers(wall, gates, {
   function add(arc, role) {
     arc = ((arc % measure.length) + measure.length) % measure.length;
     const center = wallPoint(measure, arc);
-    if ((wall.waterOpenings ?? []).some(o => arc >= o.start - TOWER_RADIUS - 3 && arc <= o.end + TOWER_RADIUS + 3)) return;
+    if ([...(wall.waterOpenings ?? []), ...(wall.terrainOpenings ?? [])].some(o => arc >= o.start - TOWER_RADIUS - 3 && arc <= o.end + TOWER_RADIUS + 3)) return;
     if (towers.some(t => Math.hypot(t.center.x - center.x, t.center.y - center.y) < TOWER_RADIUS * 2 + 5)) return;
     for (const gate of gates) {
       if (wallArcGap(arc, gate.arc, measure.length) < gate.opening / 2 + gate.postRadius * 2 + TOWER_RADIUS + 2) return;
@@ -3103,6 +4082,7 @@ function placePerimeterTowers(wall, gates, {
 
 
 
+
 function fortificationPoint(point) {
   return point && Number.isFinite(point.x) && Number.isFinite(point.y) && Math.abs(point.x) <= 100000 && Math.abs(point.y) <= 100000;
 }
@@ -3141,6 +4121,9 @@ function validateFortifications(city) {
   if (!Number.isFinite(wall.width) || wall.width < 2 || wall.width > 12 || !Array.isArray(wall.path) || wall.path.length > 1024 || !wall.path.every(fortificationPoint)) throw new Error('Invalid wall geometry.');
   if (!simpleWallPath(wall.path)) throw new Error('The wall crosses itself or is not a simple ring.');
   if (!wallEnclosesCity(wall.path, boundary, WALL_CLEARANCE)) throw new Error('The wall fails to enclose the city with safe street clearance.');
+  const expectedTerrainOpenings = terrainWallOpenings(wall, city.terrainFeatures);
+  const terrainOpenings = wall.terrainOpenings ?? [];
+  if (!Array.isArray(terrainOpenings) || terrainOpenings.length !== expectedTerrainOpenings.length || terrainOpenings.some((o, i) => !o || !Array.isArray(o.terrainIds) || JSON.stringify([...o.terrainIds].sort()) !== JSON.stringify(expectedTerrainOpenings[i].terrainIds) || !Number.isFinite(o.start) || !Number.isFinite(o.end) || Math.abs(o.start - expectedTerrainOpenings[i].start) > 1e-5 || Math.abs(o.end - expectedTerrainOpenings[i].end) > 1e-5)) throw new Error('Wall mountain openings disagree with the saved terrain.');
   const expectedWaterOpenings = waterWallOpenings(wall, city.waterFeatures);
   if (!Array.isArray(wall.waterOpenings ?? []) || (wall.waterOpenings ?? []).length !== expectedWaterOpenings.length || (wall.waterOpenings ?? []).some((o, i) => !o || JSON.stringify([...(o.waterIds ?? [o.waterId])].sort()) !== JSON.stringify([...(expectedWaterOpenings[i].waterIds ?? [expectedWaterOpenings[i].waterId])].sort()) || !Number.isFinite(o.start) || !Number.isFinite(o.end) || Math.abs(o.start - expectedWaterOpenings[i].start) > 1e-5 || Math.abs(o.end - expectedWaterOpenings[i].end) > 1e-5)) throw new Error('Wall water openings disagree with the saved river.');
   const measure = measureWall(wall.path);
@@ -3158,6 +4141,7 @@ function validateFortifications(city) {
     for (let i = 0; i < c.points.length - 1; i++) {
       if (!outsideCityConnection(c.points[i], c.points[i + 1], boundary)) throw new Error('A gate approach crosses city blocks.');
     }
+    if (!terrainGateIsClear(gate, city.terrainFeatures, measure)) throw new Error('A gate or approach overlaps a mountain.');
     if (!waterGateIsDry(gate, city.waterFeatures, measure)) throw new Error('A gate or its approach overlaps water.');
     if (!gateIsClear(gate, wall, measure)) throw new Error('A gate opening is blocked by its own wall or gateposts.');
   }
@@ -3182,7 +4166,7 @@ function validateFortifications(city) {
   for (const tower of city.towers) {
     if (tower.dataVersion !== 1 || tower.kind !== 'round') throw new Error('Unsupported tower data version or kind.');
     if (tower.wallId !== wall.id || !Number.isFinite(tower.arc) || tower.arc < 0 || tower.arc >= measure.length || !fortificationPoint(tower.center) || !Number.isFinite(tower.radius) || tower.radius < 2 || tower.radius > 20) throw new Error('Invalid tower geometry or wall reference.');
-    if ((wall.waterOpenings ?? []).some(o => tower.arc >= o.start - tower.radius - 2 && tower.arc <= o.end + tower.radius + 2)) throw new Error('A tower blocks a water opening.');
+    if ([...(wall.waterOpenings ?? []), ...(wall.terrainOpenings ?? [])].some(o => tower.arc >= o.start - tower.radius - 2 && tower.arc <= o.end + tower.radius + 2)) throw new Error('A tower blocks a water opening.');
     const at = wallPoint(measure, tower.arc);
     if (Math.hypot(at.x - tower.center.x, at.y - tower.center.y) > 1e-4) throw new Error('A tower is detached from its wall.');
     for (const road of city.roads) {
@@ -3237,6 +4221,7 @@ function setFortificationsEnabled(city, enabled) {
 
 
 
+
 function normalizeFortificationSettings(options = {}) {
   const gateCount = Number(options.gateCount ?? 4),
     towerSpacing = Number(options.towerSpacing ?? 100),
@@ -3263,6 +4248,7 @@ function outerPerimeterFortifications(city, settings) {
     extensions: {}
   };
   if (city.waterFeatures?.length) wall.waterOpenings = waterWallOpenings(wall, city.waterFeatures);
+  if (city.terrainFeatures?.length) wall.terrainOpenings = terrainWallOpenings(wall, city.terrainFeatures);
   const gates = choosePerimeterGates(city, wall, {
     seed: settings.seed,
     count: settings.gateCount
@@ -4125,8 +5111,8 @@ class DistrictPanel {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.3e5';
-const PROJECT_SCHEMA_VERSION = 8;
+const APP_VERSION = '0.1-dev.3e6';
+const PROJECT_SCHEMA_VERSION = 9;
 
 
 // src/data/migrations.js
@@ -4185,6 +5171,8 @@ function migrateProjectData(project) {
   if (project.schemaVersion === 6) project.schemaVersion = 7;
   // Lakes are additive; older accepted geometry and unfinished drafts stay exact.
   if (project.schemaVersion === 7) project.schemaVersion = 8;
+  // Terrain is optional: retain older city and workspace records exactly.
+  if (project.schemaVersion === 8) project.schemaVersion = 9;
   return project;
 }
 
@@ -4216,10 +5204,10 @@ function validateLayout(layout, boundary) {
       }
   if (reached.size !== nodes.length) throw new Error('The outline produced disconnected streets. Adjust its narrow sections or try another street pattern.');
   let total = 0;
-  for (const face of [...blocks, plaza, ...(layout.waterFaces ?? [])]) {
+  for (const face of [...blocks, plaza, ...(layout.waterFaces ?? []), ...(layout.terrainFaces ?? [])]) {
     if (new Set(face.vertices).size !== face.vertices.length) throw new Error('A street creates a pinched block. Adjust the outline or choose another street seed.');
     const area = polygonSignedArea(face.vertices.map(id => byId.get(id)));
-    if (area <= (layout.waterFaces?.includes(face) ? .00001 : 1)) throw new Error('A section is too narrow to form usable blocks. Widen it and generate again.');
+    if (area <= ((layout.waterFaces?.includes(face) || layout.terrainFaces?.includes(face)) ? .00001 : 1)) throw new Error('A section is too narrow to form usable blocks. Widen it and generate again.');
     total += area;
   }
   if (Math.abs(total - Math.abs(polygonSignedArea(boundary))) > .02) throw new Error('Streets could not cover this outline completely. Adjust its narrow sections or choose another pattern.');
@@ -4239,11 +5227,17 @@ function validateLayout(layout, boundary) {
 
 
 
+
+
+
 const MAX_PROJECT_BYTES = 20 * 1024 * 1024;
 const MAX_VALIDATION_WORK = 6000000;
 const DENSITIES = Object.freeze(['small', 'medium', 'large']);
 const PATTERNS = Object.freeze(['radial', 'organic', 'linear', 'planned']);
 const LIMITS = {
+  terrainFeatures: TERRAIN_LIMIT,
+  terrainPasses: 12,
+  terrainFaces: 256,
   waterFeatures: LAKE_LIMIT + 2,
   bridges: 8,
   waterFaces: 256,
@@ -4479,7 +5473,7 @@ function validateStoredProject(project) {
   requirePoint(project.options.center, 'Town center');
   if (!insideOrOn(project.options.center, boundary)) throw new Error('Town center is outside the city boundary.');
   const maps = {};
-  for (const [name, max] of Object.entries(LIMITS)) maps[name] = indexedRecords(requireList(city[name], name, max), name);
+  for (const [name, max] of Object.entries(LIMITS)) maps[name] = indexedRecords(requireList(name.startsWith('terrain') ? (city[name] ?? []) : city[name], name, max), name);
   if (!city.nodes.length || !city.roads.length || !city.blocks.length) throw new Error('The city is missing its street plan.');
   for (const n of city.nodes) {
     requirePoint(n, 'Road junction');
@@ -4496,7 +5490,7 @@ function validateStoredProject(project) {
   requireText(plaza.id, 'Main square ID', 128);
   if (maps.blocks.has(plaza.id)) throw new Error('The main square and a block share an ID.');
   requireText(plaza.name, 'Main square name', 200);
-  for (const face of [...city.blocks, plaza, ...city.waterFaces]) {
+  for (const face of [...city.blocks, plaza, ...city.waterFaces, ...(city.terrainFaces ?? [])]) {
     const points = references(face.vertices, maps.nodes, 'Face vertices').map(p => ({
       x: p.x,
       y: p.y
@@ -4601,6 +5595,7 @@ function validateStoredProject(project) {
   }
   validateDistricts(city);
   validateWaterCity(city);
+  validateTerrainCity(city);
   validateFortifications(city);
   return project;
 }
@@ -4608,6 +5603,7 @@ function validateStoredProject(project) {
 function validateWorkspace(workspace, project) {
   requireRecord(workspace, 'Workspace');
   if (workspace.schemaVersion !== 1) throw new Error('Unsupported workspace version. Use a newer Mappo build.');
+  if (workspace.terrainEditor !== undefined) validateTerrainEditor(workspace.terrainEditor);
   if (workspace.waterEditor !== undefined) validateWaterEditor(workspace.waterEditor);
   const draft = requireRecord(workspace.editor, 'Outline draft');
   requireList(draft.boundary, 'Draft boundary', 1200).forEach(p => requirePoint(p, 'Draft point'));
@@ -4635,7 +5631,7 @@ function validateWorkspace(workspace, project) {
   if (project) validateDistrictEditorState(workspace.districtEditor, project.city);
   if (view.layers.fortifications !== undefined && typeof view.layers.fortifications !== 'boolean') throw new Error('Invalid fortification layer visibility.');
   if (project) validateFortificationEditorState(workspace.fortificationEditor, project.city);
-  if (workspace.panels !== undefined && (!workspace.panels || typeof workspace.panels.districts !== 'boolean' || typeof workspace.panels.fortifications !== 'boolean' || (workspace.panels.water !== undefined && typeof workspace.panels.water !== 'boolean'))) throw new Error('Invalid saved panel state.');
+  if (workspace.panels !== undefined && (!workspace.panels || typeof workspace.panels.districts !== 'boolean' || typeof workspace.panels.fortifications !== 'boolean' || (workspace.panels.water !== undefined && typeof workspace.panels.water !== 'boolean') || (workspace.panels.terrain !== undefined && typeof workspace.panels.terrain !== 'boolean'))) throw new Error('Invalid saved panel state.');
   return workspace;
 }
 
@@ -4743,6 +5739,16 @@ function createProjectDocument(project, workspace = defaultWorkspace(project), b
     ...(previous.panels || {}),
     ...(copyJson(workspace.panels || {}))
   };
+  if (workspace.terrainEditor !== undefined || previous.terrainEditor !== undefined) {
+    document.workspace.terrainEditor = {
+      ...(previous.terrainEditor ?? {}),
+      ...copyJson(workspace.terrainEditor ?? {})
+    };
+    if (workspace.terrainEditor?.controls || previous.terrainEditor?.controls) document.workspace.terrainEditor.controls = {
+      ...(previous.terrainEditor?.controls ?? {}),
+      ...copyJson(workspace.terrainEditor?.controls ?? {})
+    };
+  }
   if (workspace.waterEditor !== undefined || previous.waterEditor !== undefined) {
     document.workspace.waterEditor = {
       ...(previous.waterEditor || {}),
@@ -5467,11 +6473,15 @@ function generateSurvey(seed, size, morphology = 'radial', shapeOverrides = {}) 
 
 
 
+
 // Construct a planar arrangement, rather than warping a finished mesh. Every
 // clipped street crossing becomes a shared node before faces are extracted.
 function generateLayout(seed, size, survey, morphology = 'radial', water = {
   features: [],
   bridges: []
+}, terrain = {
+  features: [],
+  passes: []
 }) {
   const boundary = survey.boundary,
     center = survey.anchors[0];
@@ -5494,8 +6504,12 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
     y: center.y + half
   }];
   const features = water.features,
-    hasWater = features.length > 0;
+    hasWater = features.length > 0,
+    mountains = terrain.features,
+    obstacles = [...features, ...mountains],
+    hasObstacles = obstacles.length > 0;
   if (features.some(f => square.some(p => insideOrOn(p, f.corridor)))) throw new Error('Move the water farther from the main square.');
+  if (mountains.some(f => square.some(p => insideOrOn(p, f.corridor)))) throw new Error('Move the mountains farther from the main square.');
   const segments = [];
   const push = (a, b, kind, tag = 'street') => {
     if (Math.hypot(a.x - b.x, a.y - b.y) > 1e-6) segments.push({
@@ -5510,7 +6524,7 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
 
   function clip(a, b, kind, tag = 'street') {
     const ts = [0, 1];
-    for (const polygon of [boundary, square, ...features.map(f => f.corridor)])
+    for (const polygon of [boundary, square, ...obstacles.map(f => f.corridor)])
       for (let i = 0; i < polygon.length; i++) ts.push(...segmentCuts(a, b, polygon[i], polygon[(i + 1) % polygon.length]));
     ts.sort((a, b) => a - b);
     for (let i = 1; i < ts.length; i++) {
@@ -5520,7 +6534,11 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
         wet = waterSetContains(p, features),
         bridgeRiver = bridge && features.find(f => f.id === bridge.waterId),
         allowedWet = bridgeRiver && pointInPolygon(p, bridgeRiver.corridor) && !waterSetContains(p, features.filter(f => f !== bridgeRiver));
-      if (insideOrOn(p, boundary) && !pointInPolygon(p, square) && (!wet || tag === 'bank' || allowedWet)) push(lerpPoint(a, b, ts[i - 1]), lerpPoint(a, b, ts[i]), kind, tag);
+      const pass = terrain.passes.find(g => g.id === tag),
+        mountain = pass && mountains.find(f => f.id === pass.terrainId),
+        blocked = waterSetContains(p, mountains),
+        allowedMountain = mountain && pointInPolygon(p, mountain.corridor);
+      if (insideOrOn(p, boundary) && !pointInPolygon(p, square) && (!wet || tag === 'bank' || allowedWet) && (!blocked || tag === 'foothill' || allowedMountain)) push(lerpPoint(a, b, ts[i - 1]), lerpPoint(a, b, ts[i]), kind, tag);
     }
   }
   if (morphology === 'radial') {
@@ -5587,6 +6605,9 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
       clip(...g.approach, 'primary', bridge.id);
     }
   }
+  for (const access of terrainAccessSegments(mountains, boundary)) clip(access.a, access.b, 'lane');
+  for (const s of waterUnionSegments(mountains)) clip(s.a, s.b, 'secondary', 'foothill');
+  for (const p of terrain.passes) clip(...terrainPassGeometry(mountains.find(f => f.id === p.terrainId), p, boundary).approach, 'primary', p.id);
   const cuts = segments.map(() => [0, 1]);
   for (let i = 0; i < segments.length; i++)
     for (let j = i + 1; j < segments.length; j++) {
@@ -5604,7 +6625,7 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
     // Microunit snapping coalesces independently computed multi-way junctions.
     const key = `${Math.round(p.x*1e6)},${Math.round(p.y*1e6)}`;
     if (byCoordinate.has(key)) return byCoordinate.get(key);
-    if (hasWater) {
+    if (hasObstacles) {
       const ix = Math.round(p.x * 1e6),
         iy = Math.round(p.y * 1e6);
       for (let dx = -1; dx <= 1; dx++)
@@ -5648,6 +6669,13 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
         kind: segment.kind,
         boundary: segment.tag === 'boundary',
         plaza: segment.tag === 'plaza',
+        ...(mountains.length ? {
+          foothill: segment.tag === 'foothill',
+          terrainBoundary: segment.tag === 'boundary' && waterSetContains(lerpPoint(a, b, .5), mountains),
+          ...(terrain.passes.some(p => p.id === segment.tag) && waterSetContains(lerpPoint(a, b, .5), mountains) ? {
+            passId: segment.tag
+          } : {})
+        } : {}),
         ...(hasWater ? {
           bank: segment.tag === 'bank',
           waterBoundary: segment.tag === 'boundary' && waterSetContains(lerpPoint(a, b, .5), features),
@@ -5706,14 +6734,14 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
   // Tangencies at the boundary can leave tiny slivers. Merge them into a
   // neighbor by removing a shared street, never a city boundary or plaza edge.
   for (let pass = 0; pass < roads.length; pass++) {
-    const small = faces.find(f => f.area < minimumArea && (!hasWater || !waterSetContains(waterFaceInterior(f.vertices, new Map(nodes.map(n => [n.id, n]))), features)));
+    const small = faces.find(f => f.area < minimumArea && (!hasObstacles || !waterSetContains(waterFaceInterior(f.vertices, new Map(nodes.map(n => [n.id, n]))), obstacles)));
     if (!small) break;
     const keys = new Set(small.vertices.map((a, i) => [a, small.vertices[(i + 1) % small.vertices.length]].sort().join(':')));
     let longest = -1,
       index = -1;
     const lookup = new Map(nodes.map(n => [n.id, n]));
     roads.forEach((r, i) => {
-      if (r.boundary || r.plaza || r.bank || r.bridgeId || !keys.has([r.a, r.b].sort().join(':'))) return;
+      if (r.boundary || r.plaza || r.bank || r.bridgeId || r.foothill || r.passId || !keys.has([r.a, r.b].sort().join(':'))) return;
       const a = lookup.get(r.a),
         b = lookup.get(r.b),
         length = Math.hypot(a.x - b.x, a.y - b.y);
@@ -5734,7 +6762,7 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
       }
       for (let i = roads.length - 1; i >= 0; i--) {
         const r = roads[i];
-        if (!r.boundary && !r.plaza && !r.bank && !r.bridgeId && (degrees.get(r.a) === 1 || degrees.get(r.b) === 1)) {
+        if (!r.boundary && !r.plaza && !r.bank && !r.bridgeId && !r.foothill && !r.passId && (degrees.get(r.a) === 1 || degrees.get(r.b) === 1)) {
           roads.splice(i, 1);
           pruned = true;
         }
@@ -5759,7 +6787,13 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
     vertices: f.vertices,
     area: Math.round(f.area * 100) / 100
   })) : [];
-  const wetKeys = new Set(waterFaces.map(f => f.vertices.join(':')));
+  const terrainFaces = faces.filter(f => waterSetContains(waterFaceInterior(f.vertices, byId), mountains)).map((f, i) => ({
+    id: `MTFACE-${String(i+1).padStart(3,'0')}`,
+    terrainIds: waterFaceFeatureIds(f.vertices, byId, mountains),
+    vertices: f.vertices,
+    area: Math.round(f.area * 100) / 100
+  }));
+  const wetKeys = new Set([...terrainFaces, ...waterFaces].map(f => f.vertices.join(':')));
   const blocks = faces.filter(f => f !== plazaFace && !wetKeys.has(f.vertices.join(':'))).map((f, i) => ({
     id: `BLK-${String(i+1).padStart(4,'0')}`,
     vertices: f.vertices,
@@ -5773,6 +6807,7 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
     roads,
     blocks,
     waterFaces,
+    terrainFaces,
     plaza: {
       id: 'PLAZA-0001',
       name: 'Founders Square',
@@ -6085,6 +7120,8 @@ function populateProperty(property, propertyPlots, rng, buildings) {
 
 
 
+
+
 const FIRST = ['Alder', 'Ash', 'Briar', 'Brindle', 'Cinder', 'Elder', 'Fell', 'Grey', 'High', 'Iron', 'Moss', 'Raven', 'Silver', 'Stone', 'Thorn', 'Willow'];
 const LAST = ['bridge', 'bury', 'crest', 'dale', 'ford', 'haven', 'mere', 'mont', 'stead', 'watch', 'wick', 'wood'];
 
@@ -6111,7 +7148,9 @@ function createProject(options = {}) {
   }, ...survey.anchors.slice(1).filter(p => insideOrOn(p, survey.boundary))];
   const water = prepareWater(options.water);
   validateWaterDefinition(water.features, water.bridges, survey.boundary, center);
-  const layout = generateLayout(seed, size, survey, morphology, water);
+  const terrain = terrainPrepare(options.terrain);
+  validateTerrainDefinition(terrain.features, terrain.passes, survey.boundary, center, water);
+  const layout = generateLayout(seed, size, survey, morphology, water, terrain);
   validateLayout(layout, survey.boundary);
   const development = generateBuildings(seed, layout);
   validateDevelopment(layout, development);
@@ -6137,6 +7176,9 @@ function createProject(options = {}) {
       waterFeatures: water.features,
       bridges: water.bridges,
       waterFaces: layout.waterFaces,
+      terrainFeatures: terrain.features,
+      terrainPasses: terrain.passes,
+      terrainFaces: layout.terrainFaces,
       nodes: layout.nodes,
       roads: layout.roads,
       blocks: layout.blocks,
@@ -6158,6 +7200,7 @@ function createProject(options = {}) {
     }
   };
   validateWaterCity(project.city);
+  validateTerrainCity(project.city);
   project.city = generateDistricts(project.city, {
     seed,
     count: options.districtCount ?? 'auto'
@@ -6222,6 +7265,125 @@ class Camera {
       Math.max(1, this.height - padding * 2) / Math.max(1, maxY - minY)
     ), 0.18, 12);
   }
+}
+
+
+// src/renderer/terrain.js
+
+
+function terrainDrawPath(ctx, camera, path) {
+  ctx.beginPath();
+  path.forEach((p, i) => {
+    const q = camera.worldToScreen(p);
+    if (i) ctx.lineTo(q.x, q.y);
+    else ctx.moveTo(q.x, q.y);
+  });
+  ctx.closePath();
+}
+function drawMountains(ctx, camera, features = []) {
+  for (const f of features) {
+    terrainDrawPath(ctx, camera, terrainPolygon(f, 9));
+    ctx.fillStyle = '#c6c0a2';
+    ctx.fill();
+    terrainDrawPath(ctx, camera, f.path);
+    ctx.fillStyle = '#b7b09a';
+    ctx.fill();
+    ctx.strokeStyle = '#8c8b75';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.save();
+    terrainDrawPath(ctx, camera, f.path);
+    ctx.clip();
+    const b = boundsOf(f.path),
+      rx = (b.maxX - b.minX) * .45 * camera.zoom,
+      ry = (b.maxY - b.minY) * .45 * camera.zoom;
+    for (const [index, peak] of f.ridge.entries()) {
+      const q = camera.worldToScreen(peak),
+        levels = Math.max(3, Math.min(12, Math.ceil(peak.height / 180)));
+      for (let level = levels; level >= 1; level--) {
+        const t = level / levels;
+        ctx.beginPath();
+        ctx.ellipse(q.x, q.y, Math.max(1, rx * t * (index === 1 ? 1 : .6)), Math.max(1, ry * t * (index === 1 ? 1 : .6)), 0, 0, Math.PI * 2);
+        ctx.fillStyle = level % 2 ? 'rgba(243,235,205,.12)' : 'rgba(69,79,67,.05)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(91,99,78,.34)';
+        ctx.lineWidth = .8;
+        ctx.stroke();
+      }
+    }
+    ctx.beginPath();
+    f.ridge.forEach((peak, i) => {
+      const q = camera.worldToScreen(peak);
+      if (i) ctx.lineTo(q.x, q.y);
+      else ctx.moveTo(q.x, q.y);
+    });
+    ctx.strokeStyle = '#777c67';
+    ctx.lineWidth = 1.3;
+    ctx.stroke();
+    for (const peak of f.ridge) {
+      const q = camera.worldToScreen(peak),
+        size = Math.max(4, Math.min(10, peak.height / 180) * camera.zoom);
+      ctx.beginPath();
+      ctx.moveTo(q.x, q.y - size);
+      ctx.lineTo(q.x + size * .85, q.y + size * .6);
+      ctx.lineTo(q.x - size * .85, q.y + size * .6);
+      ctx.closePath();
+      ctx.fillStyle = '#e7dfc5';
+      ctx.fill();
+      ctx.strokeStyle = '#7c806a';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(q.x, q.y - size);
+      ctx.lineTo(q.x, q.y + size * .6);
+      ctx.lineTo(q.x + size * .85, q.y + size * .6);
+      ctx.closePath();
+      ctx.fillStyle = '#92947b';
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+function drawTerrainDraft(ctx, camera, editor) {
+  if (!editor || (!editor.dirty && editor.mode === 'pan')) return;
+  const f = editor.activeFeature();
+  if (!f) return;
+  if (editor.dirty) {
+    ctx.globalAlpha = .85;
+    drawMountains(ctx, camera, editor.features);
+    ctx.globalAlpha = 1;
+  }
+  terrainDrawPath(ctx, camera, f.path);
+  ctx.setLineDash([5, 4]);
+  ctx.strokeStyle = '#6f775b';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.setLineDash([]);
+  const handle = (p, selected = false, radius = 5) => {
+    const q = camera.worldToScreen(p);
+    ctx.beginPath();
+    ctx.arc(q.x, q.y, selected ? radius + 2 : radius, 0, Math.PI * 2);
+    ctx.fillStyle = selected ? '#d8a268' : '#fff8e1';
+    ctx.fill();
+    ctx.strokeStyle = '#606b51';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  };
+  if (editor.mode === 'shape') f.path.forEach((p, i) => handle(p, i === editor.selectedPoint));
+  if (editor.mode === 'ridge') {
+    f.ridge.forEach((p, i) => {
+      handle(p, i === editor.selectedPoint, 6);
+      const q = camera.worldToScreen(p);
+      ctx.fillStyle = '#4d5b47';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(p.height), q.x, q.y - 13);
+    });
+  }
+  if (editor.mode === 'move') handle(f.center, true, 9);
+  for (const pass of editor.passes.filter(p => p.terrainId === f.id)) try {
+    handle(terrainPassAt(f, pass.t), pass.id === editor.selectedPass, 7);
+  } catch {}
 }
 
 
@@ -6645,6 +7807,7 @@ function drawDevelopment(ctx, camera, city, layers) {
 
 
 
+
 const INK = '#34494b';
 const ACCENT = '#ad8054';
 const ROAD_STYLES = Object.freeze({
@@ -6749,7 +7912,7 @@ function drawRoads(ctx, camera, city, byId) {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     for (const road of city.roads) {
-      if (road.waterBoundary || road.bridgeId) continue;
+      if (road.waterBoundary || road.terrainBoundary || road.bridgeId) continue;
       const style = ROAD_STYLES[road.kind];
       const a = camera.worldToScreen(byId.get(road.a));
       const b = camera.worldToScreen(byId.get(road.b));
@@ -6840,7 +8003,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null) {
+function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -6859,8 +8022,9 @@ function renderMap(canvas, camera, project, editor, layers = {}, districtSelecti
   const gridStep = drawGrid(ctx, camera);
   const city = project.city;
   const byId = new Map(city.nodes.map(node => [node.id, node]));
-  ctx.globalAlpha = editor?.dirty || waterEditor?.dirty ? 0.20 : 1;
+  ctx.globalAlpha = editor?.dirty || waterEditor?.dirty || terrainEditor?.dirty ? 0.20 : 1;
   drawSurvey(ctx, camera, city.survey);
+  drawMountains(ctx, camera, city.terrainFeatures);
   drawWater(ctx, camera, city.waterFeatures);
   drawBlocks(ctx, camera, city, byId);
   drawDistrictColors(ctx, camera, city, layers, districtSelection);
@@ -6875,6 +8039,7 @@ function renderMap(canvas, camera, project, editor, layers = {}, districtSelecti
   ctx.globalAlpha = 1;
   if (editor && !(city.waterFeatures?.some(f => f.kind === 'coast') && !editor.dirty && editor.mode === 'pan')) drawOutline(ctx, camera, editor);
   drawWaterDraft(ctx, camera, waterEditor, editor?.boundary ?? city.survey.boundary);
+  drawTerrainDraft(ctx, camera, terrainEditor);
 
   ctx.textAlign = 'left';
   ctx.fillStyle = 'rgba(52, 73, 75, 0.67)';
@@ -7306,6 +8471,10 @@ class OutlineEditor {
 
 
 
+
+
+
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -7328,6 +8497,7 @@ let files;
 let districtPanel;
 let fortificationPanel;
 let waterPanel;
+let terrainPanel;
 const layers = {
   buildings: true,
   properties: false,
@@ -7343,8 +8513,17 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor);
+    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor);
   });
+}
+
+function updateMapIndicators() {
+  const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
+    waterActive = waterPanel && waterPanel.editor.mode !== 'pan';
+  canvas.classList.toggle('drawing', Boolean(terrainActive || waterActive || editor.mode !== 'pan'));
+  for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!terrainActive && !waterActive && editor.mode === mode));
+  $('toolHint').textContent = terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
 }
 
 function updateViewport() {
@@ -7354,9 +8533,10 @@ function updateViewport() {
 
 function editorChanged() {
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(editor.mode === mode));
+  if (editor.mode !== 'pan' && terrainPanel) terrainPanel.editor.setMode('pan');
   if (editor.mode !== 'pan' && waterPanel) waterPanel.editor.setMode('pan');
   $('toolHint').textContent = TOOL_HINTS[editor.mode];
-  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
+  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
   canvas.classList.toggle('drawing', editor.mode !== 'pan');
   $('undoButton').disabled = editor.history.length === 0;
   $('finishButton').disabled = editor.closed || editor.boundary.length < 3;
@@ -7369,7 +8549,9 @@ const editor = new OutlineEditor(editorChanged, (message, error) => {
 });
 
 function fitMap() {
-  const points = !editor.dirty && project ? fortificationViewPoints(project.city) : editor.boundary.length > 2 ? editor.boundary : project?.city.survey.boundary;
+  const points = [...(!editor.dirty && project ? fortificationViewPoints(project.city) : editor.boundary.length > 2 ? editor.boundary : project?.city.survey.boundary) ?? []];
+  const terrainPoints = terrainPanel?.editor.features.flatMap(f => f.path) ?? project?.city.terrainFeatures?.flatMap(f => f.path) ?? [];
+  if (points) points.push(...terrainPoints);
   if (points) camera.fit(waterPanel?.editor.features.length && (waterPanel.editor.dirty || waterPanel.editor.mode !== 'pan') ? [...points, ...waterPanel.editor.features.flatMap(f => f.path)] : points);
   requestDraw();
   updateViewport();
@@ -7384,8 +8566,8 @@ function updateDetails() {
       citySize: project.options.size,
       cityMorphology: project.options.morphology,
       boundaryCount: c.survey.boundary.length,
-      junctionCount: new Set(c.roads.filter(r => !r.waterBoundary).flatMap(r => [r.a, r.b])).size,
-      roadCount: c.roads.filter(r => !r.waterBoundary).length,
+      junctionCount: new Set(c.roads.filter(r => !r.waterBoundary && !r.terrainBoundary).flatMap(r => [r.a, r.b])).size,
+      roadCount: c.roads.filter(r => !r.waterBoundary && !r.terrainBoundary).length,
       blockCount: c.blocks.length,
       laneCount: c.roads.filter(r => r.kind === 'lane').length,
       buildingCount: c.buildings.length,
@@ -7407,6 +8589,7 @@ function generate() {
       boundary: editor.boundary,
       center: editor.center,
       water: waterPanel?.editor.definition(),
+      terrain: terrainPanel?.editor.definition(),
       districtCount: $('districtNumberInput').value || 'auto',
       fortifications: {
         enabled: $('wallsEnabledInput').checked,
@@ -7422,6 +8605,12 @@ function generate() {
       waterPanel.refresh(true);
       waterPanel.message(tidiedWater.length ? `${tidiedWater.map(kind=>kind==='coast'?'Coastline':kind==='lake'?'Lake':'River').join(' and ')} handles were tidied automatically before generation. Undo water edit restores that draft.` : next.city.waterFeatures.length ? 'City generated around the saved water. Editing its shoreline or crossings creates a new draft.' : 'Dry city generated. Choose Add lake, Generate river or Generate coastline to preview water.');
     }
+    if (terrainPanel) {
+      terrainPanel.editor.loadCity(next.city);
+      terrainPanel.editor.setMode('pan');
+      terrainPanel.refresh(true);
+      terrainPanel.message('City generated with saved mountain footprints, ridges and road passes.');
+    }
     districtPanel?.editor.load();
     districtPanel?.refresh(true);
     fortificationPanel?.editor.load();
@@ -7434,6 +8623,7 @@ function generate() {
   } catch (error) {
     editor.notify(error.message, true);
     waterPanel?.message(error.message, true);
+    terrainPanel?.message(error.message, true);
     $('statusMessage').textContent = 'Generation paused — review the error message.';
   }
 }
@@ -7467,6 +8657,7 @@ $('editButton').addEventListener('click', () => {
   editor.notify('Drag outline points. Double-click an edge to add a point.');
 });
 $('panButton').addEventListener('click', () => {
+  terrainPanel?.editor.setMode('pan');
   waterPanel?.editor.setMode('pan');
   editor.setMode('pan');
 });
@@ -7516,7 +8707,8 @@ window.addEventListener('keydown', e => {
   if (['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(document.activeElement?.tagName)) return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
     e.preventDefault();
-    if (waterPanel?.editor.mode !== 'pan') waterPanel.editor.undo();
+    if (terrainPanel && terrainPanel.editor.mode !== 'pan') terrainPanel.editor.undo();
+    else if (waterPanel?.editor.mode !== 'pan') waterPanel.editor.undo();
     else editor.undo();
     return;
   }
@@ -7527,10 +8719,12 @@ window.addEventListener('keydown', e => {
   }
   if (e.key === 'Delete' || e.key === 'Backspace') {
     e.preventDefault();
-    if (waterPanel?.editor.mode !== 'pan') waterPanel.editor.removePoint();
+    if (terrainPanel && terrainPanel.editor.mode !== 'pan') terrainPanel.editor.removePoint();
+    else if (waterPanel?.editor.mode !== 'pan') waterPanel.editor.removePoint();
     else editor.removePoint();
   }
   if (e.key === 'Escape') {
+    terrainPanel?.editor.setMode('pan');
     waterPanel?.editor.setMode('pan');
     editor.setMode('pan');
   }
@@ -7604,7 +8798,7 @@ fortificationPanel = new FortificationPanel({
   }
 });
 fortificationPanel.bind();
-for (const id of ['districtPanel', 'fortificationPanel', 'waterPanel']) $(id).addEventListener('toggle', () => files?.changed());
+for (const id of ['districtPanel', 'fortificationPanel', 'waterPanel', 'terrainPanel']) $(id).addEventListener('toggle', () => files?.changed());
 
 waterPanel = new WaterPanel({
   getElement: $,
@@ -7614,32 +8808,62 @@ waterPanel = new WaterPanel({
     return editor.boundary;
   },
   getCenter: () => editor.center,
+  validateComposition: water => {
+    const terrain = terrainPrepare(terrainPanel?.editor.definition());
+    if (terrain.features.length) validateTerrainDefinition(terrain.features, terrain.passes, editor.boundary, editor.center, water);
+  },
   activate: () => {
     editor.setMode('pan');
+    terrainPanel?.editor.setMode('pan');
     $('waterPanel').open = true;
     fitMap();
   },
   changed: () => {
-    const active = waterPanel.editor.mode !== 'pan';
-    canvas.classList.toggle('drawing', active || editor.mode !== 'pan');
-    $('toolHint').textContent = active ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker to move its shoreline' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
-    for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!active && editor.mode === mode));
-    $('draftBadge').textContent = waterPanel.editor.dirty ? '● WATER PREVIEW' : editor.dirty ? '● OUTLINE PREVIEW' : '● CITY PLAN';
+    updateMapIndicators();
     requestDraw();
     files?.changed();
   }
 });
 waterPanel.bind();
 waterPanel.refresh(true);
+terrainPanel = new TerrainPanel({
+  getElement: $,
+  getCity: () => project?.city,
+  getBoundary: () => {
+    editor.validate();
+    return editor.boundary;
+  },
+  getCenter: () => editor.center,
+  getWater: () => prepareWater(waterPanel.editor.definition()),
+  activate: () => {
+    editor.setMode('pan');
+    waterPanel.editor.setMode('pan');
+    $('terrainPanel').open = true;
+    fitMap();
+  },
+  changed: () => {
+    updateMapIndicators();
+    requestDraw();
+    files?.changed();
+  }
+});
+terrainPanel.bind();
+terrainPanel.refresh(true);
+const activeMapEditor = () => terrainPanel.editor.mode !== 'pan' ? terrainPanel.editor : waterPanel.editor.mode !== 'pan' ? waterPanel.editor : editor;
+const runMapEdit = (method, args) => {
+  const active = activeMapEditor();
+  return active === waterPanel.editor ? waterPanel.run(() => active[method](...args)) : active === terrainPanel.editor ? terrainPanel.run(() => active[method](...args)) : active[method](...args);
+};
 const mapEditor = {
   get mode() {
-    return waterPanel.editor.mode !== 'pan' ? waterPanel.editor.mode : editor.mode;
+    return activeMapEditor().mode;
   },
-  down: (...args) => waterPanel.editor.mode !== 'pan' ? waterPanel.run(() => waterPanel.editor.down(...args)) : editor.down(...args),
-  move: (...args) => waterPanel.editor.mode !== 'pan' ? waterPanel.run(() => waterPanel.editor.move(...args)) : editor.move(...args),
-  up: (...args) => (waterPanel.editor.dragging || waterPanel.editor.mode !== 'pan' ? waterPanel.editor : editor).up(...args),
-  addPoint: (...args) => (waterPanel.editor.mode !== 'pan' ? waterPanel.editor : editor).addPoint(...args)
+  down: (...args) => runMapEdit('down', args),
+  move: (...args) => runMapEdit('move', args),
+  up: (...args) => (terrainPanel.editor.dragging ? terrainPanel.editor : waterPanel.editor.dragging ? waterPanel.editor : activeMapEditor()).up(...args),
+  addPoint: (...args) => activeMapEditor().addPoint(...args)
 };
+
 bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => districtPanel.selectAt(point));
 if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
 else window.addEventListener('resize', resize);
@@ -7666,7 +8890,12 @@ function captureWorkspace() {
       panels: {
         districts: Boolean($('districtPanel').open),
         fortifications: Boolean($('fortificationPanel').open),
-        water: Boolean($('waterPanel').open)
+        water: Boolean($('waterPanel').open),
+        terrain: Boolean($('terrainPanel').open)
+      },
+      terrainEditor: {
+        ...terrainPanel.editor.snapshot(),
+        controls: terrainPanel.controls()
       },
       waterEditor: {
         ...waterPanel.editor.snapshot(),
@@ -7770,6 +8999,17 @@ function applyProjectDocument(document) {
     $('riverWidthInput').value = workspace.waterEditor.controls.width;
     $('coastDirectionInput').value = workspace.waterEditor.controls.coastDirection ?? 'east';
   }
+  terrainPanel.editor.load(workspace.terrainEditor, next.city);
+  terrainPanel.refresh(true);
+  if (workspace.terrainEditor?.controls)
+    for (const [key, id] of [
+        ['seed', 'terrainSeedInput'],
+        ['size', 'terrainSizeInput'],
+        ['height', 'terrainHeightInput'],
+        ['placement', 'terrainPlacementInput']
+      ]) $(id).value = workspace.terrainEditor.controls[key];
+  $('terrainPanel').open = workspace.panels?.terrain ?? false;
+  terrainPanel.message(terrainPanel.editor.dirty ? 'Loaded unfinished mountain edits. Generate city to apply.' : 'Saved mountain geometry loaded exactly.');
   $('waterPanel').open = workspace.panels?.water ?? false;
   waterPanel.message(waterPanel.editor.dirty ? 'Loaded unfinished water edits. Generate city when ready to apply.' : 'Saved water and bridge geometry loaded exactly.');
   districtPanel.editor.load(workspace.districtEditor);

@@ -1,4 +1,7 @@
 import {
+  terrainWallOpenings
+} from '../core/terrain-fortifications.js';
+import {
   waterWallOpenings
 } from '../core/water-fortifications.js';
 import {
@@ -44,6 +47,7 @@ function outerPerimeterFortifications(city, settings) {
     extensions: {}
   };
   if (city.waterFeatures?.length) wall.waterOpenings = waterWallOpenings(wall, city.waterFeatures);
+  if (city.terrainFeatures?.length) wall.terrainOpenings = terrainWallOpenings(wall, city.terrainFeatures);
   const gates = choosePerimeterGates(city, wall, {
     seed: settings.seed,
     count: settings.gateCount

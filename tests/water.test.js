@@ -270,7 +270,7 @@ test('saved water corruption and unsupported forms fail before replacing a city'
 test('native 3D files migrate to dry land without changing geometry, walls, districts or workspace', async () => {
   const raw = JSON.parse(await readFile(new URL('./fixtures/save-3d-format1-schema4.json', import.meta.url), 'utf8')),
     loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 8);
+  assert.equal(loaded.project.schemaVersion, 9);
   assert.equal(loaded.project.city.waterState.status, 'dry');
   const {
     waterState,

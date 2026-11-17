@@ -303,7 +303,7 @@ test('native schema-7 city and shoreline drafts migrate without regenerating any
   assert.equal(raw.project.schemaVersion, 7);
   assert.equal(raw.project.city.waterFeatures.length, 2);
   const loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 8);
+  assert.equal(loaded.project.schemaVersion, 9);
   assert.deepEqual(loaded.project.city, raw.project.city);
   assert.deepEqual(loaded.workspace, raw.workspace);
   const editor = new WaterEditor();

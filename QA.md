@@ -201,3 +201,16 @@ Native Firefox checks pending for this release:
 4. Download and reload a project with several lakes, an active lake tool and pending lake seed/size. Confirm accepted geometry, all drafts, selection and undo restore exactly. Load a previous build's save and add a lake.
 
 Automated Canvas checks do not replace a native Firefox interaction pass.
+
+## Mountains and passes (3E.6)
+
+Automated coverage includes surrounding, inland and edge-crossing mountains across 96 outline/street/placement combinations; exact total face coverage and property setbacks; a full dividing ridge requiring a real pass; pass movement and undo; multiple ranges combined with lakes, river and coast; guided footprint/ridge edits; individual peak heights; whole-range movement and cancellation; closed-edge insertion/deletion; selected regeneration/removal with metadata retention; six-range and height boundaries; exact save/load of accepted geometry and invalid drafts; corrupt terrain/face/pass rejection; and native schema-8 migration. The compiled app workflow exercises generation, movement, height editing, applying terrain, independent water preservation, portable download/reload, pending settings and tool switching.
+
+Native Firefox checks pending:
+
+1. Add one surrounding range and one inland range. Fit map, select each, reshape foothills and move a range. Drag a sharp footprint bend and a ridge handle beyond its neighbors; the shape should self-adjust.
+2. Select each peak and change height. Confirm contour/peak detail changes, undo works and the other range remains fixed. Double-click the closing foothill edge and remove the new handle.
+3. Move an inland pass along the ridge, add another crossing, then generate. Inspect road connections, mountain setbacks and perimeter wall/tower gaps. An unsuitable crossing must preserve the last accepted city.
+4. Combine mountains and water without overlapping footprints. Save unfinished terrain edits and pending controls; reload and verify accepted geometry, selection, inputs and undo. Load a prior water-only save and add terrain.
+
+Native Canvas renders verify appearance, but do not replace a Firefox interaction pass.

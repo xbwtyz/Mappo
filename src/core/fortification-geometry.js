@@ -42,7 +42,7 @@ export function wallArcGap(a, b, length) {
 }
 export function solidWallSegments(wall, gates) {
   const measure = measureWall(wall.path),
-    cuts = (wall.waterOpenings ?? []).map(o => [o.start, o.end]);
+    cuts = [...(wall.waterOpenings ?? []), ...(wall.terrainOpenings ?? [])].map(o => [o.start, o.end]);
   for (const gate of gates.filter(g => g.wallId === wall.id)) {
     const a = gate.arc - gate.opening / 2,
       b = gate.arc + gate.opening / 2;

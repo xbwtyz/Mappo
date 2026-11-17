@@ -17,6 +17,7 @@ export class WaterPanel {
     getCity,
     getBoundary,
     getCenter,
+    validateComposition = () => {},
     changed,
     activate
   }) {
@@ -35,13 +36,14 @@ export class WaterPanel {
       } catch {
         return this.getCity()?.survey.boundary ?? [];
       }
-    });
+    }, validateComposition);
   }
   message(text, error = false) {
     if (!error && this.editor?.dirty) {
       try {
         const d = prepareWater(this.editor.definition());
         validateWaterDefinition(d.features, d.bridges, this.getBoundary(), this.getCenter());
+        this.editor.validateComposition(d);
       } catch (issue) {
         text = issue.message;
         error = true;

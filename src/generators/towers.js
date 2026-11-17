@@ -28,7 +28,7 @@ export function placePerimeterTowers(wall, gates, {
   function add(arc, role) {
     arc = ((arc % measure.length) + measure.length) % measure.length;
     const center = wallPoint(measure, arc);
-    if ((wall.waterOpenings ?? []).some(o => arc >= o.start - TOWER_RADIUS - 3 && arc <= o.end + TOWER_RADIUS + 3)) return;
+    if ([...(wall.waterOpenings ?? []), ...(wall.terrainOpenings ?? [])].some(o => arc >= o.start - TOWER_RADIUS - 3 && arc <= o.end + TOWER_RADIUS + 3)) return;
     if (towers.some(t => Math.hypot(t.center.x - center.x, t.center.y - center.y) < TOWER_RADIUS * 2 + 5)) return;
     for (const gate of gates) {
       if (wallArcGap(arc, gate.arc, measure.length) < gate.opening / 2 + gate.postRadius * 2 + TOWER_RADIUS + 2) return;

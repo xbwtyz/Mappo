@@ -57,6 +57,19 @@
           <div class="tool-grid actions"><button id="undoWaterButton" class="minor-button">Undo water edit</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
           <p id="waterMessage" class="file-status" role="status" aria-live="polite">Water edits are previews. Generate city below to rebuild streets, buildings, districts and defenses around them. The last valid city stays open if a crossing cannot connect.</p>
         </details>
+        <details id="terrainPanel" class="water-panel" open>
+          <summary>MOUNTAINS &amp; PASSES</summary>
+          <p id="terrainStats" class="hint">Generate editable mountain ranges around or inside the city.</p>
+          <div class="control-group"><label for="terrainSelect">Selected mountain range</label><select id="terrainSelect"><option value="">No mountain ranges yet</option></select></div>
+          <div class="control-group"><label for="terrainSeedInput">Mountain seed</label><input id="terrainSeedInput" maxlength="64" value="mountains" spellcheck="false"></div>
+          <div class="control-group"><label for="terrainPlacementInput">Placement · new / regenerated range</label><select id="terrainPlacementInput"><option value="surrounding">Surrounding landscape</option><option value="inside">Inside the city</option><option value="crossing">Across the city edge</option></select></div>
+          <div class="tool-grid"><div class="control-group"><label for="terrainSizeInput">Range size</label><input id="terrainSizeInput" type="number" min="40" max="220" value="70"></div><div class="control-group"><label for="terrainHeightInput">Peak height · selected / new</label><input id="terrainHeightInput" type="number" min="50" max="3000" value="900"></div></div>
+          <div class="tool-grid"><button id="addTerrainButton" class="tool-button">Add mountain range</button><button id="regenerateTerrainButton" class="minor-button">Regenerate selected</button><button id="editTerrainButton" class="tool-button" aria-pressed="false">Edit foothills</button><button id="moveTerrainButton" class="tool-button" aria-pressed="false">Move range</button><button id="editRidgeButton" class="tool-button" aria-pressed="false">Edit ridge / peaks</button><button id="removeTerrainButton" class="minor-button">Remove selected range</button><button id="editPassButton" class="tool-button" aria-pressed="false">Move passes</button><button id="addPassButton" class="minor-button" aria-pressed="false">Add road pass</button></div>
+          <button id="removeTerrainItemButton" class="minor-button full-width actions">Remove selected foothill point / pass</button>
+          <div class="tool-grid actions"><button id="undoTerrainButton" class="minor-button">Undo terrain edit</button><button id="revertTerrainButton" class="minor-button">Revert terrain draft</button></div>
+          <p class="hint">Up to six ranges, inside or outside the outline. Footprint and ridge handles self-adjust. Buildings avoid steep ground; roads cross through designated passes. Keep mountains and water separated. Heights control map contours and peak symbols.</p>
+          <p id="terrainMessage" class="file-status" role="status" aria-live="polite">Terrain edits are previews. Generate city applies the draft and rebuilds streets, buildings, districts and defenses.</p>
+        </details>
         <details id="fortificationPanel" class="fortification-panel" open>
           <summary>FORTIFICATIONS</summary>
           <label class="fortification-check"><input type="checkbox" id="wallsEnabledInput" checked> Walls enabled</label>

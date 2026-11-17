@@ -62,6 +62,10 @@ export function generateLake(boundary, center, options = {}) {
     if (others.some(f => waterPolygonsOverlap(f.corridor, feature.corridor))) continue;
     try {
       validateWaterDefinition([...others, feature], bridges, boundary, center);
+      options.validateComposition?.({
+        features: [...others, feature],
+        bridges
+      });
     } catch {
       continue;
     }

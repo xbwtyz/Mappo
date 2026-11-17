@@ -58,5 +58,7 @@ export function migrateProjectData(project) {
   if (project.schemaVersion === 6) project.schemaVersion = 7;
   // Lakes are additive; older accepted geometry and unfinished drafts stay exact.
   if (project.schemaVersion === 7) project.schemaVersion = 8;
+  // Terrain is optional: retain older city and workspace records exactly.
+  if (project.schemaVersion === 8) project.schemaVersion = 9;
   return project;
 }

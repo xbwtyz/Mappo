@@ -107,6 +107,10 @@ export function generateCoast(boundary, center, options = {}) {
     try {
       validateWaterFeature(feature, boundary, center);
       validateWaterDefinition([feature, ...(options.otherFeatures ?? [])], options.bridges ?? [], boundary, center);
+      options.validateComposition?.({
+        features: [feature, ...(options.otherFeatures ?? [])],
+        bridges: options.bridges ?? []
+      });
     } catch {
       continue;
     }

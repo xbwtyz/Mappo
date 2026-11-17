@@ -1,4 +1,8 @@
 import {
+  terrainWallOpenings,
+  terrainGateIsClear
+} from './terrain-fortifications.js';
+import {
   waterWallOpenings,
   waterGateIsDry
 } from './water-fortifications.js';
@@ -67,6 +71,9 @@ export function validateFortifications(city) {
   if (!Number.isFinite(wall.width) || wall.width < 2 || wall.width > 12 || !Array.isArray(wall.path) || wall.path.length > 1024 || !wall.path.every(fortificationPoint)) throw new Error('Invalid wall geometry.');
   if (!simpleWallPath(wall.path)) throw new Error('The wall crosses itself or is not a simple ring.');
   if (!wallEnclosesCity(wall.path, boundary, WALL_CLEARANCE)) throw new Error('The wall fails to enclose the city with safe street clearance.');
+  const expectedTerrainOpenings = terrainWallOpenings(wall, city.terrainFeatures);
+  const terrainOpenings = wall.terrainOpenings ?? [];
+  if (!Array.isArray(terrainOpenings) || terrainOpenings.length !== expectedTerrainOpenings.length || terrainOpenings.some((o, i) => !o || !Array.isArray(o.terrainIds) || JSON.stringify([...o.terrainIds].sort()) !== JSON.stringify(expectedTerrainOpenings[i].terrainIds) || !Number.isFinite(o.start) || !Number.isFinite(o.end) || Math.abs(o.start - expectedTerrainOpenings[i].start) > 1e-5 || Math.abs(o.end - expectedTerrainOpenings[i].end) > 1e-5)) throw new Error('Wall mountain openings disagree with the saved terrain.');
   const expectedWaterOpenings = waterWallOpenings(wall, city.waterFeatures);
   if (!Array.isArray(wall.waterOpenings ?? []) || (wall.waterOpenings ?? []).length !== expectedWaterOpenings.length || (wall.waterOpenings ?? []).some((o, i) => !o || JSON.stringify([...(o.waterIds ?? [o.waterId])].sort()) !== JSON.stringify([...(expectedWaterOpenings[i].waterIds ?? [expectedWaterOpenings[i].waterId])].sort()) || !Number.isFinite(o.start) || !Number.isFinite(o.end) || Math.abs(o.start - expectedWaterOpenings[i].start) > 1e-5 || Math.abs(o.end - expectedWaterOpenings[i].end) > 1e-5)) throw new Error('Wall water openings disagree with the saved river.');
   const measure = measureWall(wall.path);
@@ -84,6 +91,7 @@ export function validateFortifications(city) {
     for (let i = 0; i < c.points.length - 1; i++) {
       if (!outsideCityConnection(c.points[i], c.points[i + 1], boundary)) throw new Error('A gate approach crosses city blocks.');
     }
+    if (!terrainGateIsClear(gate, city.terrainFeatures, measure)) throw new Error('A gate or approach overlaps a mountain.');
     if (!waterGateIsDry(gate, city.waterFeatures, measure)) throw new Error('A gate or its approach overlaps water.');
     if (!gateIsClear(gate, wall, measure)) throw new Error('A gate opening is blocked by its own wall or gateposts.');
   }
@@ -108,7 +116,7 @@ export function validateFortifications(city) {
   for (const tower of city.towers) {
     if (tower.dataVersion !== 1 || tower.kind !== 'round') throw new Error('Unsupported tower data version or kind.');
     if (tower.wallId !== wall.id || !Number.isFinite(tower.arc) || tower.arc < 0 || tower.arc >= measure.length || !fortificationPoint(tower.center) || !Number.isFinite(tower.radius) || tower.radius < 2 || tower.radius > 20) throw new Error('Invalid tower geometry or wall reference.');
-    if ((wall.waterOpenings ?? []).some(o => tower.arc >= o.start - tower.radius - 2 && tower.arc <= o.end + tower.radius + 2)) throw new Error('A tower blocks a water opening.');
+    if ([...(wall.waterOpenings ?? []), ...(wall.terrainOpenings ?? [])].some(o => tower.arc >= o.start - tower.radius - 2 && tower.arc <= o.end + tower.radius + 2)) throw new Error('A tower blocks a water opening.');
     const at = wallPoint(measure, tower.arc);
     if (Math.hypot(at.x - tower.center.x, at.y - tower.center.y) > 1e-4) throw new Error('A tower is detached from its wall.');
     for (const road of city.roads) {

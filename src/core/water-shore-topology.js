@@ -15,8 +15,8 @@ import {
 
 // Connectivity of dry perimeter/quays plus proposed crossings, before a street
 // pattern is generated. Virtual edges across water are deliberately excluded.
-export function waterShoreComponents(boundary, features, bridges) {
-  const segments = [...lakeAccessSegments(features, boundary), ...boundary.map((a, i) => ({
+export function waterShoreComponents(boundary, features, bridges, extra = {}) {
+  const segments = [...(extra.access ?? []), ...(extra.crossings ?? []), ...lakeAccessSegments(features, boundary), ...boundary.map((a, i) => ({
     a,
     b: boundary[(i + 1) % boundary.length],
     kind: 'boundary'
