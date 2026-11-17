@@ -244,7 +244,7 @@ test('legacy schema-1 projects migrate in memory while preserving their source g
     }
     const text = JSON.stringify(raw),
       loaded = decodeProjectDocument(text);
-    assert.equal(loaded.project.schemaVersion, 7);
+    assert.equal(loaded.project.schemaVersion, 8);
     for (const key of ['nodes', 'roads', 'blocks', 'plaza']) assert.deepEqual(loaded.project.city[key], raw.city[key]);
     assert.equal(loaded.project.generatorVersion, raw.generatorVersion);
     assert.equal(raw.schemaVersion, 1);
@@ -749,7 +749,7 @@ test('frozen projects captured from the released 3A.2 and 3B HTML builds remain 
     const raw = JSON.parse(text),
       document = decodeProjectDocument(text);
     assert.equal(raw.generatorVersion, `0.1-dev.${version}`);
-    assert.equal(document.project.schemaVersion, 7);
+    assert.equal(document.project.schemaVersion, 8);
     for (const key of ['nodes', 'roads', 'blocks', 'plaza', 'buildings']) assert.deepEqual(document.project.city[key], raw.city[key]);
     assert.deepEqual(decodeProjectDocument(encodeProjectDocument(document)), document);
   }
@@ -761,7 +761,7 @@ test('native 3B.1 schema-2 files migrate to unassigned districts without changin
   } = await import('node:fs/promises');
   const raw = JSON.parse(await readFile(new URL('./fixtures/save-3b1-format1-schema2.json', import.meta.url), 'utf8'));
   const loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 7);
+  assert.equal(loaded.project.schemaVersion, 8);
   assert.equal(loaded.project.city.districtState.status, 'unassigned');
   const {
     districtState,

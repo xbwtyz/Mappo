@@ -56,5 +56,7 @@ export function migrateProjectData(project) {
   if (project.schemaVersion === 5) project.schemaVersion = 6;
   // Composition is additive: keep old features, geometry and drafts intact.
   if (project.schemaVersion === 6) project.schemaVersion = 7;
+  // Lakes are additive; older accepted geometry and unfinished drafts stay exact.
+  if (project.schemaVersion === 7) project.schemaVersion = 8;
   return project;
 }

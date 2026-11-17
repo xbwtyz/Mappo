@@ -1,4 +1,8 @@
 import {
+  LAKE_LIMIT,
+  validateLakeFeature
+} from './lake-geometry.js';
+import {
   waterShoreComponents
 } from './water-shore-topology.js';
 import {
@@ -31,7 +35,7 @@ import {
 } from './placement.js';
 
 export function validateWaterDefinition(features, bridges, boundary, center) {
-  if (!Array.isArray(features) || features.length > 2 || !Array.isArray(bridges) || bridges.length > 8) throw new Error('This build supports one river and one coast, with up to eight river bridges.');
+  if (!Array.isArray(features) || features.length > LAKE_LIMIT + 2 || !Array.isArray(bridges) || bridges.length > 8) throw new Error('This build supports eight lakes, one river, one coast and eight river bridges.');
   const ids = new Set(),
     kinds = new Set();
   for (const r of [...features, ...bridges]) {
@@ -40,10 +44,11 @@ export function validateWaterDefinition(features, bridges, boundary, center) {
     if (r.dataVersion !== 1) throw new Error('Unsupported water data version.');
   }
   for (const f of features) {
-    if (kinds.has(f.kind)) throw new Error('Only one water feature of each kind is supported.');
+    if (f.kind !== 'lake' && kinds.has(f.kind)) throw new Error('Only one water feature of each kind is supported.');
     kinds.add(f.kind);
     validateWaterFeature(f, boundary, center);
   }
+  if (features.filter(f => f.kind === 'lake').length > LAKE_LIMIT) throw new Error('This build supports up to eight lakes.');
   if (!features.length) {
     if (bridges.length) throw new Error('A bridge references missing water.');
     return;
@@ -67,6 +72,7 @@ export function validateWaterDefinition(features, bridges, boundary, center) {
 
 export function validateWaterFeature(f, boundary, center) {
   if (!center || !Number.isFinite(center.x) || !Number.isFinite(center.y)) throw new Error('A waterfront city needs a saved main-square center.');
+  if (f.kind === 'lake') return validateLakeFeature(f, boundary, center);
   if (!['river', 'coast'].includes(f.kind)) throw new Error('Unsupported water feature kind.');
   if ((f.kind === 'river' && (!Number.isFinite(f.width) || f.width < 10 || f.width > 90)) || (f.kind === 'coast' && (!['left', 'right'].includes(f.waterSide) || !Number.isFinite(f.seaDepth) || f.seaDepth < 100 || f.seaDepth > 20000)) || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || !f.path.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 100000 && Math.abs(p.y) < 100000)) throw new Error('Invalid water path, river width or coast extent.');
   const frame = waterFrame(f);
@@ -109,7 +115,7 @@ export function validateWaterFeature(f, boundary, center) {
 }
 export function validateWaterCity(city) {
   const state = city.waterState;
-  if (!state || state.version !== 1 || !['dry', 'river', 'coast', 'mixed'].includes(state.status) || typeof state.seed !== 'string' || state.seed.length > 64 || state.algorithm !== (state.status === 'mixed' ? 'union-v1' : state.status === 'coast' ? 'shore-v1' : 'ribbon-v1')) throw new Error('Unsupported water state.');
+  if (!state || state.version !== 1 || !['dry', 'river', 'coast', 'lake', 'mixed'].includes(state.status) || typeof state.seed !== 'string' || state.seed.length > 64 || state.algorithm !== (state.status === 'mixed' ? 'union-v1' : state.status === 'coast' ? 'shore-v1' : state.status === 'lake' ? 'lake-v1' : 'ribbon-v1')) throw new Error('Unsupported water state.');
   validateWaterDefinition(city.waterFeatures, city.bridges, city.survey.boundary, city.plaza.center);
   if (state.status !== waterStatus(city.waterFeatures)) throw new Error('Water state and features disagree.');
   if (!Array.isArray(city.waterFaces) || city.waterFaces.length > 256) throw new Error('Invalid water face collection.');

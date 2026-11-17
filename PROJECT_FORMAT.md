@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current release is **0.1-dev.3e4**. Its container format is **1**, project-data schema is **7**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current release is **0.1-dev.3e5**. Its container format is **1**, project-data schema is **8**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.3e4",
+  "appVersion": "0.1-dev.3e5",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -30,7 +30,7 @@ The empty objects illustrate envelope locations; they are not a valid complete c
 
 Names, notes and unknown JSON fields on records are retained. `project.generatorVersion` describes the original generator; loading and exporting does not rewrite it to the current app version.
 
-Schemas 2–7 share these geometry contracts: polygon coordinates are ordinary finite JSON numbers. Polygons use a counterclockwise outer boundary. Building holes are separate counterclockwise polygons inside the footprint. Base plots are convex; properties and building footprints may be concave. A property’s plots partition its area. Buildings reference only the plots their actual footprint occupies. Attached rows may share walls, with no positive-area footprint overlap.
+Schemas 2–8 share these geometry contracts: polygon coordinates are ordinary finite JSON numbers. Polygons use a counterclockwise outer boundary. Building holes are separate counterclockwise polygons inside the footprint. Base plots are convex; properties and building footprints may be concave. A property’s plots partition its area. Buildings reference only the plots their actual footprint occupies. Attached rows may share walls, with no positive-area footprint overlap.
 
 The current reader additionally validates fortification clearance, gate connectivity, tower placement and defense history, plus district coverage, connected membership, block inheritance, names/colors and saved district undo history. It validates structure, unique IDs, references, street planarity/connectivity, block coverage, street-width setbacks, polygon containment, plot ownership/area, roof geometry and rendering fields. It rejects incomplete or inconsistent core geometry before changing the open city.
 
@@ -179,3 +179,9 @@ Browser storage can be blocked, cleared, scoped to a different file/origin, or e
 The current reader accepts at most **20 MiB** of UTF-8 JSON. It limits nesting, records, polygon complexity and validation work to avoid unbounded input. These limits are implementation safeguards and can be raised deliberately in a future reader.
 
 Malformed JSON, HTML selected as a project, invalid IDs, non-finite coordinates, unsafe object keys and unsupported versions produce a visible error. No imported HTML, script or metadata is executed. The current project remains open if parsing or validation fails.
+
+## Schema 8: independent lakes
+
+The feature limit is ten: at most eight lakes, one river and one coast, plus up to eight river bridges. A single lake uses water state `status: "lake"`, `algorithm: "lake-v1"`; any multi-feature composition uses `mixed` / `union-v1`. Each lake stores a stable ID, version 1, name, center, closed 3–32 point shoreline, exact polygon/bank corridor and per-feature generation metadata. The closing point is implicit. Wet faces retain either their legacy single-feature `waterId` or exact multi-feature contributor `waterIds`.
+
+The optional water editor mode `lake-move` and controls `lakeSeed`, `lakeRadius`, `lakeId` preserve whole-lake movement, pending generation settings and the selected lake independently of river/coast selection. Invalid unfinished lake geometry remains saveable within structural bounds; accepted city shorelines must satisfy lake and full topology validation. The 7 → 8 migration increments the schema only. Native schema-7 river/coast fixtures verify that city and workspace data stay byte-for-byte equivalent as JSON values.

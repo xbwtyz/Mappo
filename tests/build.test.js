@@ -23,7 +23,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e4.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e5.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -858,5 +858,57 @@ test('standalone app downloads, previews and restores complete projects and reco
 
 
 
+
+  reloaded.el('revertWaterButton').handlers.click();
+  const existingWater = copy(guidedEditor.features),
+    existingBridges = copy(guidedEditor.bridges);
+  reloaded.el('lakeSeedInput').value = 'bundle-lakes';
+  reloaded.el('lakeRadiusInput').value = '18';
+  reloaded.el('addLakeButton').handlers.click();
+  reloaded.el('addLakeButton').handlers.click();
+  assert.equal(guidedEditor.features.filter(f => f.kind === 'lake').length, 2, reloaded.el('waterMessage').textContent);
+  assert.deepEqual(copy(guidedEditor.features.filter(f => f.kind !== 'lake')), existingWater);
+  assert.deepEqual(copy(guidedEditor.bridges), existingBridges);
+  const firstLake = guidedEditor.features.find(f => f.kind === 'lake');
+  reloaded.el('lakeSelect').value = firstLake.id;
+  reloaded.el('lakeSelect').handlers.change();
+  assert.equal(guidedEditor.activeWaterId, firstLake.id);
+  const oldLake = copy(firstLake);
+  reloaded.el('moveLakeButton').handlers.click();
+  const lakeStart = reloaded.state().camera.worldToScreen(firstLake.center),
+    lakeEnd = reloaded.state().camera.worldToScreen({
+      x: firstLake.center.x + 2,
+      y: firstLake.center.y + 2
+    });
+  fire('pointerdown', lakeStart);
+  fire('pointermove', lakeEnd);
+  fire('pointerup', lakeEnd);
+  assert.notDeepEqual(copy(firstLake.center), oldLake.center);
+  reloaded.el('undoWaterButton').handlers.click();
+  assert.deepEqual(copy(guidedEditor.features.find(f => f.id === firstLake.id)), oldLake);
+  reloaded.el('generateButton').handlers.click();
+  assert.equal(guidedEditor.dirty, false, reloaded.el('waterMessage').textContent);
+  assert.equal(reloaded.state().project.city.waterFeatures.length, 4);
+  reloaded.el('lakeSeedInput').value = 'pending-lake';
+  reloaded.el('lakeRadiusInput').value = '39';
+  assert.ok(await reloaded.el('saveProjectButton').handlers.click());
+  const lakeSave = JSON.parse(await downloaded.at(-1).blob.text());
+  assert.equal(lakeSave.workspace.waterEditor.controls.lakeSeed, 'pending-lake');
+  assert.equal(lakeSave.workspace.waterEditor.controls.lakeRadius, '39');
+  assert.equal(lakeSave.workspace.waterEditor.controls.lakeId, firstLake.id);
+  const lakeFile = {
+    size: JSON.stringify(lakeSave).length,
+    text: async () => JSON.stringify(lakeSave)
+  };
+  await reloaded.state().files.stageFile(lakeFile);
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.equal(reloaded.el('lakeSelect').value, firstLake.id);
+  assert.equal(reloaded.el('lakeSeedInput').value, 'pending-lake');
+  assert.equal(reloaded.el('lakeRadiusInput').value, '39');
+  reloaded.el('removeLakeButton').handlers.click();
+  assert.equal(guidedEditor.features.filter(f => f.kind === 'lake').length, 1);
+  assert.ok(!guidedEditor.features.some(f => f.id === firstLake.id));
+  reloaded.el('undoWaterButton').handlers.click();
+  assert.equal(guidedEditor.features.filter(f => f.kind === 'lake').length, 2);
 
 });

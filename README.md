@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.3e4 — Guided shoreline editing
+## Current build: 0.1-dev.3e5 — Multiple editable lakes
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3e4.html`](dist/mappo-0.1-dev.3e4.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3e5.html`](dist/mappo-0.1-dev.3e5.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### Workflow
 
@@ -45,13 +45,24 @@ Newly generated cities receive connected neighborhoods automatically. The **Neig
 
 Districts are geographic neighborhoods. Names do not replace buildings or simulate occupations, wealth or trade. Rules and themes can be added later without coupling neighborhood identity to geometry generation.
 
-Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 7 explicitly migrates older files; older apps that cannot read schema 7 should request a newer build rather than partially load it.
+Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 8 explicitly migrates older files; older apps that cannot read schema 8 should request a newer build rather than partially load it.
 
 See [`DISTRICTS.md`](DISTRICTS.md) for the module boundaries and extension points.
 
+### Lakes
+
+Use **Add lake** in **Water & Bridges → Lakes** to create an independent lake preview. Repeat to add more; this release supports **up to eight lakes**, alongside a river and coastline. Each lake has its own stable ID, seed and editable closed shoreline.
+
+- Choose a lake in **Selected lake**, then **Edit lake shape**. Drag any shoreline handle; sharp or crossing drags stop at a safe bank shape. Double-click any shore edge, including the closing edge, to add a handle. Delete removes a selected handle when the remaining bank stays safe. Up to 32 handles per lake are supported.
+- Choose **Move lake** and drag its center marker to move the entire shoreline. Guided movement keeps its banks inside the city outline. Keep lakes away from the main square and river bridges.
+- **Lake size** and **Lake seed** control Add lake or **Regenerate selected**. Regeneration keeps the selected lake's identity, center, name and compatible metadata. **Remove selected lake** removes only that lake. Water undo restores additions, edits, regeneration and removal.
+- Click **Generate city** to apply the draft. Inland waterfront streets connect to the surrounding street network, buildings keep shore setbacks, and reserved water faces participate in exact map coverage. Generation proposes lakes on available land; if the requested size will not fit, reduce it or enlarge the outline.
+
+Project files and browser recovery retain every lake, unfinished shape edits, active selection, pending inputs and water undo history. Existing saves migrate without adding lakes or changing accepted geometry. Closed shore guidance and geometry live in dedicated modules so future lake types, styling and tools can be added separately.
+
 ### Coastlines
 
-**Water & Bridges** has independent **River** and **Coastline** sections. A city can contain both at once. A coastline has open ocean on one side and buildable land on the other. Generating, rerolling, editing or removing a river retains the coast; the same applies in reverse. Each has its own seed and controls. The accepted city stays open until Generate city succeeds. Water undo restores the last water edit.
+**Water & Bridges** has independent **River**, **Coastline** and **Lakes** sections. A city can contain both at once. A coastline has open ocean on one side and buildable land on the other. Generating, rerolling, editing or removing a river retains the coast; the same applies in reverse. Each has its own seed and controls. The accepted city stays open until Generate city succeeds. Water undo restores the last water edit.
 
 1. Choose a **coast seed** and **Ocean direction**: north, east, south or west. Click **Generate coastline** for an editable preview. **New coast seed** rerolls only the coastline using the pending ocean direction.
 2. Drag shoreline handles. Handles stay ordered and neighboring handles ease tight bends automatically. Double-click near the shoreline to add a point; select an interior point and Delete or **Remove selected** to remove it. Use **Edit shoreline** for coast handles and **Edit river points** for river handles.
@@ -62,7 +73,7 @@ See [`DISTRICTS.md`](DISTRICTS.md) for the module boundaries and extension point
 
 The shoreline connectivity check prevents unconnected islands, including in concave outlines. River width and bridge tools stay available whenever a river exists, including in a coastal city. Bridges need two dry banks and cannot extend into the ocean. Shoreline edits, side swaps, pending direction and undo history travel with project files and browser recovery. Existing 3E river files load with their exact accepted geometry and drafts.
 
-This release supports **one river and one coast together** per city. Joined water is treated as a union: waterfront roads stop at the river mouth and water draws without an internal shoreline across the opening. Multiple rivers/coasts, lakes, islands, docks and custom beach styles are future additions. Course points still progress between endpoints without loops or sharp backtracking. See [`WATER.md`](WATER.md) for the shared shape adapters and independent coastline generator.
+This release supports **one river and one coast together** per city. Joined water is treated as a union: waterfront roads stop at the river mouth and water draws without an internal shoreline across the opening. Multiple rivers/coasts, islands, docks and custom beach styles are future additions. Course points still progress between endpoints without loops or sharp backtracking. See [`WATER.md`](WATER.md) for the shared shape adapters and independent coastline generator.
 
 ### Rivers and editable bridges
 
@@ -85,7 +96,7 @@ Water edits are independent of outline edits. **Undo water edit** keeps up to 20
 
 Invalid bridge locations, overlapping crossings, sharp/backtracking river bends, water at the square and disconnected banks retain the last valid city and show an explanation. A draft may temporarily have no bridges or invalid river geometry and can still be saved for later correction. Saving/loading never applies or regenerates a draft.
 
-River mode supports **one river, up to 32 course points, and 1–8 bridges** in a generated city. The course progresses from source to mouth without doubling back; widths are constant along the cross-stream axis. Generated bridge approaches are straight primary streets clipped to land. Lakes, tributaries, islands, variable widths and custom bridge styles remain extensions. See [`WATER.md`](WATER.md).
+River mode supports **one river, up to 32 course points, and 1–8 bridges** in a generated city. The course progresses from source to mouth without doubling back; widths are constant along the cross-stream axis. Generated bridge approaches are straight primary streets clipped to land. Tributaries, islands, variable widths and custom bridge styles remain extensions. See [`WATER.md`](WATER.md).
 
 ### Fortifications
 
@@ -169,7 +180,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e4.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e5.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -193,7 +204,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3e1:** Generated/editable coastlines, ocean-side control, connected coastal land and schema-6 compatibility.
 - **0.1-dev.3e2:** Independent river/coast controls and seeds, joined water geometry, inland bridges and schema-7 compatibility.
 - **0.1-dev.3e3:** Guided river handles, snapped point insertion, undoable draft tidying and validated river proposals.
-- **0.1-dev.3e4:** Shared river/coast guidance, snapped shoreline insertion, undoable coastline tidying and validated coast proposals.
+- **0.1-dev.3e5:** Shared river/coast guidance, snapped shoreline insertion, undoable coastline tidying and validated coast proposals.
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 

@@ -48,7 +48,7 @@ export function drawWater(ctx, camera, features = []) {
       for (let i = 1; i < f.path.length; i++)
         for (const s of waterSetIntervals(f.path[i - 1], f.path[i], others, 'polygon'))
           if (!s.inside) waterDrawSegment(ctx, camera, s.a, s.b, 'rgba(231,245,236,.38)', Math.max(.7, f.width * .10 * camera.zoom));
-    } else {
+    } else if (f.kind === 'coast') {
       const {
         v
       } = waterFrame(f), sign = f.waterSide === 'left' ? 1 : -1;
@@ -116,6 +116,7 @@ export function drawWaterDraft(ctx, camera, editor, boundary) {
     if (i) ctx.lineTo(q.x, q.y);
     else ctx.moveTo(q.x, q.y);
   });
+  if (f.kind === 'lake') ctx.closePath();
   ctx.strokeStyle = '#326b80';
   ctx.lineWidth = 1.5;
   ctx.stroke();
@@ -130,6 +131,22 @@ export function drawWaterDraft(ctx, camera, editor, boundary) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
   });
+  if (editor.mode === 'lake-move' && f.kind === 'lake') {
+    const q = camera.worldToScreen(f.center);
+    ctx.beginPath();
+    ctx.arc(q.x, q.y, 9, 0, Math.PI * 2);
+    ctx.fillStyle = '#f6faf2';
+    ctx.fill();
+    ctx.strokeStyle = '#326b80';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(q.x - 13, q.y);
+    ctx.lineTo(q.x + 13, q.y);
+    ctx.moveTo(q.x, q.y - 13);
+    ctx.lineTo(q.x, q.y + 13);
+    ctx.stroke();
+  }
   for (const bridge of editor.bridges) {
     const river = editor.features.find(r => r.id === bridge.waterId);
     if (!river) continue;

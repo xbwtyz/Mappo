@@ -1,4 +1,14 @@
 import {
+  generateLake
+} from '../generators/lakes.js';
+import {
+  guideLakePath
+} from '../core/lake-editing.js';
+import {
+  lakeShapeSafe,
+  LAKE_LIMIT
+} from '../core/lake-geometry.js';
+import {
   guideWaterPath
 } from '../core/water-editing.js';
 import {
@@ -49,7 +59,7 @@ export class WaterEditor {
     this.features = waterCopy(city.waterFeatures ?? []);
     this.bridges = waterCopy(city.bridges ?? []);
     this.state = waterCopy(city.waterState ?? waterDryState());
-    this.activeWaterId = this.features[0]?.id ?? null;
+    this.activeWaterId = this.features.some(f => f.id === this.activeWaterId) ? this.activeWaterId : this.features[0]?.id ?? null;
     this.dirty = false;
     this.dragging = null;
     this.selectedPoint = -1;
@@ -82,7 +92,7 @@ export class WaterEditor {
     return this.features.find(f => f.id === this.activeWaterId) ?? this.features[0];
   }
   selectFeature(kind) {
-    const f = this.features.find(f => f.kind === kind);
+    const f = this.features.find(f => f.id === kind) ?? this.features.find(f => f.kind === kind);
     if (!f) {
       this.notify(`Generate a ${kind} first.`, true);
       return false;
@@ -92,9 +102,9 @@ export class WaterEditor {
     this.selectedBridge = null;
     return true;
   }
-  upsert(next) {
+  upsert(next, targetId = null) {
     const fresh = next.features[0],
-      existing = this.features.find(f => f.kind === fresh.kind);
+      existing = fresh.kind === 'lake' ? this.features.find(f => f.id === targetId) : this.features.find(f => f.kind === fresh.kind);
     let id = existing?.id ?? fresh.id,
       index = 2;
     while (!existing && this.features.some(f => f.id === id)) id = `${fresh.id}-${index++}`;
@@ -146,18 +156,33 @@ export class WaterEditor {
     this.upsert(next);
     this.notify('Coast preview updated. The river and bridges were retained. Generate city to apply.');
   }
+  generateLakeDraft(boundary, center, options = {}, targetId = null) {
+    const existing = this.features.find(f => f.kind === 'lake' && f.id === targetId);
+    const next = generateLake(boundary, center, {
+      ...options,
+      id: existing?.id,
+      center: existing?.center,
+      otherFeatures: prepareWater({
+        features: this.features.filter(f => f !== existing)
+      }).features,
+      bridges: this.bridges
+    });
+    if (existing) next.features[0].name = existing.name;
+    this.upsert(next, targetId);
+    this.notify('Lake preview updated. Other water features were retained. Generate city to apply.');
+  }
   removeFeature(kind) {
-    const feature = this.features.find(f => f.kind === kind);
+    const feature = this.features.find(f => f.id === kind) ?? this.features.find(f => f.kind === kind);
     if (!feature) return;
     this.remember();
     this.features = this.features.filter(f => f !== feature);
     this.bridges = this.bridges.filter(b => b.waterId !== feature.id);
     this.state = waterCompositionState(this.features, this.state);
-    this.activeWaterId = this.features[0]?.id ?? null;
+    this.activeWaterId = this.features.some(f => f.id === this.activeWaterId) ? this.activeWaterId : this.features[0]?.id ?? null;
     this.selectedPoint = -1;
     this.selectedBridge = null;
     this.mark();
-    this.notify(`${kind==='coast'?'Coastline':'River'} removed from the draft. Other water features were retained.`);
+    this.notify(`${feature.kind==='lake'?'Lake':kind==='coast'?'Coastline':'River'} removed from the draft. Other water features were retained.`);
   }
   flipCoast() {
     const f = this.features.find(f => f.kind === 'coast');
@@ -205,10 +230,11 @@ export class WaterEditor {
   }
   applyGuidedFeature(feature, result) {
     feature.path = result.path;
+    if (feature.kind === 'lake') feature.center = result.center;
     if (feature.kind === 'coast') feature.seaDepth = result.seaDepth;
   }
   tidyFeature(kind, boundary = this.getBoundary(), notify = true) {
-    const feature = this.features.find(f => f.kind === kind);
+    const feature = this.features.find(f => f.id === kind) ?? this.features.find(f => f.kind === kind);
     if (!feature) return false;
     const result = guideWaterPath(feature, {
       boundary
@@ -248,7 +274,18 @@ export class WaterEditor {
   down(p, zoom) {
     const f = this.activeFeature();
     if (!f) return;
-    if (this.mode === 'river') {
+    if (this.mode === 'lake-move' && f.kind === 'lake') {
+      if (Math.hypot(f.center.x - p.x, f.center.y - p.y) > 16 / zoom) return;
+      this.gestureBoundary = this.getBoundary();
+      this.gestureHistory = this.history.slice();
+      this.gesture = this.definition();
+      this.gestureDirty = this.dirty;
+      this.remember();
+      this.dragging = {
+        kind: 'lake-move'
+      };
+      this.dragGuided = false;
+    } else if (this.mode === 'river') {
       const i = f.path.findIndex(q => Math.hypot(q.x - p.x, q.y - p.y) < 12 / zoom);
       this.selectedPoint = i;
       if (i >= 0) {
@@ -314,7 +351,16 @@ export class WaterEditor {
   }
   move(p) {
     if (!this.dragging) return;
-    if (this.dragging.kind === 'point') {
+    if (this.dragging.kind === 'lake-move') {
+      const feature = this.activeFeature(),
+        baseline = this.gesture.features.find(f => f.id === feature.id);
+      const result = guideLakePath(baseline, {
+        moveCenter: p,
+        boundary: this.gestureBoundary
+      });
+      this.applyGuidedFeature(feature, result);
+      this.dragGuided = result.adjusted;
+    } else if (this.dragging.kind === 'point') {
       const feature = this.activeFeature();
       const baseline = this.gesture?.features.find(f => f.id === feature.id) ?? feature;
       const result = guideWaterPath(baseline, {
@@ -345,8 +391,8 @@ export class WaterEditor {
     if (path.length >= 32) return;
     let best = -1,
       d = 18 / zoom;
-    for (let i = 0; i < path.length - 1; i++) {
-      const n = distanceToSegment(p, path[i], path[i + 1]);
+    for (let i = 0; i < path.length - (this.activeFeature().kind === 'lake' ? 0 : 1); i++) {
+      const n = distanceToSegment(p, path[i], path[(i + 1) % path.length]);
       if (n < d) {
         d = n;
         best = i;
@@ -357,9 +403,9 @@ export class WaterEditor {
       x: p.x,
       y: p.y
     };
-    if (['river', 'coast'].includes(this.activeFeature().kind)) {
+    if (['river', 'coast', 'lake'].includes(this.activeFeature().kind)) {
       const a = path[best],
-        b = path[best + 1],
+        b = path[(best + 1) % path.length],
         dx = b.x - a.x,
         dy = b.y - a.y,
         length2 = dx * dx + dy * dy,
@@ -369,11 +415,16 @@ export class WaterEditor {
         y: a.y + dy * t
       };
       if (Math.hypot(inserted.x - a.x, inserted.y - a.y) < 2 || Math.hypot(inserted.x - b.x, inserted.y - b.y) < 2) {
-        this.selectedPoint = t < .5 ? best : best + 1;
+        this.selectedPoint = t < .5 ? best : (best + 1) % path.length;
         this.changed();
         return;
       }
     }
+    const proposed = path.toSpliced(best + 1, 0, inserted);
+    if (this.activeFeature().kind === 'lake' && !lakeShapeSafe({
+        ...this.activeFeature(),
+        path: proposed
+      })) return;
     this.remember();
     path.splice(best + 1, 0, inserted);
     this.selectedPoint = best + 1;
@@ -386,7 +437,15 @@ export class WaterEditor {
       this.selectedBridge = null;
       this.mark();
       this.notify('Bridge removed from the draft. A valid city needs connected banks.');
-    } else if (this.mode === 'river' && this.selectedPoint > 0 && this.selectedPoint < this.activeFeature().path.length - 1 && this.activeFeature().path.length > 3) {
+    } else if (this.mode === 'river' && this.selectedPoint >= 0 && (this.activeFeature().kind === 'lake' || (this.selectedPoint > 0 && this.selectedPoint < this.activeFeature().path.length - 1)) && this.activeFeature().path.length > 3) {
+      const proposed = this.activeFeature().path.toSpliced(this.selectedPoint, 1);
+      if (this.activeFeature().kind === 'lake' && !lakeShapeSafe({
+          ...this.activeFeature(),
+          path: proposed
+        })) {
+        this.notify('Keep this handle to preserve a safe bank shape. Move it first.');
+        return;
+      }
       this.remember();
       this.activeFeature().path.splice(this.selectedPoint, 1);
       this.selectedPoint = -1;
@@ -418,16 +477,19 @@ export class WaterEditor {
   }
 }
 export function validateWaterEditor(snapshot) {
-  if (!snapshot || typeof snapshot !== 'object' || typeof snapshot.dirty !== 'boolean' || !['pan', 'river', 'bridge', 'addbridge'].includes(snapshot.mode) || !Number.isInteger(snapshot.selectedPoint) || snapshot.selectedPoint < -1 || snapshot.selectedPoint > 31 || (snapshot.selectedBridge !== null && typeof snapshot.selectedBridge !== 'string') || !Array.isArray(snapshot.history) || snapshot.history.length > WATER_HISTORY_LIMIT) throw new Error('Invalid water editor state.');
+  if (!snapshot || typeof snapshot !== 'object' || typeof snapshot.dirty !== 'boolean' || !['pan', 'river', 'bridge', 'addbridge', 'lake-move'].includes(snapshot.mode) || !Number.isInteger(snapshot.selectedPoint) || snapshot.selectedPoint < -1 || snapshot.selectedPoint > 31 || (snapshot.selectedBridge !== null && typeof snapshot.selectedBridge !== 'string') || !Array.isArray(snapshot.history) || snapshot.history.length > WATER_HISTORY_LIMIT) throw new Error('Invalid water editor state.');
   for (const d of [snapshot, ...snapshot.history]) {
-    if (!d.state || d.state.version !== 1 || !['ribbon-v1', 'shore-v1', 'union-v1'].includes(d.state.algorithm) || !['dry', 'river', 'coast', 'mixed'].includes(d.state.status)) throw new Error('Unsupported water draft version.');
-    if (typeof d.state.seed !== 'string' || d.state.seed.length > 64 || !Array.isArray(d.features) || d.features.length > 2 || !Array.isArray(d.bridges) || d.bridges.length > 8) throw new Error('Invalid water draft.');
+    if (!d.state || d.state.version !== 1 || !['ribbon-v1', 'shore-v1', 'union-v1', 'lake-v1'].includes(d.state.algorithm) || !['dry', 'river', 'coast', 'lake', 'mixed'].includes(d.state.status)) throw new Error('Unsupported water draft version.');
+    if (typeof d.state.seed !== 'string' || d.state.seed.length > 64 || !Array.isArray(d.features) || d.features.length > LAKE_LIMIT + 2 || !Array.isArray(d.bridges) || d.bridges.length > 8) throw new Error('Invalid water draft.');
     for (const f of d.features)
-      if (f.dataVersion !== 1 || !['river', 'coast'].includes(f.kind) || typeof f.id !== 'string' || f.id.length > 128 || (f.kind === 'river' && (!Number.isFinite(f.width) || f.width < 10 || f.width > 90)) || (f.kind === 'coast' && (!['left', 'right'].includes(f.waterSide) || !Number.isFinite(f.seaDepth) || f.seaDepth < 100 || f.seaDepth > 20000)) || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || f.path.some(p => !p || !Number.isFinite(p.x) || !Number.isFinite(p.y) || Math.abs(p.x) > 100000 || Math.abs(p.y) > 100000)) throw new Error('Invalid water draft.');
+      if (f.dataVersion !== 1 || !['river', 'coast', 'lake'].includes(f.kind) || typeof f.id !== 'string' || f.id.length > 128 || (f.kind === 'lake' && (!f.center || !Number.isFinite(f.center.x) || !Number.isFinite(f.center.y) || Math.abs(f.center.x) > 100000 || Math.abs(f.center.y) > 100000)) || (f.kind === 'river' && (!Number.isFinite(f.width) || f.width < 10 || f.width > 90)) || (f.kind === 'coast' && (!['left', 'right'].includes(f.waterSide) || !Number.isFinite(f.seaDepth) || f.seaDepth < 100 || f.seaDepth > 20000)) || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || f.path.some(p => !p || !Number.isFinite(p.x) || !Number.isFinite(p.y) || Math.abs(p.x) > 100000 || Math.abs(p.y) > 100000)) throw new Error('Invalid water draft.');
     for (const b of d.bridges)
       if (b.dataVersion !== 1 || b.kind !== 'bridge' || typeof b.id !== 'string' || b.id.length > 128 || !d.features.some(f => f.kind === 'river' && f.id === b.waterId) || !Number.isFinite(b.t) || b.t < 0 || b.t > 1 || b.width !== 9) throw new Error('Invalid bridge draft.');
   }
   if (snapshot.activeWaterId !== undefined && snapshot.activeWaterId !== null && !snapshot.features.some(f => f.id === snapshot.activeWaterId)) throw new Error('Invalid selected water feature.');
+  if (snapshot.controls?.lakeId !== undefined && (typeof snapshot.controls.lakeId !== 'string' || snapshot.controls.lakeId.length > 128)) throw new Error('Invalid saved lake selection.');
+  if (snapshot.controls?.lakeSeed !== undefined && (typeof snapshot.controls.lakeSeed !== 'string' || snapshot.controls.lakeSeed.length > 64)) throw new Error('Invalid saved lake seed.');
+  if (snapshot.controls?.lakeRadius !== undefined && (typeof snapshot.controls.lakeRadius !== 'string' || snapshot.controls.lakeRadius.length > 16)) throw new Error('Invalid saved lake size.');
   if (snapshot.controls?.coastSeed !== undefined && (typeof snapshot.controls.coastSeed !== 'string' || snapshot.controls.coastSeed.length > 64)) throw new Error('Invalid saved coast seed.');
   if (snapshot.controls?.coastDirection !== undefined && !['north', 'east', 'south', 'west'].includes(snapshot.controls.coastDirection)) throw new Error('Invalid saved coast direction.');
   if (snapshot.controls !== undefined && (typeof snapshot.controls.seed !== 'string' || snapshot.controls.seed.length > 64 || typeof snapshot.controls.width !== 'string' || snapshot.controls.width.length > 16)) throw new Error('Invalid water controls.');

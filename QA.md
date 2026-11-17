@@ -188,3 +188,16 @@ Open `dist/mappo-0.1-dev.3e4.html` directly from disk.
 - Save a renamed district, an unfinished inspector name and undo history. Reload, then undo the district edit.
 - Load a 3B.1 project; confirm its original map remains unassigned until Generate districts is chosen.
 - Test Ctrl/Cmd + S and the browser’s JSON file picker. Keep portable files when updating the HTML build.
+
+## Multiple lakes (3E.5)
+
+Automated coverage includes three lakes across 32 outline/street combinations, lake-first and lake-last river/coast generation in four ocean directions, eight independent lakes, closed-edge insertion, safe deletion, guided extreme drags, cancelled whole-lake moves, stable identities/metadata on regeneration, selective removal/undo, exact project/draft round trips, corrupted bank rejection and a native schema-7 migration fixture. The standalone integration workflow exercises Add lake twice, selection, center movement, undo, Generate city, project download/load and pending inputs.
+
+Native Firefox checks pending for this release:
+
+1. Open the standalone HTML, add two lakes, and select each from the list. Edit one shore and confirm the other stays fixed. Drag a handle sharply through the opposite shore; the draft should self-adjust without tangling.
+2. Double-click the closing edge to add a handle; select it and Delete. Use Move lake to drag the whole lake, including toward a concave city edge. Escape should exit the tool; pointer cancellation should restore the gesture.
+3. Generate city and inspect inland waterfront roads and dry buildings. Add a river and coast, then generate again. Remove only one lake and undo.
+4. Download and reload a project with several lakes, an active lake tool and pending lake seed/size. Confirm accepted geometry, all drafts, selection and undo restore exactly. Load a previous build's save and add a lake.
+
+Automated Canvas checks do not replace a native Firefox interaction pass.

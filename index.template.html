@@ -27,7 +27,7 @@
         </section>
         <details id="waterPanel" class="water-panel" open>
           <summary>WATER &amp; BRIDGES</summary>
-          <p id="waterStats" class="hint">Generate a river and coastline independently, then edit either preview.</p>
+          <p id="waterStats" class="hint">Generate lakes, a river and a coastline independently, then edit each preview.</p>
           <fieldset class="water-feature"><legend>RIVER</legend>
           <div class="control-group"><label for="waterSeedInput">River seed</label><input id="waterSeedInput" maxlength="64" value="river" spellcheck="false"></div>
           <div class="control-group"><label for="riverWidthInput">River width · survey units</label><input id="riverWidthInput" type="number" min="10" max="90" step="1" value="28"></div>
@@ -44,7 +44,15 @@
           <p class="hint">Shoreline handles self-adjust like river handles. Tidy repairs older drafts; Generate city tidies both water features before applying.</p>
           <button id="removeCoastButton" class="minor-button full-width actions">Remove coastline</button>
           </fieldset>
-          <p class="hint">River and coast controls are independent. Generating, editing or removing one retains the other. Water joins where the river meets the ocean.</p>
+          <fieldset class="water-feature"><legend>LAKES</legend>
+          <div class="control-group"><label for="lakeSelect">Selected lake</label><select id="lakeSelect"><option value="">No lakes yet</option></select></div>
+          <div class="control-group"><label for="lakeSeedInput">Lake seed</label><input id="lakeSeedInput" maxlength="64" value="lake" spellcheck="false"></div>
+          <div class="control-group"><label for="lakeRadiusInput">Lake size · new / regenerated lake</label><input id="lakeRadiusInput" type="number" min="18" max="100" value="28"></div>
+          <div class="tool-grid"><button id="addLakeButton" class="tool-button">Add lake</button><button id="regenerateLakeButton" class="minor-button">Regenerate selected</button><button id="editLakeButton" class="tool-button" aria-pressed="false">Edit lake shape</button><button id="moveLakeButton" class="tool-button" aria-pressed="false">Move lake</button></div>
+          <button id="removeLakeButton" class="minor-button full-width actions">Remove selected lake</button>
+          <p class="hint">Up to eight independent lakes. Drag shoreline points to reshape; double-click a shore edge to add a point. Move lake uses its center marker. Guided handles keep banks from tangling. Generate city applies the draft.</p>
+          </fieldset>
+          <p class="hint">Lakes, river and coast controls are independent. Generating, editing or removing one retains the other. Water joins where the river meets the ocean.</p>
           <button id="removeWaterItemButton" class="minor-button full-width">Remove selected point / bridge</button>
           <div class="tool-grid actions"><button id="undoWaterButton" class="minor-button">Undo water edit</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
           <p id="waterMessage" class="file-status" role="status" aria-live="polite">Water edits are previews. Generate city below to rebuild streets, buildings, districts and defenses around them. The last valid city stays open if a crossing cannot connect.</p>
@@ -126,7 +134,7 @@
         <div class="sidebar-rule"></div><p class="eyebrow">WORKSPACE GUIDE</p>
         <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
         <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
-        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts group whole blocks. Moving a block keeps both neighborhoods connected. Generate an editable river and coastline in Water &amp; Bridges. Water drafts apply when you generate the city. Perimeter walls stay clear of water. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
+        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No holes in the outer outline; inland lakes reserve their own water areas. Buildings now occupy varied street-facing properties. Districts group whole blocks. Moving a block keeps both neighborhoods connected. Generate editable lakes, a river and a coastline in Water &amp; Bridges. Water drafts apply when you generate the city. Perimeter walls stay clear of water. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
       </div>
     </aside>
   </div>

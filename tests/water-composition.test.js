@@ -217,7 +217,7 @@ test('invalid combined references, internal banks and ocean bridges are rejected
       [p => p.city.waterFaces[0].waterIds = [], /water face reference/],
       [p => p.city.bridges[0].waterId = 'missing', /reference/],
       [p => p.city.waterState.algorithm = 'ribbon-v1', /Unsupported/],
-      [p => p.city.waterFeatures.push(copyJson(p.city.waterFeatures[0])), /at most 2/],
+      [p => p.city.waterFeatures.push(copyJson(p.city.waterFeatures[0])), /duplicate/i],
       [p => p.city.walls[0].waterOpenings[0].waterIds = ['missing'], /water openings/]
     ]) {
     const next = copyJson(p);
@@ -248,7 +248,7 @@ test('invalid combined references, internal banks and ocean bridges are rejected
 test('native 3E.1 coasts migrate unchanged and can gain a river without changing the coast record', async () => {
   const raw = JSON.parse(await readFile(new URL('./fixtures/save-3e1-format1-schema6.json', import.meta.url), 'utf8')),
     loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 7);
+  assert.equal(loaded.project.schemaVersion, 8);
   assert.deepEqual(loaded.project.city, raw.project.city);
   assert.deepEqual(loaded.workspace, raw.workspace);
   const e = new WaterEditor();

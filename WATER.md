@@ -1,6 +1,6 @@
 # Water and bridge architecture
 
-Milestone 3E implements generated/editable rivers and connected bridges. The 3E.1 expansion adds generated/editable coastlines, an explicit ocean side and connected coastal land. The 3E.2 expansion supports one river and one coast together, with independent controls and an exposed-shore union at river mouths. Lakes and additional rivers/coasts remain extensions. Building inspection remains planned for 3F.
+Milestone 3E implements generated/editable rivers and connected bridges. The 3E.1 expansion adds generated/editable coastlines, an explicit ocean side and connected coastal land. The 3E.2 expansion supports one river and one coast together, with independent controls and an exposed-shore union at river mouths. The 3E.5 expansion adds up to eight independent lakes with closed shore handles, whole-lake movement and inland access streets. Additional rivers/coasts remain extensions. Building inspection remains planned for 3F.
 
 ## Module boundaries
 
@@ -32,7 +32,7 @@ Water definitions and histories are independent of outline, district and defense
 
 ## Extension rules
 
-- Add explicit versioned feature and crossing kinds, geometry helpers, validation and matching rendering together. Current limits accept one river with up to eight bridges and one coast simultaneously. Bridges reference the river and must remain clear of the ocean.
+- Add explicit versioned feature and crossing kinds, geometry helpers, validation and matching rendering together. Current limits accept eight lakes, one river with up to eight bridges and one coast simultaneously. Bridges reference the river and must remain clear of the ocean.
 - Keep accepted geometry authoritative and preserve compatible JSON fields. Changing a water draft must not mutate city records.
 - Extend the arrangement's land/wet face classification for lakes, coastlines, islands or multiple rivers; do not cover unwanted buildings with a water-colored overlay.
 - Preserve real shared junctions at bridge ends and validate traversable connectivity independently of virtual arrangement edges.
@@ -52,7 +52,7 @@ The shared editor uses the existing `river` mode internally for course handles, 
 
 ## Independent feature composition
 
-The editor upserts by kind, preserves imported IDs, assigns collision-free IDs to additions and remaps newly generated river bridges to their owning river. Each section has its own seed, reroll, edit and remove controls. Point selection is scoped through `activeWaterId`; removing a coast retains the river and its bridges, while removing the river retains the coast. The shared chronological undo stores complete definitions.
+The editor upserts river/coast by kind and lakes by explicit ID, preserves imported IDs, assigns collision-free IDs to additions and remaps newly generated river bridges to their owning river. Each section has its own seed, reroll, edit and remove controls. Point selection is scoped through `activeWaterId`; removing a coast retains the river and its bridges, while removing the river retains the coast. The shared chronological undo stores complete definitions.
 
 `waterSetIntervals`, `waterUnionSegments` and `waterSetBoundary` provide shared union predicates for layout, validation and rendering. Wet-face contributor IDs describe positive-area overlap, rather than labeling all merged water as whichever feature appeared first. The shore topology graph excludes virtual edges across water and helps choose enough inland bridges without altering the coast. Invalid edited crossings remain drafts and cannot replace the last valid city.
 
@@ -71,3 +71,13 @@ Regression coverage includes the narrow coastal-city case where the previous sta
 The same pure course-guidance engine now serves rivers and coasts. Coastal endpoints must span the full city projection, and ocean closure must remain beyond both city land and seaward bends. Guidance extends endpoints and increases the existing sea-depth field when necessary, within its existing bounds. The stored left/right ocean side is preserved; endpoint movement is constrained against accidentally reversing course within a gesture.
 
 `tidyFeature` handles the explicit river and coastline actions. `tidyWater` computes both results first, then applies them with a single undo snapshot when Generate city is chosen. Already valid records remain exact, and file loading never invokes tidying. Coast insertion snaps onto its course with duplicate-handle selection. Generated coasts pass guidance and common feature/definition validation before returning a preview. Square clearance, dry bridge banks and connected land remain separate required placement checks.
+
+## Independent lakes in 3E.5
+
+`core/lake-geometry.js` owns the closed shoreline, parallel bank offset, bank safety, city containment and shared inland access segments. `core/lake-editing.js` guides a single shore handle or a whole-lake translation from the gesture baseline, limiting unsafe edits rather than storing a crossing bank. `generators/lakes.js` proposes deterministic organic shores on available land and validates the whole composition before returning a preview. The shared water registry supplies the lake polygon to layout, buildings, defenses and rendering.
+
+Lake records have `kind: "lake"`, `dataVersion: 1`, stable `id`, `name`, `center`, 3–32 positively wound `path` points with no repeated closing point, `polygon`, `corridor`, generation seed/algorithm/radius, and extensions. Shores are simple star-shaped rings around the saved center. This permits elongated and indented lakes while bounding pathological banks. Shore points remain 12–200 units from the center; parallel banks must be simple and keep at least six units of actual water clearance. Banks stay at least 12 units inside the city boundary, and lake water cannot occupy the main square. Unsupported bridge references to lakes reject; existing crossings remain river-owned.
+
+Two dry lane axes through each lake center connect its bank ring to the street arrangement. Both layout and preflight topology use the same segments, clipping away wet sections. They partition the surrounding annulus into simple land faces even when a lake fits entirely inside one original street block. The full actual street connectivity, coverage, property setback and defense validators remain authoritative. Lake overlaps use the existing water-union semantics; new proposals prefer separate water bodies.
+
+Adding a lake never replaces an existing feature. Selected regeneration uses its explicit ID and preserves name, center, compatible record metadata and all other features. Removing a lake removes only that ID. Closed-edge insertion and safe deletion reuse the shared point tool, while `lake-move` selects the center marker. A cancelled gesture restores geometry, dirty state and complete history. Schema 8 admits lake data without altering older accepted geometry or drafts; load never guides or regenerates a saved shoreline.

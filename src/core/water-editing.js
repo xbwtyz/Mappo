@@ -1,4 +1,7 @@
 import {
+  guideLakePath
+} from './lake-editing.js';
+import {
   clamp
 } from './geometry.js';
 import {
@@ -36,6 +39,11 @@ export function guideWaterPath(feature, {
   point = null,
   boundary = []
 } = {}) {
+  if (feature.kind === 'lake') return guideLakePath(feature, {
+    index,
+    point,
+    boundary
+  });
   if (!['river', 'coast'].includes(feature.kind) || !Array.isArray(feature.path) || feature.path.length < 3 || feature.path.length > 32) throw new Error('Choose a river or coastline with at least three handles.');
   if (index !== null && (!Number.isInteger(index) || index < 0 || index >= feature.path.length || !point || !Number.isFinite(point.x) || !Number.isFinite(point.y))) throw new Error('Invalid water handle.');
   const original = feature.path,

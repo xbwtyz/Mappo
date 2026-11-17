@@ -1,4 +1,7 @@
 import {
+  lakeAccessSegments
+} from './lake-geometry.js';
+import {
   segmentCuts,
   lerpPoint,
   insideOrOn
@@ -13,7 +16,7 @@ import {
 // Connectivity of dry perimeter/quays plus proposed crossings, before a street
 // pattern is generated. Virtual edges across water are deliberately excluded.
 export function waterShoreComponents(boundary, features, bridges) {
-  const segments = [...boundary.map((a, i) => ({
+  const segments = [...lakeAccessSegments(features, boundary), ...boundary.map((a, i) => ({
     a,
     b: boundary[(i + 1) % boundary.length],
     kind: 'boundary'
@@ -64,7 +67,7 @@ export function waterShoreComponents(boundary, features, bridges) {
     for (let j = 1; j < ts.length; j++) {
       if (ts[j] - ts[j - 1] < 1e-9) continue;
       const mid = lerpPoint(s.a, s.b, (ts[j] + ts[j - 1]) / 2);
-      if (s.kind !== 'bridge' && (!insideOrOn(mid, boundary) || (s.kind === 'boundary' ? waterSetContains(mid, features) : !waterSetBoundary(mid, features)))) continue;
+      if (s.kind !== 'bridge' && (!insideOrOn(mid, boundary) || (s.kind === 'bank' ? !waterSetBoundary(mid, features) : waterSetContains(mid, features)))) continue;
       const a = node(lerpPoint(s.a, s.b, ts[j - 1])),
         b = node(lerpPoint(s.a, s.b, ts[j]));
       if (a === b) continue;

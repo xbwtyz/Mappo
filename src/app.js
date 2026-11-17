@@ -147,7 +147,7 @@ function generate() {
       waterPanel.editor.loadCity(next.city);
       waterPanel.editor.setMode('pan');
       waterPanel.refresh(true);
-      waterPanel.message(tidiedWater.length ? `${tidiedWater.map(kind=>kind==='coast'?'Coastline':'River').join(' and ')} handles were tidied automatically before generation. Undo water edit restores that draft.` : next.city.waterFeatures.length ? 'City generated around the saved water. Editing its shoreline or crossings creates a new draft.' : 'Dry city generated. Choose Generate river or Generate coastline to preview water.');
+      waterPanel.message(tidiedWater.length ? `${tidiedWater.map(kind=>kind==='coast'?'Coastline':kind==='lake'?'Lake':'River').join(' and ')} handles were tidied automatically before generation. Undo water edit restores that draft.` : next.city.waterFeatures.length ? 'City generated around the saved water. Editing its shoreline or crossings creates a new draft.' : 'Dry city generated. Choose Add lake, Generate river or Generate coastline to preview water.');
     }
     districtPanel?.editor.load();
     districtPanel?.refresh(true);
@@ -349,7 +349,7 @@ waterPanel = new WaterPanel({
   changed: () => {
     const active = waterPanel.editor.mode !== 'pan';
     canvas.classList.toggle('drawing', active || editor.mode !== 'pan');
-    $('toolHint').textContent = active ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+    $('toolHint').textContent = active ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker to move its shoreline' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
     for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!active && editor.mode === mode));
     $('draftBadge').textContent = waterPanel.editor.dirty ? '● WATER PREVIEW' : editor.dirty ? '● OUTLINE PREVIEW' : '● CITY PLAN';
     requestDraw();
@@ -401,7 +401,10 @@ function captureWorkspace() {
           seed: String($('waterSeedInput').value),
           width: String($('riverWidthInput').value),
           coastDirection: $('coastDirectionInput').value || 'east',
-          coastSeed: String($('coastSeedInput').value)
+          coastSeed: String($('coastSeedInput').value),
+          lakeSeed: String($('lakeSeedInput').value),
+          lakeId: waterPanel.selectedLakeId || '',
+          lakeRadius: String($('lakeRadiusInput').value)
         }
       },
       fortificationEditor: {
@@ -476,16 +479,21 @@ function applyProjectDocument(document) {
   camera.x = workspace.view.camera.x;
   camera.y = workspace.view.camera.y;
   camera.zoom = workspace.view.camera.zoom;
+  $('lakeSeedInput').value = 'lake';
+  $('lakeRadiusInput').value = '28';
   $('waterSeedInput').value = 'river';
   $('coastSeedInput').value = 'coast';
   $('riverWidthInput').value = '28';
   $('coastDirectionInput').value = 'east';
   waterPanel.editor.load(workspace.waterEditor, next.city);
+  waterPanel.selectedLakeId = workspace.waterEditor?.controls?.lakeId ?? null;
   waterPanel.refresh(true);
   if (workspace.waterEditor?.controls) {
     if (workspace.waterEditor.controls.coastSeed === undefined && next.city.waterFeatures.length === 1 && next.city.waterFeatures[0].kind === 'coast') $('coastSeedInput').value = workspace.waterEditor.controls.seed;
     else $('waterSeedInput').value = workspace.waterEditor.controls.seed;
     if (workspace.waterEditor.controls.coastSeed !== undefined) $('coastSeedInput').value = workspace.waterEditor.controls.coastSeed;
+    if (workspace.waterEditor.controls.lakeSeed !== undefined) $('lakeSeedInput').value = workspace.waterEditor.controls.lakeSeed;
+    if (workspace.waterEditor.controls.lakeRadius !== undefined) $('lakeRadiusInput').value = workspace.waterEditor.controls.lakeRadius;
     $('riverWidthInput').value = workspace.waterEditor.controls.width;
     $('coastDirectionInput').value = workspace.waterEditor.controls.coastDirection ?? 'east';
   }

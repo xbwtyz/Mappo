@@ -1,4 +1,7 @@
 import {
+  lakePolygon
+} from './lake-geometry.js';
+import {
   boundsOf,
   polygonSignedArea,
   pointInPolygon
@@ -73,7 +76,8 @@ export function waterCoastPolygon(feature, margin = 0) {
 }
 export const WATER_GEOMETRY = Object.freeze({
   river: waterRibbon,
-  coast: waterCoastPolygon
+  coast: waterCoastPolygon,
+  lake: lakePolygon
 });
 export function waterFeaturePolygon(feature, margin = 0) {
   const build = Object.hasOwn(WATER_GEOMETRY, feature.kind) ? WATER_GEOMETRY[feature.kind] : null;
@@ -177,7 +181,7 @@ export function waterCompositionState(features, previous = {}) {
     ...waterDryState(),
     ...previous,
     status,
-    algorithm: status === 'mixed' ? 'union-v1' : status === 'coast' ? 'shore-v1' : 'ribbon-v1'
+    algorithm: status === 'mixed' ? 'union-v1' : status === 'coast' ? 'shore-v1' : status === 'lake' ? 'lake-v1' : 'ribbon-v1'
   };
 }
 export function waterStrictInside(p, polygon) {

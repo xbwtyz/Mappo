@@ -1,4 +1,7 @@
 import {
+  lakeAccessSegments
+} from '../core/lake-geometry.js';
+import {
   waterBridgeGeometry,
   waterSetContains,
   waterSetIntervals,
@@ -133,6 +136,7 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
       y: center.y
     }, 'primary');
   }
+  for (const access of lakeAccessSegments(features, boundary)) clip(access.a, access.b, 'lane');
   if (hasWater) {
     for (const section of waterUnionSegments(features)) clip(section.a, section.b, 'secondary', 'bank');
     for (const bridge of water.bridges) {
