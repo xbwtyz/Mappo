@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.3c — Neighborhoods
+## Current build: 0.1-dev.3d — Fortifications
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3c.html`](dist/mappo-0.1-dev.3c.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3d.html`](dist/mappo-0.1-dev.3d.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### Workflow
 
@@ -27,7 +27,7 @@ Draft boundaries show handles and a dashed outline; the previous street plan is 
 - **Load project** reads and validates a selected project into a preview. Click **Open project** to replace the workspace, or Cancel to retain the current city.
 - **Restore latest recovery** and **Restore previous recovery** reopen browser snapshots. Existing recovery is offered at startup; select it or choose **Keep this city** before recovery resumes.
 
-Loading restores saved geometry directly. It does not regenerate from the seed, so building names, shapes and future record metadata can be retained across builds. Versioned data and explicit migrations prepare the format for districts, fortifications and later edits.
+Loading restores saved geometry directly. It does not regenerate from the seed, so building names, shapes and future record metadata can be retained across builds. Versioned data and explicit migrations retain districts, fortifications and later edits.
 
 Browser recovery uses IndexedDB where available and falls back to localStorage. Blocked storage, exhausted quota and recovery conflicts show a warning; portable downloads and file loading still work. Recovery is local to browser storage and can vary by file/origin. **Download project files to keep versions and move between standalone builds.** The app cannot confirm whether a requested download was ultimately saved on disk.
 
@@ -45,9 +45,23 @@ Newly generated cities receive connected neighborhoods automatically. The **Neig
 
 Districts are geographic neighborhoods. Names do not replace buildings or simulate occupations, wealth or trade. Rules and themes can be added later without coupling neighborhood identity to geometry generation.
 
-Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 3 explicitly migrates older files; older apps that cannot read schema 3 should request a newer build rather than partially load it.
+Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 4 explicitly migrates older files; older apps that cannot read schema 4 should request a newer build rather than partially load it.
 
 See [`DISTRICTS.md`](DISTRICTS.md) for the module boundaries and extension points.
+
+### Fortifications
+
+New native cities default to an exterior perimeter wall, connected gates and defensive towers. Open the **Fortifications** panel to change them independently of the city. The Fortifications and Neighborhoods panels collapse separately, and their open state is saved.
+
+- **Walls enabled** plus **Build / update** builds or enables defenses. Uncheck it and apply to disable defenses while retaining their geometry, IDs and metadata.
+- Choose **1–8 gates**, **40–200 survey units** of tower spacing and an independent fortification seed, then apply. Changing these settings rebuilds defenses only. Smaller spacing adds towers where clearance allows; corners also receive towers when safe.
+- Gates connect to real perimeter street junctions through saved approach paths. Walls have actual openings. If the requested gate count cannot fit safely, Mappo reports the smaller actual count.
+- **Show fortification layer** changes display only. It does not change whether defenses are enabled or erase saved records.
+- **Undo fortification edit** restores up to 10 previous defense states, including the first build or disabling. History and pending controls travel with project files and browser recovery.
+
+Walls sit outside the perimeter streets. Existing streets, buildings, properties, blocks, neighborhoods and the square remain fixed. Narrow inlets may be bridged by the exterior wall where following them would create an unsafe crossing. Imported older cities stay unchanged and unfortified: enable walls, then choose **Build / update** to add defenses explicitly.
+
+This milestone supports one outer wall ring, round towers and street gates. Custom wall drawing, inner walls, alternate tower/gate forms and gate editing remain future extensions. See [`FORTIFICATIONS.md`](FORTIFICATIONS.md) for geometry contracts and extension points.
 
 ### Buildings and properties
 
@@ -69,7 +83,7 @@ The report counts buildings, properties, combined-plot properties and base plots
 
 - Pan using **Pan map**, middle-button drag, or Space + drag in any tool.
 - Scroll to zoom; `+` and `−` also zoom.
-- Press `0` or use the fit button to fit the current outline.
+- Press `0` or use the fit button to fit the current city, including enabled fortifications (or the outline while editing).
 - Escape returns to pan mode. Ctrl/Cmd + Z undoes an outline edit when focus is on the map.
 
 Hosted URLs can initialize a preset with `?seed=demo&size=large&shape=organic`. `shape` accepts the four street patterns; custom drawn boundaries are not encoded into URLs.
@@ -79,7 +93,7 @@ Hosted URLs can initialize a preset with `?seed=demo&size=large&shape=organic`. 
 - One continuous boundary without interior holes. Concave and branching boundaries are supported.
 - Crossed or self-touching outlines are rejected. Freehand drawing is simplified before point editing. Boundaries must have enough area for streets and a town center; very narrow necks are rejected with a correction message.
 - Project save/load and browser recovery are available. PNG export remains a later milestone. Keep portable project downloads as backups; clearing browser data can remove recovery.
-- Green ground includes the open portions of city blocks. Individual building selection, renaming, manual footprint editing, functional district themes, fortifications, terrain, interiors and 3D remain later phases.
+- Green ground includes the open portions of city blocks. Individual building selection, renaming, manual footprint editing, functional district themes, terrain, interiors and three-dimensional rendering remain later phases.
 - Road centerlines and blocks respect the boundary. Rendered street strokes have width and may extend slightly beyond it along the perimeter.
 - The 3B population stage leaves the 3A.2 street graph, block geometry, plaza and outline intact for the same settings. Building generation is reproducible within this version; future generator revisions may change results.
 
@@ -91,15 +105,15 @@ The generator clips candidate streets against the boundary and plaza, splits all
 
 The population stage divides individual street frontages into variable-width plots, combines neighboring plots into larger properties, then generates inset building footprints. Each accepted property must fit wholly inside its block with a setback from every surrounding street. Property envelopes cannot overlap; building footprints fit within their envelopes. Courtyard holes and open ground remain separate from building area. Runtime checks validate references, property overlap and footprint containment before replacing the displayed city.
 
-The perimeter has a connected street following the boundary. It is not a city wall. Walls and their rendering belong to phase 3D.
+The perimeter has a connected street following the boundary. Fortifications are a separate exterior ring. Saved gates reference perimeter junction IDs through separate approach paths; adding defenses does not rewrite the original street graph.
 
 ```text
 src/
   core/           Version constants, random, geometry, placement and city model
-  generators/     Survey, streets, buildings and independent district generation
+  generators/     Survey, streets, buildings and independent district/fortification generation
   data/           Project format, migrations, validation, files and recovery
-  editor/         Outline drawing, cleanup, point editing and undo
-  renderer/       Map, roof and plot-layer drawing, camera
+  editor/         Outline, district and fortification editing and undo
+  renderer/       Map, roof, district and fortification layers, camera
   ui/             Pointer interaction, map navigation and project-file workflow
   app.js          Application state, generation controls and feedback
 styles/app.css
@@ -117,7 +131,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.3c.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.3d.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -136,7 +150,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3b:** Varied properties, multi-plot buildings, courtyards, compounds and attached rows.
 - **0.1-dev.3b1:** Portable versioned project files, load preview, recovery and compatibility validation.
 - **0.1-dev.3c:** Connected, editable, persistent neighborhoods with district layers and undo.
-- **3D:** Fortifications — future.
+- **0.1-dev.3d:** Independent exterior fortifications, connected gates, round towers, visibility, undo and schema-4 persistence.
 - Later 0.1 phases: rendering polish, inspector, PNG export and release hardening.
 
 Copyright © 2026 Mappo contributors.

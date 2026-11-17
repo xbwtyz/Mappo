@@ -1,4 +1,10 @@
 import {
+  FortificationPanel
+} from './ui/fortifications.js';
+import {
+  fortificationViewPoints
+} from './core/fortification-model.js';
+import {
   DistrictPanel
 } from './ui/districts.js';
 import {
@@ -44,13 +50,15 @@ const TOOL_HINTS = {
 let project, drawPending = false;
 let files;
 let districtPanel;
+let fortificationPanel;
 const layers = {
   buildings: true,
   properties: false,
   plots: false,
   districtColors: true,
   districtBorders: true,
-  districtLabels: true
+  districtLabels: true,
+  fortifications: true
 };
 
 function requestDraw() {
@@ -83,7 +91,7 @@ const editor = new OutlineEditor(editorChanged, (message, error) => {
 });
 
 function fitMap() {
-  const points = editor.boundary.length > 2 ? editor.boundary : project?.city.survey.boundary;
+  const points = !editor.dirty && project ? fortificationViewPoints(project.city) : editor.boundary.length > 2 ? editor.boundary : project?.city.survey.boundary;
   if (points) camera.fit(points);
   requestDraw();
   updateViewport();
@@ -118,11 +126,19 @@ function generate() {
       morphology: $('morphologyInput').value,
       boundary: editor.boundary,
       center: editor.center,
-      districtCount: $('districtNumberInput').value || 'auto'
+      districtCount: $('districtNumberInput').value || 'auto',
+      fortifications: {
+        enabled: $('wallsEnabledInput').checked,
+        gateCount: $('gateCountInput').value || 4,
+        towerSpacing: $('towerSpacingInput').value || 100,
+        seed: $('fortificationSeedInput').value || $('seedInput').value
+      }
     });
     project = next;
     districtPanel?.editor.load();
     districtPanel?.refresh(true);
+    fortificationPanel?.editor.load();
+    fortificationPanel?.refresh(true);
     $('seedInput').value = project.seed;
     editor.load(project.city.survey.boundary, project.options.center, false);
     updateDetails();
@@ -130,7 +146,7 @@ function generate() {
     $('statusMessage').textContent = `${project.city.buildings.length} buildings · ${project.city.properties.length} properties · ${project.city.properties.filter(p=>p.plotIds.length>1).length} merged sites`;
   } catch (error) {
     editor.notify(error.message, true);
-    $('statusMessage').textContent = 'Generation paused — correct the outline or center.';
+    $('statusMessage').textContent = 'Generation paused — review the error message.';
   }
 }
 
@@ -149,7 +165,7 @@ function updatePattern() {
   editor.dirty = true;
   editor.notify('Street settings changed. Generate to apply them to this outline.');
 }
-for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels']) {
+for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
     requestDraw();
@@ -274,6 +290,28 @@ districtPanel = new DistrictPanel({
   }
 });
 districtPanel.bind();
+fortificationPanel = new FortificationPanel({
+  getElement: $,
+  getCity: () => project.city,
+  commit: city => {
+    project = {
+      ...project,
+      city
+    };
+    requestDraw();
+    files?.changed();
+  },
+  changed: () => files?.changed(),
+  activateLayer: () => {
+    layers.fortifications = true;
+    $('fortificationsLayer').checked = true;
+    fitMap();
+    files?.changed();
+  }
+});
+fortificationPanel.bind();
+for (const id of ['districtPanel', 'fortificationPanel']) $(id).addEventListener('toggle', () => files?.changed());
+
 bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, point => districtPanel.selectAt(point));
 if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
 else window.addEventListener('resize', resize);
@@ -297,6 +335,18 @@ function captureWorkspace() {
     project,
     workspace: {
       schemaVersion: 1,
+      panels: {
+        districts: Boolean($('districtPanel').open),
+        fortifications: Boolean($('fortificationPanel').open)
+      },
+      fortificationEditor: {
+        ...fortificationPanel.editor.snapshot(),
+        controls: {
+          ...fortificationPanel.controls(),
+          gateCount: String($('gateCountInput').value),
+          towerSpacing: String($('towerSpacingInput').value)
+        }
+      },
       districtEditor: {
         ...districtPanel.editor.snapshot(),
         controls: {
@@ -354,7 +404,7 @@ function applyProjectDocument(document) {
       morphologyInput: workspace.controls.morphology,
       presetInput: workspace.controls.preset
     })) $(id).value = value;
-  for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels']) {
+  for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
     layers[key] = workspace.view.layers[key] ?? false;
     $(key + 'Layer').checked = layers[key];
   }
@@ -372,6 +422,17 @@ function applyProjectDocument(document) {
         districtColorInput: districtControls.color,
         districtTargetInput: districtControls.target
       })) $(id).value = value;
+  fortificationPanel.editor.load(workspace.fortificationEditor);
+  fortificationPanel.refresh(true);
+  const fortControls = workspace.fortificationEditor?.controls;
+  if (fortControls) {
+    $('wallsEnabledInput').checked = fortControls.enabled;
+    $('gateCountInput').value = fortControls.gateCount;
+    $('towerSpacingInput').value = fortControls.towerSpacing;
+    $('fortificationSeedInput').value = fortControls.seed;
+  }
+  $('districtPanel').open = workspace.panels?.districts ?? Boolean(districtPanel.editor.selectedDistrictId);
+  $('fortificationPanel').open = workspace.panels?.fortifications ?? true;
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[workspace.controls.morphology];
   editor.notify(draft.dirty ? 'Loaded city and unfinished outline edits. Generate only when ready to rebuild.' : 'Loaded city. Its exact saved geometry is ready to use.', Boolean(draft.error));
   updateDetails();

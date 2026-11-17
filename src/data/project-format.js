@@ -56,7 +56,8 @@ export function defaultWorkspace(project) {
         plots: false,
         districtColors: project.city.districtState?.status === 'assigned',
         districtBorders: project.city.districtState?.status === 'assigned',
-        districtLabels: project.city.districtState?.status === 'assigned'
+        districtLabels: project.city.districtState?.status === 'assigned',
+        fortifications: project.city.fortificationState?.status === 'built' && project.city.fortificationState.enabled
       },
       fitOnLoad: true
     }
@@ -109,6 +110,16 @@ export function createProjectDocument(project, workspace = defaultWorkspace(proj
       }
     }
   };
+  if (workspace.fortificationEditor !== undefined || previous.fortificationEditor !== undefined) {
+    document.workspace.fortificationEditor = {
+      ...(previous.fortificationEditor || {}),
+      ...(copyJson(workspace.fortificationEditor || {}))
+    };
+    if (workspace.fortificationEditor?.controls !== undefined || previous.fortificationEditor?.controls !== undefined) document.workspace.fortificationEditor.controls = {
+      ...(previous.fortificationEditor?.controls || {}),
+      ...(copyJson(workspace.fortificationEditor?.controls || {}))
+    };
+  }
   if (workspace.districtEditor === undefined && previous.districtEditor === undefined) delete document.workspace.districtEditor;
   return document;
 }

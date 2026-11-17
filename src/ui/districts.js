@@ -91,6 +91,7 @@ export class DistrictPanel {
     this.editor.selectedDistrictId = block?.districtId ?? null;
     this.refresh();
     this.changed();
+    if (block) this.$('districtPanel').open = true;
     if (block) this.$('districtPanel').scrollIntoView?.({
       block: 'nearest',
       behavior: 'smooth'

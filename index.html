@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — Neighborhoods · 0.1-dev.3c</title>
+  <title>Mappo — Fortifications · 0.1-dev.3d</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -17,13 +17,15 @@
 
 .district-panel{border:1px solid #4a6056;background:#15262a;border-radius:6px;padding:14px;margin:0 0 27px}.district-panel .eyebrow{font-size:9px}.district-panel .control-group{margin-bottom:12px}.district-panel select{appearance:auto;padding-right:8px;height:37px;font-size:11px}.district-panel .sidebar-rule{margin:18px 0}.district-name-row{display:grid;grid-template-columns:1fr 38px;gap:7px;margin:12px 0 7px}.district-name-row input{font-size:11px;height:37px}.district-name-row input[type=color]{width:38px;padding:3px;cursor:pointer}.district-layers{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0;color:#c4d3c7;font-size:10px}.district-layers label{display:flex;align-items:center;gap:4px;cursor:pointer}.district-layers input[type=checkbox]{width:14px;height:14px;margin:0;padding:0;accent-color:#d1a579}.district-panel .hint{margin-bottom:10px}
 
+.fortification-panel{border:1px solid #526058;background:#17282b;border-radius:6px;padding:14px;margin:0 0 20px}.fortification-panel summary,.district-panel summary{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.10em;color:#d3a676;cursor:pointer;padding:2px 0}.fortification-panel[open] summary,.district-panel[open] summary{margin-bottom:17px}.fortification-panel input,.fortification-panel select{height:37px;font-size:11px}.fortification-panel select{appearance:auto}.fortification-panel .control-group{margin:12px 0}.fortification-panel .control-group label{font-size:10px}.fortification-check{display:flex;align-items:center;gap:8px;color:#c4d3c7;font-size:11px;margin:12px 0}.fortification-check input[type=checkbox]{width:15px;height:15px;margin:0;padding:0;accent-color:#d1a579}.fortification-panel .hint{line-height:1.6}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3c</span></div>
-    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>NEIGHBORHOODS</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3d</span></div>
+    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>FORTIFICATIONS</span></div>
   </header>
   <div class="workspace">
     <aside class="sidebar sidebar-left" aria-label="City design tools">
@@ -39,8 +41,19 @@
           <div id="loadPreview" class="file-choice" hidden><p id="loadSummary"></p><div class="tool-grid"><button id="openProjectButton" class="tool-button">Open project</button><button id="cancelLoadButton" class="minor-button">Cancel</button></div></div>
           <p class="hint">Project files preserve the complete city and unfinished edits. Download copies to keep versions or move between builds. Browser recovery stays in this browser.</p>
         </section>
-        <section id="districtPanel" class="district-panel" aria-label="Neighborhood tools">
-          <p class="eyebrow">NEIGHBORHOODS · <span id="districtCount">0</span></p>
+        <details id="fortificationPanel" class="fortification-panel" open>
+          <summary>FORTIFICATIONS</summary>
+          <label class="fortification-check"><input type="checkbox" id="wallsEnabledInput" checked> Walls enabled</label>
+          <p id="fortificationStats" class="hint">Build perimeter walls, connected gates and defensive towers.</p>
+          <div class="tool-grid"><div class="control-group"><label for="gateCountInput">Requested gates</label><select id="gateCountInput"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
+          <div class="control-group"><label for="towerSpacingInput">Tower spacing</label><input id="towerSpacingInput" type="number" min="40" max="200" step="10" value="100"></div></div>
+          <div class="control-group"><label for="fortificationSeedInput">Fortification seed</label><input id="fortificationSeedInput" maxlength="64" value="fortifications" spellcheck="false"></div>
+          <div class="tool-grid"><button id="applyFortificationButton" class="tool-button">Build / update</button><button id="undoFortificationButton" class="minor-button" disabled>Undo fortification edit</button></div>
+          <label class="fortification-check"><input type="checkbox" id="fortificationsLayer" checked> Show fortification layer</label>
+          <p id="fortificationMessage" class="file-status" role="status" aria-live="polite">Walls sit outside the perimeter streets. Disabling retains their saved geometry. Changing gate count, spacing or seed rebuilds fortifications only.</p>
+        </details>
+        <details id="districtPanel" class="district-panel" aria-label="Neighborhood tools">
+          <summary>NEIGHBORHOODS · <span id="districtCount">0</span></summary>
           <div class="control-group"><label for="districtNumberInput">Number of districts</label><select id="districtNumberInput"><option value="auto">Automatic · Suggested for this city</option><option value="1">1 district</option><option value="2">2 districts</option><option value="3">3 districts</option><option value="4">4 districts</option><option value="5">5 districts</option><option value="6">6 districts</option><option value="7">7 districts</option><option value="8">8 districts</option><option value="9">9 districts</option><option value="10">10 districts</option><option value="11">11 districts</option><option value="12">12 districts</option></select></div>
           <div class="control-group"><label for="districtSeedInput">District seed</label><input id="districtSeedInput" maxlength="64" value="districts" spellcheck="false"></div>
           <button id="generateDistrictButton" class="tool-button full-width">Generate / rebuild districts</button>
@@ -55,7 +68,7 @@
           <label class="sr-only" for="districtTargetInput">Receiving district</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select>
           <div class="tool-grid actions"><button id="moveDistrictButton" class="minor-button" disabled>Move selected block</button><button id="undoDistrictButton" class="minor-button" disabled>Undo district edit</button></div>
           <p id="districtMessage" class="file-status" role="status" aria-live="polite">Click a neighborhood to inspect it. District names describe places; they do not change building types.</p>
-        </section>
+        </details>
         <p class="eyebrow">YOUR OUTLINE. YOUR CITY.</p><h1>Give your city<br><em>its own shape.</em></h1>
         <p class="intro">Draw the edge, place the square, then let streets grow inside.</p>
         <div class="outline-tools">
@@ -105,7 +118,7 @@
         <div class="sidebar-rule"></div><p class="eyebrow">WORKSPACE GUIDE</p>
         <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
         <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
-        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts group whole blocks. Moving a block keeps both neighborhoods connected. Fortifications remain a later phase. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
+        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts group whole blocks. Moving a block keeps both neighborhoods connected. Perimeter walls and connected gates are available in the Fortifications panel. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
       </div>
     </aside>
   </div>
@@ -149,6 +162,1113 @@ function polygonSignedArea(points) {
     area += a.x * b.y - b.x * a.y;
   }
   return area / 2;
+}
+
+
+// src/core/boundary.js
+
+function cross2(a, b) {
+  return a.x * b.y - a.y * b.x;
+}
+function lerpPoint(a, b, t) {
+  return {
+    x: a.x + (b.x - a.x) * t,
+    y: a.y + (b.y - a.y) * t
+  };
+}
+function distanceToSegment(p, a, b) {
+  const dx = b.x - a.x,
+    dy = b.y - a.y;
+  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
+  return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy);
+}
+function insideOrOn(p, polygon) {
+  return pointInPolygon(p, polygon) || polygon.some((a, i) => distanceToSegment(p, a, polygon[(i + 1) % polygon.length]) < 1e-6);
+}
+
+// Includes endpoint contacts and collinear overlaps. Both generators and
+// validation use the same segment predicates, with dimensionless parameters.
+function segmentCuts(a, b, c, d) {
+  const r = {
+      x: b.x - a.x,
+      y: b.y - a.y
+    },
+    s = {
+      x: d.x - c.x,
+      y: d.y - c.y
+    };
+  const q = {
+      x: c.x - a.x,
+      y: c.y - a.y
+    },
+    denominator = cross2(r, s);
+  if (Math.abs(denominator) > 1e-9) {
+    const t = cross2(q, s) / denominator,
+      u = cross2(q, r) / denominator;
+    return t >= -1e-9 && t <= 1 + 1e-9 && u >= -1e-9 && u <= 1 + 1e-9 ? [Math.max(0, Math.min(1, t))] : [];
+  }
+  if (Math.abs(cross2(q, r)) > 1e-7) return [];
+  const length2 = r.x * r.x + r.y * r.y;
+  if (length2 < 1e-12) return [];
+  return [c, d].map(p => ((p.x - a.x) * r.x + (p.y - a.y) * r.y) / length2).filter(t => t >= -1e-9 && t <= 1 + 1e-9).map(t => Math.max(0, Math.min(1, t)));
+}
+
+function validateBoundary(points) {
+  if (!Array.isArray(points) || points.length < 3) throw new Error('Place at least three outline points.');
+  if (points.length > 1200) throw new Error('The outline has too many points. Try a shorter stroke.');
+  if (!points.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 10000 && Math.abs(p.y) < 10000)) throw new Error('The outline contains invalid coordinates.');
+  for (let i = 0; i < points.length; i++) {
+    const a = points[i],
+      b = points[(i + 1) % points.length];
+    if (Math.hypot(a.x - b.x, a.y - b.y) < 1e-5) throw new Error('Remove duplicate outline points.');
+    for (let j = i + 1; j < points.length; j++) {
+      if (j === i + 1 || (i === 0 && j === points.length - 1)) continue;
+      if (segmentCuts(a, b, points[j], points[(j + 1) % points.length]).length) throw new Error('The outline crosses or touches itself. Move the highlighted shape points apart.');
+    }
+  }
+  const b = boundsOf(points);
+  if (Math.min(b.maxX - b.minX, b.maxY - b.minY) < 100 || Math.abs(polygonSignedArea(points)) < 8000) throw new Error('Draw a larger city outline: at least 100 units across with room for streets.');
+  return points;
+}
+
+function simplifyLine(points, tolerance) {
+  if (points.length <= 2) return points;
+  let distance = tolerance,
+    index = -1;
+  for (let i = 1; i < points.length - 1; i++) {
+    const d = distanceToSegment(points[i], points[0], points.at(-1));
+    if (d > distance) {
+      distance = d;
+      index = i;
+    }
+  }
+  if (index < 0) return [points[0], points.at(-1)];
+  return [...simplifyLine(points.slice(0, index + 1), tolerance).slice(0, -1), ...simplifyLine(points.slice(index), tolerance)];
+}
+function cleanOutline(raw, tolerance = 3) {
+  let points = raw.filter((p, i) => !i || Math.hypot(p.x - raw[i - 1].x, p.y - raw[i - 1].y) > 1e-4).map(p => ({
+    x: p.x,
+    y: p.y
+  }));
+  if (points.length > 2 && Math.hypot(points[0].x - points.at(-1).x, points[0].y - points.at(-1).y) < 1e-4) points.pop();
+  validateBoundary(points);
+  let far = 1;
+  for (let i = 2; i < points.length; i++)
+    if (Math.hypot(points[i].x - points[0].x, points[i].y - points[0].y) > Math.hypot(points[far].x - points[0].x, points[far].y - points[0].y)) far = i;
+  const simple = [...simplifyLine(points.slice(0, far + 1), tolerance).slice(0, -1), ...simplifyLine([...points.slice(far), points[0]], tolerance).slice(0, -1)];
+  validateBoundary(simple);
+  if (simple.length > 160) throw new Error('Simplify this outline to fewer than 160 corners.');
+  if (polygonSignedArea(simple) < 0) simple.reverse();
+  return simple;
+}
+
+function clearance(p, boundary) {
+  return Math.min(...boundary.map((a, i) => distanceToSegment(p, a, boundary[(i + 1) % boundary.length])));
+}
+function findCityCenter(boundary) {
+  const b = boundsOf(boundary);
+  let best = null,
+    bestDistance = -1;
+  for (let y = 0; y <= 24; y++)
+    for (let x = 0; x <= 24; x++) {
+      const p = {
+        x: b.minX + (b.maxX - b.minX) * (x + .5) / 25,
+        y: b.minY + (b.maxY - b.minY) * (y + .5) / 25
+      };
+      if (pointInPolygon(p, boundary)) {
+        const d = clearance(p, boundary);
+        if (d > bestDistance) {
+          best = p;
+          bestDistance = d;
+        }
+      }
+    }
+  if (!best || bestDistance < 18) throw new Error('This outline is too narrow for a town center. Widen part of it.');
+  return best;
+}
+
+function checkNarrowSections(boundary) {
+  const cumulative = [0];
+  for (let i = 0; i < boundary.length; i++) cumulative.push(cumulative.at(-1) + Math.hypot(boundary[i].x - boundary[(i + 1) % boundary.length].x, boundary[i].y - boundary[(i + 1) % boundary.length].y));
+  const total = cumulative.at(-1);
+  for (let i = 0; i < boundary.length; i++)
+    for (let j = i + 2; j < boundary.length; j++) {
+      if (i === 0 && j === boundary.length - 1) continue;
+      const first = [boundary[i], boundary[(i + 1) % boundary.length]],
+        second = [boundary[j], boundary[(j + 1) % boundary.length]];
+      for (const fraction of [0, .5, 1]) {
+        const a = lerpPoint(first[0], first[1], fraction),
+          dx = second[1].x - second[0].x,
+          dy = second[1].y - second[0].y;
+        const t = Math.max(0, Math.min(1, ((a.x - second[0].x) * dx + (a.y - second[0].y) * dy) / (dx * dx + dy * dy)));
+        const b = lerpPoint(second[0], second[1], t),
+          gap = Math.hypot(a.x - b.x, a.y - b.y);
+        const positionA = cumulative[i] + fraction * (cumulative[i + 1] - cumulative[i]),
+          positionB = cumulative[j] + t * (cumulative[j + 1] - cumulative[j]);
+        const path = Math.abs(positionA - positionB);
+        if (gap < 18 && Math.min(path, total - path) > 90 && pointInPolygon(lerpPoint(a, b, .5), boundary)) throw new Error('A section is too narrow for streets. Widen the neck to at least 18 units.');
+      }
+    }
+}
+
+
+// src/core/placement.js
+
+
+// Shared road dimensions keep the collision margin and rendering in agreement.
+const STREET_WIDTHS = Object.freeze({
+  primary: 12,
+  secondary: 8.2,
+  lane: 4.5
+});
+const STREET_EDGE_WIDTH = 2.2;
+const PROPERTY_SETBACK = 1.6;
+
+function rectangleInFrame(frame, x, y, width, depth) {
+  const point = (u, v) => ({
+    x: frame.origin.x + frame.tangent.x * u + frame.inward.x * v,
+    y: frame.origin.y + frame.tangent.y * u + frame.inward.y * v
+  });
+  return [point(x, y), point(x + width, y), point(x + width, y + depth), point(x, y + depth)];
+}
+
+// Separating-axis test: all property envelopes are convex rectangles. Padding
+// reserves gaps between properties, including frontages on different streets.
+function rectanglesOverlap(a, b, padding = 0) {
+  for (const polygon of [a, b]) {
+    for (let i = 0; i < 2; i++) {
+      const p = polygon[i],
+        q = polygon[i + 1];
+      const length = Math.hypot(q.x - p.x, q.y - p.y);
+      const axis = {
+        x: -(q.y - p.y) / length,
+        y: (q.x - p.x) / length
+      };
+      const pa = a.map(v => v.x * axis.x + v.y * axis.y);
+      const pb = b.map(v => v.x * axis.x + v.y * axis.y);
+      if (Math.max(...pa) + padding <= Math.min(...pb) + 1e-7 || Math.max(...pb) + padding <= Math.min(...pa) + 1e-7) return false;
+    }
+  }
+  return true;
+}
+
+function segmentDistance(a, b, c, d) {
+  if (segmentCuts(a, b, c, d).length || segmentCuts(c, d, a, b).length) return 0;
+  return Math.min(distanceToSegment(a, c, d), distanceToSegment(b, c, d), distanceToSegment(c, a, b), distanceToSegment(d, a, b));
+}
+
+function propertyFits(polygon, blockPolygon, streetEdges) {
+  if (!polygon.every(p => pointInPolygon(p, blockPolygon))) return false;
+  for (let i = 0; i < polygon.length; i++) {
+    const a = polygon[i],
+      b = polygon[(i + 1) % polygon.length];
+    for (const edge of streetEdges) {
+      const margin = (STREET_WIDTHS[edge.road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
+      if (segmentDistance(a, b, edge.a, edge.b) < margin - 1e-6) return false;
+    }
+  }
+  return true;
+}
+
+// Polygon intersection against a convex plot. Also works for concave building
+// footprints; signed area accounts for any traversed boundary bridges.
+function clipToConvexPolygon(subject, clip) {
+  let output = subject.map(p => ({
+    ...p
+  }));
+  for (let i = 0; i < clip.length; i++) {
+    const a = clip[i],
+      b = clip[(i + 1) % clip.length],
+      input = output;
+    output = [];
+    const side = p => (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+    for (let j = 0; j < input.length; j++) {
+      const p = input[j],
+        q = input[(j + 1) % input.length],
+        sp = side(p),
+        sq = side(q);
+      if (sp >= -1e-8) output.push(p);
+      if ((sp > 1e-8 && sq < -1e-8) || (sp < -1e-8 && sq > 1e-8)) {
+        const t = sp / (sp - sq);
+        output.push({
+          x: p.x + (q.x - p.x) * t,
+          y: p.y + (q.y - p.y) * t
+        });
+      }
+    }
+  }
+  return output;
+}
+
+
+// src/core/fortification-geometry.js
+
+
+
+const WALL_WIDTH = 6;
+const WALL_EDGE_WIDTH = 2;
+const WALL_CLEARANCE = 16;
+const TOWER_RADIUS = 6.5;
+const GATE_OPENING = 26;
+const GATE_POST_RADIUS = 4.5;
+
+function measureWall(path) {
+  const distances = [0];
+  for (let i = 0; i < path.length; i++) distances.push(distances.at(-1) + Math.hypot(path[(i + 1) % path.length].x - path[i].x, path[(i + 1) % path.length].y - path[i].y));
+  return {
+    path,
+    distances,
+    length: distances.at(-1)
+  };
+}
+function wallPoint(measure, arc) {
+  const at = ((arc % measure.length) + measure.length) % measure.length;
+  let index = measure.distances.findIndex((d, i) => i < measure.path.length && measure.distances[i + 1] >= at - 1e-8);
+  if (index < 0) index = measure.path.length - 1;
+  const t = (at - measure.distances[index]) / (measure.distances[index + 1] - measure.distances[index]);
+  return lerpPoint(measure.path[index], measure.path[(index + 1) % measure.path.length], Math.max(0, Math.min(1, t)));
+}
+function wallArcGap(a, b, length) {
+  const gap = Math.abs(a - b) % length;
+  return Math.min(gap, length - gap);
+}
+function solidWallSegments(wall, gates) {
+  const measure = measureWall(wall.path),
+    cuts = [];
+  for (const gate of gates.filter(g => g.wallId === wall.id)) {
+    const a = gate.arc - gate.opening / 2,
+      b = gate.arc + gate.opening / 2;
+    if (a < 0) {
+      cuts.push([0, b], [a + measure.length, measure.length]);
+    } else if (b > measure.length) {
+      cuts.push([a, measure.length], [0, b - measure.length]);
+    } else cuts.push([a, b]);
+  }
+  cuts.sort((a, b) => a[0] - b[0]);
+  const merged = [];
+  for (const cut of cuts) {
+    if (merged.length && cut[0] <= merged.at(-1)[1]) merged.at(-1)[1] = Math.max(merged.at(-1)[1], cut[1]);
+    else merged.push([...cut]);
+  }
+  const sections = [];
+  for (let i = 0; i < wall.path.length; i++) {
+    const a = measure.distances[i],
+      b = measure.distances[i + 1];
+    let spans = [
+      [a, b]
+    ];
+    for (const [lo, hi] of merged) spans = spans.flatMap(([start, end]) => hi <= start || lo >= end ? [
+      [start, end]
+    ] : [
+      [start, Math.min(end, lo)],
+      [Math.max(start, hi), end]
+    ].filter(([p, q]) => q - p > 1e-7));
+    for (const [start, end] of spans) sections.push({
+      a: wallPoint(measure, start),
+      b: wallPoint(measure, end),
+      start,
+      end
+    });
+  }
+  return sections;
+}
+function simpleWallPath(path) {
+  if (path.length < 3 || path.length > 1024 || polygonSignedArea(path) <= 0) return false;
+  for (let i = 0; i < path.length; i++)
+    if (Math.hypot(path[i].x - path[(i + 1) % path.length].x, path[i].y - path[(i + 1) % path.length].y) < 1e-7) return false;
+  for (let i = 0; i < path.length; i++)
+    for (let j = i + 2; j < path.length; j++) {
+      if (i === 0 && j === path.length - 1) continue;
+      if (segmentCuts(path[i], path[(i + 1) % path.length], path[j], path[(j + 1) % path.length]).length) return false;
+    }
+  return true;
+}
+function wallEnclosesCity(path, boundary, minimum = WALL_CLEARANCE) {
+  if (!boundary.every(p => pointInPolygon(p, path))) return false;
+  for (let i = 0; i < path.length; i++)
+    for (let j = 0; j < boundary.length; j++)
+      if (segmentDistance(path[i], path[(i + 1) % path.length], boundary[j], boundary[(j + 1) % boundary.length]) < minimum - 1e-6) return false;
+  return true;
+}
+
+function simplifyWallLine(points, tolerance) {
+  if (points.length < 3) return points;
+  let far = -1,
+    distance = tolerance;
+  for (let i = 1; i < points.length - 1; i++) {
+    const d = distanceToSegment(points[i], points[0], points.at(-1));
+    if (d > distance) {
+      distance = d;
+      far = i;
+    }
+  }
+  return far < 0 ? [points[0], points.at(-1)] : [...simplifyWallLine(points.slice(0, far + 1), tolerance).slice(0, -1), ...simplifyWallLine(points.slice(far), tolerance)];
+}
+
+function simplifyWallLoop(points, tolerance) {
+  let far = 1;
+  for (let i = 2; i < points.length; i++)
+    if (Math.hypot(points[i].x - points[0].x, points[i].y - points[0].y) > Math.hypot(points[far].x - points[0].x, points[far].y - points[0].y)) far = i;
+  const result = [...simplifyWallLine(points.slice(0, far + 1), tolerance).slice(0, -1), ...simplifyWallLine([...points.slice(far), points[0]], tolerance).slice(0, -1)];
+  return polygonSignedArea(result) < 0 ? result.reverse() : result;
+}
+
+// A signed-distance contour avoids intersecting offset miters at narrow
+// concavities. Resolution is bounded independently of map size; the resulting
+// simple outer ring is then checked against the original city exactly.
+function distanceContourWall(boundary) {
+  const bounds = boundsOf(boundary),
+    step = Math.max(1.5, Math.max(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY) / 180);
+  const radius = WALL_CLEARANCE + step * 1.35,
+    padding = radius + step * 3;
+  const origin = {
+    x: bounds.minX - padding,
+    y: bounds.minY - padding
+  };
+  const columns = Math.ceil((bounds.maxX - bounds.minX + 2 * padding) / step),
+    rows = Math.ceil((bounds.maxY - bounds.minY + 2 * padding) / step);
+  const field = new Float64Array((columns + 1) * (rows + 1));
+  const value = p => {
+    let distance = Infinity;
+    for (let i = 0; i < boundary.length; i++) distance = Math.min(distance, distanceToSegment(p, boundary[i], boundary[(i + 1) % boundary.length]));
+    const result = radius - (pointInPolygon(p, boundary) ? -distance : distance);
+    return Math.abs(result) < 1e-9 ? 1e-9 : result;
+  };
+  for (let y = 0; y <= rows; y++)
+    for (let x = 0; x <= columns; x++) field[y * (columns + 1) + x] = value({
+      x: origin.x + x * step,
+      y: origin.y + y * step
+    });
+  const vertices = new Map(),
+    neighbors = new Map();
+
+  function intersection(x, y, edge) {
+    const ends = [
+      [
+        [x, y],
+        [x + 1, y]
+      ],
+      [
+        [x + 1, y],
+        [x + 1, y + 1]
+      ],
+      [
+        [x + 1, y + 1],
+        [x, y + 1]
+      ],
+      [
+        [x, y + 1],
+        [x, y]
+      ]
+    ][edge];
+    const [a, b] = ends, key = edge === 0 ? `h:${x}:${y}` : edge === 1 ? `v:${x+1}:${y}` : edge === 2 ? `h:${x}:${y+1}` : `v:${x}:${y}`;
+    if (!vertices.has(key)) {
+      const va = field[a[1] * (columns + 1) + a[0]],
+        vb = field[b[1] * (columns + 1) + b[0]],
+        t = Math.max(1e-8, Math.min(1 - 1e-8, va / (va - vb)));
+      vertices.set(key, {
+        x: origin.x + (a[0] + (b[0] - a[0]) * t) * step,
+        y: origin.y + (a[1] + (b[1] - a[1]) * t) * step
+      });
+      neighbors.set(key, []);
+    }
+    return key;
+  }
+  for (let y = 0; y < rows; y++)
+    for (let x = 0; x < columns; x++) {
+      const values = [field[y * (columns + 1) + x], field[y * (columns + 1) + x + 1], field[(y + 1) * (columns + 1) + x + 1], field[(y + 1) * (columns + 1) + x]];
+      const crossing = [];
+      for (let e = 0; e < 4; e++)
+        if ((values[e] > 0) !== (values[(e + 1) % 4] > 0)) crossing.push(e);
+      let pairs = [];
+      if (crossing.length === 2) pairs = [crossing];
+      else if (crossing.length === 4) {
+        const centerInside = value({
+          x: origin.x + (x + .5) * step,
+          y: origin.y + (y + .5) * step
+        }) > 0;
+        const caseFive = values[0] > 0;
+        pairs = centerInside === caseFive ? [
+          [0, 1],
+          [2, 3]
+        ] : [
+          [0, 3],
+          [1, 2]
+        ];
+      }
+      for (const [a, b] of pairs) {
+        const first = intersection(x, y, a),
+          second = intersection(x, y, b);
+        neighbors.get(first).push(second);
+        neighbors.get(second).push(first);
+      }
+    }
+  const visited = new Set(),
+    loops = [];
+  for (const start of vertices.keys())
+    if (!visited.has(start)) {
+      const loop = [];
+      let previous = null,
+        current = start;
+      do {
+        if (visited.has(current)) throw new Error('Wall contour did not form a simple closed loop.');
+        visited.add(current);
+        loop.push(vertices.get(current));
+        const list = neighbors.get(current);
+        if (list.length !== 2) throw new Error('Wall contour has an incomplete junction.');
+        const next = list[0] === previous ? list[1] : list[0];
+        previous = current;
+        current = next;
+      } while (current !== start);
+      loops.push(loop);
+    }
+  if (!loops.length) throw new Error('Could not outline the city with a wall.');
+  const outer = loops.sort((a, b) => Math.abs(polygonSignedArea(b)) - Math.abs(polygonSignedArea(a)))[0];
+  for (const tolerance of [step * .4, step * .12, step * .025, 0]) {
+    const candidate = simplifyWallLoop(outer, tolerance);
+    if (simpleWallPath(candidate) && wallEnclosesCity(candidate, boundary)) return candidate;
+  }
+  throw new Error('This outline is too complex for a safe wall. Simplify its small indentations and try again.');
+}
+
+
+// src/core/gate-geometry.js
+
+
+
+
+function gatePosts(gate, measure) {
+  return [wallPoint(measure, gate.arc - gate.opening / 2 - gate.postRadius), wallPoint(measure, gate.arc + gate.opening / 2 + gate.postRadius)];
+}
+function outsideCityConnection(a, b, boundary) {
+  const cuts = [0, 1];
+  for (let i = 0; i < boundary.length; i++) cuts.push(...segmentCuts(a, b, boundary[i], boundary[(i + 1) % boundary.length]));
+  cuts.sort((a, b) => a - b);
+  for (let i = 1; i < cuts.length; i++)
+    if (cuts[i] - cuts[i - 1] > 1e-8 && pointInPolygon(lerpPoint(a, b, (cuts[i] + cuts[i - 1]) / 2), boundary)) return false;
+  return true;
+}
+function gateIsClear(gate, wall, measure = measureWall(wall.path)) {
+  const points = gate.connection.points,
+    half = (gate.connection.width + STREET_EDGE_WIDTH) / 2;
+  for (let i = 0; i < points.length - 1; i++) {
+    const start = points[i],
+      end = points[i + 1];
+    for (const section of solidWallSegments(wall, [gate]))
+      if (segmentDistance(start, end, section.a, section.b) < half + (wall.width + (wall.edgeWidth ?? WALL_EDGE_WIDTH)) / 2 + .45) return false;
+    for (const post of gatePosts(gate, measure))
+      if (distanceToSegment(post, start, end) < half + gate.postRadius + .45) return false;
+  }
+  return true;
+}
+
+
+// src/core/prng.js
+// One reproducible pseudo-random stream per seed. Avoid Math.random in generation.
+function normalizeSeed(value) {
+  return String(value ?? '').trim().slice(0, 64) || 'mappo';
+}
+
+function hashSeed(value) {
+  let hash = 2166136261;
+  for (const char of normalizeSeed(value)) {
+    hash ^= char.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function createRng(seed) {
+  let state = hashSeed(seed);
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function randomRange(rng, min, max) {
+  return min + rng() * (max - min);
+}
+
+
+// src/generators/gates.js
+
+
+
+
+
+
+function firstWallHit(origin, direction, measure) {
+  let best = null;
+  for (let i = 0; i < measure.path.length; i++) {
+    const a = measure.path[i],
+      b = measure.path[(i + 1) % measure.path.length],
+      sx = b.x - a.x,
+      sy = b.y - a.y,
+      den = direction.x * sy - direction.y * sx;
+    if (Math.abs(den) < 1e-9) continue;
+    const qx = a.x - origin.x,
+      qy = a.y - origin.y,
+      t = (qx * sy - qy * sx) / den,
+      u = (qx * direction.y - qy * direction.x) / den;
+    if (t <= 1e-6 || u < -1e-8 || u > 1 + 1e-8) continue;
+    const length = Math.hypot(sx, sy),
+      alignment = (direction.x * sy - direction.y * sx) / length;
+    if (!best || t < best.t - 1e-6 || Math.abs(t - best.t) < 1e-6 && alignment > best.alignment) best = {
+      t,
+      arc: measure.distances[i] + Math.max(0, Math.min(1, u)) * length,
+      center: {
+        x: origin.x + direction.x * t,
+        y: origin.y + direction.y * t
+      },
+      alignment
+    };
+  }
+  return best;
+}
+function choosePerimeterGates(city, wall, {
+  seed,
+  count
+}) {
+  const rng = createRng(`${seed}:gates:v1`),
+    measure = measureWall(wall.path),
+    boundary = city.survey.boundary;
+  const nodes = new Map(city.nodes.map(n => [n.id, n])),
+    incident = new Map(city.nodes.map(n => [n.id, []]));
+  for (const road of city.roads) {
+    incident.get(road.a).push({
+      road,
+      other: nodes.get(road.b)
+    });
+    incident.get(road.b).push({
+      road,
+      other: nodes.get(road.a)
+    });
+  }
+  const candidates = [];
+  for (const node of city.nodes) {
+    const edges = [];
+    for (let i = 0; i < boundary.length; i++)
+      if (distanceToSegment(node, boundary[i], boundary[(i + 1) % boundary.length]) < 1e-5) edges.push([boundary[i], boundary[(i + 1) % boundary.length]]);
+    if (!edges.length) continue;
+    const directions = [];
+    let priority = .5;
+    for (const {
+        road,
+        other
+      }
+      of incident.get(node.id)) {
+      if (!pointInPolygon(other, boundary) || boundary.some((p, i) => distanceToSegment(other, p, boundary[(i + 1) % boundary.length]) < 1e-5)) continue;
+      const length = Math.hypot(node.x - other.x, node.y - other.y),
+        rank = road.kind === 'primary' ? 3 : road.kind === 'secondary' ? 2 : 1;
+      priority = Math.max(priority, rank);
+      directions.push({
+        x: (node.x - other.x) / length,
+        y: (node.y - other.y) / length
+      });
+    }
+    let nx = 0,
+      ny = 0;
+    for (const [a, b] of edges) {
+      const length = Math.hypot(b.x - a.x, b.y - a.y),
+        x = (b.y - a.y) / length,
+        y = -(b.x - a.x) / length;
+      nx += x;
+      ny += y;
+      directions.push({
+        x,
+        y
+      });
+    }
+    if (Math.hypot(nx, ny) > 1e-6) directions.push({
+      x: nx / Math.hypot(nx, ny),
+      y: ny / Math.hypot(nx, ny)
+    });
+    let best = null;
+    for (const direction of directions) {
+      const hit = firstWallHit(node, direction, measure);
+      if (!hit || hit.alignment < .72) continue;
+      const exit = {
+        x: hit.center.x + direction.x * 24,
+        y: hit.center.y + direction.y * 24
+      };
+      if (pointInPolygon(exit, wall.path) || !outsideCityConnection(node, exit, boundary)) continue;
+      const gate = {
+        id: 'candidate',
+        dataVersion: 1,
+        kind: 'street-gate',
+        wallId: wall.id,
+        arc: hit.arc % measure.length,
+        opening: GATE_OPENING,
+        postRadius: GATE_POST_RADIUS,
+        center: hit.center,
+        connection: {
+          cityNodeId: node.id,
+          points: [{
+            x: node.x,
+            y: node.y
+          }, hit.center, exit],
+          width: STREET_WIDTHS.secondary
+        },
+        extensions: {}
+      };
+      if (!gateIsClear(gate, wall, measure)) continue;
+      const quality = priority + hit.alignment * .25 + rng() * .15;
+      if (!best || quality > best.quality) best = {
+        gate,
+        quality
+      };
+    }
+    if (best) candidates.push(best);
+  }
+  if (!candidates.length) throw new Error('No safe gate connection was found at the perimeter streets. Try a simpler outline.');
+  const chosen = [];
+  while (chosen.length < count) {
+    let best = null,
+      bestScore = -Infinity;
+    for (const candidate of candidates) {
+      if (chosen.includes(candidate)) continue;
+      let gap = measure.length / 2,
+        blocked = false;
+      for (const other of chosen) {
+        gap = Math.min(gap, wallArcGap(candidate.gate.arc, other.gate.arc, measure.length));
+        const a = candidate.gate.connection.points,
+          b = other.gate.connection.points;
+        if (segmentDistance(a[0], a[2], b[0], b[2]) < 14) blocked = true;
+      }
+      if (gap < 58 || blocked) continue;
+      const score = chosen.length ? gap * (.8 + .2 * candidate.quality / 3.5) : candidate.quality;
+      if (score > bestScore) {
+        best = candidate;
+        bestScore = score;
+      }
+    }
+    if (!best) break;
+    chosen.push(best);
+  }
+  return chosen.sort((a, b) => a.gate.arc - b.gate.arc).map((item, i) => ({
+    ...item.gate,
+    id: `GATE-${String(i+1).padStart(3,'0')}`
+  }));
+}
+
+
+// src/generators/towers.js
+
+
+
+
+
+function placePerimeterTowers(wall, gates, {
+  spacing,
+  seed
+}) {
+  const measure = measureWall(wall.path),
+    rng = createRng(`${seed}:towers:v1`),
+    towers = [];
+
+  function add(arc, role) {
+    arc = ((arc % measure.length) + measure.length) % measure.length;
+    const center = wallPoint(measure, arc);
+    if (towers.some(t => Math.hypot(t.center.x - center.x, t.center.y - center.y) < TOWER_RADIUS * 2 + 5)) return;
+    for (const gate of gates) {
+      if (wallArcGap(arc, gate.arc, measure.length) < gate.opening / 2 + gate.postRadius * 2 + TOWER_RADIUS + 2) return;
+      if (gatePosts(gate, measure).some(p => Math.hypot(p.x - center.x, p.y - center.y) < TOWER_RADIUS + gate.postRadius + 2)) return;
+      const points = gate.connection.points;
+      if (distanceToSegment(center, points[0], points[2]) < TOWER_RADIUS + (gate.connection.width + STREET_EDGE_WIDTH) / 2 + 2) return;
+    }
+    towers.push({
+      id: `TOWER-${String(towers.length+1).padStart(3,'0')}`,
+      dataVersion: 1,
+      kind: 'round',
+      role,
+      wallId: wall.id,
+      arc,
+      center,
+      radius: TOWER_RADIUS,
+      extensions: {}
+    });
+  }
+  const corners = [];
+  for (let i = 0; i < wall.path.length; i++) {
+    const arc = measure.distances[i],
+      p = wallPoint(measure, arc - 14),
+      q = wall.path[i],
+      r = wallPoint(measure, arc + 14),
+      ax = q.x - p.x,
+      ay = q.y - p.y,
+      bx = r.x - q.x,
+      by = r.y - q.y;
+    const angle = Math.acos(Math.max(-1, Math.min(1, (ax * bx + ay * by) / (Math.hypot(ax, ay) * Math.hypot(bx, by)))));
+    if (angle > .72) corners.push({
+      arc,
+      angle
+    });
+  }
+  corners.sort((a, b) => b.angle - a.angle).forEach(c => add(c.arc, 'corner'));
+  const count = Math.max(3, Math.ceil(measure.length / spacing)),
+    phase = rng() * measure.length / count;
+  for (let i = 0; i < count; i++) add(phase + i * measure.length / count, 'interval');
+  return towers.sort((a, b) => a.arc - b.arc).map((t, i) => ({
+    ...t,
+    id: `TOWER-${String(i+1).padStart(3,'0')}`
+  }));
+}
+
+
+// src/core/fortification-model.js
+
+
+
+
+
+function fortificationPoint(point) {
+  return point && Number.isFinite(point.x) && Number.isFinite(point.y) && Math.abs(point.x) <= 100000 && Math.abs(point.y) <= 100000;
+}
+
+function fortificationRecords(records, limit) {
+  if (!Array.isArray(records) || records.length > limit) throw new Error('Invalid fortification records.');
+  const ids = new Set();
+  for (const record of records) {
+    if (!record || typeof record.id !== 'string' || !record.id || record.id.length > 128 || ids.has(record.id)) throw new Error('Invalid or duplicate fortification ID.');
+    ids.add(record.id);
+  }
+}
+function validateFortifications(city) {
+  const state = city.fortificationState;
+  if (!state || state.version !== 1 || !['unbuilt', 'built'].includes(state.status)) throw new Error('Unsupported fortification data. Use a compatible Mappo build.');
+  if (typeof state.enabled !== 'boolean') throw new Error('Invalid fortification enable setting.');
+  fortificationRecords(city.walls, 20000);
+  fortificationRecords(city.gates, 20000);
+  fortificationRecords(city.towers, 20000);
+  if (state.status === 'unbuilt') {
+    if (state.enabled) throw new Error('Unbuilt walls cannot be enabled.');
+    return city;
+  }
+  if (city.walls.length !== 1 || !city.gates.length || city.gates.length > 8 || city.towers.length > 512) throw new Error('A fortified perimeter needs a wall and at least one connected gate.');
+  if (!Number.isInteger(state.requestedGateCount) || state.requestedGateCount < 1 || state.requestedGateCount > 8 || state.gateCount !== city.gates.length || state.gateCount > state.requestedGateCount || !Number.isFinite(state.towerSpacing) || state.towerSpacing < 40 || state.towerSpacing > 200 || typeof state.seed !== 'string' || state.seed.length > 64) throw new Error('Invalid fortification settings.');
+  let work = 4000000;
+  const spend = n => {
+    work -= n;
+    if (work < 0) throw new Error('Fortifications are too complex to validate in this build.');
+  };
+  const wall = city.walls[0],
+    boundary = city.survey.boundary,
+    nodes = new Map(city.nodes.map(n => [n.id, n]));
+  if (wall.dataVersion !== 1 || wall.kind !== 'perimeter') throw new Error('Unsupported wall kind or version.');
+  if (wall.edgeWidth !== undefined && (!Number.isFinite(wall.edgeWidth) || wall.edgeWidth < 0 || wall.edgeWidth > 4)) throw new Error('Invalid wall edge width.');
+  if (!Number.isFinite(wall.width) || wall.width < 2 || wall.width > 12 || !Array.isArray(wall.path) || wall.path.length > 1024 || !wall.path.every(fortificationPoint)) throw new Error('Invalid wall geometry.');
+  if (!simpleWallPath(wall.path)) throw new Error('The wall crosses itself or is not a simple ring.');
+  if (!wallEnclosesCity(wall.path, boundary, WALL_CLEARANCE)) throw new Error('The wall fails to enclose the city with safe street clearance.');
+  const measure = measureWall(wall.path);
+  for (const gate of city.gates) {
+    if (gate.dataVersion !== 1 || gate.kind !== 'street-gate') throw new Error('Unsupported gate data version or kind.');
+    if (gate.wallId !== wall.id) throw new Error('Invalid gate wall reference.');
+    if (!Number.isFinite(gate.arc) || gate.arc < 0 || gate.arc >= measure.length || !Number.isFinite(gate.opening) || gate.opening < 20 || gate.opening > 60 || !Number.isFinite(gate.postRadius) || gate.postRadius < 2 || gate.postRadius > 10 || !fortificationPoint(gate.center)) throw new Error('Invalid gate geometry.');
+    const at = wallPoint(measure, gate.arc);
+    if (Math.hypot(at.x - gate.center.x, at.y - gate.center.y) > 1e-4) throw new Error('A gate does not lie on its wall.');
+    const c = gate.connection,
+      source = nodes.get(c?.cityNodeId);
+    if (!source || !Number.isFinite(c.width) || c.width < 4 || c.width > 16 || !Array.isArray(c.points) || c.points.length < 3 || c.points.length > 32 || !c.points.every(fortificationPoint) || Math.hypot(c.points[0].x - source.x, c.points[0].y - source.y) > 1e-6 || !c.points.some(p => Math.hypot(p.x - gate.center.x, p.y - gate.center.y) < 1e-5)) throw new Error('A gate has no valid connection to the saved street graph.');
+    if (!boundary.some((p, i) => distanceToSegment(source, p, boundary[(i + 1) % boundary.length]) < 1e-5)) throw new Error('Gate approaches must begin at a perimeter street junction.');
+    if (pointInPolygon(c.points.at(-1), wall.path) || wall.path.some((p, i) => distanceToSegment(c.points.at(-1), p, wall.path[(i + 1) % wall.path.length]) < (c.width + STREET_EDGE_WIDTH + wall.width + (wall.edgeWidth ?? WALL_EDGE_WIDTH)) / 2 + .5)) throw new Error('A gate approach does not exit the wall.');
+    for (let i = 0; i < c.points.length - 1; i++) {
+      if (!outsideCityConnection(c.points[i], c.points[i + 1], boundary)) throw new Error('A gate approach crosses city blocks.');
+    }
+    if (!gateIsClear(gate, wall, measure)) throw new Error('A gate opening is blocked by its own wall or gateposts.');
+  }
+  for (let i = 0; i < city.gates.length; i++)
+    for (let j = i + 1; j < city.gates.length; j++) {
+      const a = city.gates[i],
+        b = city.gates[j];
+      if (wallArcGap(a.arc, b.arc, measure.length) < (a.opening + b.opening) / 2 + 1) throw new Error('Gate openings overlap.');
+      for (const pa of gatePosts(a, measure))
+        for (const pb of gatePosts(b, measure))
+          if (Math.hypot(pa.x - pb.x, pa.y - pb.y) < a.postRadius + b.postRadius + .5) throw new Error('Gatehouses overlap.');
+      for (let p = 0; p < a.connection.points.length - 1; p++)
+        for (let q = 0; q < b.connection.points.length - 1; q++)
+          if (segmentDistance(a.connection.points[p], a.connection.points[p + 1], b.connection.points[q], b.connection.points[q + 1]) < (a.connection.width + b.connection.width) / 2 + STREET_EDGE_WIDTH) throw new Error('Gate approaches cross without a junction.');
+    }
+  const solids = solidWallSegments(wall, city.gates);
+  for (const section of solids)
+    for (const road of city.roads) {
+      spend(1);
+      if (segmentDistance(section.a, section.b, nodes.get(road.a), nodes.get(road.b)) < (wall.width + (wall.edgeWidth ?? WALL_EDGE_WIDTH) + STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + .5) throw new Error('A wall blocks an existing street.');
+    }
+  for (const tower of city.towers) {
+    if (tower.dataVersion !== 1 || tower.kind !== 'round') throw new Error('Unsupported tower data version or kind.');
+    if (tower.wallId !== wall.id || !Number.isFinite(tower.arc) || tower.arc < 0 || tower.arc >= measure.length || !fortificationPoint(tower.center) || !Number.isFinite(tower.radius) || tower.radius < 2 || tower.radius > 20) throw new Error('Invalid tower geometry or wall reference.');
+    const at = wallPoint(measure, tower.arc);
+    if (Math.hypot(at.x - tower.center.x, at.y - tower.center.y) > 1e-4) throw new Error('A tower is detached from its wall.');
+    for (const road of city.roads) {
+      spend(1);
+      if (distanceToSegment(tower.center, nodes.get(road.a), nodes.get(road.b)) < tower.radius + (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + .5) throw new Error('A tower blocks a street.');
+    }
+    for (const gate of city.gates) {
+      for (const post of gatePosts(gate, measure))
+        if (Math.hypot(tower.center.x - post.x, tower.center.y - post.y) < tower.radius + gate.postRadius + .5) throw new Error('A tower overlaps a gatehouse.');
+      for (let i = 0; i < gate.connection.points.length - 1; i++)
+        if (distanceToSegment(tower.center, gate.connection.points[i], gate.connection.points[i + 1]) < tower.radius + (gate.connection.width + STREET_EDGE_WIDTH) / 2 + .5) throw new Error('A tower blocks a gate approach.');
+    }
+  }
+  for (let i = 0; i < city.towers.length; i++)
+    for (let j = i + 1; j < city.towers.length; j++) {
+      const a = city.towers[i],
+        b = city.towers[j];
+      if (Math.hypot(a.center.x - b.center.x, a.center.y - b.center.y) < a.radius + b.radius + .5) throw new Error('Defensive towers overlap.');
+    }
+  return city;
+}
+function fortificationViewPoints(city) {
+  if (city.fortificationState?.status !== 'built' || !city.fortificationState.enabled) return city.survey.boundary;
+  return [...city.survey.boundary, ...city.walls.flatMap(w => w.path), ...city.gates.flatMap(g => g.connection.points), ...city.towers.flatMap(t => [{
+    x: t.center.x - t.radius,
+    y: t.center.y - t.radius
+  }, {
+    x: t.center.x + t.radius,
+    y: t.center.y + t.radius
+  }])];
+}
+
+function setFortificationsEnabled(city, enabled) {
+  if (typeof enabled !== 'boolean') throw new Error('Choose whether fortifications are enabled.');
+  if (city.fortificationState.status !== 'built' && enabled) throw new Error('Build fortifications before enabling them.');
+  if (city.fortificationState.enabled === enabled) return city;
+  const next = {
+    ...city,
+    fortificationState: {
+      ...city.fortificationState,
+      enabled
+    }
+  };
+  validateFortifications(next);
+  return next;
+}
+
+
+// src/generators/fortifications.js
+
+
+
+
+function normalizeFortificationSettings(options = {}) {
+  const gateCount = Number(options.gateCount ?? 4),
+    towerSpacing = Number(options.towerSpacing ?? 100),
+    seed = String(options.seed ?? 'fortifications').slice(0, 64) || 'fortifications';
+  if (!Number.isInteger(gateCount) || gateCount < 1 || gateCount > 8) throw new Error('Choose 1–8 gates.');
+  if (!Number.isFinite(towerSpacing) || towerSpacing < 40 || towerSpacing > 200) throw new Error('Tower spacing must be 40–200 units.');
+  return {
+    enabled: options.enabled !== false,
+    gateCount,
+    towerSpacing,
+    seed,
+    algorithm: options.algorithm ?? 'outer-perimeter-v1'
+  };
+}
+
+function outerPerimeterFortifications(city, settings) {
+  const wall = {
+    id: 'WALL-001',
+    dataVersion: 1,
+    kind: 'perimeter',
+    width: WALL_WIDTH,
+    edgeWidth: WALL_EDGE_WIDTH,
+    path: distanceContourWall(city.survey.boundary),
+    extensions: {}
+  };
+  const gates = choosePerimeterGates(city, wall, {
+    seed: settings.seed,
+    count: settings.gateCount
+  });
+  if (!gates.length) throw new Error('A fortified city needs at least one connected gate.');
+  const towers = placePerimeterTowers(wall, gates, {
+    seed: settings.seed,
+    spacing: settings.towerSpacing
+  });
+  return {
+    ...city,
+    walls: [wall],
+    gates,
+    towers,
+    fortificationState: {
+      version: 1,
+      status: 'built',
+      enabled: true,
+      algorithm: settings.algorithm,
+      seed: settings.seed,
+      requestedGateCount: settings.gateCount,
+      gateCount: gates.length,
+      towerSpacing: settings.towerSpacing,
+      clearance: WALL_CLEARANCE
+    }
+  };
+}
+const FORTIFICATION_BUILDERS = Object.freeze({
+  'outer-perimeter-v1': outerPerimeterFortifications
+});
+function generateFortifications(city, options = {}) {
+  if (options.enabled === false) return setFortificationsEnabled(city, false);
+  const settings = normalizeFortificationSettings(options);
+  if (!settings.enabled) return setFortificationsEnabled(city, false);
+  const builder = FORTIFICATION_BUILDERS[settings.algorithm];
+  if (!builder) throw new Error('Unsupported fortification algorithm.');
+  const next = builder(city, settings);
+  validateFortifications(next);
+  return next;
+}
+
+
+// src/editor/fortifications.js
+
+
+const FORTIFICATION_HISTORY_LIMIT = 10;
+function fortificationSnapshot(city) {
+  return JSON.parse(JSON.stringify({
+    walls: city.walls,
+    gates: city.gates,
+    towers: city.towers,
+    fortificationState: city.fortificationState
+  }));
+}
+function restoreFortificationSnapshot(city, snapshot) {
+  if (!snapshot || typeof snapshot !== 'object' || !Array.isArray(snapshot.walls) || !Array.isArray(snapshot.gates) || !Array.isArray(snapshot.towers) || !snapshot.fortificationState) throw new Error('Invalid fortification undo snapshot.');
+  const next = {
+    ...city,
+    walls: JSON.parse(JSON.stringify(snapshot.walls)),
+    gates: JSON.parse(JSON.stringify(snapshot.gates)),
+    towers: JSON.parse(JSON.stringify(snapshot.towers)),
+    fortificationState: JSON.parse(JSON.stringify(snapshot.fortificationState))
+  };
+  validateFortifications(next);
+  return next;
+}
+class FortificationEditor {
+  constructor() {
+    this.history = [];
+  }
+  apply(city, options = {}) {
+    if (options.enabled === false) {
+      const next = setFortificationsEnabled(city, false);
+      if (next !== city) {
+        this.history.push(fortificationSnapshot(city));
+        if (this.history.length > FORTIFICATION_HISTORY_LIMIT) this.history.shift();
+      }
+      return next;
+    }
+    const settings = normalizeFortificationSettings(options),
+      state = city.fortificationState;
+    const same = state.status === 'built' && settings.gateCount === state.requestedGateCount && settings.towerSpacing === state.towerSpacing && settings.seed === state.seed && settings.algorithm === state.algorithm;
+    const next = !settings.enabled || same ? setFortificationsEnabled(city, settings.enabled) : generateFortifications(city, settings);
+    if (next !== city) {
+      this.history.push(fortificationSnapshot(city));
+      if (this.history.length > FORTIFICATION_HISTORY_LIMIT) this.history.shift();
+    }
+    return next;
+  }
+  undo(city) {
+    if (!this.history.length) throw new Error('No fortification edit to undo.');
+    const next = restoreFortificationSnapshot(city, this.history.at(-1));
+    this.history.pop();
+    return next;
+  }
+  snapshot() {
+    return JSON.parse(JSON.stringify({
+      history: this.history
+    }));
+  }
+  load(state = {}) {
+    this.history = JSON.parse(JSON.stringify(state.history ?? []));
+  }
+}
+function validateFortificationEditorState(state, city) {
+  if (state === undefined) return;
+  if (!state || typeof state !== 'object' || !Array.isArray(state.history) || state.history.length > FORTIFICATION_HISTORY_LIMIT) throw new Error('Invalid fortification undo history.');
+  for (const snapshot of state.history) restoreFortificationSnapshot(city, snapshot);
+  if (state.controls !== undefined) {
+    const c = state.controls;
+    if (!c || typeof c.enabled !== 'boolean' || typeof c.gateCount !== 'string' || c.gateCount.length > 4 || typeof c.towerSpacing !== 'string' || c.towerSpacing.length > 16 || typeof c.seed !== 'string' || c.seed.length > 64) throw new Error('Invalid saved fortification controls.');
+  }
+}
+
+
+// src/ui/fortifications.js
+
+class FortificationPanel {
+  constructor({
+    getElement,
+    getCity,
+    commit,
+    changed,
+    activateLayer = () => {}
+  }) {
+    this.$ = getElement;
+    this.getCity = getCity;
+    this.commit = commit;
+    this.changed = changed;
+    this.activateLayer = activateLayer;
+    this.editor = new FortificationEditor();
+  }
+  controls() {
+    return {
+      enabled: this.$('wallsEnabledInput').checked,
+      gateCount: this.$('gateCountInput').value,
+      towerSpacing: this.$('towerSpacingInput').value,
+      seed: this.$('fortificationSeedInput').value
+    };
+  }
+  message(text, error = false) {
+    this.$('fortificationMessage').textContent = text;
+    this.$('fortificationMessage').classList.toggle('error', error);
+  }
+  refresh(reset = false) {
+    const city = this.getCity(),
+      state = city.fortificationState,
+      built = state.status === 'built';
+    this.$('fortificationStats').textContent = built ? `${state.enabled?'Enabled':'Disabled'} · ${city.gates.length} gates · ${city.towers.length} towers` : 'No fortifications yet. Enable walls and apply to add them.';
+    this.$('undoFortificationButton').disabled = !this.editor.history.length;
+    if (reset) {
+      this.$('wallsEnabledInput').checked = state.enabled;
+      this.$('gateCountInput').value = String(built ? state.requestedGateCount : 4);
+      this.$('towerSpacingInput').value = String(built ? state.towerSpacing : 100);
+      this.$('fortificationSeedInput').value = built ? state.seed : city.id;
+    }
+  }
+  apply() {
+    try {
+      const wasUnbuilt = this.getCity().fortificationState.status !== 'built',
+        city = this.editor.apply(this.getCity(), this.controls());
+      this.commit(city);
+      this.refresh();
+      if (wasUnbuilt && city.fortificationState.status === 'built') this.activateLayer();
+      const state = city.fortificationState;
+      this.message(state.enabled ? (state.gateCount < state.requestedGateCount ? `Built ${state.gateCount} of ${state.requestedGateCount} requested gates; other locations did not have enough safe clearance.` : 'Fortifications updated. Existing city geometry was preserved.') : 'Walls disabled. Saved walls, gates and towers are retained.');
+      return true;
+    } catch (error) {
+      this.message(error.message, true);
+      return false;
+    }
+  }
+  bind() {
+    this.$('applyFortificationButton').addEventListener('click', () => this.apply());
+    this.$('undoFortificationButton').addEventListener('click', () => {
+      try {
+        this.commit(this.editor.undo(this.getCity()));
+        this.refresh(true);
+        this.message('Fortification edit undone.');
+        return true;
+      } catch (error) {
+        this.message(error.message, true);
+        return false;
+      }
+    });
+    for (const id of ['wallsEnabledInput', 'gateCountInput', 'towerSpacingInput', 'fortificationSeedInput']) {
+      this.$(id).addEventListener('input', () => this.changed());
+      this.$(id).addEventListener('change', () => this.changed());
+    }
+  }
 }
 
 
@@ -387,37 +1507,6 @@ function moveDistrictBlock(city, blockId, targetId) {
   });
   validateDistricts(next, topology);
   return next;
-}
-
-
-// src/core/prng.js
-// One reproducible pseudo-random stream per seed. Avoid Math.random in generation.
-function normalizeSeed(value) {
-  return String(value ?? '').trim().slice(0, 64) || 'mappo';
-}
-
-function hashSeed(value) {
-  let hash = 2166136261;
-  for (const char of normalizeSeed(value)) {
-    hash ^= char.codePointAt(0);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-function createRng(seed) {
-  let state = hashSeed(seed);
-  return () => {
-    state = (state + 0x6D2B79F5) >>> 0;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function randomRange(rng, min, max) {
-  return min + rng() * (max - min);
 }
 
 
@@ -806,6 +1895,7 @@ class DistrictPanel {
     this.editor.selectedDistrictId = block?.districtId ?? null;
     this.refresh();
     this.changed();
+    if (block) this.$('districtPanel').open = true;
     if (block) this.$('districtPanel').scrollIntoView?.({
       block: 'nearest',
       behavior: 'smooth'
@@ -851,8 +1941,8 @@ class DistrictPanel {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.3c';
-const PROJECT_SCHEMA_VERSION = 3;
+const APP_VERSION = '0.1-dev.3d';
+const PROJECT_SCHEMA_VERSION = 4;
 
 
 // src/data/migrations.js
@@ -884,243 +1974,18 @@ function migrateProjectData(project) {
     };
     project.schemaVersion = 3;
   }
-  return project;
-}
-
-
-// src/core/boundary.js
-
-function cross2(a, b) {
-  return a.x * b.y - a.y * b.x;
-}
-function lerpPoint(a, b, t) {
-  return {
-    x: a.x + (b.x - a.x) * t,
-    y: a.y + (b.y - a.y) * t
-  };
-}
-function distanceToSegment(p, a, b) {
-  const dx = b.x - a.x,
-    dy = b.y - a.y;
-  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
-  return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy);
-}
-function insideOrOn(p, polygon) {
-  return pointInPolygon(p, polygon) || polygon.some((a, i) => distanceToSegment(p, a, polygon[(i + 1) % polygon.length]) < 1e-6);
-}
-
-// Includes endpoint contacts and collinear overlaps. Both generators and
-// validation use the same segment predicates, with dimensionless parameters.
-function segmentCuts(a, b, c, d) {
-  const r = {
-      x: b.x - a.x,
-      y: b.y - a.y
-    },
-    s = {
-      x: d.x - c.x,
-      y: d.y - c.y
+  if (project.schemaVersion === 3) {
+    if (project.city.gates === undefined) project.city.gates = [];
+    if (project.city.towers === undefined) project.city.towers = [];
+    project.city.fortificationState = {
+      ...(project.city.fortificationState || {}),
+      version: 1,
+      status: 'unbuilt',
+      enabled: false
     };
-  const q = {
-      x: c.x - a.x,
-      y: c.y - a.y
-    },
-    denominator = cross2(r, s);
-  if (Math.abs(denominator) > 1e-9) {
-    const t = cross2(q, s) / denominator,
-      u = cross2(q, r) / denominator;
-    return t >= -1e-9 && t <= 1 + 1e-9 && u >= -1e-9 && u <= 1 + 1e-9 ? [Math.max(0, Math.min(1, t))] : [];
+    project.schemaVersion = 4;
   }
-  if (Math.abs(cross2(q, r)) > 1e-7) return [];
-  const length2 = r.x * r.x + r.y * r.y;
-  if (length2 < 1e-12) return [];
-  return [c, d].map(p => ((p.x - a.x) * r.x + (p.y - a.y) * r.y) / length2).filter(t => t >= -1e-9 && t <= 1 + 1e-9).map(t => Math.max(0, Math.min(1, t)));
-}
-
-function validateBoundary(points) {
-  if (!Array.isArray(points) || points.length < 3) throw new Error('Place at least three outline points.');
-  if (points.length > 1200) throw new Error('The outline has too many points. Try a shorter stroke.');
-  if (!points.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 10000 && Math.abs(p.y) < 10000)) throw new Error('The outline contains invalid coordinates.');
-  for (let i = 0; i < points.length; i++) {
-    const a = points[i],
-      b = points[(i + 1) % points.length];
-    if (Math.hypot(a.x - b.x, a.y - b.y) < 1e-5) throw new Error('Remove duplicate outline points.');
-    for (let j = i + 1; j < points.length; j++) {
-      if (j === i + 1 || (i === 0 && j === points.length - 1)) continue;
-      if (segmentCuts(a, b, points[j], points[(j + 1) % points.length]).length) throw new Error('The outline crosses or touches itself. Move the highlighted shape points apart.');
-    }
-  }
-  const b = boundsOf(points);
-  if (Math.min(b.maxX - b.minX, b.maxY - b.minY) < 100 || Math.abs(polygonSignedArea(points)) < 8000) throw new Error('Draw a larger city outline: at least 100 units across with room for streets.');
-  return points;
-}
-
-function simplifyLine(points, tolerance) {
-  if (points.length <= 2) return points;
-  let distance = tolerance,
-    index = -1;
-  for (let i = 1; i < points.length - 1; i++) {
-    const d = distanceToSegment(points[i], points[0], points.at(-1));
-    if (d > distance) {
-      distance = d;
-      index = i;
-    }
-  }
-  if (index < 0) return [points[0], points.at(-1)];
-  return [...simplifyLine(points.slice(0, index + 1), tolerance).slice(0, -1), ...simplifyLine(points.slice(index), tolerance)];
-}
-function cleanOutline(raw, tolerance = 3) {
-  let points = raw.filter((p, i) => !i || Math.hypot(p.x - raw[i - 1].x, p.y - raw[i - 1].y) > 1e-4).map(p => ({
-    x: p.x,
-    y: p.y
-  }));
-  if (points.length > 2 && Math.hypot(points[0].x - points.at(-1).x, points[0].y - points.at(-1).y) < 1e-4) points.pop();
-  validateBoundary(points);
-  let far = 1;
-  for (let i = 2; i < points.length; i++)
-    if (Math.hypot(points[i].x - points[0].x, points[i].y - points[0].y) > Math.hypot(points[far].x - points[0].x, points[far].y - points[0].y)) far = i;
-  const simple = [...simplifyLine(points.slice(0, far + 1), tolerance).slice(0, -1), ...simplifyLine([...points.slice(far), points[0]], tolerance).slice(0, -1)];
-  validateBoundary(simple);
-  if (simple.length > 160) throw new Error('Simplify this outline to fewer than 160 corners.');
-  if (polygonSignedArea(simple) < 0) simple.reverse();
-  return simple;
-}
-
-function clearance(p, boundary) {
-  return Math.min(...boundary.map((a, i) => distanceToSegment(p, a, boundary[(i + 1) % boundary.length])));
-}
-function findCityCenter(boundary) {
-  const b = boundsOf(boundary);
-  let best = null,
-    bestDistance = -1;
-  for (let y = 0; y <= 24; y++)
-    for (let x = 0; x <= 24; x++) {
-      const p = {
-        x: b.minX + (b.maxX - b.minX) * (x + .5) / 25,
-        y: b.minY + (b.maxY - b.minY) * (y + .5) / 25
-      };
-      if (pointInPolygon(p, boundary)) {
-        const d = clearance(p, boundary);
-        if (d > bestDistance) {
-          best = p;
-          bestDistance = d;
-        }
-      }
-    }
-  if (!best || bestDistance < 18) throw new Error('This outline is too narrow for a town center. Widen part of it.');
-  return best;
-}
-
-function checkNarrowSections(boundary) {
-  const cumulative = [0];
-  for (let i = 0; i < boundary.length; i++) cumulative.push(cumulative.at(-1) + Math.hypot(boundary[i].x - boundary[(i + 1) % boundary.length].x, boundary[i].y - boundary[(i + 1) % boundary.length].y));
-  const total = cumulative.at(-1);
-  for (let i = 0; i < boundary.length; i++)
-    for (let j = i + 2; j < boundary.length; j++) {
-      if (i === 0 && j === boundary.length - 1) continue;
-      const first = [boundary[i], boundary[(i + 1) % boundary.length]],
-        second = [boundary[j], boundary[(j + 1) % boundary.length]];
-      for (const fraction of [0, .5, 1]) {
-        const a = lerpPoint(first[0], first[1], fraction),
-          dx = second[1].x - second[0].x,
-          dy = second[1].y - second[0].y;
-        const t = Math.max(0, Math.min(1, ((a.x - second[0].x) * dx + (a.y - second[0].y) * dy) / (dx * dx + dy * dy)));
-        const b = lerpPoint(second[0], second[1], t),
-          gap = Math.hypot(a.x - b.x, a.y - b.y);
-        const positionA = cumulative[i] + fraction * (cumulative[i + 1] - cumulative[i]),
-          positionB = cumulative[j] + t * (cumulative[j + 1] - cumulative[j]);
-        const path = Math.abs(positionA - positionB);
-        if (gap < 18 && Math.min(path, total - path) > 90 && pointInPolygon(lerpPoint(a, b, .5), boundary)) throw new Error('A section is too narrow for streets. Widen the neck to at least 18 units.');
-      }
-    }
-}
-
-
-// src/core/placement.js
-
-
-// Shared road dimensions keep the collision margin and rendering in agreement.
-const STREET_WIDTHS = Object.freeze({
-  primary: 12,
-  secondary: 8.2,
-  lane: 4.5
-});
-const STREET_EDGE_WIDTH = 2.2;
-const PROPERTY_SETBACK = 1.6;
-
-function rectangleInFrame(frame, x, y, width, depth) {
-  const point = (u, v) => ({
-    x: frame.origin.x + frame.tangent.x * u + frame.inward.x * v,
-    y: frame.origin.y + frame.tangent.y * u + frame.inward.y * v
-  });
-  return [point(x, y), point(x + width, y), point(x + width, y + depth), point(x, y + depth)];
-}
-
-// Separating-axis test: all property envelopes are convex rectangles. Padding
-// reserves gaps between properties, including frontages on different streets.
-function rectanglesOverlap(a, b, padding = 0) {
-  for (const polygon of [a, b]) {
-    for (let i = 0; i < 2; i++) {
-      const p = polygon[i],
-        q = polygon[i + 1];
-      const length = Math.hypot(q.x - p.x, q.y - p.y);
-      const axis = {
-        x: -(q.y - p.y) / length,
-        y: (q.x - p.x) / length
-      };
-      const pa = a.map(v => v.x * axis.x + v.y * axis.y);
-      const pb = b.map(v => v.x * axis.x + v.y * axis.y);
-      if (Math.max(...pa) + padding <= Math.min(...pb) + 1e-7 || Math.max(...pb) + padding <= Math.min(...pa) + 1e-7) return false;
-    }
-  }
-  return true;
-}
-
-function segmentDistance(a, b, c, d) {
-  if (segmentCuts(a, b, c, d).length || segmentCuts(c, d, a, b).length) return 0;
-  return Math.min(distanceToSegment(a, c, d), distanceToSegment(b, c, d), distanceToSegment(c, a, b), distanceToSegment(d, a, b));
-}
-
-function propertyFits(polygon, blockPolygon, streetEdges) {
-  if (!polygon.every(p => pointInPolygon(p, blockPolygon))) return false;
-  for (let i = 0; i < polygon.length; i++) {
-    const a = polygon[i],
-      b = polygon[(i + 1) % polygon.length];
-    for (const edge of streetEdges) {
-      const margin = (STREET_WIDTHS[edge.road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
-      if (segmentDistance(a, b, edge.a, edge.b) < margin - 1e-6) return false;
-    }
-  }
-  return true;
-}
-
-// Polygon intersection against a convex plot. Also works for concave building
-// footprints; signed area accounts for any traversed boundary bridges.
-function clipToConvexPolygon(subject, clip) {
-  let output = subject.map(p => ({
-    ...p
-  }));
-  for (let i = 0; i < clip.length; i++) {
-    const a = clip[i],
-      b = clip[(i + 1) % clip.length],
-      input = output;
-    output = [];
-    const side = p => (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
-    for (let j = 0; j < input.length; j++) {
-      const p = input[j],
-        q = input[(j + 1) % input.length],
-        sp = side(p),
-        sq = side(q);
-      if (sp >= -1e-8) output.push(p);
-      if ((sp > 1e-8 && sq < -1e-8) || (sp < -1e-8 && sq > 1e-8)) {
-        const t = sp / (sp - sq);
-        output.push({
-          x: p.x + (q.x - p.x) * t,
-          y: p.y + (q.y - p.y) * t
-        });
-      }
-    }
-  }
-  return output;
+  return project;
 }
 
 
@@ -1169,6 +2034,8 @@ function validateLayout(layout, boundary) {
 
 
 
+
+
 const MAX_PROJECT_BYTES = 20 * 1024 * 1024;
 const MAX_VALIDATION_WORK = 6000000;
 const DENSITIES = Object.freeze(['small', 'medium', 'large']);
@@ -1182,6 +2049,8 @@ const LIMITS = {
   buildings: 40000,
   districts: 10000,
   walls: 20000,
+  gates: 20000,
+  towers: 20000,
   openSpaces: 20000
 };
 
@@ -1525,6 +2394,7 @@ function validateStoredProject(project) {
     if (!Number.isFinite(open.area) || open.area < 0) throw new Error('Open-space area is invalid.');
   }
   validateDistricts(city);
+  validateFortifications(city);
   return project;
 }
 
@@ -1555,6 +2425,9 @@ function validateWorkspace(workspace, project) {
   for (const name of ['districtColors', 'districtBorders', 'districtLabels'])
     if (view.layers[name] !== undefined && typeof view.layers[name] !== 'boolean') throw new Error('Invalid district layer visibility.');
   if (project) validateDistrictEditorState(workspace.districtEditor, project.city);
+  if (view.layers.fortifications !== undefined && typeof view.layers.fortifications !== 'boolean') throw new Error('Invalid fortification layer visibility.');
+  if (project) validateFortificationEditorState(workspace.fortificationEditor, project.city);
+  if (workspace.panels !== undefined && (!workspace.panels || typeof workspace.panels.districts !== 'boolean' || typeof workspace.panels.fortifications !== 'boolean')) throw new Error('Invalid saved panel state.');
   return workspace;
 }
 
@@ -1604,7 +2477,8 @@ function defaultWorkspace(project) {
         plots: false,
         districtColors: project.city.districtState?.status === 'assigned',
         districtBorders: project.city.districtState?.status === 'assigned',
-        districtLabels: project.city.districtState?.status === 'assigned'
+        districtLabels: project.city.districtState?.status === 'assigned',
+        fortifications: project.city.fortificationState?.status === 'built' && project.city.fortificationState.enabled
       },
       fitOnLoad: true
     }
@@ -1657,6 +2531,16 @@ function createProjectDocument(project, workspace = defaultWorkspace(project), b
       }
     }
   };
+  if (workspace.fortificationEditor !== undefined || previous.fortificationEditor !== undefined) {
+    document.workspace.fortificationEditor = {
+      ...(previous.fortificationEditor || {}),
+      ...(copyJson(workspace.fortificationEditor || {}))
+    };
+    if (workspace.fortificationEditor?.controls !== undefined || previous.fortificationEditor?.controls !== undefined) document.workspace.fortificationEditor.controls = {
+      ...(previous.fortificationEditor?.controls || {}),
+      ...(copyJson(workspace.fortificationEditor?.controls || {}))
+    };
+  }
   if (workspace.districtEditor === undefined && previous.districtEditor === undefined) delete document.workspace.districtEditor;
   return document;
 }
@@ -2924,6 +3808,7 @@ function populateProperty(property, propertyPlots, rng, buildings) {
 
 
 
+
 const FIRST = ['Alder', 'Ash', 'Briar', 'Brindle', 'Cinder', 'Elder', 'Fell', 'Grey', 'High', 'Iron', 'Moss', 'Raven', 'Silver', 'Stone', 'Thorn', 'Willow'];
 const LAST = ['bridge', 'bury', 'crest', 'dale', 'ford', 'haven', 'mere', 'mont', 'stead', 'watch', 'wick', 'wood'];
 
@@ -2980,12 +3865,23 @@ function createProject(options = {}) {
         version: 1,
         status: 'unassigned'
       },
-      walls: []
+      walls: [],
+      gates: [],
+      towers: [],
+      fortificationState: {
+        version: 1,
+        status: 'unbuilt',
+        enabled: false
+      }
     }
   };
   project.city = generateDistricts(project.city, {
     seed,
     count: options.districtCount ?? 'auto'
+  });
+  if (options.fortifications?.enabled) project.city = generateFortifications(project.city, {
+    seed,
+    ...options.fortifications
   });
   return project;
 }
@@ -3043,6 +3939,67 @@ class Camera {
       Math.max(1, this.height - padding * 2) / Math.max(1, maxY - minY)
     ), 0.18, 12);
   }
+}
+
+
+// src/renderer/fortifications.js
+
+
+
+function fortificationStroke(ctx, camera, points, width, color) {
+  ctx.beginPath();
+  points.forEach((point, i) => {
+    const p = camera.worldToScreen(point);
+    if (i) ctx.lineTo(p.x, p.y);
+    else ctx.moveTo(p.x, p.y);
+  });
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width * camera.zoom;
+  ctx.stroke();
+}
+function drawGateApproaches(ctx, camera, city, layers) {
+  if (layers.fortifications === false || city.fortificationState?.status !== 'built' || !city.fortificationState.enabled) return;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  for (const gate of city.gates) {
+    fortificationStroke(ctx, camera, gate.connection.points, gate.connection.width + STREET_EDGE_WIDTH, '#a58f73');
+    fortificationStroke(ctx, camera, gate.connection.points, gate.connection.width, '#fbf6e9');
+  }
+}
+
+function drawFortificationRound(ctx, camera, center, radius, small = false) {
+  const p = camera.worldToScreen(center),
+    outline = 1.25 * camera.zoom,
+    r = radius * camera.zoom - outline / 2;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+  ctx.fillStyle = small ? '#c6bba3' : '#b6b09a';
+  ctx.fill();
+  ctx.strokeStyle = '#5f675d';
+  ctx.lineWidth = outline;
+  ctx.stroke();
+  if (camera.zoom > .55) {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r * .53, 0, Math.PI * 2);
+    ctx.strokeStyle = '#8a907d';
+    ctx.lineWidth = Math.max(.5, .7 * camera.zoom);
+    ctx.stroke();
+  }
+}
+function drawFortifications(ctx, camera, city, layers) {
+  if (layers.fortifications === false || city.fortificationState?.status !== 'built' || !city.fortificationState.enabled) return;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  for (const wall of city.walls) {
+    const sections = solidWallSegments(wall, city.gates);
+    for (const section of sections) fortificationStroke(ctx, camera, [section.a, section.b], wall.width + (wall.edgeWidth ?? WALL_EDGE_WIDTH), '#616a5e');
+    for (const section of sections) fortificationStroke(ctx, camera, [section.a, section.b], wall.width, '#b7b39e');
+    for (const section of sections) fortificationStroke(ctx, camera, [section.a, section.b], Math.max(1, wall.width * .25), '#d7d0b9');
+    const measure = measureWall(wall.path);
+    for (const gate of city.gates.filter(g => g.wallId === wall.id))
+      for (const post of gatePosts(gate, measure)) drawFortificationRound(ctx, camera, post, gate.postRadius, true);
+  }
+  for (const tower of city.towers) drawFortificationRound(ctx, camera, tower.center, tower.radius);
 }
 
 
@@ -3230,6 +4187,7 @@ function drawDevelopment(ctx, camera, city, layers) {
 
 
 // src/renderer/canvas.js
+
 
 
 
@@ -3450,11 +4408,13 @@ function renderMap(canvas, camera, project, editor, layers = {}, districtSelecti
   ctx.globalAlpha = editor?.dirty ? 0.20 : 1;
   drawSurvey(ctx, camera, city.survey);
   drawBlocks(ctx, camera, city, byId);
-  drawDistrictColors(ctx,camera,city,layers,districtSelection);
+  drawDistrictColors(ctx, camera, city, layers, districtSelection);
   drawDevelopment(ctx, camera, city, layers);
+  drawGateApproaches(ctx, camera, city, layers);
   drawRoads(ctx, camera, city, byId);
   drawPlaza(ctx, camera, city.plaza, byId);
-  drawDistrictOverlay(ctx,camera,city,layers,districtSelection);
+  drawDistrictOverlay(ctx, camera, city, layers, districtSelection);
+  drawFortifications(ctx, camera, city, layers);
 
   ctx.globalAlpha = 1;
   if (editor) drawOutline(ctx, camera, editor);
@@ -3886,6 +4846,8 @@ class OutlineEditor {
 
 
 
+
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -3906,13 +4868,15 @@ const TOOL_HINTS = {
 let project, drawPending = false;
 let files;
 let districtPanel;
+let fortificationPanel;
 const layers = {
   buildings: true,
   properties: false,
   plots: false,
   districtColors: true,
   districtBorders: true,
-  districtLabels: true
+  districtLabels: true,
+  fortifications: true
 };
 
 function requestDraw() {
@@ -3945,7 +4909,7 @@ const editor = new OutlineEditor(editorChanged, (message, error) => {
 });
 
 function fitMap() {
-  const points = editor.boundary.length > 2 ? editor.boundary : project?.city.survey.boundary;
+  const points = !editor.dirty && project ? fortificationViewPoints(project.city) : editor.boundary.length > 2 ? editor.boundary : project?.city.survey.boundary;
   if (points) camera.fit(points);
   requestDraw();
   updateViewport();
@@ -3980,11 +4944,19 @@ function generate() {
       morphology: $('morphologyInput').value,
       boundary: editor.boundary,
       center: editor.center,
-      districtCount: $('districtNumberInput').value || 'auto'
+      districtCount: $('districtNumberInput').value || 'auto',
+      fortifications: {
+        enabled: $('wallsEnabledInput').checked,
+        gateCount: $('gateCountInput').value || 4,
+        towerSpacing: $('towerSpacingInput').value || 100,
+        seed: $('fortificationSeedInput').value || $('seedInput').value
+      }
     });
     project = next;
     districtPanel?.editor.load();
     districtPanel?.refresh(true);
+    fortificationPanel?.editor.load();
+    fortificationPanel?.refresh(true);
     $('seedInput').value = project.seed;
     editor.load(project.city.survey.boundary, project.options.center, false);
     updateDetails();
@@ -3992,7 +4964,7 @@ function generate() {
     $('statusMessage').textContent = `${project.city.buildings.length} buildings · ${project.city.properties.length} properties · ${project.city.properties.filter(p=>p.plotIds.length>1).length} merged sites`;
   } catch (error) {
     editor.notify(error.message, true);
-    $('statusMessage').textContent = 'Generation paused — correct the outline or center.';
+    $('statusMessage').textContent = 'Generation paused — review the error message.';
   }
 }
 
@@ -4011,7 +4983,7 @@ function updatePattern() {
   editor.dirty = true;
   editor.notify('Street settings changed. Generate to apply them to this outline.');
 }
-for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels']) {
+for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
     requestDraw();
@@ -4136,6 +5108,28 @@ districtPanel = new DistrictPanel({
   }
 });
 districtPanel.bind();
+fortificationPanel = new FortificationPanel({
+  getElement: $,
+  getCity: () => project.city,
+  commit: city => {
+    project = {
+      ...project,
+      city
+    };
+    requestDraw();
+    files?.changed();
+  },
+  changed: () => files?.changed(),
+  activateLayer: () => {
+    layers.fortifications = true;
+    $('fortificationsLayer').checked = true;
+    fitMap();
+    files?.changed();
+  }
+});
+fortificationPanel.bind();
+for (const id of ['districtPanel', 'fortificationPanel']) $(id).addEventListener('toggle', () => files?.changed());
+
 bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, point => districtPanel.selectAt(point));
 if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
 else window.addEventListener('resize', resize);
@@ -4159,6 +5153,18 @@ function captureWorkspace() {
     project,
     workspace: {
       schemaVersion: 1,
+      panels: {
+        districts: Boolean($('districtPanel').open),
+        fortifications: Boolean($('fortificationPanel').open)
+      },
+      fortificationEditor: {
+        ...fortificationPanel.editor.snapshot(),
+        controls: {
+          ...fortificationPanel.controls(),
+          gateCount: String($('gateCountInput').value),
+          towerSpacing: String($('towerSpacingInput').value)
+        }
+      },
       districtEditor: {
         ...districtPanel.editor.snapshot(),
         controls: {
@@ -4216,7 +5222,7 @@ function applyProjectDocument(document) {
       morphologyInput: workspace.controls.morphology,
       presetInput: workspace.controls.preset
     })) $(id).value = value;
-  for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels']) {
+  for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
     layers[key] = workspace.view.layers[key] ?? false;
     $(key + 'Layer').checked = layers[key];
   }
@@ -4234,6 +5240,17 @@ function applyProjectDocument(document) {
         districtColorInput: districtControls.color,
         districtTargetInput: districtControls.target
       })) $(id).value = value;
+  fortificationPanel.editor.load(workspace.fortificationEditor);
+  fortificationPanel.refresh(true);
+  const fortControls = workspace.fortificationEditor?.controls;
+  if (fortControls) {
+    $('wallsEnabledInput').checked = fortControls.enabled;
+    $('gateCountInput').value = fortControls.gateCount;
+    $('towerSpacingInput').value = fortControls.towerSpacing;
+    $('fortificationSeedInput').value = fortControls.seed;
+  }
+  $('districtPanel').open = workspace.panels?.districts ?? Boolean(districtPanel.editor.selectedDistrictId);
+  $('fortificationPanel').open = workspace.panels?.fortifications ?? true;
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[workspace.controls.morphology];
   editor.notify(draft.dirty ? 'Loaded city and unfinished outline edits. Generate only when ready to rebuild.' : 'Loaded city. Its exact saved geometry is ready to use.', Boolean(draft.error));
   updateDetails();

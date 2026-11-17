@@ -1,4 +1,10 @@
 import {
+  validateFortifications
+} from '../core/fortification-model.js';
+import {
+  validateFortificationEditorState
+} from '../editor/fortifications.js';
+import {
   validateDistricts
 } from '../core/district-model.js';
 import {
@@ -42,6 +48,8 @@ const LIMITS = {
   buildings: 40000,
   districts: 10000,
   walls: 20000,
+  gates: 20000,
+  towers: 20000,
   openSpaces: 20000
 };
 
@@ -385,6 +393,7 @@ export function validateStoredProject(project) {
     if (!Number.isFinite(open.area) || open.area < 0) throw new Error('Open-space area is invalid.');
   }
   validateDistricts(city);
+  validateFortifications(city);
   return project;
 }
 
@@ -415,5 +424,8 @@ export function validateWorkspace(workspace, project) {
   for (const name of ['districtColors', 'districtBorders', 'districtLabels'])
     if (view.layers[name] !== undefined && typeof view.layers[name] !== 'boolean') throw new Error('Invalid district layer visibility.');
   if (project) validateDistrictEditorState(workspace.districtEditor, project.city);
+  if (view.layers.fortifications !== undefined && typeof view.layers.fortifications !== 'boolean') throw new Error('Invalid fortification layer visibility.');
+  if (project) validateFortificationEditorState(workspace.fortificationEditor, project.city);
+  if (workspace.panels !== undefined && (!workspace.panels || typeof workspace.panels.districts !== 'boolean' || typeof workspace.panels.fortifications !== 'boolean')) throw new Error('Invalid saved panel state.');
   return workspace;
 }

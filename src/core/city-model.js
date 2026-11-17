@@ -1,4 +1,7 @@
 import {
+  generateFortifications
+} from '../generators/fortifications.js';
+import {
   generateDistricts
 } from '../generators/districts.js';
 import {
@@ -91,12 +94,23 @@ export function createProject(options = {}) {
         version: 1,
         status: 'unassigned'
       },
-      walls: []
+      walls: [],
+      gates: [],
+      towers: [],
+      fortificationState: {
+        version: 1,
+        status: 'unbuilt',
+        enabled: false
+      }
     }
   };
   project.city = generateDistricts(project.city, {
     seed,
     count: options.districtCount ?? 'auto'
+  });
+  if (options.fortifications?.enabled) project.city = generateFortifications(project.city, {
+    seed,
+    ...options.fortifications
   });
   return project;
 }

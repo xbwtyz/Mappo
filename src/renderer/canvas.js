@@ -1,4 +1,11 @@
-import { drawDistrictColors, drawDistrictOverlay } from './districts.js';
+import {
+  drawGateApproaches,
+  drawFortifications
+} from './fortifications.js';
+import {
+  drawDistrictColors,
+  drawDistrictOverlay
+} from './districts.js';
 import {
   drawDevelopment
 } from './buildings.js';
@@ -226,11 +233,13 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
   ctx.globalAlpha = editor?.dirty ? 0.20 : 1;
   drawSurvey(ctx, camera, city.survey);
   drawBlocks(ctx, camera, city, byId);
-  drawDistrictColors(ctx,camera,city,layers,districtSelection);
+  drawDistrictColors(ctx, camera, city, layers, districtSelection);
   drawDevelopment(ctx, camera, city, layers);
+  drawGateApproaches(ctx, camera, city, layers);
   drawRoads(ctx, camera, city, byId);
   drawPlaza(ctx, camera, city.plaza, byId);
-  drawDistrictOverlay(ctx,camera,city,layers,districtSelection);
+  drawDistrictOverlay(ctx, camera, city, layers, districtSelection);
+  drawFortifications(ctx, camera, city, layers);
 
   ctx.globalAlpha = 1;
   if (editor) drawOutline(ctx, camera, editor);

@@ -11,7 +11,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3c.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3d.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -69,6 +69,7 @@ test('compiled HTML initializes and responds to UI events with stubbed Canvas', 
         return fakeContext;
       }
     };
+    if (id === 'wallsEnabledInput') element.checked = true;
     if (id === 'sizeInput') element.value = 'medium';
     if (id === 'presetInput') element.value = 'organic';
     if (id === 'morphologyInput') element.value = 'radial';
@@ -137,7 +138,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
   const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
   let script = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
   // Test-only observation of private application state, without adding product globals.
-  script = script.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectState = () => ({ project, editor, camera, layers, districtPanel });\n})();');
+  script = script.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectState = () => ({ project, editor, camera, layers, districtPanel, fortificationPanel });\n})();');
   const elements = new Map(),
     windowEvents = new Map();
   const noopContext = new Proxy({}, {
@@ -194,6 +195,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
         return noopContext;
       }
     };
+    if (id === 'wallsEnabledInput') element.checked = true;
     if (id === 'sizeInput') element.value = 'medium';
     if (id === 'morphologyInput') element.value = 'organic';
     if (id === 'presetInput') element.value = 'organic';
@@ -390,7 +392,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
 test('standalone app downloads, previews and restores complete projects and recovers them after a reload', async () => {
   const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
   const originalScript = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
-  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel });\n})();');
+  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel });\n})();');
   const memory = new Map(),
     downloaded = [];
   const storage = {
@@ -465,6 +467,7 @@ test('standalone app downloads, previews and restores complete projects and reco
           top: 0
         })
       };
+      if (id === 'wallsEnabledInput') e.checked = true;
       if (id === 'sizeInput') e.value = 'small';
       if (id === 'morphologyInput' || id === 'presetInput') e.value = 'organic';
       elements.set(id, e);
@@ -609,6 +612,46 @@ test('standalone app downloads, previews and restores complete projects and reco
   reloaded.el('undoDistrictButton').handlers.click();
   const restored = copy(reloaded.state().project.city);
   delete restored.districtState;
+  delete restored.fortificationState;
+  delete restored.gates;
+  delete restored.towers;
   assert.deepEqual(restored, legacyCity);
+  const beforeWalls = copy(reloaded.state().project.city);
+  reloaded.el('wallsEnabledInput').checked = true;
+  reloaded.el('gateCountInput').value = '3';
+  reloaded.el('towerSpacingInput').value = '80';
+  reloaded.el('fortificationSeedInput').value = 'portable-forts';
+  assert.equal(reloaded.el('applyFortificationButton').handlers.click(), true);
+  assert.equal(reloaded.state().project.city.fortificationState.status, 'built');
+  assert.equal(reloaded.state().layers.fortifications, true);
+  for (const key of ['nodes', 'roads', 'blocks', 'properties', 'buildings', 'districts']) assert.deepEqual(copy(reloaded.state().project.city[key]), beforeWalls[key]);
+  const fortData = copy({
+    walls: reloaded.state().project.city.walls,
+    gates: reloaded.state().project.city.gates,
+    towers: reloaded.state().project.city.towers
+  });
+  reloaded.el('fortificationsLayer').handlers.change({
+    target: {
+      checked: false
+    }
+  });
+  assert.deepEqual(copy(reloaded.state().project.city.walls), fortData.walls);
+  assert.ok(await reloaded.el('saveProjectButton').handlers.click());
+  const fortifiedFile = downloaded.at(-1),
+    fortifiedText = await fortifiedFile.blob.text();
+  assert.ok(JSON.parse(fortifiedText).workspace.fortificationEditor.history.length > 0);
+  reloaded.el('wallsEnabledInput').checked = false;
+  reloaded.el('towerSpacingInput').value = '';
+  assert.equal(reloaded.el('applyFortificationButton').handlers.click(), true);
+  assert.equal(reloaded.state().project.city.fortificationState.enabled, false);
+  assert.deepEqual(copy(reloaded.state().project.city.gates), fortData.gates);
+  await reloaded.state().files.stageFile({
+    size: fortifiedFile.blob.size,
+    text: async () => fortifiedText
+  });
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.equal(reloaded.state().project.city.fortificationState.enabled, true);
+  assert.equal(reloaded.el('undoFortificationButton').handlers.click(), true);
+  assert.deepEqual(copy(reloaded.state().project.city), beforeWalls);
 
 });

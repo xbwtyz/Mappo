@@ -29,5 +29,16 @@ export function migrateProjectData(project) {
     };
     project.schemaVersion = 3;
   }
+  if (project.schemaVersion === 3) {
+    if (project.city.gates === undefined) project.city.gates = [];
+    if (project.city.towers === undefined) project.city.towers = [];
+    project.city.fortificationState = {
+      ...(project.city.fortificationState || {}),
+      version: 1,
+      status: 'unbuilt',
+      enabled: false
+    };
+    project.schemaVersion = 4;
+  }
   return project;
 }

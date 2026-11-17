@@ -1,10 +1,22 @@
-# Mappo 0.1-dev.3c validation
+# Mappo 0.1-dev.3d validation
 
 ## Automated checks
 
-**66 automated tests passed**, covering districts, persistence and existing city generation.
+**74 automated tests passed**, covering fortifications, districts, persistence and existing city generation.
 
 Run `npm run check` to rebuild and run the complete suite. All road-crossing checks remain enabled.
+
+### Fortification coverage
+
+- Exterior walls, real gate connections and safe towers across 96 outline × density × street-pattern configurations, plus eight rotated narrow-neck and narrow-inlet cases.
+- Independent checks for simple enclosing rings, boundary clearance, full rendered street widths, unblocked openings, actual outside exits and connected perimeter junctions.
+- Gateposts, towers and approaches avoid each other; wrapped gate cuts remove the exact requested opening length.
+- Deterministic settings, independent seeds, gate counts and tower density; original city geometry and neighborhoods remain unchanged.
+- Disable/re-enable preserves IDs and extension metadata. Disabling still works with unfinished invalid numeric controls. Undo restores prior defense geometry.
+- Native file round trips include defense records, layer visibility, pending controls, collapsible panels and defense history.
+- Invalid references, duplicate wall points, detached/blocked towers, walls crossing the city, invalid exits and unsupported future tower kinds are rejected.
+- Frozen native 3C migration retains original city and district data with defenses unbuilt.
+- Compiled-app checks build defenses onto an imported city, hide the layer without altering geometry, download/load, disable with a blank spacing field and undo the first build.
 
 ### District coverage
 
@@ -66,7 +78,7 @@ Additional tests check 1,200 survey configurations, reproducible IDs, invalid in
 
 ## Rendering checks
 
-The production Canvas renderer was used with a native Canvas implementation to inspect full-city views for all four street patterns and a zoomed view of individual roofs. This checks generated geometry, building forms and drawing, not browser layout or native browser pointer delivery.
+The production Canvas renderer was used with a native Canvas implementation to inspect full-city views for all four street patterns and a zoomed view of individual roofs. For this milestone it also rendered fortified organic, planned, branching and horseshoe cities, plus a gate closeup; wall gaps, street connections and tower placement were visually inspected. This checks generated geometry, building forms and drawing, not browser layout or native browser pointer delivery.
 
 ## Graphical browser limitation
 
@@ -74,8 +86,13 @@ The host previously denied Chromium's process-singleton socket. No full graphica
 
 ## Manual Firefox checklist
 
-Open `dist/mappo-0.1-dev.3c.html` directly from disk.
+Open `dist/mappo-0.1-dev.3d.html` directly from disk.
 
+- Adjust gate count, tower spacing and defense seed; Build / update. Confirm only defenses change.
+- Disable walls and apply, then re-enable with the same settings; check geometry is retained. Toggle the display layer separately.
+- Save/load defenses and their undo history. Load a 3C file and confirm no walls appear until explicitly built.
+- Inspect a concave city and each gate at high zoom. Check clear openings, connected approaches, unclipped towers and fit bounds.
+- Collapse both editing panels; save/load and confirm their states.
 - Generate all four street patterns. Confirm variation in building sizes, shapes, spacing and open ground.
 - Zoom in on an L-shaped building, courtyard, compound and attached row. Confirm streets and the main square remain unobstructed.
 - Toggle buildings, property boundaries and plot divisions. Find a large building extending across several plot divisions.
