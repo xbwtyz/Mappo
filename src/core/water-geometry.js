@@ -11,6 +11,7 @@ import {
 } from './boundary.js';
 
 export const WATER_BANK = 9;
+export const WATER_MAX_SLOPE = .8;
 export function waterDryState() {
   return {
     version: 1,

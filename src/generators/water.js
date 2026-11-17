@@ -1,4 +1,11 @@
 import {
+  validateWaterFeature,
+  validateWaterDefinition
+} from '../core/water-model.js';
+import {
+  guideRiverPath
+} from '../core/river-editing.js';
+import {
   waterShoreComponents
 } from '../core/water-shore-topology.js';
 import {
@@ -58,7 +65,12 @@ export function generateRiver(boundary, center, options = {}) {
     });
     if (coast && pointInPolygon(path[0], coast.polygon) && !pointInPolygon(path.at(-1), coast.polygon)) path.reverse();
     const feature = {
-      id: 'WATER-RIVER-001',
+      id: (() => {
+        let id = 'WATER-RIVER-001',
+          i = 2;
+        while ((options.otherFeatures ?? []).some(f => f.id === id)) id = `WATER-RIVER-001-${i++}`;
+        return id;
+      })(),
       dataVersion: 1,
       kind: 'river',
       width,
@@ -69,9 +81,21 @@ export function generateRiver(boundary, center, options = {}) {
       },
       extensions: {}
     };
+    try {
+      feature.path = guideRiverPath(feature, {
+        boundary
+      }).path;
+    } catch {
+      continue;
+    }
     feature.polygon = waterRibbon(feature);
     feature.corridor = waterRibbon(feature, WATER_BANK);
     if (pointInPolygon(center, feature.corridor) || clearance(center, feature.corridor) < 35) continue;
+    try {
+      validateWaterFeature(feature, boundary, center);
+    } catch {
+      continue;
+    }
     const possible = [];
     for (let i = 0; i < 51; i++) {
       const bridge = {
@@ -112,12 +136,18 @@ export function generateRiver(boundary, center, options = {}) {
       }
       if (components !== 1) continue;
     }
+    const bridges = chosen.map((p, i) => ({
+      ...p,
+      id: `BRIDGE-${String(i+1).padStart(3,'0')}`
+    }));
+    try {
+      validateWaterDefinition([feature, ...(options.otherFeatures ?? [])], bridges, boundary, center);
+    } catch {
+      continue;
+    }
     return {
       features: [feature],
-      bridges: chosen.map((p, i) => ({
-        ...p,
-        id: `BRIDGE-${String(i+1).padStart(3,'0')}`
-      })),
+      bridges,
       state: {
         ...waterDryState(),
         status: 'river',

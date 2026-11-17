@@ -23,7 +23,8 @@ import {
   waterBridgeGeometry,
   waterLineIntervals,
   waterFaceInterior,
-  WATER_BANK
+  WATER_BANK,
+  WATER_MAX_SLOPE
 } from './water-geometry.js';
 import {
   segmentDistance
@@ -64,7 +65,7 @@ export function validateWaterDefinition(features, bridges, boundary, center) {
   if (features.length > 1 && waterShoreComponents(boundary, features, bridges) !== 1) throw new Error('The combined water layout disconnects land. Add or move a bridge, or adjust the river or shoreline.');
 }
 
-function validateWaterFeature(f, boundary, center) {
+export function validateWaterFeature(f, boundary, center) {
   if (!center || !Number.isFinite(center.x) || !Number.isFinite(center.y)) throw new Error('A waterfront city needs a saved main-square center.');
   if (!['river', 'coast'].includes(f.kind)) throw new Error('Unsupported water feature kind.');
   if ((f.kind === 'river' && (!Number.isFinite(f.width) || f.width < 10 || f.width > 90)) || (f.kind === 'coast' && (!['left', 'right'].includes(f.waterSide) || !Number.isFinite(f.seaDepth) || f.seaDepth < 100 || f.seaDepth > 20000)) || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || !f.path.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 100000 && Math.abs(p.y) < 100000)) throw new Error('Invalid water path, river width or coast extent.');
@@ -80,7 +81,7 @@ function validateWaterFeature(f, boundary, center) {
       b = f.path[i],
       du = (b.x - a.x) * frame.u.x + (b.y - a.y) * frame.u.y,
       dv = (b.x - a.x) * frame.v.x + (b.y - a.y) * frame.v.y;
-    if (Math.abs(dv) > du * .8) throw new Error('Smooth this water bend; adjacent points turn too sharply for safe banks.');
+    if (Math.abs(dv) > du * WATER_MAX_SLOPE) throw new Error('Smooth this water bend; adjacent points turn too sharply for safe banks.');
   }
   if (insideOrOn(f.path[0], boundary) || insideOrOn(f.path.at(-1), boundary)) throw new Error('Extend both water endpoints beyond the city.');
   for (const [key, margin] of [

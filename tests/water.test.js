@@ -196,10 +196,12 @@ test('water files retain exact geometry, unfinished invalid drafts, undo and fut
   e.setMode('river');
   const p = e.features[0].path[4];
   e.down(p, 1);
-  e.move({
+  // Imported older drafts may contain a crossing even though new gestures guide it.
+  e.remember();
+  e.features[0].path[4] = {
     ...e.features[0].path[3]
-  });
-  e.up(1);
+  };
+  e.dirty = true;
   const workspace = defaultWorkspace(project);
   workspace.waterEditor = {
     ...e.snapshot(),

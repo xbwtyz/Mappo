@@ -1,10 +1,20 @@
-# Mappo 0.1-dev.3e2 validation
+# Mappo 0.1-dev.3e3 validation
 
 ## Automated checks
 
-**94 automated tests passed**, covering combined water, coasts, rivers, bridges, fortifications, districts, persistence and existing city generation.
+**100 automated tests passed**, covering guided river editing, combined water, coasts, rivers, bridges, fortifications, districts, persistence and existing city generation.
 
 Run `npm run check` to rebuild and run the complete suite. All road-crossing checks remain enabled.
+
+### Forgiving river editing
+
+- 225 large handle gestures, including endpoint moves and drags past neighboring points, retain ordered courses and simple bank polygons.
+- Endpoint moves into city land extend back outside the boundary; cancelling a gesture restores the exact draft and full 20-entry history.
+- 1,000 narrow coastal-city river seeds all pass shared feature and complete water-definition validation. The previous 3E.2 standalone returned 42 bend-invalid courses for the same inputs.
+- Off-course double-clicks project onto the course; repeated clicks select an existing handle without adding a duplicate or undo entry.
+- Tidy repairs older overlapping/backtracking drafts and remains undoable; coast geometry, bridge records and compatible metadata are preserved.
+- Valid river geometry is unchanged by tidying. Invalid unfinished drafts still save/load exactly without auto-repair during loading.
+- Compiled-app checks drag a handle beyond its neighbor, retain the accepted city and coast, apply an older invalid draft with automatic tidying, undo the repair and use the explicit Tidy button.
 
 ### Independent river/coast composition
 
@@ -123,8 +133,11 @@ The host previously denied Chromium's process-singleton socket. No full graphica
 
 ## Manual Firefox checklist
 
-Open `dist/mappo-0.1-dev.3e2.html` directly from disk.
+Open `dist/mappo-0.1-dev.3e3.html` directly from disk.
 
+- Drag a river handle past its neighbor and into a tight bend. Check handles respond gently without sharp/tangled-draft errors. Test undo and pointer cancellation.
+- Double-click near the river and on an existing handle; check insertion snaps and no duplicate appears.
+- Load an older invalid river draft. Confirm it loads exactly, then test Tidy river bends, Generate city and water undo.
 - Generate a coast in each ocean direction. Drag/add/remove shoreline points, reroll water and confirm only a draft changes until Generate city.
 - Swap land/water; check submerged-square feedback and retention of the previous city. Undo and regenerate.
 - Generate a river then a coast, and repeat in reverse order. Check each feature and its seed survives changes to the other.

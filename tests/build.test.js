@@ -1,4 +1,10 @@
 import {
+  riverPathIsOrdered
+} from '../src/core/river-editing.js';
+import {
+  waterFrame
+} from '../src/core/water-geometry.js';
+import {
   waterAt
 } from '../src/core/water-geometry.js';
 import test from 'node:test';
@@ -14,7 +20,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e2.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e3.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -781,6 +787,41 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
   assert.equal(reloaded.el('waterSeedInput').value, 'only-the-river');
   assert.equal(reloaded.el('coastSeedInput').value, 'only-the-coast');
+  reloaded.el('revertWaterButton').handlers.click();
+  reloaded.el('editRiverButton').handlers.click();
+  const beforeGuide = copy(reloaded.state().project),
+    guidedEditor = reloaded.state().waterPanel.editor,
+    guidedRiver = guidedEditor.activeFeature(),
+    coastBeforeGuide = copy(guidedEditor.features.find(f => f.kind === 'coast')),
+    frame = waterFrame(guidedRiver);
+  const handle = reloaded.state().camera.worldToScreen(guidedRiver.path[3]),
+    pastNeighbor = reloaded.state().camera.worldToScreen({
+      x: guidedRiver.path[4].x + frame.u.x * 40,
+      y: guidedRiver.path[4].y + frame.u.y * 40
+    });
+  fire('pointerdown', handle);
+  fire('pointermove', pastNeighbor);
+  fire('pointerup', pastNeighbor);
+  assert.equal(riverPathIsOrdered(guidedRiver.path), true);
+  assert.doesNotMatch(reloaded.el('waterMessage').textContent, /too sharply|untangle/);
+  assert.deepEqual(copy(reloaded.state().project), beforeGuide);
+  assert.deepEqual(copy(guidedEditor.features.find(f => f.kind === 'coast')), coastBeforeGuide);
+  reloaded.el('undoWaterButton').handlers.click();
+  // An older saved invalid draft is repaired when applying, while file loading stays exact.
+  const legacyRiver = guidedEditor.features.find(f => f.kind === 'river');
+  legacyRiver.path[4] = {
+    ...legacyRiver.path[3]
+  };
+  guidedEditor.dirty = true;
+  reloaded.el('generateButton').handlers.click();
+  assert.equal(guidedEditor.dirty, false, reloaded.el('waterMessage').textContent);
+  assert.equal(riverPathIsOrdered(reloaded.state().project.city.waterFeatures.find(f => f.kind === 'river').path), true);
+  assert.match(reloaded.el('waterMessage').textContent, /tidied/);
+  reloaded.el('undoWaterButton').handlers.click();
+  assert.equal(riverPathIsOrdered(guidedEditor.features.find(f => f.kind === 'river').path), false);
+  reloaded.el('tidyRiverButton').handlers.click();
+  assert.equal(riverPathIsOrdered(guidedEditor.features.find(f => f.kind === 'river').path), true);
+
 
 
 });

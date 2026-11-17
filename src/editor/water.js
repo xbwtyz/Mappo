@@ -1,4 +1,10 @@
 import {
+  guideRiverPath
+} from '../core/river-editing.js';
+import {
+  clamp
+} from '../core/geometry.js';
+import {
   generateCoast
 } from '../generators/coast.js';
 import {
@@ -20,7 +26,8 @@ export function waterCopy(value) {
   return JSON.parse(JSON.stringify(value));
 }
 export class WaterEditor {
-  constructor(changed = () => {}, notify = () => {}) {
+  constructor(changed = () => {}, notify = () => {}, getBoundary = () => []) {
+    this.getBoundary = getBoundary;
     this.changed = changed;
     this.notify = notify;
     this.mode = 'pan';
@@ -196,6 +203,20 @@ export class WaterEditor {
     this.mark();
     this.notify('River width changed in the draft. Generate city to apply.');
   }
+  tidyRiver(boundary = this.getBoundary(), notify = true) {
+    const river = this.features.find(f => f.kind === 'river');
+    if (!river) return false;
+    const result = guideRiverPath(river, {
+      boundary
+    });
+    if (result.changed) {
+      this.remember();
+      river.path = result.path;
+      this.mark();
+    }
+    if (notify) this.notify(result.changed ? 'River bends tidied automatically. The coastline and bridge positions were retained. Generate city to apply.' : 'River handles are already in order; no adjustment was needed.');
+    return result.changed;
+  }
   down(p, zoom) {
     const f = this.activeFeature();
     if (!f) return;
@@ -203,6 +224,9 @@ export class WaterEditor {
       const i = f.path.findIndex(q => Math.hypot(q.x - p.x, q.y - p.y) < 12 / zoom);
       this.selectedPoint = i;
       if (i >= 0) {
+        this.gestureBoundary = f.kind === 'river' ? this.getBoundary() : [];
+        this.gestureHistory = this.history.slice();
+        this.dragGuided = false;
         this.gesture = this.definition();
         this.gestureDirty = this.dirty;
         this.remember();
@@ -218,6 +242,9 @@ export class WaterEditor {
       });
       this.selectedBridge = bridge?.id ?? null;
       if (bridge) {
+        this.gestureBoundary = f.kind === 'river' ? this.getBoundary() : [];
+        this.gestureHistory = this.history.slice();
+        this.dragGuided = false;
         this.gesture = this.definition();
         this.gestureDirty = this.dirty;
         this.remember();
@@ -259,11 +286,23 @@ export class WaterEditor {
   }
   move(p) {
     if (!this.dragging) return;
-    if (this.dragging.kind === 'point') this.activeFeature().path[this.dragging.index] = {
-      x: p.x,
-      y: p.y
-    };
-    else this.bridges.find(b => b.id === this.dragging.id).t = waterNearestT(this.features.find(f => f.id === this.bridges.find(b => b.id === this.dragging.id).waterId), p);
+    if (this.dragging.kind === 'point') {
+      const feature = this.activeFeature();
+      if (feature.kind === 'river') {
+        const baseline = this.gesture?.features.find(f => f.id === feature.id) ?? feature;
+        const result = guideRiverPath(baseline, {
+          index: this.dragging.index,
+          point: p,
+          boundary: this.gestureBoundary ?? this.getBoundary()
+        });
+        feature.path = result.path;
+        this.dragGuided = result.adjusted;
+      } else feature.path[this.dragging.index] = {
+        ...feature.path[this.dragging.index],
+        x: p.x,
+        y: p.y
+      };
+    } else this.bridges.find(b => b.id === this.dragging.id).t = waterNearestT(this.features.find(f => f.id === this.bridges.find(b => b.id === this.dragging.id).waterId), p);
     this.mark();
   }
   up(zoom, cancelled = false) {
@@ -271,9 +310,11 @@ export class WaterEditor {
     if (cancelled) {
       this.restore(this.gesture);
       this.dirty = this.gestureDirty;
-      this.history.pop();
-    } else this.notify('Water draft changed. Generate city to validate and connect streets.');
+      this.history = this.gestureHistory ?? this.history.slice(0, -1);
+    } else this.notify(this.dragGuided ? 'River handles adjusted gently to keep their order and ease the bend. Generate city to apply.' : 'Water draft changed. Generate city to validate and connect streets.');
     this.dragging = null;
+    this.gestureHistory = null;
+    this.gestureBoundary = null;
     this.changed();
   }
   addPoint(p, zoom) {
@@ -290,11 +331,29 @@ export class WaterEditor {
       }
     }
     if (best < 0) return;
-    this.remember();
-    path.splice(best + 1, 0, {
+    let inserted = {
       x: p.x,
       y: p.y
-    });
+    };
+    if (this.activeFeature().kind === 'river') {
+      const a = path[best],
+        b = path[best + 1],
+        dx = b.x - a.x,
+        dy = b.y - a.y,
+        length2 = dx * dx + dy * dy,
+        t = clamp(((p.x - a.x) * dx + (p.y - a.y) * dy) / (length2 || 1), 0, 1);
+      inserted = {
+        x: a.x + dx * t,
+        y: a.y + dy * t
+      };
+      if (Math.hypot(inserted.x - a.x, inserted.y - a.y) < 2 || Math.hypot(inserted.x - b.x, inserted.y - b.y) < 2) {
+        this.selectedPoint = t < .5 ? best : best + 1;
+        this.changed();
+        return;
+      }
+    }
+    this.remember();
+    path.splice(best + 1, 0, inserted);
     this.selectedPoint = best + 1;
     this.mark();
   }

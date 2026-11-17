@@ -126,6 +126,7 @@ function generate() {
   try {
     editor.validate();
     if (waterPanel?.editor.features.some(f => f.kind === 'river')) waterPanel.editor.width($('riverWidthInput').value);
+    const riverTidied = waterPanel?.editor.tidyRiver(editor.boundary, false);
     const next = createProject({
       seed: $('seedInput').value,
       size: $('sizeInput').value,
@@ -146,7 +147,7 @@ function generate() {
       waterPanel.editor.loadCity(next.city);
       waterPanel.editor.setMode('pan');
       waterPanel.refresh(true);
-      waterPanel.message(next.city.waterFeatures.length ? 'City generated around the saved water. Editing its shoreline or crossings creates a new draft.' : 'Dry city generated. Choose Generate river or Generate coastline to preview water.');
+      waterPanel.message(riverTidied ? 'River handles were tidied automatically before generation. Undo water edit restores that draft.' : next.city.waterFeatures.length ? 'City generated around the saved water. Editing its shoreline or crossings creates a new draft.' : 'Dry city generated. Choose Generate river or Generate coastline to preview water.');
     }
     districtPanel?.editor.load();
     districtPanel?.refresh(true);

@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.3e2 — Rivers and coasts together
+## Current build: 0.1-dev.3e3 — More forgiving river editing
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3e2.html`](dist/mappo-0.1-dev.3e2.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3e3.html`](dist/mappo-0.1-dev.3e3.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### Workflow
 
@@ -63,6 +63,12 @@ The shoreline connectivity check prevents unconnected islands, including in conc
 This release supports **one river and one coast together** per city. Joined water is treated as a union: waterfront roads stop at the river mouth and water draws without an internal shoreline across the opening. Multiple rivers/coasts, lakes, islands, docks and custom beach styles are future additions. Course points still progress between endpoints without loops or sharp backtracking. See [`WATER.md`](WATER.md) for the shared shape adapters and independent coastline generator.
 
 ### Rivers and editable bridges
+
+River editing now guides handles into valid positions as you drag. Handles stay in order, and neighboring handles adjust when a bend needs more room. Endpoints dragged into city land extend back outside the outline. Double-clicking adds a handle on the course; clicking an existing handle selects it instead of adding a duplicate.
+
+**Tidy river bends** repairs overlapping points and tight bends in older drafts, with water undo available. **Generate city** also tidies river geometry before applying a draft. These adjustments preserve the coast, bridge location records, river identity and compatible metadata. Actual square/shoreline conflicts, unsuitable bridge locations and disconnected streets still receive placement feedback.
+
+New river proposals are checked with the same geometry and bridge rules used when applying them. Unsuitable candidates are tidied or retried before a preview is returned. Existing saved city geometry and unfinished drafts load exactly; loading never tidies or regenerates them.
 
 Water is optional. Existing and fresh cities start on dry land until you choose a water feature in **Water & Bridges**. Generation uses the river seed and proposes a river course with bridge locations, keeping any coast intact. When a coast exists, new rivers favor a course toward its ocean and bridge suggestions remain inland. It creates a preview; the current city stays open.
 
@@ -161,7 +167,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e2.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e3.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -184,6 +190,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3e:** Generated/editable rivers, land-aware streets and buildings, editable connected bridges and schema-5 persistence.
 - **0.1-dev.3e1:** Generated/editable coastlines, ocean-side control, connected coastal land and schema-6 compatibility.
 - **0.1-dev.3e2:** Independent river/coast controls and seeds, joined water geometry, inland bridges and schema-7 compatibility.
+- **0.1-dev.3e3:** Guided river handles, snapped point insertion, undoable draft tidying and validated river proposals.
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 

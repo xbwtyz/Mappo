@@ -32,6 +32,8 @@
           <div class="control-group"><label for="waterSeedInput">River seed</label><input id="waterSeedInput" maxlength="64" value="river" spellcheck="false"></div>
           <div class="control-group"><label for="riverWidthInput">River width · survey units</label><input id="riverWidthInput" type="number" min="10" max="90" step="1" value="28"></div>
           <div class="tool-grid"><button id="generateRiverButton" class="tool-button">Generate river</button><button id="rerollRiverButton" class="minor-button">New river seed</button><button id="editRiverButton" class="tool-button" aria-pressed="false">Edit river points</button><button id="removeRiverButton" class="minor-button">Remove river</button></div>
+          <button id="tidyRiverButton" class="minor-button full-width actions">Tidy river bends</button>
+          <p class="hint">River handles stay in order and nearby handles adjust to ease tight bends as you drag. Tidy repairs older drafts; Generate city also tidies them before applying.</p>
           <div class="tool-grid actions"><button id="editBridgesButton" class="tool-button" aria-pressed="false">Move bridges</button><button id="addBridgeButton" class="minor-button" aria-pressed="false">Add bridge</button></div>
           </fieldset>
           <fieldset class="water-feature"><legend>COASTLINE</legend>

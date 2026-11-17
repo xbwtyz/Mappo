@@ -12,6 +12,7 @@ Milestone 3E implements generated/editable rivers and connected bridges. The 3E.
 | `core/water-shore-topology.js` | Dry perimeter/quay/crossing connectivity before street generation |
 | `core/water-regions.js` | Shoreline-only planar arrangement and dry-region counting before streets exist |
 | `core/water-model.js` | Supported record contracts, shoreline agreement, bridge spans, face classification and traversable connectivity |
+| `core/river-editing.js` | Pure ordered-handle guidance, gentle bend propagation and draft tidying |
 | `editor/water.js` | Independent definition drafts, point/bridge selection, gestures and 20-step undo |
 | `ui/water.js` | Water controls, tool selection, feedback and pending inputs |
 | `renderer/water.js` | Water/bank fills, bridge decks and interactive preview handles |
@@ -55,3 +56,11 @@ The editor upserts by kind, preserves imported IDs, assigns collision-free IDs t
 `waterSetIntervals`, `waterUnionSegments` and `waterSetBoundary` provide shared union predicates for layout, validation and rendering. Wet-face contributor IDs describe positive-area overlap, rather than labeling all merged water as whichever feature appeared first. The shore topology graph excludes virtual edges across water and helps choose enough inland bridges without altering the coast. Invalid edited crossings remain drafts and cannot replace the last valid city.
 
 Coast and river generators use derived geometry from the current other-feature draft when proposing compatible placements; they do not mutate that draft. Accepted geometry is still rebuilt only through Generate city and saved directly. Schema 7 adds composition while preserving native schema-6 coasts unchanged.
+
+## Forgiving river interaction in 3E.3
+
+The model retains its existing monotonic-course and bank-slope invariants. Guided dragging prevents a handle passing its neighbors and propagates a tight lateral bend through nearby handles. Calculations use a gesture baseline so repeated pointer updates do not accumulate drift. Endpoint correction uses the current outline; its bounds are obtained once per gesture. Double-click insertion projects onto the existing course, selecting a nearby existing handle rather than duplicating it.
+
+Tidy river bends and explicit city generation can repair older invalid drafts, with a snapshot for undo. The helper preserves already-valid coordinates. Water file loading, migrations and exact geometry restoration do not invoke it. Coast and bridge location records are retained. River generation guides or retries candidates and runs the shared feature and full water-definition validators before returning a proposal.
+
+Regression coverage includes the narrow coastal-city case where the previous standalone build returned 42 invalid courses across 1,000 seeds. The same 1,000 seeds now all pass the common water-definition validator. This does not imply every possible river fits every outline; square clearance, dry bridge banks and traversable connectivity remain required.

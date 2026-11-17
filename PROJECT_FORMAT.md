@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current release is **0.1-dev.3e2**. Its container format is **1**, project-data schema is **7**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current release is **0.1-dev.3e3**. Its container format is **1**, project-data schema is **7**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.3e2",
+  "appVersion": "0.1-dev.3e3",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -147,6 +147,12 @@ Wall openings merge overlapping corridor cuts. New combined openings carry `wate
 Workspace schema stays 1. Optional `waterEditor.activeWaterId` identifies which feature's points are being edited. Optional `controls.coastSeed` is independent from `controls.seed` (the river seed), `width` and `coastDirection`. Existing single-feature saves map their legacy seed to the appropriate section. Water undo remains chronological across both feature editors and preserves snapshots of the complete water definition.
 
 Migration 6→7 advances only the project schema. Geometry, IDs, district/defense data, existing water states, drafts and history remain unchanged. `tests/fixtures/save-3e1-format1-schema6.json` is a native coastal save captured from the released 3E.1 HTML and tested for exact migration and subsequent river addition.
+
+## Guided river editing in 3E.3
+
+The data schema remains **7**: accepted geometry uses the existing ribbon, point-order and bank-slope contracts. The editor now guides river handle positions to those contracts during gestures. It may move neighboring river points to ease a bend, keeps longitudinal order, and extends an endpoint outside city land when needed. New point insertion snaps to the course and avoids duplicate handles.
+
+A pure `core/river-editing.js` helper returns adjusted draft points; it does not alter accepted city geometry, the coast, bridge location records or record metadata. Gesture cancellation restores the prior draft and complete bounded undo history. Explicit Tidy river bends and Generate city can repair an older invalid river draft, recording the change in water undo. File decoding and workspace restoration never tidy a draft. New river proposals pass the same feature and complete-definition validation before being offered.
 
 ## Browser recovery
 
