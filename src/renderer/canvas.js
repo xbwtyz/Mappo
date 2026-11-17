@@ -98,8 +98,8 @@ function drawBlocks(ctx, camera, city, byId) {
   for (const block of city.blocks) {
     const points = block.vertices.map(id => byId.get(id));
     pathPolygon(ctx, points, camera);
-    const palette = BLOCK_FILLS[block.ring % BLOCK_FILLS.length];
-    ctx.fillStyle = palette[(block.sector + block.id.length * 7 + Number(block.id.slice(-2))) % palette.length];
+    const palette = BLOCK_FILLS[Math.abs(Math.trunc(block.ring || 0)) % BLOCK_FILLS.length];
+    ctx.fillStyle = palette[(Math.abs(Math.trunc(block.sector || 0)) + block.id.length * 7 + (Number(block.id.slice(-2)) || 0)) % palette.length];
     ctx.fill();
     ctx.strokeStyle = '#a9b09c';
     ctx.lineWidth = 0.9;

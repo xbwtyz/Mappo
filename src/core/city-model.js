@@ -1,4 +1,8 @@
 import {
+  APP_VERSION,
+  PROJECT_SCHEMA_VERSION
+} from './version.js';
+import {
   normalizeSeed,
   createRng
 } from './prng.js';
@@ -57,8 +61,8 @@ export function createProject(options = {}) {
   const development = generateBuildings(seed, layout);
   validateDevelopment(layout, development);
   return {
-    schemaVersion: 1,
-    generatorVersion: '0.1-dev.3b',
+    schemaVersion: PROJECT_SCHEMA_VERSION,
+    generatorVersion: APP_VERSION,
     seed,
     options: {
       size,

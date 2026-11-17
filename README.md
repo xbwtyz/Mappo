@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.3b — Buildings & Properties
+## Current build: 0.1-dev.3b1 — Save & Restore
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3b.html`](dist/mappo-0.1-dev.3b.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3b1.html`](dist/mappo-0.1-dev.3b1.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### Workflow
 
@@ -20,6 +20,18 @@ Changing street settings does not reshape your boundary. **New street seed** reg
 Eight editable starting outlines are available: rounded, organic, long, rectangular, wedge, twin-core, branching and horseshoe. Select one and click **Use**, then adjust it. Applying a preset changes the draft; it does not silently replace the generated city.
 
 Draft boundaries show handles and a dashed outline; the previous street plan is faded. Click Generate to apply the draft. Invalid outlines show an explanation and retain the last good generated city.
+
+### Save, load and recovery
+
+- **Download project** writes a `.mappo.json` download containing the complete city, its metadata, unfinished outline edits, undo history, generation controls, map position and layers. Ctrl/Cmd + S also requests a project download.
+- **Load project** reads and validates a selected project into a preview. Click **Open project** to replace the workspace, or Cancel to retain the current city.
+- **Restore latest recovery** and **Restore previous recovery** reopen browser snapshots. Existing recovery is offered at startup; select it or choose **Keep this city** before recovery resumes.
+
+Loading restores saved geometry directly. It does not regenerate from the seed, so building names, shapes and future record metadata can be retained across builds. Versioned data and explicit migrations prepare the format for districts, fortifications and later edits.
+
+Browser recovery uses IndexedDB where available and falls back to localStorage. Blocked storage, exhausted quota and recovery conflicts show a warning; portable downloads and file loading still work. Recovery is local to browser storage and can vary by file/origin. **Download project files to keep versions and move between standalone builds.** The app cannot confirm whether a requested download was ultimately saved on disk.
+
+The current file limit is 20 MiB. Unsupported newer schemas are rejected rather than partially loaded. Unknown compatible JSON fields are retained.
 
 ### Buildings and properties
 
@@ -50,7 +62,7 @@ Hosted URLs can initialize a preset with `?seed=demo&size=large&shape=organic`. 
 
 - One continuous boundary without interior holes. Concave and branching boundaries are supported.
 - Crossed or self-touching outlines are rejected. Freehand drawing is simplified before point editing. Boundaries must have enough area for streets and a town center; very narrow necks are rejected with a correction message.
-- Keep the page open to retain your custom outline. Project save/load and image export remain later milestones; refreshing does not preserve a custom city.
+- Project save/load and browser recovery are available. PNG export remains a later milestone. Keep portable project downloads as backups; clearing browser data can remove recovery.
 - Green ground includes the open portions of city blocks. Individual building selection, renaming, manual footprint editing, districts, fortifications, terrain, interiors and 3D remain later phases.
 - Road centerlines and blocks respect the boundary. Rendered street strokes have width and may extend slightly beyond it along the perimeter.
 - The 3B population stage leaves the 3A.2 street graph, block geometry, plaza and outline intact for the same settings. Building generation is reproducible within this version; future generator revisions may change results.
@@ -67,11 +79,12 @@ The perimeter has a connected street following the boundary. It is not a city wa
 
 ```text
 src/
-  core/           Seeded random, geometry, placement validation, city model
+  core/           Version constants, random, geometry, placement and city model
   generators/     Survey, streets, properties, plots and building footprints
+  data/           Project format, migrations, validation, files and recovery
   editor/         Outline drawing, cleanup, point editing and undo
   renderer/       Map, roof and plot-layer drawing, camera
-  ui/             Pointer interaction and map navigation
+  ui/             Pointer interaction, map navigation and project-file workflow
   app.js          Application state, generation controls and feedback
 styles/app.css
 index.template.html
@@ -88,14 +101,14 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.3b.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.3b1.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
 
 The test suite checks building containment, street clearance, nonoverlapping properties, actual multi-plot occupancy, courtyard holes, compound spacing, type/shape variety, shared-wall rows, layer toggles, and unchanged street generation. It also covers seeded reproducibility, connected roads, explicit crossings, positive simple blocks, exact outline coverage, face-to-road relationships, boundary containment, invalid input, chosen-center preservation, all street patterns, former profile extremes, and outline gestures. Compiled-application interaction checks execute the embedded script with a simulated DOM and Canvas. These do not replace a graphical browser check.
 
-See [`QA.md`](QA.md) for validation results and the remaining manual browser checklist.
+See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and migration rules. See [`QA.md`](QA.md) for validation results and the remaining manual browser checklist.
 
 ## Milestones
 
@@ -105,8 +118,9 @@ See [`QA.md`](QA.md) for validation results and the remaining manual browser che
 - **0.1-dev.3a1:** Historical advanced-shape snapshot, recovered from the standalone artifact. This snapshot had unresolved crossings and is not the current validated build.
 - **0.1-dev.3a2:** Drawn outlines, point editing and boundary-constrained street generation.
 - **0.1-dev.3b:** Varied properties, multi-plot buildings, courtyards, compounds and attached rows.
+- **0.1-dev.3b1:** Portable versioned project files, load preview, recovery and compatibility validation.
 - **3C:** Districts — future.
 - **3D:** Fortifications — future.
-- Later 0.1 phases: rendering polish, inspector, project persistence, export and release hardening.
+- Later 0.1 phases: rendering polish, inspector, PNG export and release hardening.
 
 Copyright © 2026 Mappo contributors.

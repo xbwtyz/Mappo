@@ -227,3 +227,28 @@ test('freehand cleanup rejects a self-crossing stroke before simplification can 
     y: -200
   }], 100), /crosses/);
 });
+
+test('loaded undo metadata cannot overwrite editor callbacks or methods', () => {
+  const {
+    editor
+  } = editorFixture();
+  const onChange = editor.onChange,
+    onMessage = editor.onMessage;
+  editor.history = [{
+    boundary: [{
+      x: 0,
+      y: 0
+    }],
+    center: null,
+    closed: false,
+    dirty: true,
+    onChange: 'invalid',
+    onMessage: 'invalid',
+    undo: 'invalid'
+  }];
+  editor.undo();
+  assert.equal(editor.onChange, onChange);
+  assert.equal(editor.onMessage, onMessage);
+  assert.equal(typeof editor.undo, 'function');
+  assert.equal(editor.boundary.length, 1);
+});

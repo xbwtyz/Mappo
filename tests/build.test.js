@@ -11,7 +11,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3b.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3b1.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -327,4 +327,196 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
   });
   assert.notEqual(state().camera.x, position);
   assert.deepEqual(copy(state().editor.boundary), before);
+});
+
+test('standalone app downloads, previews and restores complete projects and recovers them after a reload', async () => {
+  const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
+  const originalScript = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
+  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files });\n})();');
+  const memory = new Map(),
+    downloaded = [];
+  const storage = {
+    getItem: key => memory.get(key) ?? null,
+    setItem: (key, value) => memory.set(key, value)
+  };
+  async function app() {
+    const elements = new Map(),
+      events = new Map(),
+      blobs = new Map();
+    let sequence = 0;
+    const context2d = new Proxy({}, {
+      get: (t, p) => t[p] ?? (() => {})
+    });
+    const document = {
+      activeElement: {
+        tagName: 'BODY'
+      },
+      body: {
+        appendChild() {}
+      },
+      getElementById: el,
+      addEventListener() {},
+      createElement() {
+        return {
+          click() {
+            downloaded.push({
+              filename: this.download,
+              blob: blobs.get(this.href)
+            });
+          },
+          remove() {}
+        };
+      }
+    };
+
+    function el(id) {
+      if (elements.has(id)) return elements.get(id);
+      const e = {
+        id,
+        value: '',
+        checked: false,
+        hidden: false,
+        disabled: false,
+        textContent: '',
+        handlers: {},
+        tagName: 'DIV',
+        classList: {
+          add() {},
+          remove() {},
+          toggle() {}
+        },
+        setAttribute() {},
+        setPointerCapture() {},
+        focus() {
+          document.activeElement = this;
+        },
+        addEventListener(name, cb) {
+          this.handlers[name] = cb;
+        },
+        click() {
+          return this.handlers.click?.();
+        },
+        getContext: () => context2d,
+        getBoundingClientRect: () => ({
+          width: 800,
+          height: 650,
+          left: 0,
+          top: 0
+        })
+      };
+      if (id === 'sizeInput') e.value = 'small';
+      if (id === 'morphologyInput' || id === 'presetInput') e.value = 'organic';
+      elements.set(id, e);
+      return e;
+    }
+    class FileURL extends URL {
+      static createObjectURL(blob) {
+        const key = `blob:app-test-${sequence++}`;
+        blobs.set(key, blob);
+        return key;
+      }
+      static revokeObjectURL(key) {
+        blobs.delete(key);
+      }
+    }
+    const context = {
+      document,
+      window: {
+        location: {
+          href: 'file:///mappo.html'
+        },
+        devicePixelRatio: 1,
+        addEventListener(name, cb) {
+          if (!events.has(name)) events.set(name, []);
+          events.get(name).push(cb);
+        }
+      },
+      localStorage: storage,
+      Blob,
+      TextEncoder,
+      URL: FileURL,
+      Uint32Array,
+      Date,
+      Math,
+      console,
+      requestAnimationFrame: cb => cb(),
+      setTimeout: () => 1,
+      clearTimeout() {}
+    };
+    context.globalThis = context;
+    vm.runInNewContext(script, context);
+    const state = () => context.inspectSavedApp();
+    for (let i = 0; i < 20 && !state().files.ready; i++) await Promise.resolve();
+    assert.equal(state().files.ready, true);
+    return {
+      state,
+      el,
+      events
+    };
+  }
+  const copy = value => JSON.parse(JSON.stringify(value));
+  const first = await app();
+  const s = first.state();
+  s.project.city.name = 'Exact Saved City';
+  s.project.city.buildings[0].name = 'Copper Fox';
+  s.editor.start('points');
+  s.editor.down({
+    x: 10,
+    y: 20
+  }, 1);
+  s.editor.down({
+    x: 80,
+    y: 100
+  }, 1);
+  s.camera.x = 77;
+  s.camera.y = -31;
+  s.camera.zoom = 2.4;
+  first.el('plotsLayer').handlers.change({
+    target: {
+      checked: true
+    }
+  });
+  first.el('seedInput').value = 'unfinished-next-seed';
+  const expectedProject = copy(s.project),
+    expectedDraft = copy(s.editor.snapshot());
+  assert.ok(await first.el('saveProjectButton').handlers.click());
+  const file = downloaded.at(-1),
+    text = await file.blob.text(),
+    payload = JSON.parse(text);
+  assert.match(file.filename, /\.mappo\.json$/);
+  assert.deepEqual(payload.project, expectedProject);
+  assert.equal(payload.workspace.view.camera.zoom, 2.4);
+  assert.equal(payload.workspace.view.layers.plots, true);
+  // Staging a file never changes the city. Only Open project commits the import.
+  s.project.city.name = 'Replace this temporary city';
+  s.editor.boundary = [];
+  await s.files.stageFile({
+    size: file.blob.size,
+    text: async () => text
+  });
+  assert.equal(first.state().project.city.name, 'Replace this temporary city');
+  assert.equal(first.el('loadPreview').hidden, false);
+  assert.equal(await first.el('openProjectButton').handlers.click(), true);
+  assert.deepEqual(copy(first.state().project), expectedProject);
+  assert.deepEqual(copy(first.state().editor.snapshot()), expectedDraft);
+  assert.equal(first.state().editor.mode, 'points');
+  assert.equal(first.el('seedInput').value, 'unfinished-next-seed');
+  assert.equal(first.state().camera.x, 77);
+  assert.equal(first.state().layers.plots, true);
+  await first.state().files.flush();
+  const beforeReload = [...memory.values()][0];
+  const reloaded = await app();
+  assert.equal(reloaded.state().files.suspended, true);
+  assert.equal([...memory.values()][0], beforeReload);
+  reloaded.el('restoreRecoveryButton').handlers.click();
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.deepEqual(copy(reloaded.state().project), expectedProject);
+  assert.deepEqual(copy(reloaded.state().editor.snapshot()), expectedDraft);
+  const loadedBefore = copy(reloaded.state().project);
+  await reloaded.state().files.stageFile({
+    size: 5,
+    text: async () => '<html>'
+  });
+  assert.deepEqual(copy(reloaded.state().project), loadedBefore);
+  assert.match(reloaded.el('fileStatus').textContent, /standalone HTML/);
 });

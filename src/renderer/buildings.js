@@ -15,7 +15,7 @@ export function drawDevelopment(ctx, camera, city, layers) {
       ctx.beginPath();
       traceDevelopmentPolygon(ctx, building.footprint, camera);
       for (const hole of building.holes) traceDevelopmentPolygon(ctx, hole, camera);
-      ctx.fillStyle = ROOF_COLORS[building.roofTone];
+      ctx.fillStyle = ROOF_COLORS[building.roofTone % ROOF_COLORS.length];
       ctx.fill('evenodd');
       ctx.strokeStyle = '#756552';
       ctx.lineWidth = Math.max(.45, .85 * camera.zoom);

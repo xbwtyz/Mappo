@@ -131,7 +131,16 @@ export class OutlineEditor {
   undo() {
     const state = this.history.pop();
     if (!state) return;
-    Object.assign(this, state);
+    // Restore only editor data. Loaded history may carry future metadata, but
+    // it must never replace runtime callbacks or methods.
+    this.boundary = state.boundary.map(point => ({
+      ...point
+    }));
+    this.center = state.center ? {
+      ...state.center
+    } : null;
+    this.closed = state.closed;
+    this.dirty = state.dirty;
     this.selected = -1;
     this.error = false;
     this.mode = this.closed ? 'edit' : 'points';

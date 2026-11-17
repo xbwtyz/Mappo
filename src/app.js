@@ -1,4 +1,10 @@
 import {
+  ProjectFiles
+} from './ui/project-files.js';
+import {
+  copyJson
+} from './data/project-format.js';
+import {
   createProject
 } from './core/city-model.js';
 import {
@@ -33,6 +39,7 @@ const TOOL_HINTS = {
   center: 'Click inside the outline to place the main square'
 };
 let project, drawPending = false;
+let files;
 const layers = {
   buildings: true,
   properties: false,
@@ -50,6 +57,7 @@ function requestDraw() {
 
 function updateViewport() {
   $('zoomValue').textContent = `${Math.round(camera.zoom*100)}%`;
+  files?.changed();
 }
 
 function editorChanged() {
@@ -60,6 +68,7 @@ function editorChanged() {
   $('undoButton').disabled = editor.history.length === 0;
   $('finishButton').disabled = editor.closed || editor.boundary.length < 3;
   requestDraw();
+  files?.changed();
 }
 const editor = new OutlineEditor(editorChanged, (message, error) => {
   $('draftMessage').textContent = message;
@@ -134,6 +143,7 @@ for (const key of ['buildings', 'properties', 'plots']) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
     requestDraw();
+    files?.changed();
   });
 }
 $('freehandButton').addEventListener('click', () => editor.start('freehand'));
@@ -156,6 +166,7 @@ $('cancelButton').addEventListener('click', () => {
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[project.options.morphology];
 });
 $('presetButton').addEventListener('click', loadPreset);
+$('presetInput').addEventListener('change', () => files?.changed());
 $('generateButton').addEventListener('click', generate);
 $('newSeedButton').addEventListener('click', () => {
   const v = new Uint32Array(2);
@@ -244,3 +255,96 @@ $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[$('morphologyInput').valu
 loadPreset();
 generate();
 fitMap();
+
+function captureWorkspace() {
+  return {
+    project,
+    workspace: {
+      schemaVersion: 1,
+      editor: {
+        ...editor.snapshot(),
+        history: copyJson(editor.history),
+        mode: editor.closed ? editor.mode : 'points',
+        error: editor.error
+      },
+      controls: {
+        seed: $('seedInput').value,
+        size: $('sizeInput').value,
+        morphology: $('morphologyInput').value,
+        preset: $('presetInput').value
+      },
+      view: {
+        camera: {
+          x: camera.x,
+          y: camera.y,
+          zoom: camera.zoom
+        },
+        layers: {
+          ...layers
+        },
+        fitOnLoad: false
+      }
+    }
+  };
+}
+
+function applyProjectDocument(document) {
+  const next = copyJson(document.project),
+    workspace = copyJson(document.workspace),
+    draft = workspace.editor;
+  project = next;
+  editor.boundary = draft.boundary;
+  editor.center = draft.center;
+  editor.closed = draft.closed;
+  editor.dirty = draft.dirty;
+  editor.history = draft.history;
+  editor.mode = !draft.closed ? 'points' : (['pan', 'edit', 'center'].includes(draft.mode) ? draft.mode : 'pan');
+  editor.stroke = false;
+  editor.dragging = -1;
+  editor.selected = -1;
+  for (const [id, value] of Object.entries({
+      seedInput: workspace.controls.seed,
+      sizeInput: workspace.controls.size,
+      morphologyInput: workspace.controls.morphology,
+      presetInput: workspace.controls.preset
+    })) $(id).value = value;
+  for (const key of ['buildings', 'properties', 'plots']) {
+    layers[key] = workspace.view.layers[key];
+    $(key + 'Layer').checked = layers[key];
+  }
+  camera.x = workspace.view.camera.x;
+  camera.y = workspace.view.camera.y;
+  camera.zoom = workspace.view.camera.zoom;
+  $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[workspace.controls.morphology];
+  editor.notify(draft.dirty ? 'Loaded city and unfinished outline edits. Generate only when ready to rebuild.' : 'Loaded city. Its exact saved geometry is ready to use.', Boolean(draft.error));
+  updateDetails();
+  updateViewport();
+  requestDraw();
+  if (workspace.view.fitOnLoad) fitMap();
+  $('statusMessage').textContent = `Loaded ${next.city.buildings.length} buildings · ${next.city.properties.length} properties`;
+}
+files = new ProjectFiles({
+  getElement: $,
+  capture: captureWorkspace,
+  apply: applyProjectDocument
+});
+files.bind();
+files.start();
+window.addEventListener('beforeunload', event => {
+  if (files.needsUnloadWarning) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});
+window.addEventListener('pagehide', () => {
+  files.flush().catch(() => {});
+});
+if (typeof document.addEventListener === 'function') document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') files.flush().catch(() => {});
+});
+window.addEventListener('keydown', event => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+    event.preventDefault();
+    files.saveDownload();
+  }
+});

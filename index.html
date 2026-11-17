@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — Buildings & Properties · 0.1-dev.3b</title>
+  <title>Mappo — Save & Restore · 0.1-dev.3b1</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -13,18 +13,30 @@
 .layer-panel{border:1px solid #42554d;border-radius:5px;padding:15px;margin:0 0 25px}.layer-panel label{display:flex;align-items:center;gap:9px;margin:10px 0;color:#c4d3c7;font-size:11px;cursor:pointer}.layer-panel input[type=checkbox]{width:15px;height:15px;accent-color:#d1a579;margin:0;padding:0;flex:none}.layer-panel .eyebrow{font-size:9px;margin-bottom:12px}.featured-stat strong{font-size:20px;color:#d9b88c}.roof-mark{width:11px;height:9px;background:#b68e76;border:1px solid #756552}.map-legend{flex-wrap:wrap;max-width:calc(100% - 100px)}
 @media(max-width:1100px){.layer-panel{display:block}.sidebar-left .layer-panel{margin-top:25px}}
 
+.file-panel{border:1px solid #4b6056;background:#142327;border-radius:6px;padding:14px;margin:0 0 27px}.file-panel .eyebrow{font-size:9px;margin-bottom:12px}.file-panel .tool-button{font-size:10px}.file-status{font-size:10px;line-height:1.65;color:#b3c8b7;margin:12px 0;overflow-wrap:anywhere}.file-status.error{color:#ffb6a3}.recovery-tools{display:grid;gap:6px}.recovery-tools button{text-align:left;overflow-wrap:anywhere}.file-choice{border-top:1px solid #42544b;padding-top:10px;margin-top:12px}.file-choice p{font-size:10px;line-height:1.65;color:#d2c5af;margin:0 0 10px}.file-choice[hidden]{display:none}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3b</span></div>
-    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>BUILDINGS &amp; PROPERTIES</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3b1</span></div>
+    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>SAVE &amp; RESTORE</span></div>
   </header>
   <div class="workspace">
     <aside class="sidebar sidebar-left" aria-label="City design tools">
       <div class="sidebar-heading"><span class="section-number">01</span><span>CITY DESIGN</span></div>
       <div class="sidebar-content">
+        <section class="file-panel" aria-label="Project files">
+          <p class="eyebrow">PROJECT FILES</p>
+          <div class="tool-grid"><button id="saveProjectButton" class="tool-button">↓ Download project</button><button id="loadProjectButton" class="tool-button">↑ Load project</button></div>
+          <input id="projectFileInput" class="sr-only" type="file" accept=".json,.mappo.json,application/json" aria-label="Choose Mappo project file">
+          <p id="fileStatus" class="file-status" role="status" aria-live="polite">Preparing browser recovery…</p>
+          <div class="recovery-tools"><button id="restoreRecoveryButton" class="minor-button" disabled>Restore latest recovery</button><button id="restoreBackupButton" class="minor-button" disabled>Restore previous recovery</button></div>
+          <div id="recoveryChoice" class="file-choice" hidden><p>Recovery is paused while you choose which city to continue.</p><button id="keepCurrentButton" class="minor-button">Keep this city</button></div>
+          <div id="loadPreview" class="file-choice" hidden><p id="loadSummary"></p><div class="tool-grid"><button id="openProjectButton" class="tool-button">Open project</button><button id="cancelLoadButton" class="minor-button">Cancel</button></div></div>
+          <p class="hint">Project files preserve the complete city and unfinished edits. Download copies to keep versions or move between builds. Browser recovery stays in this browser.</p>
+        </section>
         <p class="eyebrow">YOUR OUTLINE. YOUR CITY.</p><h1>Give your city<br><em>its own shape.</em></h1>
         <p class="intro">Draw the edge, place the square, then let streets grow inside.</p>
         <div class="outline-tools">
@@ -74,7 +86,7 @@
         <div class="sidebar-rule"></div><p class="eyebrow">WORKSPACE GUIDE</p>
         <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
         <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
-        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts and fortifications remain later phases. Draft edits apply when you generate. Keep this page open to retain a custom outline; project saving is a later milestone.</p></div>
+        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts and fortifications remain later phases. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
       </div>
     </aside>
   </div>
@@ -82,34 +94,31 @@
 <script>
 (function(){
 'use strict';
-// src/core/prng.js
-// One reproducible pseudo-random stream per seed. Avoid Math.random in generation.
-function normalizeSeed(value) {
-  return String(value ?? '').trim().slice(0, 64) || 'mappo';
-}
+// src/core/version.js
+const APP_VERSION = '0.1-dev.3b1';
+const PROJECT_SCHEMA_VERSION = 2;
 
-function hashSeed(value) {
-  let hash = 2166136261;
-  for (const char of normalizeSeed(value)) {
-    hash ^= char.codePointAt(0);
-    hash = Math.imul(hash, 16777619);
+
+// src/data/migrations.js
+
+// Add one explicit, tested migration per data-schema change. Migration never
+// calls the generator: saved geometry and record IDs are authoritative.
+const CURRENT_PROJECT_SCHEMA = PROJECT_SCHEMA_VERSION;
+const CURRENT_FORMAT_VERSION = 1;
+const CURRENT_APP_VERSION = APP_VERSION;
+
+function migrateProjectData(project) {
+  if (!project || typeof project !== 'object') throw new Error('The file has no project data.');
+  if (!Number.isInteger(project.schemaVersion) || project.schemaVersion < 1) throw new Error('The project schema is missing or invalid.');
+  if (project.schemaVersion > CURRENT_PROJECT_SCHEMA) throw new Error('This project uses a newer data schema. Open it in a newer Mappo build.');
+  if (project.schemaVersion === 1) {
+    if (!project.city || typeof project.city !== 'object') throw new Error('The legacy project has no city.');
+    // 3A.2 projects predate property records. Preserve their empty city blocks.
+    for (const key of ['plots', 'properties', 'openSpaces', 'buildings', 'districts', 'walls'])
+      if (project.city[key] === undefined) project.city[key] = [];
+    project.schemaVersion = 2;
   }
-  return hash >>> 0;
-}
-
-function createRng(seed) {
-  let state = hashSeed(seed);
-  return () => {
-    state = (state + 0x6D2B79F5) >>> 0;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function randomRange(rng, min, max) {
-  return min + rng() * (max - min);
+  return project;
 }
 
 
@@ -149,6 +158,1293 @@ function polygonSignedArea(points) {
     area += a.x * b.y - b.x * a.y;
   }
   return area / 2;
+}
+
+
+// src/core/boundary.js
+
+function cross2(a, b) {
+  return a.x * b.y - a.y * b.x;
+}
+function lerpPoint(a, b, t) {
+  return {
+    x: a.x + (b.x - a.x) * t,
+    y: a.y + (b.y - a.y) * t
+  };
+}
+function distanceToSegment(p, a, b) {
+  const dx = b.x - a.x,
+    dy = b.y - a.y;
+  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
+  return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy);
+}
+function insideOrOn(p, polygon) {
+  return pointInPolygon(p, polygon) || polygon.some((a, i) => distanceToSegment(p, a, polygon[(i + 1) % polygon.length]) < 1e-6);
+}
+
+// Includes endpoint contacts and collinear overlaps. Both generators and
+// validation use the same segment predicates, with dimensionless parameters.
+function segmentCuts(a, b, c, d) {
+  const r = {
+      x: b.x - a.x,
+      y: b.y - a.y
+    },
+    s = {
+      x: d.x - c.x,
+      y: d.y - c.y
+    };
+  const q = {
+      x: c.x - a.x,
+      y: c.y - a.y
+    },
+    denominator = cross2(r, s);
+  if (Math.abs(denominator) > 1e-9) {
+    const t = cross2(q, s) / denominator,
+      u = cross2(q, r) / denominator;
+    return t >= -1e-9 && t <= 1 + 1e-9 && u >= -1e-9 && u <= 1 + 1e-9 ? [Math.max(0, Math.min(1, t))] : [];
+  }
+  if (Math.abs(cross2(q, r)) > 1e-7) return [];
+  const length2 = r.x * r.x + r.y * r.y;
+  if (length2 < 1e-12) return [];
+  return [c, d].map(p => ((p.x - a.x) * r.x + (p.y - a.y) * r.y) / length2).filter(t => t >= -1e-9 && t <= 1 + 1e-9).map(t => Math.max(0, Math.min(1, t)));
+}
+
+function validateBoundary(points) {
+  if (!Array.isArray(points) || points.length < 3) throw new Error('Place at least three outline points.');
+  if (points.length > 1200) throw new Error('The outline has too many points. Try a shorter stroke.');
+  if (!points.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 10000 && Math.abs(p.y) < 10000)) throw new Error('The outline contains invalid coordinates.');
+  for (let i = 0; i < points.length; i++) {
+    const a = points[i],
+      b = points[(i + 1) % points.length];
+    if (Math.hypot(a.x - b.x, a.y - b.y) < 1e-5) throw new Error('Remove duplicate outline points.');
+    for (let j = i + 1; j < points.length; j++) {
+      if (j === i + 1 || (i === 0 && j === points.length - 1)) continue;
+      if (segmentCuts(a, b, points[j], points[(j + 1) % points.length]).length) throw new Error('The outline crosses or touches itself. Move the highlighted shape points apart.');
+    }
+  }
+  const b = boundsOf(points);
+  if (Math.min(b.maxX - b.minX, b.maxY - b.minY) < 100 || Math.abs(polygonSignedArea(points)) < 8000) throw new Error('Draw a larger city outline: at least 100 units across with room for streets.');
+  return points;
+}
+
+function simplifyLine(points, tolerance) {
+  if (points.length <= 2) return points;
+  let distance = tolerance,
+    index = -1;
+  for (let i = 1; i < points.length - 1; i++) {
+    const d = distanceToSegment(points[i], points[0], points.at(-1));
+    if (d > distance) {
+      distance = d;
+      index = i;
+    }
+  }
+  if (index < 0) return [points[0], points.at(-1)];
+  return [...simplifyLine(points.slice(0, index + 1), tolerance).slice(0, -1), ...simplifyLine(points.slice(index), tolerance)];
+}
+function cleanOutline(raw, tolerance = 3) {
+  let points = raw.filter((p, i) => !i || Math.hypot(p.x - raw[i - 1].x, p.y - raw[i - 1].y) > 1e-4).map(p => ({
+    x: p.x,
+    y: p.y
+  }));
+  if (points.length > 2 && Math.hypot(points[0].x - points.at(-1).x, points[0].y - points.at(-1).y) < 1e-4) points.pop();
+  validateBoundary(points);
+  let far = 1;
+  for (let i = 2; i < points.length; i++)
+    if (Math.hypot(points[i].x - points[0].x, points[i].y - points[0].y) > Math.hypot(points[far].x - points[0].x, points[far].y - points[0].y)) far = i;
+  const simple = [...simplifyLine(points.slice(0, far + 1), tolerance).slice(0, -1), ...simplifyLine([...points.slice(far), points[0]], tolerance).slice(0, -1)];
+  validateBoundary(simple);
+  if (simple.length > 160) throw new Error('Simplify this outline to fewer than 160 corners.');
+  if (polygonSignedArea(simple) < 0) simple.reverse();
+  return simple;
+}
+
+function clearance(p, boundary) {
+  return Math.min(...boundary.map((a, i) => distanceToSegment(p, a, boundary[(i + 1) % boundary.length])));
+}
+function findCityCenter(boundary) {
+  const b = boundsOf(boundary);
+  let best = null,
+    bestDistance = -1;
+  for (let y = 0; y <= 24; y++)
+    for (let x = 0; x <= 24; x++) {
+      const p = {
+        x: b.minX + (b.maxX - b.minX) * (x + .5) / 25,
+        y: b.minY + (b.maxY - b.minY) * (y + .5) / 25
+      };
+      if (pointInPolygon(p, boundary)) {
+        const d = clearance(p, boundary);
+        if (d > bestDistance) {
+          best = p;
+          bestDistance = d;
+        }
+      }
+    }
+  if (!best || bestDistance < 18) throw new Error('This outline is too narrow for a town center. Widen part of it.');
+  return best;
+}
+
+function checkNarrowSections(boundary) {
+  const cumulative = [0];
+  for (let i = 0; i < boundary.length; i++) cumulative.push(cumulative.at(-1) + Math.hypot(boundary[i].x - boundary[(i + 1) % boundary.length].x, boundary[i].y - boundary[(i + 1) % boundary.length].y));
+  const total = cumulative.at(-1);
+  for (let i = 0; i < boundary.length; i++)
+    for (let j = i + 2; j < boundary.length; j++) {
+      if (i === 0 && j === boundary.length - 1) continue;
+      const first = [boundary[i], boundary[(i + 1) % boundary.length]],
+        second = [boundary[j], boundary[(j + 1) % boundary.length]];
+      for (const fraction of [0, .5, 1]) {
+        const a = lerpPoint(first[0], first[1], fraction),
+          dx = second[1].x - second[0].x,
+          dy = second[1].y - second[0].y;
+        const t = Math.max(0, Math.min(1, ((a.x - second[0].x) * dx + (a.y - second[0].y) * dy) / (dx * dx + dy * dy)));
+        const b = lerpPoint(second[0], second[1], t),
+          gap = Math.hypot(a.x - b.x, a.y - b.y);
+        const positionA = cumulative[i] + fraction * (cumulative[i + 1] - cumulative[i]),
+          positionB = cumulative[j] + t * (cumulative[j + 1] - cumulative[j]);
+        const path = Math.abs(positionA - positionB);
+        if (gap < 18 && Math.min(path, total - path) > 90 && pointInPolygon(lerpPoint(a, b, .5), boundary)) throw new Error('A section is too narrow for streets. Widen the neck to at least 18 units.');
+      }
+    }
+}
+
+
+// src/core/placement.js
+
+
+// Shared road dimensions keep the collision margin and rendering in agreement.
+const STREET_WIDTHS = Object.freeze({
+  primary: 12,
+  secondary: 8.2,
+  lane: 4.5
+});
+const STREET_EDGE_WIDTH = 2.2;
+const PROPERTY_SETBACK = 1.6;
+
+function rectangleInFrame(frame, x, y, width, depth) {
+  const point = (u, v) => ({
+    x: frame.origin.x + frame.tangent.x * u + frame.inward.x * v,
+    y: frame.origin.y + frame.tangent.y * u + frame.inward.y * v
+  });
+  return [point(x, y), point(x + width, y), point(x + width, y + depth), point(x, y + depth)];
+}
+
+// Separating-axis test: all property envelopes are convex rectangles. Padding
+// reserves gaps between properties, including frontages on different streets.
+function rectanglesOverlap(a, b, padding = 0) {
+  for (const polygon of [a, b]) {
+    for (let i = 0; i < 2; i++) {
+      const p = polygon[i],
+        q = polygon[i + 1];
+      const length = Math.hypot(q.x - p.x, q.y - p.y);
+      const axis = {
+        x: -(q.y - p.y) / length,
+        y: (q.x - p.x) / length
+      };
+      const pa = a.map(v => v.x * axis.x + v.y * axis.y);
+      const pb = b.map(v => v.x * axis.x + v.y * axis.y);
+      if (Math.max(...pa) + padding <= Math.min(...pb) + 1e-7 || Math.max(...pb) + padding <= Math.min(...pa) + 1e-7) return false;
+    }
+  }
+  return true;
+}
+
+function segmentDistance(a, b, c, d) {
+  if (segmentCuts(a, b, c, d).length || segmentCuts(c, d, a, b).length) return 0;
+  return Math.min(distanceToSegment(a, c, d), distanceToSegment(b, c, d), distanceToSegment(c, a, b), distanceToSegment(d, a, b));
+}
+
+function propertyFits(polygon, blockPolygon, streetEdges) {
+  if (!polygon.every(p => pointInPolygon(p, blockPolygon))) return false;
+  for (let i = 0; i < polygon.length; i++) {
+    const a = polygon[i],
+      b = polygon[(i + 1) % polygon.length];
+    for (const edge of streetEdges) {
+      const margin = (STREET_WIDTHS[edge.road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
+      if (segmentDistance(a, b, edge.a, edge.b) < margin - 1e-6) return false;
+    }
+  }
+  return true;
+}
+
+// Polygon intersection against a convex plot. Also works for concave building
+// footprints; signed area accounts for any traversed boundary bridges.
+function clipToConvexPolygon(subject, clip) {
+  let output = subject.map(p => ({
+    ...p
+  }));
+  for (let i = 0; i < clip.length; i++) {
+    const a = clip[i],
+      b = clip[(i + 1) % clip.length],
+      input = output;
+    output = [];
+    const side = p => (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+    for (let j = 0; j < input.length; j++) {
+      const p = input[j],
+        q = input[(j + 1) % input.length],
+        sp = side(p),
+        sq = side(q);
+      if (sp >= -1e-8) output.push(p);
+      if ((sp > 1e-8 && sq < -1e-8) || (sp < -1e-8 && sq > 1e-8)) {
+        const t = sp / (sp - sq);
+        output.push({
+          x: p.x + (q.x - p.x) * t,
+          y: p.y + (q.y - p.y) * t
+        });
+      }
+    }
+  }
+  return output;
+}
+
+
+// src/core/validate-layout.js
+
+// Fail closed if a numerical edge case would otherwise publish malformed city
+// data. Draft outlines and the last good city remain available for correction.
+function validateLayout(layout, boundary) {
+  const {
+    nodes,
+    roads,
+    blocks,
+    plaza
+  } = layout;
+  const byId = new Map(nodes.map(n => [n.id, n])),
+    graph = new Map(nodes.map(n => [n.id, []]));
+  for (const road of roads) {
+    graph.get(road.a).push(road.b);
+    graph.get(road.b).push(road.a);
+  }
+  const reached = new Set([nodes[0]?.id]),
+    queue = [nodes[0]?.id];
+  for (let i = 0; i < queue.length; i++)
+    for (const id of graph.get(queue[i]) || [])
+      if (!reached.has(id)) {
+        reached.add(id);
+        queue.push(id);
+      }
+  if (reached.size !== nodes.length) throw new Error('The outline produced disconnected streets. Adjust its narrow sections or try another street pattern.');
+  let total = 0;
+  for (const face of [...blocks, plaza]) {
+    if (new Set(face.vertices).size !== face.vertices.length) throw new Error('A street creates a pinched block. Adjust the outline or choose another street seed.');
+    const area = polygonSignedArea(face.vertices.map(id => byId.get(id)));
+    if (area <= 1) throw new Error('A section is too narrow to form usable blocks. Widen it and generate again.');
+    total += area;
+  }
+  if (Math.abs(total - Math.abs(polygonSignedArea(boundary))) > .02) throw new Error('Streets could not cover this outline completely. Adjust its narrow sections or choose another pattern.');
+}
+
+
+// src/data/project-validation.js
+
+
+
+
+
+const MAX_PROJECT_BYTES = 20 * 1024 * 1024;
+const MAX_VALIDATION_WORK = 6000000;
+const DENSITIES = Object.freeze(['small', 'medium', 'large']);
+const PATTERNS = Object.freeze(['radial', 'organic', 'linear', 'planned']);
+const LIMITS = {
+  nodes: 20000,
+  roads: 40000,
+  blocks: 20000,
+  plots: 40000,
+  properties: 20000,
+  buildings: 40000,
+  districts: 10000,
+  walls: 20000,
+  openSpaces: 20000
+};
+
+function requireRecord(value, path) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${path} must be an object.`);
+  return value;
+}
+function requireText(value, path, max = 200) {
+  if (typeof value !== 'string' || !value.length || value.length > max) throw new Error(`${path} must be text of 1–${max} characters.`);
+}
+function requirePoint(p, path) {
+  requireRecord(p, path);
+  if (!Number.isFinite(p.x) || !Number.isFinite(p.y) || Math.abs(p.x) > 100000 || Math.abs(p.y) > 100000) throw new Error(`${path} contains invalid coordinates.`);
+}
+function requireList(value, path, max) {
+  if (!Array.isArray(value) || value.length > max) throw new Error(`${path} must be a list with at most ${max} entries.`);
+  return value;
+}
+function createValidationBudget() {
+  let remaining = MAX_VALIDATION_WORK;
+  return n => {
+    remaining -= n;
+    if (remaining < 0) throw new Error('This project is too complex for this build to validate safely.');
+  };
+}
+function validateJsonTree(value) {
+  const pending = [{
+    value,
+    depth: 0
+  }];
+  let count = 0;
+  while (pending.length) {
+    const item = pending.pop();
+    if (++count > 1200000 || item.depth > 64) throw new Error('Project data is too deeply nested or too large.');
+    const v = item.value;
+    if (v === null || typeof v === 'string' || typeof v === 'boolean') continue;
+    if (typeof v === 'number') {
+      if (!Number.isFinite(v)) throw new Error('Project data contains a non-finite number.');
+      continue;
+    }
+    if (typeof v !== 'object' || (!Array.isArray(v) && Object.prototype.toString.call(v) !== '[object Object]')) throw new Error('Project data must contain JSON values only.');
+    for (const key of Object.keys(v)) {
+      if (key === '__proto__') throw new Error('Project data contains an unsafe object key.');
+      pending.push({
+        value: v[key],
+        depth: item.depth + 1
+      });
+    }
+  }
+}
+function validatePolygon(points, path, spend) {
+  requireList(points, path, 1024);
+  if (points.length < 3) throw new Error(`${path} needs at least three points.`);
+  points.forEach((p, i) => requirePoint(p, `${path}[${i}]`));
+  if (polygonSignedArea(points) <= 1e-6) throw new Error(`${path} has invalid winding or zero area.`);
+  for (let i = 0; i < points.length; i++) {
+    const a = points[i],
+      b = points[(i + 1) % points.length];
+    if (Math.hypot(a.x - b.x, a.y - b.y) < 1e-7) throw new Error(`${path} has duplicate consecutive points.`);
+    for (let j = i + 2; j < points.length; j++) {
+      if (i === 0 && j === points.length - 1) continue;
+      spend(1);
+      if (segmentCuts(a, b, points[j], points[(j + 1) % points.length]).length) throw new Error(`${path} crosses or touches itself.`);
+    }
+  }
+}
+
+function strictInside(p, polygon) {
+  return pointInPolygon(p, polygon) && clearance(p, polygon) > 1e-6;
+}
+
+function properIntersection(a, b, c, d) {
+  const rx = b.x - a.x,
+    ry = b.y - a.y,
+    sx = d.x - c.x,
+    sy = d.y - c.y,
+    den = rx * sy - ry * sx;
+  if (Math.abs(den) < 1e-8) return false;
+  const qx = c.x - a.x,
+    qy = c.y - a.y,
+    t = (qx * sy - qy * sx) / den,
+    u = (qx * ry - qy * rx) / den;
+  return t > 1e-7 && t < 1 - 1e-7 && u > 1e-7 && u < 1 - 1e-7;
+}
+
+function polygonsOverlapInterior(a, b, spend) {
+  for (let i = 0; i < a.length; i++)
+    for (let j = 0; j < b.length; j++) {
+      spend(1);
+      if (properIntersection(a[i], a[(i + 1) % a.length], b[j], b[(j + 1) % b.length])) return true;
+    }
+  for (const [own, other] of [
+      [a, b],
+      [b, a]
+    ])
+    for (let i = 0; i < own.length; i++) {
+      const p = own[i],
+        q = own[(i + 1) % own.length],
+        mid = {
+          x: (p.x + q.x) / 2,
+          y: (p.y + q.y) / 2
+        };
+      if (strictInside(p, other) || strictInside(mid, other)) return true;
+      const length = Math.hypot(q.x - p.x, q.y - p.y);
+      const inside = {
+        x: mid.x - (q.y - p.y) / length * 1e-4,
+        y: mid.y + (q.x - p.x) / length * 1e-4
+      };
+      if (strictInside(inside, own) && strictInside(inside, other)) return true;
+    }
+  return false;
+}
+
+function polygonContained(inner, outer, path, spend) {
+  if (!inner.every(p => insideOrOn(p, outer))) throw new Error(`${path} extends outside its parent polygon.`);
+  for (let i = 0; i < inner.length; i++)
+    for (let j = 0; j < outer.length; j++) {
+      spend(1);
+      if (properIntersection(inner[i], inner[(i + 1) % inner.length], outer[j], outer[(j + 1) % outer.length])) throw new Error(`${path} crosses its parent polygon.`);
+    }
+}
+
+function indexedRecords(list, path) {
+  const result = new Map();
+  for (const record of list) {
+    requireRecord(record, path);
+    requireText(record.id, `${path}.id`, 128);
+    if (result.has(record.id)) throw new Error(`Duplicate ID in ${path}: ${record.id}`);
+    result.set(record.id, record);
+  }
+  return result;
+}
+
+function reference(map, id, path) {
+  if (typeof id !== 'string' || !map.has(id)) throw new Error(`${path} references a missing ID: ${String(id)}`);
+  return map.get(id);
+}
+
+function references(value, map, path, allowEmpty = false) {
+  requireList(value, path, 40000);
+  if (!allowEmpty && !value.length) throw new Error(`${path} cannot be empty.`);
+  if (new Set(value).size !== value.length) throw new Error(`${path} contains duplicate IDs.`);
+  return value.map(id => reference(map, id, path));
+}
+
+function validateRoadGraph(city, boundary, nodes, spend) {
+  const boxes = boundsOf(boundary),
+    cell = Math.max(1, Math.max(boxes.maxX - boxes.minX, boxes.maxY - boxes.minY) / 48);
+  const bins = new Map(),
+    pairs = new Set(),
+    edges = new Set();
+  for (const road of city.roads) {
+    const a = reference(nodes, road.a, 'Road endpoint'),
+      b = reference(nodes, road.b, 'Road endpoint');
+    if (road.a === road.b || Math.hypot(a.x - b.x, a.y - b.y) < 1e-7) throw new Error('Road has zero length.');
+    if (!Object.hasOwn(STREET_WIDTHS, road.kind)) throw new Error('Road has an unsupported classification.');
+    const pair = [a.id, b.id].sort().join(':');
+    if (edges.has(pair)) throw new Error('Duplicate road edge.');
+    edges.add(pair);
+    const cuts = [0, 1];
+    for (let i = 0; i < boundary.length; i++) {
+      spend(1);
+      cuts.push(...segmentCuts(a, b, boundary[i], boundary[(i + 1) % boundary.length]));
+    }
+    cuts.sort((a, b) => a - b);
+    for (let i = 1; i < cuts.length; i++) {
+      const t = (cuts[i - 1] + cuts[i]) / 2;
+      if (!insideOrOn({
+          x: a.x + (b.x - a.x) * t,
+          y: a.y + (b.y - a.y) * t
+        }, boundary)) throw new Error('A road leaves the city boundary.');
+    }
+    const x0 = Math.floor(Math.min(a.x, b.x) / cell),
+      x1 = Math.floor(Math.max(a.x, b.x) / cell),
+      y0 = Math.floor(Math.min(a.y, b.y) / cell),
+      y1 = Math.floor(Math.max(a.y, b.y) / cell);
+    for (let x = x0; x <= x1; x++)
+      for (let y = y0; y <= y1; y++) {
+        spend(1);
+        const key = `${x}:${y}`,
+          bucket = bins.get(key) || [];
+        for (const other of bucket) {
+          const pk = [road.id, other.id].sort().join(':');
+          if (pairs.has(pk)) continue;
+          pairs.add(pk);
+          spend(1);
+          if (road.a === other.a || road.a === other.b || road.b === other.a || road.b === other.b) {
+            const common = road.a === other.a || road.a === other.b ? road.a : road.b;
+            const one = nodes.get(road.a === common ? road.b : road.a),
+              two = nodes.get(other.a === common ? other.b : other.a),
+              shared = nodes.get(common);
+            if (distanceToSegment(one, shared, two) < 1e-6 || distanceToSegment(two, shared, one) < 1e-6) throw new Error('Roads overlap along the same segment.');
+            continue;
+          }
+          if (segmentCuts(a, b, nodes.get(other.a), nodes.get(other.b)).length || segmentCuts(nodes.get(other.a), nodes.get(other.b), a, b).length) throw new Error('Roads cross without a shared junction.');
+        }
+        bucket.push(road);
+        bins.set(key, bucket);
+      }
+  }
+  return edges;
+}
+
+function validateStoredProject(project) {
+  const spend = createValidationBudget();
+  requireRecord(project, 'Project');
+  if (project.schemaVersion !== PROJECT_SCHEMA_VERSION) throw new Error('Unsupported project schema. Open this file in a newer Mappo build.');
+  requireText(project.generatorVersion, 'Generator version', 100);
+  requireText(project.seed, 'Seed', 64);
+  requireRecord(project.options, 'Generation settings');
+  if (!DENSITIES.includes(project.options.size) || !PATTERNS.includes(project.options.morphology)) throw new Error('This build does not support the saved generation settings.');
+  const city = requireRecord(project.city, 'City');
+  requireText(city.id, 'City ID', 128);
+  requireText(city.name, 'City name', 200);
+  requireRecord(city.survey, 'Survey');
+  const boundary = city.survey.boundary;
+  validatePolygon(boundary, 'City boundary', spend);
+  validatePolygon(project.options.boundary, 'Generation boundary', spend);
+  if (project.options.boundary.length !== boundary.length || project.options.boundary.some((p, i) => Math.hypot(p.x - boundary[i].x, p.y - boundary[i].y) > 1e-6)) throw new Error('Generation and city boundaries disagree.');
+  requirePoint(project.options.center, 'Town center');
+  if (!insideOrOn(project.options.center, boundary)) throw new Error('Town center is outside the city boundary.');
+  const maps = {};
+  for (const [name, max] of Object.entries(LIMITS)) maps[name] = indexedRecords(requireList(city[name], name, max), name);
+  if (!city.nodes.length || !city.roads.length || !city.blocks.length) throw new Error('The city is missing its street plan.');
+  for (const n of city.nodes) {
+    requirePoint(n, 'Road junction');
+    if (!insideOrOn(n, boundary)) throw new Error('Road junction is outside the city boundary.');
+  }
+  const edgeKeys = validateRoadGraph(city, boundary, maps.nodes, spend);
+  const roadByEdge = new Map(city.roads.map(r => [
+    [r.a, r.b].sort().join(':'), r
+  ]));
+  const orientedEdges = new Set();
+  const facePolygons = new Map();
+  const plaza = requireRecord(city.plaza, 'Main square');
+  if (plaza.center !== undefined) requirePoint(plaza.center, 'Main square center');
+  requireText(plaza.id, 'Main square ID', 128);
+  if (maps.blocks.has(plaza.id)) throw new Error('The main square and a block share an ID.');
+  requireText(plaza.name, 'Main square name', 200);
+  for (const face of [...city.blocks, plaza]) {
+    const points = references(face.vertices, maps.nodes, 'Face vertices').map(p => ({
+      x: p.x,
+      y: p.y
+    }));
+    validatePolygon(points, `Face ${face.id}`, spend);
+    polygonContained(points, boundary, 'City block or square', spend);
+    for (let i = 0; i < face.vertices.length; i++) {
+      const a = face.vertices[i],
+        b = face.vertices[(i + 1) % face.vertices.length],
+        directed = `${a}:${b}`;
+      if (!edgeKeys.has([a, b].sort().join(':'))) throw new Error('A block edge has no matching road.');
+      if (orientedEdges.has(directed)) throw new Error('City faces overlap or reuse a directed street edge.');
+      orientedEdges.add(directed);
+    }
+    const area = polygonSignedArea(points);
+    if (!Number.isFinite(face.area) || Math.abs(face.area - area) > .02) throw new Error('A block or square has an incorrect area.');
+    facePolygons.set(face.id, points);
+  }
+  validateLayout(city, boundary);
+  if (plaza.center && (!pointInPolygon(plaza.center, facePolygons.get(plaza.id)) || Math.hypot(plaza.center.x - project.options.center.x, plaza.center.y - project.options.center.y) > 1e-6)) throw new Error('The square’s saved center is inconsistent.');
+  if (!pointInPolygon(project.options.center, facePolygons.get(plaza.id))) throw new Error('The saved town center is not inside the main square.');
+  const grouped = new Map(),
+    usedPlots = new Set(),
+    usedBuildings = new Set();
+  for (const property of city.properties) {
+    reference(maps.blocks, property.blockId, 'Property block');
+    reference(maps.roads, property.frontageRoadId, 'Property frontage');
+    validatePolygon(property.boundary, 'Property boundary', spend);
+    const block = facePolygons.get(property.blockId);
+    polygonContained(property.boundary, block, 'Property', spend);
+    for (let i = 0; i < block.length; i++) {
+      const ids = maps.blocks.get(property.blockId).vertices,
+        road = roadByEdge.get([ids[i], ids[(i + 1) % ids.length]].sort().join(':'));
+      const margin = (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
+      for (let j = 0; j < property.boundary.length; j++) {
+        spend(1);
+        if (segmentDistance(property.boundary[j], property.boundary[(j + 1) % property.boundary.length], block[i], block[(i + 1) % block.length]) < margin - 1e-5) throw new Error('A property encroaches on a street.');
+      }
+    }
+    const neighbors = grouped.get(property.blockId) || [];
+    for (const other of neighbors)
+      if (polygonsOverlapInterior(property.boundary, other.boundary, spend)) throw new Error('Property boundaries overlap.');
+    neighbors.push(property);
+    grouped.set(property.blockId, neighbors);
+    const ownPlots = references(property.plotIds, maps.plots, 'Property plots');
+    let plotArea = 0;
+    for (const plot of ownPlots) {
+      if (usedPlots.has(plot.id) || plot.propertyId !== property.id || plot.blockId !== property.blockId) throw new Error('Plot ownership is inconsistent.');
+      usedPlots.add(plot.id);
+      validatePolygon(plot.boundary, 'Plot boundary', spend);
+      for (let i = 0; i < plot.boundary.length; i++) {
+        const a = plot.boundary[i],
+          b = plot.boundary[(i + 1) % plot.boundary.length],
+          c = plot.boundary[(i + 2) % plot.boundary.length];
+        if ((b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) < -1e-7) throw new Error('Base plots must be convex in this project schema.');
+      }
+      polygonContained(plot.boundary, property.boundary, 'Plot', spend);
+      plotArea += polygonSignedArea(plot.boundary);
+    }
+    for (let i = 0; i < ownPlots.length; i++)
+      for (let j = i + 1; j < ownPlots.length; j++)
+        if (polygonsOverlapInterior(ownPlots[i].boundary, ownPlots[j].boundary, spend)) throw new Error('Plots overlap within their property.');
+    const actual = polygonSignedArea(property.boundary);
+    if (!Number.isFinite(property.area) || Math.abs(actual - property.area) > .02 || Math.abs(actual - plotArea) > .02) throw new Error('Property or plot areas are inconsistent.');
+    for (const building of references(property.buildingIds, maps.buildings, 'Property buildings', true)) {
+      if (usedBuildings.has(building.id) || building.propertyId !== property.id || building.blockId !== property.blockId) throw new Error('Building ownership is inconsistent.');
+      usedBuildings.add(building.id);
+      validatePolygon(building.footprint, 'Building footprint', spend);
+      polygonContained(building.footprint, property.boundary, 'Building', spend);
+      requireText(building.type, 'Building type');
+      requireText(building.shape, 'Building shape');
+      if (!Number.isFinite(building.orientation) || !Number.isInteger(building.roofTone) || building.roofTone < 0 || building.roofTone > 255) throw new Error('Building rendering data is invalid.');
+      reference(maps.roads, building.frontageRoadId, 'Building frontage');
+      const buildingPlots = references(building.plotIds, maps.plots, 'Building plots');
+      if (buildingPlots.some(p => p.propertyId !== property.id)) throw new Error('A building refers to another property’s plot.');
+      let area = polygonSignedArea(building.footprint);
+      requireList(building.holes, 'Courtyard holes', 64);
+      for (const hole of building.holes) {
+        validatePolygon(hole, 'Courtyard', spend);
+        polygonContained(hole, building.footprint, 'Courtyard', spend);
+        if (hole.some(p => !strictInside(p, building.footprint))) throw new Error('A courtyard touches its outer building boundary.');
+        area -= polygonSignedArea(hole);
+      }
+      for (let i = 0; i < building.holes.length; i++)
+        for (let j = i + 1; j < building.holes.length; j++)
+          if (polygonsOverlapInterior(building.holes[i], building.holes[j], spend)) throw new Error('Courtyard holes overlap.');
+      const occupiedPlots = ownPlots.filter(plot => Math.abs(polygonSignedArea(clipToConvexPolygon(building.footprint, plot.boundary))) - building.holes.reduce((sum, h) => sum + Math.abs(polygonSignedArea(clipToConvexPolygon(h, plot.boundary))), 0) > 1e-5).map(p => p.id);
+      if (occupiedPlots.length !== building.plotIds.length || occupiedPlots.some(id => !building.plotIds.includes(id))) throw new Error('Building plot references do not match its actual footprint.');
+      if (area <= 1 || !Number.isFinite(building.area) || Math.abs(area - building.area) > .02) throw new Error('Building area is invalid.');
+    }
+    const own = property.buildingIds.map(id => maps.buildings.get(id));
+    for (let i = 0; i < own.length; i++)
+      for (let j = i + 1; j < own.length; j++)
+        if (polygonsOverlapInterior(own[i].footprint, own[j].footprint, spend)) throw new Error('Building footprints overlap.');
+  }
+  if (usedPlots.size !== city.plots.length || usedBuildings.size !== city.buildings.length) throw new Error('The project contains orphan plots or buildings.');
+  for (const record of [...city.properties, ...city.buildings])
+    if (record.districtId != null) reference(maps.districts, record.districtId, 'District membership');
+  for (const open of city.openSpaces) {
+    reference(maps.blocks, open.blockId, 'Open-space block');
+    if (!Number.isFinite(open.area) || open.area < 0) throw new Error('Open-space area is invalid.');
+  }
+  return project;
+}
+
+function validateWorkspace(workspace) {
+  requireRecord(workspace, 'Workspace');
+  if (workspace.schemaVersion !== 1) throw new Error('Unsupported workspace version. Use a newer Mappo build.');
+  const draft = requireRecord(workspace.editor, 'Outline draft');
+  requireList(draft.boundary, 'Draft boundary', 1200).forEach(p => requirePoint(p, 'Draft point'));
+  if (draft.center !== null) requirePoint(draft.center, 'Draft center');
+  if (typeof draft.closed !== 'boolean' || typeof draft.dirty !== 'boolean') throw new Error('Invalid draft state.');
+  requireList(draft.history, 'Outline undo history', 40).forEach(entry => {
+    requireRecord(entry, 'Undo entry');
+    requireList(entry.boundary, 'Undo boundary', 1200).forEach(p => requirePoint(p, 'Undo point'));
+    if (entry.center !== null) requirePoint(entry.center, 'Undo center');
+    if (typeof entry.closed !== 'boolean' || typeof entry.dirty !== 'boolean') throw new Error('Invalid undo state.');
+  });
+  const controls = requireRecord(workspace.controls, 'Workspace controls');
+  if (typeof controls.seed !== 'string' || controls.seed.length > 64) throw new Error('Invalid draft seed.');
+  if (!DENSITIES.includes(controls.size) || !PATTERNS.includes(controls.morphology)) throw new Error('Unsupported draft generation settings.');
+  if (!['radial', 'organic', 'linear', 'planned', 'wedge', 'twin', 'branching', 'crescent'].includes(controls.preset)) throw new Error('Unsupported starting outline.');
+  const view = requireRecord(workspace.view, 'Map view');
+  requireRecord(view.camera, 'Camera');
+  requirePoint(view.camera, 'Camera');
+  if (!Number.isFinite(view.camera.zoom) || view.camera.zoom < .18 || view.camera.zoom > 12) throw new Error('Invalid map zoom.');
+  requireRecord(view.layers, 'Map layers');
+  for (const name of ['buildings', 'properties', 'plots'])
+    if (typeof view.layers[name] !== 'boolean') throw new Error('Invalid layer visibility.');
+  return workspace;
+}
+
+
+// src/data/project-format.js
+
+
+
+const PROJECT_FORMAT = 'mappo-project';
+function copyJson(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+function utf8Size(text) {
+  return new TextEncoder().encode(text).byteLength;
+}
+function newDocumentId() {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  return `mappo-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+}
+function defaultWorkspace(project) {
+  const bounds = boundsOf(project.city.survey.boundary);
+  return {
+    schemaVersion: 1,
+    editor: {
+      boundary: copyJson(project.city.survey.boundary),
+      center: copyJson(project.options.center),
+      closed: true,
+      dirty: false,
+      history: [],
+      mode: 'pan'
+    },
+    controls: {
+      seed: project.seed,
+      size: project.options.size,
+      morphology: project.options.morphology,
+      preset: project.options.morphology
+    },
+    view: {
+      camera: {
+        x: (bounds.minX + bounds.maxX) / 2,
+        y: (bounds.minY + bounds.maxY) / 2,
+        zoom: 1
+      },
+      layers: {
+        buildings: true,
+        properties: false,
+        plots: false
+      },
+      fitOnLoad: true
+    }
+  };
+}
+function createProjectDocument(project, workspace = defaultWorkspace(project), base = null, now = new Date().toISOString()) {
+  const document = base ? copyJson(base) : {
+    format: PROJECT_FORMAT,
+    formatVersion: CURRENT_FORMAT_VERSION,
+    documentId: newDocumentId(),
+    createdAt: now,
+    extensions: {}
+  };
+  document.appVersion = CURRENT_APP_VERSION;
+  document.savedAt = now;
+  document.project = copyJson(project);
+  // Preserve opaque future workspace fields while replacing known state.
+  const previous = document.workspace || {};
+  document.workspace = {
+    ...previous,
+    ...copyJson(workspace),
+    editor: {
+      ...(previous.editor || {}),
+      ...copyJson(workspace.editor)
+    },
+    controls: {
+      ...(previous.controls || {}),
+      ...copyJson(workspace.controls)
+    },
+    view: {
+      ...(previous.view || {}),
+      ...copyJson(workspace.view),
+      camera: {
+        ...(previous.view?.camera || {}),
+        ...copyJson(workspace.view.camera)
+      },
+      layers: {
+        ...(previous.view?.layers || {}),
+        ...copyJson(workspace.view.layers)
+      }
+    }
+  };
+  return document;
+}
+
+function validateDocument(document) {
+  requireRecord(document, 'Project file');
+  if (document.format !== PROJECT_FORMAT) throw new Error('This is not a Mappo project file.');
+  if (document.formatVersion !== CURRENT_FORMAT_VERSION) throw new Error('This file uses an unsupported save format. Open it in a newer Mappo build.');
+  requireText(document.documentId, 'Document ID', 200);
+  requireText(document.appVersion, 'Saving app version', 100);
+  for (const key of ['createdAt', 'savedAt'])
+    if (typeof document[key] !== 'string' || !Number.isFinite(Date.parse(document[key]))) throw new Error(`Invalid ${key} timestamp.`);
+  validateStoredProject(document.project);
+  validateWorkspace(document.workspace);
+  if (document.extensions !== undefined) requireRecord(document.extensions, 'Extensions');
+  return document;
+}
+function encodeProjectDocument(document) {
+  validateJsonTree(document);
+  validateDocument(document);
+  const text = JSON.stringify(document);
+  if (utf8Size(text) > MAX_PROJECT_BYTES) throw new Error('Project exceeds this build’s 20 MiB file limit.');
+  return text;
+}
+function decodeProjectDocument(text) {
+  if (typeof text !== 'string') throw new Error('The project file could not be read as text.');
+  if (utf8Size(text) > MAX_PROJECT_BYTES) throw new Error('This project is larger than the 20 MiB limit.');
+  const clean = text.replace(/^\uFEFF/, '').trim();
+  if (clean.startsWith('<')) throw new Error('Choose a .mappo.json project file, not the standalone HTML app.');
+  let document;
+  try {
+    document = JSON.parse(clean);
+  } catch {
+    throw new Error('The file is incomplete or is not valid JSON. Your current city has not been changed.');
+  }
+  validateJsonTree(document);
+  if (document && document.format === undefined && document.city && document.schemaVersion) {
+    const project = migrateProjectData(document);
+    document = createProjectDocument(project);
+  } else {
+    requireRecord(document, 'Project file');
+    if (document.format !== PROJECT_FORMAT) throw new Error('This is not a Mappo project file.');
+    if (document.formatVersion !== CURRENT_FORMAT_VERSION) throw new Error('This file uses a newer or unsupported save format. Use a compatible Mappo build.');
+    document.project = migrateProjectData(document.project);
+  }
+  return validateDocument(document);
+}
+function projectFilename(document) {
+  const name = document.project.city.name.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'mappo-city';
+  return `${name}-${new Date(document.savedAt).toISOString().slice(0,10)}.mappo.json`;
+}
+
+
+// src/data/recovery-store.js
+
+const STORAGE_KEY = 'mappo:recovery:v1';
+const DB_NAME = 'mappo-project-recovery';
+const STORE_NAME = 'snapshots';
+const RECOVERY_CONFLICT = 'Another Mappo tab changed recovery. Download your project to keep it, then reload this page.';
+
+function nextRecoveryState(previous, text, expectedToken) {
+  if ((previous?.token ?? null) !== expectedToken) throw new Error(RECOVERY_CONFLICT);
+  let current = null,
+    backup = previous?.backup ?? null;
+  if (previous?.current) {
+    try {
+      decodeProjectDocument(previous.current);
+      current = previous.current;
+    } catch (error) {
+      if (/newer|unsupported/i.test(error.message)) throw new Error('Recovery belongs to an unsupported or newer Mappo build. It has been preserved. Download this project to keep your current work.');
+    }
+  }
+  if (current) {
+    const a = JSON.parse(current),
+      b = JSON.parse(text);
+    delete a.savedAt;
+    delete b.savedAt;
+    delete a.appVersion;
+    delete b.appVersion;
+    if (JSON.stringify(a) === JSON.stringify(b)) return previous;
+  }
+  return {
+    token: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`,
+    current: text,
+    backup: current || backup
+  };
+}
+
+class RecoveryStore {
+  constructor(adapter) {
+    this.adapter = adapter;
+    this.token = null;
+    this.queue = Promise.resolve();
+    this.initialized = false;
+  }
+  async read() {
+    const state = await this.adapter.read();
+    this.token = state?.token ?? null;
+    this.initialized = true;
+    return {
+      current: state?.current ?? null,
+      backup: state?.backup ?? null
+    };
+  }
+  save(text) {
+    const operation = this.queue.catch(() => {}).then(async () => {
+      if (!this.initialized) await this.read();
+      const state = await this.adapter.update(previous => nextRecoveryState(previous, text, this.token));
+      this.token = state.token;
+      return state;
+    });
+    this.queue = operation;
+    return operation;
+  }
+}
+
+function localStorageRecoveryAdapter(storage) {
+  const read = () => {
+    const raw = storage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      throw new Error('Browser recovery storage is unreadable. Download your project and use a fresh browser storage location.');
+    }
+  };
+  return {
+    label: 'browser storage',
+    async read() {
+      return read();
+    },
+    async update(transform) {
+      const next = transform(read());
+      storage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    }
+  };
+}
+
+function indexedDbRecoveryAdapter(indexedDB) {
+  let connection;
+
+  function connect() {
+    if (connection) return connection;
+    connection = new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, 1);
+      request.onupgradeneeded = () => {
+        if (!request.result.objectStoreNames.contains(STORE_NAME)) request.result.createObjectStore(STORE_NAME);
+      };
+      request.onerror = () => reject(request.error || new Error('Browser recovery database could not open.'));
+      request.onblocked = () => reject(new Error('Close other Mappo tabs to upgrade browser recovery.'));
+      request.onsuccess = () => {
+        const db = request.result;
+        db.onversionchange = () => db.close();
+        resolve(db);
+      };
+    });
+    return connection;
+  }
+  async function transaction(write, transform) {
+    const db = await connect();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, write ? 'readwrite' : 'readonly'),
+        store = tx.objectStore(STORE_NAME);
+      let result, problem;
+      tx.oncomplete = () => resolve(result ?? null);
+      tx.onabort = () => reject(problem || tx.error || new Error('Browser recovery transaction was not completed.'));
+      tx.onerror = () => {};
+      const request = store.get('workspace');
+      request.onsuccess = () => {
+        try {
+          result = write ? transform(request.result ?? null) : request.result ?? null;
+          if (write) store.put(result, 'workspace');
+        } catch (error) {
+          problem = error;
+          tx.abort();
+        }
+      };
+    });
+  }
+  return {
+    label: 'browser database',
+    read: () => transaction(false),
+    update: transform => transaction(true, transform)
+  };
+}
+
+async function openBrowserRecovery(environment = globalThis) {
+  try {
+    if (environment.indexedDB) {
+      const adapter = indexedDbRecoveryAdapter(environment.indexedDB);
+      await adapter.read();
+      return new RecoveryStore(adapter);
+    }
+  } catch {
+    /* file:// storage policies can prohibit IndexedDB. Try atomic localStorage writes. */ }
+  let storage;
+  try {
+    storage = environment.localStorage;
+  } catch {}
+  if (!storage) throw new Error('Browser recovery is unavailable here. Use Download project to keep your work.');
+  const adapter = localStorageRecoveryAdapter(storage);
+  await adapter.read();
+  return new RecoveryStore(adapter);
+}
+
+
+// src/data/file-io.js
+
+async function readProjectFile(file) {
+  if (!file) throw new Error('Choose a project file first.');
+  if (!Number.isFinite(file.size) || file.size > MAX_PROJECT_BYTES) throw new Error('Choose a project file smaller than 20 MiB.');
+  return file.text();
+}
+function downloadProjectText(text, filename, environment = globalThis) {
+  const blob = new environment.Blob([text], {
+    type: 'application/json;charset=utf-8'
+  });
+  const url = environment.URL.createObjectURL(blob),
+    link = environment.document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  try {
+    environment.document.body.appendChild(link);
+    link.click();
+  } finally {
+    link.remove();
+    environment.setTimeout(() => environment.URL.revokeObjectURL(url), 30000);
+  }
+}
+
+
+// src/ui/project-files.js
+
+
+
+class ProjectFiles {
+  constructor({
+    getElement,
+    capture,
+    apply,
+    openRecovery = openBrowserRecovery,
+    download = downloadProjectText,
+    clock = () => new Date().toISOString(),
+    delay = 800,
+    timers = globalThis
+  }) {
+    this.$ = getElement;
+    this.capture = capture;
+    this.apply = apply;
+    this.openRecovery = openRecovery;
+    this.download = download;
+    this.clock = clock;
+    this.delay = delay;
+    this.timers = timers;
+    this.base = null;
+    this.store = null;
+    this.timer = null;
+    this.ready = false;
+    this.suspended = false;
+    this.revision = 0;
+    this.recoveredRevision = -1;
+    this.downloadRevision = -1;
+    this.pending = null;
+    this.importSequence = 0;
+    this.busy = false;
+    this.writeQueue = Promise.resolve();
+    this.lastError = null;
+    this.applying = false;
+    this.opening = false;
+  }
+  status(message, error = false) {
+    this.$('fileStatus').textContent = message;
+    this.$('fileStatus').classList.toggle('error', error);
+  }
+  captureDocument() {
+    const state = this.capture();
+    const document = createProjectDocument(state.project, state.workspace, this.base, this.clock());
+    if (!this.base) this.base = document;
+    return document;
+  }
+  changed() {
+    if (this.applying) return;
+    this.revision++;
+    if (!this.ready || this.suspended) return;
+    if (!this.store) {
+      this.status('Changes in this page — download a project copy.', true);
+      return;
+    }
+    if (this.timer !== null) this.timers.clearTimeout(this.timer);
+    this.timer = this.timers.setTimeout(() => {
+      this.timer = null;
+      this.flush().catch(() => {});
+    }, this.delay);
+    this.status(this.store ? 'Changes pending browser recovery…' : 'Changes in this page — download a project copy.', !this.store);
+  }
+  get needsUnloadWarning() {
+    return this.revision > 0 && this.revision > this.downloadRevision && this.revision > this.recoveredRevision;
+  }
+  async start() {
+    try {
+      this.store = await this.openRecovery();
+      const stored = await this.store.read();
+      let recoverable = 0;
+      for (const [key, label] of [
+          ['current', 'Latest recovery'],
+          ['backup', 'Previous recovery']
+        ]) {
+        const button = this.$(key === 'current' ? 'restoreRecoveryButton' : 'restoreBackupButton');
+        button.disabled = true;
+        if (stored[key]) {
+          try {
+            const doc = decodeProjectDocument(stored[key]);
+            this[key + 'Recovery'] = doc;
+            button.disabled = false;
+            button.textContent = `${label}: ${doc.project.city.name}`;
+            recoverable++;
+          } catch (error) {
+            this.status(`${label} could not be read: ${error.message}`, true);
+          }
+        }
+      }
+      this.ready = true;
+      if (recoverable) {
+        this.suspended = true;
+        this.$('recoveryChoice').hidden = false;
+        this.status('A recovery copy is available. Restore it or keep this city to resume recovery saving.');
+      } else {
+        this.status('Browser recovery ready. Download project for a portable copy.');
+        this.changed();
+      }
+    } catch (error) {
+      this.ready = true;
+      this.lastError = error;
+      this.status(error.message, true);
+    }
+  }
+  flush() {
+    if (!this.ready || this.suspended || !this.store) return Promise.reject(new Error('Browser recovery is not currently available.'));
+    if (this.timer !== null) {
+      this.timers.clearTimeout(this.timer);
+      this.timer = null;
+    }
+    const operation = this.writeQueue.catch(() => {}).then(async () => {
+      const revision = this.revision,
+        document = this.captureDocument(),
+        text = encodeProjectDocument(document);
+      const savedState = await this.store.save(text);
+      this.base = document;
+      this.recoveredRevision = revision;
+      this.lastError = null;
+      if (savedState.backup) {
+        try {
+          this.backupRecovery = decodeProjectDocument(savedState.backup);
+          this.$('restoreBackupButton').disabled = false;
+        } catch {}
+      }
+      this.currentRecovery = document;
+      this.$('restoreRecoveryButton').disabled = false;
+      if (this.revision === revision) this.status(`Recovery saved in this browser at ${new Date(document.savedAt).toLocaleTimeString()}. Download a portable copy when you want to keep a version.`);
+      return document;
+    }).catch(error => {
+      this.lastError = error;
+      this.status(`Recovery failed: ${error.message} Download project to keep this version.`, true);
+      throw error;
+    });
+    this.writeQueue = operation;
+    return operation;
+  }
+  keepCurrent() {
+    this.suspended = false;
+    this.$('recoveryChoice').hidden = true;
+    this.changed();
+  }
+  async saveDownload() {
+    try {
+      await this.writeQueue.catch(() => {});
+      const revision = this.revision,
+        document = this.captureDocument(),
+        text = encodeProjectDocument(document);
+      await this.download(text, projectFilename(document));
+      this.base = document;
+      this.downloadRevision = revision;
+      this.status('Project download requested. Keep the .mappo.json file to reopen this exact city in another build.');
+      return document;
+    } catch (error) {
+      this.status(`Download failed: ${error.message}`, true);
+      return null;
+    }
+  }
+  async stageFile(file) {
+    if (this.opening) {
+      this.status('A project is opening. Please wait before choosing another file.');
+      return;
+    }
+    this.pending = null;
+    this.$('loadPreview').hidden = true;
+    const sequence = ++this.importSequence;
+    this.busy = true;
+    try {
+      const text = await readProjectFile(file),
+        document = decodeProjectDocument(text);
+      if (sequence !== this.importSequence) return;
+      this.stageDocument(document, 'file');
+    } catch (error) {
+      if (sequence === this.importSequence) this.status(`Could not open project: ${error.message}`, true);
+    } finally {
+      if (sequence === this.importSequence) this.busy = false;
+    }
+  }
+  stageDocument(document, source) {
+    if (this.opening) return;
+    if (source !== 'file') {
+      this.importSequence++;
+      this.busy = false;
+    }
+    this.pending = {
+      document,
+      source
+    };
+    this.$('loadPreview').hidden = false;
+    const project = document.project;
+    this.$('loadSummary').textContent = `${project.city.name} · ${project.city.buildings.length} buildings · saved ${new Date(document.savedAt).toLocaleString()}${document.workspace.editor.dirty?' · includes unfinished edits':''}. Opening replaces the current workspace; download it first if you want a separate copy.`;
+    this.status('Project validated. Review it, then choose Open project.');
+  }
+  cancelLoad() {
+    if (this.opening) return;
+    this.busy = false;
+    this.importSequence++;
+    this.pending = null;
+    this.$('loadPreview').hidden = true;
+    this.status('Open cancelled. Current city retained.');
+  }
+  async openPending() {
+    if (!this.pending || this.busy) return false;
+    const selected = this.pending;
+    this.busy = true;
+    this.opening = true;
+    let outgoing, oldBase = this.base;
+    try {
+      outgoing = this.captureDocument();
+      // Make a best-effort recovery of the outgoing workspace before replacing it.
+      if (this.store && !this.suspended) {
+        try {
+          await this.flush();
+        } catch {}
+      }
+      // Re-validate the immutable staged payload immediately before applying.
+      const document = decodeProjectDocument(encodeProjectDocument(selected.document));
+      this.suspended = true;
+      this.applying = true;
+      this.apply(document);
+      this.applying = false;
+      this.base = document;
+      this.pending = null;
+      this.$('loadPreview').hidden = true;
+      this.$('recoveryChoice').hidden = true;
+      this.revision++;
+      this.downloadRevision = selected.source === 'file' ? this.revision : -1;
+      this.recoveredRevision = -1;
+      this.suspended = false;
+      this.ready = true;
+      this.status(`Opened ${document.project.city.name}. Saved geometry restored without regeneration.`);
+      if (this.store) {
+        try {
+          await this.flush();
+        } catch {}
+      }
+      return true;
+    } catch (error) {
+      try {
+        if (outgoing) {
+          this.applying = true;
+          this.apply(outgoing);
+          this.base = oldBase;
+        }
+      } catch {}
+      this.status(`Could not apply project: ${error.message} Current city retained.`, true);
+      return false;
+    } finally {
+      this.applying = false;
+      this.opening = false;
+      this.suspended = false;
+      this.busy = false;
+    }
+  }
+  bind() {
+    this.$('saveProjectButton').addEventListener('click', () => this.saveDownload());
+    this.$('loadProjectButton').addEventListener('click', () => this.$('projectFileInput').click());
+    this.$('projectFileInput').addEventListener('change', event => {
+      const file = event.target.files?.[0];
+      event.target.value = '';
+      if (file) this.stageFile(file);
+    });
+    this.$('openProjectButton').addEventListener('click', () => this.openPending());
+    this.$('cancelLoadButton').addEventListener('click', () => this.cancelLoad());
+    this.$('restoreRecoveryButton').addEventListener('click', () => {
+      if (this.currentRecovery) this.stageDocument(this.currentRecovery, 'recovery');
+    });
+    this.$('restoreBackupButton').addEventListener('click', () => {
+      if (this.backupRecovery) this.stageDocument(this.backupRecovery, 'recovery');
+    });
+    this.$('keepCurrentButton').addEventListener('click', () => this.keepCurrent());
+  }
+}
+
+
+// src/core/prng.js
+// One reproducible pseudo-random stream per seed. Avoid Math.random in generation.
+function normalizeSeed(value) {
+  return String(value ?? '').trim().slice(0, 64) || 'mappo';
+}
+
+function hashSeed(value) {
+  let hash = 2166136261;
+  for (const char of normalizeSeed(value)) {
+    hash ^= char.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function createRng(seed) {
+  let state = hashSeed(seed);
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function randomRange(rng, min, max) {
+  return min + rng() * (max - min);
 }
 
 
@@ -340,190 +1636,6 @@ function generateSurvey(seed, size, morphology = 'radial', shapeOverrides = {}) 
     axisAngle: orientation,
     shapeOptions
   };
-}
-
-
-// src/core/boundary.js
-
-function cross2(a, b) {
-  return a.x * b.y - a.y * b.x;
-}
-function lerpPoint(a, b, t) {
-  return {
-    x: a.x + (b.x - a.x) * t,
-    y: a.y + (b.y - a.y) * t
-  };
-}
-function distanceToSegment(p, a, b) {
-  const dx = b.x - a.x,
-    dy = b.y - a.y;
-  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
-  return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy);
-}
-function insideOrOn(p, polygon) {
-  return pointInPolygon(p, polygon) || polygon.some((a, i) => distanceToSegment(p, a, polygon[(i + 1) % polygon.length]) < 1e-6);
-}
-
-// Includes endpoint contacts and collinear overlaps. Both generators and
-// validation use the same segment predicates, with dimensionless parameters.
-function segmentCuts(a, b, c, d) {
-  const r = {
-      x: b.x - a.x,
-      y: b.y - a.y
-    },
-    s = {
-      x: d.x - c.x,
-      y: d.y - c.y
-    };
-  const q = {
-      x: c.x - a.x,
-      y: c.y - a.y
-    },
-    denominator = cross2(r, s);
-  if (Math.abs(denominator) > 1e-9) {
-    const t = cross2(q, s) / denominator,
-      u = cross2(q, r) / denominator;
-    return t >= -1e-9 && t <= 1 + 1e-9 && u >= -1e-9 && u <= 1 + 1e-9 ? [Math.max(0, Math.min(1, t))] : [];
-  }
-  if (Math.abs(cross2(q, r)) > 1e-7) return [];
-  const length2 = r.x * r.x + r.y * r.y;
-  if (length2 < 1e-12) return [];
-  return [c, d].map(p => ((p.x - a.x) * r.x + (p.y - a.y) * r.y) / length2).filter(t => t >= -1e-9 && t <= 1 + 1e-9).map(t => Math.max(0, Math.min(1, t)));
-}
-
-function validateBoundary(points) {
-  if (!Array.isArray(points) || points.length < 3) throw new Error('Place at least three outline points.');
-  if (points.length > 1200) throw new Error('The outline has too many points. Try a shorter stroke.');
-  if (!points.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 10000 && Math.abs(p.y) < 10000)) throw new Error('The outline contains invalid coordinates.');
-  for (let i = 0; i < points.length; i++) {
-    const a = points[i],
-      b = points[(i + 1) % points.length];
-    if (Math.hypot(a.x - b.x, a.y - b.y) < 1e-5) throw new Error('Remove duplicate outline points.');
-    for (let j = i + 1; j < points.length; j++) {
-      if (j === i + 1 || (i === 0 && j === points.length - 1)) continue;
-      if (segmentCuts(a, b, points[j], points[(j + 1) % points.length]).length) throw new Error('The outline crosses or touches itself. Move the highlighted shape points apart.');
-    }
-  }
-  const b = boundsOf(points);
-  if (Math.min(b.maxX - b.minX, b.maxY - b.minY) < 100 || Math.abs(polygonSignedArea(points)) < 8000) throw new Error('Draw a larger city outline: at least 100 units across with room for streets.');
-  return points;
-}
-
-function simplifyLine(points, tolerance) {
-  if (points.length <= 2) return points;
-  let distance = tolerance,
-    index = -1;
-  for (let i = 1; i < points.length - 1; i++) {
-    const d = distanceToSegment(points[i], points[0], points.at(-1));
-    if (d > distance) {
-      distance = d;
-      index = i;
-    }
-  }
-  if (index < 0) return [points[0], points.at(-1)];
-  return [...simplifyLine(points.slice(0, index + 1), tolerance).slice(0, -1), ...simplifyLine(points.slice(index), tolerance)];
-}
-function cleanOutline(raw, tolerance = 3) {
-  let points = raw.filter((p, i) => !i || Math.hypot(p.x - raw[i - 1].x, p.y - raw[i - 1].y) > 1e-4).map(p => ({
-    x: p.x,
-    y: p.y
-  }));
-  if (points.length > 2 && Math.hypot(points[0].x - points.at(-1).x, points[0].y - points.at(-1).y) < 1e-4) points.pop();
-  validateBoundary(points);
-  let far = 1;
-  for (let i = 2; i < points.length; i++)
-    if (Math.hypot(points[i].x - points[0].x, points[i].y - points[0].y) > Math.hypot(points[far].x - points[0].x, points[far].y - points[0].y)) far = i;
-  const simple = [...simplifyLine(points.slice(0, far + 1), tolerance).slice(0, -1), ...simplifyLine([...points.slice(far), points[0]], tolerance).slice(0, -1)];
-  validateBoundary(simple);
-  if (simple.length > 160) throw new Error('Simplify this outline to fewer than 160 corners.');
-  if (polygonSignedArea(simple) < 0) simple.reverse();
-  return simple;
-}
-
-function clearance(p, boundary) {
-  return Math.min(...boundary.map((a, i) => distanceToSegment(p, a, boundary[(i + 1) % boundary.length])));
-}
-function findCityCenter(boundary) {
-  const b = boundsOf(boundary);
-  let best = null,
-    bestDistance = -1;
-  for (let y = 0; y <= 24; y++)
-    for (let x = 0; x <= 24; x++) {
-      const p = {
-        x: b.minX + (b.maxX - b.minX) * (x + .5) / 25,
-        y: b.minY + (b.maxY - b.minY) * (y + .5) / 25
-      };
-      if (pointInPolygon(p, boundary)) {
-        const d = clearance(p, boundary);
-        if (d > bestDistance) {
-          best = p;
-          bestDistance = d;
-        }
-      }
-    }
-  if (!best || bestDistance < 18) throw new Error('This outline is too narrow for a town center. Widen part of it.');
-  return best;
-}
-
-function checkNarrowSections(boundary) {
-  const cumulative = [0];
-  for (let i = 0; i < boundary.length; i++) cumulative.push(cumulative.at(-1) + Math.hypot(boundary[i].x - boundary[(i + 1) % boundary.length].x, boundary[i].y - boundary[(i + 1) % boundary.length].y));
-  const total = cumulative.at(-1);
-  for (let i = 0; i < boundary.length; i++)
-    for (let j = i + 2; j < boundary.length; j++) {
-      if (i === 0 && j === boundary.length - 1) continue;
-      const first = [boundary[i], boundary[(i + 1) % boundary.length]],
-        second = [boundary[j], boundary[(j + 1) % boundary.length]];
-      for (const fraction of [0, .5, 1]) {
-        const a = lerpPoint(first[0], first[1], fraction),
-          dx = second[1].x - second[0].x,
-          dy = second[1].y - second[0].y;
-        const t = Math.max(0, Math.min(1, ((a.x - second[0].x) * dx + (a.y - second[0].y) * dy) / (dx * dx + dy * dy)));
-        const b = lerpPoint(second[0], second[1], t),
-          gap = Math.hypot(a.x - b.x, a.y - b.y);
-        const positionA = cumulative[i] + fraction * (cumulative[i + 1] - cumulative[i]),
-          positionB = cumulative[j] + t * (cumulative[j + 1] - cumulative[j]);
-        const path = Math.abs(positionA - positionB);
-        if (gap < 18 && Math.min(path, total - path) > 90 && pointInPolygon(lerpPoint(a, b, .5), boundary)) throw new Error('A section is too narrow for streets. Widen the neck to at least 18 units.');
-      }
-    }
-}
-
-
-// src/core/validate-layout.js
-
-// Fail closed if a numerical edge case would otherwise publish malformed city
-// data. Draft outlines and the last good city remain available for correction.
-function validateLayout(layout, boundary) {
-  const {
-    nodes,
-    roads,
-    blocks,
-    plaza
-  } = layout;
-  const byId = new Map(nodes.map(n => [n.id, n])),
-    graph = new Map(nodes.map(n => [n.id, []]));
-  for (const road of roads) {
-    graph.get(road.a).push(road.b);
-    graph.get(road.b).push(road.a);
-  }
-  const reached = new Set([nodes[0]?.id]),
-    queue = [nodes[0]?.id];
-  for (let i = 0; i < queue.length; i++)
-    for (const id of graph.get(queue[i]) || [])
-      if (!reached.has(id)) {
-        reached.add(id);
-        queue.push(id);
-      }
-  if (reached.size !== nodes.length) throw new Error('The outline produced disconnected streets. Adjust its narrow sections or try another street pattern.');
-  let total = 0;
-  for (const face of [...blocks, plaza]) {
-    if (new Set(face.vertices).size !== face.vertices.length) throw new Error('A street creates a pinched block. Adjust the outline or choose another street seed.');
-    const area = polygonSignedArea(face.vertices.map(id => byId.get(id)));
-    if (area <= 1) throw new Error('A section is too narrow to form usable blocks. Widen it and generate again.');
-    total += area;
-  }
-  if (Math.abs(total - Math.abs(polygonSignedArea(boundary))) > .02) throw new Error('Streets could not cover this outline completely. Adjust its narrow sections or choose another pattern.');
 }
 
 
@@ -798,95 +1910,6 @@ function generateLayout(seed, size, survey, morphology = 'radial') {
       area: Math.round(plazaFace.area * 100) / 100
     }
   };
-}
-
-
-// src/core/placement.js
-
-
-// Shared road dimensions keep the collision margin and rendering in agreement.
-const STREET_WIDTHS = Object.freeze({
-  primary: 12,
-  secondary: 8.2,
-  lane: 4.5
-});
-const STREET_EDGE_WIDTH = 2.2;
-const PROPERTY_SETBACK = 1.6;
-
-function rectangleInFrame(frame, x, y, width, depth) {
-  const point = (u, v) => ({
-    x: frame.origin.x + frame.tangent.x * u + frame.inward.x * v,
-    y: frame.origin.y + frame.tangent.y * u + frame.inward.y * v
-  });
-  return [point(x, y), point(x + width, y), point(x + width, y + depth), point(x, y + depth)];
-}
-
-// Separating-axis test: all property envelopes are convex rectangles. Padding
-// reserves gaps between properties, including frontages on different streets.
-function rectanglesOverlap(a, b, padding = 0) {
-  for (const polygon of [a, b]) {
-    for (let i = 0; i < 2; i++) {
-      const p = polygon[i],
-        q = polygon[i + 1];
-      const length = Math.hypot(q.x - p.x, q.y - p.y);
-      const axis = {
-        x: -(q.y - p.y) / length,
-        y: (q.x - p.x) / length
-      };
-      const pa = a.map(v => v.x * axis.x + v.y * axis.y);
-      const pb = b.map(v => v.x * axis.x + v.y * axis.y);
-      if (Math.max(...pa) + padding <= Math.min(...pb) + 1e-7 || Math.max(...pb) + padding <= Math.min(...pa) + 1e-7) return false;
-    }
-  }
-  return true;
-}
-
-function segmentDistance(a, b, c, d) {
-  if (segmentCuts(a, b, c, d).length || segmentCuts(c, d, a, b).length) return 0;
-  return Math.min(distanceToSegment(a, c, d), distanceToSegment(b, c, d), distanceToSegment(c, a, b), distanceToSegment(d, a, b));
-}
-
-function propertyFits(polygon, blockPolygon, streetEdges) {
-  if (!polygon.every(p => pointInPolygon(p, blockPolygon))) return false;
-  for (let i = 0; i < polygon.length; i++) {
-    const a = polygon[i],
-      b = polygon[(i + 1) % polygon.length];
-    for (const edge of streetEdges) {
-      const margin = (STREET_WIDTHS[edge.road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
-      if (segmentDistance(a, b, edge.a, edge.b) < margin - 1e-6) return false;
-    }
-  }
-  return true;
-}
-
-// Polygon intersection against a convex plot. Also works for concave building
-// footprints; signed area accounts for any traversed boundary bridges.
-function clipToConvexPolygon(subject, clip) {
-  let output = subject.map(p => ({
-    ...p
-  }));
-  for (let i = 0; i < clip.length; i++) {
-    const a = clip[i],
-      b = clip[(i + 1) % clip.length],
-      input = output;
-    output = [];
-    const side = p => (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
-    for (let j = 0; j < input.length; j++) {
-      const p = input[j],
-        q = input[(j + 1) % input.length],
-        sp = side(p),
-        sq = side(q);
-      if (sp >= -1e-8) output.push(p);
-      if ((sp > 1e-8 && sq < -1e-8) || (sp < -1e-8 && sq > 1e-8)) {
-        const t = sp / (sp - sq);
-        output.push({
-          x: p.x + (q.x - p.x) * t,
-          y: p.y + (q.y - p.y) * t
-        });
-      }
-    }
-  }
-  return output;
 }
 
 
@@ -1183,6 +2206,7 @@ function populateProperty(property, propertyPlots, rng, buildings) {
 
 
 
+
 const FIRST = ['Alder', 'Ash', 'Briar', 'Brindle', 'Cinder', 'Elder', 'Fell', 'Grey', 'High', 'Iron', 'Moss', 'Raven', 'Silver', 'Stone', 'Thorn', 'Willow'];
 const LAST = ['bridge', 'bury', 'crest', 'dale', 'ford', 'haven', 'mere', 'mont', 'stead', 'watch', 'wick', 'wood'];
 
@@ -1212,8 +2236,8 @@ function createProject(options = {}) {
   const development = generateBuildings(seed, layout);
   validateDevelopment(layout, development);
   return {
-    schemaVersion: 1,
-    generatorVersion: '0.1-dev.3b',
+    schemaVersion: PROJECT_SCHEMA_VERSION,
+    generatorVersion: APP_VERSION,
     seed,
     options: {
       size,
@@ -1314,7 +2338,7 @@ function drawDevelopment(ctx, camera, city, layers) {
       ctx.beginPath();
       traceDevelopmentPolygon(ctx, building.footprint, camera);
       for (const hole of building.holes) traceDevelopmentPolygon(ctx, hole, camera);
-      ctx.fillStyle = ROOF_COLORS[building.roofTone];
+      ctx.fillStyle = ROOF_COLORS[building.roofTone % ROOF_COLORS.length];
       ctx.fill('evenodd');
       ctx.strokeStyle = '#756552';
       ctx.lineWidth = Math.max(.45, .85 * camera.zoom);
@@ -1470,8 +2494,8 @@ function drawBlocks(ctx, camera, city, byId) {
   for (const block of city.blocks) {
     const points = block.vertices.map(id => byId.get(id));
     pathPolygon(ctx, points, camera);
-    const palette = BLOCK_FILLS[block.ring % BLOCK_FILLS.length];
-    ctx.fillStyle = palette[(block.sector + block.id.length * 7 + Number(block.id.slice(-2))) % palette.length];
+    const palette = BLOCK_FILLS[Math.abs(Math.trunc(block.ring || 0)) % BLOCK_FILLS.length];
+    ctx.fillStyle = palette[(Math.abs(Math.trunc(block.sector || 0)) + block.id.length * 7 + (Number(block.id.slice(-2)) || 0)) % palette.length];
     ctx.fill();
     ctx.strokeStyle = '#a9b09c';
     ctx.lineWidth = 0.9;
@@ -1859,7 +2883,16 @@ class OutlineEditor {
   undo() {
     const state = this.history.pop();
     if (!state) return;
-    Object.assign(this, state);
+    // Restore only editor data. Loaded history may carry future metadata, but
+    // it must never replace runtime callbacks or methods.
+    this.boundary = state.boundary.map(point => ({
+      ...point
+    }));
+    this.center = state.center ? {
+      ...state.center
+    } : null;
+    this.closed = state.closed;
+    this.dirty = state.dirty;
     this.selected = -1;
     this.error = false;
     this.mode = this.closed ? 'edit' : 'points';
@@ -2011,6 +3044,8 @@ class OutlineEditor {
 
 
 
+
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -2029,6 +3064,7 @@ const TOOL_HINTS = {
   center: 'Click inside the outline to place the main square'
 };
 let project, drawPending = false;
+let files;
 const layers = {
   buildings: true,
   properties: false,
@@ -2046,6 +3082,7 @@ function requestDraw() {
 
 function updateViewport() {
   $('zoomValue').textContent = `${Math.round(camera.zoom*100)}%`;
+  files?.changed();
 }
 
 function editorChanged() {
@@ -2056,6 +3093,7 @@ function editorChanged() {
   $('undoButton').disabled = editor.history.length === 0;
   $('finishButton').disabled = editor.closed || editor.boundary.length < 3;
   requestDraw();
+  files?.changed();
 }
 const editor = new OutlineEditor(editorChanged, (message, error) => {
   $('draftMessage').textContent = message;
@@ -2130,6 +3168,7 @@ for (const key of ['buildings', 'properties', 'plots']) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
     requestDraw();
+    files?.changed();
   });
 }
 $('freehandButton').addEventListener('click', () => editor.start('freehand'));
@@ -2152,6 +3191,7 @@ $('cancelButton').addEventListener('click', () => {
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[project.options.morphology];
 });
 $('presetButton').addEventListener('click', loadPreset);
+$('presetInput').addEventListener('change', () => files?.changed());
 $('generateButton').addEventListener('click', generate);
 $('newSeedButton').addEventListener('click', () => {
   const v = new Uint32Array(2);
@@ -2240,6 +3280,99 @@ $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[$('morphologyInput').valu
 loadPreset();
 generate();
 fitMap();
+
+function captureWorkspace() {
+  return {
+    project,
+    workspace: {
+      schemaVersion: 1,
+      editor: {
+        ...editor.snapshot(),
+        history: copyJson(editor.history),
+        mode: editor.closed ? editor.mode : 'points',
+        error: editor.error
+      },
+      controls: {
+        seed: $('seedInput').value,
+        size: $('sizeInput').value,
+        morphology: $('morphologyInput').value,
+        preset: $('presetInput').value
+      },
+      view: {
+        camera: {
+          x: camera.x,
+          y: camera.y,
+          zoom: camera.zoom
+        },
+        layers: {
+          ...layers
+        },
+        fitOnLoad: false
+      }
+    }
+  };
+}
+
+function applyProjectDocument(document) {
+  const next = copyJson(document.project),
+    workspace = copyJson(document.workspace),
+    draft = workspace.editor;
+  project = next;
+  editor.boundary = draft.boundary;
+  editor.center = draft.center;
+  editor.closed = draft.closed;
+  editor.dirty = draft.dirty;
+  editor.history = draft.history;
+  editor.mode = !draft.closed ? 'points' : (['pan', 'edit', 'center'].includes(draft.mode) ? draft.mode : 'pan');
+  editor.stroke = false;
+  editor.dragging = -1;
+  editor.selected = -1;
+  for (const [id, value] of Object.entries({
+      seedInput: workspace.controls.seed,
+      sizeInput: workspace.controls.size,
+      morphologyInput: workspace.controls.morphology,
+      presetInput: workspace.controls.preset
+    })) $(id).value = value;
+  for (const key of ['buildings', 'properties', 'plots']) {
+    layers[key] = workspace.view.layers[key];
+    $(key + 'Layer').checked = layers[key];
+  }
+  camera.x = workspace.view.camera.x;
+  camera.y = workspace.view.camera.y;
+  camera.zoom = workspace.view.camera.zoom;
+  $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[workspace.controls.morphology];
+  editor.notify(draft.dirty ? 'Loaded city and unfinished outline edits. Generate only when ready to rebuild.' : 'Loaded city. Its exact saved geometry is ready to use.', Boolean(draft.error));
+  updateDetails();
+  updateViewport();
+  requestDraw();
+  if (workspace.view.fitOnLoad) fitMap();
+  $('statusMessage').textContent = `Loaded ${next.city.buildings.length} buildings · ${next.city.properties.length} properties`;
+}
+files = new ProjectFiles({
+  getElement: $,
+  capture: captureWorkspace,
+  apply: applyProjectDocument
+});
+files.bind();
+files.start();
+window.addEventListener('beforeunload', event => {
+  if (files.needsUnloadWarning) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});
+window.addEventListener('pagehide', () => {
+  files.flush().catch(() => {});
+});
+if (typeof document.addEventListener === 'function') document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') files.flush().catch(() => {});
+});
+window.addEventListener('keydown', event => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+    event.preventDefault();
+    files.saveDownload();
+  }
+});
 
 })();
 </script>

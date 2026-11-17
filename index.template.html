@@ -2,19 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — Buildings & Properties · 0.1-dev.3b</title>
+  <title>Mappo — Save & Restore · {{APP_VERSION}}</title>
   <!-- INLINE_CSS -->
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3b</span></div>
-    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>BUILDINGS &amp; PROPERTIES</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">{{APP_VERSION}}</span></div>
+    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>SAVE &amp; RESTORE</span></div>
   </header>
   <div class="workspace">
     <aside class="sidebar sidebar-left" aria-label="City design tools">
       <div class="sidebar-heading"><span class="section-number">01</span><span>CITY DESIGN</span></div>
       <div class="sidebar-content">
+        <section class="file-panel" aria-label="Project files">
+          <p class="eyebrow">PROJECT FILES</p>
+          <div class="tool-grid"><button id="saveProjectButton" class="tool-button">↓ Download project</button><button id="loadProjectButton" class="tool-button">↑ Load project</button></div>
+          <input id="projectFileInput" class="sr-only" type="file" accept=".json,.mappo.json,application/json" aria-label="Choose Mappo project file">
+          <p id="fileStatus" class="file-status" role="status" aria-live="polite">Preparing browser recovery…</p>
+          <div class="recovery-tools"><button id="restoreRecoveryButton" class="minor-button" disabled>Restore latest recovery</button><button id="restoreBackupButton" class="minor-button" disabled>Restore previous recovery</button></div>
+          <div id="recoveryChoice" class="file-choice" hidden><p>Recovery is paused while you choose which city to continue.</p><button id="keepCurrentButton" class="minor-button">Keep this city</button></div>
+          <div id="loadPreview" class="file-choice" hidden><p id="loadSummary"></p><div class="tool-grid"><button id="openProjectButton" class="tool-button">Open project</button><button id="cancelLoadButton" class="minor-button">Cancel</button></div></div>
+          <p class="hint">Project files preserve the complete city and unfinished edits. Download copies to keep versions or move between builds. Browser recovery stays in this browser.</p>
+        </section>
         <p class="eyebrow">YOUR OUTLINE. YOUR CITY.</p><h1>Give your city<br><em>its own shape.</em></h1>
         <p class="intro">Draw the edge, place the square, then let streets grow inside.</p>
         <div class="outline-tools">
@@ -64,7 +74,7 @@
         <div class="sidebar-rule"></div><p class="eyebrow">WORKSPACE GUIDE</p>
         <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
         <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
-        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts and fortifications remain later phases. Draft edits apply when you generate. Keep this page open to retain a custom outline; project saving is a later milestone.</p></div>
+        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts and fortifications remain later phases. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
       </div>
     </aside>
   </div>

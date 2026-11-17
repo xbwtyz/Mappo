@@ -1,10 +1,24 @@
-# Mappo 0.1-dev.3b validation
+# Mappo 0.1-dev.3b1 validation
 
 ## Automated checks
 
-**30 automated tests passed.**
+**56 automated tests passed**, including persistence and prior city-generation checks.
 
 Run `npm run check` to rebuild and run the complete suite. All road-crossing checks remain enabled.
+
+### Persistence coverage
+
+- Exact save/load round trips across 96 outline, density and street-pattern configurations.
+- Complete geometry, IDs, renamed metadata, unfinished drafts, undo snapshots, view and layer restoration.
+- Unknown compatible extension fields, future type metadata and reserved district/wall records retained.
+- Explicit schema-1 migration, including frozen data captured from the actual released 3A.2 and 3B standalone builds.
+- Unsupported newer versions, malformed/truncated files, HTML, oversize input, invalid IDs, invalid geometry and excessive nesting rejected.
+- Current/previous recovery, unchanged-content deduplication, queued writes, quota failures, corrupt current snapshots, newer-snapshot protection and multi-writer conflict handling.
+- IndexedDB transaction completion/abort tested with a simulated adapter, plus localStorage fallback and fully blocked storage.
+- File staging/cancellation, asynchronous read ordering, rollback after application failure and captured-revision unload protection.
+- The embedded standalone script performs Blob download, preview/open, exact state restoration and a new-runtime reload/recovery using simulated browser APIs.
+
+These tests exercise the persistence code and the compiled app; actual native browser file dialogs and storage policies remain in the manual checklist.
 
 ### Building placement
 
@@ -48,7 +62,7 @@ The host previously denied Chromium's process-singleton socket. No full graphica
 
 ## Manual Firefox checklist
 
-Open `dist/mappo-0.1-dev.3b.html` directly from disk.
+Open `dist/mappo-0.1-dev.3b1.html` directly from disk.
 
 - Generate all four street patterns. Confirm variation in building sizes, shapes, spacing and open ground.
 - Zoom in on an L-shaped building, courtyard, compound and attached row. Confirm streets and the main square remain unobstructed.
@@ -59,4 +73,8 @@ Open `dist/mappo-0.1-dev.3b.html` directly from disk.
 - Drag, add and remove outline points; test Undo edit and Revert edits.
 - Try a crossed outline and narrow neck. Confirm a useful message and retention of the prior city.
 - Pan, zoom, fit and resize. Check layer controls remain reachable by scrolling the left panel on narrow windows.
-- Keep the page open when preserving a custom city: save/load is still a later milestone.
+- Download a `.mappo.json` file. Change the city, load the file, review the preview and confirm Open project. Compare the outline, buildings and view.
+- Save an incomplete clicked outline, then reload it and continue editing.
+- Reload the HTML. Restore latest recovery, then test previous recovery. Check that the startup default city does not overwrite recovery before a choice.
+- Disable browser storage and confirm that a visible warning appears while file download/load still works.
+- Test Ctrl/Cmd + S and the browser’s JSON file picker. Keep portable files when updating the HTML build.
