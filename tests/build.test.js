@@ -1,3 +1,6 @@
+import {
+  waterAt
+} from '../src/core/water-geometry.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -11,7 +14,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3d.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -392,7 +395,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
 test('standalone app downloads, previews and restores complete projects and recovers them after a reload', async () => {
   const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
   const originalScript = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
-  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel });\n})();');
+  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel, waterPanel });\n})();');
   const memory = new Map(),
     downloaded = [];
   const storage = {
@@ -612,6 +615,7 @@ test('standalone app downloads, previews and restores complete projects and reco
   reloaded.el('undoDistrictButton').handlers.click();
   const restored = copy(reloaded.state().project.city);
   delete restored.districtState;
+  for (const key of ['waterState', 'waterFeatures', 'waterFaces', 'bridges']) delete restored[key];
   delete restored.fortificationState;
   delete restored.gates;
   delete restored.towers;
@@ -653,5 +657,60 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(reloaded.state().project.city.fortificationState.enabled, true);
   assert.equal(reloaded.el('undoFortificationButton').handlers.click(), true);
   assert.deepEqual(copy(reloaded.state().project.city), beforeWalls);
+  // Water remains a draft until its complete street/bridge generation succeeds.
+  const dryProject = copy(reloaded.state().project);
+  reloaded.el('waterSeedInput').value = 'river-stress';
+  reloaded.el('riverWidthInput').value = '24';
+  reloaded.el('generateRiverButton').handlers.click();
+  assert.equal(reloaded.state().waterPanel.editor.dirty, true);
+  assert.deepEqual(copy(reloaded.state().project), dryProject);
+  reloaded.el('editBridgesButton').handlers.click();
+  const we = reloaded.state().waterPanel.editor,
+    f = we.features[0],
+    bridge = we.bridges[0],
+    priorT = bridge.t;
+  const start = reloaded.state().camera.worldToScreen(waterAt(f, priorT)),
+    end = reloaded.state().camera.worldToScreen(waterAt(f, priorT + .02));
+  const canvas = reloaded.el('mapCanvas'),
+    fire = (type, p) => canvas.handlers[type]({
+      clientX: p.x,
+      clientY: p.y,
+      button: 0,
+      pointerId: 1,
+      preventDefault() {}
+    });
+  fire('pointerdown', start);
+  fire('pointermove', end);
+  fire('pointerup', end);
+  assert.ok(Math.abs(we.bridges[0].t - priorT) > .01);
+  reloaded.el('generateButton').handlers.click();
+  assert.equal(reloaded.state().project.city.waterFeatures.length, 1, reloaded.el('draftMessage').textContent);
+  assert.equal(reloaded.state().waterPanel.editor.dirty, false);
+  const wetProject = copy(reloaded.state().project);
+  // Removing every bridge can be saved as a draft, but cannot replace the valid city.
+  reloaded.el('editBridgesButton').handlers.click();
+  for (const b of [...reloaded.state().waterPanel.editor.bridges]) {
+    reloaded.state().waterPanel.editor.selectedBridge = b.id;
+    reloaded.el('removeWaterItemButton').handlers.click();
+  }
+  assert.match(reloaded.el('waterMessage').textContent, /at least one bridge/);
+  reloaded.el('generateButton').handlers.click();
+  assert.deepEqual(copy(reloaded.state().project), wetProject);
+  assert.match(reloaded.el('waterMessage').textContent, /at least one bridge/);
+  assert.ok(await reloaded.el('saveProjectButton').handlers.click());
+  const wetFile = downloaded.at(-1),
+    wetText = await wetFile.blob.text();
+  reloaded.el('revertWaterButton').handlers.click();
+  assert.equal(reloaded.state().waterPanel.editor.dirty, false);
+  await reloaded.state().files.stageFile({
+    size: wetFile.blob.size,
+    text: async () => wetText
+  });
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.deepEqual(copy(reloaded.state().project), wetProject);
+  assert.equal(reloaded.state().waterPanel.editor.bridges.length, 0);
+  assert.equal(reloaded.state().waterPanel.editor.dirty, true);
+  reloaded.el('undoWaterButton').handlers.click();
+  assert.equal(reloaded.state().waterPanel.editor.bridges.length, 1);
 
 });

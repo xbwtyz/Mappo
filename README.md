@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.3d — Fortifications
+## Current build: 0.1-dev.3e — Rivers and editable bridges
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3d.html`](dist/mappo-0.1-dev.3d.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3e.html`](dist/mappo-0.1-dev.3e.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### Workflow
 
@@ -45,9 +45,26 @@ Newly generated cities receive connected neighborhoods automatically. The **Neig
 
 Districts are geographic neighborhoods. Names do not replace buildings or simulate occupations, wealth or trade. Rules and themes can be added later without coupling neighborhood identity to geometry generation.
 
-Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 4 explicitly migrates older files; older apps that cannot read schema 4 should request a newer build rather than partially load it.
+Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 5 explicitly migrates older files; older apps that cannot read schema 5 should request a newer build rather than partially load it.
 
 See [`DISTRICTS.md`](DISTRICTS.md) for the module boundaries and extension points.
+
+### Rivers and editable bridges
+
+Water is optional. Existing and fresh cities start on dry land until you choose **Generate river** in **Water & Bridges**. Generation uses an independent water seed and proposes a river course with bridge locations. It creates a preview; the current city stays open.
+
+1. Choose a water seed and a river width of **10–90 survey units**, then **Generate river**. **New river seed** proposes another course without changing the street seed.
+2. Choose **Edit river points**. Drag the handles, including endpoints; double-click near the course to add an interior point. Select an interior point and press Delete or **Remove selected** to remove it. Endpoints must remain beyond the city.
+3. Choose **Move bridges** and drag a bridge marker along the river. The crossing snaps to the course and adjusts its angle to the local river segment. **Add bridge** places a marker near a clicked river location. Select a bridge and Delete or **Remove selected** to remove it.
+4. Click **Generate city** to apply the draft. Streets, buildings, neighborhoods and enabled defenses regenerate around the accepted water and crossings. Download a project copy before rebuilding a customized city.
+
+Bridges create actual street connections to both banks. Waterfront streets follow a reserved bank corridor; buildings stay on land. Water boundary edges close the planar arrangement without appearing as roads. Walls leave river openings and keep towers and street gates clear of the water.
+
+Water edits are independent of outline edits. **Undo water edit** keeps up to 20 previous water definitions; **Revert water draft** restores the current city's accepted water. **Remove river from draft** previews dry land and applies only after Generate city. The map's fit control includes river handles while water is being edited. Escape or **Pan map** leaves the water tool; Space-drag and middle-button drag pan in every tool.
+
+Invalid bridge locations, overlapping crossings, sharp/backtracking river bends, water at the square and disconnected banks retain the last valid city and show an explanation. A draft may temporarily have no bridges or invalid river geometry and can still be saved for later correction. Saving/loading never applies or regenerates a draft.
+
+The first water release supports **one river, up to 32 course points, and 1–8 bridges** in a generated city. The course progresses from source to mouth without doubling back; widths are constant along the cross-stream axis. Generated bridge approaches are straight primary streets clipped to land. Lakes, coasts, tributaries, islands, variable widths and custom bridge styles remain extensions. See [`WATER.md`](WATER.md).
 
 ### Fortifications
 
@@ -90,10 +107,10 @@ Hosted URLs can initialize a preset with `?seed=demo&size=large&shape=organic`. 
 
 ### Current limits
 
-- One continuous boundary without interior holes. Concave and branching boundaries are supported.
+- One continuous outer boundary; a crossing river is represented separately. Concave and branching boundaries are supported.
 - Crossed or self-touching outlines are rejected. Freehand drawing is simplified before point editing. Boundaries must have enough area for streets and a town center; very narrow necks are rejected with a correction message.
 - Project save/load and browser recovery are available. PNG export remains a later milestone. Keep portable project downloads as backups; clearing browser data can remove recovery.
-- Green ground includes the open portions of city blocks. Individual building selection, renaming, manual footprint editing, functional district themes, terrain, interiors and three-dimensional rendering remain later phases.
+- Green ground includes the open portions of city blocks. Individual building selection, renaming, manual footprint editing, functional district themes, lakes/coasts, terrain, interiors and three-dimensional rendering remain later phases.
 - Road centerlines and blocks respect the boundary. Rendered street strokes have width and may extend slightly beyond it along the perimeter.
 - The 3B population stage leaves the 3A.2 street graph, block geometry, plaza and outline intact for the same settings. Building generation is reproducible within this version; future generator revisions may change results.
 
@@ -110,10 +127,10 @@ The perimeter has a connected street following the boundary. Fortifications are 
 ```text
 src/
   core/           Version constants, random, geometry, placement and city model
-  generators/     Survey, streets, buildings and independent district/fortification generation
+  generators/     Survey, streets, buildings and independent district/water/fortification generation
   data/           Project format, migrations, validation, files and recovery
-  editor/         Outline, district and fortification editing and undo
-  renderer/       Map, roof, district and fortification layers, camera
+  editor/         Outline, water, district and fortification editing and undo
+  renderer/       Map, roof, water, bridge, district and fortification layers, camera
   ui/             Pointer interaction, map navigation and project-file workflow
   app.js          Application state, generation controls and feedback
 styles/app.css
@@ -131,7 +148,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.3d.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -151,6 +168,8 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3b1:** Portable versioned project files, load preview, recovery and compatibility validation.
 - **0.1-dev.3c:** Connected, editable, persistent neighborhoods with district layers and undo.
 - **0.1-dev.3d:** Independent exterior fortifications, connected gates, round towers, visibility, undo and schema-4 persistence.
-- Later 0.1 phases: rendering polish, inspector, PNG export and release hardening.
+- **0.1-dev.3e:** Generated/editable rivers, land-aware streets and buildings, editable connected bridges and schema-5 persistence.
+- **3F:** Building inspector with names, notes and undo — planned.
+- Later 0.1 phases: rendering polish, PNG export and release hardening.
 
 Copyright © 2026 Mappo contributors.

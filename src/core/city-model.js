@@ -1,4 +1,11 @@
 import {
+  prepareWater
+} from '../generators/water.js';
+import {
+  validateWaterDefinition,
+  validateWaterCity
+} from './water-model.js';
+import {
   generateFortifications
 } from '../generators/fortifications.js';
 import {
@@ -62,7 +69,9 @@ export function createProject(options = {}) {
     kind: 'center',
     ...center
   }, ...survey.anchors.slice(1).filter(p => insideOrOn(p, survey.boundary))];
-  const layout = generateLayout(seed, size, survey, morphology);
+  const water = prepareWater(options.water);
+  validateWaterDefinition(water.features, water.bridges, survey.boundary, center);
+  const layout = generateLayout(seed, size, survey, morphology, water);
   validateLayout(layout, survey.boundary);
   const development = generateBuildings(seed, layout);
   validateDevelopment(layout, development);
@@ -84,6 +93,10 @@ export function createProject(options = {}) {
       id: `city-${seed.replace(/[^\w-]/g, '-').toLowerCase().slice(0, 24)}`,
       name,
       survey,
+      waterState: water.state,
+      waterFeatures: water.features,
+      bridges: water.bridges,
+      waterFaces: layout.waterFaces,
       nodes: layout.nodes,
       roads: layout.roads,
       blocks: layout.blocks,
@@ -104,6 +117,7 @@ export function createProject(options = {}) {
       }
     }
   };
+  validateWaterCity(project.city);
   project.city = generateDistricts(project.city, {
     seed,
     count: options.districtCount ?? 'auto'

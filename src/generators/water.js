@@ -1,0 +1,110 @@
+import {
+  boundsOf,
+  pointInPolygon
+} from '../core/geometry.js';
+import {
+  clearance
+} from '../core/boundary.js';
+import {
+  createRng
+} from '../core/prng.js';
+import {
+  waterRibbon,
+  waterBridgeGeometry,
+  waterDryState,
+  WATER_BANK
+} from '../core/water-geometry.js';
+
+export function generateRiver(boundary, center, options = {}) {
+  const seed = String(options.seed || 'river').slice(0, 64),
+    width = Number(options.width ?? 28);
+  if (!Number.isFinite(width) || width < 10 || width > 90) throw new Error('River width must be 10–90 survey units.');
+  const rng = createRng(`${seed}:river:v1`),
+    b = boundsOf(boundary),
+    horizontal = (b.maxX - b.minX) >= (b.maxY - b.minY);
+  const low = horizontal ? b.minX : b.minY,
+    high = horizontal ? b.maxX : b.maxY,
+    sideLow = horizontal ? b.minY : b.minX,
+    sideHigh = horizontal ? b.maxY : b.maxX;
+  const sideCenter = horizontal ? center.y : center.x,
+    span = high - low,
+    sideSpan = sideHigh - sideLow;
+  for (let attempt = 0; attempt < 32; attempt++) {
+    const sign = rng() < .5 ? -1 : 1,
+      base = sideCenter + sign * (width / 2 + WATER_BANK + 42 + rng() * Math.max(0, sideSpan * .15 - 35));
+    if (base < sideLow + width || base > sideHigh - width) continue;
+    const path = Array.from({
+      length: 9
+    }, (_, i) => {
+      const t = i / 8,
+        u = low - span * .35 + t * span * 1.7,
+        v = base + Math.sin(t * Math.PI * 2 + rng() * .3) * Math.min(18, sideSpan * .05);
+      return horizontal ? {
+        x: u,
+        y: v
+      } : {
+        x: v,
+        y: u
+      };
+    });
+    const feature = {
+      id: 'WATER-001',
+      dataVersion: 1,
+      kind: 'river',
+      width,
+      path,
+      extensions: {}
+    };
+    feature.polygon = waterRibbon(feature);
+    feature.corridor = waterRibbon(feature, WATER_BANK);
+    if (pointInPolygon(center, feature.corridor) || clearance(center, feature.corridor) < 35) continue;
+    const possible = [];
+    for (let i = 0; i < 51; i++) {
+      const bridge = {
+        id: '',
+        dataVersion: 1,
+        kind: 'bridge',
+        waterId: feature.id,
+        t: .20 + i * .012,
+        width: 9,
+        extensions: {}
+      };
+      try {
+        const g = waterBridgeGeometry(feature, bridge, boundary);
+        if (Math.hypot(g.center.x - center.x, g.center.y - center.y) < 40) continue;
+        possible.push(bridge);
+      } catch {}
+    }
+    if (!possible.length) continue;
+    const chosen = [possible[Math.floor(possible.length * .3)], possible[Math.floor(possible.length * .72)]].filter((p, i, a) => !i || Math.abs(p.t - a[0].t) * span * 1.7 > 65);
+    return {
+      features: [feature],
+      bridges: chosen.map((p, i) => ({
+        ...p,
+        id: `BRIDGE-${String(i+1).padStart(3,'0')}`
+      })),
+      state: {
+        ...waterDryState(),
+        status: 'river',
+        seed
+      }
+    };
+  }
+  throw new Error('No river course fits clear of the square. Try a narrower river, another water seed, or a different outline.');
+}
+export function prepareWater(water) {
+  const features = (water?.features ?? []).map(f => ({
+    ...f,
+    polygon: waterRibbon(f),
+    corridor: waterRibbon(f, WATER_BANK)
+  }));
+  return {
+    features,
+    bridges: JSON.parse(JSON.stringify(water?.bridges ?? [])),
+    state: {
+      ...waterDryState(),
+      ...(water?.state ?? {}),
+      status: features.length ? 'river' : 'dry'
+    }
+  };
+}

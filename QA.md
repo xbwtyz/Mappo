@@ -1,10 +1,24 @@
-# Mappo 0.1-dev.3d validation
+# Mappo 0.1-dev.3e validation
 
 ## Automated checks
 
-**74 automated tests passed**, covering fortifications, districts, persistence and existing city generation.
+**82 automated tests passed**, covering rivers, bridges, fortifications, districts, persistence and existing city generation.
 
 Run `npm run check` to rebuild and run the complete suite. All road-crossing checks remain enabled.
+
+### River and bridge coverage
+
+- 96 outline × density × street-pattern configurations generate valid river cities with bridge streets, waterfront roads, dry buildings and river openings through defenses.
+- Independent area coverage, property shoreline clearance, building exclusion from water and absence of ordinary water-crossing streets.
+- Normal bridge spans reach both banks and reference actual street segments; traversable connectivity excludes virtual water-boundary edges.
+- River/street seed independence and deterministic city generation; moving bridge locations changes the actual crossing streets.
+- Missing bridges, overlapping crossings and outside-city crossings are rejected. A concave small-city linear-street regression checks nearly identical intersection coordinates are joined.
+- Three river widths across three rotated custom outlines. An additional diagnostic pass generated and validated 32 varied city/water seed combinations successfully.
+- Water-only editing, undo, cancelled gestures and metadata preservation leave the accepted city untouched.
+- Saved files retain exact water geometry, bridge metadata, unfinished invalid drafts and history; unknown compatible workspace fields survive later saves.
+- Invalid banks, nonnumeric polygon points, unsupported versions, missing water references, ordinary roads across water and removed wall water openings are rejected.
+- Frozen native 3D migration preserves all city, district, defense and workspace data while adding dry water state.
+- Compiled-app interaction tests generate a water preview, drag a bridge through pointer events, apply it, reject removal of every bridge, download an invalid draft, load it exactly and undo its last bridge removal.
 
 ### Fortification coverage
 
@@ -78,7 +92,7 @@ Additional tests check 1,200 survey configurations, reproducible IDs, invalid in
 
 ## Rendering checks
 
-The production Canvas renderer was used with a native Canvas implementation to inspect full-city views for all four street patterns and a zoomed view of individual roofs. For this milestone it also rendered fortified organic, planned, branching and horseshoe cities, plus a gate closeup; wall gaps, street connections and tower placement were visually inspected. This checks generated geometry, building forms and drawing, not browser layout or native browser pointer delivery.
+The production Canvas renderer was used with a native Canvas implementation to inspect full-city views for all four street patterns and a zoomed view of individual roofs. For this milestone it also rendered fortified organic, planned, branching and horseshoe cities, plus a gate closeup; wall gaps, street connections and tower placement were visually inspected. This checks generated geometry, building forms and drawing, not browser layout or native browser pointer delivery. Water rendering was additionally inspected for organic, planned, branching and horseshoe cities, plus a bridge closeup with actual connected roads, clear banks and wall passages.
 
 ## Graphical browser limitation
 
@@ -86,8 +100,14 @@ The host previously denied Chromium's process-singleton socket. No full graphica
 
 ## Manual Firefox checklist
 
-Open `dist/mappo-0.1-dev.3d.html` directly from disk.
+Open `dist/mappo-0.1-dev.3e.html` directly from disk.
 
+- Generate a river; verify the current city stays intact until Generate city. Drag points, change width and reroll only water.
+- Move, add and remove bridges. Generate and inspect both ends; streets should connect to waterfront roads.
+- Try overlapping bridges, a crossing outside the city, a sharp/backtracking river bend, a river through the square and removing every bridge. Check useful errors and retention of the prior city.
+- Save/reload accepted water and an unfinished invalid water draft; test water undo and Revert water draft.
+- Remove the river from the draft and generate dry land. Change only the street seed and confirm the river remains fixed.
+- Pan using Space/middle drag while editing water; press Escape, test fit and resize. Inspect wall river openings and nearby towers.
 - Adjust gate count, tower spacing and defense seed; Build / update. Confirm only defenses change.
 - Disable walls and apply, then re-enable with the same settings; check geometry is retained. Toggle the display layer separately.
 - Save/load defenses and their undo history. Load a 3C file and confirm no walls appear until explicitly built.

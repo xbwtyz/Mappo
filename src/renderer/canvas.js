@@ -1,4 +1,9 @@
 import {
+  drawWater,
+  drawBridges,
+  drawWaterDraft
+} from './water.js';
+import {
   drawGateApproaches,
   drawFortifications
 } from './fortifications.js';
@@ -121,6 +126,7 @@ function drawRoads(ctx, camera, city, byId) {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     for (const road of city.roads) {
+      if (road.waterBoundary || road.bridgeId) continue;
       const style = ROAD_STYLES[road.kind];
       const a = camera.worldToScreen(byId.get(road.a));
       const b = camera.worldToScreen(byId.get(road.b));
@@ -211,7 +217,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null) {
+export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -230,19 +236,22 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
   const gridStep = drawGrid(ctx, camera);
   const city = project.city;
   const byId = new Map(city.nodes.map(node => [node.id, node]));
-  ctx.globalAlpha = editor?.dirty ? 0.20 : 1;
+  ctx.globalAlpha = editor?.dirty || waterEditor?.dirty ? 0.20 : 1;
   drawSurvey(ctx, camera, city.survey);
+  drawWater(ctx, camera, city.waterFeatures);
   drawBlocks(ctx, camera, city, byId);
   drawDistrictColors(ctx, camera, city, layers, districtSelection);
   drawDevelopment(ctx, camera, city, layers);
   drawGateApproaches(ctx, camera, city, layers);
   drawRoads(ctx, camera, city, byId);
+  drawBridges(ctx, camera, city);
   drawPlaza(ctx, camera, city.plaza, byId);
   drawDistrictOverlay(ctx, camera, city, layers, districtSelection);
   drawFortifications(ctx, camera, city, layers);
 
   ctx.globalAlpha = 1;
   if (editor) drawOutline(ctx, camera, editor);
+  drawWaterDraft(ctx, camera, waterEditor, editor?.boundary ?? city.survey.boundary);
 
   ctx.textAlign = 'left';
   ctx.fillStyle = 'rgba(52, 73, 75, 0.67)';

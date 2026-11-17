@@ -1,4 +1,7 @@
 import {
+  WaterPanel
+} from './ui/water.js';
+import {
   FortificationPanel
 } from './ui/fortifications.js';
 import {
@@ -51,6 +54,7 @@ let project, drawPending = false;
 let files;
 let districtPanel;
 let fortificationPanel;
+let waterPanel;
 const layers = {
   buildings: true,
   properties: false,
@@ -66,7 +70,7 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId);
+    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor);
   });
 }
 
@@ -77,8 +81,9 @@ function updateViewport() {
 
 function editorChanged() {
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(editor.mode === mode));
+  if (editor.mode !== 'pan' && waterPanel) waterPanel.editor.setMode('pan');
   $('toolHint').textContent = TOOL_HINTS[editor.mode];
-  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : '● CITY PLAN';
+  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
   canvas.classList.toggle('drawing', editor.mode !== 'pan');
   $('undoButton').disabled = editor.history.length === 0;
   $('finishButton').disabled = editor.closed || editor.boundary.length < 3;
@@ -92,7 +97,7 @@ const editor = new OutlineEditor(editorChanged, (message, error) => {
 
 function fitMap() {
   const points = !editor.dirty && project ? fortificationViewPoints(project.city) : editor.boundary.length > 2 ? editor.boundary : project?.city.survey.boundary;
-  if (points) camera.fit(points);
+  if (points) camera.fit(waterPanel?.editor.features.length && (waterPanel.editor.dirty || waterPanel.editor.mode !== 'pan') ? [...points, ...waterPanel.editor.features[0].path] : points);
   requestDraw();
   updateViewport();
 }
@@ -106,8 +111,8 @@ function updateDetails() {
       citySize: project.options.size,
       cityMorphology: project.options.morphology,
       boundaryCount: c.survey.boundary.length,
-      junctionCount: c.nodes.length,
-      roadCount: c.roads.length,
+      junctionCount: new Set(c.roads.filter(r => !r.waterBoundary).flatMap(r => [r.a, r.b])).size,
+      roadCount: c.roads.filter(r => !r.waterBoundary).length,
       blockCount: c.blocks.length,
       laneCount: c.roads.filter(r => r.kind === 'lane').length,
       buildingCount: c.buildings.length,
@@ -120,12 +125,14 @@ function updateDetails() {
 function generate() {
   try {
     editor.validate();
+    if (waterPanel?.editor.features.length) waterPanel.editor.width($('riverWidthInput').value);
     const next = createProject({
       seed: $('seedInput').value,
       size: $('sizeInput').value,
       morphology: $('morphologyInput').value,
       boundary: editor.boundary,
       center: editor.center,
+      water: waterPanel?.editor.definition(),
       districtCount: $('districtNumberInput').value || 'auto',
       fortifications: {
         enabled: $('wallsEnabledInput').checked,
@@ -135,6 +142,12 @@ function generate() {
       }
     });
     project = next;
+    if (waterPanel) {
+      waterPanel.editor.loadCity(next.city);
+      waterPanel.editor.setMode('pan');
+      waterPanel.refresh(true);
+      waterPanel.message(next.city.waterFeatures.length ? 'City generated around the saved river and bridge locations. Editing water creates a new draft.' : 'Dry city generated. Choose Generate river to preview water.');
+    }
     districtPanel?.editor.load();
     districtPanel?.refresh(true);
     fortificationPanel?.editor.load();
@@ -146,6 +159,7 @@ function generate() {
     $('statusMessage').textContent = `${project.city.buildings.length} buildings · ${project.city.properties.length} properties · ${project.city.properties.filter(p=>p.plotIds.length>1).length} merged sites`;
   } catch (error) {
     editor.notify(error.message, true);
+    waterPanel?.message(error.message, true);
     $('statusMessage').textContent = 'Generation paused — review the error message.';
   }
 }
@@ -178,7 +192,10 @@ $('editButton').addEventListener('click', () => {
   editor.setMode('edit');
   editor.notify('Drag outline points. Double-click an edge to add a point.');
 });
-$('panButton').addEventListener('click', () => editor.setMode('pan'));
+$('panButton').addEventListener('click', () => {
+  waterPanel?.editor.setMode('pan');
+  editor.setMode('pan');
+});
 $('centerButton').addEventListener('click', () => editor.setMode('center'));
 $('finishButton').addEventListener('click', () => editor.finish());
 $('undoButton').addEventListener('click', () => editor.undo());
@@ -225,7 +242,8 @@ window.addEventListener('keydown', e => {
   if (['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(document.activeElement?.tagName)) return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
     e.preventDefault();
-    editor.undo();
+    if (waterPanel?.editor.mode !== 'pan') waterPanel.editor.undo();
+    else editor.undo();
     return;
   }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -235,9 +253,11 @@ window.addEventListener('keydown', e => {
   }
   if (e.key === 'Delete' || e.key === 'Backspace') {
     e.preventDefault();
-    editor.removePoint();
+    if (waterPanel?.editor.mode !== 'pan') waterPanel.editor.removePoint();
+    else editor.removePoint();
   }
   if (e.key === 'Escape') {
+    waterPanel?.editor.setMode('pan');
     editor.setMode('pan');
   }
   if (e.key === '0') {
@@ -310,9 +330,43 @@ fortificationPanel = new FortificationPanel({
   }
 });
 fortificationPanel.bind();
-for (const id of ['districtPanel', 'fortificationPanel']) $(id).addEventListener('toggle', () => files?.changed());
+for (const id of ['districtPanel', 'fortificationPanel', 'waterPanel']) $(id).addEventListener('toggle', () => files?.changed());
 
-bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, point => districtPanel.selectAt(point));
+waterPanel = new WaterPanel({
+  getElement: $,
+  getCity: () => project.city,
+  getBoundary: () => {
+    editor.validate();
+    return editor.boundary;
+  },
+  getCenter: () => editor.center,
+  activate: () => {
+    editor.setMode('pan');
+    $('waterPanel').open = true;
+    fitMap();
+  },
+  changed: () => {
+    const active = waterPanel.editor.mode !== 'pan';
+    canvas.classList.toggle('drawing', active || editor.mode !== 'pan');
+    $('toolHint').textContent = active ? (waterPanel.editor.mode === 'river' ? 'Drag river points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+    for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!active && editor.mode === mode));
+    $('draftBadge').textContent = waterPanel.editor.dirty ? '● WATER PREVIEW' : editor.dirty ? '● OUTLINE PREVIEW' : '● CITY PLAN';
+    requestDraw();
+    files?.changed();
+  }
+});
+waterPanel.bind();
+waterPanel.refresh(true);
+const mapEditor = {
+  get mode() {
+    return waterPanel.editor.mode !== 'pan' ? waterPanel.editor.mode : editor.mode;
+  },
+  down: (...args) => waterPanel.editor.mode !== 'pan' ? waterPanel.run(() => waterPanel.editor.down(...args)) : editor.down(...args),
+  move: (...args) => waterPanel.editor.mode !== 'pan' ? waterPanel.run(() => waterPanel.editor.move(...args)) : editor.move(...args),
+  up: (...args) => (waterPanel.editor.dragging || waterPanel.editor.mode !== 'pan' ? waterPanel.editor : editor).up(...args),
+  addPoint: (...args) => (waterPanel.editor.mode !== 'pan' ? waterPanel.editor : editor).addPoint(...args)
+};
+bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => districtPanel.selectAt(point));
 if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
 else window.addEventListener('resize', resize);
 resize();
@@ -337,7 +391,15 @@ function captureWorkspace() {
       schemaVersion: 1,
       panels: {
         districts: Boolean($('districtPanel').open),
-        fortifications: Boolean($('fortificationPanel').open)
+        fortifications: Boolean($('fortificationPanel').open),
+        water: Boolean($('waterPanel').open)
+      },
+      waterEditor: {
+        ...waterPanel.editor.snapshot(),
+        controls: {
+          seed: String($('waterSeedInput').value),
+          width: String($('riverWidthInput').value)
+        }
       },
       fortificationEditor: {
         ...fortificationPanel.editor.snapshot(),
@@ -411,6 +473,14 @@ function applyProjectDocument(document) {
   camera.x = workspace.view.camera.x;
   camera.y = workspace.view.camera.y;
   camera.zoom = workspace.view.camera.zoom;
+  waterPanel.editor.load(workspace.waterEditor, next.city);
+  waterPanel.refresh(true);
+  if (workspace.waterEditor?.controls) {
+    $('waterSeedInput').value = workspace.waterEditor.controls.seed;
+    $('riverWidthInput').value = workspace.waterEditor.controls.width;
+  }
+  $('waterPanel').open = workspace.panels?.water ?? false;
+  waterPanel.message(waterPanel.editor.dirty ? 'Loaded unfinished water edits. Generate city when ready to apply.' : 'Saved water and bridge geometry loaded exactly.');
   districtPanel.editor.load(workspace.districtEditor);
   districtPanel.refresh(true);
   const districtControls = workspace.districtEditor?.controls;

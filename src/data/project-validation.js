@@ -1,4 +1,10 @@
 import {
+  validateWaterCity
+} from '../core/water-model.js';
+import {
+  validateWaterEditor
+} from '../editor/water.js';
+import {
   validateFortifications
 } from '../core/fortification-model.js';
 import {
@@ -40,6 +46,9 @@ export const MAX_VALIDATION_WORK = 6000000;
 export const DENSITIES = Object.freeze(['small', 'medium', 'large']);
 export const PATTERNS = Object.freeze(['radial', 'organic', 'linear', 'planned']);
 const LIMITS = {
+  waterFeatures: 1,
+  bridges: 8,
+  waterFaces: 256,
   nodes: 20000,
   roads: 40000,
   blocks: 20000,
@@ -289,7 +298,7 @@ export function validateStoredProject(project) {
   requireText(plaza.id, 'Main square ID', 128);
   if (maps.blocks.has(plaza.id)) throw new Error('The main square and a block share an ID.');
   requireText(plaza.name, 'Main square name', 200);
-  for (const face of [...city.blocks, plaza]) {
+  for (const face of [...city.blocks, plaza, ...city.waterFaces]) {
     const points = references(face.vertices, maps.nodes, 'Face vertices').map(p => ({
       x: p.x,
       y: p.y
@@ -393,6 +402,7 @@ export function validateStoredProject(project) {
     if (!Number.isFinite(open.area) || open.area < 0) throw new Error('Open-space area is invalid.');
   }
   validateDistricts(city);
+  validateWaterCity(city);
   validateFortifications(city);
   return project;
 }
@@ -400,6 +410,7 @@ export function validateStoredProject(project) {
 export function validateWorkspace(workspace, project) {
   requireRecord(workspace, 'Workspace');
   if (workspace.schemaVersion !== 1) throw new Error('Unsupported workspace version. Use a newer Mappo build.');
+  if (workspace.waterEditor !== undefined) validateWaterEditor(workspace.waterEditor);
   const draft = requireRecord(workspace.editor, 'Outline draft');
   requireList(draft.boundary, 'Draft boundary', 1200).forEach(p => requirePoint(p, 'Draft point'));
   if (draft.center !== null) requirePoint(draft.center, 'Draft center');
@@ -426,6 +437,6 @@ export function validateWorkspace(workspace, project) {
   if (project) validateDistrictEditorState(workspace.districtEditor, project.city);
   if (view.layers.fortifications !== undefined && typeof view.layers.fortifications !== 'boolean') throw new Error('Invalid fortification layer visibility.');
   if (project) validateFortificationEditorState(workspace.fortificationEditor, project.city);
-  if (workspace.panels !== undefined && (!workspace.panels || typeof workspace.panels.districts !== 'boolean' || typeof workspace.panels.fortifications !== 'boolean')) throw new Error('Invalid saved panel state.');
+  if (workspace.panels !== undefined && (!workspace.panels || typeof workspace.panels.districts !== 'boolean' || typeof workspace.panels.fortifications !== 'boolean' || (workspace.panels.water !== undefined && typeof workspace.panels.water !== 'boolean'))) throw new Error('Invalid saved panel state.');
   return workspace;
 }

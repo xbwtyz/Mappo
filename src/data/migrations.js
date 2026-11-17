@@ -1,4 +1,7 @@
 import {
+  waterDryState
+} from '../core/water-geometry.js';
+import {
   APP_VERSION,
   PROJECT_SCHEMA_VERSION
 } from '../core/version.js';
@@ -39,6 +42,15 @@ export function migrateProjectData(project) {
       enabled: false
     };
     project.schemaVersion = 4;
+  }
+  if (project.schemaVersion === 4) {
+    for (const key of ['waterFeatures', 'bridges', 'waterFaces'])
+      if (project.city[key] === undefined) project.city[key] = [];
+    project.city.waterState = {
+      ...(project.city.waterState || {}),
+      ...waterDryState()
+    };
+    project.schemaVersion = 5;
   }
   return project;
 }

@@ -110,6 +110,20 @@ export function createProjectDocument(project, workspace = defaultWorkspace(proj
       }
     }
   };
+  if (workspace.panels !== undefined || previous.panels !== undefined) document.workspace.panels = {
+    ...(previous.panels || {}),
+    ...(copyJson(workspace.panels || {}))
+  };
+  if (workspace.waterEditor !== undefined || previous.waterEditor !== undefined) {
+    document.workspace.waterEditor = {
+      ...(previous.waterEditor || {}),
+      ...copyJson(workspace.waterEditor || {})
+    };
+    if (workspace.waterEditor?.controls || previous.waterEditor?.controls) document.workspace.waterEditor.controls = {
+      ...(previous.waterEditor?.controls || {}),
+      ...copyJson(workspace.waterEditor?.controls || {})
+    };
+  }
   if (workspace.fortificationEditor !== undefined || previous.fortificationEditor !== undefined) {
     document.workspace.fortificationEditor = {
       ...(previous.fortificationEditor || {}),

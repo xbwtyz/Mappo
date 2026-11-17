@@ -302,13 +302,17 @@ test('fortifications and their undo history round-trip through native project fi
 test('native 3C projects migrate without adding defenses or changing district and city data', async () => {
   const raw = JSON.parse(await readFile(new URL('./fixtures/save-3c-format1-schema3.json', import.meta.url), 'utf8'));
   const loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 4);
+  assert.equal(loaded.project.schemaVersion, 5);
   assert.deepEqual(loaded.project.city.fortificationState, {
     version: 1,
     status: 'unbuilt',
     enabled: false
   });
   const {
+    waterState,
+    waterFeatures,
+    waterFaces,
+    bridges,
     fortificationState,
     gates,
     towers,

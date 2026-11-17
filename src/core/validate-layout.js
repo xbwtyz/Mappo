@@ -27,10 +27,10 @@ export function validateLayout(layout, boundary) {
       }
   if (reached.size !== nodes.length) throw new Error('The outline produced disconnected streets. Adjust its narrow sections or try another street pattern.');
   let total = 0;
-  for (const face of [...blocks, plaza]) {
+  for (const face of [...blocks, plaza, ...(layout.waterFaces ?? [])]) {
     if (new Set(face.vertices).size !== face.vertices.length) throw new Error('A street creates a pinched block. Adjust the outline or choose another street seed.');
     const area = polygonSignedArea(face.vertices.map(id => byId.get(id)));
-    if (area <= 1) throw new Error('A section is too narrow to form usable blocks. Widen it and generate again.');
+    if (area <= (layout.waterFaces?.includes(face) ? .00001 : 1)) throw new Error('A section is too narrow to form usable blocks. Widen it and generate again.');
     total += area;
   }
   if (Math.abs(total - Math.abs(polygonSignedArea(boundary))) > .02) throw new Error('Streets could not cover this outline completely. Adjust its narrow sections or choose another pattern.');

@@ -1,4 +1,7 @@
 import {
+  waterWallOpenings
+} from '../core/water-fortifications.js';
+import {
   distanceContourWall,
   WALL_WIDTH,
   WALL_EDGE_WIDTH,
@@ -40,6 +43,7 @@ function outerPerimeterFortifications(city, settings) {
     path: distanceContourWall(city.survey.boundary),
     extensions: {}
   };
+  if (city.waterFeatures?.length) wall.waterOpenings = waterWallOpenings(wall, city.waterFeatures);
   const gates = choosePerimeterGates(city, wall, {
     seed: settings.seed,
     count: settings.gateCount
