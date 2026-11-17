@@ -8,6 +8,10 @@ Draw a city boundary, place its main square, and generate connected streets, var
 
 Open [`dist/mappo-0.1-dev.3e6.html`](dist/mappo-0.1-dev.3e6.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
+### Planned UI overhaul
+
+The next planned work reorganizes City, Landscape, Districts and Defenses into a clearer map editor. See [UI_OVERHAUL_PLAN.md](UI_OVERHAUL_PLAN.md) for the phased goals, acceptance criteria and review checkpoints. The current build remains 3E.6; UI implementation follows discussion and approval.
+
 ### Workflow
 
 1. Choose **Freehand** and drag an outline; release to close it. Alternatively, use **Click points**, place the corners, and press **Close outline** or Enter.
@@ -219,6 +223,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3e2:** Independent river/coast controls and seeds, joined water geometry, inland bridges and schema-7 compatibility.
 - **0.1-dev.3e3:** Guided river handles, snapped point insertion, undoable draft tidying and validated river proposals.
 - **0.1-dev.3e6:** Shared river/coast guidance, snapped shoreline insertion, undoable coastline tidying and validated coast proposals.
+- **UI overhaul:** Workspace navigation, landscape list, contextual inspector, readability and persistent editing controls — [planned goals](UI_OVERHAUL_PLAN.md).
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 
