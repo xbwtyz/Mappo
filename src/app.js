@@ -33,13 +33,18 @@ const TOOL_HINTS = {
   center: 'Click inside the outline to place the main square'
 };
 let project, drawPending = false;
+const layers = {
+  buildings: true,
+  properties: false,
+  plots: false
+};
 
 function requestDraw() {
   if (drawPending) return;
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor);
+    if (project) renderMap(canvas, camera, project, editor, layers);
   });
 }
 
@@ -50,7 +55,7 @@ function updateViewport() {
 function editorChanged() {
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(editor.mode === mode));
   $('toolHint').textContent = TOOL_HINTS[editor.mode];
-  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : '● STREET PLAN';
+  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : '● CITY PLAN';
   canvas.classList.toggle('drawing', editor.mode !== 'pan');
   $('undoButton').disabled = editor.history.length === 0;
   $('finishButton').disabled = editor.closed || editor.boundary.length < 3;
@@ -80,7 +85,11 @@ function updateDetails() {
       junctionCount: c.nodes.length,
       roadCount: c.roads.length,
       blockCount: c.blocks.length,
-      laneCount: c.roads.filter(r => r.kind === 'lane').length
+      laneCount: c.roads.filter(r => r.kind === 'lane').length,
+      buildingCount: c.buildings.length,
+      propertyCount: c.properties.length,
+      mergedCount: c.properties.filter(p => p.plotIds.length > 1).length,
+      plotCount: c.plots.length
     })) $(id).textContent = value;
 }
 
@@ -99,7 +108,7 @@ function generate() {
     editor.load(project.city.survey.boundary, project.options.center, false);
     updateDetails();
     updateViewport();
-    $('statusMessage').textContent = `${project.city.roads.length} road segments · ${project.city.blocks.length} blocks · outline preserved`;
+    $('statusMessage').textContent = `${project.city.buildings.length} buildings · ${project.city.properties.length} properties · ${project.city.properties.filter(p=>p.plotIds.length>1).length} merged sites`;
   } catch (error) {
     editor.notify(error.message, true);
     $('statusMessage').textContent = 'Generation paused — correct the outline or center.';
@@ -120,6 +129,12 @@ function updatePattern() {
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[$('morphologyInput').value];
   editor.dirty = true;
   editor.notify('Street settings changed. Generate to apply them to this outline.');
+}
+for (const key of ['buildings', 'properties', 'plots']) {
+  $(key + 'Layer').addEventListener('change', event => {
+    layers[key] = event.target.checked;
+    requestDraw();
+  });
 }
 $('freehandButton').addEventListener('click', () => editor.start('freehand'));
 $('pointsButton').addEventListener('click', () => editor.start('points'));

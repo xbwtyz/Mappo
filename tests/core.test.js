@@ -25,7 +25,7 @@ test('all settlement sizes generate reproducible project data', () => {
     assert.ok(a.city.roads.length > 40);
     assert.ok(a.city.blocks.length > 15);
     assert.ok(a.city.plaza.vertices.length >= 4);
-    assert.equal(a.city.buildings.length, 0);
+    assert.ok(a.city.buildings.length > 20);
     assert.equal(a.city.survey.boundary.length, 64);
     assert.ok(a.city.survey.anchors.length > 3);
   }
@@ -65,7 +65,7 @@ test('morphology is validated and persisted in reproducible projects', () => {
     const project = createProject({ seed: 'growth-123', size: 'medium', morphology });
     assert.equal(project.options.morphology, morphology);
     assert.equal(project.city.survey.morphology, morphology);
-    assert.equal(project.generatorVersion, '0.1-dev.3a2');
+    assert.equal(project.generatorVersion, '0.1-dev.3b');
     assert.deepEqual(project, createProject({ seed: 'growth-123', size: 'medium', morphology }));
   }
   assert.equal(createProject({ morphology: 'unknown' }).options.morphology, 'radial');

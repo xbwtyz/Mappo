@@ -96,7 +96,7 @@ test('layout produces a connected planar road graph and real blocks for 360 dive
       }).city;
       assert.ok(city.roads.length > 45, `${size}/${n}: insufficient roads`);
       assert.ok(city.blocks.length > 15, `${size}/${n}: insufficient blocks`);
-      assert.equal(city.buildings.length, 0);
+      assert.ok(city.buildings.length > 0);
       verifyCityGeometry(city, `${size}/${n}`);
     }
   }
@@ -117,7 +117,7 @@ test('layout has repeatable graph IDs and geometry and varies with different see
       seed: 'changed-layout',
       size
     }).city.nodes);
-    assert.equal(left.generatorVersion, '0.1-dev.3a2');
+    assert.equal(left.generatorVersion, '0.1-dev.3b');
     assert.ok(left.city.blocks[0].vertices.map(id => left.city.nodes.find(node => node.id === id)).every(Boolean));
   }
 });

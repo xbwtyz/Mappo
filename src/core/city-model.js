@@ -21,6 +21,13 @@ import {
   generateLayout
 } from '../generators/layout.js';
 
+import {
+  validateDevelopment
+} from './validate-development.js';
+import {
+  generateBuildings
+} from '../generators/buildings.js';
+
 const FIRST = ['Alder', 'Ash', 'Briar', 'Brindle', 'Cinder', 'Elder', 'Fell', 'Grey', 'High', 'Iron', 'Moss', 'Raven', 'Silver', 'Stone', 'Thorn', 'Willow'];
 const LAST = ['bridge', 'bury', 'crest', 'dale', 'ford', 'haven', 'mere', 'mont', 'stead', 'watch', 'wick', 'wood'];
 
@@ -47,9 +54,11 @@ export function createProject(options = {}) {
   }, ...survey.anchors.slice(1).filter(p => insideOrOn(p, survey.boundary))];
   const layout = generateLayout(seed, size, survey, morphology);
   validateLayout(layout, survey.boundary);
+  const development = generateBuildings(seed, layout);
+  validateDevelopment(layout, development);
   return {
     schemaVersion: 1,
-    generatorVersion: '0.1-dev.3a2',
+    generatorVersion: '0.1-dev.3b',
     seed,
     options: {
       size,
@@ -69,7 +78,7 @@ export function createProject(options = {}) {
       roads: layout.roads,
       blocks: layout.blocks,
       plaza: layout.plaza,
-      buildings: [],
+      ...development,
       districts: [],
       walls: []
     }

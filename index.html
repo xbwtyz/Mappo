@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — Draw Your City · 0.1-dev.3a2</title>
+  <title>Mappo — Buildings & Properties · 0.1-dev.3b</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -10,13 +10,16 @@
 .sidebar-content{padding-top:24px}.sidebar-left .intro{margin-bottom:21px}.step-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em;color:#d3a676;margin:24px 0 12px}.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.tool-button,.minor-button{border:1px solid #4b6060;border-radius:5px;background:#152328;color:#d9e4dc;font-size:11px;min-height:37px;padding:8px 6px}.tool-button:hover,.minor-button:hover{background:#30443f}.tool-button[aria-pressed=true]{background:#d1a579;color:#162426;border-color:#e0b88a;font-weight:750}.full-width{width:100%}.actions{margin-top:8px}.minor-button{background:transparent;color:#adc1b6;min-height:32px;font-size:10px}.preset-row{display:grid;grid-template-columns:1fr 42px;gap:7px;margin-top:17px}.preset-row select{font-size:11px;height:35px;padding:0 8px;appearance:auto}.hint{line-height:1.6}.tool-hint{position:absolute;left:18px;top:15px;max-width:calc(100% - 95px);background:#f9f6ebed;border:1px solid #d4cbb9;border-radius:5px;padding:9px 12px;color:#465d56;font:11px/1.5 ui-monospace,Consolas,monospace;pointer-events:none}.draft-message{font-size:11px;color:#a9bfb0;line-height:1.65;margin:14px 0 0;min-height:36px}.draft-message.error{color:#ffb6a3}.center-mark{font-size:18px;color:#a16a3e}.map-viewport canvas.drawing{cursor:crosshair}.map-status [role=status]{white-space:normal;line-height:1.4}.map-status{min-height:44px;height:auto;padding-top:8px;padding-bottom:8px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}button:disabled{opacity:.4;cursor:default}
 @media(max-width:670px){.sidebar-left .sidebar-content{overflow:visible}.map-shell{height:72vh;min-height:460px}.tool-hint{font-size:10px}.map-status [role=status]{max-width:none}.sidebar-left .intro{max-width:none}.workspace{display:flex}.sidebar-left{max-height:none}}
 
+.layer-panel{border:1px solid #42554d;border-radius:5px;padding:15px;margin:0 0 25px}.layer-panel label{display:flex;align-items:center;gap:9px;margin:10px 0;color:#c4d3c7;font-size:11px;cursor:pointer}.layer-panel input[type=checkbox]{width:15px;height:15px;accent-color:#d1a579;margin:0;padding:0;flex:none}.layer-panel .eyebrow{font-size:9px;margin-bottom:12px}.featured-stat strong{font-size:20px;color:#d9b88c}.roof-mark{width:11px;height:9px;background:#b68e76;border:1px solid #756552}.map-legend{flex-wrap:wrap;max-width:calc(100% - 100px)}
+@media(max-width:1100px){.layer-panel{display:block}.sidebar-left .layer-panel{margin-top:25px}}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3a2</span></div>
-    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>DRAW YOUR CITY</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3b</span></div>
+    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>BUILDINGS &amp; PROPERTIES</span></div>
   </header>
   <div class="workspace">
     <aside class="sidebar sidebar-left" aria-label="City design tools">
@@ -41,27 +44,29 @@
         <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
         <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div><p class="hint">Changes block spacing. Your outline stays fixed.</p></div>
         <div class="control-group"><label for="seedInput">Street seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"><p class="hint">Same outline, center, pattern, density and seed = same city.</p></div>
-        <button id="generateButton" class="button-primary">↻ Generate inside outline</button>
+        <button id="generateButton" class="button-primary">↻ Generate city</button>
         <div class="tool-grid"><button id="newSeedButton" class="minor-button">New street seed</button><button id="cancelButton" class="minor-button">Revert edits</button></div>
         <p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p>
+        <div class="layer-panel"><p class="eyebrow">MAP LAYERS</p><label><input type="checkbox" id="buildingsLayer" checked> Building footprints</label><label><input type="checkbox" id="propertiesLayer"> Property boundaries</label><label><input type="checkbox" id="plotsLayer"> Underlying plot divisions</label><p class="hint">A large property can combine multiple plots. Plot divisions can run beneath one continuous building.</p></div>
       </div>
       <div class="sidebar-footer">MAPPO PROJECT <span>© 2026</span></div>
     </aside>
     <main class="map-shell" aria-label="City map workspace">
-      <div class="map-topline"><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><span id="draftBadge" class="map-draft">● STREET PLAN</span></div>
+      <div class="map-topline"><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><span id="draftBadge" class="map-draft">● CITY PLAN</span></div>
       <div id="mapViewport" class="map-viewport">
-        <canvas id="mapCanvas" tabindex="0" aria-label="City map and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
+        <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="toolHint" class="tool-hint">Drag to pan · Scroll to zoom</div>
         <div class="map-controls" aria-label="Map controls"><button id="zoomInButton" title="Zoom in (+)" aria-label="Zoom in">+</button><button id="zoomOutButton" title="Zoom out (-)" aria-label="Zoom out">−</button><div class="map-controls-divider"></div><button id="fitButton" title="Fit outline (0)" aria-label="Fit outline">⤢</button></div>
-        <div class="map-legend"><span class="legend-mark"></span><span>CITY BOUNDARY</span><span class="legend-sep">/</span><span class="center-mark">⊙</span><span>TOWN CENTER</span></div>
+        <div class="map-legend"><span class="legend-mark"></span><span>CITY BOUNDARY</span><span class="legend-sep">/</span><span class="center-mark">⊙</span><span>TOWN CENTER</span><span class="legend-sep">/</span><span class="roof-mark"></span><span>BUILDINGS</span></div>
       </div>
       <div class="map-status"><span id="statusMessage" role="status">Generating city plan…</span><span class="status-readout">ZOOM <strong id="zoomValue">100%</strong></span></div>
     </main>
     <aside class="sidebar sidebar-right" aria-label="Project information">
       <div class="sidebar-heading"><span class="section-number">02</span><span>FIELD NOTES</span></div>
       <div class="sidebar-content">
-        <p class="eyebrow">CURRENT GENERATED CITY</p><h2>City report<span class="gold-dot">.</span></h2><p class="intro">A street plan shaped by your boundary. Tinted areas are empty city blocks.</p>
+        <p class="eyebrow">CURRENT GENERATED CITY</p><h2>City report<span class="gold-dot">.</span></h2><p class="intro">Buildings and varied properties shaped by your streets. Green space remains for yards, gardens and gaps.</p>
         <div class="report-label">SETTLEMENT</div><div class="report-primary" id="reportCityName"></div>
+        <div class="stat-row featured-stat"><span>Buildings</span><strong id="buildingCount">—</strong></div><div class="stat-row"><span>Properties</span><strong id="propertyCount">—</strong></div><div class="stat-row"><span>Combined-plot properties</span><strong id="mergedCount">—</strong></div><div class="stat-row"><span>Base plots</span><strong id="plotCount">—</strong></div>
         <div class="stat-row"><span>Seed</span><strong id="citySeed">—</strong></div><div class="stat-row"><span>Density</span><strong id="citySize">—</strong></div>
         <div class="stat-row"><span>Street pattern</span><strong id="cityMorphology">—</strong></div><div class="stat-row"><span>Boundary points</span><strong id="boundaryCount">—</strong></div>
         <div class="stat-row"><span>Road junctions</span><strong id="junctionCount">—</strong></div><div class="stat-row"><span>Road segments</span><strong id="roadCount">—</strong></div>
@@ -69,7 +74,7 @@
         <div class="sidebar-rule"></div><p class="eyebrow">WORKSPACE GUIDE</p>
         <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
         <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
-        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings, districts and fortifications come in later phases. Draft edits apply when you generate. Keep this page open to retain a custom outline; project saving is a later milestone.</p></div>
+        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts and fortifications remain later phases. Draft edits apply when you generate. Keep this page open to retain a custom outline; project saving is a later milestone.</p></div>
       </div>
     </aside>
   </div>
@@ -796,7 +801,383 @@ function generateLayout(seed, size, survey, morphology = 'radial') {
 }
 
 
+// src/core/placement.js
+
+
+// Shared road dimensions keep the collision margin and rendering in agreement.
+const STREET_WIDTHS = Object.freeze({
+  primary: 12,
+  secondary: 8.2,
+  lane: 4.5
+});
+const STREET_EDGE_WIDTH = 2.2;
+const PROPERTY_SETBACK = 1.6;
+
+function rectangleInFrame(frame, x, y, width, depth) {
+  const point = (u, v) => ({
+    x: frame.origin.x + frame.tangent.x * u + frame.inward.x * v,
+    y: frame.origin.y + frame.tangent.y * u + frame.inward.y * v
+  });
+  return [point(x, y), point(x + width, y), point(x + width, y + depth), point(x, y + depth)];
+}
+
+// Separating-axis test: all property envelopes are convex rectangles. Padding
+// reserves gaps between properties, including frontages on different streets.
+function rectanglesOverlap(a, b, padding = 0) {
+  for (const polygon of [a, b]) {
+    for (let i = 0; i < 2; i++) {
+      const p = polygon[i],
+        q = polygon[i + 1];
+      const length = Math.hypot(q.x - p.x, q.y - p.y);
+      const axis = {
+        x: -(q.y - p.y) / length,
+        y: (q.x - p.x) / length
+      };
+      const pa = a.map(v => v.x * axis.x + v.y * axis.y);
+      const pb = b.map(v => v.x * axis.x + v.y * axis.y);
+      if (Math.max(...pa) + padding <= Math.min(...pb) + 1e-7 || Math.max(...pb) + padding <= Math.min(...pa) + 1e-7) return false;
+    }
+  }
+  return true;
+}
+
+function segmentDistance(a, b, c, d) {
+  if (segmentCuts(a, b, c, d).length || segmentCuts(c, d, a, b).length) return 0;
+  return Math.min(distanceToSegment(a, c, d), distanceToSegment(b, c, d), distanceToSegment(c, a, b), distanceToSegment(d, a, b));
+}
+
+function propertyFits(polygon, blockPolygon, streetEdges) {
+  if (!polygon.every(p => pointInPolygon(p, blockPolygon))) return false;
+  for (let i = 0; i < polygon.length; i++) {
+    const a = polygon[i],
+      b = polygon[(i + 1) % polygon.length];
+    for (const edge of streetEdges) {
+      const margin = (STREET_WIDTHS[edge.road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
+      if (segmentDistance(a, b, edge.a, edge.b) < margin - 1e-6) return false;
+    }
+  }
+  return true;
+}
+
+// Polygon intersection against a convex plot. Also works for concave building
+// footprints; signed area accounts for any traversed boundary bridges.
+function clipToConvexPolygon(subject, clip) {
+  let output = subject.map(p => ({
+    ...p
+  }));
+  for (let i = 0; i < clip.length; i++) {
+    const a = clip[i],
+      b = clip[(i + 1) % clip.length],
+      input = output;
+    output = [];
+    const side = p => (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+    for (let j = 0; j < input.length; j++) {
+      const p = input[j],
+        q = input[(j + 1) % input.length],
+        sp = side(p),
+        sq = side(q);
+      if (sp >= -1e-8) output.push(p);
+      if ((sp > 1e-8 && sq < -1e-8) || (sp < -1e-8 && sq > 1e-8)) {
+        const t = sp / (sp - sq);
+        output.push({
+          x: p.x + (q.x - p.x) * t,
+          y: p.y + (q.y - p.y) * t
+        });
+      }
+    }
+  }
+  return output;
+}
+
+
+// src/core/validate-development.js
+
+
+
+function validateDevelopment(layout, development) {
+  const {
+    plots,
+    properties,
+    buildings
+  } = development;
+  const byProperty = new Map(properties.map(p => [p.id, p]));
+  const byPlot = new Map(plots.map(p => [p.id, p]));
+  const roadIds = new Set(layout.roads.map(r => r.id));
+  const usedPlots = new Set();
+  const groups = new Map();
+  for (const property of properties) {
+    if (!property.plotIds.length || !roadIds.has(property.frontageRoadId)) throw new Error('A generated property has no valid street frontage.');
+    for (const id of property.plotIds) {
+      if (!byPlot.has(id) || usedPlots.has(id) || byPlot.get(id).propertyId !== property.id) throw new Error('A plot was allocated to more than one property.');
+      usedPlots.add(id);
+    }
+    const neighbors = groups.get(property.blockId) || [];
+    if (neighbors.some(p => rectanglesOverlap(p.boundary, property.boundary))) throw new Error('Generated properties overlap. Try another seed.');
+    neighbors.push(property);
+    groups.set(property.blockId, neighbors);
+  }
+  if (usedPlots.size !== plots.length) throw new Error('An allocated plot has no property.');
+  for (const building of buildings) {
+    const property = byProperty.get(building.propertyId);
+    if (!property || building.blockId !== property.blockId || !property.buildingIds.includes(building.id) || !building.plotIds.length || building.plotIds.some(id => !property.plotIds.includes(id))) throw new Error('A building has invalid property or plot references.');
+    if (building.footprint.length < 4 || building.area <= 1 || !building.footprint.every(p => Number.isFinite(p.x) && Number.isFinite(p.y) && insideOrOn(p, property.boundary))) throw new Error('A generated building extends outside its property.');
+    if (polygonSignedArea(building.footprint) <= 0) throw new Error('A building footprint has invalid winding.');
+    for (const hole of building.holes)
+      if (!hole.every(p => insideOrOn(p, building.footprint))) throw new Error('A courtyard extends beyond its building.');
+  }
+}
+
+
+// src/generators/buildings.js
+
+
+
+function keyedPair(a, b) {
+  return [a, b].sort().join(':');
+}
+
+function choose(rng, list) {
+  return list[Math.floor(rng() * list.length)];
+}
+
+function worldPoint(frame, u, v) {
+  return {
+    x: frame.origin.x + frame.tangent.x * u + frame.inward.x * v,
+    y: frame.origin.y + frame.tangent.y * u + frame.inward.y * v
+  };
+}
+
+function generateBuildings(seed, layout) {
+  const nodes = new Map(layout.nodes.map(n => [n.id, n]));
+  const roadByPair = new Map(layout.roads.map(r => [keyedPair(r.a, r.b), r]));
+  const plots = [],
+    properties = [],
+    buildings = [],
+    openSpaces = [];
+  for (const block of layout.blocks) {
+    const rng = createRng(`${seed}:buildings:v1:${block.id}`);
+    const polygon = block.vertices.map(id => nodes.get(id));
+    const edges = block.vertices.map((id, i) => {
+      const next = block.vertices[(i + 1) % block.vertices.length];
+      return {
+        a: nodes.get(id),
+        b: nodes.get(next),
+        road: roadByPair.get(keyedPair(id, next))
+      };
+    });
+    const accepted = [];
+    // A separate seeded occupancy level per block avoids identical density.
+    const occupancy = randomRange(rng, .64, .94);
+    const fronts = edges.map((edge, index) => {
+      const length = Math.hypot(edge.b.x - edge.a.x, edge.b.y - edge.a.y);
+      const frame = {
+        origin: edge.a,
+        tangent: {
+          x: (edge.b.x - edge.a.x) / length,
+          y: (edge.b.y - edge.a.y) / length
+        },
+        inward: {
+          x: -(edge.b.y - edge.a.y) / length,
+          y: (edge.b.x - edge.a.x) / length
+        }
+      };
+      const distance = (STREET_WIDTHS[edge.road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK + .05;
+      // Each frontage is divided once; merged sites consume contiguous entries.
+      const intervals = [];
+      let start = distance + 1;
+      const end = length - distance - 1;
+      while (end - start >= 8) {
+        let width = Math.min(randomRange(rng, 11, 19), end - start);
+        if (end - start - width < 8) width = end - start;
+        intervals.push({
+          start,
+          width,
+          occupied: false
+        });
+        start += width;
+      }
+      return {
+        edge,
+        index,
+        frame,
+        distance,
+        intervals,
+        priority: rng()
+      };
+    }).filter(f => f.intervals.length);
+    fronts.sort((a, b) => b.intervals.length - a.intervals.length || a.priority - b.priority);
+
+    function allocate(front, first, count, category) {
+      const group = front.intervals.slice(first, first + count);
+      if (group.length !== count || group.some(p => p.occupied)) return false;
+      const start = group[0].start + .75,
+        width = group.reduce((s, p) => s + p.width, 0) - 1.5;
+      if (width < 7) return false;
+      const preferredDepth = category === 'large' ? randomRange(rng, 24, 43) : randomRange(rng, 12, 25);
+      let envelope, depth = preferredDepth;
+      for (; depth >= 9; depth -= 3) {
+        envelope = rectangleInFrame(front.frame, start, front.distance, width, depth);
+        if (propertyFits(envelope, polygon, edges) && !accepted.some(p => rectanglesOverlap(envelope, p.boundary, .9))) break;
+      }
+      if (depth < 9) return false;
+      const propertyId = `PROP-${String(properties.length+1).padStart(5,'0')}`;
+      const propertyPlots = [];
+      let cursor = start;
+      group.forEach((interval, i) => {
+        const w = interval.width - (i === 0 ? .75 : 0) - (i === group.length - 1 ? .75 : 0);
+        const plot = {
+          id: `PLOT-${String(plots.length+1).padStart(5,'0')}`,
+          blockId: block.id,
+          propertyId,
+          frontageRoadId: front.edge.road.id,
+          boundary: rectangleInFrame(front.frame, cursor, front.distance, w, depth)
+        };
+        propertyPlots.push(plot);
+        plots.push(plot);
+        cursor += w;
+        interval.occupied = true;
+      });
+      const property = {
+        id: propertyId,
+        blockId: block.id,
+        plotIds: propertyPlots.map(p => p.id),
+        boundary: envelope,
+        frontageRoadId: front.edge.road.id,
+        frontage: [envelope[0], envelope[1]],
+        area: Math.abs(polygonSignedArea(envelope)),
+        buildingIds: [],
+        usage: category === 'large' ? 'establishment' : 'residential',
+        frame: front.frame,
+        local: {
+          x: start,
+          y: front.distance,
+          width,
+          depth
+        }
+      };
+      properties.push(property);
+      accepted.push(property);
+      populateProperty(property, propertyPlots, rng, buildings);
+      return true;
+    }
+    // Larger properties are allocated before the single-plot infill pass.
+    let largeCount = 0;
+    const largeTarget = block.area > 10000 ? 2 : 1;
+    for (const front of fronts) {
+      if (largeCount >= largeTarget) break;
+      const count = front.intervals.length >= 4 && rng() < .55 ? 3 : 2;
+      const first = Math.floor(rng() * Math.max(1, front.intervals.length - count + 1));
+      if (rng() < .84 && allocate(front, first, count, 'large')) largeCount++;
+    }
+    // Most frontages get small, varied buildings; occasional paired plots make
+    // wider workshops and inns even in blocks without a landmark-sized site.
+    for (const front of fronts)
+      for (let i = 0; i < front.intervals.length; i++) {
+        if (front.intervals[i].occupied || rng() > occupancy) continue;
+        const count = i + 1 < front.intervals.length && !front.intervals[i + 1].occupied && rng() < .17 ? 2 : 1;
+        allocate(front, i, count, count > 1 ? 'large' : 'small');
+      }
+    const occupiedArea = accepted.reduce((sum, p) => sum + p.area, 0);
+    openSpaces.push({
+      id: `OPEN-${block.id}`,
+      blockId: block.id,
+      kind: accepted.length ? 'yards-and-gaps' : 'undeveloped',
+      area: Math.max(0, block.area - occupiedArea)
+    });
+  }
+  return {
+    plots,
+    properties,
+    buildings,
+    openSpaces
+  };
+}
+
+function populateProperty(property, propertyPlots, rng, buildings) {
+  const {
+    frame,
+    local
+  } = property;
+  const x = local.x + randomRange(rng, 1, 1.7),
+    y = local.y + randomRange(rng, 1.1, 2);
+  const width = local.width - (x - local.x) - randomRange(rng, 1, 2.3);
+  const depth = local.depth - (y - local.y) - randomRange(rng, 1.1, 3);
+  const merged = property.plotIds.length > 1;
+  let shape = 'rectangle';
+  const roll = rng();
+  if (merged && width > 27 && depth > 24 && roll < .25) shape = 'courtyard';
+  else if (merged && width > 27 && depth > 20 && roll < .49) shape = 'compound';
+  else if (merged && width > 28 && roll > .82) shape = 'terrace';
+  else if (width > 13 && depth > 13 && roll < .76) shape = 'L';
+  const type = merged ? choose(rng, ['inn', 'workshop', 'guildhall', 'temple', 'warehouse']) : choose(rng, ['house', 'house', 'shop', 'workshop']);
+  property.usage = type;
+
+  function add(footprint, holes = [], form = shape, buildingType = type) {
+    const building = {
+      id: `BLD-${String(buildings.length+1).padStart(5,'0')}`,
+      blockId: property.blockId,
+      propertyId: property.id,
+      plotIds: propertyPlots.filter(p => Math.abs(polygonSignedArea(clipToConvexPolygon(footprint, p.boundary))) - holes.reduce((sum, h) => sum + Math.abs(polygonSignedArea(clipToConvexPolygon(h, p.boundary))), 0) > 1e-5).map(p => p.id),
+      frontageRoadId: property.frontageRoadId,
+      type: buildingType,
+      shape: form,
+      footprint,
+      holes,
+      area: Math.abs(polygonSignedArea(footprint)) - holes.reduce((s, h) => s + Math.abs(polygonSignedArea(h)), 0),
+      entrance: {
+        x: (footprint[0].x + footprint[1].x) / 2,
+        y: (footprint[0].y + footprint[1].y) / 2
+      },
+      orientation: Math.atan2(frame.tangent.y, frame.tangent.x),
+      roofTone: Math.floor(rng() * 5)
+    };
+    const doorU = (building.entrance.x - frame.origin.x) * frame.tangent.x + (building.entrance.y - frame.origin.y) * frame.tangent.y;
+    building.accessPath = [building.entrance, worldPoint(frame, doorU, 0)];
+    property.buildingIds.push(building.id);
+    buildings.push(building);
+  }
+  const rect = (u, v, w, d) => rectangleInFrame(frame, u, v, w, d);
+  if (shape === 'courtyard') {
+    const wall = Math.min(7, width * .22, depth * .25);
+    add(rect(x, y, width, depth), [rect(x + wall, y + wall, width - wall * 2, depth - wall * 2)]);
+  } else if (shape === 'compound') {
+    const gap = 3.3,
+      wing = Math.min(width * .28, 10);
+    add(rect(x, y, wing, depth), [], 'compound-wing');
+    add(rect(x + width - wing, y, wing, depth), [], 'compound-wing');
+    const backWidth = width - wing * 2 - gap * 2;
+    if (backWidth > 6) add(rect(x + wing + gap, y + depth * .61, backWidth, depth * .39), [], 'compound-wing');
+  } else if (shape === 'terrace') {
+    property.usage = 'residential-row';
+    const count = property.plotIds.length;
+    let cursor = x;
+    propertyPlots.forEach((plot, i) => {
+      const plotEnd = (plot.boundary[1].x - frame.origin.x) * frame.tangent.x + (plot.boundary[1].y - frame.origin.y) * frame.tangent.y;
+      const partWidth = (i === count - 1 ? x + width : plotEnd) - cursor;
+      add(rect(cursor, y, partWidth, depth * randomRange(rng, .75, 1)), [], 'terrace-house', choose(rng, ['house', 'house', 'shop']));
+      cursor += partWidth;
+    });
+  } else if (shape === 'L') {
+    const notchX = width * randomRange(rng, .43, .67),
+      notchY = depth * randomRange(rng, .4, .6);
+    const footprint = [
+      [x, y],
+      [x + width, y],
+      [x + width, y + notchY],
+      [x + notchX, y + notchY],
+      [x + notchX, y + depth],
+      [x, y + depth]
+    ].map(([u, v]) => worldPoint(frame, u, v));
+    add(footprint);
+  } else {
+    // Narrow plots have smaller houses, with varied depths and back gardens.
+    add(rect(x, y, width, depth * randomRange(rng, .68, 1)));
+  }
+}
+
+
 // src/core/city-model.js
+
 
 
 
@@ -828,9 +1209,11 @@ function createProject(options = {}) {
   }, ...survey.anchors.slice(1).filter(p => insideOrOn(p, survey.boundary))];
   const layout = generateLayout(seed, size, survey, morphology);
   validateLayout(layout, survey.boundary);
+  const development = generateBuildings(seed, layout);
+  validateDevelopment(layout, development);
   return {
     schemaVersion: 1,
-    generatorVersion: '0.1-dev.3a2',
+    generatorVersion: '0.1-dev.3b',
     seed,
     options: {
       size,
@@ -850,7 +1233,7 @@ function createProject(options = {}) {
       roads: layout.roads,
       blocks: layout.blocks,
       plaza: layout.plaza,
-      buildings: [],
+      ...development,
       districts: [],
       walls: []
     }
@@ -913,23 +1296,106 @@ class Camera {
 }
 
 
+// src/renderer/buildings.js
+const ROOF_COLORS = ['#b68e76', '#b38a70', '#9a8d78', '#c29d82', '#a4977e'];
+
+function traceDevelopmentPolygon(ctx, polygon, camera) {
+  polygon.forEach((p, i) => {
+    const s = camera.worldToScreen(p);
+    if (!i) ctx.moveTo(s.x, s.y);
+    else ctx.lineTo(s.x, s.y);
+  });
+  ctx.closePath();
+}
+
+function drawDevelopment(ctx, camera, city, layers) {
+  if (layers.buildings !== false) {
+    for (const building of city.buildings) {
+      ctx.beginPath();
+      traceDevelopmentPolygon(ctx, building.footprint, camera);
+      for (const hole of building.holes) traceDevelopmentPolygon(ctx, hole, camera);
+      ctx.fillStyle = ROOF_COLORS[building.roofTone];
+      ctx.fill('evenodd');
+      ctx.strokeStyle = '#756552';
+      ctx.lineWidth = Math.max(.45, .85 * camera.zoom);
+      ctx.stroke();
+      if (camera.zoom > .6) {
+        ctx.save();
+        ctx.clip('evenodd');
+        const a = building.footprint[0],
+          b = building.footprint[1];
+        const along = {
+          x: Math.cos(building.orientation),
+          y: Math.sin(building.orientation)
+        };
+        const inward = {
+          x: -along.y,
+          y: along.x
+        };
+        const offsets = building.footprint.map(p => (p.x - a.x) * inward.x + (p.y - a.y) * inward.y);
+        const distance = (Math.min(...offsets) + Math.max(...offsets)) / 2;
+        const start = camera.worldToScreen({
+          x: a.x + inward.x * distance,
+          y: a.y + inward.y * distance
+        });
+        const end = camera.worldToScreen({
+          x: b.x + inward.x * distance,
+          y: b.y + inward.y * distance
+        });
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(end.x, end.y);
+        ctx.strokeStyle = 'rgba(95,69,49,.35)';
+        ctx.lineWidth = Math.max(.45, .65 * camera.zoom);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  }
+  if (layers.properties) {
+    ctx.strokeStyle = 'rgba(108,82,47,.7)';
+    ctx.lineWidth = 1.1;
+    ctx.setLineDash([5, 3]);
+    for (const property of city.properties) {
+      ctx.beginPath();
+      traceDevelopmentPolygon(ctx, property.boundary, camera);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+  }
+  if (layers.plots) {
+    ctx.strokeStyle = 'rgba(45,89,112,.75)';
+    ctx.lineWidth = .8;
+    ctx.setLineDash([2, 3]);
+    for (const plot of city.plots) {
+      ctx.beginPath();
+      traceDevelopmentPolygon(ctx, plot.boundary, camera);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+  }
+}
+
+
 // src/renderer/canvas.js
+
+
 
 const INK = '#34494b';
 const ACCENT = '#ad8054';
 const ROAD_STYLES = Object.freeze({
   primary: {
-    width: 12,
+    width: STREET_WIDTHS.primary,
     fill: '#fbf6e9',
     edge: '#a58f73'
   },
   secondary: {
-    width: 8.2,
+    width: STREET_WIDTHS.secondary,
     fill: '#faf4e6',
     edge: '#b2a58e'
   },
   lane: {
-    width: 4.5,
+    width: STREET_WIDTHS.lane,
     fill: '#f8f1df',
     edge: '#b6ab93'
   }
@@ -1026,7 +1492,7 @@ function drawRoads(ctx, camera, city, byId) {
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
       ctx.strokeStyle = style[pass];
-      ctx.lineWidth = (style.width + (pass === 'edge' ? 2.2 : 0)) * camera.zoom;
+      ctx.lineWidth = (style.width + (pass === 'edge' ? STREET_EDGE_WIDTH : 0)) * camera.zoom;
       ctx.stroke();
     }
   }
@@ -1109,7 +1575,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-function renderMap(canvas, camera, project, editor) {
+function renderMap(canvas, camera, project, editor, layers = {}) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -1131,6 +1597,7 @@ function renderMap(canvas, camera, project, editor) {
   ctx.globalAlpha = editor?.dirty ? 0.20 : 1;
   drawSurvey(ctx, camera, city.survey);
   drawBlocks(ctx, camera, city, byId);
+  drawDevelopment(ctx, camera, city, layers);
   drawRoads(ctx, camera, city, byId);
   drawPlaza(ctx, camera, city.plaza, byId);
 
@@ -1562,13 +2029,18 @@ const TOOL_HINTS = {
   center: 'Click inside the outline to place the main square'
 };
 let project, drawPending = false;
+const layers = {
+  buildings: true,
+  properties: false,
+  plots: false
+};
 
 function requestDraw() {
   if (drawPending) return;
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor);
+    if (project) renderMap(canvas, camera, project, editor, layers);
   });
 }
 
@@ -1579,7 +2051,7 @@ function updateViewport() {
 function editorChanged() {
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(editor.mode === mode));
   $('toolHint').textContent = TOOL_HINTS[editor.mode];
-  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : '● STREET PLAN';
+  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : '● CITY PLAN';
   canvas.classList.toggle('drawing', editor.mode !== 'pan');
   $('undoButton').disabled = editor.history.length === 0;
   $('finishButton').disabled = editor.closed || editor.boundary.length < 3;
@@ -1609,7 +2081,11 @@ function updateDetails() {
       junctionCount: c.nodes.length,
       roadCount: c.roads.length,
       blockCount: c.blocks.length,
-      laneCount: c.roads.filter(r => r.kind === 'lane').length
+      laneCount: c.roads.filter(r => r.kind === 'lane').length,
+      buildingCount: c.buildings.length,
+      propertyCount: c.properties.length,
+      mergedCount: c.properties.filter(p => p.plotIds.length > 1).length,
+      plotCount: c.plots.length
     })) $(id).textContent = value;
 }
 
@@ -1628,7 +2104,7 @@ function generate() {
     editor.load(project.city.survey.boundary, project.options.center, false);
     updateDetails();
     updateViewport();
-    $('statusMessage').textContent = `${project.city.roads.length} road segments · ${project.city.blocks.length} blocks · outline preserved`;
+    $('statusMessage').textContent = `${project.city.buildings.length} buildings · ${project.city.properties.length} properties · ${project.city.properties.filter(p=>p.plotIds.length>1).length} merged sites`;
   } catch (error) {
     editor.notify(error.message, true);
     $('statusMessage').textContent = 'Generation paused — correct the outline or center.';
@@ -1649,6 +2125,12 @@ function updatePattern() {
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[$('morphologyInput').value];
   editor.dirty = true;
   editor.notify('Street settings changed. Generate to apply them to this outline.');
+}
+for (const key of ['buildings', 'properties', 'plots']) {
+  $(key + 'Layer').addEventListener('change', event => {
+    layers[key] = event.target.checked;
+    requestDraw();
+  });
 }
 $('freehandButton').addEventListener('click', () => editor.start('freehand'));
 $('pointsButton').addEventListener('click', () => editor.start('points'));

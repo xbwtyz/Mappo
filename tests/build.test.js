@@ -11,7 +11,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3a2.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3b.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -130,7 +130,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
   const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
   let script = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
   // Test-only observation of private application state, without adding product globals.
-  script = script.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectState = () => ({ project, editor, camera });\n})();');
+  script = script.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectState = () => ({ project, editor, camera, layers });\n})();');
   const elements = new Map(),
     windowEvents = new Map();
   const noopContext = new Proxy({}, {
@@ -209,6 +209,35 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
   vm.runInNewContext(script, context);
   const state = () => context.inspectState(),
     copy = x => JSON.parse(JSON.stringify(x));
+  const initialCity = state().project.city;
+  assert.equal(el('buildingCount').textContent, initialCity.buildings.length);
+  assert.equal(el('propertyCount').textContent, initialCity.properties.length);
+  assert.equal(el('mergedCount').textContent, initialCity.properties.filter(p => p.plotIds.length > 1).length);
+  const beforeLayers = copy(state().project);
+  el('propertiesLayer').handlers.change({
+    target: {
+      checked: true
+    }
+  });
+  el('plotsLayer').handlers.change({
+    target: {
+      checked: true
+    }
+  });
+  el('buildingsLayer').handlers.change({
+    target: {
+      checked: false
+    }
+  });
+  assert.equal(state().layers.properties, true);
+  assert.equal(state().layers.plots, true);
+  assert.equal(state().layers.buildings, false);
+  assert.deepEqual(copy(state().project), beforeLayers);
+  el('buildingsLayer').handlers.change({
+    target: {
+      checked: true
+    }
+  });
   const fire = (name, x, y) => el('mapCanvas').handlers[name]({
     button: 0,
     pointerId: 1,
@@ -239,7 +268,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
   const chosen = copy(state().editor.center);
   el('generateButton').handlers.click();
   const boundary = copy(state().project.options.boundary);
-  assert.equal(el('draftBadge').textContent, '● STREET PLAN');
+  assert.equal(el('draftBadge').textContent, '● CITY PLAN');
   assert.deepEqual(copy(state().project.options.center), chosen);
   el('newSeedButton').handlers.click();
   assert.deepEqual(copy(state().project.options.boundary), boundary);

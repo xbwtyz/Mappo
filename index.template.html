@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — Draw Your City · 0.1-dev.3a2</title>
+  <title>Mappo — Buildings & Properties · 0.1-dev.3b</title>
   <!-- INLINE_CSS -->
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3a2</span></div>
-    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>DRAW YOUR CITY</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3b</span></div>
+    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>BUILDINGS &amp; PROPERTIES</span></div>
   </header>
   <div class="workspace">
     <aside class="sidebar sidebar-left" aria-label="City design tools">
@@ -34,27 +34,29 @@
         <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
         <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div><p class="hint">Changes block spacing. Your outline stays fixed.</p></div>
         <div class="control-group"><label for="seedInput">Street seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"><p class="hint">Same outline, center, pattern, density and seed = same city.</p></div>
-        <button id="generateButton" class="button-primary">↻ Generate inside outline</button>
+        <button id="generateButton" class="button-primary">↻ Generate city</button>
         <div class="tool-grid"><button id="newSeedButton" class="minor-button">New street seed</button><button id="cancelButton" class="minor-button">Revert edits</button></div>
         <p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p>
+        <div class="layer-panel"><p class="eyebrow">MAP LAYERS</p><label><input type="checkbox" id="buildingsLayer" checked> Building footprints</label><label><input type="checkbox" id="propertiesLayer"> Property boundaries</label><label><input type="checkbox" id="plotsLayer"> Underlying plot divisions</label><p class="hint">A large property can combine multiple plots. Plot divisions can run beneath one continuous building.</p></div>
       </div>
       <div class="sidebar-footer">MAPPO PROJECT <span>© 2026</span></div>
     </aside>
     <main class="map-shell" aria-label="City map workspace">
-      <div class="map-topline"><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><span id="draftBadge" class="map-draft">● STREET PLAN</span></div>
+      <div class="map-topline"><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><span id="draftBadge" class="map-draft">● CITY PLAN</span></div>
       <div id="mapViewport" class="map-viewport">
-        <canvas id="mapCanvas" tabindex="0" aria-label="City map and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
+        <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="toolHint" class="tool-hint">Drag to pan · Scroll to zoom</div>
         <div class="map-controls" aria-label="Map controls"><button id="zoomInButton" title="Zoom in (+)" aria-label="Zoom in">+</button><button id="zoomOutButton" title="Zoom out (-)" aria-label="Zoom out">−</button><div class="map-controls-divider"></div><button id="fitButton" title="Fit outline (0)" aria-label="Fit outline">⤢</button></div>
-        <div class="map-legend"><span class="legend-mark"></span><span>CITY BOUNDARY</span><span class="legend-sep">/</span><span class="center-mark">⊙</span><span>TOWN CENTER</span></div>
+        <div class="map-legend"><span class="legend-mark"></span><span>CITY BOUNDARY</span><span class="legend-sep">/</span><span class="center-mark">⊙</span><span>TOWN CENTER</span><span class="legend-sep">/</span><span class="roof-mark"></span><span>BUILDINGS</span></div>
       </div>
       <div class="map-status"><span id="statusMessage" role="status">Generating city plan…</span><span class="status-readout">ZOOM <strong id="zoomValue">100%</strong></span></div>
     </main>
     <aside class="sidebar sidebar-right" aria-label="Project information">
       <div class="sidebar-heading"><span class="section-number">02</span><span>FIELD NOTES</span></div>
       <div class="sidebar-content">
-        <p class="eyebrow">CURRENT GENERATED CITY</p><h2>City report<span class="gold-dot">.</span></h2><p class="intro">A street plan shaped by your boundary. Tinted areas are empty city blocks.</p>
+        <p class="eyebrow">CURRENT GENERATED CITY</p><h2>City report<span class="gold-dot">.</span></h2><p class="intro">Buildings and varied properties shaped by your streets. Green space remains for yards, gardens and gaps.</p>
         <div class="report-label">SETTLEMENT</div><div class="report-primary" id="reportCityName"></div>
+        <div class="stat-row featured-stat"><span>Buildings</span><strong id="buildingCount">—</strong></div><div class="stat-row"><span>Properties</span><strong id="propertyCount">—</strong></div><div class="stat-row"><span>Combined-plot properties</span><strong id="mergedCount">—</strong></div><div class="stat-row"><span>Base plots</span><strong id="plotCount">—</strong></div>
         <div class="stat-row"><span>Seed</span><strong id="citySeed">—</strong></div><div class="stat-row"><span>Density</span><strong id="citySize">—</strong></div>
         <div class="stat-row"><span>Street pattern</span><strong id="cityMorphology">—</strong></div><div class="stat-row"><span>Boundary points</span><strong id="boundaryCount">—</strong></div>
         <div class="stat-row"><span>Road junctions</span><strong id="junctionCount">—</strong></div><div class="stat-row"><span>Road segments</span><strong id="roadCount">—</strong></div>
@@ -62,7 +64,7 @@
         <div class="sidebar-rule"></div><p class="eyebrow">WORKSPACE GUIDE</p>
         <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
         <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
-        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings, districts and fortifications come in later phases. Draft edits apply when you generate. Keep this page open to retain a custom outline; project saving is a later milestone.</p></div>
+        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts and fortifications remain later phases. Draft edits apply when you generate. Keep this page open to retain a custom outline; project saving is a later milestone.</p></div>
       </div>
     </aside>
   </div>

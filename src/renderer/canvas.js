@@ -1,4 +1,11 @@
 import {
+  drawDevelopment
+} from './buildings.js';
+import {
+  STREET_WIDTHS,
+  STREET_EDGE_WIDTH
+} from '../core/placement.js';
+import {
   clamp
 } from '../core/geometry.js';
 
@@ -6,17 +13,17 @@ const INK = '#34494b';
 const ACCENT = '#ad8054';
 const ROAD_STYLES = Object.freeze({
   primary: {
-    width: 12,
+    width: STREET_WIDTHS.primary,
     fill: '#fbf6e9',
     edge: '#a58f73'
   },
   secondary: {
-    width: 8.2,
+    width: STREET_WIDTHS.secondary,
     fill: '#faf4e6',
     edge: '#b2a58e'
   },
   lane: {
-    width: 4.5,
+    width: STREET_WIDTHS.lane,
     fill: '#f8f1df',
     edge: '#b6ab93'
   }
@@ -113,7 +120,7 @@ function drawRoads(ctx, camera, city, byId) {
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
       ctx.strokeStyle = style[pass];
-      ctx.lineWidth = (style.width + (pass === 'edge' ? 2.2 : 0)) * camera.zoom;
+      ctx.lineWidth = (style.width + (pass === 'edge' ? STREET_EDGE_WIDTH : 0)) * camera.zoom;
       ctx.stroke();
     }
   }
@@ -196,7 +203,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-export function renderMap(canvas, camera, project, editor) {
+export function renderMap(canvas, camera, project, editor, layers = {}) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -218,6 +225,7 @@ export function renderMap(canvas, camera, project, editor) {
   ctx.globalAlpha = editor?.dirty ? 0.20 : 1;
   drawSurvey(ctx, camera, city.survey);
   drawBlocks(ctx, camera, city, byId);
+  drawDevelopment(ctx, camera, city, layers);
   drawRoads(ctx, camera, city, byId);
   drawPlaza(ctx, camera, city.plaza, byId);
 

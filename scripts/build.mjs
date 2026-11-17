@@ -28,7 +28,7 @@ const template = await readFile(join(root, 'index.template.html'), 'utf8');
 if (!template.includes('<!-- INLINE_CSS -->') || !template.includes('<!-- INLINE_JS -->')) throw new Error('HTML template markers missing');
 const html = template.replace('<!-- INLINE_CSS -->', `<style>\n${css}\n</style>`)
   .replace('<!-- INLINE_JS -->', `<script>\n${script.replaceAll('</script', '<\\/script')}\n</script>`);
-const distribution = join(root, 'dist/mappo-0.1-dev.3a2.html');
+const distribution = join(root, 'dist/mappo-0.1-dev.3b.html');
 await mkdir(dirname(distribution), { recursive: true });
 await Promise.all([writeFile(distribution, html), writeFile(join(root, 'index.html'), html)]);
 const hash = createHash('sha256').update(html).digest('hex').slice(0, 16);
