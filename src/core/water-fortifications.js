@@ -1,5 +1,5 @@
 import {
-  waterRibbon,
+  waterFeaturePolygon,
   waterLineIntervals,
   waterDistance,
   WATER_BANK
@@ -16,7 +16,7 @@ export function waterWallOpenings(wall, features) {
   const measure = measureWall(wall.path),
     cuts = [];
   for (const f of features ?? []) {
-    const corridor = waterRibbon(f, WATER_BANK + 10);
+    const corridor = waterFeaturePolygon(f, WATER_BANK + 10);
     for (let i = 0; i < wall.path.length; i++)
       for (const s of waterLineIntervals(wall.path[i], wall.path[(i + 1) % wall.path.length], corridor)) {
         if (!s.inside) continue;
@@ -41,7 +41,7 @@ export function waterWallOpenings(wall, features) {
 }
 export function waterGateIsDry(gate, features, measure) {
   for (const f of features ?? []) {
-    const polygon = waterRibbon(f, WATER_BANK + 12),
+    const polygon = waterFeaturePolygon(f, WATER_BANK + 12),
       points = gate.connection.points;
     if (points.some(p => waterDistance(p, polygon) < 8)) return false;
     for (let i = 1; i < points.length; i++)

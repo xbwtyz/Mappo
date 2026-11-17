@@ -1,5 +1,6 @@
 import {
-  waterRibbon,
+  waterFeaturePolygon,
+  waterFrame,
   waterAt,
   waterBridgeGeometry,
   WATER_BANK
@@ -24,7 +25,7 @@ function waterDrawPolygon(ctx, camera, polygon, fill, stroke) {
 export function drawWater(ctx, camera, features) {
   for (const feature of features ?? []) {
     waterDrawPolygon(ctx, camera, feature.corridor, '#c8c7ac');
-    waterDrawPolygon(ctx, camera, feature.polygon, '#94bbc2', '#6d99a5');
+    waterDrawPolygon(ctx, camera, feature.polygon, feature.kind === 'coast' ? '#9bbec8' : '#94bbc2', feature.kind === 'coast' ? null : '#6d99a5');
     ctx.beginPath();
     feature.path.forEach((p, i) => {
       const q = camera.worldToScreen(p);
@@ -32,8 +33,28 @@ export function drawWater(ctx, camera, features) {
       else ctx.moveTo(q.x, q.y);
     });
     ctx.strokeStyle = 'rgba(231,245,236,.38)';
-    ctx.lineWidth = Math.max(.7, feature.width * .10 * camera.zoom);
+    ctx.lineWidth = feature.kind === 'coast' ? Math.max(1, 2 * camera.zoom) : Math.max(.7, feature.width * .10 * camera.zoom);
+    if (feature.kind === 'coast') ctx.strokeStyle = '#f1edcf';
     ctx.stroke();
+    if (feature.kind === 'coast') {
+      const {
+        v
+      } = waterFrame(feature), sign = feature.waterSide === 'left' ? 1 : -1;
+      for (const distance of [4, 11]) {
+        ctx.beginPath();
+        feature.path.forEach((p, i) => {
+          const q = camera.worldToScreen({
+            x: p.x + v.x * sign * distance,
+            y: p.y + v.y * sign * distance
+          });
+          if (i) ctx.lineTo(q.x, q.y);
+          else ctx.moveTo(q.x, q.y);
+        });
+        ctx.lineWidth = Math.max(.6, .8 * camera.zoom);
+        ctx.strokeStyle = distance === 4 ? 'rgba(241,239,212,.65)' : 'rgba(224,237,230,.28)';
+        ctx.stroke();
+      }
+    }
   }
 }
 export function drawBridges(ctx, camera, city) {
@@ -75,8 +96,8 @@ export function drawWaterDraft(ctx, camera, editor, boundary) {
     try {
       drawWater(ctx, camera, [{
         ...f,
-        polygon: waterRibbon(f),
-        corridor: waterRibbon(f, WATER_BANK)
+        polygon: waterFeaturePolygon(f),
+        corridor: waterFeaturePolygon(f, WATER_BANK)
       }]);
     } catch {}
     ctx.globalAlpha = 1;

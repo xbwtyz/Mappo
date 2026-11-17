@@ -1,4 +1,7 @@
 import {
+  generateCoast
+} from '../generators/coast.js';
+import {
   waterAt,
   waterNearestT,
   waterDryState
@@ -71,6 +74,23 @@ export class WaterEditor {
     this.mark();
     this.notify('River preview ready. Move its points or bridges, then Generate city to apply.');
   }
+  generateCoastline(boundary, center, options) {
+    const next = generateCoast(boundary, center, options);
+    this.remember();
+    this.restore(next);
+    this.mode = 'river';
+    this.mark();
+    this.notify('Coast preview ready. Drag shoreline points, then Generate city to apply.');
+  }
+  flipCoast() {
+    if (this.features[0]?.kind !== 'coast') throw new Error('Generate a coast first.');
+    this.remember();
+    const f = this.features[0];
+    f.waterSide = f.waterSide === 'left' ? 'right' : 'left';
+    delete f.direction;
+    this.mark();
+    this.notify('Ocean side swapped in the draft. Keep the main square on land before generating.');
+  }
   clear() {
     this.remember();
     this.restore({
@@ -79,7 +99,7 @@ export class WaterEditor {
       state: waterDryState()
     });
     this.mark();
-    this.notify('Dry-land preview. Generate city to remove the river and rebuild streets.');
+    this.notify('Dry-land preview. Generate city to remove water and rebuild streets.');
   }
   revert(city) {
     this.remember();
@@ -95,7 +115,7 @@ export class WaterEditor {
     this.notify('Water edit undone in the draft. Generate city to apply.');
   }
   width(value) {
-    if (!this.features.length) throw new Error('Generate a river first.');
+    if (this.features[0]?.kind !== 'river') throw new Error('Generate a river before adjusting river width.');
     const n = Number(value);
     if (!Number.isFinite(n) || n < 10 || n > 90) throw new Error('River width must be 10–90 survey units.');
     if (this.features[0].width === n) return;
@@ -119,7 +139,7 @@ export class WaterEditor {
           index: i
         };
       }
-    } else if (this.mode === 'bridge') {
+    } else if (this.mode === 'bridge' && f.kind === 'river') {
       const bridge = this.bridges.find(b => {
         const q = waterAt(f, b.t);
         return Math.hypot(p.x - q.x, p.y - q.y) < 15 / zoom;
@@ -134,7 +154,7 @@ export class WaterEditor {
           id: bridge.id
         };
       }
-    } else if (this.mode === 'addbridge') {
+    } else if (this.mode === 'addbridge' && f.kind === 'river') {
       if (this.bridges.length >= 8) {
         this.notify('This build supports up to eight bridges.', true);
         return;
@@ -247,12 +267,13 @@ export class WaterEditor {
 export function validateWaterEditor(snapshot) {
   if (!snapshot || typeof snapshot !== 'object' || typeof snapshot.dirty !== 'boolean' || !['pan', 'river', 'bridge', 'addbridge'].includes(snapshot.mode) || !Number.isInteger(snapshot.selectedPoint) || snapshot.selectedPoint < -1 || snapshot.selectedPoint > 31 || (snapshot.selectedBridge !== null && typeof snapshot.selectedBridge !== 'string') || !Array.isArray(snapshot.history) || snapshot.history.length > WATER_HISTORY_LIMIT) throw new Error('Invalid water editor state.');
   for (const d of [snapshot, ...snapshot.history]) {
-    if (!d.state || d.state.version !== 1 || d.state.algorithm !== 'ribbon-v1' || !['dry', 'river'].includes(d.state.status)) throw new Error('Unsupported water draft version.');
+    if (!d.state || d.state.version !== 1 || !['ribbon-v1', 'shore-v1'].includes(d.state.algorithm) || !['dry', 'river', 'coast'].includes(d.state.status)) throw new Error('Unsupported water draft version.');
     if (typeof d.state.seed !== 'string' || d.state.seed.length > 64 || !Array.isArray(d.features) || d.features.length > 1 || !Array.isArray(d.bridges) || d.bridges.length > 8) throw new Error('Invalid water draft.');
     for (const f of d.features)
-      if (f.dataVersion !== 1 || f.kind !== 'river' || typeof f.id !== 'string' || f.id.length > 128 || !Number.isFinite(f.width) || f.width < 10 || f.width > 90 || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || f.path.some(p => !p || !Number.isFinite(p.x) || !Number.isFinite(p.y) || Math.abs(p.x) > 100000 || Math.abs(p.y) > 100000)) throw new Error('Invalid river draft.');
+      if (f.dataVersion !== 1 || !['river', 'coast'].includes(f.kind) || typeof f.id !== 'string' || f.id.length > 128 || (f.kind === 'river' && (!Number.isFinite(f.width) || f.width < 10 || f.width > 90)) || (f.kind === 'coast' && (!['left', 'right'].includes(f.waterSide) || !Number.isFinite(f.seaDepth) || f.seaDepth < 100 || f.seaDepth > 20000)) || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || f.path.some(p => !p || !Number.isFinite(p.x) || !Number.isFinite(p.y) || Math.abs(p.x) > 100000 || Math.abs(p.y) > 100000)) throw new Error('Invalid water draft.');
     for (const b of d.bridges)
       if (b.dataVersion !== 1 || b.kind !== 'bridge' || typeof b.id !== 'string' || b.id.length > 128 || b.waterId !== d.features[0]?.id || !Number.isFinite(b.t) || b.t < 0 || b.t > 1 || b.width !== 9) throw new Error('Invalid bridge draft.');
   }
+  if (snapshot.controls?.coastDirection !== undefined && !['north', 'east', 'south', 'west'].includes(snapshot.controls.coastDirection)) throw new Error('Invalid saved coast direction.');
   if (snapshot.controls !== undefined && (typeof snapshot.controls.seed !== 'string' || snapshot.controls.seed.length > 64 || typeof snapshot.controls.width !== 'string' || snapshot.controls.width.length > 16)) throw new Error('Invalid water controls.');
 }

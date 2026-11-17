@@ -125,7 +125,7 @@ function updateDetails() {
 function generate() {
   try {
     editor.validate();
-    if (waterPanel?.editor.features.length) waterPanel.editor.width($('riverWidthInput').value);
+    if (waterPanel?.editor.features[0]?.kind === 'river') waterPanel.editor.width($('riverWidthInput').value);
     const next = createProject({
       seed: $('seedInput').value,
       size: $('sizeInput').value,
@@ -146,7 +146,7 @@ function generate() {
       waterPanel.editor.loadCity(next.city);
       waterPanel.editor.setMode('pan');
       waterPanel.refresh(true);
-      waterPanel.message(next.city.waterFeatures.length ? 'City generated around the saved river and bridge locations. Editing water creates a new draft.' : 'Dry city generated. Choose Generate river to preview water.');
+      waterPanel.message(next.city.waterFeatures.length ? 'City generated around the saved water. Editing its shoreline or crossings creates a new draft.' : 'Dry city generated. Choose Generate river or Generate coastline to preview water.');
     }
     districtPanel?.editor.load();
     districtPanel?.refresh(true);
@@ -348,7 +348,7 @@ waterPanel = new WaterPanel({
   changed: () => {
     const active = waterPanel.editor.mode !== 'pan';
     canvas.classList.toggle('drawing', active || editor.mode !== 'pan');
-    $('toolHint').textContent = active ? (waterPanel.editor.mode === 'river' ? 'Drag river points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+    $('toolHint').textContent = active ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
     for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!active && editor.mode === mode));
     $('draftBadge').textContent = waterPanel.editor.dirty ? '● WATER PREVIEW' : editor.dirty ? '● OUTLINE PREVIEW' : '● CITY PLAN';
     requestDraw();
@@ -398,7 +398,8 @@ function captureWorkspace() {
         ...waterPanel.editor.snapshot(),
         controls: {
           seed: String($('waterSeedInput').value),
-          width: String($('riverWidthInput').value)
+          width: String($('riverWidthInput').value),
+          coastDirection: $('coastDirectionInput').value || 'east'
         }
       },
       fortificationEditor: {
@@ -478,6 +479,7 @@ function applyProjectDocument(document) {
   if (workspace.waterEditor?.controls) {
     $('waterSeedInput').value = workspace.waterEditor.controls.seed;
     $('riverWidthInput').value = workspace.waterEditor.controls.width;
+    $('coastDirectionInput').value = workspace.waterEditor.controls.coastDirection ?? 'east';
   }
   $('waterPanel').open = workspace.panels?.water ?? false;
   waterPanel.message(waterPanel.editor.dirty ? 'Loaded unfinished water edits. Generate city when ready to apply.' : 'Saved water and bridge geometry loaded exactly.');

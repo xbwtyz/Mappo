@@ -23,7 +23,7 @@ export function waterFrame(feature) {
   const a = feature.path[0],
     b = feature.path.at(-1),
     length = Math.hypot(b.x - a.x, b.y - a.y);
-  if (length < 80) throw new Error('Extend the river endpoints farther apart.');
+  if (length < 80) throw new Error('Extend the water feature endpoints farther apart.');
   const u = {
     x: (b.x - a.x) / length,
     y: (b.y - a.y) / length
@@ -51,6 +51,33 @@ export function waterRibbon(feature, margin = 0) {
   }))];
   if (polygonSignedArea(polygon) < 0) polygon.reverse();
   return polygon;
+}
+// Shape adapters keep the layout, defense and editing pipelines independent of
+// a particular water kind. Additional kinds need a matching strict validator.
+export function waterCoastPolygon(feature, margin = 0) {
+  const {
+    v
+  } = waterFrame(feature), sign = feature.waterSide === 'left' ? 1 : -1;
+  const shore = feature.path.map(p => ({
+    x: p.x - v.x * sign * margin,
+    y: p.y - v.y * sign * margin
+  }));
+  const far = p => ({
+    x: p.x + v.x * sign * feature.seaDepth,
+    y: p.y + v.y * sign * feature.seaDepth
+  });
+  const polygon = [...shore, far(feature.path.at(-1)), far(feature.path[0])];
+  if (polygonSignedArea(polygon) < 0) polygon.reverse();
+  return polygon;
+}
+export const WATER_GEOMETRY = Object.freeze({
+  river: waterRibbon,
+  coast: waterCoastPolygon
+});
+export function waterFeaturePolygon(feature, margin = 0) {
+  const build = Object.hasOwn(WATER_GEOMETRY, feature.kind) ? WATER_GEOMETRY[feature.kind] : null;
+  if (!build) throw new Error('Unsupported water feature kind.');
+  return build(feature, margin);
 }
 export function waterAt(feature, t) {
   const f = waterFrame(feature),
@@ -97,6 +124,7 @@ export function waterLineIntervals(a, b, polygon) {
   return result;
 }
 export function waterBridgeGeometry(feature, bridge, boundary) {
+  if (feature.kind !== 'river') throw new Error('Bridges require a river with two banks.');
   const p = waterAt(feature, bridge.t),
     bounds = boundsOf(boundary),
     reach = Math.hypot(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY) * 3;

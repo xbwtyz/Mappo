@@ -1,10 +1,22 @@
-# Mappo 0.1-dev.3e validation
+# Mappo 0.1-dev.3e1 validation
 
 ## Automated checks
 
-**82 automated tests passed**, covering rivers, bridges, fortifications, districts, persistence and existing city generation.
+**88 automated tests passed**, covering coasts, rivers, bridges, fortifications, districts, persistence and existing city generation.
 
 Run `npm run check` to rebuild and run the complete suite. All road-crossing checks remain enabled.
+
+### Coastline coverage
+
+- 96 combinations of eight outlines, three densities and four street patterns, covering all four requested ocean directions.
+- Independent land/wet area coverage, property setback, dry building footprints, dry traversable streets, land-only wall sections and tower clearance.
+- Deterministic coast seeds, independent street seeds and explicit checks that ocean lies on the requested north/east/south/west side.
+- Shoreline-only region checks reject isolated land; a concave horseshoe regression covers a coast that would cut off a lower arm.
+- Shoreline dragging, side swaps, undo and cancelled gestures preserve the accepted city and compatible record metadata.
+- Coast files preserve exact ocean geometry, invalid side-swapped drafts, history and pending generator direction.
+- Invalid water sides, incompatible versions/algorithms, undersized ocean extents, changed bank geometry and bridges on coasts are rejected.
+- A frozen native 3E river file migrates without changing accepted geometry, view or water history.
+- Compiled-app checks generate a coast over an existing river draft, drag a shoreline handle, disable river-only controls, apply a coastal city, reject a submerged square, save/load the invalid draft and undo the side swap.
 
 ### River and bridge coverage
 
@@ -92,7 +104,7 @@ Additional tests check 1,200 survey configurations, reproducible IDs, invalid in
 
 ## Rendering checks
 
-The production Canvas renderer was used with a native Canvas implementation to inspect full-city views for all four street patterns and a zoomed view of individual roofs. For this milestone it also rendered fortified organic, planned, branching and horseshoe cities, plus a gate closeup; wall gaps, street connections and tower placement were visually inspected. This checks generated geometry, building forms and drawing, not browser layout or native browser pointer delivery. Water rendering was additionally inspected for organic, planned, branching and horseshoe cities, plus a bridge closeup with actual connected roads, clear banks and wall passages.
+The production Canvas renderer was used with a native Canvas implementation to inspect full-city views for all four street patterns and a zoomed view of individual roofs. For this milestone it also rendered fortified organic, planned, branching and horseshoe cities, plus a gate closeup; wall gaps, street connections and tower placement were visually inspected. This checks generated geometry, building forms and drawing, not browser layout or native browser pointer delivery. Coastal rendering was inspected for organic, planned, branching and horseshoe cities with west/north/south/east oceans, plus a waterfront closeup. Ocean fill, shoreline roads and dry defenses were checked. Water rendering was additionally inspected for organic, planned, branching and horseshoe cities, plus a bridge closeup with actual connected roads, clear banks and wall passages.
 
 ## Graphical browser limitation
 
@@ -100,8 +112,13 @@ The host previously denied Chromium's process-singleton socket. No full graphica
 
 ## Manual Firefox checklist
 
-Open `dist/mappo-0.1-dev.3e.html` directly from disk.
+Open `dist/mappo-0.1-dev.3e1.html` directly from disk.
 
+- Generate a coast in each ocean direction. Drag/add/remove shoreline points, reroll water and confirm only a draft changes until Generate city.
+- Swap land/water; check submerged-square feedback and retention of the previous city. Undo and regenerate.
+- Confirm river width and bridge tools are disabled on a coast. Save/load a coast with an unfinished invalid draft and pending ocean direction.
+- Inspect shoreline roads, building setbacks, outer wall termination and absence of streets/towers in ocean. Test a concave outline and a disconnected-island draft.
+- Load a native 3E river project; compare its accepted map, unfinished edits and water undo history.
 - Generate a river; verify the current city stays intact until Generate city. Drag points, change width and reroll only water.
 - Move, add and remove bridges. Generate and inspect both ends; streets should connect to waterfront roads.
 - Try overlapping bridges, a crossing outside the city, a sharp/backtracking river bend, a river through the square and removing every bridge. Check useful errors and retention of the prior city.

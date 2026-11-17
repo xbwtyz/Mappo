@@ -1,4 +1,7 @@
 import {
+  waterLandRegions
+} from './water-regions.js';
+import {
   pointInPolygon
 } from './geometry.js';
 import {
@@ -7,7 +10,7 @@ import {
 } from './boundary.js';
 import {
   waterFrame,
-  waterRibbon,
+  waterFeaturePolygon,
   waterBridgeGeometry,
   waterLineIntervals,
   waterFaceInterior,
@@ -18,7 +21,7 @@ import {
 } from './placement.js';
 
 export function validateWaterDefinition(features, bridges, boundary, center) {
-  if (!Array.isArray(features) || features.length > 1 || !Array.isArray(bridges) || bridges.length > 8) throw new Error('This build supports one river and up to eight bridges.');
+  if (!Array.isArray(features) || features.length > 1 || !Array.isArray(bridges) || bridges.length > 8) throw new Error('This build supports one river or coast, and up to eight river bridges.');
   const ids = new Set();
   for (const r of [...features, ...bridges]) {
     if (typeof r.id !== 'string' || !r.id || r.id.length > 128 || ids.has(r.id)) throw new Error('Invalid or duplicate water/bridge ID.');
@@ -29,15 +32,15 @@ export function validateWaterDefinition(features, bridges, boundary, center) {
     if (bridges.length) throw new Error('A bridge references missing water.');
     return;
   }
-  if (!center || !Number.isFinite(center.x) || !Number.isFinite(center.y)) throw new Error('A river city needs a saved main-square center.');
+  if (!center || !Number.isFinite(center.x) || !Number.isFinite(center.y)) throw new Error('A waterfront city needs a saved main-square center.');
   const f = features[0];
-  if (f.kind !== 'river') throw new Error('Unsupported water feature kind.');
-  if (!Number.isFinite(f.width) || f.width < 10 || f.width > 90 || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || !f.path.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 100000 && Math.abs(p.y) < 100000)) throw new Error('Invalid river path or width.');
+  if (!['river', 'coast'].includes(f.kind)) throw new Error('Unsupported water feature kind.');
+  if ((f.kind === 'river' && (!Number.isFinite(f.width) || f.width < 10 || f.width > 90)) || (f.kind === 'coast' && (!['left', 'right'].includes(f.waterSide) || !Number.isFinite(f.seaDepth) || f.seaDepth < 100 || f.seaDepth > 20000)) || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || !f.path.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 100000 && Math.abs(p.y) < 100000)) throw new Error('Invalid water path, river width or coast extent.');
   const frame = waterFrame(f);
   let previous = -1;
   for (const p of f.path) {
     const t = (p.x - frame.origin.x) * frame.u.x + (p.y - frame.origin.y) * frame.u.y;
-    if (t - previous < 1e-3) throw new Error('River points must progress from source to mouth; untangle the draft.');
+    if (t - previous < 1e-3) throw new Error('Water points must progress from one endpoint to the other; untangle the draft.');
     previous = t;
   }
   for (let i = 1; i < f.path.length; i++) {
@@ -45,21 +48,32 @@ export function validateWaterDefinition(features, bridges, boundary, center) {
       b = f.path[i],
       du = (b.x - a.x) * frame.u.x + (b.y - a.y) * frame.u.y,
       dv = (b.x - a.x) * frame.v.x + (b.y - a.y) * frame.v.y;
-    if (Math.abs(dv) > du * .8) throw new Error('Smooth this river bend; adjacent points turn too sharply for safe banks.');
+    if (Math.abs(dv) > du * .8) throw new Error('Smooth this water bend; adjacent points turn too sharply for safe banks.');
   }
-  if (insideOrOn(f.path[0], boundary) || insideOrOn(f.path.at(-1), boundary)) throw new Error('Extend both river endpoints beyond the city.');
+  if (insideOrOn(f.path[0], boundary) || insideOrOn(f.path.at(-1), boundary)) throw new Error('Extend both water endpoints beyond the city.');
   for (const [key, margin] of [
       ['polygon', 0],
       ['corridor', WATER_BANK]
     ]) {
-    const expected = waterRibbon(f, margin);
-    if (!Array.isArray(f[key]) || f[key].length !== expected.length || expected.some((p, i) => !Number.isFinite(f[key][i]?.x) || !Number.isFinite(f[key][i]?.y) || Math.hypot(p.x - f[key][i].x, p.y - f[key][i].y) > 1e-5)) throw new Error('Saved river banks disagree with the path.');
+    const expected = waterFeaturePolygon(f, margin);
+    if (!Array.isArray(f[key]) || f[key].length !== expected.length || expected.some((p, i) => !Number.isFinite(f[key][i]?.x) || !Number.isFinite(f[key][i]?.y) || Math.hypot(p.x - f[key][i].x, p.y - f[key][i].y) > 1e-5)) throw new Error('Saved water banks disagree with the path.');
   }
-  if (insideOrOn(center, f.corridor) || Math.min(...f.corridor.map((p, i) => distanceToSegment(center, p, f.corridor[(i + 1) % f.corridor.length]))) < 28) throw new Error('Move the river away from the main square or relocate the square.');
+  if (insideOrOn(center, f.corridor) || Math.min(...f.corridor.map((p, i) => distanceToSegment(center, p, f.corridor[(i + 1) % f.corridor.length]))) < 28) throw new Error('Move the water away from the main square or relocate the square.');
   let intersects = false;
   for (let i = 0; i < f.path.length - 1; i++)
     if (waterLineIntervals(f.path[i], f.path[i + 1], boundary).some(s => s.inside)) intersects = true;
-  if (!intersects) throw new Error('The river must pass through the city.');
+  if (!intersects) throw new Error('The shoreline or river must pass through the city.');
+  if (f.kind === 'coast') {
+    if (bridges.length) throw new Error('A coast has open ocean, not a second bank for bridges.');
+    const frame = waterFrame(f);
+    for (const p of boundary) {
+      const u = (p.x - frame.origin.x) * frame.u.x + (p.y - frame.origin.y) * frame.u.y,
+        v = (p.x - frame.origin.x) * frame.v.x + (p.y - frame.origin.y) * frame.v.y;
+      if (u <= 0 || u >= frame.length || Math.abs(v) > f.seaDepth - 100) throw new Error('Extend the coast endpoints and ocean extent to cover the city.');
+    }
+    if (waterLandRegions(boundary, f.corridor).landCount !== 1) throw new Error('The coastline separates land into disconnected islands. Move the shore to keep the city connected.');
+    return;
+  }
   if (!bridges.length) throw new Error('Add at least one bridge to connect the river banks.');
   const geometries = [];
   for (const bridge of bridges) {
@@ -73,9 +87,9 @@ export function validateWaterDefinition(features, bridges, boundary, center) {
 }
 export function validateWaterCity(city) {
   const state = city.waterState;
-  if (!state || state.version !== 1 || !['dry', 'river'].includes(state.status) || typeof state.seed !== 'string' || state.seed.length > 64 || state.algorithm !== 'ribbon-v1') throw new Error('Unsupported water state.');
+  if (!state || state.version !== 1 || !['dry', 'river', 'coast'].includes(state.status) || typeof state.seed !== 'string' || state.seed.length > 64 || state.algorithm !== (state.status === 'coast' ? 'shore-v1' : 'ribbon-v1')) throw new Error('Unsupported water state.');
   validateWaterDefinition(city.waterFeatures, city.bridges, city.survey.boundary, city.plaza.center);
-  if (state.status !== (city.waterFeatures.length ? 'river' : 'dry')) throw new Error('Water state and features disagree.');
+  if (state.status !== (city.waterFeatures[0]?.kind ?? 'dry')) throw new Error('Water state and features disagree.');
   if (!Array.isArray(city.waterFaces) || city.waterFaces.length > 256) throw new Error('Invalid water face collection.');
   if (!city.waterFeatures.length) {
     if (city.waterFaces.length || city.roads.some(r => r.waterBoundary || r.bridgeId || r.bank)) throw new Error('Dry cities cannot contain water topology.');
@@ -90,7 +104,7 @@ export function validateWaterCity(city) {
     nodes = new Map(city.nodes.map(n => [n.id, n])),
     ids = new Set(city.bridges.map(b => b.id)),
     wetEdges = new Map();
-  if (!city.waterFaces.length) throw new Error('The river has no reserved water area.');
+  if (!city.waterFaces.length) throw new Error('The water feature has no reserved area.');
   for (const face of [...city.blocks, city.plaza, ...city.waterFaces]) {
     const wet = city.waterFaces.includes(face),
       p = waterFaceInterior(face.vertices, nodes);
@@ -128,7 +142,7 @@ export function validateWaterCity(city) {
         g = waterBridgeGeometry(f, bridge, city.survey.boundary);
       if (distanceToSegment(a, ...g.ends) > 1e-4 || distanceToSegment(b, ...g.ends) > 1e-4) throw new Error('Bridge road is detached from its crossing.');
       wetEdges.set(r.bridgeId, (wetEdges.get(r.bridgeId) || 0) + Math.hypot(b.x - a.x, b.y - a.y));
-    } else if (wet && !onBank && !r.waterBoundary) throw new Error('An ordinary street crosses the river.');
+    } else if (wet && !onBank && !r.waterBoundary) throw new Error('An ordinary street crosses the water.');
     if (r.waterBoundary && (!r.boundary || !wet)) throw new Error('Invalid water boundary edge.');
   }
   for (const bridge of city.bridges) {
@@ -152,6 +166,6 @@ export function validateWaterCity(city) {
         visited.add(n);
         queue.push(n);
       }
-  if (visited.size !== graph.size) throw new Error('The river disconnects streets. Add or move a bridge to connect every bank, or adjust the river course.');
+  if (visited.size !== graph.size) throw new Error(f.kind === 'coast' ? 'The coastline separates land into disconnected islands. Move the shore to keep the city connected.' : 'The river disconnects streets. Add or move a bridge to connect every bank, or adjust the river course.');
   return city;
 }

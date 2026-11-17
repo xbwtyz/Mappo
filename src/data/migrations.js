@@ -52,5 +52,7 @@ export function migrateProjectData(project) {
     };
     project.schemaVersion = 5;
   }
+  // Schema 6 admits coasts; existing river and dry models require no edits.
+  if (project.schemaVersion === 5) project.schemaVersion = 6;
   return project;
 }

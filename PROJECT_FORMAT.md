@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current release is **0.1-dev.3e**. Its container format is **1**, project-data schema is **5**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current release is **0.1-dev.3e1**. Its container format is **1**, project-data schema is **6**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.3e",
+  "appVersion": "0.1-dev.3e1",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -30,7 +30,7 @@ The empty objects illustrate envelope locations; they are not a valid complete c
 
 Names, notes and unknown JSON fields on records are retained. `project.generatorVersion` describes the original generator; loading and exporting does not rewrite it to the current app version.
 
-Schemas 2–5 share these geometry contracts: polygon coordinates are ordinary finite JSON numbers. Polygons use a counterclockwise outer boundary. Building holes are separate counterclockwise polygons inside the footprint. Base plots are convex; properties and building footprints may be concave. A property’s plots partition its area. Buildings reference only the plots their actual footprint occupies. Attached rows may share walls, with no positive-area footprint overlap.
+Schemas 2–6 share these geometry contracts: polygon coordinates are ordinary finite JSON numbers. Polygons use a counterclockwise outer boundary. Building holes are separate counterclockwise polygons inside the footprint. Base plots are convex; properties and building footprints may be concave. A property’s plots partition its area. Buildings reference only the plots their actual footprint occupies. Attached rows may share walls, with no positive-area footprint overlap.
 
 The current reader additionally validates fortification clearance, gate connectivity, tower placement and defense history, plus district coverage, connected membership, block inheritance, names/colors and saved district undo history. It validates structure, unique IDs, references, street planarity/connectivity, block coverage, street-width setbacks, polygon containment, plot ownership/area, roof geometry and rendering fields. It rejects incomplete or inconsistent core geometry before changing the open city.
 
@@ -70,7 +70,7 @@ Future developers should:
 
 A newer unsupported container, project schema or workspace schema is rejected with a compatible-build message. The reader does not guess how to downgrade it. Compatible unknown fields are preserved; arbitrary future formats are not promised to be readable by old apps.
 
-Raw schema-1 projects captured from the released 3A.2 and 3B builds are supported. The first migration adds missing empty property/plot/open-space collections where appropriate and advances schema 1 to 2; the district migration advances it to schema 3, the fortification migration advances it to schema 4, then the water migration advances it to schema 5. It preserves original geometry, IDs and generator metadata. Those earlier HTML builds did not have a save button; raw JSON compatibility supports existing model snapshots.
+Raw schema-1 projects captured from the released 3A.2 and 3B builds are supported. The first migration adds missing empty property/plot/open-space collections where appropriate and advances schema 1 to 2; the district migration advances it to schema 3, the fortification migration advances it to schema 4, the water migration advances it to schema 5, then the coast compatibility migration advances it to schema 6. It preserves original geometry, IDs and generator metadata. Those earlier HTML builds did not have a save button; raw JSON compatibility supports existing model snapshots.
 
 ## District schema 3
 
@@ -100,7 +100,7 @@ Built records have strict kind/version checks; unsupported future forms require 
 
 ## Water schema 5
 
-`city.waterState` records `version: 1`, `status: "dry" | "river"`, independent `seed` and `algorithm: "ribbon-v1"`. Current readers support zero or one river.
+`city.waterState` records `version: 1`, `status: "dry" | "river"`, independent `seed` and `algorithm: "ribbon-v1"`. Schema-5 records support zero or one river; the schema-6 extension also accepts one coast.
 
 | Collection | Authoritative content |
 | --- | --- |
@@ -119,6 +119,18 @@ Walls optionally store `waterOpenings: [{start, end, waterId}]`, measured along 
 All river polygons, node/road/face geometry and bridge definitions are saved directly. Validation checks their agreement without replacing them. River/bridge geometry is never regenerated during file loading. Editing the draft or rerolling water does not mutate accepted city data. Applying water explicitly regenerates streets, population, districts and enabled defenses.
 
 Migration from schema 4 adds empty water/bridge/face collections and a dry state, retaining all existing city, district and defense geometry and metadata. The frozen native fixture `tests/fixtures/save-3d-format1-schema4.json` was captured from the released 3D standalone HTML. Older schemas run the earlier migrations first. Unknown compatible fields are preserved; unsupported water/bridge kinds or versions require a compatible reader.
+
+## Coast schema 6
+
+A coastal city uses `city.waterState: {version: 1, status: "coast", seed, algorithm: "shore-v1"}`. The existing collection accepts a single `kind: "coast"` feature with `dataVersion: 1`, stable ID, ordered `path`, `waterSide: "left" | "right"`, finite `seaDepth` of 100–20,000 units, saved ocean `polygon`, saved bank `corridor` and compatible extensions. Optional `direction` records a north/east/south/west generator preference, not an authoritative geometric direction after editing.
+
+Left/right is relative to the source-to-endpoint frame. The polygon follows the shoreline and closes toward the selected ocean side using the saved sea depth. The corridor extends nine cross-frame units onto land for the waterfront road. Both endpoints must extend beyond the entire city in the longitudinal frame, and the ocean closure must stay beyond it. Loops, backward course segments and excessively sharp adjacent slopes are rejected. The shape adapter is independent of street generation and rendering.
+
+Coasts use the same land/wet face partition, `bank` streets and hidden virtual `waterBoundary` edges as rivers. They contain no bridges. A shoreline-only planar arrangement checks there is exactly one connected land region before street generation; the complete city also validates actual traversable street connectivity. The square, all properties and buildings stay on land. Wall water openings remove submerged outer-perimeter sections; towers and street gates remain dry.
+
+Workspace schema stays 1. The shared course editor retains its historical `mode: "river"` enum for editing either river or shoreline points. Optional `workspace.waterEditor.controls.coastDirection` saves the pending generator direction separately from the current shoreline. Side swaps edit only the draft; a temporarily submerged square or otherwise invalid draft can still be saved. Unknown compatible workspace and feature fields remain preserved.
+
+Migration 5→6 advances only `project.schemaVersion`. It never changes existing water, bridges, streets, buildings, defenses, districts, history or view. `tests/fixtures/save-3e-format1-schema5.json` is a frozen native river project captured from the released 3E HTML. The current reader accepts one river **or** one coast; connected river mouths, multiple water features and lakes need later contracts.
 
 ## Browser recovery
 

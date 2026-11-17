@@ -14,7 +14,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e1.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -712,5 +712,44 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(reloaded.state().waterPanel.editor.dirty, true);
   reloaded.el('undoWaterButton').handlers.click();
   assert.equal(reloaded.state().waterPanel.editor.bridges.length, 1);
+  reloaded.el('coastDirectionInput').value = 'east';
+  reloaded.el('waterSeedInput').value = 'coast-stress';
+  reloaded.el('generateCoastButton').handlers.click();
+  assert.equal(reloaded.state().waterPanel.editor.features[0].kind, 'coast');
+  assert.deepEqual(copy(reloaded.state().project), wetProject);
+  assert.equal(reloaded.el('addBridgeButton').disabled, true);
+  assert.equal(reloaded.el('riverWidthInput').disabled, true);
+  const shoreEditor = reloaded.state().waterPanel.editor,
+    shorePoint = shoreEditor.features[0].path[4];
+  const a = reloaded.state().camera.worldToScreen(shorePoint),
+    b = {
+      x: a.x + 3 * reloaded.state().camera.zoom,
+      y: a.y
+    };
+  fire('pointerdown', a);
+  fire('pointermove', b);
+  fire('pointerup', b);
+  reloaded.el('generateButton').handlers.click();
+  assert.equal(reloaded.state().project.city.waterState.status, 'coast', reloaded.el('waterMessage').textContent);
+  assert.equal(reloaded.state().project.city.bridges.length, 0);
+  const coastProject = copy(reloaded.state().project);
+  reloaded.el('flipCoastButton').handlers.click();
+  assert.match(reloaded.el('waterMessage').textContent, /square/);
+  reloaded.el('generateButton').handlers.click();
+  assert.deepEqual(copy(reloaded.state().project), coastProject);
+  reloaded.el('coastDirectionInput').value = 'south';
+  assert.ok(await reloaded.el('saveProjectButton').handlers.click());
+  const coastFile = downloaded.at(-1),
+    coastText = await coastFile.blob.text();
+  reloaded.el('revertWaterButton').handlers.click();
+  await reloaded.state().files.stageFile({
+    size: coastFile.blob.size,
+    text: async () => coastText
+  });
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.deepEqual(copy(reloaded.state().project), coastProject);
+  assert.equal(reloaded.el('coastDirectionInput').value, 'south');
+  reloaded.el('undoWaterButton').handlers.click();
+  assert.equal(reloaded.state().waterPanel.editor.features[0].waterSide, coastProject.city.waterFeatures[0].waterSide);
 
 });

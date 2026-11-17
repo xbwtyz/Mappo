@@ -10,6 +10,7 @@ import {
 } from '../core/prng.js';
 import {
   waterRibbon,
+  waterFeaturePolygon,
   waterBridgeGeometry,
   waterDryState,
   WATER_BANK
@@ -95,8 +96,8 @@ export function generateRiver(boundary, center, options = {}) {
 export function prepareWater(water) {
   const features = (water?.features ?? []).map(f => ({
     ...f,
-    polygon: waterRibbon(f),
-    corridor: waterRibbon(f, WATER_BANK)
+    polygon: waterFeaturePolygon(f),
+    corridor: waterFeaturePolygon(f, WATER_BANK)
   }));
   return {
     features,
@@ -104,7 +105,8 @@ export function prepareWater(water) {
     state: {
       ...waterDryState(),
       ...(water?.state ?? {}),
-      status: features.length ? 'river' : 'dry'
+      status: features[0]?.kind ?? 'dry',
+      algorithm: features[0]?.kind === 'coast' ? 'shore-v1' : 'ribbon-v1'
     }
   };
 }

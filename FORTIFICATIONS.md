@@ -1,6 +1,6 @@
 # Fortification modules and extension contracts
 
-Milestone 3D adds one optional exterior wall ring with connected street gates and round towers. Source modules remain independent of rendering and project-file UI. Rivers introduced in 3E add independently saved water openings to the ring; gates and towers remain clear of these passages. Native UI generation enables defenses by default; the core city factory keeps this optional through `options.fortifications.enabled`.
+Milestone 3D adds one optional exterior wall ring with connected street gates and round towers. Source modules remain independent of rendering and project-file UI. Water introduced in 3E adds independently saved water openings to the ring; coastal mode in 3E.1 removes all submerged perimeter sections. Gates and towers remain clear of water. Native UI generation enables defenses by default; the core city factory keeps this optional through `options.fortifications.enabled`.
 
 ## Responsibilities
 

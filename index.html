@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — Rivers & Bridges · 0.1-dev.3e</title>
+  <title>Mappo — Coastlines & Rivers · 0.1-dev.3e1</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -26,8 +26,8 @@
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3e</span></div>
-    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>RIVERS &amp; BRIDGES</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3e1</span></div>
+    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>COASTLINES &amp; RIVERS</span></div>
   </header>
   <div class="workspace">
     <aside class="sidebar sidebar-left" aria-label="City design tools">
@@ -45,13 +45,16 @@
         </section>
         <details id="waterPanel" class="water-panel" open>
           <summary>WATER &amp; BRIDGES</summary>
-          <p id="waterStats" class="hint">Generate a river, then reshape its course and crossings.</p>
+          <p id="waterStats" class="hint">Generate a river or coastline, then edit the water preview.</p>
           <div class="control-group"><label for="waterSeedInput">Water seed</label><input id="waterSeedInput" maxlength="64" value="river" spellcheck="false"></div>
           <div class="control-group"><label for="riverWidthInput">River width · survey units</label><input id="riverWidthInput" type="number" min="10" max="90" step="1" value="28"></div>
-          <div class="tool-grid"><button id="generateRiverButton" class="tool-button">Generate river</button><button id="rerollRiverButton" class="minor-button">New river seed</button></div>
+          <div class="tool-grid"><button id="generateRiverButton" class="tool-button">Generate river</button><button id="rerollRiverButton" class="minor-button">New water seed</button></div>
+          <div class="control-group coast-direction"><label for="coastDirectionInput">Ocean direction · new coastline</label><select id="coastDirectionInput"><option value="north">North</option><option value="east" selected>East</option><option value="south">South</option><option value="west">West</option></select></div>
+          <div class="tool-grid"><button id="generateCoastButton" class="tool-button">Generate coastline</button><button id="flipCoastButton" class="minor-button" disabled>Swap land / water</button></div>
+          <p class="hint">Generate river or coastline replaces the water draft. Direction applies when generating a new coast; Swap changes the current draft.</p>
           <div class="tool-grid actions"><button id="editRiverButton" class="tool-button" aria-pressed="false">Edit river points</button><button id="editBridgesButton" class="tool-button" aria-pressed="false">Move bridges</button><button id="addBridgeButton" class="minor-button" aria-pressed="false">Add bridge</button><button id="removeWaterItemButton" class="minor-button">Remove selected</button></div>
           <div class="tool-grid actions"><button id="undoWaterButton" class="minor-button">Undo water edit</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
-          <button id="removeRiverButton" class="minor-button full-width">Remove river from draft</button>
+          <button id="removeRiverButton" class="minor-button full-width">Remove water from draft</button>
           <p id="waterMessage" class="file-status" role="status" aria-live="polite">Water edits are previews. Generate city below to rebuild streets, buildings, districts and defenses around them. The last valid city stays open if a crossing cannot connect.</p>
         </details>
         <details id="fortificationPanel" class="fortification-panel" open>
@@ -131,7 +134,7 @@
         <div class="sidebar-rule"></div><p class="eyebrow">WORKSPACE GUIDE</p>
         <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
         <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
-        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts group whole blocks. Moving a block keeps both neighborhoods connected. Generate an editable river and bridge locations in Water &amp; Bridges. Water drafts apply when you generate the city. Perimeter walls keep openings for the river. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
+        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No interior holes. Buildings now occupy varied street-facing properties. Districts group whole blocks. Moving a block keeps both neighborhoods connected. Generate an editable river or coastline in Water &amp; Bridges. Water drafts apply when you generate the city. Perimeter walls stay clear of water. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
       </div>
     </aside>
   </div>
@@ -372,7 +375,7 @@ function waterFrame(feature) {
   const a = feature.path[0],
     b = feature.path.at(-1),
     length = Math.hypot(b.x - a.x, b.y - a.y);
-  if (length < 80) throw new Error('Extend the river endpoints farther apart.');
+  if (length < 80) throw new Error('Extend the water feature endpoints farther apart.');
   const u = {
     x: (b.x - a.x) / length,
     y: (b.y - a.y) / length
@@ -400,6 +403,33 @@ function waterRibbon(feature, margin = 0) {
   }))];
   if (polygonSignedArea(polygon) < 0) polygon.reverse();
   return polygon;
+}
+// Shape adapters keep the layout, defense and editing pipelines independent of
+// a particular water kind. Additional kinds need a matching strict validator.
+function waterCoastPolygon(feature, margin = 0) {
+  const {
+    v
+  } = waterFrame(feature), sign = feature.waterSide === 'left' ? 1 : -1;
+  const shore = feature.path.map(p => ({
+    x: p.x - v.x * sign * margin,
+    y: p.y - v.y * sign * margin
+  }));
+  const far = p => ({
+    x: p.x + v.x * sign * feature.seaDepth,
+    y: p.y + v.y * sign * feature.seaDepth
+  });
+  const polygon = [...shore, far(feature.path.at(-1)), far(feature.path[0])];
+  if (polygonSignedArea(polygon) < 0) polygon.reverse();
+  return polygon;
+}
+const WATER_GEOMETRY = Object.freeze({
+  river: waterRibbon,
+  coast: waterCoastPolygon
+});
+function waterFeaturePolygon(feature, margin = 0) {
+  const build = Object.hasOwn(WATER_GEOMETRY, feature.kind) ? WATER_GEOMETRY[feature.kind] : null;
+  if (!build) throw new Error('Unsupported water feature kind.');
+  return build(feature, margin);
 }
 function waterAt(feature, t) {
   const f = waterFrame(feature),
@@ -446,6 +476,7 @@ function waterLineIntervals(a, b, polygon) {
   return result;
 }
 function waterBridgeGeometry(feature, bridge, boundary) {
+  if (feature.kind !== 'river') throw new Error('Bridges require a river with two banks.');
   const p = waterAt(feature, bridge.t),
     bounds = boundsOf(boundary),
     reach = Math.hypot(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY) * 3;
@@ -574,8 +605,8 @@ function generateRiver(boundary, center, options = {}) {
 function prepareWater(water) {
   const features = (water?.features ?? []).map(f => ({
     ...f,
-    polygon: waterRibbon(f),
-    corridor: waterRibbon(f, WATER_BANK)
+    polygon: waterFeaturePolygon(f),
+    corridor: waterFeaturePolygon(f, WATER_BANK)
   }));
   return {
     features,
@@ -583,8 +614,105 @@ function prepareWater(water) {
     state: {
       ...waterDryState(),
       ...(water?.state ?? {}),
-      status: features.length ? 'river' : 'dry'
+      status: features[0]?.kind ?? 'dry',
+      algorithm: features[0]?.kind === 'coast' ? 'shore-v1' : 'ribbon-v1'
     }
+  };
+}
+
+
+// src/core/water-regions.js
+
+
+
+// A shoreline-only arrangement checks land connectivity before streets exist.
+// Each positive dry face is one land region; tangent spurs do not add regions.
+function waterLandRegions(boundary, corridor) {
+  const segments = [...boundary.map((a, i) => ({
+    a,
+    b: boundary[(i + 1) % boundary.length]
+  })), ...corridor.map((a, i) => ({
+    a,
+    b: corridor[(i + 1) % corridor.length]
+  }))];
+  const cuts = segments.map(() => [0, 1]);
+  let work = 400000;
+  for (let i = 0; i < segments.length; i++)
+    for (let j = i + 1; j < segments.length; j++) {
+      if (--work < 0) throw new Error('The shoreline is too complex for this build. Simplify the outline.');
+      const a = segments[i],
+        b = segments[j];
+      cuts[i].push(...segmentCuts(a.a, a.b, b.a, b.b));
+      cuts[j].push(...segmentCuts(b.a, b.b, a.a, a.b));
+    }
+  const nodes = [],
+    bins = new Map(),
+    edges = new Map();
+  const node = p => {
+    const x = Math.round(p.x * 1e6),
+      y = Math.round(p.y * 1e6);
+    for (let dx = -1; dx <= 1; dx++)
+      for (let dy = -1; dy <= 1; dy++) {
+        const q = bins.get(`${x+dx},${y+dy}`);
+        if (q && Math.hypot(q.x - p.x, q.y - p.y) < 1e-6) return q;
+      }
+    if (nodes.length >= 4096) throw new Error('Too many shoreline intersections. Simplify the coast.');
+    const q = {
+      id: String(nodes.length),
+      x: p.x,
+      y: p.y
+    };
+    nodes.push(q);
+    bins.set(`${x},${y}`, q);
+    return q;
+  };
+  for (let i = 0; i < segments.length; i++) {
+    const ts = cuts[i].sort((a, b) => a - b),
+      s = segments[i];
+    for (let j = 1; j < ts.length; j++) {
+      if (ts[j] - ts[j - 1] < 1e-9) continue;
+      const a = node(lerpPoint(s.a, s.b, ts[j - 1])),
+        b = node(lerpPoint(s.a, s.b, ts[j]));
+      if (a !== b) edges.set([a.id, b.id].sort().join(':'), [a.id, b.id]);
+    }
+  }
+  const byId = new Map(nodes.map(n => [n.id, n])),
+    graph = new Map(nodes.map(n => [n.id, []]));
+  for (const [a, b] of edges.values()) {
+    graph.get(a).push(b);
+    graph.get(b).push(a);
+  }
+  for (const [id, neighbors] of graph) {
+    const p = byId.get(id);
+    neighbors.sort((a, b) => Math.atan2(byId.get(a).y - p.y, byId.get(a).x - p.x) - Math.atan2(byId.get(b).y - p.y, byId.get(b).x - p.x));
+  }
+  const seen = new Set();
+  let landCount = 0,
+    wetCount = 0;
+  for (const edge of edges.values())
+    for (const pair of [edge, [edge[1], edge[0]]]) {
+      if (seen.has(pair.join(':'))) continue;
+      let [a, b] = pair;
+      const vertices = [];
+      for (let step = 0; step <= edges.size * 2; step++) {
+        const key = `${a}:${b}`;
+        if (seen.has(key)) break;
+        seen.add(key);
+        vertices.push(a);
+        const neighbors = graph.get(b),
+          next = neighbors[(neighbors.indexOf(a) + neighbors.length - 1) % neighbors.length];
+        a = b;
+        b = next;
+      }
+      if (polygonSignedArea(vertices.map(id => byId.get(id))) < 1e-5) continue;
+      const p = waterFaceInterior(vertices, byId);
+      if (!pointInPolygon(p, boundary)) continue;
+      if (pointInPolygon(p, corridor)) wetCount++;
+      else landCount++;
+    }
+  return {
+    landCount,
+    wetCount
   };
 }
 
@@ -683,8 +811,9 @@ function clipToConvexPolygon(subject, clip) {
 
 
 
+
 function validateWaterDefinition(features, bridges, boundary, center) {
-  if (!Array.isArray(features) || features.length > 1 || !Array.isArray(bridges) || bridges.length > 8) throw new Error('This build supports one river and up to eight bridges.');
+  if (!Array.isArray(features) || features.length > 1 || !Array.isArray(bridges) || bridges.length > 8) throw new Error('This build supports one river or coast, and up to eight river bridges.');
   const ids = new Set();
   for (const r of [...features, ...bridges]) {
     if (typeof r.id !== 'string' || !r.id || r.id.length > 128 || ids.has(r.id)) throw new Error('Invalid or duplicate water/bridge ID.');
@@ -695,15 +824,15 @@ function validateWaterDefinition(features, bridges, boundary, center) {
     if (bridges.length) throw new Error('A bridge references missing water.');
     return;
   }
-  if (!center || !Number.isFinite(center.x) || !Number.isFinite(center.y)) throw new Error('A river city needs a saved main-square center.');
+  if (!center || !Number.isFinite(center.x) || !Number.isFinite(center.y)) throw new Error('A waterfront city needs a saved main-square center.');
   const f = features[0];
-  if (f.kind !== 'river') throw new Error('Unsupported water feature kind.');
-  if (!Number.isFinite(f.width) || f.width < 10 || f.width > 90 || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || !f.path.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 100000 && Math.abs(p.y) < 100000)) throw new Error('Invalid river path or width.');
+  if (!['river', 'coast'].includes(f.kind)) throw new Error('Unsupported water feature kind.');
+  if ((f.kind === 'river' && (!Number.isFinite(f.width) || f.width < 10 || f.width > 90)) || (f.kind === 'coast' && (!['left', 'right'].includes(f.waterSide) || !Number.isFinite(f.seaDepth) || f.seaDepth < 100 || f.seaDepth > 20000)) || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || !f.path.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) && Math.abs(p.x) < 100000 && Math.abs(p.y) < 100000)) throw new Error('Invalid water path, river width or coast extent.');
   const frame = waterFrame(f);
   let previous = -1;
   for (const p of f.path) {
     const t = (p.x - frame.origin.x) * frame.u.x + (p.y - frame.origin.y) * frame.u.y;
-    if (t - previous < 1e-3) throw new Error('River points must progress from source to mouth; untangle the draft.');
+    if (t - previous < 1e-3) throw new Error('Water points must progress from one endpoint to the other; untangle the draft.');
     previous = t;
   }
   for (let i = 1; i < f.path.length; i++) {
@@ -711,21 +840,32 @@ function validateWaterDefinition(features, bridges, boundary, center) {
       b = f.path[i],
       du = (b.x - a.x) * frame.u.x + (b.y - a.y) * frame.u.y,
       dv = (b.x - a.x) * frame.v.x + (b.y - a.y) * frame.v.y;
-    if (Math.abs(dv) > du * .8) throw new Error('Smooth this river bend; adjacent points turn too sharply for safe banks.');
+    if (Math.abs(dv) > du * .8) throw new Error('Smooth this water bend; adjacent points turn too sharply for safe banks.');
   }
-  if (insideOrOn(f.path[0], boundary) || insideOrOn(f.path.at(-1), boundary)) throw new Error('Extend both river endpoints beyond the city.');
+  if (insideOrOn(f.path[0], boundary) || insideOrOn(f.path.at(-1), boundary)) throw new Error('Extend both water endpoints beyond the city.');
   for (const [key, margin] of [
       ['polygon', 0],
       ['corridor', WATER_BANK]
     ]) {
-    const expected = waterRibbon(f, margin);
-    if (!Array.isArray(f[key]) || f[key].length !== expected.length || expected.some((p, i) => !Number.isFinite(f[key][i]?.x) || !Number.isFinite(f[key][i]?.y) || Math.hypot(p.x - f[key][i].x, p.y - f[key][i].y) > 1e-5)) throw new Error('Saved river banks disagree with the path.');
+    const expected = waterFeaturePolygon(f, margin);
+    if (!Array.isArray(f[key]) || f[key].length !== expected.length || expected.some((p, i) => !Number.isFinite(f[key][i]?.x) || !Number.isFinite(f[key][i]?.y) || Math.hypot(p.x - f[key][i].x, p.y - f[key][i].y) > 1e-5)) throw new Error('Saved water banks disagree with the path.');
   }
-  if (insideOrOn(center, f.corridor) || Math.min(...f.corridor.map((p, i) => distanceToSegment(center, p, f.corridor[(i + 1) % f.corridor.length]))) < 28) throw new Error('Move the river away from the main square or relocate the square.');
+  if (insideOrOn(center, f.corridor) || Math.min(...f.corridor.map((p, i) => distanceToSegment(center, p, f.corridor[(i + 1) % f.corridor.length]))) < 28) throw new Error('Move the water away from the main square or relocate the square.');
   let intersects = false;
   for (let i = 0; i < f.path.length - 1; i++)
     if (waterLineIntervals(f.path[i], f.path[i + 1], boundary).some(s => s.inside)) intersects = true;
-  if (!intersects) throw new Error('The river must pass through the city.');
+  if (!intersects) throw new Error('The shoreline or river must pass through the city.');
+  if (f.kind === 'coast') {
+    if (bridges.length) throw new Error('A coast has open ocean, not a second bank for bridges.');
+    const frame = waterFrame(f);
+    for (const p of boundary) {
+      const u = (p.x - frame.origin.x) * frame.u.x + (p.y - frame.origin.y) * frame.u.y,
+        v = (p.x - frame.origin.x) * frame.v.x + (p.y - frame.origin.y) * frame.v.y;
+      if (u <= 0 || u >= frame.length || Math.abs(v) > f.seaDepth - 100) throw new Error('Extend the coast endpoints and ocean extent to cover the city.');
+    }
+    if (waterLandRegions(boundary, f.corridor).landCount !== 1) throw new Error('The coastline separates land into disconnected islands. Move the shore to keep the city connected.');
+    return;
+  }
   if (!bridges.length) throw new Error('Add at least one bridge to connect the river banks.');
   const geometries = [];
   for (const bridge of bridges) {
@@ -739,9 +879,9 @@ function validateWaterDefinition(features, bridges, boundary, center) {
 }
 function validateWaterCity(city) {
   const state = city.waterState;
-  if (!state || state.version !== 1 || !['dry', 'river'].includes(state.status) || typeof state.seed !== 'string' || state.seed.length > 64 || state.algorithm !== 'ribbon-v1') throw new Error('Unsupported water state.');
+  if (!state || state.version !== 1 || !['dry', 'river', 'coast'].includes(state.status) || typeof state.seed !== 'string' || state.seed.length > 64 || state.algorithm !== (state.status === 'coast' ? 'shore-v1' : 'ribbon-v1')) throw new Error('Unsupported water state.');
   validateWaterDefinition(city.waterFeatures, city.bridges, city.survey.boundary, city.plaza.center);
-  if (state.status !== (city.waterFeatures.length ? 'river' : 'dry')) throw new Error('Water state and features disagree.');
+  if (state.status !== (city.waterFeatures[0]?.kind ?? 'dry')) throw new Error('Water state and features disagree.');
   if (!Array.isArray(city.waterFaces) || city.waterFaces.length > 256) throw new Error('Invalid water face collection.');
   if (!city.waterFeatures.length) {
     if (city.waterFaces.length || city.roads.some(r => r.waterBoundary || r.bridgeId || r.bank)) throw new Error('Dry cities cannot contain water topology.');
@@ -756,7 +896,7 @@ function validateWaterCity(city) {
     nodes = new Map(city.nodes.map(n => [n.id, n])),
     ids = new Set(city.bridges.map(b => b.id)),
     wetEdges = new Map();
-  if (!city.waterFaces.length) throw new Error('The river has no reserved water area.');
+  if (!city.waterFaces.length) throw new Error('The water feature has no reserved area.');
   for (const face of [...city.blocks, city.plaza, ...city.waterFaces]) {
     const wet = city.waterFaces.includes(face),
       p = waterFaceInterior(face.vertices, nodes);
@@ -794,7 +934,7 @@ function validateWaterCity(city) {
         g = waterBridgeGeometry(f, bridge, city.survey.boundary);
       if (distanceToSegment(a, ...g.ends) > 1e-4 || distanceToSegment(b, ...g.ends) > 1e-4) throw new Error('Bridge road is detached from its crossing.');
       wetEdges.set(r.bridgeId, (wetEdges.get(r.bridgeId) || 0) + Math.hypot(b.x - a.x, b.y - a.y));
-    } else if (wet && !onBank && !r.waterBoundary) throw new Error('An ordinary street crosses the river.');
+    } else if (wet && !onBank && !r.waterBoundary) throw new Error('An ordinary street crosses the water.');
     if (r.waterBoundary && (!r.boundary || !wet)) throw new Error('Invalid water boundary edge.');
   }
   for (const bridge of city.bridges) {
@@ -818,12 +958,88 @@ function validateWaterCity(city) {
         visited.add(n);
         queue.push(n);
       }
-  if (visited.size !== graph.size) throw new Error('The river disconnects streets. Add or move a bridge to connect every bank, or adjust the river course.');
+  if (visited.size !== graph.size) throw new Error(f.kind === 'coast' ? 'The coastline separates land into disconnected islands. Move the shore to keep the city connected.' : 'The river disconnects streets. Add or move a bridge to connect every bank, or adjust the river course.');
   return city;
 }
 
 
+// src/generators/coast.js
+
+
+
+
+
+const COAST_DIRECTIONS = Object.freeze(['north', 'east', 'south', 'west']);
+function generateCoast(boundary, center, options = {}) {
+  const seed = String(options.seed || 'coast').slice(0, 64),
+    direction = options.direction ?? 'east';
+  if (!COAST_DIRECTIONS.includes(direction)) throw new Error('Choose north, east, south or west for the ocean.');
+  const b = boundsOf(boundary),
+    horizontal = direction === 'north' || direction === 'south',
+    sign = direction === 'south' || direction === 'west' ? 1 : -1;
+  const low = horizontal ? b.minX : b.minY,
+    high = horizontal ? b.maxX : b.maxY,
+    span = high - low,
+    sideLow = horizontal ? b.minY : b.minX,
+    sideHigh = horizontal ? b.maxY : b.maxX,
+    sideSpan = sideHigh - sideLow,
+    centerSide = horizontal ? center.y : center.x;
+  // For vertical paths, the left-hand normal points west.
+  const waterSide = sign === 1 ? 'left' : 'right',
+    rng = createRng(`${seed}:coast:v1:${direction}`);
+  const towardHigh = direction === 'south' || direction === 'east';
+  for (let attempt = 0; attempt < 24; attempt++) {
+    const fraction = .20 + rng() * .12,
+      base = towardHigh ? Math.max(centerSide + 58, sideHigh - sideSpan * fraction) : Math.min(centerSide - 58, sideLow + sideSpan * fraction);
+    if (base <= sideLow + 16 || base >= sideHigh - 16) continue;
+    const phase = rng() * Math.PI * 2,
+      amplitude = Math.min(24, sideSpan * .055),
+      path = Array.from({
+        length: 9
+      }, (_, i) => {
+        const t = i / 8,
+          u = low - span * .35 + t * span * 1.7,
+          v = base + Math.sin(t * Math.PI * 2 + phase) * amplitude;
+        return horizontal ? {
+          x: u,
+          y: v
+        } : {
+          x: v,
+          y: u
+        };
+      });
+    const feature = {
+      id: 'WATER-001',
+      dataVersion: 1,
+      kind: 'coast',
+      path,
+      waterSide,
+      seaDepth: Math.min(20000, Math.max(2000, span * 5)),
+      direction,
+      extensions: {}
+    };
+    feature.polygon = waterFeaturePolygon(feature);
+    feature.corridor = waterFeaturePolygon(feature, WATER_BANK);
+    if (pointInPolygon(center, feature.corridor) || clearance(center, feature.corridor) < 38) continue;
+    if (!boundary.some(p => pointInPolygon(p, feature.polygon))) continue;
+    if (waterLandRegions(boundary, feature.corridor).landCount !== 1) continue;
+    return {
+      features: [feature],
+      bridges: [],
+      state: {
+        version: 1,
+        status: 'coast',
+        seed,
+        algorithm: 'shore-v1'
+      }
+    };
+  }
+  throw new Error('No shoreline fits on that side with room for the square. Try another ocean direction or water seed.');
+}
+
+
 // src/editor/water.js
+
 
 
 
@@ -888,6 +1104,23 @@ class WaterEditor {
     this.mark();
     this.notify('River preview ready. Move its points or bridges, then Generate city to apply.');
   }
+  generateCoastline(boundary, center, options) {
+    const next = generateCoast(boundary, center, options);
+    this.remember();
+    this.restore(next);
+    this.mode = 'river';
+    this.mark();
+    this.notify('Coast preview ready. Drag shoreline points, then Generate city to apply.');
+  }
+  flipCoast() {
+    if (this.features[0]?.kind !== 'coast') throw new Error('Generate a coast first.');
+    this.remember();
+    const f = this.features[0];
+    f.waterSide = f.waterSide === 'left' ? 'right' : 'left';
+    delete f.direction;
+    this.mark();
+    this.notify('Ocean side swapped in the draft. Keep the main square on land before generating.');
+  }
   clear() {
     this.remember();
     this.restore({
@@ -896,7 +1129,7 @@ class WaterEditor {
       state: waterDryState()
     });
     this.mark();
-    this.notify('Dry-land preview. Generate city to remove the river and rebuild streets.');
+    this.notify('Dry-land preview. Generate city to remove water and rebuild streets.');
   }
   revert(city) {
     this.remember();
@@ -912,7 +1145,7 @@ class WaterEditor {
     this.notify('Water edit undone in the draft. Generate city to apply.');
   }
   width(value) {
-    if (!this.features.length) throw new Error('Generate a river first.');
+    if (this.features[0]?.kind !== 'river') throw new Error('Generate a river before adjusting river width.');
     const n = Number(value);
     if (!Number.isFinite(n) || n < 10 || n > 90) throw new Error('River width must be 10–90 survey units.');
     if (this.features[0].width === n) return;
@@ -936,7 +1169,7 @@ class WaterEditor {
           index: i
         };
       }
-    } else if (this.mode === 'bridge') {
+    } else if (this.mode === 'bridge' && f.kind === 'river') {
       const bridge = this.bridges.find(b => {
         const q = waterAt(f, b.t);
         return Math.hypot(p.x - q.x, p.y - q.y) < 15 / zoom;
@@ -951,7 +1184,7 @@ class WaterEditor {
           id: bridge.id
         };
       }
-    } else if (this.mode === 'addbridge') {
+    } else if (this.mode === 'addbridge' && f.kind === 'river') {
       if (this.bridges.length >= 8) {
         this.notify('This build supports up to eight bridges.', true);
         return;
@@ -1064,13 +1297,14 @@ class WaterEditor {
 function validateWaterEditor(snapshot) {
   if (!snapshot || typeof snapshot !== 'object' || typeof snapshot.dirty !== 'boolean' || !['pan', 'river', 'bridge', 'addbridge'].includes(snapshot.mode) || !Number.isInteger(snapshot.selectedPoint) || snapshot.selectedPoint < -1 || snapshot.selectedPoint > 31 || (snapshot.selectedBridge !== null && typeof snapshot.selectedBridge !== 'string') || !Array.isArray(snapshot.history) || snapshot.history.length > WATER_HISTORY_LIMIT) throw new Error('Invalid water editor state.');
   for (const d of [snapshot, ...snapshot.history]) {
-    if (!d.state || d.state.version !== 1 || d.state.algorithm !== 'ribbon-v1' || !['dry', 'river'].includes(d.state.status)) throw new Error('Unsupported water draft version.');
+    if (!d.state || d.state.version !== 1 || !['ribbon-v1', 'shore-v1'].includes(d.state.algorithm) || !['dry', 'river', 'coast'].includes(d.state.status)) throw new Error('Unsupported water draft version.');
     if (typeof d.state.seed !== 'string' || d.state.seed.length > 64 || !Array.isArray(d.features) || d.features.length > 1 || !Array.isArray(d.bridges) || d.bridges.length > 8) throw new Error('Invalid water draft.');
     for (const f of d.features)
-      if (f.dataVersion !== 1 || f.kind !== 'river' || typeof f.id !== 'string' || f.id.length > 128 || !Number.isFinite(f.width) || f.width < 10 || f.width > 90 || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || f.path.some(p => !p || !Number.isFinite(p.x) || !Number.isFinite(p.y) || Math.abs(p.x) > 100000 || Math.abs(p.y) > 100000)) throw new Error('Invalid river draft.');
+      if (f.dataVersion !== 1 || !['river', 'coast'].includes(f.kind) || typeof f.id !== 'string' || f.id.length > 128 || (f.kind === 'river' && (!Number.isFinite(f.width) || f.width < 10 || f.width > 90)) || (f.kind === 'coast' && (!['left', 'right'].includes(f.waterSide) || !Number.isFinite(f.seaDepth) || f.seaDepth < 100 || f.seaDepth > 20000)) || !Array.isArray(f.path) || f.path.length < 3 || f.path.length > 32 || f.path.some(p => !p || !Number.isFinite(p.x) || !Number.isFinite(p.y) || Math.abs(p.x) > 100000 || Math.abs(p.y) > 100000)) throw new Error('Invalid water draft.');
     for (const b of d.bridges)
       if (b.dataVersion !== 1 || b.kind !== 'bridge' || typeof b.id !== 'string' || b.id.length > 128 || b.waterId !== d.features[0]?.id || !Number.isFinite(b.t) || b.t < 0 || b.t > 1 || b.width !== 9) throw new Error('Invalid bridge draft.');
   }
+  if (snapshot.controls?.coastDirection !== undefined && !['north', 'east', 'south', 'west'].includes(snapshot.controls.coastDirection)) throw new Error('Invalid saved coast direction.');
   if (snapshot.controls !== undefined && (typeof snapshot.controls.seed !== 'string' || snapshot.controls.seed.length > 64 || typeof snapshot.controls.width !== 'string' || snapshot.controls.width.length > 16)) throw new Error('Invalid water controls.');
 }
 
@@ -1113,8 +1347,12 @@ class WaterPanel {
     this.$('waterMessage').classList.toggle('error', Boolean(error));
   }
   refresh(reset = false) {
-    const e = this.editor;
-    this.$('waterStats').textContent = `${e.features.length?'River':'Dry land'} · ${e.bridges.length} bridges${e.dirty?' · Pending regeneration':''}`;
+    const e = this.editor,
+      coast = e.features[0]?.kind === 'coast';
+    this.$('editRiverButton').textContent = coast ? 'Edit shoreline' : 'Edit river points';
+    this.$('flipCoastButton').disabled = !coast;
+    this.$('riverWidthInput').disabled = coast;
+    this.$('waterStats').textContent = `${coast?'Coast':e.features.length?'River':'Dry land'} · ${e.bridges.length} bridges${e.dirty?' · Pending regeneration':''}`;
     this.$('undoWaterButton').disabled = !e.history.length;
     this.$('removeWaterItemButton').disabled = e.selectedPoint < 0 && !e.selectedBridge;
     for (const [id, mode] of [
@@ -1122,12 +1360,14 @@ class WaterPanel {
         ['editBridgesButton', 'bridge'],
         ['addBridgeButton', 'addbridge']
       ]) {
-      this.$(id).disabled = !e.features.length;
+      this.$(id).disabled = !e.features.length || (coast && mode !== 'river');
       this.$(id).setAttribute('aria-pressed', String(e.mode === mode));
     }
     if (reset) {
       this.$('waterSeedInput').value = e.state.seed;
       this.$('riverWidthInput').value = String(e.features[0]?.width ?? 28);
+      if (coast && e.features[0].direction) this.$('coastDirectionInput').value = e.features[0].direction;
+      else if (!this.$('coastDirectionInput').value) this.$('coastDirectionInput').value = 'east';
     }
   }
   run(fn) {
@@ -1138,11 +1378,25 @@ class WaterPanel {
     }
   }
   mode(mode) {
+    if (mode !== 'river' && this.editor.features[0]?.kind === 'coast') {
+      this.message('Coasts have open ocean. Bridge tools are available for rivers.', true);
+      return;
+    }
     this.editor.setMode(mode);
     this.activate();
-    this.message(mode === 'river' ? 'Drag river points. Double-click the course to add a point. Delete removes a selected interior point.' : mode === 'bridge' ? 'Drag a bridge marker along the river. Delete removes it.' : 'Click near the river to add a bridge, then drag to position it.');
+    this.message(mode === 'river' ? 'Drag water points. Double-click the shoreline or river to add a point. Delete removes a selected interior point.' : mode === 'bridge' ? 'Drag a bridge marker along the river. Delete removes it.' : 'Click near the river to add a bridge, then drag to position it.');
   }
   bind() {
+    this.$('generateCoastButton').addEventListener('click', () => this.run(() => {
+      this.editor.generateCoastline(this.getBoundary(), this.getCenter(), {
+        seed: this.$('waterSeedInput').value,
+        direction: this.$('coastDirectionInput').value || 'east'
+      });
+      this.activate();
+      this.refresh(true);
+    }));
+    this.$('flipCoastButton').addEventListener('click', () => this.editor.flipCoast());
+    this.$('coastDirectionInput').addEventListener('change', () => this.changed());
     this.$('generateRiverButton').addEventListener('click', () => this.run(() => {
       this.editor.generate(this.getBoundary(), this.getCenter(), {
         seed: this.$('waterSeedInput').value,
@@ -1153,7 +1407,7 @@ class WaterPanel {
     }));
     this.$('rerollRiverButton').addEventListener('click', () => this.run(() => {
       this.$('waterSeedInput').value = `river-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,6)}`;
-      this.$('generateRiverButton').click();
+      this.$(this.editor.features[0]?.kind === 'coast' ? 'generateCoastButton' : 'generateRiverButton').click();
     }));
     for (const [id, mode] of [
         ['editRiverButton', 'river'],
@@ -1415,7 +1669,7 @@ function waterWallOpenings(wall, features) {
   const measure = measureWall(wall.path),
     cuts = [];
   for (const f of features ?? []) {
-    const corridor = waterRibbon(f, WATER_BANK + 10);
+    const corridor = waterFeaturePolygon(f, WATER_BANK + 10);
     for (let i = 0; i < wall.path.length; i++)
       for (const s of waterLineIntervals(wall.path[i], wall.path[(i + 1) % wall.path.length], corridor)) {
         if (!s.inside) continue;
@@ -1440,7 +1694,7 @@ function waterWallOpenings(wall, features) {
 }
 function waterGateIsDry(gate, features, measure) {
   for (const f of features ?? []) {
-    const polygon = waterRibbon(f, WATER_BANK + 12),
+    const polygon = waterFeaturePolygon(f, WATER_BANK + 12),
       points = gate.connection.points;
     if (points.some(p => waterDistance(p, polygon) < 8)) return false;
     for (let i = 1; i < points.length; i++)
@@ -2740,8 +2994,8 @@ class DistrictPanel {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.3e';
-const PROJECT_SCHEMA_VERSION = 5;
+const APP_VERSION = '0.1-dev.3e1';
+const PROJECT_SCHEMA_VERSION = 6;
 
 
 // src/data/migrations.js
@@ -2794,6 +3048,8 @@ function migrateProjectData(project) {
     };
     project.schemaVersion = 5;
   }
+  // Schema 6 admits coasts; existing river and dry models require no edits.
+  if (project.schemaVersion === 5) project.schemaVersion = 6;
   return project;
 }
 
@@ -4843,7 +5099,7 @@ function waterDrawPolygon(ctx, camera, polygon, fill, stroke) {
 function drawWater(ctx, camera, features) {
   for (const feature of features ?? []) {
     waterDrawPolygon(ctx, camera, feature.corridor, '#c8c7ac');
-    waterDrawPolygon(ctx, camera, feature.polygon, '#94bbc2', '#6d99a5');
+    waterDrawPolygon(ctx, camera, feature.polygon, feature.kind === 'coast' ? '#9bbec8' : '#94bbc2', feature.kind === 'coast' ? null : '#6d99a5');
     ctx.beginPath();
     feature.path.forEach((p, i) => {
       const q = camera.worldToScreen(p);
@@ -4851,8 +5107,28 @@ function drawWater(ctx, camera, features) {
       else ctx.moveTo(q.x, q.y);
     });
     ctx.strokeStyle = 'rgba(231,245,236,.38)';
-    ctx.lineWidth = Math.max(.7, feature.width * .10 * camera.zoom);
+    ctx.lineWidth = feature.kind === 'coast' ? Math.max(1, 2 * camera.zoom) : Math.max(.7, feature.width * .10 * camera.zoom);
+    if (feature.kind === 'coast') ctx.strokeStyle = '#f1edcf';
     ctx.stroke();
+    if (feature.kind === 'coast') {
+      const {
+        v
+      } = waterFrame(feature), sign = feature.waterSide === 'left' ? 1 : -1;
+      for (const distance of [4, 11]) {
+        ctx.beginPath();
+        feature.path.forEach((p, i) => {
+          const q = camera.worldToScreen({
+            x: p.x + v.x * sign * distance,
+            y: p.y + v.y * sign * distance
+          });
+          if (i) ctx.lineTo(q.x, q.y);
+          else ctx.moveTo(q.x, q.y);
+        });
+        ctx.lineWidth = Math.max(.6, .8 * camera.zoom);
+        ctx.strokeStyle = distance === 4 ? 'rgba(241,239,212,.65)' : 'rgba(224,237,230,.28)';
+        ctx.stroke();
+      }
+    }
   }
 }
 function drawBridges(ctx, camera, city) {
@@ -4894,8 +5170,8 @@ function drawWaterDraft(ctx, camera, editor, boundary) {
     try {
       drawWater(ctx, camera, [{
         ...f,
-        polygon: waterRibbon(f),
-        corridor: waterRibbon(f, WATER_BANK)
+        polygon: waterFeaturePolygon(f),
+        corridor: waterFeaturePolygon(f, WATER_BANK)
       }]);
     } catch {}
     ctx.globalAlpha = 1;
@@ -5426,7 +5702,7 @@ function renderMap(canvas, camera, project, editor, layers = {}, districtSelecti
   drawFortifications(ctx, camera, city, layers);
 
   ctx.globalAlpha = 1;
-  if (editor) drawOutline(ctx, camera, editor);
+  if (editor && !(city.waterFeatures?.[0]?.kind === 'coast' && !editor.dirty && editor.mode === 'pan')) drawOutline(ctx, camera, editor);
   drawWaterDraft(ctx, camera, waterEditor, editor?.boundary ?? city.survey.boundary);
 
   ctx.textAlign = 'left';
@@ -5951,7 +6227,7 @@ function updateDetails() {
 function generate() {
   try {
     editor.validate();
-    if (waterPanel?.editor.features.length) waterPanel.editor.width($('riverWidthInput').value);
+    if (waterPanel?.editor.features[0]?.kind === 'river') waterPanel.editor.width($('riverWidthInput').value);
     const next = createProject({
       seed: $('seedInput').value,
       size: $('sizeInput').value,
@@ -5972,7 +6248,7 @@ function generate() {
       waterPanel.editor.loadCity(next.city);
       waterPanel.editor.setMode('pan');
       waterPanel.refresh(true);
-      waterPanel.message(next.city.waterFeatures.length ? 'City generated around the saved river and bridge locations. Editing water creates a new draft.' : 'Dry city generated. Choose Generate river to preview water.');
+      waterPanel.message(next.city.waterFeatures.length ? 'City generated around the saved water. Editing its shoreline or crossings creates a new draft.' : 'Dry city generated. Choose Generate river or Generate coastline to preview water.');
     }
     districtPanel?.editor.load();
     districtPanel?.refresh(true);
@@ -6174,7 +6450,7 @@ waterPanel = new WaterPanel({
   changed: () => {
     const active = waterPanel.editor.mode !== 'pan';
     canvas.classList.toggle('drawing', active || editor.mode !== 'pan');
-    $('toolHint').textContent = active ? (waterPanel.editor.mode === 'river' ? 'Drag river points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+    $('toolHint').textContent = active ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
     for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!active && editor.mode === mode));
     $('draftBadge').textContent = waterPanel.editor.dirty ? '● WATER PREVIEW' : editor.dirty ? '● OUTLINE PREVIEW' : '● CITY PLAN';
     requestDraw();
@@ -6224,7 +6500,8 @@ function captureWorkspace() {
         ...waterPanel.editor.snapshot(),
         controls: {
           seed: String($('waterSeedInput').value),
-          width: String($('riverWidthInput').value)
+          width: String($('riverWidthInput').value),
+          coastDirection: $('coastDirectionInput').value || 'east'
         }
       },
       fortificationEditor: {
@@ -6304,6 +6581,7 @@ function applyProjectDocument(document) {
   if (workspace.waterEditor?.controls) {
     $('waterSeedInput').value = workspace.waterEditor.controls.seed;
     $('riverWidthInput').value = workspace.waterEditor.controls.width;
+    $('coastDirectionInput').value = workspace.waterEditor.controls.coastDirection ?? 'east';
   }
   $('waterPanel').open = workspace.panels?.water ?? false;
   waterPanel.message(waterPanel.editor.dirty ? 'Loaded unfinished water edits. Generate city when ready to apply.' : 'Saved water and bridge geometry loaded exactly.');

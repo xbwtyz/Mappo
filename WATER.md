@@ -1,13 +1,15 @@
 # Water and bridge architecture
 
-Milestone 3E implements the agreed river-first foundation: generated courses and bridge suggestions, editable drafts, land-aware generation and actual connected bridge streets. Lakes and coasts can extend the model later; they are not accepted record kinds in this release. Building inspection remains planned for 3F.
+Milestone 3E implements generated/editable rivers and connected bridges. The 3E.1 expansion adds generated/editable coastlines, an explicit ocean side and connected coastal land. One river or one coast is supported per city; lakes, joined river mouths and multiple features remain extensions. Building inspection remains planned for 3F.
 
 ## Module boundaries
 
 | Module | Responsibility |
 | --- | --- |
-| `core/water-geometry.js` | River frame, ribbons, interpolation, line/polygon intervals and bridge spans |
-| `generators/water.js` | Seeded river proposals and materializing accepted bank polygons |
+| `core/water-geometry.js` | Shared course frame, river/coast shape adapters, interpolation, line/polygon intervals and bridge spans |
+| `generators/water.js` | Seeded river proposals and materializing accepted water polygons through shape adapters |
+| `generators/coast.js` | Independent seeded shorelines, requested ocean direction and connected-land proposals |
+| `core/water-regions.js` | Shoreline-only planar arrangement and dry-region counting before streets exist |
 | `core/water-model.js` | Supported record contracts, shoreline agreement, bridge spans, face classification and traversable connectivity |
 | `editor/water.js` | Independent definition drafts, point/bridge selection, gestures and 20-step undo |
 | `ui/water.js` | Water controls, tool selection, feedback and pending inputs |
@@ -27,12 +29,20 @@ Water definitions and histories are independent of outline, district and defense
 
 ## Extension rules
 
-- Add explicit versioned feature and crossing kinds, geometry helpers, validation and matching rendering together. Current limits intentionally accept only one river and eight bridges.
+- Add explicit versioned feature and crossing kinds, geometry helpers, validation and matching rendering together. Current limits accept one river with up to eight bridges or one coast without bridges.
 - Keep accepted geometry authoritative and preserve compatible JSON fields. Changing a water draft must not mutate city records.
 - Extend the arrangement's land/wet face classification for lakes, coastlines, islands or multiple rivers; do not cover unwanted buildings with a water-colored overlay.
 - Preserve real shared junctions at bridge ends and validate traversable connectivity independently of virtual arrangement edges.
 - Keep shore setbacks and rendered road/bridge widths consistent. New terrain-aware crossings, variable widths and bridge styles need corresponding clearance checks.
 - Extend the fortification adapter for each new feature kind so walls, towers and street gates respect its geometry.
-- Use explicit migrations and frozen standalone-save fixtures for incompatible model changes. Schema 5 preserves older cities as dry land.
+- Use explicit migrations and frozen standalone-save fixtures for incompatible model changes. Schema 5 preserves older cities as dry land; schema 6 preserves existing river data unchanged.
 
 See `PROJECT_FORMAT.md` for the exact persistence contract and `QA.md` for automated coverage and the native Firefox checklist.
+
+## Coast adapter
+
+`WATER_GEOMETRY` selects a shape implementation by supported kind. Rivers retain their exact ribbon calculation; coast polygons close from the ordered shoreline toward the selected ocean side using a stored sea depth. Layout clipping, water-face extraction, shoreline roads and the fortification adapter use `waterFeaturePolygon` rather than assuming a two-bank river. New kinds require matching strict model/draft validation and rendering.
+
+The coastline generator keeps the square on land and rejects proposals producing disconnected dry regions. Edited coasts run the same preflight check. The full city still validates real street connectivity independently of virtual boundary edges. Ocean direction applies to new proposals; swapping land/water edits the current draft and can intentionally make it invalid until the shore or square is moved.
+
+The shared editor uses the existing `river` mode internally for course handles, preserving workspace-schema-1 compatibility. Bridge tools and river-width changes are disabled for coastal drafts. Explicit water generation replaces the previous draft with one feature; undo can restore it. No river/coast joining is inferred.
