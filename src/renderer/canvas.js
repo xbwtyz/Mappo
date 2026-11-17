@@ -185,6 +185,6 @@ export function renderMap(canvas, camera, project) {
   ctx.textAlign = 'left';
   ctx.fillStyle = 'rgba(52, 73, 75, 0.67)';
   ctx.font = '700 10px ui-monospace, SFMono-Regular, Consolas, monospace';
-  ctx.fillText('CITY PLAN  /  STREET NETWORK & BLOCKS', 22, 31);
+  ctx.fillText(`CITY PLAN  /  ${project.options.morphology.toUpperCase()} LAYOUT`, 22, 31);
   drawCompassAndScale(ctx, camera, gridStep);
 }

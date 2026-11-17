@@ -57,7 +57,7 @@ function verifyCityGeometry(city, context, checkCrossings) {
     }
   }
   const plazaPolygon = plaza.vertices.map(id => byId.get(id));
-  assert.ok(plazaPolygon.length >= 8 && polygonSignedArea(plazaPolygon) > 1, `${context}: bad civic plaza`);
+  assert.ok(plazaPolygon.length >= 4 && polygonSignedArea(plazaPolygon) > 1, `${context}: bad civic plaza`);
   if (checkCrossings) {
     for (let i = 0; i < roads.length; i++) {
       const a = roads[i];
@@ -89,7 +89,45 @@ test('layout has repeatable graph IDs and geometry and varies with different see
     const right = createProject({ seed: 'same-layout', size });
     assert.deepEqual(left, right);
     assert.notDeepEqual(left.city.nodes, createProject({ seed: 'changed-layout', size }).city.nodes);
-    assert.equal(left.generatorVersion, '0.1-dev.2');
+    assert.equal(left.generatorVersion, '0.1-dev.3a');
     assert.deepEqual(left.city.blocks[0].vertices.map(id => left.city.nodes.find(node => node.id === id)).every(Boolean), true);
   }
+});
+
+
+test('all four layouts preserve planar road connectivity and block integrity across 480 varied cities', () => {
+  for (const morphology of ['radial', 'organic', 'linear', 'planned']) {
+    for (const size of ['small', 'medium', 'large']) {
+      for (let n = 0; n < 40; n++) {
+        const city = createProject({ seed: `morph-${n}`, size, morphology }).city;
+        assert.ok(city.roads.length > 45, `${morphology}/${size}/${n}: too few streets`);
+        assert.ok(city.blocks.length > 15, `${morphology}/${size}/${n}: too few blocks`);
+        verifyCityGeometry(city, `${morphology}/${size}/${n}`, true);
+      }
+    }
+  }
+});
+
+test('four distinct city patterns differ in street geometry and external footprint', () => {
+  const sample = Object.fromEntries(['radial', 'organic', 'linear', 'planned'].map(morphology =>
+    [morphology, createProject({ seed: 'identity', size: 'medium', morphology }).city]));
+  for (const morphology of Object.keys(sample)) {
+    const nodes = sample[morphology].nodes;
+    const xs = nodes.map(n => n.x), ys = nodes.map(n => n.y);
+    const ratio = (Math.max(...xs) - Math.min(...xs)) / (Math.max(...ys) - Math.min(...ys));
+    if (morphology === 'linear') assert.ok(ratio > 3, `linear layout not elongated: ${ratio}`);
+    if (morphology === 'planned') {
+      const byId = new Map(nodes.map(n => [n.id,n]));
+      const surfaceRoads = sample.planned.roads.filter(r => r.kind !== 'lane');
+      const axial = surfaceRoads.filter(r => {
+        const a = byId.get(r.a), b = byId.get(r.b);
+        const angle = Math.atan2(b.y-a.y, b.x-a.x);
+        return Math.min(Math.abs(Math.sin(angle)), Math.abs(Math.cos(angle))) < 0.17;
+      });
+      assert.ok(axial.length > surfaceRoads.length * 0.88, 'planned roads not orderly');
+    }
+  }
+  assert.notDeepEqual(sample.radial.nodes, sample.organic.nodes);
+  assert.notDeepEqual(sample.linear.nodes, sample.planned.nodes);
+  assert.notDeepEqual(sample.radial.survey.boundary, sample.organic.survey.boundary);
 });

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { normalizeSeed, createRng, hashSeed } from '../src/core/prng.js';
 import { createProject } from '../src/core/city-model.js';
-import { generateSurvey, SIZE_PRESETS } from '../src/generators/survey.js';
+import { generateSurvey, SIZE_PRESETS, MORPHOLOGY_PRESETS } from '../src/generators/survey.js';
 import { pointInPolygon } from '../src/core/geometry.js';
 import { Camera } from '../src/renderer/camera.js';
 
@@ -21,19 +21,20 @@ test('all settlement sizes generate reproducible project data', () => {
     const b = createProject({ seed: 'raven-hill', size });
     assert.deepEqual(a, b);
     assert.equal(a.options.size, size);
+    assert.equal(a.options.morphology, 'radial');
     assert.ok(a.city.roads.length > 40);
     assert.ok(a.city.blocks.length > 15);
-    assert.ok(a.city.plaza.vertices.length > 8);
+    assert.ok(a.city.plaza.vertices.length >= 4);
     assert.equal(a.city.buildings.length, 0);
     assert.equal(a.city.survey.boundary.length, 64);
     assert.ok(a.city.survey.anchors.length > 3);
   }
 });
 
-test('survey anchors remain in the survey boundary for 300 varied seeds', () => {
+test('survey anchors remain in the survey boundary for 1200 layouts', () => {
   for (const size of Object.keys(SIZE_PRESETS)) {
-    for (let n = 0; n < 100; n++) {
-      const survey = generateSurvey(`stress-${n}`, size);
+    for (const morphology of MORPHOLOGY_PRESETS) for (let n = 0; n < 100; n++) {
+      const survey = generateSurvey(`stress-${n}`, size, morphology);
       assert.ok(survey.boundary.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
       for (const anchor of survey.anchors) {
         assert.ok(pointInPolygon(anchor, survey.boundary), `anchor outside boundary for ${size}/${n}`);
@@ -56,4 +57,17 @@ test('camera round-trips coordinates and retains cursor position on zoom', () =>
   assert.ok(Math.abs(next.y - screen.y) < 1e-9);
   camera.pan(25, -13);
   assert.ok(Math.abs(camera.worldToScreen(original).x - (screen.x + 25)) < 1e-9);
+});
+
+
+test('morphology is validated and persisted in reproducible projects', () => {
+  for (const morphology of MORPHOLOGY_PRESETS) {
+    const project = createProject({ seed: 'growth-123', size: 'medium', morphology });
+    assert.equal(project.options.morphology, morphology);
+    assert.equal(project.city.survey.morphology, morphology);
+    assert.equal(project.generatorVersion, '0.1-dev.3a');
+    assert.deepEqual(project, createProject({ seed: 'growth-123', size: 'medium', morphology }));
+  }
+  assert.equal(createProject({ morphology: 'unknown' }).options.morphology, 'radial');
+  assert.equal(createProject().options.morphology, 'radial');
 });

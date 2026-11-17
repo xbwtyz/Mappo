@@ -7,7 +7,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.2.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3a.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -36,12 +36,13 @@ test('compiled HTML initializes and responds to UI events with stubbed Canvas', 
       getContext() { return fakeContext; }
     };
     if (id === 'sizeInput') element.value = 'medium';
+    if (id === 'morphologyInput') element.value = 'radial';
     allElements.set(id, element);
     return element;
   }
   const context = {
     document: { getElementById: el, activeElement: { tagName: 'BODY' } },
-    window: { devicePixelRatio: 1, location: { href: 'file:///mappo.html?seed=test-seed&size=large' }, addEventListener() {} },
+    window: { devicePixelRatio: 1, location: { href: 'file:///mappo.html?seed=test-seed&size=large&shape=organic' }, addEventListener() {} },
     requestAnimationFrame(cb) { cb(); },
     URL, Uint32Array, Math, Date, console
   };
@@ -49,6 +50,7 @@ test('compiled HTML initializes and responds to UI events with stubbed Canvas', 
   vm.runInNewContext(script, context);
   assert.equal(el('citySeed').textContent, 'test-seed');
   assert.equal(el('citySize').textContent, 'large');
+  assert.equal(el('cityMorphology').textContent, 'organic');
   assert.ok(el('junctionCount').textContent > 50);
   assert.ok(el('blockCount').textContent > 30);
   assert.ok(el('roadCount').textContent > 70);
@@ -60,6 +62,9 @@ test('compiled HTML initializes and responds to UI events with stubbed Canvas', 
   el('generateButton').handlers.click();
   assert.equal(el('citySeed').textContent, 'a-different-seed');
   assert.equal(el('reportCityName').textContent, el('cityName').textContent);
+  el('morphologyInput').value = 'linear';
+  el('morphologyInput').handlers.change();
+  assert.equal(el('cityMorphology').textContent, 'linear');
   el('zoomInButton').handlers.click();
   assert.notEqual(el('zoomValue').textContent, '100%');
   el('mapCanvas').handlers.wheel({ deltaY: -200, clientX: 200, clientY: 180, preventDefault() {} });

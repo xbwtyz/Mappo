@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#131d21">
-  <title>Mappo — City Plan · 0.1-dev.2</title>
+  <title>Mappo — City Plan · 0.1-dev.3a</title>
   <!-- INLINE_CSS -->
 </head>
 <body>
   <div class="app">
     <header class="topbar">
-      <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.2</span></div>
-      <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span class="header-phase">PHASE 02 / 06</span></div>
+      <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3a</span></div>
+      <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span class="header-phase">PHASE 03A / 06</span></div>
     </header>
     <div class="workspace">
       <aside class="sidebar sidebar-left" aria-label="Generation tools">
@@ -19,13 +19,14 @@
         <div class="sidebar-content">
           <p class="eyebrow">NEW CITY PLAN</p>
           <h1>Build your<br><em>next kingdom.</em></h1>
-          <p class="intro">Every city begins with a plan. Carve winding streets and irregular blocks from a fresh seed.</p>
-          <div class="control-group"><label for="seedInput">Generation seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"><p class="hint">Same seed + size = same layout.</p></div>
+          <p class="intro">Every city begins with a plan. Choose how the settlement grows, then create its connected street plan.</p>
+          <div class="control-group"><label for="seedInput">Generation seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"><p class="hint">Same seed, size and layout = same streets.</p></div>
           <div class="control-group"><label for="sizeInput">Settlement footprint</label><div class="select-wrap"><select id="sizeInput"><option value="small">Small · Hamlet</option><option value="medium" selected>Medium · Town</option><option value="large">Large · City</option></select><span aria-hidden="true">⌄</span></div></div>
+          <div class="control-group"><label for="morphologyInput">Settlement layout</label><div class="select-wrap"><select id="morphologyInput"><option value="radial">Radial · Ring &amp; spoke</option><option value="organic">Organic · Winding &amp; irregular</option><option value="linear">Linear · Trade-road corridor</option><option value="planned">Planned · Ordered grid</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription">Concentric streets radiate from a civic square.</p></div>
           <button id="generateButton" class="button-primary">↻ &nbsp; Generate city layout</button>
           <button id="newSeedButton" class="button-secondary">✦ &nbsp; Surprise me</button>
           <div class="sidebar-rule"></div>
-          <p class="eyebrow">COMING IN 0.1-DEV.3</p>
+          <p class="eyebrow">NEXT: MILESTONES 3B–3D</p>
           <div class="upcoming"><span class="upcoming-icon">⌁</span><div><strong>Building footprints</strong><p>Turn empty blocks into busy streets lined with structures.</p></div></div>
           <div class="upcoming"><span class="upcoming-icon">▦</span><div><strong>Districts & defenses</strong><p>Neighborhood identities, gates, towers and city walls.</p></div></div>
         </div>
@@ -45,17 +46,18 @@
           <div class="report-label">SETTLEMENT</div><div class="report-primary" id="reportCityName"></div>
           <div class="stat-row"><span>Seed</span><strong id="citySeed">—</strong></div>
           <div class="stat-row"><span>Size class</span><strong id="citySize">—</strong></div>
-          <div class="stat-row"><span>Footprint radius</span><strong id="cityRadius">—</strong></div>
+          <div class="stat-row"><span>Street layout</span><strong id="cityMorphology">—</strong></div>
+          <div class="stat-row"><span>Base scale</span><strong id="cityRadius">—</strong></div>
           <div class="stat-row"><span>Road junctions</span><strong id="junctionCount">—</strong></div>
           <div class="stat-row"><span>Road segments</span><strong id="roadCount">—</strong></div>
           <div class="stat-row"><span>City blocks</span><strong id="blockCount">—</strong></div>
           <div class="stat-row"><span>Connecting lanes</span><strong id="laneCount">—</strong></div>
           <div class="stat-row"><span>Civic plaza</span><strong>1</strong></div>
-          <div class="stat-row"><span>Buildings</span><strong>0 <small>· Milestone 3</small></strong></div>
+          <div class="stat-row"><span>Buildings</span><strong>0 <small>· Milestone 3B</small></strong></div>
           <div class="sidebar-rule"></div>
           <p class="eyebrow">HOW TO NAVIGATE</p>
           <div class="shortcut"><span>Drag canvas</span><kbd>PAN</kbd></div><div class="shortcut"><span>Scroll wheel</span><kbd>ZOOM</kbd></div><div class="shortcut"><span>Fit to view</span><kbd>0</kbd></div><div class="shortcut"><span>Zoom in / out</span><kbd>+ / −</kbd></div>
-          <div class="note"><strong>ABOUT THIS BUILD</strong><p>Milestone 2 creates genuine connected roads, irregular blocks and a civic plaza. Blocks are still empty—buildings, districts and walls follow in Milestone 3.</p></div>
+          <div class="note"><strong>ABOUT THIS BUILD</strong><p>Milestone 3A adds four distinct settlement layouts using connected street geometry. Blocks are empty; buildings, districts and walls will be built in 3B–3D.</p></div>
         </div>
         <div class="sidebar-footer">ACTIVE SEED <span id="currentSeed">—</span></div>
       </aside>

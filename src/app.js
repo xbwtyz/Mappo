@@ -7,6 +7,12 @@ const $ = id => document.getElementById(id);
 const canvas = $('mapCanvas');
 const viewport = $('mapViewport');
 const camera = new Camera();
+const SHAPE_DESCRIPTIONS = Object.freeze({
+  radial: 'Concentric streets radiate from a civic square.',
+  organic: 'Winding streets and asymmetric neighborhoods grow naturally.',
+  linear: 'A curving trade route anchors a long, narrow town.',
+  planned: 'Orderly, near-orthogonal streets form a structured grid.'
+});
 let project;
 let drawPending = false;
 
@@ -30,6 +36,8 @@ function updateDetails() {
   $('reportCityName').textContent = city.name;
   $('citySeed').textContent = project.seed;
   $('citySize').textContent = project.options.size;
+  $('cityMorphology').textContent = project.options.morphology;
+  $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[project.options.morphology];
   $('junctionCount').textContent = city.nodes.length;
   $('roadCount').textContent = city.roads.length;
   $('blockCount').textContent = city.blocks.length;
@@ -50,11 +58,11 @@ function fitMap() {
 }
 
 function generate() {
-  project = createProject({ seed: $('seedInput').value, size: $('sizeInput').value });
+  project = createProject({ seed: $('seedInput').value, size: $('sizeInput').value, morphology: $('morphologyInput').value });
   $('seedInput').value = project.seed;
   fitMap();
   updateDetails();
-  setMessage(`${project.city.roads.length} connected road segments · ${project.city.blocks.length} city blocks`);
+  setMessage(`${project.city.roads.length} connected road segments · ${project.city.blocks.length} ${project.options.morphology} blocks`);
 }
 
 function newSeed() {
@@ -79,6 +87,7 @@ $('zoomInButton').addEventListener('click', () => { camera.zoomAt(1.25); request
 $('zoomOutButton').addEventListener('click', () => { camera.zoomAt(0.8); requestDraw(); updateViewport(); });
 $('seedInput').addEventListener('keydown', event => { if (event.key === 'Enter') generate(); });
 $('sizeInput').addEventListener('change', generate);
+$('morphologyInput').addEventListener('change', generate);
 window.addEventListener('keydown', event => {
   const tag = document.activeElement?.tagName;
   if (tag === 'INPUT' || tag === 'SELECT' || event.ctrlKey || event.metaKey || event.altKey) return;
@@ -95,4 +104,6 @@ const url = new URL(window.location.href);
 $('seedInput').value = url.searchParams.get('seed') || 'mappo-001';
 const size = url.searchParams.get('size');
 if (['small', 'medium', 'large'].includes(size)) $('sizeInput').value = size;
+const morphology = url.searchParams.get('shape') || url.searchParams.get('morphology');
+if (Object.hasOwn(SHAPE_DESCRIPTIONS, morphology)) $('morphologyInput').value = morphology;
 generate();

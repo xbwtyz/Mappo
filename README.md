@@ -1,74 +1,75 @@
 # Mappo
 
-**Mappo** is an offline-first procedural medieval city mapper. Its application is developed as modular JavaScript and distributed as **one standalone HTML file**.
+**Mappo** is an offline-first procedural medieval city mapper. The source is modular JavaScript; every development milestone also ships as **one standalone HTML file** that works without an internet connection, CDN, npm packages, or a web server.
 
-## Current development build: 0.1-dev.2 — City Geometry
+## Current development build: 0.1-dev.3a — Settlement Morphology
 
-Generate a medieval city plan from a seed, explore it on an interactive canvas, and inspect the structure of its street network. This release adds genuine geometric city data rather than simply drawing a picture.
+**Four city growth patterns**, not just a stretched version of the same circular town:
 
-### Features
+- **Radial** — ring-and-spoke roads around a central civic square. Preserves the prior milestone's seeded street geometry.
+- **Organic** — asymmetric perimeter, curved and staggered streets, and irregular building-block polygons.
+- **Linear** — an elongated trade corridor with roads following a bending central axis and transverse streets.
+- **Planned** — a nearly orthogonal street grid within a softly chamfered rectangular city extent.
 
-- **Deterministic generation:** the same seed and settlement size produce the same city plan.
-- **Three sizes:** small hamlet, medium town and large city.
-- **Connected street graph:** every road junction is connected; roads are classified as primary streets, secondary streets or lanes.
-- **Irregular city blocks:** uniquely identified polygons bounded by the streets, with cross-block lanes and no disconnected or dangling segments.
-- **Central civic plaza:** a persistent named plaza whose boundary shares real junctions with the street graph.
-- **Cartographic rendering:** drawn on Canvas 2D with zoom, pan, fit-to-view, compass, scale bar and survey-boundary guide.
-- **City data model:** durable IDs for nodes, roads, blocks and the plaza, ready for later selection, building placement and project saving.
-- **Truly standalone release:** complete CSS and JavaScript are compiled into `index.html` and `dist/mappo-0.1-dev.2.html`. No network, external libraries, runtime installation or web server needed.
+All presets produce explicit, **connected road-junction graphs**, city blocks with persistent vertex identifiers, and a civic plaza. Streets have classifications: primary, secondary, and connecting lanes. The Canvas 2D map supports zoom, pan, fit-to-view, compass and scale bar.
 
-**Not yet implemented:** building footprints, districts, walls, terrain editing, road editing, project save/load, PNG export, or 3D. The green polygons currently represent **empty city blocks**, not buildings. These are scheduled for later milestones.
+### Run the release
 
-## Try it
+Open **[`dist/mappo-0.1-dev.3a.html`](dist/mappo-0.1-dev.3a.html)** in any modern desktop browser. The repository root `index.html` is identical and can be served as a static website.
 
-Open [`dist/mappo-0.1-dev.2.html`](dist/mappo-0.1-dev.2.html) directly in your browser. The identical `index.html` exists at the repository root for convenient static hosting.
+- Enter a seed, choose a small/medium/large size and a **settlement layout**; click **Generate city layout**.
+- Changing size or layout also regenerates the map using the current seed.
+- **Surprise me** picks a random seed.
+- Drag on the map to pan, use the scroll wheel to zoom, press `0` to fit, or `+` / `-` to change the zoom.
+- For hosted deployments, `?seed=demo&size=large&shape=organic` links to a reproducible configuration. The `shape` parameter also accepts `radial`, `linear`, and `planned`.
 
-- **Generate city layout:** enter a seed and press the generation button.
-- **Surprise me:** create a random seed.
-- **Size selector:** generate a small, medium or large settlement.
-- **Navigate:** drag to pan, scroll to zoom, `0` to fit, `+` / `-` to adjust zoom.
-- **Direct linking:** `?seed=my-seed&size=large` provides a reproducible initial layout when hosted.
+**Not implemented yet:** buildings, district identities, walls/towers/gates, hand-editable roads, geography editing, project save/load, PNG export, or 3D. The tinted polygons are **empty city blocks**. Building footprints are next, in 3B.
 
-## Development
+## Build & test
 
-Node.js 20+ is needed only when working on the source. The output HTML runs without Node or an internet connection. There are no npm dependencies.
+Develop with Node.js 20 or later. No external package installation is needed.
 
 ```bash
-npm test
-npm run build
-npm run check
+npm run check  # rebuild HTML, then run the automated tests
+npm test       # tests for geometry, reproducibility and compiled HTML
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.3a.html
 ```
 
-The zero-dependency build script assembles named ES modules and embeds all CSS/JS in the HTML template. It verifies that source imports are local, and the build tests verify distribution parity and inline script syntax. Do not add runtime CDN requests. The build script supports the narrow import/export syntax presently in use, not the full JavaScript module grammar.
+The build script traverses local ES module imports and embeds the JavaScript and CSS in the HTML template; it rejects external runtime imports. `index.html` and the versioned file in `dist/` are generated from the same sources and are identical.
 
-## Project organization
+## Repository layout
 
 ```text
 src/
-  core/                 seeded randomness, geometry, city data model
-  generators/           survey and city layout generation
-  renderer/             canvas drawing and camera
-  ui/                   canvas mouse and pointer controls
-  app.js                generation, navigation, status and UI binding
-styles/app.css          styling
-index.template.html     standalone HTML template
-scripts/build.mjs       reproducible browser distribution builder
-tests/                  deterministic generation, planar geometry, UI and bundle tests
-dist/                   self-contained HTML releases
-index.html              same standalone build, suitable for static hosting
+  core/           PRNG, geometry and the persistent city model
+  generators/     survey boundary and per-morphology road/block generation
+  renderer/       Canvas 2D rendering and camera
+  ui/             pointer-based map navigation
+  app.js          generation controls, state and status
+styles/app.css    app visual design
+index.template.html
+scripts/build.mjs
+index.html        auto-generated standalone output
+dist/        versioned standalone HTML releases
+tests/            seeded geometry, browser bundle and UI regression tests
 ```
 
-### Geometry notes
+The shared data model stores `options.morphology` and every street junction as a node with a stable ID. Roads refer to node endpoints. Blocks refer to ordered vertices from those same nodes. The civic square is an explicit polygon whose edges align with street junctions. This prevents future building-placement features from having to infer geography from rendered pixels.
 
-The city generator builds a deterministic irregular ring-and-spoke street lattice and then adds cross-block lanes. All intersections, including lane endpoints, are explicit shared graph vertices. City block polygons refer to the same vertex IDs. This makes it possible to build later editing and placement features without trying to infer network connectivity from rendered pixels. The algorithm intentionally favors geometric reliability and a recognizable city pattern at this stage; later releases can introduce more varied layout structures.
+### Why the city shapes are different
 
-## Roadmap to 0.1.0
+Radial uses an angular, multi-ring lattice. Organic uses a warped and curved planar mesh within a lobed settlement boundary. Linear uses a long, gently curved main travel corridor with secondary cross streets. Planned uses a near-orthogonal grid with seed-controlled spacing. All are seeded and make reproducible project data. No roads are drawn purely as decoration.
 
-1. **0.1-dev.1** — Application foundation, seeded site survey and Canvas controls (complete).
-2. **0.1-dev.2** — Connected streets, irregular blocks and civic plaza (this build).
-3. **0.1-dev.3** — Building footprints, district generation and optional fortifications.
-4. **0.1-dev.4** — Visual styles, labels and procedural polish.
-5. **0.1-dev.5** — Inspector, basic editing, editable project JSON, image export.
-6. **0.1.0** — Browser verification, stress tests, documentation and distribution release.
+## Release roadmap
+
+1. **0.1-dev.1** — Application shell, seeded survey and navigation (complete)
+2. **0.1-dev.2** — Connected roads, irregular blocks and civic plaza (complete)
+3. **0.1-dev.3a** — Four settlement morphologies (complete; current build)
+4. **0.1-dev.3b** — Building footprints and land-parcel population (future)
+5. **0.1-dev.3c** — District identities and names (future)
+6. **0.1-dev.3d** — Walls, gates and towers (future)
+7. **0.1-dev.4** — Rendering styles and visual polish (future)
+8. **0.1-dev.5** — Inspector, project JSON persistence and PNG export (future)
+9. **0.1.0** — Release hardening, cross-browser testing, documentation and distribution (future)
 
 Copyright © 2026 Mappo contributors.
