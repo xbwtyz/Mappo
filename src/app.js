@@ -38,6 +38,10 @@ import {
   DistrictWorkspace
 } from './ui/district-workspace.js';
 import {
+  describePendingChanges,
+  REBUILD_EFFECTS
+} from './core/pending-changes.js';
+import {
   ProjectFiles
 } from './ui/project-files.js';
 import {
@@ -100,6 +104,36 @@ const layers = {
   fortifications: true
 };
 
+function updatePendingFeedback() {
+  if (!project || !districtPanel || !fortificationPanel || !waterPanel || !terrainPanel) return;
+  const status = describePendingChanges({
+    project, outline: editor, water: waterPanel.editor, terrain: terrainPanel.editor,
+    controls: {
+      seed: $('seedInput').value, size: $('sizeInput').value,
+      morphology: $('morphologyInput').value
+    },
+    districtEditor: districtPanel.editor,
+    districtControls: {
+      count: $('districtNumberInput').value, seed: $('districtSeedInput').value,
+      name: $('districtNameInput').value, color: $('districtColorInput').value,
+      target: $('districtTargetInput').value
+    },
+    defensePreview: fortificationPanel.syncPreview()
+  });
+  $('workspacePendingCount').textContent = status.count ? status.count + ' pending' : 'Up to date';
+  $('workspacePendingCount').classList.toggle('pending', Boolean(status.count));
+  $('workspacePendingDetails').textContent = status.count
+    ? (status.city.length ? 'Rebuild pending: ' + status.city.join(', ') + '. ' : '')
+      + (status.local.length ? 'Local updates: ' + status.local.join(', ') + '.' : '')
+    : 'No unapplied city or local changes.';
+  $('workspaceRebuildImpact').textContent = REBUILD_EFFECTS;
+  $('workspaceRebuildImpact').classList.toggle('pending', status.cityPending);
+}
+function workspaceChanged() {
+  updatePendingFeedback();
+  files?.changed();
+}
+
 function requestDraw() {
   if (drawPending) return;
   drawPending = true;
@@ -120,7 +154,7 @@ function updateMapIndicators() {
 
 function updateViewport() {
   $('zoomValue').textContent = `${Math.round(camera.zoom*100)}%`;
-  files?.changed();
+  workspaceChanged();
 }
 
 function editorChanged() {
@@ -134,7 +168,7 @@ function editorChanged() {
   $('undoButton').disabled = editor.history.length === 0;
   $('finishButton').disabled = editor.closed || editor.boundary.length < 3;
   requestDraw();
-  files?.changed();
+  workspaceChanged();
 }
 const editor = new OutlineEditor(editorChanged, (message, error) => {
   $('draftMessage').textContent = message;
@@ -214,6 +248,7 @@ function generate() {
     workspaceShell?.refresh();
     updateViewport();
     $('statusMessage').textContent = `${project.city.buildings.length} buildings · ${project.city.properties.length} properties · ${project.city.properties.filter(p=>p.plotIds.length>1).length} merged sites`;
+    updatePendingFeedback();
   } catch (error) {
     editor.notify(error.message, true);
     waterPanel?.message(error.message, true);
@@ -235,13 +270,14 @@ function loadPreset() {
 function updatePattern() {
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[$('morphologyInput').value];
   editor.dirty = true;
-  editor.notify('Street settings changed. Generate to apply them to this outline.');
+  editor.notify('Street settings changed. Rebuild city to apply them to this outline.');
+  workspaceChanged();
 }
 for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
     requestDraw();
-    files?.changed();
+    workspaceChanged();
   });
 }
 $('freehandButton').addEventListener('click', () => editor.start('freehand'));
@@ -266,10 +302,17 @@ $('cancelButton').addEventListener('click', () => {
   $('sizeInput').value = project.options.size;
   $('morphologyInput').value = project.options.morphology;
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[project.options.morphology];
+  workspaceChanged();
 });
 $('presetButton').addEventListener('click', loadPreset);
 $('presetInput').addEventListener('change', () => files?.changed());
 $('generateButton').addEventListener('click', generate);
+for (const id of ['districtNumberInput', 'districtSeedInput', 'districtNameInput', 'districtColorInput',
+  'districtTargetInput', 'wallsEnabledInput', 'gateCountInput', 'towerSpacingInput',
+  'fortificationSeedInput', 'riverWidthInput']) {
+  $(id).addEventListener('input', updatePendingFeedback);
+  $(id).addEventListener('change', updatePendingFeedback);
+}
 $('newSeedButton').addEventListener('click', () => {
   const v = new Uint32Array(2);
   if (globalThis.crypto?.getRandomValues) globalThis.crypto.getRandomValues(v);
@@ -355,7 +398,7 @@ districtPanel = new DistrictPanel({
       $(key + 'Layer').checked = true;
     }
     requestDraw();
-    files?.changed();
+    workspaceChanged();
   },
   commit: city => {
     project = {
@@ -364,12 +407,12 @@ districtPanel = new DistrictPanel({
     };
     updateDetails();
     requestDraw();
-    files?.changed();
+    workspaceChanged();
   },
   changed: () => {
     syncWorkspaceDistrictSelection();
     requestDraw();
-    files?.changed();
+    workspaceChanged();
   }
 });
 districtPanel.bind();
@@ -390,14 +433,14 @@ fortificationPanel = new FortificationPanel({
       city
     };
     requestDraw();
-    files?.changed();
+    workspaceChanged();
   },
   changed: () => files?.changed(),
   activateLayer: () => {
     layers.fortifications = true;
     $('fortificationsLayer').checked = true;
     fitMap();
-    files?.changed();
+    workspaceChanged();
   }
 });
 fortificationPanel.bind();
@@ -430,7 +473,7 @@ waterPanel = new WaterPanel({
     workspaceShell?.refresh();
     updateMapIndicators();
     requestDraw();
-    files?.changed();
+    workspaceChanged();
   }
 });
 waterPanel.bind();
@@ -459,7 +502,7 @@ terrainPanel = new TerrainPanel({
     workspaceShell?.refresh();
     updateMapIndicators();
     requestDraw();
-    files?.changed();
+    workspaceChanged();
   }
 });
 terrainPanel.bind();
@@ -496,7 +539,7 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
   onNavigate: (previous, next) => stopWorkspaceTools(next),
   onLayout: () => resize(),
   changed: () => {
-    files?.changed();
+    workspaceChanged();
     requestDraw();
   },
   onInspect: () => {
@@ -779,6 +822,7 @@ function applyProjectDocument(document) {
   requestDraw();
   if (workspace.view.fitOnLoad) fitMap();
   $('statusMessage').textContent = `Loaded ${next.city.buildings.length} buildings · ${next.city.properties.length} properties`;
+  updatePendingFeedback();
 }
 files = new ProjectFiles({
   getElement: $,

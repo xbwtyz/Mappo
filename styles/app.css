@@ -189,3 +189,14 @@
 .defense-workflow .defense-apply{min-height:40px;font-size:12px;background:#334c43;border-color:#ab9978}
 .defense-workflow .defense-apply:hover{background:#405e50}
 .defense-workflow .defense-layer-hint{border-top:1px solid #3c5049;padding-top:12px;margin-top:16px}
+
+
+/* UI Phase 5A: pending-state summary and rebuilding consequences. */
+.workspace-pending-indicator{font:700 10px ui-monospace,monospace;color:#b6cbbf;border:1px solid #516558;padding:5px 8px;border-radius:5px}
+.workspace-pending-indicator.pending{background:#443c31;border-color:#b69b70;color:#edd2a6}
+.workspace-pending-details{font-size:11px;line-height:1.6;color:#d0dccf;margin:9px 0 6px;overflow-wrap:anywhere}
+.workspace-rebuild-guide{border:1px solid #465c50;border-radius:5px;padding:7px 10px;margin:7px 0}
+.workspace-rebuild-guide summary{cursor:pointer;font-size:11px;color:#c7d4c4;font-weight:650}
+.workspace-rebuild-guide p{font-size:11px;line-height:1.6;color:#b9cbbb;margin:8px 0 0}
+.workspace-rebuild-guide p.pending{color:#eed7b8}
+@media(max-width:900px){.workspace-pending-indicator{padding:4px 6px;font-size:9px}}
