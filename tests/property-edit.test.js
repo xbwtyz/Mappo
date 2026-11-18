@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { PropertyEditSession3I } from '../src/editor/property-edit.js';
 import { propertyDividerFractions3I, propertyGeometryPreview3I } from '../src/core/property-geometry.js';
+import { inspectPropertyEdit3I, preparePropertyApply3I } from '../src/editor/property-application.js';
+import { defaultWorkspace } from '../src/data/project-format.js';
 import { buildingAppHarness } from './helpers/building-app.js';
 
 test('3I-A property preview clones geometry, preserves accepted records, selects corners and resets safely',()=>{
@@ -82,4 +84,52 @@ test('3I-B controlled quadrilateral reflow preserves plot IDs, exact area, and a
   session.reset();
   assert.equal(session.isPending,false);
   assert.equal(JSON.stringify(project.city),original);
+});
+
+test('3I-C validates and atomically commits small, safe rear-boundary changes',()=>{
+  const project=createProject({seed:'3i-property-apply',size:'small',morphology:'organic'});
+  const workspace=defaultWorkspace(project);
+  const initial=JSON.stringify(project.city);
+  let receipt=null,property=null;
+  for(const candidate of project.city.properties.slice(0,200)){
+    const session=new PropertyEditSession3I();
+    if(!session.start(project.city,candidate.id))continue;
+    const inward=candidate.frame.inward;
+    for(const index of [2,3]){
+      const p=candidate.boundary[index];
+      session.setCorner(index,{x:p.x-inward.x*.1,y:p.y-inward.y*.1});
+    }
+    const trial=preparePropertyApply3I(project,workspace,session);
+    if(trial.ok){property=candidate;receipt=trial;break;}
+  }
+  assert.ok(receipt?.ok,'At least one safe rear setback should be valid.');
+  assert.equal(receipt.candidate.schemaVersion,9);
+  assert.equal(receipt.candidate.city.properties.find(p=>p.id===property.id).id,property.id);
+  assert.deepEqual(receipt.candidate.city.properties.find(p=>p.id===property.id).plotIds,property.plotIds);
+  assert.deepEqual(receipt.candidate.city.properties.find(p=>p.id===property.id).buildingIds,property.buildingIds);
+  assert.deepEqual(receipt.candidate.city.roads,project.city.roads);
+  assert.deepEqual(receipt.candidate.city.buildings.map(b=>b.footprint),project.city.buildings.map(b=>b.footprint));
+  assert.notDeepEqual(receipt.candidate.city.plots,project.city.plots);
+  assert.equal(JSON.stringify(project.city),initial,'Atomic preparation must not change the source.');
+  const invalid=new PropertyEditSession3I();
+  assert.equal(invalid.start(project.city,property.id),true);
+  invalid.setCorner(2,{x:10001,y:10001});
+  const blocked=preparePropertyApply3I(project,workspace,invalid);
+  assert.equal(blocked.ok,false);
+  assert.equal(blocked.candidate,null);
+  assert.equal(JSON.stringify(project.city),initial);
+});
+test('3I-C fresh validation rejects a parcel that crosses existing buildings',()=>{
+  const project=createProject({seed:'3i-property-building-guard',size:'small',morphology:'organic'});
+  const property=project.city.properties.find(p=>p.buildingIds.length>0);
+  const session=new PropertyEditSession3I();
+  assert.equal(session.start(project.city,property.id),true);
+  const inward=property.frame.inward;
+  for(const index of [2,3]){
+    const p=property.boundary[index];
+    session.setCorner(index,{x:p.x-inward.x*property.local.depth*.9,y:p.y-inward.y*property.local.depth*.9});
+  }
+  const result=inspectPropertyEdit3I(project,session);
+  assert.equal(result.ok,false);
+  assert.ok(result.issues.some(issue=>['building','shape','plot'].includes(issue.code)),JSON.stringify(result.issues));
 });
