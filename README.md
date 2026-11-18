@@ -248,3 +248,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 
 Copyright © 2026 Mappo contributors.
+
+### Phase 4 integration verification
+
+The `0.1-dev.ui4c` feature-branch build passed 141 automated tests, including combined district and defense edits, invalid-input atomicity, native save/load with both undo histories, exact geometry restoration, and a reproducible standalone HTML build. [See the passing CI run](https://github.com/xbwtyz/Mappo/actions/runs/44217250343). Native Firefox and the responsive graphical matrix remain scheduled for the final UI phase; this is not yet a merged main-branch release.
