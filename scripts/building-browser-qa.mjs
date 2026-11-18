@@ -89,7 +89,15 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.evaluate(() => __buildingQA.state().propertyEditSession.propertyId),id);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
       await page.screenshot({ path: new URL(`${label}-3ia-property-preview.png`, output).pathname });
+      // 3I-B: change a corner through the public numeric control, then Reset.
+      await page.evaluate(() => __buildingQA.state().propertyEditSession.selectCorner(0));
+      const originalCornerX=Number(await page.locator('#propertyCornerX3I').inputValue());
+      await page.locator('#propertyCornerX3I').fill(String(originalCornerX-.15));
+      await page.locator('#propertyCornerX3I').press('Tab');
+      assert.equal(await page.evaluate(() => __buildingQA.state().propertyEditSession.isPending),true);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
       await page.locator('#propertyEditReset3I').click();
+      assert.equal(await page.evaluate(() => __buildingQA.state().propertyEditSession.isPending),false);
       assert.equal(await page.evaluate(() => __buildingQA.state().propertyEditSession.selectedCorner),null);
       await page.locator('#propertyEditCancel3I').click();
       assert.equal(await page.locator('#propertyEditPanel3I').isVisible(),false);
