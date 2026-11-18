@@ -21,8 +21,9 @@ export class BuildingGeometryHistory {
     this.limit = limit;
     this.past = [];
     this.future = [];
+    this.serial = 0;
   }
-  clear() { this.past = []; this.future = []; }
+  clear() { this.past = []; this.future = []; this.serial = 0; }
   get history() { return this.past; }
   record(before, after, buildingId) {
     const old = historyFindBuilding(before,buildingId), next = historyFindBuilding(after,buildingId);
@@ -31,8 +32,12 @@ export class BuildingGeometryHistory {
     const from = historyGeometryOf(old), to = historyGeometryOf(next);
     if (sameBuildingGeometry(from,to)) return false;
     this.future = this.future.filter(item => item.buildingId !== buildingId);
-    this.past.push({buildingId, propertyId:old.propertyId, from, to});
-    if (this.past.length > this.limit) this.past.shift();
+    this.past.push({buildingId, propertyId:old.propertyId, from, to, serial:++this.serial});
+    if (this.past.length + this.future.length > this.limit) {
+      const oldest = [...this.past,...this.future].sort((a,b)=>a.serial-b.serial)[0];
+      const stack = this.past.includes(oldest) ? this.past : this.future;
+      stack.splice(stack.indexOf(oldest),1);
+    }
     return true;
   }
   can(direction, project, buildingId) {
