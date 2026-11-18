@@ -1459,6 +1459,7 @@ function applyProjectDocument(document) {
   buildingEditSession?.stop();
   buildingPlacementSession?.stop();
   buildingStructureHistory.clear();
+  propertyHistory.clear();
   identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
