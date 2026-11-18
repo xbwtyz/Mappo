@@ -2,9 +2,9 @@
 
 **Mappo** is an offline-first procedural medieval city mapper built from modular JavaScript and distributed as a **single standalone HTML file**.
 
-[**Launch stable Mappo (main)**](https://xbwtyz.github.io/Mappo/) · [**Download 3H preview HTML**](dist/mappo-0.1-dev.3he.html) · [**User Guide**](docs/user-guide.md) · [**Roadmap**](docs/ROADMAP.md)
+[**Launch stable Mappo (main)**](https://xbwtyz.github.io/Mappo/) · [**Download 3I preview HTML**](dist/mappo-0.1-dev.3ie.html) · [**User Guide**](docs/user-guide.md) · [**Roadmap**](docs/ROADMAP.md)
 
-**3H preview:** `0.1-dev.3he` on `feature/building-management-3h` (awaiting review). **Stable main baseline:** 3G-D (`0.1-dev.3he`), merged in PR #9. Project schema 9 is unchanged.
+**3I preview:** `0.1-dev.3ie` on `feature/property-plot-editing-3i` (draft PR, unmerged). **Stable main:** 3H (`0.1-dev.3he`), merged in PR #10. Project schema 9 remains unchanged.
 
 ## What it can do
 
@@ -16,11 +16,12 @@
 - Undo or redo accepted footprint edits for the selected building (up to 20 accepted edits in session); changes, not history, persist in portable saves.
 - Add buildings to a property, preview rectangle/L/courtyard/T shapes, replace an existing building while preserving its identity, or delete one with confirmation. Atomic transactions validate geometry, road access, and property links.
 - Undo/redo accepted structural add/replace/delete actions within a property; history stays in the session.
+- Edit an existing property's four-corner boundary and internal plot dividers in preview, with validation for neighboring parcels, roads, buildings and complete plot coverage. Apply safely with property-scoped Undo/Redo; plot and building identities remain stable.
 - Download and load portable `.mappo.json` projects, with browser-local recovery snapshots.
 
 ## Start here
 
-1. Open the [hosted stable app](https://xbwtyz.github.io/Mappo/), or save [the 3H standalone preview](dist/mappo-0.1-dev.3he.html) from this branch and open it in a modern browser.
+1. Open the [hosted stable app](https://xbwtyz.github.io/Mappo/), or save [the 3I standalone preview](dist/mappo-0.1-dev.3ie.html) from this branch and open it in a modern browser.
 2. In **City**, draw or choose an outline, then place a main square.
 3. Select a street pattern and seed, then click **Generate city**.
 4. Use **Landscape**, **Districts**, **Defenses**, **Layers**, and the **Inspector** to explore and edit.
@@ -41,7 +42,7 @@ See the [User Guide](docs/user-guide.md) for controls, save/recovery details and
 The build embeds local JavaScript modules and CSS into a self-contained HTML artifact. **Node.js 20.11+** is required for development, but neither installation nor a server is required to run the resulting HTML. Standard build/Node tests need no `npm install`.
 
 ```bash
-npm run build   # write index.html and dist/mappo-0.1-dev.3he.html
+npm run build   # write index.html and dist/mappo-0.1-dev.3ie.html
 npm test        # run Node regression tests
 npm run check   # build, then test
 ```
@@ -52,4 +53,4 @@ The generated root `index.html` and matching versioned `dist/` HTML are byte-for
 
 [Documentation index](docs/README.md) · [Developer Guide](docs/development.md) · [Technical references](docs/reference/README.md) · [Development history](docs/history/README.md) · [Roadmap](docs/ROADMAP.md)
 
-**Current limits:** Building placement and edits stay within existing property boundaries; Undo/Redo history is session-only, and structure edits require unobstructed original frontage access. Editing property shapes, PNG export and 3D remain future work. [3H QA and safeguards](docs/history/3h/MILESTONE_3H_QA.md).
+**Current limits:** 3I only reshapes existing convex four-corner properties and relocates dividers without changing plot count or ownership. Buildings are never automatically moved. Session-only history is cleared on load/rebuild. Property splitting/merging, road edits, PNG export and 3D are future work. [3I QA and safeguards](docs/history/3i/MILESTONE_3I_QA.md).
