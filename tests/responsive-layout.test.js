@@ -29,3 +29,13 @@ test('resizing a live canvas preserves camera world center, zoom and conversions
     assert.deepEqual(camera.screenToWorld({x:w/2,y:h/2}),world);
   }
 });
+
+test('Phase 7C stacks narrow inspector and tools above map toolbar hit targets', () => {
+  const css=readFileSync(new URL('../styles/app.css',import.meta.url),'utf8');
+  const phase=css.slice(css.indexOf('/* Phase 7C'));
+  assert.match(phase,/max-width:900px/);
+  assert.match(phase,/\.workspace-shell \.map-shell\{position:relative;z-index:0\}/);
+  assert.match(phase,/\.workspace-shell \.sidebar-right\{z-index:11\}/);
+  assert.match(phase,/max-width:670px/);
+  assert.match(phase,/\.workspace-shell \.sidebar-left\{z-index:10\}/);
+});

@@ -310,3 +310,12 @@
   .workspace-shell .workspace-header-button{padding-inline:8px}
   .workspace-shell .map-legend{display:none}
 }
+
+/* Phase 7C — narrow overlays must layer above the map header and controls. */
+@media(max-width:900px) {
+  .workspace-shell .map-shell{position:relative;z-index:0}
+  .workspace-shell .sidebar-right{z-index:11}
+}
+@media(max-width:670px) {
+  .workspace-shell .sidebar-left{z-index:10}
+}
