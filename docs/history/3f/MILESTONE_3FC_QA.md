@@ -19,7 +19,7 @@ Accepted fields round-trip through schema-9 project files and recovery storage, 
 - CI will run the existing 8-case standalone smoke matrix and expanded 8-case property/building/identity matrix, in Chromium and Firefox at 1440×900, 5120×1440, 768×1024 and 390×844.
 - Regression coverage includes immutable metadata-only scope; no-op/clear/validation; independent history; existing local district operations; bounded and stale undo; explicit Apply; per-record draft navigation/discard; saved-file round-trip and malformed-file atomic rejection; reset semantics; new-seed deferral and failed-generation retention.
 
-![Applied property identity](docs/images/mappo-3fc-property.jpg)
+![Applied property identity](../../images/mappo-3fc-property.jpg)
 
 ## Limits
 

@@ -19,9 +19,9 @@ Build: **0.1-dev.3faa**. Branch: `feature/building-inspector-3f`.
 - Exact standalone SHA256: `ccec4326768ed2d3cefe826148420f3f650273015dc017ffc72a682cf5d10a90`. Browser screenshots and the standalone HTML are archived in the successful CI run.
 - Project schema **9**, workspace schema **1**; no migration or metadata edits.
 
-![Primary Property Inspector](docs/images/mappo-3faa-property.jpg)
+![Primary Property Inspector](../../images/mappo-3faa-property.jpg)
 
-![Secondary building and parent navigation](docs/images/mappo-3faa-child.jpg)
+![Secondary building and parent navigation](../../images/mappo-3faa-child.jpg)
 
 ## Limits and next work
 
