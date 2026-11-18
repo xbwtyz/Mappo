@@ -83,10 +83,9 @@ export class BuildingPlacementSession3H {
   update(changes) {
     if(!this.active)return false;
     const next={...this.active.spec,...changes};
-    try{makeBuildingShape3H(this._property,next);}catch(error){
-      // Invalid geometry stays editable; a full validation message explains why.
-      if(!['u','v','width','depth','angle'].every(k=>h3Finite(next[k])))return false;
-    }
+    // Invalid extents may be entered temporarily; validation is handled by the
+    // safe preview gate. Never admit NaN, Infinity or malformed numeric input.
+    if(!['u','v','width','depth','angle'].every(k=>h3Finite(next[k])))return false;
     this.active.spec=next;this.changed();return true;
   }
   property(city){return city?.properties.find(p=>p.id===this.propertyId)??null;}
