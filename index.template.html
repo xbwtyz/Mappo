@@ -146,6 +146,11 @@
             <button type="button" id="buildingPreviewReset">Reset preview</button>
             <button type="button" id="buildingPreviewCancel">Cancel preview</button>
           </div>
+          <div class="building-history-actions" role="group" aria-label="Accepted building edit history">
+            <button type="button" id="buildingHistoryUndo" disabled title="Undo the latest accepted footprint edit for this building">Undo building</button>
+            <button type="button" id="buildingHistoryRedo" disabled title="Redo a previously undone footprint edit for this building">Redo building</button>
+          </div>
+          <p id="buildingHistoryStatus" class="building-history-status" role="status" aria-live="polite"></p>
           <p id="buildingPreviewStatus" role="status" aria-live="polite">Change a building to check its placement.</p>
           <ul id="buildingPreviewIssues" class="building-preview-issues" aria-label="Building validation problems" hidden></ul>
         </section>
