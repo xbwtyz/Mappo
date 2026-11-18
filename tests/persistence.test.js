@@ -480,6 +480,26 @@ test('startup recovery is offered without replacing it with the default generate
   assert.deepEqual(fixture.getLive().project, copyJson(original));
 });
 
+test('project-open confirmation survives recovery write and reports a recovery failure', async () => {
+  const document = documentFixture();
+  document.project.city.name = 'Confirmed import';
+  const fixture = controllerFixture({ store: new RecoveryStore(adapterFixture()) });
+  await fixture.controller.start();
+  fixture.controller.stageDocument(document, 'file');
+  assert.equal(await fixture.controller.openPending(), true);
+  assert.match(fixture.elements('fileStatus').textContent, /^Opened Confirmed import\..*Browser recovery updated\./);
+  assert.equal(fixture.controller.currentRecovery.project.city.name, 'Confirmed import');
+
+  const failed = controllerFixture({ store: {
+    read: async () => ({ current: null, backup: null }),
+    save: async () => { throw new Error('quota blocked'); }
+  } });
+  await failed.controller.start();
+  failed.controller.stageDocument(document, 'file');
+  assert.equal(await failed.controller.openPending(), true);
+  assert.match(failed.elements('fileStatus').textContent, /^Opened Confirmed import\..*Browser recovery failed: quota blocked/);
+  assert.equal(failed.getLive().project.city.name, 'Confirmed import');
+});
 test('invalid staged files and cancel leave the open project and undo draft untouched', async () => {
   const fixture = controllerFixture();
   await fixture.controller.start();
@@ -791,6 +811,22 @@ test('native 3B.1 schema-2 files migrate to unassigned districts without changin
   assert.deepEqual(decodeProjectDocument(encodeProjectDocument(annotated)), annotated);
 });
 
+test('schema-1 Inspector references validate and missing older selection fields remain optional', () => {
+  const document = documentFixture();
+  document.workspace.ui = { section: 'city', selection: null };
+  const property = document.project.city.properties[0], building = document.project.city.buildings[0];
+  for (const selection of [{ kind: 'property', id: property.id }, { kind: 'building', id: building.id }]) {
+    document.workspace.ui.selection = selection;
+    assert.deepEqual(decodeProjectDocument(encodeProjectDocument(document)).workspace.ui.selection, selection);
+  }
+  for (const selection of [{ kind: 'other', id: 'a' }, { kind: 'property', id: '' },
+    { kind: 'building', id: 'x'.repeat(129) }, { kind: 'property', id: 7 }]) {
+    document.workspace.ui.selection = selection;
+    assert.throws(() => encodeProjectDocument(document), /Invalid saved inspector selection/);
+  }
+  delete document.workspace.ui.selection;
+  assert.equal(decodeProjectDocument(encodeProjectDocument(document)).workspace.ui.selection, undefined);
+});
 test('optional landscape selection remains bounded, preserves compatible data and accepts older saves', () => {
   const document = documentFixture();
   for (const selection of [null, {

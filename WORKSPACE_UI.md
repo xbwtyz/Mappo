@@ -101,3 +101,49 @@ Workspace format 1 gains an optional additive `workspace.ui` record, validated s
 The compiled, dependency-free HTML is exercised by `scripts/browser-qa.mjs` with Playwright as a **test-only** dependency. Chromium and Firefox run four screen sizes (1440×900, 5120×1440, 768×1024, 390×844). Checks cover menus, keyboard dismissal, section navigation, drawer collapse, inspector, landscape creation form routing, horizontal overflow and readable screenshots. Narrow drawer stacking is explicitly scoped above map controls so panel action targets are not hidden behind the map toolbar. Phone tests close the Tools drawer before interacting with controls underneath it.
 
 The 7D desktop file workflow also downloads and validates a real `.mappo.json`, stages it back through the app's file picker, and reopens it without changing project schema 9. Browser tests do not replace human verification of all geometry drag gestures and extreme edge cases. The whole runtime continues to compile to one offline HTML with inlined JS and CSS; versioning/build modules stay separate during development.
+
+## Milestone 3F-A: building selection
+
+`core/building-selection.js` tests accepted footprint polygons and excludes courtyard interiors. Roof interiors outrank tolerant outer edges, closest edges outrank farther edges, and the last rendered building wins equal/overlapping hits. The tolerance is three CSS pixels converted through camera zoom. A bounding-box rejection keeps pointer-move work small without a stale geometry cache.
+
+`ui/building-workspace.js` registers a `building` provider in the shared shell and owns only runtime hover/selection behavior. It resolves records from the current city and visible Buildings layer. `app.js` routes eligible Select/Pan taps through landscape, building, then district selection. Building selection clears district-editor selection without touching its history. Tool changes, zoom, pointer leave/cancel, project replacement and layer changes clear hover. Missing/hidden records and full rebuilds clear building selection; a local record-preserving update does not.
+
+`renderer/building-selection.js` strokes exact outer and inner footprint rings in screen coordinates without filling or modifying them; selection and hover have distinct widths/colors. The overlay draws above city layers and below the landscape selection overlay. Workspace panel sizing preserves camera center/zoom.
+
+The existing persistence validator does not yet accept a building reference. For this checkpoint, capture explicitly records `workspace.ui.selection: null` when a building is selected. This keeps downloads and recovery valid without widening the saved UI contract early. 3F-D owns validated portable building selection and restoration. City schema remains 9 and workspace schema remains 1.
+
+## Milestone 3F-Aa: properties as the primary selection
+
+`core/property-selection.js` tests accepted property boundaries, including yards and courtyard interiors. At least one development layer (Buildings, Properties or Plots) enables hits. Actual interiors beat nearby edges, with a three-CSS-pixel tolerance and deterministic boundary paint-order ties. The existing building hit test and footprint overlay remain available for individual structures.
+
+`ui/property-workspace.js` registers the property provider, resolves two-way property/building references, renders basic property facts and linked building actions, and validates every child navigation request. `ui/building-workspace.js` supplies a Back to property action. The generic shell accepts optional section actions as native buttons with safe textContent, wrapping labels, stable data attributes and heading focus after navigation. Existing providers without actions retain their original rendering.
+
+The map routes landscape → property → district, while existing editor/pointer ownership remains authoritative. `renderer/property-selection.js` adds teal hover/orange selected property boundaries; when a building is selected its parent's outline becomes dashed and the existing building overlay highlights the exact child footprint. Hidden child roofs cannot be selected. Hiding roofs returns a selected child to its parent if another development layer is visible; hiding all development layers clears the selection. Full replacement clears both property and child selections even if IDs are reused. Missing records clear safely.
+
+Both property and building UI references are deliberately captured as null until 3F-D adds portable validation and restoration. No generator, accepted record, metadata, city schema (9), workspace schema (1), history or geometry format changes. Detailed read-only property/child facts remain 3F-B.
+
+## Milestone 3F-B: read-only record information
+
+`core/selection-information.js` resolves property/building summaries from the current accepted city without caches or mutations. It formats generated labels and square-survey-unit areas, keeps property site area separate from accepted net building footprint area, uses each building's own occupied plot list and frontage, and retains IDs for missing links. An optional historical district field can resolve through the actual block; an explicitly unassigned district stays unassigned. Matching property ownership is required when presenting linked plot/building references. No simulation data or custom metadata is generated.
+
+Both Inspector providers compose the pure sections with the existing safe native-button actions. Readable headings combine the generated usage/type with the stable ID, falling back to the ID alone. District names and optional actual street names remain textContent data. Property and child sections use the existing wrapping/scrollable Inspector layout. No editing controls or serialized fields are added.
+
+A local district operation may cause DistrictEditor to choose a default ward. When a property or building is being inspected, the app clears that incidental district selection at commit, refreshes the Inspector against the new accepted city, and retains the inspected record. Explicit district map/list/dropdown selection still follows the original routing. District history and accepted geometry retain their original ownership. Defense-only commits also refresh the current Inspector. Project schema 9 and workspace schema 1 are unchanged; property/building view selection remains session-only until 3F-D.
+
+## Milestone 3F-C: explicit identity editing
+
+`core/identity.js` owns optional customName/customUse validation/normalization, target lookup and metadata-only copy-on-write commits. IdentityEditor holds a separate 20-entry session history of ref/before/after identity fields. Undo checks the current record and expected metadata, then changes only these optional fields, preserving all current geometry, unrelated metadata and local district/defense changes.
+
+`ui/identity-workspace.js` mounts static, accessible inputs in an expandable Inspector section. It maintains per-record pending drafts bounded by the accepted city's records, Apply/Discard/local errors, an explicit Other-use input and separate Undo. The shared Inspector can refresh without recreating active form inputs. Headings/building choices use accepted custom names; generated facts remain available. Property/building identities never propagate implicitly.
+
+The pending-state helper reports identity drafts as local updates, not city-generation changes. Contextual Undo prioritizes active geometry tools, then property/building identity history, then existing section histories. Native text-field undo is still excluded from map shortcut routing.
+
+Generation preflight counts customized records and pending identity drafts and presents an inline loss confirmation. New street seed generation defers seed assignment until confirmation. Only a successful new accepted city resets the identity editor/drafts; failed generation preserves accepted metadata and history. Project loading resets session history/drafts and cancels any stale confirmation callback before restoring accepted records.
+
+Project validation recognizes the optional bounded strings on properties/buildings. Old files without the fields still load; valid compatible extension fields are retained, and no geometry/schema migration occurs. Applied metadata already round-trips in the actual project. At the 3F-C checkpoint, selection, identity history and drafts were session-only; 3F-D adds portable selection.
+
+## Milestone 3F-D: portable Inspector state
+
+`app.js` serializes selected properties and child buildings through the existing optional `workspace.ui.selection`, alongside the previous district/landscape Inspector types. `core/workspace-presentation.js` validates the kind and bounded ID before restoration. The loader applies accepted project records and saved layer flags first, then resolves the requested property/building through existing providers. Missing or hidden targets and broken building-to-parent links clear safely without relying on reused generated IDs.
+
+Applied identity overrides remain in the accepted schema-9 city. Inspector presentation persists in workspace UI schema 1, including portable file and browser recovery snapshots. Old project files without UI selection still load. Unapplied identity drafts and the independent 20-entry identity Undo history remain session-only; other editor histories retain their existing persistence contracts. No runtime dependencies, geometry regeneration or format migrations are introduced.

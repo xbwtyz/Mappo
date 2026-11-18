@@ -18,7 +18,7 @@ export const LANDSCAPE_CONTROL_IDS = Object.freeze([
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const finiteScroll = v => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 1000000;
 const selectionValid = s => s === null || (object(s)
-  && ['water','terrain','district','landscape-add'].includes(s.kind)
+  && ['water','terrain','district','landscape-add','property','building'].includes(s.kind)
   && typeof s.id === 'string' && s.id.length > 0 && s.id.length <= 128
   && (s.kind !== 'landscape-add' || ['river','coast','lake','terrain'].includes(s.id)));
 

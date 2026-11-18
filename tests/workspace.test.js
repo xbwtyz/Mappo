@@ -6,6 +6,8 @@ import {
 import {
   registerWorkspaceInspectors
 } from '../src/ui/workspace-inspectors.js';
+import { BuildingWorkspace } from '../src/ui/building-workspace.js';
+import { PropertyWorkspace } from '../src/ui/property-workspace.js';
 import {
   workspaceInitialState,
   workspaceInspectorVisible,
@@ -49,7 +51,12 @@ function shellHarness(providers = {}) {
   const shell = new WorkspaceShell({
     getElement: el,
     document: {
-      createElement: () => ({})
+      createElement: () => ({
+        attributes: {}, handlers: {},
+        setAttribute(name, value) { this.attributes[name] = value; },
+        addEventListener(name, fn) { this.handlers[name] = fn; },
+        replaceChildren(...children) { this.children = children; }
+      })
     },
     onLayout: () => layouts++,
     onNavigate: () => navigations++,
@@ -67,6 +74,96 @@ function shellHarness(providers = {}) {
     })
   };
 }
+test('property inspector supports safe building navigation, parent return, hidden layers, local refresh and stale references', () => {
+  const { shell, el } = shellHarness();
+  let city = { properties: [{ id: 'PROP-1', usage: '<img src=x>', plotIds: ['plot-1', 'plot-2'], buildingIds: ['west', 'east'] }],
+    buildings: [{ id: 'west', propertyId: 'PROP-1', type: 'temple', shape: 'compound-wing' },
+      { id: 'east', propertyId: 'PROP-1', type: 'temple', shape: 'compound-wing' }] };
+  const before = JSON.stringify(city), layers = { buildings: true, properties: false, plots: false };
+  let properties;
+  const buildings = new BuildingWorkspace({ shell, getCity: () => city, getLayers: () => layers, getProperties: () => properties });
+  properties = new PropertyWorkspace({ shell, getCity: () => city, getLayers: () => layers, buildings });
+  properties.select({ kind: 'property', id: 'PROP-1' });
+  assert.equal(el('workspaceSelectionType').textContent, 'Property');
+  assert.equal(shell.descriptor().sections[0].rows[0][1], '<img src=x>');
+  const buttons = el('workspaceSelectionSections').children.flatMap(section => section.children ?? [])
+    .filter(button => button.attributes?.['data-inspector-kind'] === 'building');
+  assert.equal(buttons.length, 2);
+  assert.match(buttons[0].textContent, /west/);
+  buttons[0].handlers.click();
+  assert.deepEqual(shell.state.selection, { kind: 'building', id: 'west' });
+  assert.equal(el('workspaceSelectionName').focused, true);
+  assert.equal(properties.selectBuilding('other-property', 'east'), false);
+  const back = el('workspaceSelectionSections').children.flatMap(section => section.children ?? [])
+    .find(button => button.attributes?.['data-inspector-kind'] === 'property');
+  assert.equal(back.textContent, 'Back to property');
+  back.handlers.click();
+  assert.equal(shell.state.selection.kind, 'property');
+  assert.equal(properties.selectBuilding('PROP-1', 'east'), true);
+  assert.equal(shell.state.selection.id, 'east');
+  city = JSON.parse(JSON.stringify(city));
+  properties.refresh();
+  assert.equal(shell.state.selection.id, 'east', 'Local record-preserving changes retain the selected child');
+  layers.properties = true;
+  layers.buildings = false;
+  properties.refresh();
+  buildings.refresh();
+  assert.deepEqual(shell.state.selection, { kind: 'property', id: 'PROP-1' });
+  assert.ok(shell.descriptor().sections.find(section => section.actions)?.actions.every(a => a.disabled));
+  assert.equal(properties.selectBuilding('PROP-1', 'east'), false);
+  properties.setHover({ kind: 'property', id: 'PROP-1' });
+  layers.properties = false;
+  properties.refresh();
+  assert.equal(shell.state.selection, null);
+  assert.equal(properties.hover, null);
+  layers.plots = true;
+  properties.select({ kind: 'property', id: 'PROP-1' });
+  shell.navigate('landscape');
+  assert.equal(shell.state.selection.id, 'PROP-1');
+  assert.equal(JSON.stringify(city), before);
+  properties.refresh({ replaced: true });
+  assert.equal(shell.state.selection, null, 'Full replacement clears even reused property IDs');
+  properties.select({ kind: 'property', id: 'PROP-1' });
+  city.properties = [];
+  properties.refresh();
+  assert.equal(shell.state.selection, null);
+});
+test('building selection uses the shared inspector and clears hidden, missing or replaced records without geometry changes', () => {
+  const { shell, el } = shellHarness();
+  let city = { buildings: [{ id: 'BLD-1', footprint: [], holes: [] }] };
+  const layers = { buildings: true };
+  let selections = 0;
+  const workspace = new BuildingWorkspace({ shell, getCity: () => city, getLayers: () => layers, onSelect: () => selections++ });
+  const ref = { kind: 'building', id: 'BLD-1' }, before = JSON.stringify(city);
+  assert.equal(workspace.select(ref), true);
+  assert.equal(el('workspaceSelectionType').textContent, 'Building');
+  assert.equal(el('workspaceSelectionName').textContent, 'BLD-1');
+  assert.equal(el('workspaceInspector').hidden, false);
+  el('workspaceCloseInspector').handlers.click();
+  workspace.select(ref);
+  assert.equal(el('workspaceInspector').hidden, false, 'Reselecting reopens a collapsed inspector');
+  shell.navigate('landscape');
+  assert.equal(shell.state.selection.id, ref.id, 'Changing sections retains valid selection');
+  city = JSON.parse(JSON.stringify(city));
+  workspace.refresh();
+  assert.equal(shell.state.selection.id, ref.id, 'A local record-preserving update retains selection');
+  workspace.setHover(ref);
+  layers.buildings = false;
+  workspace.refresh();
+  assert.equal(shell.state.selection, null);
+  assert.equal(workspace.hover, null);
+  assert.equal(workspace.select(ref), false);
+  layers.buildings = true;
+  workspace.select(ref);
+  workspace.refresh({ replaced: true });
+  assert.equal(shell.state.selection, null, 'A full rebuild clears even a reused building ID');
+  workspace.select(ref);
+  assert.equal(JSON.stringify(city), before, 'Selection and navigation never mutate city records');
+  city.buildings = [];
+  shell.refresh();
+  assert.equal(shell.state.selection, null);
+  assert.equal(selections, 4);
+});
 test('workspace defaults to City with an empty inspector collapsed and one accessible section', () => {
   const {
     shell,

@@ -59,7 +59,7 @@
           <ul id="landscapeFeatureList" class="landscape-feature-list" aria-label="Landscape features"></ul>
           <p id="landscapeEmpty" class="hint">Add a river, coastline, lake or mountain range.</p>
           <p class="hint">Select a feature here or click it on the map. Its editing controls open in the inspector.</p>
-          <details id="landscapeHelpSettings" class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a city block to inspect its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
+          <details id="landscapeHelpSettings" class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a roof, yard or courtyard to inspect its property. Choose an individual building in the Property Inspector. Open ground outside properties selects its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
           <div id="landscapeHistoryTools" class="landscape-history-tools"><p class="hint">Draft histories</p><div class="tool-grid"><button id="landscapeUndoWater" class="minor-button">Undo water</button><button id="landscapeUndoTerrain" class="minor-button">Undo mountains</button></div></div>
         </section>
         <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>
@@ -105,7 +105,11 @@
         </section>
       </div>
       <div class="workspace-apply">
-        <button id="generateButton" class="button-primary">↻ Rebuild city</button>
+        <section id="identityRebuildWarning" class="identity-rebuild-warning" hidden aria-label="Confirm identity loss">
+          <p id="identityRebuildMessage" role="status"></p>
+          <button id="identityConfirmRebuildButton" class="tool-button full-width">Rebuild and discard identities</button>
+          <button id="identityCancelRebuildButton" class="minor-button full-width">Keep editing</button>
+        </section><button id="generateButton" class="button-primary">↻ Rebuild city</button>
         <p id="workspacePendingDetails" class="workspace-pending-details" role="status" aria-live="polite">No unapplied city or local changes.</p>
         <details id="workspaceRebuildGuide" class="workspace-rebuild-guide"><summary>What rebuilding changes</summary><p id="workspaceRebuildImpact"></p></details>
         <p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p>
@@ -124,7 +128,7 @@
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div class="map-controls workspace-map-controls" role="group" aria-label="Map navigation">
-          <button id="panButton" title="Click to select a district; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
+          <button id="panButton" title="Click a property, landscape feature or open block to inspect; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
           <button id="workspaceUndoButton" class="workspace-context-undo" title="No outline edit to undo" disabled>Undo outline</button>
           <button id="fitButton" title="Fit outline (0)" aria-label="Fit outline">Fit</button>
           <div class="workspace-zoom-controls"><button id="zoomInButton" title="Zoom in (+)" aria-label="Zoom in">+</button><button id="zoomOutButton" title="Zoom out (-)" aria-label="Zoom out">−</button></div>
@@ -137,13 +141,23 @@
       <div class="sidebar-heading workspace-panel-heading"><span>INSPECTOR</span><div class="workspace-panel-actions"><button id="workspacePinInspector" class="workspace-pin-button" aria-label="Pin inspector open" aria-pressed="false">Pin</button><button id="workspaceCloseInspector" class="workspace-icon-button" aria-label="Collapse inspector" title="Collapse inspector">›</button></div></div>
       <div id="workspaceInspectorScroll" class="sidebar-content">
         <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a landscape feature or city block, or use Add feature in Landscape. Pin this panel to keep the city report available.</p></div>
-        <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+        <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><details id="identityInspector" class="identity-inspector" hidden>
+          <summary id="identityEditorTitle">Property identity</summary>
+          <p class="hint">Name and use apply only to this selected record. Blank fields restore its generated label. Undo identity keeps the last 20 applied edits in this session.</p>
+          <div class="control-group"><label for="identityNameInput">Custom name</label><input id="identityNameInput" maxlength="80" placeholder="Use generated label" autocomplete="off"></div>
+          <div class="control-group"><label for="identityUseInput">Descriptive use</label><select id="identityUseInput"><option value="">No override</option><option>Residence</option><option>Inn / Tavern</option><option>Shop</option><option>Workshop</option><option>Guildhall</option><option>Temple</option><option>Warehouse</option><option value="other">Other…</option></select></div>
+          <div id="identityOtherUseGroup" class="control-group" hidden><label for="identityOtherUseInput">Other descriptive use</label><input id="identityOtherUseInput" maxlength="80" placeholder="Describe this place" autocomplete="off"></div>
+          <p id="identityDraftState" class="hint">Up to date</p>
+          <button id="identityApplyButton" class="tool-button full-width">Apply identity</button>
+          <div class="tool-grid actions"><button id="identityDiscardButton" class="minor-button">Discard draft</button><button id="identityUndoButton" class="minor-button" disabled>Undo identity</button></div>
+          <p id="identityStatus" class="file-status" role="status" aria-live="polite"></p>
+        </details><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
         <div id="districtInspectorControls" class="district-inspector-controls" hidden>
           <p id="districtStats" class="hint"></p>
           <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>
           <button id="applyDistrictButton" class="tool-button full-width" disabled>Apply district changes</button>
           <div class="sidebar-rule"></div>
-          <p id="selectedDistrictBlock" class="hint">Click a city block in Select / Pan to change its district.</p>
+          <p id="selectedDistrictBlock" class="hint">Click open ground outside properties in Select / Pan to change its district. Hide Buildings, Properties and Plots to target entire blocks.</p>
           <div class="control-group"><label for="districtTargetInput">Receiving neighborhood</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select></div>
           <button id="moveDistrictButton" class="minor-button full-width" disabled>Move selected block</button>
           <p class="hint">Blocks can move only to an adjacent district. Neither neighborhood may become empty or disconnected.</p>

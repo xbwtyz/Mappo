@@ -90,6 +90,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
   canvas.addEventListener('wheel', event => {
     event.preventDefault();
     if (active) return;
+    onHover(null);
     const r = canvas.getBoundingClientRect();
     camera.zoomAt(Math.exp(-event.deltaY * .0013), {
       x: event.clientX - r.left,

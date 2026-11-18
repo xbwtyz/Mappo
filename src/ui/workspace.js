@@ -148,6 +148,28 @@ export class WorkspaceShell {
       const element = this.document.createElement('section');
       element.className = 'workspace-inspector-section';
       element.textContent = [section.title ?? '', ...(section.rows ?? []).map(([label, value]) => `${label}: ${value}`)].filter(Boolean).join('\n');
+      if (section.actions?.length) {
+        const summary = this.document.createElement('div');
+        summary.textContent = element.textContent;
+        element.textContent = '';
+        element.replaceChildren(summary, ...section.actions.map(action => {
+          const button = this.document.createElement('button');
+          button.type = 'button';
+          button.className = 'workspace-inspector-action';
+          button.textContent = action.label;
+          button.disabled = Boolean(action.disabled);
+          if (action.selection) {
+            button.setAttribute('data-inspector-kind', action.selection.kind);
+            button.setAttribute('data-inspector-id', action.selection.id);
+          }
+          button.addEventListener('click', () => {
+            action.run();
+            this.$('workspaceSelectionName').setAttribute('tabindex', '-1');
+            this.$('workspaceSelectionName').focus?.();
+          });
+          return button;
+        }));
+      }
       return element;
     }));
     this.$('workspaceShowControls').hidden = !descriptor.section;

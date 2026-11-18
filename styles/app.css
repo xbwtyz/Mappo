@@ -319,3 +319,17 @@
 @media(max-width:670px) {
   .workspace-shell .sidebar-left{z-index:10}
 }
+
+/* 3F-Aa: keyboard-accessible property/building inspector navigation. */
+.workspace-inspector-action{display:block;width:100%;min-height:40px;margin-top:9px;padding:9px 11px;border:1px solid #61756c;border-radius:5px;background:#213638;color:#e5dfcf;font:inherit;line-height:1.5;text-align:left;white-space:normal;overflow-wrap:anywhere;cursor:pointer}
+.workspace-inspector-action:hover{background:#304b49;border-color:#b5a17e}
+.workspace-inspector-action:disabled{opacity:.55;cursor:default}
+.workspace-inspector-section{overflow-wrap:anywhere}
+
+/* 3F-C: local identity form and explicit rebuild-loss feedback. */
+.identity-inspector{margin:18px 0;padding:14px;border:1px solid #65756b;border-radius:6px;background:#213234}
+.identity-inspector summary{font-weight:700;cursor:pointer;color:#efdfc5}
+.identity-inspector .control-group{margin:14px 0}.identity-inspector input,.identity-inspector select{width:100%;min-width:0;box-sizing:border-box}
+.identity-inspector .tool-grid{grid-template-columns:1fr 1fr}.identity-inspector button{white-space:normal;min-height:40px}
+.identity-rebuild-warning{padding:12px;margin-bottom:12px;border:1px solid #d1a579;background:#443a2d;color:#f0dfc8;font-size:12px;line-height:1.6}
+.identity-rebuild-warning button{margin-top:8px;white-space:normal}
