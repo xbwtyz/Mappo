@@ -62,24 +62,21 @@
           <details class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a city block to inspect its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
           <div id="landscapeHistoryTools" class="landscape-history-tools"><p class="hint">Draft histories</p><div class="tool-grid"><button id="landscapeUndoWater" class="minor-button">Undo water</button><button id="landscapeUndoTerrain" class="minor-button">Undo mountains</button></div></div>
         </section>
-        <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>        <details id="districtPanel" class="district-panel" aria-label="Neighborhood tools">
-          <summary>NEIGHBORHOODS · <span id="districtCount">0</span></summary>
-          <div class="control-group"><label for="districtNumberInput">Number of districts</label><select id="districtNumberInput"><option value="auto">Automatic · Suggested for this city</option><option value="1">1 district</option><option value="2">2 districts</option><option value="3">3 districts</option><option value="4">4 districts</option><option value="5">5 districts</option><option value="6">6 districts</option><option value="7">7 districts</option><option value="8">8 districts</option><option value="9">9 districts</option><option value="10">10 districts</option><option value="11">11 districts</option><option value="12">12 districts</option></select></div>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
-          <div class="control-group"><label for="districtSeedInput">District seed</label><input id="districtSeedInput" maxlength="64" value="districts" spellcheck="false"></div>
+        <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>
+          <details id="districtPanel" class="district-panel" aria-label="Neighborhood generation" open>
+            <summary>NEIGHBORHOODS · <span id="districtCount">0</span></summary>
+            <div class="control-group"><label for="districtNumberInput">Number of districts</label><select id="districtNumberInput"><option value="auto">Automatic · Suggested for this city</option><option value="1">1 district</option><option value="2">2 districts</option><option value="3">3 districts</option><option value="4">4 districts</option><option value="5">5 districts</option><option value="6">6 districts</option><option value="7">7 districts</option><option value="8">8 districts</option><option value="9">9 districts</option><option value="10">10 districts</option><option value="11">11 districts</option><option value="12">12 districts</option></select></div>
+            <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary><div class="control-group"><label for="districtSeedInput">District seed</label><input id="districtSeedInput" maxlength="64" value="districts" spellcheck="false"></div></details>
+            <button id="generateDistrictButton" class="tool-button full-width">Rebuild districts</button>
+            <p class="hint">Replaces neighborhood names and membership, but preserves streets, properties and buildings. Undo restores the prior assignment.</p>
+            <button id="undoDistrictButton" class="minor-button full-width actions" disabled>Undo district edit</button>
+            <p id="districtGenerationMessage" class="file-status" role="status" aria-live="polite"></p>
+            <div class="district-list-heading"><h2>Neighborhoods</h2><span>SELECT TO EDIT</span></div>
+            <ul id="districtList" class="district-feature-list" aria-label="Neighborhoods"></ul>
+            <p id="districtEmpty" class="hint">Generate districts to create selectable neighborhoods.</p>
+            <div hidden><label for="districtSelect">Selected district</label><select id="districtSelect"><option value="">Choose a neighborhood</option></select></div>
+            <p class="hint">Select a neighborhood here or click a city block. Name, color and connected block editing open in the inspector. Visibility controls are under Layers.</p>
           </details>
-          <button id="generateDistrictButton" class="tool-button full-width">Generate / rebuild districts</button>
-          <p class="hint">Replaces district names and assignments. Streets and buildings stay fixed. Undo district edit restores the previous layout.</p>
-          <div class="sidebar-rule"></div>
-          <div class="control-group"><label for="districtSelect">District inspector</label><select id="districtSelect"><option value="">Choose a neighborhood</option></select></div>
-          <p id="districtStats" class="hint"></p>
-          <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>
-          <button id="applyDistrictButton" class="minor-button full-width" disabled>Apply name &amp; color</button>
-          <p id="selectedDistrictBlock" class="hint">Click a block in Pan map mode to move it.</p>
-          <label class="sr-only" for="districtTargetInput">Receiving district</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select>
-          <div class="tool-grid actions"><button id="moveDistrictButton" class="minor-button" disabled>Move selected block</button><button id="undoDistrictButton" class="minor-button" disabled>Undo district edit</button></div>
-          <p id="districtMessage" class="file-status" role="status" aria-live="polite">Click a neighborhood to inspect it. District names describe places; they do not change building types.</p>
-        </details>
         </section>
         <section id="workspaceSection-defenses" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-defenses" hidden>        <details id="fortificationPanel" class="fortification-panel" open>
           <summary>FORTIFICATIONS</summary>
@@ -123,6 +120,17 @@
       <div id="workspaceInspectorScroll" class="sidebar-content">
         <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a landscape feature or city block, or use Add feature in Landscape. Pin this panel to keep the city report available.</p></div>
         <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+        <div id="districtInspectorControls" class="district-inspector-controls" hidden>
+          <p id="districtStats" class="hint"></p>
+          <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>
+          <button id="applyDistrictButton" class="tool-button full-width" disabled>Apply district changes</button>
+          <div class="sidebar-rule"></div>
+          <p id="selectedDistrictBlock" class="hint">Click a city block in Select / Pan to change its district.</p>
+          <div class="control-group"><label for="districtTargetInput">Receiving neighborhood</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select></div>
+          <button id="moveDistrictButton" class="minor-button full-width" disabled>Move selected block</button>
+          <p class="hint">Blocks can move only to an adjacent district. Neither neighborhood may become empty or disconnected.</p>
+          <p id="districtMessage" class="file-status" role="status" aria-live="polite">Select a neighborhood to edit its name, color or connected blocks.</p>
+        </div>
         <div id="landscapeInspectorControls" class="landscape-inspector-controls" hidden>
           <div id="landscapeCreationType" class="control-group" hidden><label for="landscapeTypeInput">Feature type</label><select id="landscapeTypeInput"><option value="river">River</option><option value="coast">Coastline</option><option value="lake">Lake</option><option value="terrain">Mountain range</option></select><p id="landscapeCreationHelp" class="hint"></p></div>
 <details id="waterPanel" class="water-panel" open>

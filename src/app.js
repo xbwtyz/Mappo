@@ -35,6 +35,9 @@ import {
   DistrictPanel
 } from './ui/districts.js';
 import {
+  DistrictWorkspace
+} from './ui/district-workspace.js';
+import {
   ProjectFiles
 } from './ui/project-files.js';
 import {
@@ -77,6 +80,7 @@ const TOOL_HINTS = {
 let project, drawPending = false;
 let files;
 let districtPanel;
+let districtWorkspace;
 let fortificationPanel;
 let waterPanel;
 let terrainPanel;
@@ -369,6 +373,13 @@ districtPanel = new DistrictPanel({
   }
 });
 districtPanel.bind();
+districtWorkspace = new DistrictWorkspace({
+  getElement: $,
+  getCity: () => project?.city,
+  panel: districtPanel,
+  getShell: () => workspaceShell
+});
+districtPanel.onRefresh = () => districtWorkspace.render();
 fortificationPanel = new FortificationPanel({
   getElement: $,
   getCity: () => project.city,
@@ -455,13 +466,13 @@ terrainPanel.refresh(true);
 
 function syncWorkspaceDistrictSelection() {
   const id = districtPanel?.editor.selectedDistrictId;
-  if (id) workspaceShell?.select({
-    kind: 'district',
-    id
-  });
-  else if (workspaceShell?.state.selection?.kind === 'district') workspaceShell.select(null, {
+  if (id) {
+    if (workspaceShell && workspaceShell.state.section !== 'districts') workspaceShell.navigate('districts');
+    workspaceShell?.select({ kind: 'district', id });
+  } else if (workspaceShell?.state.selection?.kind === 'district') workspaceShell.select(null, {
     reveal: false
   });
+  districtWorkspace?.render();
 }
 
 function stopWorkspaceTools(targetSection = null) {
@@ -487,7 +498,10 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
     files?.changed();
     requestDraw();
   },
-  onInspect: () => landscapeWorkspace?.render(),
+  onInspect: () => {
+    landscapeWorkspace?.render();
+    districtWorkspace?.render();
+  },
   clearSelection: () => {
     stopWorkspaceTools();
     districtPanel.editor.selectedDistrictId = null;

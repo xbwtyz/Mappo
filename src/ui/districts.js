@@ -25,10 +25,15 @@ export class DistrictPanel {
     this.changed = changed;
     this.document = document;
     this.editor = new DistrictEditor();
+    this.formDistrictId = null;
+    this.formBlockId = null;
+    this.onRefresh = () => {};
   }
   message(text, error = false) {
-    this.$('districtMessage').textContent = text;
-    this.$('districtMessage').classList.toggle('error', error);
+    for (const id of ['districtMessage', 'districtGenerationMessage']) {
+      this.$(id).textContent = text;
+      this.$(id).classList.toggle('error', error);
+    }
   }
   options(id, items, value) {
     const select = this.$(id);
@@ -51,8 +56,12 @@ export class DistrictPanel {
       value: d.id,
       label: d.name
     })) : [])], district?.id);
-    this.$('districtNameInput').value = district?.name ?? '';
-    this.$('districtColorInput').value = district?.color ?? '#cba480';
+    const selectionChanged = this.formDistrictId !== (district?.id ?? null);
+    if (resetControls || selectionChanged) {
+      this.$('districtNameInput').value = district?.name ?? '';
+      this.$('districtColorInput').value = district?.color ?? '#cba480';
+    }
+    this.formDistrictId = district?.id ?? null;
     this.$('applyDistrictButton').disabled = !district;
     this.$('districtNameInput').disabled = !district;
     this.$('districtColorInput').disabled = !district;
@@ -70,14 +79,18 @@ export class DistrictPanel {
     } else this.$('districtStats').textContent = active ? 'Select a district or click a block on the map.' : 'Add neighborhoods without changing this city’s geometry.';
     this.$('selectedDistrictBlock').textContent = block ? `Selected block: ${block.id}` : 'Click a block in Pan map mode to move it.';
     const targets = active && block ? [...new Set([...topology.neighbors.get(block.id)].map(id => topology.blocks.get(id).districtId).filter(id => id !== block.districtId))] : [];
+    const priorTarget = !resetControls && !selectionChanged && this.formBlockId === (block?.id ?? null)
+      ? this.$('districtTargetInput').value : '';
     this.options('districtTargetInput', [{
       value: '',
       label: 'Move to neighboring district'
     }, ...targets.map(id => ({
       value: id,
       label: city.districts.find(d => d.id === id).name
-    }))], '');
+    }))], targets.includes(priorTarget) ? priorTarget : '');
+    this.formBlockId = block?.id ?? null;
     this.$('moveDistrictButton').disabled = !targets.length;
+    this.onRefresh();
   }
   selectAt(point) {
     const city = this.getCity();
@@ -101,8 +114,12 @@ export class DistrictPanel {
     try {
       const city = action();
       this.commit(city);
+      // Refill committed values without clearing independent generation inputs.
+      this.formDistrictId = null;
+      this.formBlockId = null;
       this.refresh();
       this.message(message);
+      this.changed();
       return true;
     } catch (error) {
       this.message(error.message, true);

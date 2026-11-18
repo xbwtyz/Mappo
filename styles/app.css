@@ -146,3 +146,24 @@
 .landscape-inspector-controls select{appearance:auto;padding:0 8px;font-size:12px}
 .landscape-inspector-controls .tool-grid .control-group label{font-size:11px}
 .workspace-shell .map-viewport canvas.feature-hover{cursor:pointer}
+
+
+/* Phase 4A: district inventory and contextual district editing. */
+.district-list-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;border-top:1px solid #3b5149;margin-top:20px;padding-top:17px}
+.district-list-heading h2{font:650 14px system-ui,sans-serif;letter-spacing:0;color:#e5d6bd}
+.district-list-heading span{font:700 9px ui-monospace,monospace;letter-spacing:.06em;color:#91a9a0}
+.district-feature-list{list-style:none;margin:12px 0;padding:0;display:grid;gap:7px}
+.district-list-item{margin:0;padding:0;min-width:0}
+.district-list-row{width:100%;display:flex;align-items:center;gap:9px;min-height:42px;padding:8px 10px;background:#16282a;border:1px solid #415652;border-radius:5px;color:#e1e7df;text-align:left;font-size:12px}
+.district-list-row:hover{background:#293e3c;border-color:#8f9f8c}
+.district-list-row[aria-pressed=true]{background:#354439;border-color:#d1a579;box-shadow:inset 3px 0 #d1a579}
+.district-list-swatch{display:inline-block;flex:none;width:13px;height:13px;border:1px solid #d0d8c777;border-radius:3px}
+.district-list-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.district-list-count{font:10px ui-monospace,monospace;color:#a2b7ab}
+.district-inspector-controls{border-top:1px solid #3b5149;margin-top:14px;padding-top:9px}
+.district-inspector-controls .district-name-row{grid-template-columns:minmax(0,1fr) 42px;gap:8px;margin:15px 0 10px}
+.district-inspector-controls .district-name-row input{height:39px}
+.district-inspector-controls .district-name-row input[type=color]{width:42px;padding:3px}
+.district-inspector-controls .control-group{margin:15px 0 9px}
+.district-inspector-controls .control-group label{font-size:12px}
+.district-inspector-controls .hint{font-size:11px;line-height:1.6}
