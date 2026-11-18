@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui3` build implements Phases 1–3 of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui4a` feature-branch build implements Phases 1–3 plus Phase 4A of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -12,6 +12,7 @@ The `0.1-dev.ui3` build implements Phases 1–3 of `UI_OVERHAUL_PLAN.md` around 
 | `ui/workspace-inspectors.js` | Read-only adapters from current district/water/terrain records to inspector descriptors |
 | `core/landscape-selection.js` | Pure draft-record inventory, readable labels, polygon adapters and deterministic map hits |
 | `ui/landscape.js` | Keyed feature list, filters, creation/selection routing, contextual form visibility and runtime input cache |
+| `ui/district-workspace.js` | Keyed neighborhood list, list/map selection synchronization and contextual district form visibility without geometry ownership |
 | `renderer/landscape-selection.js` | Canvas hover and selected halos independent of feature generation |
 | `app.js` | Connect existing editors to shell selection, cancel tools leaving a section and resize the live Canvas |
 | `index.template.html` | Stable DOM controls grouped under four tabpanels, inspector slots and shared generation action |
@@ -31,7 +32,7 @@ Shell selection is a small `{kind, id}` reference, separate from generated recor
 
 Providers register by kind with a `resolve(id)` function. They return a descriptor containing `type`, `title`, `description`, an optional target `section`/`controlLabel`, and reusable `sections` with a title and label/value rows. Text is rendered through textContent. The shell does not import feature generators or mutate records. Tests demonstrate registration of an additional building provider without changing the shell; the actual 3F building inspector remains future work.
 
-Current providers resolve district selection, water tool/feature selection and mountain tool/feature selection against the existing records. They show live summaries and an Open controls shortcut. Water/terrain forms now live once in the inspector, retaining their original IDs and event bindings. The landscape adapter shows one feature group at a time; district forms remain in their section until Phase 4. The shell exposes a generic onInspect callback without importing feature geometry.
+Current providers resolve district selection, water tool/feature selection and mountain tool/feature selection against the existing records. They show live summaries and an Open controls shortcut. Water/terrain forms now live once in the inspector, retaining their original IDs and event bindings. The landscape adapter shows one feature group at a time; Phase 4A moves the existing district form to the same inspector and adds a separate keyed neighborhood list in Districts. The shell exposes a generic onInspect callback without importing feature geometry.
 
 ## Persistence and verification
 
@@ -54,3 +55,9 @@ The creation picker uses the same mounted controls, showing creation fields and 
 Map hit testing uses an eight-CSS-pixel edge tolerance divided by zoom. Edges beat interiors, nearest edges win, smaller interior footprints win, and stable IDs break exact ties. Coastal interiors use the ocean polygon while coastal edge selection/highlights use the actual shoreline. Landscape hits precede district block hits; empty land clears the selection. Pointer movement only updates hover in Select/Pan and never edits geometry. Renderer halos use constant screen widths to stay visible around small features.
 
 Editor callbacks reconcile selection by ID. Missing selected records clear without selecting an arbitrary replacement. Undo retains a still-valid selected record even if its snapshot held another active ID. Full rebuilds preserve IDs where the original generators do. Loading resolves the optional landscape reference against restored draft records, clears missing IDs and never regenerates saved geometry. Older saves retain the existing active-mode fallback. Inspector scroll resets for a different selection and remains stable during edits.
+
+## Phase 4A district list and contextual editing
+
+The district adapter reads authoritative accepted districts, creates stable keyed rows and mirrors the original `DistrictEditor` selected district ID. Map block clicks and list buttons select the same district, open Districts and reveal the contextual right-hand form. The existing district panel continues to own generation, input validation, membership propagation, 20-history undo, and failure messages. Rebuild and undo stay in Districts; name/color and block transfers live in the inspector; layer visibility stays in Layers. No generator, validation or schema logic changed.
+
+The district panel retains pending name and color inputs when the selected district stays the same (including clicking other blocks in it) but restores accepted values when the selection changes or a local mutation succeeds. The receiving-district input retains a pending target only while the selected block and target remain valid. The existing saved single-selected-district control values remain authoritative for portable files; portable per-district input caches belong to Phase 6.

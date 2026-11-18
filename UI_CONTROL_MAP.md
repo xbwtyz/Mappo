@@ -1,6 +1,6 @@
-# UI control locations — Phase 3
+# UI control locations — Phase 4A
 
-Build `0.1-dev.ui3`. This inventory records the new homes of the existing controls. IDs and controller bindings stay stable. Project schema remains 9; shell menu/disclosure visibility is runtime-only until the workspace persistence phase.
+Build `0.1-dev.ui4a`. This inventory records the new homes of the existing controls. IDs and controller bindings stay stable. Project schema remains 9; shell menu/disclosure visibility is runtime-only until the workspace persistence phase.
 
 | Controls | New home | Behavior |
 | --- | --- | --- |
@@ -35,10 +35,12 @@ Build `0.1-dev.ui3`. This inventory records the new homes of the existing contro
 | Undo water / Undo mountains | Landscape → Draft histories | Existing editor undo remains available after a selected record is removed |
 | District count, Generate/rebuild districts | Districts → Neighborhoods | Existing district-only generation |
 | District seed | Districts → Neighborhoods → Generation settings | Existing pending district seed |
-| District selection, name/color, Apply, receiving district, Move block, Undo, district status | Districts → Neighborhoods | Existing local editing and connected membership validation |
+| District list, selection | Districts → Neighborhoods | Stable district IDs; map clicks and list selection both reveal contextual inspector |
+| District name/color, Apply district changes, selected block, receiving district, Move selected block | Right selection inspector → Neighborhood | Existing local editing, strict connected membership validation and UI bindings |
+| Undo district edit, district generation/status | Districts → Neighborhoods | Existing 20-snapshot scoped history and generation feedback |
 | Walls enabled, gates, tower spacing, Build/update, Undo, defense status | Defenses → Fortifications | Existing defense-only updates |
 | Fortification seed | Defenses → Fortifications → Generation settings | Existing pending defense seed |
-| Inspector summaries, Open editing controls, Clear selection, Pin, city report/guide | Shared right inspector | Landscape summaries plus contextual forms; district forms remain Phase 4 |
+| Inspector summaries, Clear selection, Pin, city report/guide | Shared right inspector | Landscape and district contextual forms; defense controls remain in Defenses |
 | Collapse/reopen tools and inspector, four section tabs | Shared panel headings/map header/top bar | Same Phase 1 shell state and draft-safe navigation |
 
 Project and Layers are nonmodal panels with normal buttons, form controls and Tab navigation. Opening either closes the other. Escape closes the panel and returns focus to its opener without cancelling the active map tool. Moving focus outside or clicking outside closes it; its fields and staged file remain intact. Arrow Down on an opener enters its controls. Menus remain available when the side panels collapse.

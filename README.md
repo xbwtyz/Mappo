@@ -2,13 +2,13 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.ui3 — Landscape list and contextual editing
+## Current build: 0.1-dev.ui4a — District list and inspector (Phase 4A)
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui3.html`](dist/mappo-0.1-dev.ui3.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui4a.html`](dist/mappo-0.1-dev.ui4a.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### UI overhaul: Phases 1–3
+### UI overhaul: Phases 1–3 and Phase 4A
 
 Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) lists the new homes of the existing controls.
 
@@ -18,11 +18,11 @@ Open **Landscape** for one list of every river, coastline, lake and mountain ran
 
 Select a feature from the list or map in **Select / Pan** to open only its own editing controls. Selection alone leaves the map in Select/Pan; choose a shape, move or crossing button to edit. Hover and selected outlines use a light halo, with orange marking selection. Nearby feature edges take priority over broad interiors; smaller interiors win overlap ties, then stable IDs break equal ties. Map selection reveals the matching list row, switching a conflicting filter to All. Click a city block to inspect its district; click empty land to clear selection.
 
-**Clear selection** closes an unpinned inspector; **Pin** keeps it open, including its expandable city report. District editing remains in Districts until Phase 4. Water and terrain retain separate histories, with Undo actions also accessible from the Landscape list after removal. Selected landscape IDs now survive saves even in Select/Pan mode. Full shell/filter/layout persistence remains Phase 6.
+**Clear selection** closes an unpinned inspector; **Pin** keeps it open, including its expandable city report. Districts now lists neighborhoods and opens their name/color and connected-block controls in the selection inspector. District count, seed, rebuild and scoped undo remain under Districts; defense reorganization is next. Water and terrain retain separate histories, with Undo actions also accessible from the Landscape list after removal. Selected landscape IDs now survive saves even in Select/Pan mode. Full shell/filter/layout persistence remains Phase 6.
 
 Switching sections stops tools whose controls are being hidden while preserving completed drafts, history, pending inputs and the accepted city. An in-progress gesture is cancelled through its original editor. Panel collapse resizes the Canvas without changing the city or camera position/zoom. Shell layout preferences are runtime state in this phase; their portable persistence is planned for Phase 6. Existing project saves and recovery still restore their original city geometry and editor drafts.
 
-See [UI_OVERHAUL_PLAN.md](UI_OVERHAUL_PLAN.md) for completed Phase 1–2 goals and the next review checkpoint, and [WORKSPACE_UI.md](WORKSPACE_UI.md) for the modular shell/inspector architecture.
+See [UI_OVERHAUL_PLAN.md](UI_OVERHAUL_PLAN.md) for the phase-by-phase goals and review checkpoints, and [WORKSPACE_UI.md](WORKSPACE_UI.md) for the modular shell/inspector architecture.
 
 ### Workflow
 
@@ -51,17 +51,17 @@ The current file limit is 20 MiB. Unsupported newer schemas are rejected rather 
 
 ### Districts
 
-Newly generated cities receive connected neighborhoods automatically. The **Neighborhoods** panel lets you choose an automatic count or 1–12 districts and an independent district seed, then **Generate / rebuild districts**. Only district data changes; streets, block shapes, properties and building footprints remain fixed. A separate connected block group receives at least one district if it cannot share a region with the rest of the city.
+Newly generated cities receive connected neighborhoods automatically. The **Neighborhoods** panel lets you choose an automatic count or 1–12 districts and an independent district seed, then **Rebuild districts**. Only district data changes; streets, block shapes, properties and building footprints remain fixed. A separate connected block group receives at least one district if it cannot share a region with the rest of the city.
 
 - Click a block in **Select / Pan** mode to select its neighborhood and inspect its block, property and building counts. Dragging the map does not select a block.
-- Select a neighborhood from the district inspector list, edit its name and color, and click **Apply name & color**.
+- Select a neighborhood in the Districts list or click one of its blocks on the map. Edit its name/color in the right inspector and click **Apply district changes**.
 - With a block selected, choose a neighboring district and click **Move selected block**. The receiving district must share a street edge. Moving a block cannot split its source district or leave a district empty. All properties and buildings in the block inherit the new district.
 - Toggle district **Colors**, **Borders** and **Labels** independently of roof/property/plot layers.
 - **Undo district edit** restores the last district generation, rename, color change or block move. Up to 20 district edits, selections, pending inspector values and district layer settings are saved with the project.
 
 Districts are geographic neighborhoods. Names do not replace buildings or simulate occupations, wealth or trade. Rules and themes can be added later without coupling neighborhood identity to geometry generation.
 
-Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Generate / rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 9 explicitly migrates older files; older apps that cannot read schema 9 should request a newer build rather than partially load it.
+Older saved cities load with their original geometry and no newly generated neighborhoods. Choose **Rebuild districts** to add them; district display layers switch on for that first assignment. Project data schema 9 explicitly migrates older files; older apps that cannot read schema 9 should request a newer build rather than partially load it.
 
 See [`DISTRICTS.md`](DISTRICTS.md) for the module boundaries and extension points.
 
@@ -210,7 +210,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui3.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui4a.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -240,7 +240,8 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.ui1:** UI overhaul Phase 1 — modular workspace shell, section navigation, collapsible panels and extensible selection summaries.
 - **0.1-dev.ui2:** UI overhaul Phase 2 — compact City controls, expandable seeds, shared Project/Layers menus and map navigation.
 - **0.1-dev.ui3:** UI overhaul Phase 3 — unified landscape list, inline creation/contextual forms, map hits/highlights and portable landscape selection.
-- **UI overhaul, Phases 4–7:** District/defense workflows, draft feedback, readability and full workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
+- **0.1-dev.ui4a:** UI overhaul Phase 4A — selectable neighborhood inventory, contextual district editing, shared district history and explicit local district rebuild.
+- **UI overhaul, Phase 4B onward:** Defense workflow organization, integration, draft feedback, readability and full workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 

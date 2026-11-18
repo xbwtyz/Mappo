@@ -23,7 +23,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui3.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui4a.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -328,10 +328,16 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
   worldClick(topology.centers.get(candidate.block.id));
   assert.equal(state().districtPanel.editor.selectedBlockId, candidate.block.id);
   assert.equal(el('districtSelect').value, candidate.block.districtId);
+  assert.equal(el('workspaceSection-districts').hidden, false, 'Map selection opens Districts');
+  assert.equal(el('districtInspectorControls').hidden, false, 'District form is visible in inspector');
+  assert.equal(el('workspaceShowControls').hidden, true, 'A shortcut is unnecessary for inline forms');
   el('districtNameInput').value = 'Test Quarter';
   el('districtColorInput').value = '#123abc';
   el('applyDistrictButton').handlers.click();
   assert.equal(state().project.city.districts.find(d => d.id === candidate.block.districtId).name, 'Test Quarter');
+  el('districtNameInput').value = 'Pending name while selecting a block';
+  worldClick(topology.centers.get(candidate.block.id));
+  assert.equal(el('districtNameInput').value, 'Pending name while selecting a block', 'Reselecting a block preserves unfinished district name');
   el('districtTargetInput').value = candidate.target;
   assert.equal(el('moveDistrictButton').handlers.click(), true);
   assert.equal(state().project.city.blocks.find(b => b.id === candidate.block.id).districtId, candidate.target);
