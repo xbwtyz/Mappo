@@ -115,7 +115,7 @@ test('3I-C validates and atomically commits small, safe rear-boundary changes',(
   assert.equal(JSON.stringify(project.city),initial,'Atomic preparation must not change the source.');
   const invalid=new PropertyEditSession3I();
   assert.equal(invalid.start(project.city,property.id),true);
-  invalid.setCorner(2,{x:10001,y:10001});
+  invalid.setCorner(2,{x:9999,y:9999});
   const blocked=preparePropertyApply3I(project,workspace,invalid);
   assert.equal(blocked.ok,false);
   assert.equal(blocked.candidate,null);
