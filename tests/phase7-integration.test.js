@@ -82,8 +82,8 @@ test('7B: recovery backs up the previous complete document on a UI-only change',
   const previous = decodeProjectDocument(snapshots.backup);
   assert.equal(current.workspace.ui.section, 'districts');
   assert.equal(previous.workspace.ui.section, 'landscape');
-  assert.deepEqual(current.project.city, project.city);
-  assert.deepEqual(previous.project.city, project.city);
+  assert.equal(JSON.stringify(current.project.city), JSON.stringify(project.city));
+  assert.equal(JSON.stringify(previous.project.city), JSON.stringify(project.city));
 });
 
 test('7B: navigation, scoped undo and pending drafts never mutate accepted geometry', () => {
