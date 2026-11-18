@@ -117,6 +117,10 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       // 3G-A: use the real Inspector action and verify a visual-only mode in every viewport.
       await page.getByRole('button', { name: 'Edit building footprint' }).click();
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isEditing(__buildingQA.buildingId)), true);
+      // 3G-D: real browsers expose scoped, initially disabled accepted-edit history.
+      assert.equal(await page.locator('#buildingHistoryUndo').isDisabled(), true);
+      assert.equal(await page.locator('#buildingHistoryRedo').isDisabled(), true);
+      assert.match(await page.locator('#buildingHistoryStatus').innerText(), /session history/i);
       assert.equal(await page.evaluate(() => document.getElementById('draftBadge').textContent), '● BUILDING EDIT MODE');
       assert.equal(await page.evaluate(() => __buildingQA.state().files.captureDocument().workspace.ui.selection?.id), buildingId);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
