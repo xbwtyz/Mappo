@@ -64,7 +64,7 @@ test('3G-C4 validated Apply commits once, preserves IDs and persists schema-9 sa
   assert.notEqual(JSON.stringify(updated.city),original);
   const snapshot=app.capture();
   const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(snapshot.project,snapshot.workspace)));
-  assert.deepEqual(portable.project.city,updated.city);
+  assert.equal(JSON.stringify(portable.project.city),JSON.stringify(updated.city),'Portable project must preserve exact accepted geometry across Node and browser VM realms');
   assert.equal(portable.project.schemaVersion,9);
   assert.equal(JSON.stringify(portable.workspace).includes('buildingEditSession'),false);
   assert.equal(JSON.stringify(portable.workspace).includes('buildingTransform'),false);
