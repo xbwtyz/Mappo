@@ -2,19 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — Rivers + Coastlines · {{APP_VERSION}}</title>
+  <title>Mappo — City editor · {{APP_VERSION}}</title>
   <!-- INLINE_CSS -->
 </head>
 <body>
-<div class="app">
+<div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
     <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">{{APP_VERSION}}</span></div>
-    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>RIVERS + COASTLINES</span></div>
+    <nav class="workspace-tabs" role="tablist" aria-label="Editor sections"><button id="workspaceTab-city" role="tab" aria-controls="workspaceSection-city" aria-selected="true" tabindex="0">City</button><button id="workspaceTab-landscape" role="tab" aria-controls="workspaceSection-landscape" aria-selected="false" tabindex="-1">Landscape</button><button id="workspaceTab-districts" role="tab" aria-controls="workspaceSection-districts" aria-selected="false" tabindex="-1">Districts</button><button id="workspaceTab-defenses" role="tab" aria-controls="workspaceSection-defenses" aria-selected="false" tabindex="-1">Defenses</button></nav>
+    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>WORKSPACE · PHASE 1</span></div>
   </header>
   <div class="workspace">
-    <aside class="sidebar sidebar-left" aria-label="City design tools">
-      <div class="sidebar-heading"><span class="section-number">01</span><span>CITY DESIGN</span></div>
-      <div class="sidebar-content">
+    <aside id="workspaceTools" class="sidebar sidebar-left" aria-label="City design tools">
+      <div class="sidebar-heading workspace-panel-heading"><span id="workspaceSectionTitle">City layout</span><button id="workspaceCollapseTools" class="workspace-icon-button" aria-label="Collapse tools" title="Collapse tools">‹</button></div>
+      <div id="workspaceToolScroll" class="sidebar-content">
+        <section id="workspaceSection-city" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-city">        <p class="eyebrow">CITY FOUNDATION</p><h1>Shape your city.</h1>
+        <p class="intro">Draw the edge, place the square, then let streets grow inside.</p>
+        <div class="outline-tools">
+          <p class="step-label">1 / SHAPE THE BOUNDARY</p>
+          <div class="tool-grid" role="group" aria-label="Outline tools">
+            <button id="freehandButton" class="tool-button" aria-pressed="false">✎ Freehand</button><button id="pointsButton" class="tool-button" aria-pressed="false">◇ Click points</button>
+            <button id="editButton" class="tool-button" aria-pressed="false">⌘ Edit points</button><button id="panButton" class="tool-button" aria-pressed="true">✥ Pan map</button>
+          </div>
+          <div class="tool-grid actions"><button id="finishButton" class="minor-button">Close outline</button><button id="undoButton" class="minor-button">Undo edit</button></div>
+          <p class="hint">Freehand starts a new outline. Release to close it. Click points: place corners, then close.</p>
+          <div class="preset-row"><label class="sr-only" for="presetInput">Starting outline</label><select id="presetInput"><option value="organic">Organic outline</option><option value="radial">Rounded outline</option><option value="linear">Long outline</option><option value="planned">Rectangular outline</option><option value="wedge">Wedge outline</option><option value="twin">Twin-core outline</option><option value="branching">Branching outline</option><option value="crescent">Horseshoe outline</option></select><button id="presetButton" class="minor-button">Use</button></div>
+          <p class="step-label">2 / PLACE THE TOWN CENTER</p>
+          <button id="centerButton" class="tool-button full-width" aria-pressed="false">⊙ Place main square</button>
+          <p class="hint">Click inside the boundary. Keep room between the square and the edge.</p>
+        </div>
+        <p class="step-label">3 / GENERATE THE STREETS</p>
+        <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
+        <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div><p class="hint">Changes block spacing. Your outline stays fixed.</p></div>
+        <div class="control-group"><label for="seedInput">Street seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"><p class="hint">Same outline, center, pattern, density and seed = same city.</p></div>
+        <div class="tool-grid"><button id="newSeedButton" class="minor-button">New street seed</button><button id="cancelButton" class="minor-button">Revert edits</button></div>
+        <div class="layer-panel"><p class="eyebrow">MAP LAYERS</p><label><input type="checkbox" id="buildingsLayer" checked> Building footprints</label><label><input type="checkbox" id="propertiesLayer"> Property boundaries</label><label><input type="checkbox" id="plotsLayer"> Underlying plot divisions</label><p class="hint">A large property can combine multiple plots. Plot divisions can run beneath one continuous building.</p></div>
         <section class="file-panel" aria-label="Project files">
           <p class="eyebrow">PROJECT FILES</p>
           <div class="tool-grid"><button id="saveProjectButton" class="tool-button">↓ Download project</button><button id="loadProjectButton" class="tool-button">↑ Load project</button></div>
@@ -25,7 +47,8 @@
           <div id="loadPreview" class="file-choice" hidden><p id="loadSummary"></p><div class="tool-grid"><button id="openProjectButton" class="tool-button">Open project</button><button id="cancelLoadButton" class="minor-button">Cancel</button></div></div>
           <p class="hint">Project files preserve the complete city and unfinished edits. Download copies to keep versions or move between builds. Browser recovery stays in this browser.</p>
         </section>
-        <details id="waterPanel" class="water-panel" open>
+        </section>
+        <section id="workspaceSection-landscape" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-landscape" hidden>        <details id="waterPanel" class="water-panel" open>
           <summary>WATER &amp; BRIDGES</summary>
           <p id="waterStats" class="hint">Generate lakes, a river and a coastline independently, then edit each preview.</p>
           <fieldset class="water-feature"><legend>RIVER</legend>
@@ -70,18 +93,8 @@
           <p class="hint">Up to six ranges, inside or outside the outline. Footprint and ridge handles self-adjust. Buildings avoid steep ground; roads cross through designated passes. Keep mountains and water separated. Heights control map contours and peak symbols.</p>
           <p id="terrainMessage" class="file-status" role="status" aria-live="polite">Terrain edits are previews. Generate city applies the draft and rebuilds streets, buildings, districts and defenses.</p>
         </details>
-        <details id="fortificationPanel" class="fortification-panel" open>
-          <summary>FORTIFICATIONS</summary>
-          <label class="fortification-check"><input type="checkbox" id="wallsEnabledInput" checked> Walls enabled</label>
-          <p id="fortificationStats" class="hint">Build perimeter walls, connected gates and defensive towers.</p>
-          <div class="tool-grid"><div class="control-group"><label for="gateCountInput">Requested gates</label><select id="gateCountInput"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
-          <div class="control-group"><label for="towerSpacingInput">Tower spacing</label><input id="towerSpacingInput" type="number" min="40" max="200" step="10" value="100"></div></div>
-          <div class="control-group"><label for="fortificationSeedInput">Fortification seed</label><input id="fortificationSeedInput" maxlength="64" value="fortifications" spellcheck="false"></div>
-          <div class="tool-grid"><button id="applyFortificationButton" class="tool-button">Build / update</button><button id="undoFortificationButton" class="minor-button" disabled>Undo fortification edit</button></div>
-          <label class="fortification-check"><input type="checkbox" id="fortificationsLayer" checked> Show fortification layer</label>
-          <p id="fortificationMessage" class="file-status" role="status" aria-live="polite">Walls sit outside the perimeter streets. Disabling retains their saved geometry. Changing gate count, spacing or seed rebuilds fortifications only.</p>
-        </details>
-        <details id="districtPanel" class="district-panel" aria-label="Neighborhood tools">
+        </section>
+        <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>        <details id="districtPanel" class="district-panel" aria-label="Neighborhood tools">
           <summary>NEIGHBORHOODS · <span id="districtCount">0</span></summary>
           <div class="control-group"><label for="districtNumberInput">Number of districts</label><select id="districtNumberInput"><option value="auto">Automatic · Suggested for this city</option><option value="1">1 district</option><option value="2">2 districts</option><option value="3">3 districts</option><option value="4">4 districts</option><option value="5">5 districts</option><option value="6">6 districts</option><option value="7">7 districts</option><option value="8">8 districts</option><option value="9">9 districts</option><option value="10">10 districts</option><option value="11">11 districts</option><option value="12">12 districts</option></select></div>
           <div class="control-group"><label for="districtSeedInput">District seed</label><input id="districtSeedInput" maxlength="64" value="districts" spellcheck="false"></div>
@@ -98,34 +111,24 @@
           <div class="tool-grid actions"><button id="moveDistrictButton" class="minor-button" disabled>Move selected block</button><button id="undoDistrictButton" class="minor-button" disabled>Undo district edit</button></div>
           <p id="districtMessage" class="file-status" role="status" aria-live="polite">Click a neighborhood to inspect it. District names describe places; they do not change building types.</p>
         </details>
-        <p class="eyebrow">YOUR OUTLINE. YOUR CITY.</p><h1>Give your city<br><em>its own shape.</em></h1>
-        <p class="intro">Draw the edge, place the square, then let streets grow inside.</p>
-        <div class="outline-tools">
-          <p class="step-label">1 / SHAPE THE BOUNDARY</p>
-          <div class="tool-grid" role="group" aria-label="Outline tools">
-            <button id="freehandButton" class="tool-button" aria-pressed="false">✎ Freehand</button><button id="pointsButton" class="tool-button" aria-pressed="false">◇ Click points</button>
-            <button id="editButton" class="tool-button" aria-pressed="false">⌘ Edit points</button><button id="panButton" class="tool-button" aria-pressed="true">✥ Pan map</button>
-          </div>
-          <div class="tool-grid actions"><button id="finishButton" class="minor-button">Close outline</button><button id="undoButton" class="minor-button">Undo edit</button></div>
-          <p class="hint">Freehand starts a new outline. Release to close it. Click points: place corners, then close.</p>
-          <div class="preset-row"><label class="sr-only" for="presetInput">Starting outline</label><select id="presetInput"><option value="organic">Organic outline</option><option value="radial">Rounded outline</option><option value="linear">Long outline</option><option value="planned">Rectangular outline</option><option value="wedge">Wedge outline</option><option value="twin">Twin-core outline</option><option value="branching">Branching outline</option><option value="crescent">Horseshoe outline</option></select><button id="presetButton" class="minor-button">Use</button></div>
-          <p class="step-label">2 / PLACE THE TOWN CENTER</p>
-          <button id="centerButton" class="tool-button full-width" aria-pressed="false">⊙ Place main square</button>
-          <p class="hint">Click inside the boundary. Keep room between the square and the edge.</p>
-        </div>
-        <p class="step-label">3 / GENERATE THE STREETS</p>
-        <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
-        <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div><p class="hint">Changes block spacing. Your outline stays fixed.</p></div>
-        <div class="control-group"><label for="seedInput">Street seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"><p class="hint">Same outline, center, pattern, density and seed = same city.</p></div>
-        <button id="generateButton" class="button-primary">↻ Generate city</button>
-        <div class="tool-grid"><button id="newSeedButton" class="minor-button">New street seed</button><button id="cancelButton" class="minor-button">Revert edits</button></div>
-        <p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p>
-        <div class="layer-panel"><p class="eyebrow">MAP LAYERS</p><label><input type="checkbox" id="buildingsLayer" checked> Building footprints</label><label><input type="checkbox" id="propertiesLayer"> Property boundaries</label><label><input type="checkbox" id="plotsLayer"> Underlying plot divisions</label><p class="hint">A large property can combine multiple plots. Plot divisions can run beneath one continuous building.</p></div>
+        </section>
+        <section id="workspaceSection-defenses" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-defenses" hidden>        <details id="fortificationPanel" class="fortification-panel" open>
+          <summary>FORTIFICATIONS</summary>
+          <label class="fortification-check"><input type="checkbox" id="wallsEnabledInput" checked> Walls enabled</label>
+          <p id="fortificationStats" class="hint">Build perimeter walls, connected gates and defensive towers.</p>
+          <div class="tool-grid"><div class="control-group"><label for="gateCountInput">Requested gates</label><select id="gateCountInput"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
+          <div class="control-group"><label for="towerSpacingInput">Tower spacing</label><input id="towerSpacingInput" type="number" min="40" max="200" step="10" value="100"></div></div>
+          <div class="control-group"><label for="fortificationSeedInput">Fortification seed</label><input id="fortificationSeedInput" maxlength="64" value="fortifications" spellcheck="false"></div>
+          <div class="tool-grid"><button id="applyFortificationButton" class="tool-button">Build / update</button><button id="undoFortificationButton" class="minor-button" disabled>Undo fortification edit</button></div>
+          <label class="fortification-check"><input type="checkbox" id="fortificationsLayer" checked> Show fortification layer</label>
+          <p id="fortificationMessage" class="file-status" role="status" aria-live="polite">Walls sit outside the perimeter streets. Disabling retains their saved geometry. Changing gate count, spacing or seed rebuilds fortifications only.</p>
+        </details>
+        </section>
       </div>
-      <div class="sidebar-footer">MAPPO PROJECT <span>© 2026</span></div>
+      <div class="workspace-apply"><button id="generateButton" class="button-primary">↻ Generate city</button><p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p></div>
     </aside>
     <main class="map-shell" aria-label="City map workspace">
-      <div class="map-topline"><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><span id="draftBadge" class="map-draft">● CITY PLAN</span></div>
+      <div class="map-topline"><div class="workspace-panel-restores"><button id="workspaceOpenTools" class="workspace-map-button" aria-label="Show tools" hidden>Tools</button><button id="workspaceOpenInspector" class="workspace-map-button" aria-label="Show inspector">Inspector</button></div><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><span id="draftBadge" class="map-draft">● CITY PLAN</span></div>
       <div id="mapViewport" class="map-viewport">
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
@@ -134,9 +137,13 @@
       </div>
       <div class="map-status"><span id="statusMessage" role="status">Generating city plan…</span><span class="status-readout">ZOOM <strong id="zoomValue">100%</strong></span></div>
     </main>
-    <aside class="sidebar sidebar-right" aria-label="Project information">
-      <div class="sidebar-heading"><span class="section-number">02</span><span>FIELD NOTES</span></div>
+    <aside id="workspaceInspector" class="sidebar sidebar-right" aria-label="Selection inspector" hidden>
+      <div class="sidebar-heading workspace-panel-heading"><span>INSPECTOR</span><div class="workspace-panel-actions"><button id="workspacePinInspector" class="workspace-pin-button" aria-label="Pin inspector open" aria-pressed="false">Pin</button><button id="workspaceCloseInspector" class="workspace-icon-button" aria-label="Collapse inspector" title="Collapse inspector">›</button></div></div>
       <div class="sidebar-content">
+        <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a block to inspect its district, or choose a water or mountain editing tool. Pin this panel to keep the city report available.</p></div>
+        <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+        <details id="workspaceCityReport" class="workspace-city-report"><summary>City report &amp; workspace guide</summary>
+
         <p class="eyebrow">CURRENT GENERATED CITY</p><h2>City report<span class="gold-dot">.</span></h2><p class="intro">Buildings and varied properties shaped by your streets. Green space remains for yards, gardens and gaps.</p>
         <div class="report-label">SETTLEMENT</div><div class="report-primary" id="reportCityName"></div>
         <div class="stat-row featured-stat"><span>Buildings</span><strong id="buildingCount">—</strong></div><div class="stat-row"><span>Properties</span><strong id="propertyCount">—</strong></div><div class="stat-row"><span>Combined-plot properties</span><strong id="mergedCount">—</strong></div><div class="stat-row"><span>Base plots</span><strong id="plotCount">—</strong></div>
@@ -148,6 +155,7 @@
         <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
         <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
         <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No holes in the outer outline; inland lakes reserve their own water areas. Buildings now occupy varied street-facing properties. Districts group whole blocks. Moving a block keeps both neighborhoods connected. Generate editable lakes, a river and a coastline in Water &amp; Bridges. Water drafts apply when you generate the city. Perimeter walls stay clear of water. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
+        </details>
       </div>
     </aside>
   </div>

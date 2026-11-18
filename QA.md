@@ -214,3 +214,11 @@ Native Firefox checks pending:
 4. Combine mountains and water without overlapping footprints. Save unfinished terrain edits and pending controls; reload and verify accepted geometry, selection, inputs and undo. Load a prior water-only save and add terrain.
 
 Native Canvas renders verify appearance, but do not replace a Firefox interaction pass.
+
+## UI overhaul Phase 1 (`0.1-dev.ui1`)
+
+Automated coverage adds workspace navigation and accessibility state, provider registration and safe text rendering, inspector selection/pin/collapse/clear behavior, automatic clearing of removed records, read-only feature adapters, and compiled application navigation with exact preservation of accepted geometry, completed outline/water/terrain drafts, pending inputs and histories. It exercises original gesture cancellation when leaving a water editing section, existing save/load/recovery workflows and restored active editor modes.
+
+Graphical Chrome checks confirm City opens first, Landscape uses the working feature editors, adding a lake opens its live summary, an empty pinned inspector stays visible, unpinning collapses an empty inspector, and restoring/collapsing panels resizes the actual Canvas. Both collapsed panels give the Canvas the full map width without page overflow. Navigation controls retain visible selected/focus styling.
+
+Native Firefox verification and the wider desktop/ultrawide/narrow-screen matrix remain pending. Full inspector editing, a combined landscape feature list and persisted shell preferences are later phases, not part of this build.

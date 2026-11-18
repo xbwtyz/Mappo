@@ -1,8 +1,8 @@
 # Mappo UI overhaul — goals and acceptance checklist
 
-Status: planned. This document records the agreed direction and the refinements proposed after the mockup review. Implementation phases still need discussion and approval before application code changes.
+Status: Phase 1 implemented in `0.1-dev.ui1`; Phases 2–7 remain planned. This document records the agreed direction and the refinements proposed after the mockup review. Further implementation follows discussion and approval.
 
-Baseline: Mappo `0.1-dev.3e6`, project schema 9. The UI overhaul comes before the planned 3F building inspector. Its release version will be chosen when the implementation scope is finalized.
+Baseline: Mappo `0.1-dev.3e6`, project schema 9. The UI overhaul comes before the planned 3F building inspector. The first UI implementation build is `0.1-dev.ui1`; accepted city schema remains 9.
 
 ## Goal
 
@@ -25,15 +25,17 @@ Visual/interaction reference: [interactive UI mockup](https://chatgpt.com/librar
 
 ## Phase 1 — Modular workspace and navigation
 
-- [ ] Create a workspace-shell controller for section navigation, panel visibility, and inspector pinning.
-- [ ] Provide City, Landscape, Districts, and Defenses sections; show one section's controls at a time.
-- [ ] Open City by default for a new workspace.
-- [ ] Keep the map central and allow both side panels to collapse.
-- [ ] Collapse the inspector when nothing is selected; open it on selection. Support pinning it open.
-- [ ] Keep selection state, navigation state, and panel layout separate from generation and geometry modules.
-- [ ] Use reusable inspector sections so the later building inspector can join the same shell.
+- [x] Create a workspace-shell controller for section navigation, panel visibility, and inspector pinning.
+- [x] Provide City, Landscape, Districts, and Defenses sections; show one section's controls at a time.
+- [x] Open City by default for a new workspace.
+- [x] Keep the map central and allow both side panels to collapse.
+- [x] Collapse the inspector when nothing is selected; open it on selection. Support pinning it open.
+- [x] Keep selection state, navigation state, and panel layout separate from generation and geometry modules.
+- [x] Use reusable inspector sections so the later building inspector can join the same shell.
 
-Acceptance: the main city tools are immediately available; switching sections changes the visible controls without regenerating the city or discarding drafts. Empty inspector space is available to the map unless the panel is pinned.
+Acceptance: the main city tools are immediately available; switching sections changes the visible controls without regenerating the city or discarding completed drafts. Empty inspector space is available to the map unless the panel is pinned.
+
+Phase 1 scope: existing editing forms remain in their respective sections. Inspector providers currently supply live read-only summaries and a shortcut to those controls. Full landscape selection/listing, inspector forms and persisted shell preferences remain assigned to later phases. See [WORKSPACE_UI.md](WORKSPACE_UI.md).
 
 ## Phase 2 — City, Project, and Layers organization
 
@@ -121,8 +123,9 @@ Acceptance: the reorganized editor supports every current feature, all appropria
 
 Work in the phase order above. Each phase is a reviewable implementation chunk. Discuss upcoming implementation scope before application changes, then work within the scope approved by the user. Adjust dependencies as needed, and record changes here so this checklist remains the reference.
 
-- Planning/documentation: this commit.
-- Next discussion: Phase 1 workspace shell, navigation, and inspector behavior, incorporating feedback on the mockup.
+- Planning/documentation: committed reference checklist.
+- Phase 1: implemented with focused workspace tests, the existing regression suite and Chrome graphical checks; native Firefox verification remains pending.
+- Next discussion: Phase 2 City/Project/Layers organization.
 - After the UI overhaul: resume the planned 3F building inspector within the new inspector architecture.
 
 Mark checkboxes complete only after the corresponding production behavior has been implemented and verified. A visual mockup alone does not complete an implementation goal.

@@ -1,0 +1,317 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {
+  WorkspaceShell
+} from '../src/ui/workspace.js';
+import {
+  registerWorkspaceInspectors
+} from '../src/ui/workspace-inspectors.js';
+import {
+  workspaceInitialState,
+  workspaceInspectorVisible,
+  workspaceTransition
+} from '../src/core/workspace-state.js';
+
+function shellHarness(providers = {}) {
+  const elements = new Map();
+  let layouts = 0,
+    navigations = 0,
+    changes = 0;
+  const el = id => {
+    if (!elements.has(id)) {
+      const classes = new Set();
+      elements.set(id, {
+        id,
+        hidden: false,
+        inert: false,
+        handlers: {},
+        attributes: {},
+        classList: {
+          toggle: (key, on) => on ? classes.add(key) : classes.delete(key),
+          contains: key => classes.has(key)
+        },
+        setAttribute(key, value) {
+          this.attributes[key] = value;
+        },
+        addEventListener(key, fn) {
+          this.handlers[key] = fn;
+        },
+        replaceChildren(...children) {
+          this.children = children;
+        },
+        focus() {
+          this.focused = true;
+        }
+      });
+    }
+    return elements.get(id);
+  };
+  const shell = new WorkspaceShell({
+    getElement: el,
+    document: {
+      createElement: () => ({})
+    },
+    onLayout: () => layouts++,
+    onNavigate: () => navigations++,
+    changed: () => changes++
+  });
+  for (const [kind, provider] of Object.entries(providers)) shell.registerInspector(kind, provider);
+  shell.bind();
+  return {
+    shell,
+    el,
+    counts: () => ({
+      layouts,
+      navigations,
+      changes
+    })
+  };
+}
+test('workspace defaults to City with an empty inspector collapsed and one accessible section', () => {
+  const {
+    shell,
+    el
+  } = shellHarness();
+  assert.equal(shell.state.section, 'city');
+  assert.equal(el('workspaceInspector').hidden, true);
+  assert.equal(el('workspaceSection-city').hidden, false);
+  assert.equal(el('workspaceSection-landscape').hidden, true);
+  assert.equal(el('workspaceSection-landscape').inert, true);
+  assert.equal(el('workspaceTab-city').attributes['aria-selected'], 'true');
+  assert.equal(el('workspaceTab-city').tabIndex, 0);
+  el('workspaceTab-landscape').handlers.click();
+  assert.equal(shell.state.section, 'landscape');
+  assert.equal(el('workspaceSection-city').hidden, true);
+  assert.equal(el('workspaceSection-landscape').hidden, false);
+  assert.equal(el('workspaceTab-landscape').tabIndex, 0);
+  assert.throws(() => shell.navigate('missing'), /Unknown/);
+  assert.equal(shell.state.section, 'landscape');
+});
+test('selection opens the inspector; pin, close, reopen, clear and automatic disappearance cooperate', () => {
+  const records = new Map([
+      ['lake', {
+        title: 'Northmere',
+        type: 'Lake',
+        section: 'landscape',
+        sections: [{
+          title: 'Shoreline',
+          rows: [
+            ['Handles', 12]
+          ]
+        }]
+      }]
+    ]),
+    {
+      shell,
+      el,
+      counts
+    } = shellHarness({
+      water: {
+        resolve: id => records.get(id)
+      }
+    });
+  shell.select({
+    kind: 'water',
+    id: 'lake'
+  });
+  assert.equal(el('workspaceInspector').hidden, false);
+  assert.equal(el('workspaceSelectionName').textContent, 'Northmere');
+  assert.equal(el('workspaceSelectionSections').children[0].textContent, 'Shoreline\nHandles: 12');
+  el('workspaceCloseInspector').handlers.click();
+  assert.equal(el('workspaceInspector').hidden, true);
+  shell.select({
+    kind: 'water',
+    id: 'lake'
+  }, {
+    reveal: false
+  });
+  assert.equal(el('workspaceInspector').hidden, true);
+  shell.select({
+    kind: 'water',
+    id: 'lake'
+  });
+  assert.equal(el('workspaceInspector').hidden, false);
+  el('workspacePinInspector').handlers.click();
+  assert.equal(shell.state.inspectorPinned, true);
+  shell.clear();
+  assert.equal(el('workspaceInspector').hidden, false);
+  assert.equal(el('workspaceEmptyInspector').hidden, false);
+  el('workspacePinInspector').handlers.click();
+  assert.equal(el('workspaceInspector').hidden, true);
+  shell.select({
+    kind: 'water',
+    id: 'lake'
+  });
+  records.clear();
+  shell.refresh();
+  assert.equal(shell.state.selection, null);
+  assert.equal(el('workspaceInspector').hidden, true);
+  assert.ok(counts().layouts >= 5);
+});
+test('future inspector providers render text safely and navigate through the shared shell', () => {
+  const source = Object.freeze({
+      id: 'BLD-1',
+      name: '<img src=x onerror=alert(1)>'
+    }),
+    {
+      shell,
+      el
+    } = shellHarness({
+      building: {
+        resolve: id => id === source.id ? {
+          title: source.name,
+          type: 'Building',
+          section: 'city',
+          sections: [{
+            title: 'Notes',
+            rows: [
+              ['Name', source.name]
+            ]
+          }]
+        } : null
+      }
+    });
+  shell.select({
+    kind: 'building',
+    id: source.id
+  });
+  assert.equal(el('workspaceSelectionName').textContent, source.name);
+  assert.equal(el('workspaceSelectionName').innerHTML, undefined);
+  el('workspaceShowControls').handlers.click();
+  assert.equal(shell.state.section, 'city');
+  assert.equal(source.name, '<img src=x onerror=alert(1)>');
+  assert.throws(() => shell.select({
+    kind: 'unknown',
+    id: 'x'
+  }), /provider/);
+});
+test('panel collapse and keyboard navigation change only workspace state', () => {
+  const {
+    shell,
+    el,
+    counts
+  } = shellHarness();
+  el('workspaceCollapseTools').handlers.click();
+  assert.equal(el('workspaceTools').hidden, true);
+  assert.equal(el('workspaceOpenTools').focused, true);
+  el('workspaceOpenTools').handlers.click();
+  assert.equal(el('workspaceTools').hidden, false);
+  const event = {
+    key: 'ArrowRight',
+    preventDefault() {
+      this.prevented = true;
+    }
+  };
+  el('workspaceTab-city').handlers.keydown(event);
+  assert.equal(shell.state.section, 'landscape');
+  assert.equal(event.prevented, true);
+  assert.equal(el('workspaceTab-landscape').focused, true);
+  shell.dispatch({
+    type: 'inspector',
+    collapsed: false
+  });
+  assert.equal(shell.state.inspectorPinned, true);
+  assert.equal(el('workspaceInspector').hidden, false);
+  shell.reset();
+  assert.deepEqual(shell.state, workspaceInitialState());
+  assert.equal(el('workspaceInspector').hidden, true);
+  assert.equal(counts().navigations, 1);
+  const state = workspaceInitialState();
+  assert.throws(() => workspaceTransition(state, {
+    type: 'select',
+    selection: {
+      kind: 'water',
+      id: ''
+    }
+  }), /Invalid/);
+  assert.equal(workspaceInspectorVisible(state), false);
+});
+test('existing district, water and terrain inspector adapters read source records without changing them', () => {
+  const city = {
+      districtState: {
+        status: 'assigned'
+      },
+      districts: [{
+        id: 'D1',
+        name: 'Old Ward',
+        blockIds: ['B1']
+      }],
+      properties: [{
+        districtId: 'D1'
+      }],
+      buildings: [{
+        districtId: 'D1'
+      }]
+    },
+    district = {
+      editor: {
+        selectedDistrictId: 'D1',
+        selectedBlockId: 'B1'
+      }
+    },
+    water = {
+      editor: {
+        dirty: true,
+        features: [{
+          id: 'L1',
+          kind: 'lake',
+          path: [1, 2, 3]
+        }],
+        bridges: []
+      }
+    },
+    terrain = {
+      editor: {
+        dirty: false,
+        features: [{
+          id: 'T1',
+          name: 'High Ridge',
+          path: [1, 2, 3, 4],
+          ridge: [{
+            height: 100
+          }, {
+            height: 300
+          }, {
+            height: 200
+          }]
+        }],
+        passes: []
+      }
+    };
+  const before = JSON.stringify({
+      city,
+      district,
+      water,
+      terrain
+    }),
+    {
+      shell
+    } = shellHarness();
+  registerWorkspaceInspectors(shell, {
+    getCity: () => city,
+    getDistrictPanel: () => district,
+    getWaterPanel: () => water,
+    getTerrainPanel: () => terrain
+  });
+  shell.select({
+    kind: 'district',
+    id: 'D1'
+  });
+  assert.equal(shell.descriptor().title, 'Old Ward');
+  shell.select({
+    kind: 'water',
+    id: 'L1'
+  });
+  assert.match(shell.descriptor().description, /draft/);
+  shell.select({
+    kind: 'terrain',
+    id: 'T1'
+  });
+  assert.equal(shell.descriptor().title, 'High Ridge');
+  assert.equal(JSON.stringify({
+    city,
+    district,
+    water,
+    terrain
+  }), before);
+});

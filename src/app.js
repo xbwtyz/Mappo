@@ -1,4 +1,10 @@
 import {
+  WorkspaceShell
+} from './ui/workspace.js';
+import {
+  registerWorkspaceInspectors
+} from './ui/workspace-inspectors.js';
+import {
   terrainPrepare
 } from './core/terrain-geometry.js';
 import {
@@ -68,6 +74,7 @@ let districtPanel;
 let fortificationPanel;
 let waterPanel;
 let terrainPanel;
+let workspaceShell;
 const layers = {
   buildings: true,
   properties: false,
@@ -103,6 +110,7 @@ function updateViewport() {
 
 function editorChanged() {
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(editor.mode === mode));
+  if (editor.mode !== 'pan' && workspaceShell?.state.section !== 'city') workspaceShell?.navigate('city');
   if (editor.mode !== 'pan' && terrainPanel) terrainPanel.editor.setMode('pan');
   if (editor.mode !== 'pan' && waterPanel) waterPanel.editor.setMode('pan');
   $('toolHint').textContent = TOOL_HINTS[editor.mode];
@@ -188,6 +196,7 @@ function generate() {
     $('seedInput').value = project.seed;
     editor.load(project.city.survey.boundary, project.options.center, false);
     updateDetails();
+    workspaceShell?.refresh();
     updateViewport();
     $('statusMessage').textContent = `${project.city.buildings.length} buildings · ${project.city.properties.length} properties · ${project.city.properties.filter(p=>p.plotIds.length>1).length} merged sites`;
   } catch (error) {
@@ -343,6 +352,7 @@ districtPanel = new DistrictPanel({
     files?.changed();
   },
   changed: () => {
+    syncWorkspaceDistrictSelection();
     requestDraw();
     files?.changed();
   }
@@ -385,10 +395,22 @@ waterPanel = new WaterPanel({
   activate: () => {
     editor.setMode('pan');
     terrainPanel?.editor.setMode('pan');
+    workspaceShell?.navigate('landscape');
+    if (waterPanel.editor.activeFeature()) workspaceShell?.select({
+      kind: 'water',
+      id: waterPanel.editor.activeFeature().id
+    });
     $('waterPanel').open = true;
     fitMap();
   },
   changed: () => {
+    if (waterPanel?.editor.mode !== 'pan' && waterPanel?.editor.activeFeature()) workspaceShell?.select({
+      kind: 'water',
+      id: waterPanel.editor.activeFeature().id
+    }, {
+      reveal: false
+    });
+    workspaceShell?.refresh();
     updateMapIndicators();
     requestDraw();
     files?.changed();
@@ -408,10 +430,22 @@ terrainPanel = new TerrainPanel({
   activate: () => {
     editor.setMode('pan');
     waterPanel.editor.setMode('pan');
+    workspaceShell?.navigate('landscape');
+    if (terrainPanel.editor.activeFeature()) workspaceShell?.select({
+      kind: 'terrain',
+      id: terrainPanel.editor.activeFeature().id
+    });
     $('terrainPanel').open = true;
     fitMap();
   },
   changed: () => {
+    if (terrainPanel?.editor.mode !== 'pan' && terrainPanel?.editor.activeFeature()) workspaceShell?.select({
+      kind: 'terrain',
+      id: terrainPanel.editor.activeFeature().id
+    }, {
+      reveal: false
+    });
+    workspaceShell?.refresh();
     updateMapIndicators();
     requestDraw();
     files?.changed();
@@ -419,6 +453,53 @@ terrainPanel = new TerrainPanel({
 });
 terrainPanel.bind();
 terrainPanel.refresh(true);
+
+function syncWorkspaceDistrictSelection() {
+  const id = districtPanel?.editor.selectedDistrictId;
+  if (id) workspaceShell?.select({
+    kind: 'district',
+    id
+  });
+  else if (workspaceShell?.state.selection?.kind === 'district') workspaceShell.select(null, {
+    reveal: false
+  });
+}
+
+function stopWorkspaceTools(targetSection = null) {
+  // Cancel only a tool whose controls are leaving the visible section.
+  // Completed drafts and their histories stay with the original editors.
+  if (targetSection !== 'landscape') {
+    if (terrainPanel?.editor.dragging) terrainPanel.editor.up(camera.zoom, true);
+    if (waterPanel?.editor.dragging) waterPanel.editor.up(camera.zoom, true);
+    if (terrainPanel?.editor.mode !== 'pan') terrainPanel?.editor.setMode('pan');
+    if (waterPanel?.editor.mode !== 'pan') waterPanel?.editor.setMode('pan');
+  }
+  if (targetSection !== 'city') {
+    if (editor.stroke || editor.dragging >= 0) editor.up(camera.zoom, true);
+    if (editor.mode !== 'pan') editor.setMode('pan');
+  }
+  updateMapIndicators();
+}
+workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
+  getElement: $,
+  onNavigate: (previous, next) => stopWorkspaceTools(next),
+  onLayout: () => resize(),
+  changed: () => files?.changed(),
+  clearSelection: () => {
+    stopWorkspaceTools();
+    districtPanel.editor.selectedDistrictId = null;
+    districtPanel.editor.selectedBlockId = null;
+    districtPanel.refresh();
+    requestDraw();
+  }
+}), {
+  getCity: () => project?.city,
+  getDistrictPanel: () => districtPanel,
+  getWaterPanel: () => waterPanel,
+  getTerrainPanel: () => terrainPanel
+});
+workspaceShell.bind();
+
 const activeMapEditor = () => terrainPanel.editor.mode !== 'pan' ? terrainPanel.editor : waterPanel.editor.mode !== 'pan' ? waterPanel.editor : editor;
 const runMapEdit = (method, args) => {
   const active = activeMapEditor();
@@ -605,6 +686,20 @@ function applyProjectDocument(document) {
   $('districtPanel').open = workspace.panels?.districts ?? Boolean(districtPanel.editor.selectedDistrictId);
   $('fortificationPanel').open = workspace.panels?.fortifications ?? true;
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[workspace.controls.morphology];
+  const restoredSelection = terrainPanel.editor.mode !== 'pan' && terrainPanel.editor.activeFeature() ? {
+    kind: 'terrain',
+    id: terrainPanel.editor.activeFeature().id
+  } : waterPanel.editor.mode !== 'pan' && waterPanel.editor.activeFeature() ? {
+    kind: 'water',
+    id: waterPanel.editor.activeFeature().id
+  } : districtPanel.editor.selectedDistrictId ? {
+    kind: 'district',
+    id: districtPanel.editor.selectedDistrictId
+  } : null;
+  workspaceShell.reset({
+    section: restoredSelection?.kind === 'district' ? 'districts' : restoredSelection ? 'landscape' : 'city',
+    selection: restoredSelection
+  });
   editor.notify(draft.dirty ? 'Loaded city and unfinished outline edits. Generate only when ready to rebuild.' : 'Loaded city. Its exact saved geometry is ready to use.', Boolean(draft.error));
   updateDetails();
   updateViewport();

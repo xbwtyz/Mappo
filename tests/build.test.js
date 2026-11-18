@@ -23,7 +23,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.3e6.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui1.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -404,7 +404,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
 test('standalone app downloads, previews and restores complete projects and recovers them after a reload', async () => {
   const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
   const originalScript = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
-  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel, waterPanel, terrainPanel });\n})();');
+  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel, waterPanel, terrainPanel, workspaceShell });\n})();');
   const memory = new Map(),
     downloaded = [];
   const storage = {
@@ -967,5 +967,61 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.deepEqual(copy(reloaded.state().project.city.terrainFeatures), terrainSaved.project.city.terrainFeatures);
   reloaded.el('editRiverButton').handlers.click();
   assert.equal(terrainEditor.mode, 'pan');
+
+  // The workspace shell preserves completed drafts and existing editor histories.
+  const shell = reloaded.state().workspaceShell;
+  reloaded.el('workspaceTab-landscape').handlers.click();
+  reloaded.el('waterSeedInput').value = 'pending-shell-seed';
+  const beforeTabs = {
+    project: copy(reloaded.state().project),
+    outline: copy(reloaded.state().editor.snapshot()),
+    water: copy(guidedEditor.definition()),
+    waterHistory: copy(guidedEditor.history),
+    terrain: copy(terrainEditor.definition()),
+    terrainHistory: copy(terrainEditor.history)
+  };
+  reloaded.el('workspaceTab-defenses').handlers.click();
+  reloaded.el('workspaceTab-districts').handlers.click();
+  reloaded.el('workspaceTab-city').handlers.click();
+  assert.deepEqual(copy(reloaded.state().project), beforeTabs.project);
+  assert.deepEqual(copy(reloaded.state().editor.snapshot()), beforeTabs.outline);
+  assert.deepEqual(copy(guidedEditor.definition()), beforeTabs.water);
+  assert.deepEqual(copy(guidedEditor.history), beforeTabs.waterHistory);
+  assert.deepEqual(copy(terrainEditor.definition()), beforeTabs.terrain);
+  assert.deepEqual(copy(terrainEditor.history), beforeTabs.terrainHistory);
+  assert.equal(reloaded.el('waterSeedInput').value, 'pending-shell-seed');
+  assert.equal(guidedEditor.mode, 'pan');
+  reloaded.el('workspaceCollapseTools').handlers.click();
+  assert.equal(reloaded.el('workspaceTools').hidden, true);
+  reloaded.el('workspaceOpenTools').handlers.click();
+  assert.equal(reloaded.el('workspaceTools').hidden, false);
+  shell.clear();
+  assert.equal(reloaded.el('workspaceInspector').hidden, true);
+  reloaded.el('workspaceOpenInspector').handlers.click();
+  assert.equal(shell.state.inspectorPinned, true);
+  shell.clear();
+  assert.equal(reloaded.el('workspaceInspector').hidden, false);
+  reloaded.el('workspacePinInspector').handlers.click();
+  assert.equal(reloaded.el('workspaceInspector').hidden, true);
+  reloaded.el('workspaceTab-landscape').handlers.click();
+  reloaded.el('editRiverButton').handlers.click();
+  assert.equal(shell.state.section, 'landscape');
+  assert.equal(shell.state.selection.kind, 'water');
+  assert.equal(reloaded.el('workspaceInspector').hidden, false);
+  const riverForCancel = copy(guidedEditor.activeFeature()),
+    historyBeforeCancel = copy(guidedEditor.history);
+  guidedEditor.down(riverForCancel.path[3], 1);
+  guidedEditor.move({
+    x: riverForCancel.path[3].x + 2,
+    y: riverForCancel.path[3].y + 2
+  });
+  reloaded.el('workspaceTab-city').handlers.click();
+  assert.equal(guidedEditor.dragging, null);
+  assert.deepEqual(copy(guidedEditor.activeFeature()), riverForCancel);
+  assert.deepEqual(copy(guidedEditor.history), historyBeforeCancel);
+  reloaded.el('workspaceTab-landscape').handlers.click();
+  reloaded.el('editTerrainButton').handlers.click();
+  assert.equal(shell.state.selection.kind, 'terrain');
+  assert.equal(reloaded.el('workspaceSelectionName').textContent, terrainEditor.activeFeature().name);
 
 });

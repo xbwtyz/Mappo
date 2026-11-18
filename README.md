@@ -2,15 +2,21 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.3e6 — Mountain ranges and road passes
+## Current build: 0.1-dev.ui1 — Workspace shell and navigation
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3e6.html`](dist/mappo-0.1-dev.3e6.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui1.html`](dist/mappo-0.1-dev.ui1.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### Planned UI overhaul
+### UI overhaul: Phase 1
 
-The next planned work reorganizes City, Landscape, Districts and Defenses into a clearer map editor. See [UI_OVERHAUL_PLAN.md](UI_OVERHAUL_PLAN.md) for the phased goals, acceptance criteria and review checkpoints. The current build remains 3E.6; UI implementation follows discussion and approval.
+The working editor now opens in **City**, with **Landscape**, **Districts** and **Defenses** tabs showing one tool section at a time. Use the arrow buttons to collapse the tools or inspector; the live map takes the available space. **Tools** and **Inspector** buttons reopen the panels. **Generate city** stays available beneath the active tools.
+
+The inspector opens when you select a district on the map or activate/select an existing water or mountain tool. It shows live record summaries and an **Open editing controls** shortcut. **Clear selection** closes an unpinned inspector; **Pin** keeps it open, including its expandable city report. Existing editing forms remain in their sections for this first phase. The landscape feature list and full inspector editing arrive in later phases.
+
+Switching sections stops tools whose controls are being hidden while preserving completed drafts, history, pending inputs and the accepted city. An in-progress gesture is cancelled through its original editor. Panel collapse resizes the Canvas without changing the city or camera position/zoom. Shell layout preferences are runtime state in this phase; their portable persistence is planned for Phase 6. Existing project saves and recovery still restore their original city geometry and editor drafts.
+
+See [UI_OVERHAUL_PLAN.md](UI_OVERHAUL_PLAN.md) for completed Phase 1 goals and the next review checkpoint, and [WORKSPACE_UI.md](WORKSPACE_UI.md) for the modular shell/inspector architecture.
 
 ### Workflow
 
@@ -198,7 +204,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.3e6.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui1.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -222,8 +228,11 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3e1:** Generated/editable coastlines, ocean-side control, connected coastal land and schema-6 compatibility.
 - **0.1-dev.3e2:** Independent river/coast controls and seeds, joined water geometry, inland bridges and schema-7 compatibility.
 - **0.1-dev.3e3:** Guided river handles, snapped point insertion, undoable draft tidying and validated river proposals.
-- **0.1-dev.3e6:** Shared river/coast guidance, snapped shoreline insertion, undoable coastline tidying and validated coast proposals.
-- **UI overhaul:** Workspace navigation, landscape list, contextual inspector, readability and persistent editing controls — [planned goals](UI_OVERHAUL_PLAN.md).
+- **0.1-dev.3e4:** Shared river/coast guidance, snapped shoreline insertion, undoable coastline tidying and validated coast proposals.
+- **0.1-dev.3e5:** Multiple independently editable lakes, closed shoreline guidance, inland access streets and schema-8 compatibility.
+- **0.1-dev.3e6:** Editable mountain ranges around/inside the city, ridge peaks, connected road passes and schema-9 compatibility.
+- **0.1-dev.ui1:** UI overhaul Phase 1 — modular workspace shell, section navigation, collapsible panels and extensible selection summaries.
+- **UI overhaul, Phases 2–7:** Control organization, landscape list, full contextual editing, readability and workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 
