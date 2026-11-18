@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.ui6c</title>
+  <title>Mappo — City editor · 0.1-dev.ui6d</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -322,7 +322,7 @@
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.ui6c</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.ui6d</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -373,14 +373,14 @@
           <ul id="landscapeFeatureList" class="landscape-feature-list" aria-label="Landscape features"></ul>
           <p id="landscapeEmpty" class="hint">Add a river, coastline, lake or mountain range.</p>
           <p class="hint">Select a feature here or click it on the map. Its editing controls open in the inspector.</p>
-          <details class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a city block to inspect its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
+          <details id="landscapeHelpSettings" class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a city block to inspect its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
           <div id="landscapeHistoryTools" class="landscape-history-tools"><p class="hint">Draft histories</p><div class="tool-grid"><button id="landscapeUndoWater" class="minor-button">Undo water</button><button id="landscapeUndoTerrain" class="minor-button">Undo mountains</button></div></div>
         </section>
         <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>
           <details id="districtPanel" class="district-panel" aria-label="Neighborhood generation" open>
             <summary>NEIGHBORHOODS · <span id="districtCount">0</span></summary>
             <div class="control-group"><label for="districtNumberInput">Number of districts</label><select id="districtNumberInput"><option value="auto">Automatic · Suggested for this city</option><option value="1">1 district</option><option value="2">2 districts</option><option value="3">3 districts</option><option value="4">4 districts</option><option value="5">5 districts</option><option value="6">6 districts</option><option value="7">7 districts</option><option value="8">8 districts</option><option value="9">9 districts</option><option value="10">10 districts</option><option value="11">11 districts</option><option value="12">12 districts</option></select></div>
-            <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary><div class="control-group"><label for="districtSeedInput">District seed</label><input id="districtSeedInput" maxlength="64" value="districts" spellcheck="false"></div></details>
+            <details id="districtGenerationSettings" class="workspace-settings feature-generation-settings"><summary>Generation settings</summary><div class="control-group"><label for="districtSeedInput">District seed</label><input id="districtSeedInput" maxlength="64" value="districts" spellcheck="false"></div></details>
             <button id="generateDistrictButton" class="tool-button full-width">Rebuild districts</button>
             <p class="hint">Replaces neighborhood names and membership, but preserves streets, properties and buildings. Undo restores the prior assignment.</p>
             <button id="undoDistrictButton" class="minor-button full-width actions" disabled>Undo district edit</button>
@@ -406,7 +406,7 @@
               <div class="control-group"><label for="towerSpacingInput">Tower spacing</label><input id="towerSpacingInput" type="number" min="40" max="200" step="10" value="100"></div></div>
               <p class="hint">Gates must connect to existing streets. The requested count is a maximum; safe clearance may reduce it.</p>
             </div>
-            <details class="workspace-settings feature-generation-settings defense-generation-settings"><summary>Generation settings</summary>
+            <details id="defenseGenerationSettings" class="workspace-settings feature-generation-settings defense-generation-settings"><summary>Generation settings</summary>
               <div class="control-group"><label for="fortificationSeedInput">Defense seed</label><input id="fortificationSeedInput" maxlength="64" value="fortifications" spellcheck="false"></div>
               <p class="hint">Changing the seed regenerates defenses only when walls are enabled.</p>
             </details>
@@ -421,7 +421,7 @@
       <div class="workspace-apply">
         <button id="generateButton" class="button-primary">↻ Rebuild city</button>
         <p id="workspacePendingDetails" class="workspace-pending-details" role="status" aria-live="polite">No unapplied city or local changes.</p>
-        <details class="workspace-rebuild-guide"><summary>What rebuilding changes</summary><p id="workspaceRebuildImpact"></p></details>
+        <details id="workspaceRebuildGuide" class="workspace-rebuild-guide"><summary>What rebuilding changes</summary><p id="workspaceRebuildImpact"></p></details>
         <p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p>
       </div>
     </aside>
@@ -469,7 +469,7 @@
           <summary hidden>Water controls</summary>
           <p id="waterStats" class="hint">Generate lakes, a river and a coastline independently, then edit each preview.</p>
           <fieldset id="landscapeRiverControls" class="water-feature"><legend>RIVER</legend>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
+          <details id="riverGenerationSettings" class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
           <div class="control-group"><label for="waterSeedInput">River seed</label><input id="waterSeedInput" maxlength="64" value="river" spellcheck="false"></div>
           <button id="rerollRiverButton" class="minor-button full-width">New river seed</button>
           </details>
@@ -480,7 +480,7 @@
           <div class="tool-grid actions"><button id="editBridgesButton" class="tool-button" aria-pressed="false">Move bridges</button><button id="addBridgeButton" class="minor-button" aria-pressed="false">Add bridge</button></div>
           </fieldset>
           <fieldset id="landscapeCoastControls" class="water-feature"><legend>COASTLINE</legend>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
+          <details id="coastGenerationSettings" class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
           <div class="control-group"><label for="coastSeedInput">Coast seed</label><input id="coastSeedInput" maxlength="64" value="coast" spellcheck="false"></div>
           <button id="rerollCoastButton" class="minor-button full-width">New coast seed</button>
           </details>
@@ -492,7 +492,7 @@
           </fieldset>
           <fieldset id="landscapeLakeControls" class="water-feature"><legend>LAKES</legend>
           <div class="control-group" hidden><label for="lakeSelect">Selected lake</label><select id="lakeSelect"><option value="">No lakes yet</option></select></div>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
+          <details id="lakeGenerationSettings" class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
           <div class="control-group"><label for="lakeSeedInput">Lake seed</label><input id="lakeSeedInput" maxlength="64" value="lake" spellcheck="false"></div>
           </details>
           <div class="control-group"><label for="lakeRadiusInput">Lake size · new / regenerated lake</label><input id="lakeRadiusInput" type="number" min="18" max="100" value="28"></div>
@@ -511,7 +511,7 @@
           <summary hidden>Mountain controls</summary>
           <p id="terrainStats" class="hint">Generate editable mountain ranges around or inside the city.</p>
           <div class="control-group" hidden><label for="terrainSelect">Selected mountain range</label><select id="terrainSelect"><option value="">No mountain ranges yet</option></select></div>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
+          <details id="terrainGenerationSettings" class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
           <div class="control-group"><label for="terrainSeedInput">Mountain seed</label><input id="terrainSeedInput" maxlength="64" value="mountains" spellcheck="false"></div>
           </details>
           <div class="control-group"><label for="terrainPlacementInput">Placement · new / regenerated range</label><select id="terrainPlacementInput"><option value="surrounding">Surrounding landscape</option><option value="inside">Inside the city</option><option value="crossing">Across the city edge</option></select></div>
@@ -1619,7 +1619,23 @@ class LandscapeWorkspace {
   hit(point, zoom) {
     return hitLandscape(point, this.records(), zoom);
   }
+  snapshotUI() {
+    this.stash();
+    return {
+      filter: this.filter,
+      formCache: [...this.controlCache].slice(0, 80).map(([key, controls]) => ({
+        key, controls: { ...controls }
+      }))
+    };
+  }
+  restoreUI(saved) {
+    this.reset();
+    this.filter = saved?.filter ?? 'all';
+    for (const entry of saved?.formCache ?? [])
+      this.controlCache.set(entry.key, { ...entry.controls });
+  }
   reset() {
+    this.filter = 'all';
     this.controlCache.clear();
     this.context = null;
     this.hover = null;
@@ -1844,9 +1860,15 @@ class WorkspaceShell {
   }
   dispatch(action) {
     const previous = this.state;
+    if (action.type === 'tools' && action.collapsed && !previous.toolsCollapsed) {
+      const scroll = Number(this.$('workspaceToolScroll').scrollTop ?? 0);
+      this.sectionScroll.set(previous.section, Number.isFinite(scroll) ? Math.max(0, scroll) : 0);
+    }
     this.state = workspaceTransition(previous, action);
     this.render();
     if (previous.toolsCollapsed !== this.state.toolsCollapsed || workspaceInspectorVisible(previous) !== workspaceInspectorVisible(this.state)) this.onLayout();
+    if (previous.toolsCollapsed && !this.state.toolsCollapsed)
+      this.$('workspaceToolScroll').scrollTop = this.sectionScroll.get(this.state.section) ?? 0;
     this.changed();
   }
   navigate(section) {
@@ -1887,23 +1909,48 @@ class WorkspaceShell {
     });
     else this.renderInspector();
   }
+  snapshot() {
+    const scroll = Object.fromEntries(this.sectionScroll);
+    const current = Number(this.$('workspaceToolScroll').scrollTop ?? 0);
+    if (!this.state.toolsCollapsed || scroll[this.state.section] === undefined)
+      scroll[this.state.section] = Number.isFinite(current) ? Math.max(0, current) : 0;
+    const inspectorScroll = Number(this.$('workspaceInspectorScroll').scrollTop ?? 0);
+    return {
+      section: this.state.section,
+      toolsCollapsed: this.state.toolsCollapsed,
+      inspectorCollapsed: this.state.inspectorCollapsed,
+      inspectorPinned: this.state.inspectorPinned,
+      selection: this.state.selection ? { ...this.state.selection } : null,
+      sectionScroll: scroll,
+      inspectorScroll: Number.isFinite(inspectorScroll) ? Math.max(0, inspectorScroll) : 0
+    };
+  }
   reset({
     section = 'city',
-    selection = null
+    selection = null,
+    ui = null
   } = {}) {
     this.sectionScroll.clear();
-    this.$('workspaceToolScroll').scrollTop = 0;
-    this.state = workspaceInitialState();
-    this.state = workspaceTransition(this.state, {
+    for (const [id, value] of Object.entries(ui?.sectionScroll ?? {}))
+      if (WORKSPACE_SECTIONS.some(s => s.id === id) && Number.isFinite(value))
+        this.sectionScroll.set(id, Math.max(0, value));
+    const destination = ui?.section ?? section;
+    this.state = workspaceTransition(workspaceInitialState(), {
       type: 'navigate',
-      section
+      section: destination
     });
     if (selection) this.state = workspaceTransition(this.state, {
-      type: 'select',
-      selection,
-      reveal: true
+      type: 'select', selection, reveal: true
     });
+    if (ui) this.state = {
+      ...this.state,
+      toolsCollapsed: ui.toolsCollapsed ?? false,
+      inspectorCollapsed: ui.inspectorCollapsed ?? false,
+      inspectorPinned: ui.inspectorPinned ?? false
+    };
     this.render();
+    this.$('workspaceToolScroll').scrollTop = this.sectionScroll.get(destination) ?? 0;
+    this.$('workspaceInspectorScroll').scrollTop = ui?.inspectorScroll ?? 0;
     this.onLayout();
   }
   renderInspector() {
@@ -1951,6 +1998,8 @@ class WorkspaceShell {
     this.renderInspector();
   }
   bind() {
+    this.$('workspaceToolScroll').addEventListener('scroll', () => this.changed());
+    this.$('workspaceInspectorScroll').addEventListener('scroll', () => this.changed());
     for (const [index, section] of WORKSPACE_SECTIONS.entries()) {
       const button = this.$(`workspaceTab-${section.id}`);
       button.addEventListener('click', () => this.navigate(section.id));
@@ -6318,8 +6367,28 @@ class DistrictPanel {
     this.editor = new DistrictEditor();
     this.formDistrictId = null;
     this.formBlockId = null;
+    this.formCache = new Map();
     this.onRefresh = () => {};
     this.onMapSelect = () => {};
+  }
+  stashDraft() {
+    if (this.formDistrictId) this.formCache.set(this.formDistrictId, {
+      name: String(this.$('districtNameInput').value),
+      color: String(this.$('districtColorInput').value)
+    });
+  }
+  snapshotUI() {
+    this.stashDraft();
+    return {
+      formCache: [...this.formCache].slice(0, 80).map(([id, values]) => ({
+        id, ...values
+      }))
+    };
+  }
+  restoreUI(saved) {
+    this.formCache = new Map((saved?.formCache ?? []).map(entry => [
+      entry.id, { name: entry.name, color: entry.color }
+    ]));
   }
   message(text, error = false) {
     for (const id of ['districtMessage', 'districtGenerationMessage']) {
@@ -6349,9 +6418,12 @@ class DistrictPanel {
       label: d.name
     })) : [])], district?.id);
     const selectionChanged = this.formDistrictId !== (district?.id ?? null);
+    if (selectionChanged && !resetControls) this.stashDraft();
+    if (resetControls) this.formCache.clear();
     if (resetControls || selectionChanged) {
-      this.$('districtNameInput').value = district?.name ?? '';
-      this.$('districtColorInput').value = district?.color ?? '#cba480';
+      const saved = !resetControls && district ? this.formCache.get(district.id) : null;
+      this.$('districtNameInput').value = saved?.name ?? district?.name ?? '';
+      this.$('districtColorInput').value = saved?.color ?? district?.color ?? '#cba480';
     }
     this.formDistrictId = district?.id ?? null;
     this.$('applyDistrictButton').disabled = !district;
@@ -6404,6 +6476,7 @@ class DistrictPanel {
       const city = action();
       this.commit(city);
       // Refill committed values without clearing independent generation inputs.
+      if (this.formDistrictId) this.formCache.delete(this.formDistrictId);
       this.formDistrictId = null;
       this.formBlockId = null;
       this.refresh();
@@ -6617,7 +6690,7 @@ function isMapShortcutEvent(event, activeElement) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.ui6c';
+const APP_VERSION = '0.1-dev.ui6d';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -6720,7 +6793,91 @@ function validateLayout(layout, boundary) {
 }
 
 
+// src/core/workspace-presentation.js
+// Optional schema-1 workspace presentation fields. No city schema migration.
+// These rules validate user-controlled saved UI data before it touches the DOM.
+const WORKSPACE_SECTION_IDS = Object.freeze(['city','landscape','districts','defenses']);
+const WORKSPACE_DISCLOSURE_IDS = Object.freeze([
+  'startingShapeSettings','cityGenerationSettings','landscapeHelpSettings',
+  'districtPanel','districtGenerationSettings','fortificationPanel',
+  'defenseGenerationSettings','workspaceRebuildGuide',
+  'waterPanel','riverGenerationSettings','coastGenerationSettings',
+  'lakeGenerationSettings','terrainPanel','terrainGenerationSettings',
+  'workspaceCityReport'
+]);
+const LANDSCAPE_CONTROL_IDS = Object.freeze([
+  'waterSeedInput','riverWidthInput','coastSeedInput','coastDirectionInput',
+  'lakeSeedInput','lakeRadiusInput','terrainSeedInput','terrainSizeInput',
+  'terrainHeightInput','terrainPlacementInput'
+]);
+
+const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+const finiteScroll = v => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 1000000;
+const selectionValid = s => s === null || (object(s)
+  && ['water','terrain','district','landscape-add'].includes(s.kind)
+  && typeof s.id === 'string' && s.id.length > 0 && s.id.length <= 128
+  && (s.kind !== 'landscape-add' || ['river','coast','lake','terrain'].includes(s.id)));
+
+function validateWorkspacePresentation(ui) {
+  if (ui === undefined) return;
+  if (!object(ui)) throw new Error('Invalid saved workspace presentation.');
+  if (ui.section !== undefined && !WORKSPACE_SECTION_IDS.includes(ui.section)) throw new Error('Invalid saved editor section.');
+  for (const key of ['toolsCollapsed','inspectorCollapsed','inspectorPinned'])
+    if (ui[key] !== undefined && typeof ui[key] !== 'boolean') throw new Error('Invalid saved panel visibility.');
+  if (ui.selection !== undefined && !selectionValid(ui.selection)) throw new Error('Invalid saved inspector selection.');
+  if (ui.inspectorScroll !== undefined && !finiteScroll(ui.inspectorScroll)) throw new Error('Invalid inspector scroll position.');
+  if (ui.sectionScroll !== undefined) {
+    if (!object(ui.sectionScroll)) throw new Error('Invalid section scroll positions.');
+    for (const id of WORKSPACE_SECTION_IDS)
+      if (ui.sectionScroll[id] !== undefined && !finiteScroll(ui.sectionScroll[id]))
+        throw new Error('Invalid section scroll position.');
+  }
+  if (ui.disclosures !== undefined) {
+    if (!object(ui.disclosures)) throw new Error('Invalid saved disclosure state.');
+    for (const id of WORKSPACE_DISCLOSURE_IDS)
+      if (ui.disclosures[id] !== undefined && typeof ui.disclosures[id] !== 'boolean')
+        throw new Error('Invalid saved disclosure visibility.');
+  }
+  if (ui.landscape !== undefined) {
+    if (!object(ui.landscape)) throw new Error('Invalid saved landscape UI.');
+    if (ui.landscape.filter !== undefined && !['all','water','mountains'].includes(ui.landscape.filter))
+      throw new Error('Invalid saved landscape filter.');
+    if (ui.landscape.formCache !== undefined) {
+      if (!Array.isArray(ui.landscape.formCache) || ui.landscape.formCache.length > 80)
+        throw new Error('Too many saved landscape input drafts.');
+      const seen = new Set();
+      for (const entry of ui.landscape.formCache) {
+        if (!object(entry) || typeof entry.key !== 'string' || !/^(water|terrain|landscape-add):.{1,128}$/.test(entry.key)
+          || seen.has(entry.key) || !object(entry.controls) || Object.keys(entry.controls).length > LANDSCAPE_CONTROL_IDS.length)
+          throw new Error('Invalid saved landscape input draft.');
+        seen.add(entry.key);
+        for (const [id, value] of Object.entries(entry.controls))
+          if (!LANDSCAPE_CONTROL_IDS.includes(id) || typeof value !== 'string' || value.length > 256)
+            throw new Error('Invalid saved landscape input.');
+      }
+    }
+  }
+  if (ui.districts !== undefined) {
+    if (!object(ui.districts)) throw new Error('Invalid saved district UI.');
+    if (ui.districts.formCache !== undefined) {
+      if (!Array.isArray(ui.districts.formCache) || ui.districts.formCache.length > 80)
+        throw new Error('Too many saved district input drafts.');
+      const seen = new Set();
+      for (const entry of ui.districts.formCache) {
+        if (!object(entry) || typeof entry.id !== 'string' || !entry.id || entry.id.length > 128 || seen.has(entry.id)
+          || typeof entry.name !== 'string' || entry.name.length > 64
+          || typeof entry.color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(entry.color))
+          throw new Error('Invalid saved district input draft.');
+        seen.add(entry.id);
+      }
+    }
+  }
+  return ui;
+}
+
+
 // src/data/project-validation.js
+
 
 
 
@@ -7142,6 +7299,7 @@ function validateWorkspace(workspace, project) {
   if (view.layers.fortifications !== undefined && typeof view.layers.fortifications !== 'boolean') throw new Error('Invalid fortification layer visibility.');
   if (project) validateFortificationEditorState(workspace.fortificationEditor, project.city);
   if (workspace.panels !== undefined && (!workspace.panels || typeof workspace.panels.districts !== 'boolean' || typeof workspace.panels.fortifications !== 'boolean' || (workspace.panels.water !== undefined && typeof workspace.panels.water !== 'boolean') || (workspace.panels.terrain !== undefined && typeof workspace.panels.terrain !== 'boolean'))) throw new Error('Invalid saved panel state.');
+  validateWorkspacePresentation(workspace.ui);
   return workspace;
 }
 
@@ -7277,6 +7435,20 @@ function createProjectDocument(project, workspace = defaultWorkspace(project), b
     if (workspace.fortificationEditor?.controls !== undefined || previous.fortificationEditor?.controls !== undefined) document.workspace.fortificationEditor.controls = {
       ...(previous.fortificationEditor?.controls || {}),
       ...(copyJson(workspace.fortificationEditor?.controls || {}))
+    };
+  }
+  if (workspace.ui !== undefined || previous.ui !== undefined) {
+    const oldUI = previous.ui || {}, newUI = workspace.ui || {};
+    document.workspace.ui = {
+      ...oldUI, ...copyJson(newUI),
+      sectionScroll: { ...(oldUI.sectionScroll || {}), ...(newUI.sectionScroll || {}) },
+      disclosures: { ...(oldUI.disclosures || {}), ...(newUI.disclosures || {}) },
+      landscape: {
+        ...(oldUI.landscape || {}), ...(newUI.landscape || {})
+      },
+      districts: {
+        ...(oldUI.districts || {}), ...(newUI.districts || {})
+      }
     };
   }
   if (workspace.districtEditor === undefined && previous.districtEditor === undefined) delete document.workspace.districtEditor;
@@ -10056,6 +10228,7 @@ class OutlineEditor {
 
 
 
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -10645,6 +10818,12 @@ function captureWorkspace() {
     project,
     workspace: {
       schemaVersion: 1,
+      ui: {
+        ...workspaceShell.snapshot(),
+        disclosures: Object.fromEntries(WORKSPACE_DISCLOSURE_IDS.map(id => [id, Boolean($(id).open)])),
+        landscape: landscapeWorkspace.snapshotUI(),
+        districts: districtPanel.snapshotUI()
+      },
       panels: {
         districts: Boolean($('districtPanel').open),
         fortifications: Boolean($('fortificationPanel').open),
@@ -10828,11 +11007,41 @@ function applyProjectDocument(document) {
     terrainPanel.editor.select(restoredSelection.id);
     terrainPanel.refresh();
   }
-  landscapeWorkspace.reset();
+  landscapeWorkspace.restoreUI(workspace.ui?.landscape);
+  districtPanel.restoreUI(workspace.ui?.districts);
+  const savedUISelection = workspace.ui?.selection;
+  const isValidSelection = ref => ref?.kind === 'district'
+    ? next.city.districts.some(d => d.id === ref.id)
+    : ['water', 'terrain'].includes(ref?.kind)
+      ? Boolean(landscapeWorkspace.record(ref))
+      : ref?.kind === 'landscape-add' && landscapeWorkspace.available(ref.id);
+  const selectedUIRef = workspace.ui && Object.hasOwn(workspace.ui, 'selection')
+    ? (savedUISelection && isValidSelection(savedUISelection) ? savedUISelection : null)
+    : restoredSelection;
+  if (selectedUIRef?.kind === 'district' && districtPanel.editor.selectedDistrictId !== selectedUIRef.id) {
+    districtPanel.editor.selectedDistrictId = selectedUIRef.id;
+    districtPanel.editor.selectedBlockId = null;
+    districtPanel.refresh();
+  }
+  if (selectedUIRef?.kind === 'water') {
+    waterPanel.editor.selectFeature(selectedUIRef.id);
+    waterPanel.refresh();
+  }
+  if (selectedUIRef?.kind === 'terrain') {
+    terrainPanel.editor.select(selectedUIRef.id);
+    terrainPanel.refresh();
+  }
   workspaceShell.reset({
-    section: restoredSelection?.kind === 'district' ? 'districts' : restoredSelection ? 'landscape' : 'city',
-    selection: restoredSelection
+    section: selectedUIRef?.kind === 'district' ? 'districts' : selectedUIRef ? 'landscape' : 'city',
+    selection: selectedUIRef,
+    ui: workspace.ui
   });
+  if (['water', 'terrain', 'landscape-add'].includes(selectedUIRef?.kind))
+    landscapeWorkspace.loadControls(selectedUIRef);
+  landscapeWorkspace.render();
+  for (const id of WORKSPACE_DISCLOSURE_IDS)
+    if (workspace.ui?.disclosures?.[id] !== undefined)
+      $(id).open = workspace.ui.disclosures[id];
   editor.notify(draft.dirty ? 'Loaded city and unfinished outline edits. Generate only when ready to rebuild.' : 'Loaded city. Its exact saved geometry is ready to use.', Boolean(draft.error));
   updateDetails();
   updateViewport();
