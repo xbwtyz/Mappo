@@ -82,6 +82,19 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         assert.ok(informationText.includes(text), `Property information contains ${text}`);
       if (siteContext.district) assert.ok(informationText.includes(siteContext.district));
       await page.screenshot({ path: new URL(`${label}-selected.png`, output).pathname });
+      // 3I-A: real browser property preview must not mutate any accepted land.
+      await page.getByRole('button', { name: 'Edit property geometry' }).click();
+      assert.equal(await page.locator('#propertyEditPanel3I').isVisible(),true);
+      assert.equal(await page.locator('#propertyEditApply3I').isDisabled(),true);
+      assert.equal(await page.evaluate(() => __buildingQA.state().propertyEditSession.propertyId),id);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      await page.screenshot({ path: new URL(`${label}-3ia-property-preview.png`, output).pathname });
+      await page.locator('#propertyEditReset3I').click();
+      assert.equal(await page.evaluate(() => __buildingQA.state().propertyEditSession.selectedCorner),null);
+      await page.locator('#propertyEditCancel3I').click();
+      assert.equal(await page.locator('#propertyEditPanel3I').isVisible(),false);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+
       // 3H: property-first Add starts a ghost, not a committed building.
       await page.getByRole('button', { name: 'Add building to this property' }).click();
       assert.equal(await page.locator('#buildingStructurePanel').isVisible(),true);
