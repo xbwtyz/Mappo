@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.3ia</title>
+  <title>Mappo — City editor · 0.1-dev.3ib</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -401,7 +401,7 @@
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3ia</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3ib</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -522,10 +522,16 @@
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
           <div class="building-transform-heading"><strong>PROPERTY PREVIEW</strong><span id="propertyEditTarget3I">—</span></div>
-          <p class="hint">3I-A: Select a highlighted corner to inspect it. Boundary and plot manipulation unlock in 3I-B. The original city remains unchanged.</p>
-          <p id="propertyEditCorner3I" class="building-history-status" role="status" aria-live="polite">No corner selected.</p>
+          <p class="hint">Drag a property corner or select it to edit precise coordinates. Move internal plot dividers without changing plot ownership. Everything remains a preview.</p>
+          <p id="propertyEditCorner3I" class="building-history-status" role="status" aria-live="polite">Select a highlighted property corner.</p>
+          <div class="building-transform-values">
+            <label>Corner X <input id="propertyCornerX3I" type="number" step="0.5" disabled></label>
+            <label>Corner Y <input id="propertyCornerY3I" type="number" step="0.5" disabled></label>
+            <label>Plot divider <select id="propertyDividerIndex3I" aria-label="Plot divider"></select></label>
+            <label>Divider % <input id="propertyDividerPercent3I" type="number" min="0.01" max="99.99" step="0.5" disabled></label>
+          </div>
           <div class="building-transform-actions">
-            <button type="button" id="propertyEditApply3I" disabled title="Available after geometry validation in 3I-C">Apply to City — coming in 3I-C</button>
+            <button type="button" id="propertyEditApply3I" disabled title="Available after geometry validation in 3I-C">Apply to City — validation pending</button>
             <button type="button" id="propertyEditReset3I">Reset preview</button>
             <button type="button" id="propertyEditCancel3I">Cancel preview</button>
           </div>
@@ -7760,7 +7766,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.3ia';
+const APP_VERSION = '0.1-dev.3ib';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -10722,12 +10728,22 @@ function drawPropertyEditPreview3I(ctx, camera, city, session) {
     ctx.closePath();
   };
   ctx.save();
+  // Show the actual prospective plot tiling, without touching stored city plots.
+  for (const plot of session.plotsFor(city) ?? []) {
+    trace(plot.boundary);
+    ctx.fillStyle = 'rgba(26,100,124,.055)';
+    ctx.fill();
+    ctx.strokeStyle = '#408c91';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4,4]);
+    ctx.stroke();
+  }
   trace(boundary);
   ctx.fillStyle = 'rgba(45,127,114,.12)';
   ctx.fill();
   ctx.setLineDash([7, 5]);
   ctx.lineWidth = 2.5;
-  ctx.strokeStyle = '#167f7d';
+  ctx.strokeStyle = session.validation?.status === 'invalid' ? '#c54e49' : '#167f7d';
   ctx.stroke();
   ctx.setLineDash([]);
   boundary.forEach((point, index) => {
@@ -12015,62 +12031,135 @@ class BuildingStructureHistory3H {
 }
 
 
+// src/core/property-geometry.js
+
+
+const giFinite = value => typeof value === 'number' && Number.isFinite(value);
+const giLerp = (a,b,t) => ({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
+const giProject = (p,a,b) => ((p.x-a.x)*(b.x-a.x)+(p.y-a.y)*(b.y-a.y))
+  / ((b.x-a.x)**2+(b.y-a.y)**2 || 1);
+
+// Stored base plots are convex strips running from the frontage (corners 0→1)
+// to the rear (corners 3→2). Preserve their order and IDs when editing.
+function propertyDividerFractions3I(city, property) {
+  if (!property || property.boundary?.length !== 4) throw new Error('Only four-corner properties support this milestone.');
+  const plots=property.plotIds.map(id=>city.plots.find(plot=>plot.id===id&&plot.propertyId===property.id));
+  if (plots.some(p=>!p || p.boundary?.length!==4)) throw new Error('Property plot subdivision cannot be edited safely.');
+  const [front0,front1]=property.boundary;
+  const ratios=plots.slice(0,-1).map(plot=>giProject(plot.boundary[1],front0,front1));
+  if(ratios.some((v,i)=>!giFinite(v)||v<=0.0001||v>=.9999||(i>0&&v<=ratios[i-1]+.0001)))
+    throw new Error('Existing plot divisions are not ordered along this frontage.');
+  return ratios;
+}
+
+function propertyGeometryPreview3I(city,propertyId,boundary,dividers) {
+  const property=city?.properties?.find(p=>p.id===propertyId);
+  if(!property || !Array.isArray(boundary)||boundary.length!==4
+      || !boundary.every(p=>p&&giFinite(p.x)&&giFinite(p.y)&&Math.abs(p.x)<10000&&Math.abs(p.y)<10000))
+    throw new Error('Property preview needs four finite boundary corners.');
+  const ids=property.plotIds;
+  if(!Array.isArray(dividers)||dividers.length!==ids.length-1)throw new Error('Plot subdivision count must remain unchanged.');
+  const ratios=[0,...dividers,1];
+  if(ratios.some((v,i)=>!giFinite(v)||v<0||v>1||(i>0&&v-ratios[i-1]<.0001)))
+    throw new Error('Plot dividers must stay ordered without touching.');
+  const front=s=>giLerp(boundary[0],boundary[1],s);
+  const back=s=>giLerp(boundary[3],boundary[2],s);
+  const plots=ids.map((id,i)=>({
+    id,
+    boundary:[front(ratios[i]),front(ratios[i+1]),back(ratios[i+1]),back(ratios[i])]
+  }));
+  const total=plots.reduce((sum,p)=>sum+polygonSignedArea(p.boundary),0);
+  const area=polygonSignedArea(boundary);
+  // Correctly sided and shared edges cover the quadrilateral without gaps.
+  return {propertyId,boundary:copyJson(boundary),dividers:[...dividers],area,total,plots};
+}
+
+function propertyLocalBounds3I(property,boundary) {
+  const frame=property.frame;
+  if(!frame || !Array.isArray(boundary)||!boundary.length)throw new Error('Missing property frontage frame.');
+  const projected=boundary.map(p=>{
+    const dx=p.x-frame.origin.x,dy=p.y-frame.origin.y;
+    return {u:dx*frame.tangent.x+dy*frame.tangent.y,v:dx*frame.inward.x+dy*frame.inward.y};
+  });
+  const xs=projected.map(p=>p.u),ys=projected.map(p=>p.v);
+  const minU=Math.min(...xs),minV=Math.min(...ys);
+  return {x:minU,y:minV,width:Math.max(...xs)-minU,depth:Math.max(...ys)-minV};
+}
+
+
 // src/editor/property-edit.js
 
-// 3I-A deliberately keeps every preview in memory. No city/project mutation,
-// project document field, or accepted edit is possible at this checkpoint.
+
+// Draft boundaries and plot divisions exist only inside this in-memory session.
 class PropertyEditSession3I {
   constructor(changed = () => {}) {
-    this.changed = changed;
-    this.active = null;
-    this.selectedCorner = null;
+    this.changed=changed; this.active=null; this.selectedCorner=null; this.selectedDivider=0; this.drag=null;
+    this.validation=null;
   }
-  get isActive() { return Boolean(this.active); }
-  get propertyId() { return this.active?.propertyId ?? null; }
-  get isPending() { return false; } // Editable geometry arrives in 3I-B.
-  source(city) {
-    return city?.properties?.find(property => property.id === this.propertyId) ?? null;
+  get isActive(){return Boolean(this.active);}
+  get propertyId(){return this.active?.propertyId??null;}
+  get boundary(){return this.active?.boundary??null;}
+  get dividers(){return this.active?.dividers??null;}
+  get isPending(){return Boolean(this.active && (JSON.stringify(this.active.boundary)!==JSON.stringify(this.active.originalBoundary)
+    ||JSON.stringify(this.active.dividers)!==JSON.stringify(this.active.originalDividers)));}
+  source(city){return city?.properties?.find(p=>p.id===this.propertyId)??null;}
+  previewFor(city){return this.isActive && this.source(city)?copyJson(this.active.boundary):null;}
+  plotsFor(city){
+    if(!this.isActive)return null;
+    try{return propertyGeometryPreview3I(city,this.propertyId,this.boundary,this.dividers).plots;}
+    catch{return null;}
   }
-  previewFor(city) {
-    return this.isActive && this.source(city) ? copyJson(this.active.boundary) : null;
+  start(city,propertyId){
+    const property=city?.properties?.find(item=>item.id===propertyId);
+    if(!property || property.boundary?.length!==4)return false;
+    let dividers;
+    try{dividers=propertyDividerFractions3I(city,property);}
+    catch{return false;}
+    const boundary=copyJson(property.boundary);
+    this.active={propertyId,boundary,dividers,
+      originalBoundary:copyJson(boundary),originalDividers:[...dividers]};
+    this.selectedCorner=null;this.selectedDivider=0;this.drag=null;this.validation=null;
+    this.changed();return true;
   }
-  start(city, propertyId) {
-    const property = city?.properties?.find(item => item.id === propertyId);
-    if (!property || !Array.isArray(property.boundary) || property.boundary.length !== 4) return false;
-    this.active = { propertyId, boundary: copyJson(property.boundary) };
-    this.selectedCorner = null;
-    this.changed();
-    return true;
+  selectCorner(index){
+    if(!this.isActive||!Number.isInteger(index)||index<0||index>3)return false;
+    this.selectedCorner=index;this.changed();return true;
   }
-  selectCorner(index) {
-    if (!this.isActive || !Number.isInteger(index) || index < 0 || index > 3) return false;
-    this.selectedCorner = index;
-    this.changed();
-    return true;
+  setCorner(index,point){
+    if(!this.isActive || !Number.isInteger(index)||index<0||index>3
+      || !Number.isFinite(point?.x)||!Number.isFinite(point?.y)
+      ||Math.abs(point.x)>=10000||Math.abs(point.y)>=10000)return false;
+    this.active.boundary[index]={x:point.x,y:point.y};
+    this.selectedCorner=index;this.validation=null;this.changed();return true;
   }
-  hitCorner(city, point, zoom = 1) {
-    const preview = this.previewFor(city);
-    if (!preview || !point) return null;
-    const radius = 12 / Math.max(0.18, zoom);
-    let closest = null, distance = radius;
-    preview.forEach((corner, i) => {
-      const d = Math.hypot(corner.x - point.x, corner.y - point.y);
-      if (d <= distance) { closest = i; distance = d; }
+  setDivider(index,ratio){
+    if(!this.isActive||!Number.isInteger(index)||index<0||index>=this.dividers.length
+      ||!Number.isFinite(ratio)||ratio<=0||ratio>=1)return false;
+    this.active.dividers[index]=ratio;this.selectedDivider=index;
+    this.validation=null;this.changed();return true;
+  }
+  hitCorner(city,point,zoom=1){
+    const preview=this.previewFor(city);
+    if(!preview||!point)return null;
+    const radius=12/Math.max(.18,zoom);
+    let closest=null,distance=radius;
+    preview.forEach((corner,i)=>{
+      const d=Math.hypot(corner.x-point.x,corner.y-point.y);
+      if(d<=distance){closest=i;distance=d;}
     });
     return closest;
   }
-  reset() {
-    if (!this.isActive) return false;
-    this.selectedCorner = null;
-    this.changed();
-    return true;
+  reset(){
+    if(!this.isActive)return false;
+    this.active.boundary=copyJson(this.active.originalBoundary);
+    this.active.dividers=[...this.active.originalDividers];
+    this.selectedCorner=null;this.selectedDivider=0;this.drag=null;this.validation=null;
+    this.changed();return true;
   }
-  stop() {
-    if (!this.isActive) return false;
-    this.active = null;
-    this.selectedCorner = null;
-    this.changed();
-    return true;
+  stop(){
+    if(!this.isActive)return false;
+    this.active=null;this.selectedCorner=null;this.selectedDivider=0;this.drag=null;this.validation=null;
+    this.changed();return true;
   }
 }
 
@@ -12520,7 +12609,8 @@ function exitBuildingEditing() {
 }
 function exitPropertyEditing3I() {
   if (!propertyEditSession?.isActive) return true;
-  // 3I-A has no mutable draft, so exiting is always lossless.
+  if (propertyEditSession.isPending && typeof window.confirm === 'function'
+      && !window.confirm('Discard your unsaved property boundary and plot preview?'))return false;
   propertyEditSession.stop();
   if (Number.isFinite(window.innerWidth) && window.innerWidth <= 900
       && workspaceShell?.state.inspectorCollapsed)
@@ -12534,10 +12624,31 @@ function syncPropertyEditUI3I() {
   if (!active) return;
   $('propertyEditTarget3I').textContent = session.propertyId;
   $('propertyEditCorner3I').textContent = session.selectedCorner === null
-    ? 'Click a highlighted corner to select it.'
-    : 'Corner '+(session.selectedCorner + 1)+' selected · coordinate editing is planned for 3I-B.';
+    ? 'Click or drag a highlighted corner to select it.'
+    : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
+  const corner = session.selectedCorner === null ? null : session.boundary[session.selectedCorner];
+  for(const [id,value] of [['propertyCornerX3I',corner?.x],['propertyCornerY3I',corner?.y]]){
+    $(id).disabled = !corner;
+    $(id).value = corner ? String(Number(value.toFixed(2))) : '';
+  }
+  const dividerIndex=$('propertyDividerIndex3I'), dividerInput=$('propertyDividerPercent3I');
+  const dividers=session.dividers;
+  const previous=dividerIndex.options?.length??-1;
+  if(previous!==dividers.length){
+    const options=dividers.map((_,i)=>{
+      const option=document.createElement('option');
+      option.value=String(i);option.textContent='Divider '+(i+1);return option;
+    });
+    dividerIndex.replaceChildren(...options);
+  }
+  dividerIndex.disabled=dividers.length===0;
+  dividerIndex.value=String(session.selectedDivider);
+  dividerInput.disabled=dividers.length===0;
+  dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
   $('propertyEditApply3I').disabled = true;
-  $('propertyEditStatus3I').textContent = 'PREVIEW ONLY · No accepted city geometry or project file has changed.';
+  $('propertyEditStatus3I').textContent = session.isPending
+    ? 'UNSAVED PREVIEW · Property and plot geometry are unchanged until a validated Apply in 3I-C.'
+    : 'NO PENDING CHANGES · The map shows the original property and plot boundaries.';
 }
 function updateMapIndicators() {
   clearMapHover();
@@ -12552,7 +12663,7 @@ function updateMapIndicators() {
   canvas.classList.toggle('building-edit-mode', buildingActive);
   canvas.classList.toggle('drawing', Boolean(terrainActive || waterActive || editor.mode !== 'pan'));
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!terrainActive && !waterActive && editor.mode === mode));
-  $('toolHint').textContent = propertyActive ? 'PROPERTY PREVIEW · Select a highlighted corner · Boundary editing arrives in 3I-B' : structureActive ? 'BUILDING PLACEMENT · Click property ground or drag the ghost · Use numeric controls for exact size and rotation' : buildingActive ? 'BUILDING EDIT · Move, Rotate, Resize · Space/middle drag pans · No geometry changes until validated Apply' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+  $('toolHint').textContent = propertyActive ? 'PROPERTY PREVIEW · Drag corners or edit coordinates and plot dividers · Apply unlocks after validation' : structureActive ? 'BUILDING PLACEMENT · Click property ground or drag the ghost · Use numeric controls for exact size and rotation' : buildingActive ? 'BUILDING EDIT · Move, Rotate, Resize · Space/middle drag pans · No geometry changes until validated Apply' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
   $('draftBadge').textContent = propertyActive ? '● PROPERTY PREVIEW ONLY' : structureActive ? '● BUILDING PLACEMENT PREVIEW' : buildingActive ? '● BUILDING EDIT MODE' : editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
 }
 
@@ -13137,6 +13248,29 @@ $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
 $('propertyEditReset3I').addEventListener('click',()=>propertyEditSession?.reset());
 $('propertyEditCancel3I').addEventListener('click',exitPropertyEditing3I);
+for(const [id,axis] of [['propertyCornerX3I','x'],['propertyCornerY3I','y']])
+  $(id).addEventListener('change',()=>{
+    const session=propertyEditSession;
+    if(!session?.isActive||session.selectedCorner===null)return;
+    const value=Number($(id).value);
+    if($(id).value===''||!Number.isFinite(value)){syncPropertyEditUI3I();return;}
+    session.setCorner(session.selectedCorner,{...session.boundary[session.selectedCorner],[axis]:value});
+  });
+$('propertyDividerIndex3I').addEventListener('change',()=>{
+  if(!propertyEditSession?.isActive)return;
+  const index=Number($('propertyDividerIndex3I').value);
+  if(Number.isInteger(index)&&index>=0&&index<propertyEditSession.dividers.length){
+    propertyEditSession.selectedDivider=index;
+    updateMapIndicators();
+  }
+});
+$('propertyDividerPercent3I').addEventListener('change',()=>{
+  const session=propertyEditSession;
+  if(!session?.isActive)return;
+  const value=Number($('propertyDividerPercent3I').value);
+  if($('propertyDividerPercent3I').value===''||!Number.isFinite(value)
+      ||!session.setDivider(session.selectedDivider,value/100))syncPropertyEditUI3I();
+});
 
 const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
 // An editor cannot receive map input unless its section is visible.
@@ -13206,6 +13340,13 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
   canvas.classList.toggle('feature-hover', Boolean(hit || propertyHit));
 }, {
   begin: (point,zoom) => {
+    if(propertyEditSession?.isActive){
+      const index=propertyEditSession.hitCorner(project?.city,point,zoom);
+      if(index===null)return false;
+      propertyEditSession.drag={index,original:{...propertyEditSession.boundary[index]}};
+      propertyEditSession.selectCorner(index);
+      return true;
+    }
     if(buildingPlacementSession?.isActive){
       const polygon=buildingPlacementSession.previewFor(project?.city)?.footprint;
       if(polygon?.length && pointInPolygon(point,polygon)){
@@ -13218,7 +13359,9 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     return Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom));
   },
   move: point => {
-    if(buildingPlacementSession?.drag){
+    if(propertyEditSession?.drag){
+      propertyEditSession.setCorner(propertyEditSession.drag.index,point);
+    }else if(buildingPlacementSession?.drag){
       const property=buildingPlacementSession.property(project.city);
       const now=buildingLocalPoint3H(property,point),drag=buildingPlacementSession.drag;
       if(now && drag.start)buildingPlacementSession.update({
@@ -13227,7 +13370,12 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     }else buildingEditSession?.moveGesture(point);
   },
   end: cancelled => {
-    if(buildingPlacementSession?.drag){
+    if(propertyEditSession?.drag){
+      const drag=propertyEditSession.drag;
+      propertyEditSession.drag=null;
+      if(cancelled)propertyEditSession.setCorner(drag.index,drag.original);
+      syncPropertyEditUI3I();
+    }else if(buildingPlacementSession?.drag){
       const drag=buildingPlacementSession.drag;
       buildingPlacementSession.drag=null;
       if(cancelled)buildingPlacementSession.update(drag.spec);
