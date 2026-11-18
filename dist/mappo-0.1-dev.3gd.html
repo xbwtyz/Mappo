@@ -11523,12 +11523,12 @@ const BUILDING_GEOMETRY_FIELDS = Object.freeze([
   'entrance', 'accessPath', 'frontageRoadId'
 ]);
 
-const geometryOf = record => Object.fromEntries(
+const historyGeometryOf = record => Object.fromEntries(
   BUILDING_GEOMETRY_FIELDS.map(key => [key, copyJson(record[key] === undefined ? null : record[key])])
 );
-const same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
-const findBuilding = (project,id) => project?.city?.buildings?.find(item => item.id === id);
-const lastFor = (list,id) => list.findLastIndex(item => item.buildingId === id);
+const sameBuildingGeometry = (a,b) => JSON.stringify(a) === JSON.stringify(b);
+const historyFindBuilding = (project,id) => project?.city?.buildings?.find(item => item.id === id);
+const historyLastFor = (list,id) => list.findLastIndex(item => item.buildingId === id);
 
 class BuildingGeometryHistory {
   constructor(limit = 20) {
@@ -11540,11 +11540,11 @@ class BuildingGeometryHistory {
   clear() { this.past = []; this.future = []; }
   get history() { return this.past; }
   record(before, after, buildingId) {
-    const old = findBuilding(before,buildingId), next = findBuilding(after,buildingId);
+    const old = historyFindBuilding(before,buildingId), next = historyFindBuilding(after,buildingId);
     if (!old || !next || old.id !== next.id || old.propertyId !== next.propertyId)
       throw new Error('The accepted building identity changed during Apply.');
-    const from = geometryOf(old), to = geometryOf(next);
-    if (same(from,to)) return false;
+    const from = historyGeometryOf(old), to = historyGeometryOf(next);
+    if (sameBuildingGeometry(from,to)) return false;
     this.future = this.future.filter(item => item.buildingId !== buildingId);
     this.past.push({buildingId, propertyId:old.propertyId, from, to});
     if (this.past.length > this.limit) this.past.shift();
@@ -11553,11 +11553,11 @@ class BuildingGeometryHistory {
   can(direction, project, buildingId) {
     if (!buildingId || !['undo','redo'].includes(direction)) return false;
     const stack = direction === 'undo' ? this.past : this.future;
-    const index = lastFor(stack,buildingId);
+    const index = historyLastFor(stack,buildingId);
     if (index < 0) return false;
-    const entry = stack[index], current = findBuilding(project,buildingId);
+    const entry = stack[index], current = historyFindBuilding(project,buildingId);
     return Boolean(current && current.propertyId === entry.propertyId
-      && same(geometryOf(current),direction === 'undo' ? entry.to : entry.from));
+      && sameBuildingGeometry(historyGeometryOf(current),direction === 'undo' ? entry.to : entry.from));
   }
   count(direction,buildingId) {
     return (direction === 'undo' ? this.past : this.future)
@@ -11566,11 +11566,11 @@ class BuildingGeometryHistory {
   prepare(project, workspace, buildingId, direction) {
     if (!this.can(direction,project,buildingId)) return {ok:false,reason:'No compatible building edit to '+direction+'.'};
     const stack = direction === 'undo' ? this.past : this.future;
-    const entry = stack[lastFor(stack,buildingId)];
+    const entry = stack[historyLastFor(stack,buildingId)];
     const target = direction === 'undo' ? entry.from : entry.to;
     try {
       const candidate = copyJson(project);
-      const live = findBuilding(candidate,buildingId);
+      const live = historyFindBuilding(candidate,buildingId);
       // Preserve current custom identity/metadata; restore the full geometry
       // record and all dependent fields in one validated project transaction.
       for (const key of BUILDING_GEOMETRY_FIELDS) {
@@ -11579,7 +11579,7 @@ class BuildingGeometryHistory {
       }
       validateStoredProject(candidate);
       const roundtrip = decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
-      if (!same(roundtrip.project.city,candidate.city))
+      if (!sameBuildingGeometry(roundtrip.project.city,candidate.city))
         throw new Error('Project geometry changed during portable save/load verification.');
       return {ok:true,entry,candidate:roundtrip.project};
     } catch(error) {
