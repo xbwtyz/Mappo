@@ -31,8 +31,10 @@ jobs:
       - name: Verify latest compiled distribution matches root
         run: |
           test -f index.html
-          test -f dist/mappo-0.1-dev.ui5d.html
-          cmp index.html dist/mappo-0.1-dev.ui5d.html
+          version=$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")
+          test -n "$version"
+          test -f "dist/mappo-${version}.html"
+          cmp index.html "dist/mappo-${version}.html"
           test "$(find dist -maxdepth 1 -name '*.html' -type f | wc -l)" -ge 26
       - name: Configure or enable GitHub Pages
         uses: actions/configure-pages@v5
