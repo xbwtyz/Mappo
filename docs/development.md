@@ -1,6 +1,6 @@
 # Mappo Developer Guide
 
-**Current baseline:** `0.1-dev.3gb` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
+**Current baseline:** `0.1-dev.3gc` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
 
 ## Source organization
 
@@ -13,6 +13,8 @@ src/data/          Project persistence, migration, validation and browser recove
 src/editor/        Gesture controllers, drafts and scoped Undo histories
 src/editor/building.js  Transient 3G-B building edit session / gestures (not serialized)
 src/core/building-transform.js  Pure transform geometry and preview handles
+src/core/building-validation.js  Exact polygon/containment/collision checks
+src/editor/building-application.js  Reconciliation, complete project checks and atomic candidate preparation
 src/renderer/      Canvas layers and camera
 src/renderer/building-editing.js  Transformed footprint overlay and handles
 src/ui/            Controls, Inspector, selection and project-file workflow
@@ -26,7 +28,7 @@ index.html        Generated GitHub Pages entrypoint
 dist/             Versioned standalone HTML snapshots
 ```
 
-Properties are primary selected sites; individual buildings are child records with independent identity. 3G-B extends the temporary editing session with pure footprint transforms and a separate Canvas overlay. The accepted building, its area/entrance/access path, and save envelopes are never mutated by previews. Keep accepted geometry distinct from drafts. Validate restored selections against record existence, parent relationships and layer visibility. Do not reattach identities to potentially reused IDs after regeneration.
+Properties are primary selected sites; individual buildings are child records with independent identity. 3G-C extends the transient preview with exact polygon and ownership validation, plot/entrance/access-path reconciliation, and a guarded atomic replacement of the accepted project only after schema-9 saved-project validation and portable round trip. Failed candidates never mutate existing data; after Apply, files.changed() marks the new city for recovery. Geometry Undo is reserved for 3G-D. Keep accepted geometry distinct from drafts. Validate restored selections against record existence, parent relationships and layer visibility. Do not reattach identities to potentially reused IDs after regeneration.
 
 ## Build and automated checks
 
@@ -38,11 +40,11 @@ npm test
 npm run check
 ```
 
-The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current output: `dist/mappo-0.1-dev.3gb.html`. External runtime imports are rejected.
+The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current output: `dist/mappo-0.1-dev.3gc.html`. External runtime imports are rejected.
 
 ```bash
-cmp index.html dist/mappo-0.1-dev.3gb.html
-git diff --exit-code -- index.html dist/mappo-0.1-dev.3gb.html
+cmp index.html dist/mappo-0.1-dev.3gc.html
+git diff --exit-code -- index.html dist/mappo-0.1-dev.3gc.html
 ```
 
 Use a Windows binary comparison tool if `cmp` is unavailable. Update paths when the release version changes.
@@ -71,4 +73,4 @@ The last completed 3F-D development run passed **205/205 Node tests** and **16/1
 
 **Unified CI:** [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs version-derived build parity, Node regressions, and both real-browser QA suites for active development branches, pull requests, and `main`. See the [CI guide](CI.md) and [Pass B QA report](PASS_B_QA.md). The old phase-specific validation workflows have been retired.
 
-[3G-B milestone QA and preview contract](history/3g/MILESTONE_3GB_QA.md) · [3G-A milestone QA](history/3g/MILESTONE_3GA_QA.md) · [Workspace UI reference](reference/WORKSPACE_UI.md) · [UI control map](reference/UI_CONTROL_MAP.md) · [Water](reference/WATER.md) · [Terrain](reference/TERRAIN.md) · [Districts](reference/DISTRICTS.md) · [Fortifications](reference/FORTIFICATIONS.md)
+[3G-C milestone QA and acceptance safety](history/3g/MILESTONE_3GC_QA.md) · [3G-B milestone QA](history/3g/MILESTONE_3GB_QA.md) · [3G-A milestone QA](history/3g/MILESTONE_3GA_QA.md) · [Workspace UI reference](reference/WORKSPACE_UI.md) · [UI control map](reference/UI_CONTROL_MAP.md) · [Water](reference/WATER.md) · [Terrain](reference/TERRAIN.md) · [Districts](reference/DISTRICTS.md) · [Fortifications](reference/FORTIFICATIONS.md)

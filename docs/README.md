@@ -10,6 +10,7 @@
 | [Current Roadmap](ROADMAP.md) | Completed milestones and separately proposed future work |
 | [3G-A Checkpoint](history/3g/MILESTONE_3GA_QA.md) | Visual building edit mode design and verification |
 | [3G-B Checkpoint](history/3g/MILESTONE_3GB_QA.md) | Non-destructive building transformation previews, controls and QA |
+| [3G-C Checkpoint](history/3g/MILESTONE_3GC_QA.md) | Validated building changes, road access and schema-9 application |
 | [Screenshot Gallery](gallery.md) | Captioned visual examples from Inspector development |
 | [Technical References](reference/README.md) | Persistence, workspace and domain modules |
 | [Historical Archives](history/README.md) | Prior plans, QA reports and original detailed README |
