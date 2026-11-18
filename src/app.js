@@ -745,9 +745,6 @@ function captureWorkspace() {
       schemaVersion: 1,
       ui: {
         ...workspaceShell.snapshot(),
-        // Property/building selection is session-only until validated portable
-        // references and restoration are introduced in 3F-D.
-        selection: ['property', 'building'].includes(workspaceShell.state.selection?.kind) ? null : workspaceShell.state.selection,
         disclosures: Object.fromEntries(WORKSPACE_DISCLOSURE_IDS.map(id => [id, Boolean($(id).open)])),
         landscape: landscapeWorkspace.snapshotUI(),
         districts: districtPanel.snapshotUI()
@@ -945,11 +942,16 @@ function applyProjectDocument(document) {
   // A stale legacy landscape reference invalidates any conflicting saved
   // presentation selection; never resurrect a different feature by accident.
   const staleLegacySelection = Boolean(savedSelection && !landscapeWorkspace.record(savedSelection));
-  const isValidSelection = ref => ref?.kind === 'district'
-    ? next.city.districts.some(d => d.id === ref.id)
-    : ['water', 'terrain'].includes(ref?.kind)
-      ? Boolean(landscapeWorkspace.record(ref))
-      : ref?.kind === 'landscape-add' && landscapeWorkspace.available(ref.id);
+  const isValidSelection = ref => {
+    if (ref?.kind === 'district') return next.city.districts.some(d => d.id === ref.id);
+    if (ref?.kind === 'property') return Boolean(propertyWorkspace.record(ref));
+    if (ref?.kind === 'building') {
+      const building = buildingWorkspace.record(ref);
+      return Boolean(building && propertyWorkspace.propertyForBuilding(building));
+    }
+    if (['water', 'terrain'].includes(ref?.kind)) return Boolean(landscapeWorkspace.record(ref));
+    return ref?.kind === 'landscape-add' && landscapeWorkspace.available(ref.id);
+  };
   const selectedUIRef = staleLegacySelection ? null
     : workspace.ui && Object.hasOwn(workspace.ui, 'selection')
       ? (savedUISelection && isValidSelection(savedUISelection) ? savedUISelection : null)
@@ -968,7 +970,7 @@ function applyProjectDocument(document) {
     terrainPanel.refresh();
   }
   workspaceShell.reset({
-    section: selectedUIRef?.kind === 'district' ? 'districts' : selectedUIRef ? 'landscape' : 'city',
+    section: selectedUIRef?.kind === 'district' ? 'districts' : ['property', 'building'].includes(selectedUIRef?.kind) || !selectedUIRef ? 'city' : 'landscape',
     selection: selectedUIRef,
     ui: workspace.ui
   });

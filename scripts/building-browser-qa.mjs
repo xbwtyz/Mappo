@@ -112,7 +112,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       for (const text of ['Generated type:', 'Footprint shape:', 'Footprint area:',
         `Occupied plots: ${childContext.plots.length}`, 'square survey units', childContext.frontage, id, ...childContext.plots])
         assert.ok(informationText.includes(text), `Building information contains ${text}`);
-      assert.equal(await page.evaluate(() => __buildingQA.state().files.captureDocument().workspace.ui.selection), null);
+      assert.deepEqual(await page.evaluate(() => __buildingQA.state().files.captureDocument().workspace.ui.selection), { kind: 'building', id: buildingId });
       await page.screenshot({ path: new URL(`${label}-child.png`, output).pathname });
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 3), 'Child Inspector must not overflow horizontally');
       await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
@@ -193,7 +193,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       const saved = await page.evaluate(() => __buildingQA.state().files.captureDocument());
       assert.equal(saved.project.schemaVersion, 9);
       assert.equal(saved.workspace.schemaVersion, 1);
-      assert.equal(saved.workspace.ui.selection, null, 'Session-only 3F-Aa selection does not break saving');
+      assert.deepEqual(saved.workspace.ui.selection, { kind: 'property', id }, 'Property selection travels with schema-1 UI state');
       // 3F-C: native identity editing, scoped undo and portable metadata.
       if (await page.locator('#identityInspector').getAttribute('open') === null)
         await page.locator('#identityEditorTitle').click();
@@ -254,8 +254,11 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#openProjectButton').click();
       await page.waitForFunction(() => document.querySelector('#fileStatus').textContent.startsWith('Opened '));
       await page.locator('#projectMenuClose').click();
+      assert.deepEqual(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), { kind: 'property', id }, 'Saved Inspector selection restores after loading');
       assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.find(p => p.id === id).customName, id), 'The Silver Stag');
       assert.equal(await page.evaluate(() => __buildingQA.state().identityWorkspace.editor.history.length), 0);
+      if (viewport.width <= 900 && await page.locator('#workspaceInspector').isVisible())
+        await page.locator('#workspaceCloseInspector').click();
       p = await target();
       await page.mouse.click(p.x, p.y);
       if (await page.locator('#identityInspector').getAttribute('open') === null)

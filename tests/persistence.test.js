@@ -811,6 +811,22 @@ test('native 3B.1 schema-2 files migrate to unassigned districts without changin
   assert.deepEqual(decodeProjectDocument(encodeProjectDocument(annotated)), annotated);
 });
 
+test('schema-1 Inspector references validate and missing older selection fields remain optional', () => {
+  const document = documentFixture();
+  document.workspace.ui = { section: 'city', selection: null };
+  const property = document.project.city.properties[0], building = document.project.city.buildings[0];
+  for (const selection of [{ kind: 'property', id: property.id }, { kind: 'building', id: building.id }]) {
+    document.workspace.ui.selection = selection;
+    assert.deepEqual(decodeProjectDocument(encodeProjectDocument(document)).workspace.ui.selection, selection);
+  }
+  for (const selection of [{ kind: 'other', id: 'a' }, { kind: 'property', id: '' },
+    { kind: 'building', id: 'x'.repeat(129) }, { kind: 'property', id: 7 }]) {
+    document.workspace.ui.selection = selection;
+    assert.throws(() => encodeProjectDocument(document), /Invalid saved inspector selection/);
+  }
+  delete document.workspace.ui.selection;
+  assert.equal(decodeProjectDocument(encodeProjectDocument(document)).workspace.ui.selection, undefined);
+});
 test('optional landscape selection remains bounded, preserves compatible data and accepts older saves', () => {
   const document = documentFixture();
   for (const selection of [null, {

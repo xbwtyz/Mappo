@@ -35,7 +35,7 @@ test('compiled property Inspector selects each compound wing and returns to its 
     assert.equal(app.el('workspaceSelectionType').textContent, 'Building');
     const captured = app.capture();
     assert.doesNotThrow(() => encodeProjectDocument(createProjectDocument(captured.project, captured.workspace)));
-    assert.equal(captured.workspace.ui.selection, null);
+    assert.deepEqual(copy(captured.workspace.ui.selection), { kind: 'building', id });
     action(app, 'property', site.id).handlers.click();
     assert.deepEqual(copy(state.workspaceShell.state.selection), { kind: 'property', id: site.id });
   }
@@ -77,14 +77,44 @@ test('compiled property click/hover reveals the correct inspector, preserves geo
   const captured = app.capture();
   const portable = decodeProjectDocument(encodeProjectDocument(createProjectDocument(captured.project, captured.workspace)));
   assert.equal(portable.project.schemaVersion, 9);
-  assert.equal(portable.workspace.ui.selection, null, '3F-Aa keeps property/building selection session-only');
+  assert.deepEqual(copy(portable.workspace.ui.selection), { kind: 'property', id: target.propertyId });
   assert.equal(JSON.stringify(portable.project), before);
   app.apply(portable);
-  assert.equal(app.state().workspaceShell.state.selection, null);
+  assert.deepEqual(copy(app.state().workspaceShell.state.selection), { kind: 'property', id: target.propertyId });
   assert.equal(app.state().buildingWorkspace.hover, null);
   assert.equal(JSON.stringify(app.state().project), before);
 });
 
+test('portable Inspector restores a child and safely drops missing, hidden and legacy selections', async () => {
+  const app = await buildingAppHarness(), state = app.state();
+  const property = state.project.city.properties.find(p => p.buildingIds.length > 1);
+  const childId = property.buildingIds[0], before = JSON.stringify(state.project.city);
+  assert.equal(state.propertyWorkspace.select({ kind: 'property', id: property.id }), true);
+  assert.equal(state.propertyWorkspace.selectBuilding(property.id, childId), true);
+  const snapshot = app.capture();
+  const portable = decodeProjectDocument(encodeProjectDocument(createProjectDocument(snapshot.project, snapshot.workspace)));
+  assert.deepEqual(copy(portable.workspace.ui.selection), { kind: 'building', id: childId });
+  app.apply(portable);
+  assert.deepEqual(copy(app.state().workspaceShell.state.selection), { kind: 'building', id: childId });
+  assert.equal(app.el('workspaceSelectionType').textContent, 'Building');
+  const stale = copy(portable);
+  stale.workspace.ui.selection = { kind: 'building', id: 'BLD-missing' };
+  app.apply(stale);
+  assert.equal(app.state().workspaceShell.state.selection, null);
+  const hidden = copy(portable);
+  hidden.workspace.view.layers.buildings = false;
+  hidden.workspace.view.layers.properties = true;
+  app.apply(hidden);
+  assert.equal(app.state().workspaceShell.state.selection, null);
+  hidden.workspace.ui.selection = { kind: 'property', id: property.id };
+  app.apply(hidden);
+  assert.deepEqual(copy(app.state().workspaceShell.state.selection), { kind: 'property', id: property.id });
+  const legacy = copy(portable);
+  delete legacy.workspace.ui.selection;
+  app.apply(legacy);
+  assert.equal(app.state().workspaceShell.state.selection, null);
+  assert.equal(JSON.stringify(app.state().project.city), before);
+});
 test('compiled property routing retains landscape priority, district fallback with hidden land layers, and clearing empty land', async () => {
   const app = await buildingAppHarness(), target = roofTarget(app);
   const state = app.state(), topology = buildDistrictTopology(state.project.city);
