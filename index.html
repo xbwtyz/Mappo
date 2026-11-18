@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.3ic</title>
+  <title>Mappo — City editor · 0.1-dev.3id</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -401,7 +401,7 @@
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3ic</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3id</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -535,6 +535,11 @@
             <button type="button" id="propertyEditReset3I">Reset preview</button>
             <button type="button" id="propertyEditCancel3I">Cancel preview</button>
           </div>
+          <div class="building-history-actions" role="group" aria-label="Property geometry history">
+            <button type="button" id="propertyHistoryUndo3I" disabled>Undo property</button>
+            <button type="button" id="propertyHistoryRedo3I" disabled>Redo property</button>
+          </div>
+          <p id="propertyHistoryStatus3I" class="building-history-status" role="status" aria-live="polite">Session-only property history</p>
           <p id="propertyEditStatus3I" role="status" aria-live="polite">Move a corner or divider to preview a validated property change.</p>
           <ul id="propertyEditIssues3I" class="building-preview-issues" aria-label="Property validation problems" hidden></ul>
         </section>
@@ -7767,7 +7772,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.3ic';
+const APP_VERSION = '0.1-dev.3id';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -12278,7 +12283,102 @@ function preparePropertyApply3I(project,workspace,session){
 }
 
 
+// src/editor/property-history.js
+
+
+const giCopy=copyJson, giSame=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const PROPERTY_FIELDS=Object.freeze(['boundary','frontage','area','local','frame']);
+
+function snapshot(project,propertyId){
+  const city=project?.city;
+  const site=city?.properties.find(p=>p.id===propertyId);
+  if(!site)throw new Error('Property no longer exists.');
+  const plots=site.plotIds.map(id=>city.plots.find(p=>p.id===id&&p.propertyId===propertyId));
+  if(plots.some(p=>!p))throw new Error('Property plot membership changed.');
+  const buildings=site.buildingIds.map(id=>city.buildings.find(b=>b.id===id&&b.propertyId===propertyId));
+  if(buildings.some(b=>!b))throw new Error('Property building membership changed.');
+  const geometry=Object.fromEntries(PROPERTY_FIELDS.map(key=>[key,giCopy(site[key])]));
+  const openSpace=city.openSpaces.find(o=>o.blockId===site.blockId);
+  return {propertyId,blockId:site.blockId,plotIds:giCopy(site.plotIds),
+    buildingIds:giCopy(site.buildingIds),geometry,
+    plots:plots.map(p=>({id:p.id,boundary:giCopy(p.boundary)})),
+    buildings:buildings.map(b=>({id:b.id,plotIds:giCopy(b.plotIds)})),
+    openSpace:openSpace?{id:openSpace.id,area:openSpace.area}:null};
+}
+function restore(project,propertyId,target){
+  const candidate=giCopy(project),city=candidate.city,site=city.properties.find(p=>p.id===propertyId);
+  if(!site||site.blockId!==target.blockId
+      ||!giSame(site.plotIds,target.plotIds)||!giSame(site.buildingIds,target.buildingIds))
+    throw new Error('Property memberships changed since this edit.');
+  for(const key of PROPERTY_FIELDS)site[key]=giCopy(target.geometry[key]);
+  for(const plotRef of target.plots){
+    const plot=city.plots.find(p=>p.id===plotRef.id&&p.propertyId===propertyId);
+    if(!plot)throw new Error('Edited plot was deleted.');
+    plot.boundary=giCopy(plotRef.boundary);
+  }
+  for(const row of target.buildings){
+    const building=city.buildings.find(b=>b.id===row.id&&b.propertyId===propertyId);
+    if(!building)throw new Error('Edited building no longer exists.');
+    building.plotIds=giCopy(row.plotIds);
+  }
+  if(target.openSpace){
+    const open=city.openSpaces.find(o=>o.id===target.openSpace.id&&o.blockId===target.blockId);
+    if(!open)throw new Error('Block open-space record changed.');
+    open.area=target.openSpace.area;
+  }
+  return candidate;
+}
+
+class PropertyGeometryHistory3I {
+  constructor(limit=20){
+    if(!Number.isInteger(limit)||limit<1||limit>200)throw new Error('Invalid property history bound.');
+    this.limit=limit;this.past=[];this.future=[];this.serial=0;
+  }
+  clear(){this.past=[];this.future=[];this.serial=0;}
+  count(direction,id){return (direction==='undo'?this.past:this.future).filter(row=>row.propertyId===id).length;}
+  entry(direction,id){return (direction==='undo'?this.past:this.future).findLast(row=>row.propertyId===id)??null;}
+  record(before,after,propertyId){
+    const from=snapshot(before,propertyId),to=snapshot(after,propertyId);
+    if(giSame(from,to))return false;
+    this.future=this.future.filter(row=>row.propertyId!==propertyId);
+    this.past.push({propertyId,from,to,serial:++this.serial});
+    while(this.past.length+this.future.length>this.limit){
+      const oldest=[...this.past,...this.future].sort((a,b)=>a.serial-b.serial)[0];
+      const stack=this.past.includes(oldest)?this.past:this.future;
+      stack.splice(stack.indexOf(oldest),1);
+    }
+    return true;
+  }
+  can(direction,project,propertyId){
+    if(!['undo','redo'].includes(direction)||!propertyId)return false;
+    const entry=this.entry(direction,propertyId);
+    if(!entry)return false;
+    try{return giSame(snapshot(project,propertyId),direction==='undo'?entry.to:entry.from);}
+    catch{return false;}
+  }
+  prepare(project,workspace,propertyId,direction){
+    if(!this.can(direction,project,propertyId))
+      return {ok:false,reason:'No compatible property '+direction+' entry is available.'};
+    const entry=this.entry(direction,propertyId);
+    try{
+      const candidate=restore(project,propertyId,direction==='undo'?entry.from:entry.to);
+      validateStoredProject(candidate);
+      const saved=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
+      if(!giSame(candidate.city,saved.project.city))throw new Error('Portable save/load changed the restored city.');
+      return {ok:true,candidate:saved.project,entry};
+    }catch(error){return {ok:false,reason:'Property '+direction+' rejected: '+error.message};}
+  }
+  accept(entry,direction){
+    const source=direction==='undo'?this.past:this.future, dest=direction==='undo'?this.future:this.past;
+    const index=source.indexOf(entry);
+    if(index<0)throw new Error('Property history changed.');
+    source.splice(index,1);dest.push(entry);
+  }
+}
+
+
 // src/app.js
+
 
 
 
@@ -12346,6 +12446,7 @@ let buildingWorkspace;
 let buildingEditSession;
 const buildingHistory = new BuildingGeometryHistory(20);
 const buildingStructureHistory = new BuildingStructureHistory3H(20);
+const propertyHistory = new PropertyGeometryHistory3I(20);
 let buildingPlacementSession;
 let propertyEditSession;
 let propertyWorkspace;
@@ -12392,6 +12493,14 @@ function updatePendingFeedback() {
   updateUndoFeedback();
 }
 function currentUndoContext() {
+  if(propertyEditSession?.isActive){
+    const id=propertyEditSession.propertyId;
+    const available=!propertyEditSession.isPending&&!propertyEditSession.drag&&propertyHistory.can('undo',project,id);
+    return {kind:'property',controlId:'propertyHistoryUndo3I',label:'Undo property',available,
+      description:propertyEditSession.isPending
+        ? 'Apply or reset your parcel draft before Undo.'
+        : available?'Undo the last accepted property and plot edit.':'No accepted property edit to undo.'};
+  }
   const structuralProperty=structureHistoryProperty3H();
   if (!buildingEditSession?.isActive && !buildingPlacementSession?.isActive
       && structuralProperty && buildingStructureHistory.can('undo',project,structuralProperty)) {
@@ -12532,6 +12641,7 @@ function applyBuildingTransform() {
     // existing schema. Record and UI updates cannot affect pre-commit checks.
     if(project!==previous || session.buildingId!==buildingId) return false;
     if (!buildingHistory.record(previous,received.candidate,buildingId)) return false;
+    propertyHistory.clear();
     project=received.candidate;
     session.reset();
     updateDetails();
@@ -12562,6 +12672,7 @@ function moveBuildingHistory(direction) {
     return false;
   }
   buildingHistory.accept(receipt.entry,direction);
+  propertyHistory.clear();
   project=receipt.candidate;
   session.reset();
   updateDetails();
@@ -12613,7 +12724,7 @@ function syncBuildingStructureUI3H() {
   $('buildingStructurePanel').hidden=!shown;
   const propertyId=structureHistoryProperty3H();
   const historyShown=Boolean(project && propertyId && workspaceShell?.state.section==='city'
-    && !buildingEditSession?.isActive);
+    && !buildingEditSession?.isActive && !propertyEditSession?.isActive);
   $('buildingStructureHistoryPanel').hidden=!historyShown;
   const idle=Boolean(session?.isActive);
   const canHistory=historyShown && !idle;
@@ -12663,6 +12774,7 @@ function applyStructurePlacement3H() {
   if(project!==previous || session.active?.buildingId!==request.buildingId)return false;
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,request.operation))return false;
+    propertyHistory.clear();
     project=result.candidate;
     buildingHistory.clear();
     session.stop();
@@ -12685,6 +12797,7 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
   if(!result.ok){$('statusMessage').textContent='Deletion rejected: '+result.issues[0]?.message;return false;}
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'delete'))return false;
+    propertyHistory.clear();
     project=result.candidate;
     buildingHistory.clear();
     updateDetails();
@@ -12703,6 +12816,7 @@ function moveStructureHistory3H(direction) {
   const result=buildingStructureHistory.prepare(project,captureWorkspace().workspace,propertyId,direction);
   if(!result.ok){$('statusMessage').textContent='Cannot '+direction+' structure: '+result.issues[0]?.message;return false;}
   buildingStructureHistory.accept(result.entry,direction);
+  propertyHistory.clear();
   project=result.candidate;
   buildingHistory.clear();
   updateDetails();
@@ -12760,6 +12874,11 @@ function syncPropertyEditUI3I() {
   dividerIndex.value=String(session.selectedDivider);
   dividerInput.disabled=dividers.length===0;
   dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
+  const canHistory=!session.isPending&&!session.drag;
+  $('propertyHistoryUndo3I').disabled=!(canHistory&&propertyHistory.can('undo',project,session.propertyId));
+  $('propertyHistoryRedo3I').disabled=!(canHistory&&propertyHistory.can('redo',project,session.propertyId));
+  $('propertyHistoryStatus3I').textContent='Property history · '+propertyHistory.count('undo',session.propertyId)
+    +' undo / '+propertyHistory.count('redo',session.propertyId)+' redo (session only).';
   const result=session.drag ? {ok:false,status:'checking',issues:[]} : inspectPropertyEdit3I(project,session);
   session.validation=result;
   $('propertyEditPanel3I').setAttribute('data-validation',result.status);
@@ -12876,6 +12995,7 @@ function generate({ discardIdentities = false } = {}) {
     buildingPlacementSession?.stop();
     propertyEditSession?.stop();
     buildingStructureHistory.clear();
+    propertyHistory.clear();
     identityWorkspace?.reset();
     propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
@@ -13007,7 +13127,8 @@ $('seedInput').addEventListener('keydown', e => {
 window.addEventListener('keydown', e => {
   if (!isMapShortcutEvent(e, document.activeElement)) return;
   if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
-    if (buildingEditSession?.isActive && moveBuildingHistory('redo')) e.preventDefault();
+    if (propertyEditSession?.isActive && movePropertyHistory3I('redo')) e.preventDefault();
+    else if (buildingEditSession?.isActive && moveBuildingHistory('redo')) e.preventDefault();
     else if (!buildingPlacementSession?.isActive && moveStructureHistory3H('redo')) e.preventDefault();
     return;
   }
@@ -13027,7 +13148,7 @@ window.addEventListener('keydown', e => {
     else if (workspaceShell?.state.section === 'city') editor.removePoint();
   }
   if (e.key === 'Escape') {
-    if (!exitBuildingEditing() || !exitStructurePlacement3H()) return;
+    if (!exitPropertyEditing3I() || !exitBuildingEditing() || !exitStructurePlacement3H()) return;
     stopWorkspaceTools();
     e.preventDefault();
   }
@@ -13386,10 +13507,11 @@ function applyPropertyEdit3I() {
     syncPropertyEditUI3I();requestDraw();return false;
   }
   if(project!==before||session.propertyId!==propertyId)return false;
+  if(!propertyHistory.record(before,received.candidate,propertyId))return false;
   project=received.candidate;
   buildingHistory.clear();
   buildingStructureHistory.clear();
-  session.stop();
+  session.start(project.city,propertyId);
   updateDetails();
   workspaceShell.select({kind:'property',id:propertyId});
   workspaceShell.refresh();requestDraw();workspaceChanged();
@@ -13399,6 +13521,23 @@ function applyPropertyEdit3I() {
 $('propertyEditReset3I').addEventListener('click',()=>propertyEditSession?.reset());
 $('propertyEditCancel3I').addEventListener('click',exitPropertyEditing3I);
 $('propertyEditApply3I').addEventListener('click',applyPropertyEdit3I);
+function movePropertyHistory3I(direction){
+  const session=propertyEditSession;
+  if(!project||!session?.isActive||session.isPending||session.drag)return false;
+  const id=session.propertyId;
+  const receipt=propertyHistory.prepare(project,captureWorkspace().workspace,id,direction);
+  if(!receipt.ok){
+    $('statusMessage').textContent=receipt.reason;return false;
+  }
+  project=receipt.candidate;
+  propertyHistory.accept(receipt.entry,direction);
+  session.start(project.city,id);
+  updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+  $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' property and plot edit for '+id+'.';
+  return true;
+}
+$('propertyHistoryUndo3I').addEventListener('click',()=>movePropertyHistory3I('undo'));
+$('propertyHistoryRedo3I').addEventListener('click',()=>movePropertyHistory3I('redo'));
 for(const [id,axis] of [['propertyCornerX3I','x'],['propertyCornerY3I','y']])
   $(id).addEventListener('change',()=>{
     const session=propertyEditSession;
@@ -13647,6 +13786,7 @@ function applyProjectDocument(document) {
   buildingEditSession?.stop();
   buildingPlacementSession?.stop();
   buildingStructureHistory.clear();
+  propertyHistory.clear();
   identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
