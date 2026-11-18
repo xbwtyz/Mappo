@@ -3,8 +3,8 @@ import { workspaceSelectionEqual } from '../core/workspace-state.js';
 import { propertyInformation, inspectionValue } from '../core/selection-information.js';
 
 export class PropertyWorkspace {
-  constructor({ shell, getCity, getLayers, buildings, onSelect = () => {}, draw = () => {} }) {
-    Object.assign(this, { shell, getCity, getLayers, buildings, onSelect, draw });
+  constructor({ shell, getCity, getLayers, buildings, exitEditing = () => {}, onSelect = () => {}, draw = () => {} }) {
+    Object.assign(this, { shell, getCity, getLayers, buildings, exitEditing, onSelect, draw });
     this.hover = null;
     shell.registerInspector('property', { resolve: id => this.descriptor(id) });
   }
@@ -40,6 +40,7 @@ export class PropertyWorkspace {
   }
   select(ref) {
     if (!this.record(ref)) return false;
+    this.exitEditing();
     this.onSelect();
     this.setHover(null);
     this.buildings.setHover(null);
