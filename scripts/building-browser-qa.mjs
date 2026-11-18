@@ -99,6 +99,31 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#propertyEditReset3I').click();
       assert.equal(await page.evaluate(() => __buildingQA.state().propertyEditSession.isPending),false);
       assert.equal(await page.evaluate(() => __buildingQA.state().propertyEditSession.selectedCorner),null);
+      // 3I-C/D: apply a safe shrinking of the rear property edge and verify
+      // real UI Undo/Redo restores every linked record with no schema changes.
+      const validParcelEdit=await page.evaluate(() => {
+        const {project,propertyEditSession:session}=__buildingQA.state();
+        const site=session.source(project.city),axis=site.frame.inward;
+        for(const index of [2,3]){
+          const p=site.boundary[index];
+          session.setCorner(index,{x:p.x-axis.x*.1,y:p.y-axis.y*.1});
+        }
+        return {valid:session.validation?.ok,issues:session.validation?.issues};
+      });
+      assert.equal(validParcelEdit.valid,true,JSON.stringify(validParcelEdit.issues));
+      assert.equal(await page.locator('#propertyEditApply3I').isDisabled(),false);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      await page.locator('#propertyEditApply3I').click();
+      assert.notEqual(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      assert.equal(await page.locator('#propertyHistoryUndo3I').isDisabled(),false);
+      await page.locator('#propertyHistoryUndo3I').click();
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      assert.equal(await page.locator('#propertyHistoryRedo3I').isDisabled(),false);
+      await page.locator('#propertyHistoryRedo3I').click();
+      assert.notEqual(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      await page.locator('#propertyHistoryUndo3I').click();
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      await page.screenshot({ path: new URL(`${label}-3id-property-undo.png`,output).pathname });
       await page.locator('#propertyEditCancel3I').click();
       assert.equal(await page.locator('#propertyEditPanel3I').isVisible(),false);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
