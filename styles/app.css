@@ -421,3 +421,10 @@
 .precision-nudge-buttons-4c button:focus-visible,.precision-nudge-4c select:focus-visible{outline:2px solid #edc989;outline-offset:2px}
 .precision-key-hint-4c{font:10px ui-sans-serif,system-ui,sans-serif;color:#a5c5be;margin:4px 0 7px}
 @media(max-width:670px){.precision-nudge-4c{gap:3px}.precision-nudge-buttons-4c button{min-width:29px;min-height:30px}.precision-key-hint-4c{font-size:9px}}
+
+/* Dev 4d: targeted validation is visible beside the map, never a blocking modal. */
+.map-edit-diagnostic-4d{position:absolute;right:14px;bottom:70px;z-index:10;max-width:min(335px,43%);padding:9px 12px;
+  background:rgba(46,30,27,.96);color:#ffe1d7;border:1px solid #c67c67;border-radius:7px;
+  box-shadow:0 3px 16px #0006;font:11px/1.45 ui-sans-serif,system-ui,sans-serif;pointer-events:none;overflow-wrap:anywhere}
+.map-edit-diagnostic-4d[hidden]{display:none}
+@media(max-width:670px){.map-edit-diagnostic-4d{right:8px;bottom:57px;max-width:min(180px,46%);max-height:114px;overflow:auto;padding:6px;font-size:10px}}
