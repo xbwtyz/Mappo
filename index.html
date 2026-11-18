@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.ui4a</title>
+  <title>Mappo — City editor · 0.1-dev.ui4b</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -174,12 +174,34 @@
 .district-inspector-controls .control-group label{font-size:12px}
 .district-inspector-controls .hint{font-size:11px;line-height:1.6}
 
+
+/* UI Phase 4B: defensive configuration and scoped update feedback. */
+.workspace-shell .defense-workflow{padding:15px}
+.defense-intro{font-size:11px;line-height:1.65;margin-bottom:14px!important}
+.defense-stats{font-size:12px;color:#e2dac6;border:1px solid #4c5d51;background:#21332e;border-radius:5px;padding:11px 12px;margin:9px 0 15px}
+.defense-control-group{padding:12px 0;border-top:1px solid #3c5049}
+.defense-control-group h3{font:650 13px system-ui,sans-serif;color:#e8d6ba;margin:0 0 5px}
+.defense-workflow .fortification-check{margin:0;font-size:12px;align-items:flex-start}
+.defense-workflow .fortification-check input{flex:none;margin-top:3px}
+.defense-workflow .fortification-check span{display:block}
+.defense-workflow .fortification-check small{display:block;font-size:10px;color:#9eb4a7;line-height:1.6;margin-top:5px}
+.defense-workflow .tool-grid{gap:8px}
+.defense-workflow .tool-grid .control-group{min-width:0}
+.defense-workflow .control-group label{font-size:11px}
+.defense-workflow .defense-generation-settings{margin:10px 0 14px}
+.defense-workflow .defense-pending{font-size:11px;line-height:1.6;color:#b2c5ba;border:1px solid #4f6258;border-radius:5px;padding:10px 12px;margin:14px 0;background:#23342e}
+.defense-workflow .defense-pending.pending{border-color:#9d896b;color:#e6ceb0;background:#38362c}
+.defense-workflow .defense-pending.error{border-color:#9f5b4b;color:#ffd2c7;background:#3b2e2e}
+.defense-workflow .defense-apply{min-height:40px;font-size:12px;background:#334c43;border-color:#ab9978}
+.defense-workflow .defense-apply:hover{background:#405e50}
+.defense-workflow .defense-layer-hint{border-top:1px solid #3c5049;padding-top:12px;margin-top:16px}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.ui4a</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.ui4b</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -249,18 +271,30 @@
             <p class="hint">Select a neighborhood here or click a city block. Name, color and connected block editing open in the inspector. Visibility controls are under Layers.</p>
           </details>
         </section>
-        <section id="workspaceSection-defenses" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-defenses" hidden>        <details id="fortificationPanel" class="fortification-panel" open>
-          <summary>FORTIFICATIONS</summary>
-          <label class="fortification-check"><input type="checkbox" id="wallsEnabledInput" checked> Walls enabled</label>
-          <p id="fortificationStats" class="hint">Build perimeter walls, connected gates and defensive towers.</p>
-          <div class="tool-grid"><div class="control-group"><label for="gateCountInput">Requested gates</label><select id="gateCountInput"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
-          <div class="control-group"><label for="towerSpacingInput">Tower spacing</label><input id="towerSpacingInput" type="number" min="40" max="200" step="10" value="100"></div></div>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
-          <div class="control-group"><label for="fortificationSeedInput">Fortification seed</label><input id="fortificationSeedInput" maxlength="64" value="fortifications" spellcheck="false"></div>
+        <section id="workspaceSection-defenses" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-defenses" hidden>
+          <details id="fortificationPanel" class="fortification-panel defense-workflow" open>
+            <summary>PERIMETER DEFENSES</summary>
+            <p class="hint defense-intro">Update walls, road-connected gates and defensive towers independently of the city layout.</p>
+            <p id="fortificationStats" class="defense-stats">No perimeter defenses built yet.</p>
+            <div class="defense-control-group">
+              <label class="fortification-check"><input type="checkbox" id="wallsEnabledInput" checked> <span>Walls enabled <small>Disable without deleting saved defenses</small></span></label>
+            </div>
+            <div class="defense-control-group">
+              <h3>Gates &amp; towers</h3>
+              <div class="tool-grid"><div class="control-group"><label for="gateCountInput">Requested gates</label><select id="gateCountInput"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
+              <div class="control-group"><label for="towerSpacingInput">Tower spacing</label><input id="towerSpacingInput" type="number" min="40" max="200" step="10" value="100"></div></div>
+              <p class="hint">Gates must connect to existing streets. The requested count is a maximum; safe clearance may reduce it.</p>
+            </div>
+            <details class="workspace-settings feature-generation-settings defense-generation-settings"><summary>Generation settings</summary>
+              <div class="control-group"><label for="fortificationSeedInput">Defense seed</label><input id="fortificationSeedInput" maxlength="64" value="fortifications" spellcheck="false"></div>
+              <p class="hint">Changing the seed regenerates defenses only when walls are enabled.</p>
+            </details>
+            <p id="defensePendingMessage" class="defense-pending" role="status" aria-live="polite">No defense changes pending.</p>
+            <button id="applyFortificationButton" class="tool-button full-width defense-apply">Update defenses</button>
+            <button id="undoFortificationButton" class="minor-button full-width actions" disabled>Undo defense edit</button>
+            <p id="fortificationMessage" class="file-status" role="status" aria-live="polite">Defenses can be updated without rebuilding the city.</p>
+            <p class="hint defense-layer-hint">Layers controls display only. Walls enabled controls whether saved defenses are active.</p>
           </details>
-          <div class="tool-grid"><button id="applyFortificationButton" class="tool-button">Build / update</button><button id="undoFortificationButton" class="minor-button" disabled>Undo fortification edit</button></div>
-          <p id="fortificationMessage" class="file-status" role="status" aria-live="polite">Walls sit outside the perimeter streets. Disabling retains their saved geometry. Changing gate count, spacing or seed rebuilds fortifications only.</p>
-        </details>
         </section>
       </div>
       <div class="workspace-apply"><button id="generateButton" class="button-primary">↻ Generate city</button><p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p></div>
@@ -5422,6 +5456,49 @@ function validateFortificationEditorState(state, city) {
 
 // src/ui/fortifications.js
 
+
+// Presentation-only: never generate or modify geometry while previewing inputs.
+function describeDefenseUpdate(city, controls) {
+  const state = city?.fortificationState;
+  if (!state) return { pending: false, invalid: false, text: 'Open a city to configure defenses.' };
+  const built = state.status === 'built';
+  if (!controls.enabled) {
+    if (state.enabled) return {
+      pending: true, invalid: false,
+      text: 'Update defenses will disable the visible walls. Their saved wall, gate and tower geometry will be retained.'
+    };
+    return {
+      pending: false, invalid: false,
+      text: built
+        ? 'Walls are disabled. Saved defenses are retained; gate, tower and seed changes apply only after re-enabling walls.'
+        : 'No defenses are built. Enable walls to build perimeter defenses.'
+    };
+  }
+  let settings;
+  try {
+    settings = normalizeFortificationSettings(controls);
+  } catch (error) {
+    return { pending: true, invalid: true, text: error.message };
+  }
+  if (!built) return {
+    pending: true, invalid: false,
+    text: 'Update defenses will build walls, connected gates and towers around the accepted city without rebuilding streets or buildings.'
+  };
+  const changed = settings.gateCount !== state.requestedGateCount
+    || settings.towerSpacing !== state.towerSpacing
+    || settings.seed !== state.seed
+    || settings.algorithm !== state.algorithm;
+  if (changed) return {
+    pending: true, invalid: false,
+    text: 'Update defenses will regenerate only walls, gates and towers. Streets, buildings, districts, water and mountains remain unchanged.'
+  };
+  if (!state.enabled) return {
+    pending: true, invalid: false,
+    text: 'Update defenses will re-enable the saved defenses without regenerating their geometry.'
+  };
+  return { pending: false, invalid: false, text: 'No defense changes pending. The accepted city and fortifications are unchanged.' };
+}
+
 class FortificationPanel {
   constructor({
     getElement,
@@ -5445,6 +5522,14 @@ class FortificationPanel {
       seed: this.$('fortificationSeedInput').value
     };
   }
+  syncPreview() {
+    const preview = describeDefenseUpdate(this.getCity(), this.controls());
+    const status = this.$('defensePendingMessage');
+    status.textContent = preview.text;
+    status.classList.toggle('error', preview.invalid);
+    status.classList.toggle('pending', preview.pending && !preview.invalid);
+    return preview;
+  }
   message(text, error = false) {
     this.$('fortificationMessage').textContent = text;
     this.$('fortificationMessage').classList.toggle('error', error);
@@ -5453,7 +5538,9 @@ class FortificationPanel {
     const city = this.getCity(),
       state = city.fortificationState,
       built = state.status === 'built';
-    this.$('fortificationStats').textContent = built ? `${state.enabled?'Enabled':'Disabled'} · ${city.gates.length} gates · ${city.towers.length} towers` : 'No fortifications yet. Enable walls and apply to add them.';
+    this.$('fortificationStats').textContent = built
+      ? `${state.enabled ? 'Enabled' : 'Disabled · saved'} · ${city.gates.length} gates · ${city.towers.length} towers`
+      : 'No perimeter defenses built yet.';
     this.$('undoFortificationButton').disabled = !this.editor.history.length;
     if (reset) {
       this.$('wallsEnabledInput').checked = state.enabled;
@@ -5461,16 +5548,29 @@ class FortificationPanel {
       this.$('towerSpacingInput').value = String(built ? state.towerSpacing : 100);
       this.$('fortificationSeedInput').value = built ? state.seed : city.id;
     }
+    this.syncPreview();
   }
   apply() {
     try {
-      const wasUnbuilt = this.getCity().fortificationState.status !== 'built',
-        city = this.editor.apply(this.getCity(), this.controls());
+      const previous = this.getCity(),
+        before = previous.fortificationState,
+        wasUnbuilt = before.status !== 'built',
+        city = this.editor.apply(previous, this.controls());
       this.commit(city);
       this.refresh();
       if (wasUnbuilt && city.fortificationState.status === 'built') this.activateLayer();
       const state = city.fortificationState;
-      this.message(state.enabled ? (state.gateCount < state.requestedGateCount ? `Built ${state.gateCount} of ${state.requestedGateCount} requested gates; other locations did not have enough safe clearance.` : 'Fortifications updated. Existing city geometry was preserved.') : 'Walls disabled. Saved walls, gates and towers are retained.');
+      this.message(city === previous
+        ? (wasUnbuilt ? 'No defenses are built. Enable walls to create them.' : 'No defense changes were applied.')
+        : !state.enabled
+          ? 'Walls disabled. Existing walls, gates and towers remain saved.'
+          : !before.enabled && !wasUnbuilt && state.gateCount === before.gateCount
+            && state.requestedGateCount === before.requestedGateCount && state.seed === before.seed
+            && state.towerSpacing === before.towerSpacing
+              ? 'Saved walls re-enabled without rebuilding their geometry.'
+              : state.gateCount < state.requestedGateCount
+                ? `Built ${state.gateCount} of ${state.requestedGateCount} requested gates; remaining locations lacked safe clearance. The city layout was preserved.`
+                : 'Defenses updated. Streets, buildings, districts and landscape were preserved.');
       return true;
     } catch (error) {
       this.message(error.message, true);
@@ -5491,8 +5591,14 @@ class FortificationPanel {
       }
     });
     for (const id of ['wallsEnabledInput', 'gateCountInput', 'towerSpacingInput', 'fortificationSeedInput']) {
-      this.$(id).addEventListener('input', () => this.changed());
-      this.$(id).addEventListener('change', () => this.changed());
+      this.$(id).addEventListener('input', () => {
+        this.syncPreview();
+        this.changed();
+      });
+      this.$(id).addEventListener('change', () => {
+        this.syncPreview();
+        this.changed();
+      });
     }
   }
 }
@@ -6263,7 +6369,7 @@ class DistrictWorkspace {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.ui4a';
+const APP_VERSION = '0.1-dev.ui4b';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -10359,6 +10465,7 @@ function applyProjectDocument(document) {
     $('towerSpacingInput').value = fortControls.towerSpacing;
     $('fortificationSeedInput').value = fortControls.seed;
   }
+  fortificationPanel.syncPreview();
   $('districtPanel').open = workspace.panels?.districts ?? Boolean(districtPanel.editor.selectedDistrictId);
   $('fortificationPanel').open = workspace.panels?.fortifications ?? true;
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[workspace.controls.morphology];
