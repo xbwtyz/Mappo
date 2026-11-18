@@ -129,10 +129,16 @@
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
           <div class="building-transform-heading"><strong>PROPERTY PREVIEW</strong><span id="propertyEditTarget3I">—</span></div>
-          <p class="hint">3I-A: Select a highlighted corner to inspect it. Boundary and plot manipulation unlock in 3I-B. The original city remains unchanged.</p>
-          <p id="propertyEditCorner3I" class="building-history-status" role="status" aria-live="polite">No corner selected.</p>
+          <p class="hint">Drag a property corner or select it to edit precise coordinates. Move internal plot dividers without changing plot ownership. Everything remains a preview.</p>
+          <p id="propertyEditCorner3I" class="building-history-status" role="status" aria-live="polite">Select a highlighted property corner.</p>
+          <div class="building-transform-values">
+            <label>Corner X <input id="propertyCornerX3I" type="number" step="0.5" disabled></label>
+            <label>Corner Y <input id="propertyCornerY3I" type="number" step="0.5" disabled></label>
+            <label>Plot divider <select id="propertyDividerIndex3I" aria-label="Plot divider"></select></label>
+            <label>Divider % <input id="propertyDividerPercent3I" type="number" min="0.01" max="99.99" step="0.5" disabled></label>
+          </div>
           <div class="building-transform-actions">
-            <button type="button" id="propertyEditApply3I" disabled title="Available after geometry validation in 3I-C">Apply to City — coming in 3I-C</button>
+            <button type="button" id="propertyEditApply3I" disabled title="Available after geometry validation in 3I-C">Apply to City — validation pending</button>
             <button type="button" id="propertyEditReset3I">Reset preview</button>
             <button type="button" id="propertyEditCancel3I">Cancel preview</button>
           </div>
