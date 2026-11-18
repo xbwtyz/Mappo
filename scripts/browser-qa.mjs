@@ -86,7 +86,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
           page.waitForEvent('download', { timeout: 20000 }),
           page.locator('#saveProjectButton').click()
         ]);
-        assert.match(download.suggestedFilename(), /\\.mappo\\.json$/, 'Portable save filename');
+        assert.match(download.suggestedFilename(), /\.mappo\.json$/, 'Portable save filename');
         const chunks = [];
         for await (const chunk of await download.createReadStream()) chunks.push(chunk);
         const portable = Buffer.concat(chunks);
