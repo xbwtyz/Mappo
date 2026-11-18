@@ -26,7 +26,7 @@ Browser QA requires `npm install --no-save --no-package-lock playwright@1.56.1` 
 
 CI uses `contents: read`; it never commits, pushes, tags, or deploys. The existing `.github/workflows/pages.yml` remains separate and untouched. Under current Pages configuration, changes to generated `index.html` or `dist/**` on `main` trigger publishing.
 
-The old milestone-specific workflows will be retired **after the new unified workflow passes**. Avoid reintroducing fixed-version paths or automated commit/push steps into CI.
+The old milestone-specific workflows were removed from this branch **only after** the unified workflow passed its first full run: [Mappo CI #44272377893](https://github.com/xbwtyz/Mappo/actions/runs/44272377893), with **205/205 Node tests**, **16/16 real-browser checks**, exact standalone build parity and both artifact uploads. GitHub retains the prior workflow history; older feature-branch copies remain until optional branch cleanup. Avoid reintroducing fixed-version paths or automated commit/push steps into CI.
 
 ## Local files
 
