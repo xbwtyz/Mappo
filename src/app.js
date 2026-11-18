@@ -744,7 +744,7 @@ $('editButton').addEventListener('click', () => {
   editor.notify('Drag outline points. Double-click an edge to add a point.');
 });
 $('panButton').addEventListener('click', () => {
-  if (!exitBuildingEditing() || !exitStructurePlacement3H()) return;
+  if (!exitPropertyEditing3I() || !exitBuildingEditing() || !exitStructurePlacement3H()) return;
   terrainPanel?.editor.setMode('pan');
   waterPanel?.editor.setMode('pan');
   editor.setMode('pan');
