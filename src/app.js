@@ -88,6 +88,7 @@ import { PropertyEditSession3I } from './editor/property-edit.js';
 import { inspectPropertyEdit3I, preparePropertyApply3I } from './editor/property-application.js';
 import { PropertyGeometryHistory3I } from './editor/property-history.js';
 import { pointInPolygon } from './core/geometry.js';
+import { focusCameraOnSelection4B } from './core/selection-focus-4b.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
@@ -612,6 +613,18 @@ const editor = new OutlineEditor(editorChanged, (message, error) => {
   $('draftMessage').classList.toggle('error', error);
 });
 
+// View-only framing: selection and accepted geometry remain unchanged.
+function zoomToSelection4B(ref) {
+  if(!project||!focusCameraOnSelection4B(camera,project.city,ref))return false;
+  if(workspaceShell?.state.section!=='city')workspaceShell.navigate('city');
+  if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900
+      && workspaceShell?.state.inspectorCollapsed===false)
+    workspaceShell.dispatch({type:'inspector',collapsed:true});
+  updateViewport();
+  requestDraw();
+  $('statusMessage').textContent='Focused map on '+ref.kind+' '+ref.id+'. No city geometry was changed.';
+  return true;
+}
 function fitMap() {
   const points = [...(!editor.dirty && project ? fortificationViewPoints(project.city) : editor.boundary.length > 2 ? editor.boundary : project?.city.survey.boundary) ?? []];
   const terrainPoints = terrainPanel?.editor.features.flatMap(f => f.path) ?? project?.city.terrainFeatures?.flatMap(f => f.path) ?? [];
@@ -1094,6 +1107,7 @@ buildingWorkspace = new BuildingWorkspace({
   exitEditing: exitBuildingEditing,
   startReplacement: (propertyId,id) => startStructurePlacement3H(propertyId,id),
   deleteBuilding: (propertyId,id) => deleteStructureBuilding3H(propertyId,id),
+  focusSelection: zoomToSelection4B,
   confirmPreviewDiscard: () => confirmBuildingPreviewDiscard() && confirmStructureDiscard3H(),
   onSelect: () => {
     buildingPlacementSession?.stop();
@@ -1111,6 +1125,7 @@ propertyWorkspace = new PropertyWorkspace({
   exitEditing: () => exitBuildingEditing() && exitStructurePlacement3H() && exitPropertyEditing3I(),
   startBuilding: propertyId => startStructurePlacement3H(propertyId),
   startPropertyEdit: enterPropertyEditing3I,
+  focusSelection: zoomToSelection4B,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
