@@ -243,3 +243,5 @@ Additional focused tests cover the keyed district list, contextual inspector vis
 ## UI overhaul Phase 4B (`0.1-dev.ui4b`)
 
 The new defense workflow tests cover initial build, no-op, enable-only, disable-only, changed-settings regeneration, invalid enabled settings, disabled walls with temporarily invalid numeric controls, pending-preview input events and geometry immutability during preview. The compiled-app workflow additionally verifies inline preview transitions around an imported unfortified project, first defense update, disabled walls and saved controls. Full suite/CI verification is recorded separately; native Firefox and the responsive graphical matrix remain outstanding.
+
+**Phase 4B verified:** Commit `ba76f4043b844eee4eb62c0598614d8e61bea084` passed the GitHub Actions `npm run check` workflow with **141/141 tests passing** (0 failed). Rebuilding from modular source produced an exact match to committed root `index.html` and `dist/mappo-0.1-dev.ui4b.html` (`git diff --exit-code` succeeded). CI run: https://github.com/xbwtyz/Mappo/actions/runs/44215804436. Native Firefox and the wider responsive/ultrawide graphical matrix have not been completed.

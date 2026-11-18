@@ -1,6 +1,6 @@
 # Mappo UI overhaul — goals and acceptance checklist
 
-Status: Phases 1–3 and 4A implemented; Phase 4B defensive workflows are implemented on the feature branch (`0.1-dev.ui4b`) with automated validation underway. Later phases remain planned. This document records the agreed direction and the refinements proposed after the mockup review. Further implementation follows discussion and approval.
+Status: Phases 1–3 and 4A–4B implemented on the feature branch (`0.1-dev.ui4b`). Phase 4B passed 141 automated tests and exact standalone-build parity; Phase 4 cross-workflow/browser review, Phases 5–7 and the later 3F inspector remain planned. This document records the agreed direction and the refinements proposed after the mockup review. Further implementation follows discussion and approval.
 
 Baseline: Mappo `0.1-dev.3e6`, project schema 9. The UI overhaul comes before the planned 3F building inspector. The first UI implementation build is `0.1-dev.ui1`; accepted city schema remains 9.
 
@@ -73,10 +73,10 @@ Phase 3 scope: the live Landscape list and inspector reuse the original water/te
 
 - [x] Move district name/color and connected block membership controls into the district inspector (4A).
 - [x] Keep neighborhood generation settings in Districts and district display switches in Layers (4A).
-- [ ] Group wall enablement, requested gates, tower spacing, and defense generation settings under Defenses.
-- [ ] Label local updates clearly: Apply district changes, Rebuild districts, and Update defenses.
-- [ ] Preserve geometry when applying district-only or defense-only changes, following the existing contracts.
-- [ ] Reuse the current district and fortification controllers and validators through modular UI adapters.
+- [x] Group wall enablement, requested gates, tower spacing, and defense generation settings under Defenses.
+- [x] Label local updates clearly: Apply district changes, Rebuild districts, and Update defenses.
+- [x] Preserve geometry when applying district-only or defense-only changes, following the existing contracts.
+- [x] Reuse the current district and fortification controllers and validators through modular UI adapters.
 
 Acceptance: local updates remain visibly distinct from a full city rebuild. District membership connectivity, gate/street connections, water/mountain openings, and scoped histories continue to work.
 
@@ -132,7 +132,8 @@ Work in the phase order above. Each phase is a reviewable implementation chunk. 
 - Phase 2: implemented with 129 passing automated tests and Chrome menu, recovery preview/cancel, layer and shared map-control checks.
 - Phase 3: implemented with 135 passing automated tests, focused final integration checks and Chrome creation, map/list selection, filters, removal/undo and explicit file-load checks.
 - Phase 4A: new Districts inventory with contextual district editing, using the existing controller, selection and scoped undo; automated suite passed (138 tests).
-- Phase 4B: grouped Defenses settings, pending-change guidance and explicit local update; awaits full regression verification before final acceptance.
+- Phase 4B: grouped Defenses settings, pending-change guidance and explicit local update; `npm run check` passed 141/141 tests on GitHub Actions. Root/index distribution parity checked by `git diff --exit-code`. Native Firefox and broader screen-size verification remain open for Phase 7.
+- Phase 4C next: review district/defense interactions together, scoped undo, validation feedback and explicit project/recovery round trips before closing the phase for review.
 - After the UI overhaul: resume the planned 3F building inspector within the new inspector architecture.
 
 Mark checkboxes complete only after the corresponding production behavior has been implemented and verified. A visual mockup alone does not complete an implementation goal.

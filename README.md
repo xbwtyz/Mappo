@@ -242,7 +242,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.ui3:** UI overhaul Phase 3 — unified landscape list, inline creation/contextual forms, map hits/highlights and portable landscape selection.
 - **0.1-dev.ui4a:** UI overhaul Phase 4A — selectable neighborhood inventory, contextual district editing, shared district history and explicit local district rebuild.
 - **0.1-dev.ui4b:** UI overhaul Phase 4B — scoped defensive settings, clear Update defenses action, live mutation preview and retained independent defense history.
-- **UI overhaul, Phase 4 integration onward:** Integration, draft feedback, readability and full workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
+- **UI overhaul, Phase 4 cross-workflow review onward:** Final district/defense integration review, draft feedback, readability and full workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 
