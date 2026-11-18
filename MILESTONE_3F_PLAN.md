@@ -1,6 +1,7 @@
 # Mappo Milestone 3F — Building Inspector
 
-Status: **3F-A implemented; checkpoint verification in progress. 3F-B–D not started**.
+Status: **3F-A complete and verified (`0.1-dev.3fa`); 3F-B–D not started**.
+3F-A verification: 177/177 Node tests, 16/16 browser cases, exact standalone parity. See [checkpoint QA](MILESTONE_3FA_QA.md).
 Branch: `feature/building-inspector-3f`, branched from `main` after the Phase 7 UI overhaul merge (`40e64fb`).
 Baseline: `0.1-dev.ui7d`; accepted city project schema **9** and optional workspace UI schema **1**.
 Owner approval: implement the four ordered checkpoints below, using incremental commits, tests, and a compiled standalone HTML after each. **Do not merge into `main`, tag a release, or publish GitHub Pages without explicit approval.**
