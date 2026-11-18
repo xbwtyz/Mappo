@@ -352,3 +352,12 @@
 .building-transform-panel #buildingPreviewCancel{border-color:#a9846c;color:#f0cfb8}
 .building-transform-panel p{margin:9px 0 1px;color:#b8d3d1;font-size:10px;line-height:1.5}
 @media(max-width:670px){.building-transform-panel{left:8px;top:auto;bottom:56px;width:min(262px,calc(100% - 18px));max-width:none;max-height:47%;padding:9px}.building-transform-values{gap:5px}.building-transform-values input{height:29px}}
+
+/* 3G-C: live preview validity and a disabled-until-validated apply gate. */
+.building-transform-actions #buildingPreviewApply{grid-column:1/-1;background:#266c63;border-color:#4eaba1;color:#fff;font-weight:750}
+.building-transform-actions #buildingPreviewApply:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.7)}
+.building-preview-issues{margin:5px 0 2px;padding-left:16px;color:#efbbaa;line-height:1.4}
+.building-preview-issues li+li{margin-top:3px}
+.building-transform-panel[data-validation="invalid"]{border-color:#c67c67}
+.building-transform-panel[data-validation="valid"]{border-color:#4eafa3}
+.building-transform-panel[data-validation="checking"]{border-color:#c2a66c}

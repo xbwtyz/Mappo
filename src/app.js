@@ -80,6 +80,7 @@ import {
   OutlineEditor,
   makeStartingOutline
 } from './editor/outline.js';
+import { inspectBuildingPreview, prepareBuildingApply } from './editor/building-application.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
@@ -208,14 +209,78 @@ function syncBuildingTransformUI() {
   })) $(id).value = Number(value.toFixed(2)).toString();
   for (const tool of ['Move','Rotate','Resize'])
     $('buildingTool'+tool).setAttribute('aria-pressed',String(session.tool===tool.toLowerCase()));
-  $('buildingPreviewStatus').textContent = session.isPending
-    ? 'UNSAVED PREVIEW · No city changes. Leaving or switching buildings discards this draft.'
-    : 'Preview only. Nothing is applied or saved. Select Move, Rotate or Resize.';
+  const result = session.isPending
+    ? inspectBuildingPreview(project,session.buildingId,t,Boolean(session.drag))
+    : {ok:false,status:'idle',issues:[]};
+  session.validation = result;
+  const eligible = session.isPending && !session.drag && result.status==='valid';
+  $('buildingPreviewApply').disabled = !eligible;
+  $('buildingTransformPanel').setAttribute('data-validation',result.status);
+  const issues = $('buildingPreviewIssues');
+  issues.hidden = !result.issues.length;
+  issues.replaceChildren(...result.issues.map(issue=>{
+    const li=document.createElement('li');
+    li.textContent=issue.message;
+    return li;
+  }));
+  $('buildingPreviewStatus').textContent = !session.isPending
+    ? 'Choose Move, Rotate or Resize. Only a validated, changed building can be applied.'
+    : result.status==='checking'
+      ? 'CHECKING · Fast geometry check complete; road access is verified when the drag ends.'
+      : result.ok
+        ? 'VALID PLACEMENT · Ready to Apply to City. Project compatibility will be rechecked.'
+        : 'INVALID PLACEMENT · Apply is disabled. Adjust the preview to resolve the issues below.';
 }
 function confirmBuildingPreviewDiscard() {
   if (!buildingEditSession?.isPending) return true;
   return typeof window.confirm !== 'function' || window.confirm('Discard the unsaved building preview? The city remains unchanged.');
 }
+function applyBuildingTransform() {
+  const session=buildingEditSession;
+  if (!project || !session?.isActive || !session.isPending || session.drag
+      || workspaceShell.state.selection?.kind !== 'building'
+      || workspaceShell.state.selection.id !== session.buildingId) return false;
+  const previous=project;
+  const buildingId=session.buildingId, transform={...session.transform};
+  let received;
+  try {
+    // Fresh computation. Never trust stale status from an earlier drag frame.
+    received=prepareBuildingApply(previous,captureWorkspace().workspace,buildingId,transform);
+    if(!received.ok){
+      const issues=received.issues??[];
+      session.validation=received;
+      $('buildingPreviewApply').disabled=true;
+      $('buildingTransformPanel').setAttribute('data-validation','invalid');
+      $('buildingPreviewStatus').textContent='CANNOT APPLY · '+(issues[0]?.message??'Preview was rejected.');
+      const list=$('buildingPreviewIssues');
+      list.hidden=!issues.length;
+      list.replaceChildren(...issues.map(issue=>{
+        const li=document.createElement('li');
+        li.textContent=issue.message;return li;
+      }));
+      requestDraw();
+      return false;
+    }
+    // Commit one already-validated project object, preserving IDs and the
+    // existing schema. Record and UI updates cannot affect pre-commit checks.
+    if(project!==previous || session.buildingId!==buildingId) return false;
+    project=received.candidate;
+    session.reset();
+    updateDetails();
+    workspaceShell.refresh();
+    requestDraw();
+    workspaceChanged(); // Mark the accepted city dirty for recovery/save.
+    $('statusMessage').textContent='Applied validated footprint to '+buildingId+'. Download a project copy to keep this change.';
+    return true;
+  } catch(error){
+    project=previous;
+    $('buildingPreviewApply').disabled=true;
+    $('buildingPreviewStatus').textContent='APPLY FAILED · Original city preserved. '+error.message;
+    requestDraw();
+    return false;
+  }
+}
+
 function exitBuildingEditing() {
   if (!buildingEditSession?.isActive) return true;
   if (!confirmBuildingPreviewDiscard()) return false;
@@ -233,7 +298,7 @@ function updateMapIndicators() {
   canvas.classList.toggle('building-edit-mode', buildingActive);
   canvas.classList.toggle('drawing', Boolean(terrainActive || waterActive || editor.mode !== 'pan'));
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!terrainActive && !waterActive && editor.mode === mode));
-  $('toolHint').textContent = buildingActive ? 'BUILDING PREVIEW · Move, Rotate or Resize · Space/middle drag pans · Escape discards · No geometry changes are saved' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+  $('toolHint').textContent = buildingActive ? 'BUILDING EDIT · Move, Rotate, Resize · Space/middle drag pans · No geometry changes until validated Apply' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
   $('draftBadge').textContent = buildingActive ? '● BUILDING EDIT MODE' : editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
 }
 
@@ -766,6 +831,7 @@ $('buildingPreviewReset').addEventListener('click',()=>{
   if (confirmBuildingPreviewDiscard()) buildingEditSession.reset();
 });
 $('buildingPreviewCancel').addEventListener('click',exitBuildingEditing);
+$('buildingPreviewApply').addEventListener('click',applyBuildingTransform);
 
 const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
 // An editor cannot receive map input unless its section is visible.

@@ -15,17 +15,18 @@
 | 3F-C | Complete; merged | Custom identity for properties and buildings |
 | 3F-D | Complete; merged | Portable validated Inspector selection and integration QA |
 | 3G-A | Complete; merged | Visual-only Building Edit Mode and same-property targeting |
+| 3G-B | Complete; merged | Non-destructive move, rotate and resize previews |
 
-**Stable public release:** `0.1-dev.3ga` from [merged PR #6](https://github.com/xbwtyz/Mappo/pull/6). **3G-B preview:** `0.1-dev.3gb` on `feature/building-transform-3gb`, awaiting explicit merge approval.
+**Stable public release:** `0.1-dev.3gb` from [merged PR #7](https://github.com/xbwtyz/Mappo/pull/7). **3G-C preview:** `0.1-dev.3gc` on `feature/building-validation-3gc`, awaiting explicit merge approval.
 
 ## Next proposal: Milestone 3G — Building footprint editing
 
 - **3G-A:** Complete and merged — temporary building selection/edit context. [3G-A QA](history/3g/MILESTONE_3GA_QA.md).
-- **3G-B:** Implemented in the pending feature branch: preview-only move, rotate, resize, precise numerical controls, cancellation and browser QA. **No accepted geometry modifications or saved transformations.** [3G-B QA](history/3g/MILESTONE_3GB_QA.md).
-- **3G-C:** Enforce property containment, non-overlap and valid editing feedback.
+- **3G-B:** Complete and merged — preview-only move, rotate, resize and precise controls. [3G-B QA](history/3g/MILESTONE_3GB_QA.md).
+- **3G-C:** Implemented on the pending feature branch — polygon validity, containment/collision checks, plot references, frontage reconstruction, live feedback and atomic Apply after schema-9 save/load verification. [3G-C QA](history/3g/MILESTONE_3GC_QA.md).
 - **3G-D:** Scoped Undo, portable persistence, backward compatibility and compiled/browser QA.
 
-**3G-A is merged and 3G-B was approved for implementation.** 3G-C and 3G-D remain separate proposals requiring approval. Protect property-first selection, accepted geometry, record relationships, compatibility and standalone distribution.
+**3G-B is merged; 3G-C implementation was approved.** 3G-D remains a future proposal requiring separate approval. Protect property-first selection, record identities, schema-9 compatibility and historical distributions.
 
 ## Later ideas, not committed schedules
 

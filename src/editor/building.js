@@ -131,6 +131,7 @@ export class BuildingEditSession {
     const old = this.drag;
     this.drag = null;
     if (cancelled) this.setTransform(old.initial);
+    else this.changed(); // Recheck full project/road validation when a gesture ends.
     return true;
   }
 }

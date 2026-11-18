@@ -140,6 +140,14 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.ok(await page.evaluate(() => __buildingQA.state().buildingEditSession.transform.scaleX>1.1));
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
       assert.ok(await page.evaluate(() => __buildingQA.state().buildingEditSession.isPending));
+      // 3G-C: invalid geometry is editable, but Apply must be disabled.
+      await page.locator('#buildingOffsetX').fill('-10000');
+      await page.locator('#buildingOffsetX').press('Tab');
+      assert.equal(await page.locator('#buildingPreviewApply').isDisabled(), true);
+      assert.match(await page.locator('#buildingPreviewStatus').innerText(),/INVALID PLACEMENT/);
+      assert.ok(await page.locator('#buildingPreviewIssues li').count() > 0);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
+      await page.screenshot({ path: new URL(`${label}-building-invalid.png`, output).pathname });
       await page.screenshot({ path: new URL(`${label}-building-preview.png`, output).pathname });
       page.once('dialog',dialog=>dialog.accept());
       await page.locator('#buildingPreviewReset').click();

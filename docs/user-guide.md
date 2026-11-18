@@ -1,6 +1,6 @@
 # Mappo User Guide
 
-**Version:** `0.1-dev.3gb` · [Stable published app](https://xbwtyz.github.io/Mappo/) · [Standalone HTML](../dist/mappo-0.1-dev.3gb.html) · [Docs index](README.md)
+**Version:** `0.1-dev.3gc` · [Stable published app](https://xbwtyz.github.io/Mappo/) · [Standalone HTML](../dist/mappo-0.1-dev.3gc.html) · [Docs index](README.md)
 
 Mappo opens directly from its HTML file with no server. Portable project downloads are the recommended backup.
 
@@ -32,13 +32,15 @@ Expand **Edit property identity** or **Edit building identity**. Enter a name, c
 
 Properties and buildings have independent identities, including separate compound wings. Applied names/uses survive save/load, but identity drafts and the 20-step **Undo identity** history are **session-only**. Full city regeneration may replace building IDs and discard identities; Mappo warns before this happens. Local district/defense updates retain them.
 
-### Building Edit Mode (3G-B preview)
+### Building Edit Mode (3G-C preview)
 
 In the Property Inspector, choose a linked building, then click **Edit building footprint**. A turquoise preview outline appears, plus a floating **Building Preview** control panel. Choose **Move** and drag inside the active roof; **Rotate** and drag the circular angle handle; or **Resize** and drag a corner/edge square. You can also enter precise **X/Y offsets**, **Angle (degrees)**, **Width** and **Depth** in survey units. The preview transforms courtyard holes, entrances and access paths together but never changes the accepted city. Switch to another roof on the same property to start a fresh preview; clicking elsewhere does not steal focus. Space + drag or middle-button drag still pans, and scrolling zooms.
 
 Choose **Reset preview** to return the ghost to its original footprint, or **Cancel preview** to discard it and leave editing. **Exit building editing**, Escape, Back to property, switching workspaces/tools, hiding Buildings, regeneration and project load also leave editing. The panel warns that an unfinished preview is unsaved; explicit exit/reset or switching building asks for confirmation. Automatic project transitions discard the preview only, not accepted city data. A saved project retains the normal Inspector selection but **never** a preview.
 
-**Important: 3G-B transforms are only visual drafts.** A moved/rotated/resized preview may cross property boundaries, overlap neighboring buildings, or look disconnected from its frontage. You cannot apply it to the city or preserve it in a portable project. Validated application begins in 3G-C; Undo and persistence are planned for 3G-D.
+**3G-C validates edits before accepting them.** The preview outline turns green for a valid edit and red for a problem; the validation panel describes collisions, property boundary errors, courtyard problems and blocked street access. **Apply to City** is enabled only when the changed footprint passes validation. Applying rechecks the entire schema-9 project and its portable save/load round trip before making one atomic city update. Changed plot references, area, entrance and frontage access path are reconciled. An invalid preview stays editable; Reset or Cancel never changes the accepted city.
+
+Applied edits are part of the accepted project and can be preserved with **Project → Download project** and compatible browser recovery. The transformation preview itself is *never* saved. **Dedicated geometry Undo/Redo is not available yet** (planned for 3G-D); save a backup before experimenting with permanent changes.
 
 ## 4. Landscape tools
 
@@ -67,6 +69,6 @@ Portable files retain accepted geometry, applied identities, editor state, camer
 
 ## 7. Known limits
 
-Applying building transformations (including property containment, overlap checks, entrance/access consistency and persistence), placing/replacing buildings, PNG export and 3D visualization are not implemented yet. See [Roadmap](ROADMAP.md).
+Dedicated building geometry Undo/Redo, placing/replacing buildings, PNG export and 3D visualization are not implemented yet. See [Roadmap](ROADMAP.md).
 
 The [archived complete 3F-D README](history/README-pre-cleanup-3fd.md) includes more extensive feature notes and historical milestone descriptions.
