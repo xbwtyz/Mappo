@@ -384,7 +384,7 @@
 }
 
 /* 3I-A: bounded, non-destructive property preview tools. */
-.property-edit-panel-3i{left:16px;right:auto;top:62px;border-color:#428f84}
+.property-edit-panel-3i{z-index:14;left:16px;right:auto;top:62px;border-color:#428f84}
 .property-edit-panel-3i .building-transform-actions #propertyEditApply3I{grid-column:1/-1;background:#266c63;border-color:#4eaba1;color:#fff}
 .property-edit-panel-3i .building-transform-actions #propertyEditApply3I:disabled{opacity:.45;cursor:not-allowed}
 .property-edit-panel-3i #propertyEditCancel3I{border-color:#a9846c;color:#f0cfb8}
