@@ -1,6 +1,6 @@
 # Mappo UI overhaul — goals and acceptance checklist
 
-Status: Phases 1–6 are merged into `main`. Approved Phase 7 is underway on `feature/ui-phase-7`; 7A inventories all 93 interactive controls from 3E.6 against the current template, with integration, graphical QA and release readiness still to verify. Project schema remains 9.
+Status: Phases 1–6 are merged into `main`. Approved Phase 7 is underway on `feature/ui-phase-7`; 7A passed 163/163 tests, and 7B adds full save/recovery/undo integration coverage. Graphical QA and final release readiness remain to verify. Project schema remains 9.
 
 Baseline: Mappo `0.1-dev.3e6`, project schema 9. The UI overhaul comes before the planned 3F building inspector. The first UI implementation build is `0.1-dev.ui1`; accepted city schema remains 9.
 
@@ -111,7 +111,7 @@ Acceptance: the workspace is readable and navigable across supported layouts, an
 
 ## Phase 7 — Integration, regression checks, and release
 
-- [ ] Check the complete old-to-new control inventory against the working 3E.6 build.
+- [x] Check the complete old-to-new control inventory against the working 3E.6 build (93/93 retained; automated 7A check).
 - [ ] Add focused UI/state tests for navigation, selection, tool routing, panel behavior, draft counts, undo scope, and workspace round trips.
 - [ ] Run the existing geometry, water, terrain, district, defense, and persistence regression suite with `npm run check`.
 - [ ] Exercise the actual standalone HTML through outline editing, all landscape types, crossings, local updates, full rebuilds, save/load, and recovery.
