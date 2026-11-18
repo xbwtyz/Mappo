@@ -109,3 +109,12 @@
 - [ ] Change grouping, order, or contents before any code work.
 
 **Current release dependency at time of plan:** `main` is `0.1-dev.3ie`; Dev 4a is in draft [PR #12](https://github.com/xbwtyz/Mappo/pull/12), and its latest CI run [#44405883390](https://github.com/xbwtyz/Mappo/actions/runs/44405883390) failed the Chromium/Firefox phone browser matrix because the Inspector intercepted the Redo Delete control. This is a release blocker, **not** permission to repair or merge Dev 4a in this planning task.
+
+## Approved execution status — November 18, 2026
+
+The owner explicitly approved this roadmap and authorized finishing Dev 4a QA and beginning Dev 4b.
+
+- [x] Dev 4a mobile Inspector/Redo fix committed. [CI run #274](https://github.com/xbwtyz/Mappo/actions/runs/44409261226) passed Node, compiled HTML parity, and Chromium/Firefox browser QA.
+- [ ] Dev 4a [PR #12](https://github.com/xbwtyz/Mappo/pull/12) requires separate merge authorization and remains unmerged.
+- [x] Owner-authorized Dev 4b work started on the independent `feature/dev4-map-interaction` branch from stable merged 3I. [Draft PR #14](https://github.com/xbwtyz/Mappo/pull/14) contains map highlights, Inspector focus, readability and responsive refinements.
+- [ ] Merge the separately approved Dev 4a first; integrate its changes into Dev 4b, rebuild and rerun Dev 4b CI before any Dev 4b merge approval.
