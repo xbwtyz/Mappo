@@ -1,0 +1,111 @@
+import { polygonSignedArea } from '../core/geometry.js';
+import { shapeWellFormed, shapeContained, shapesOverlapInterior } from '../core/building-validation.js';
+import { segmentDistance, STREET_WIDTHS, STREET_EDGE_WIDTH, PROPERTY_SETBACK } from '../core/placement.js';
+import { propertyGeometryPreview3I, propertyLocalBounds3I } from '../core/property-geometry.js';
+import { deriveOccupiedPlots } from './building-application.js';
+import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
+import { validateStoredProject } from '../data/project-validation.js';
+
+const giCross=(a,b,c)=>(b.x-a.x)*(c.y-b.y)-(b.y-a.y)*(c.x-b.x);
+const giConvex=points=>points.length===4&&points.every((p,i)=>giCross(p,points[(i+1)%4],points[(i+2)%4])>1e-7);
+const giIssue=(issues,code,message,targetId=null)=>issues.push({code,message,targetId});
+const giSame=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+
+// Pure inspect-on-every-preview; no mutation or JSON save/round-trip until Apply.
+export function inspectPropertyEdit3I(project,session){
+  const issues=[], city=project?.city, property=session?.source(city);
+  if(!session?.isActive||!city||!property){
+    giIssue(issues,'selection','The selected property is no longer available.');
+    return {ok:false,status:'invalid',issues,preview:null};
+  }
+  let preview=null;
+  try{preview=propertyGeometryPreview3I(city,property.id,session.boundary,session.dividers);}
+  catch(error){
+    giIssue(issues,'subdivision',error.message);
+    return {ok:false,status:'invalid',issues,preview:null};
+  }
+  const polygon=preview.boundary;
+  if(!shapeWellFormed(polygon)||!giConvex(polygon))
+    giIssue(issues,'shape','Property must remain a non-self-intersecting convex four-corner parcel.');
+  const block=city.blocks.find(b=>b.id===property.blockId);
+  const nodes=new Map(city.nodes.map(n=>[n.id,n]));
+  const blockBoundary=block?.vertices.map(id=>nodes.get(id));
+  if(!blockBoundary?.every(Boolean)||!shapeContained(polygon,blockBoundary))
+    giIssue(issues,'block','Property extends beyond its parent street block.',property.blockId);
+  if(blockBoundary?.every(Boolean)){
+    const edgeRoads=new Map(city.roads.map(r=>[[r.a,r.b].sort().join(':'),r]));
+    for(let i=0;i<block.vertices.length;i++){
+      const road=edgeRoads.get([block.vertices[i],block.vertices[(i+1)%block.vertices.length]].sort().join(':'));
+      if(!road||!Object.hasOwn(STREET_WIDTHS,road.kind)){
+        giIssue(issues,'frontage','The street edge could not be resolved.');break;
+      }
+      const margin=(STREET_WIDTHS[road.kind]+STREET_EDGE_WIDTH)/2+PROPERTY_SETBACK;
+      for(let j=0;j<polygon.length;j++){
+        if(segmentDistance(polygon[j],polygon[(j+1)%polygon.length],
+            blockBoundary[i],blockBoundary[(i+1)%blockBoundary.length])<margin-1e-5){
+          giIssue(issues,'setback','Property crosses the required setback from street '+road.id+'.',road.id);
+          break;
+        }
+      }
+    }
+  }
+  for(const neighbor of city.properties){
+    if(neighbor.id===property.id||neighbor.blockId!==property.blockId)continue;
+    if(shapesOverlapInterior(polygon,neighbor.boundary)){
+      giIssue(issues,'neighbor','Property overlaps neighboring '+neighbor.id+'.',neighbor.id);
+      break;
+    }
+  }
+  for(const plot of preview.plots){
+    if(!shapeWellFormed(plot.boundary)||!giConvex(plot.boundary)){
+      giIssue(issues,'plot','A plot subdivision is too narrow, reversed, or non-convex.',plot.id);break;
+    }
+  }
+  if(Math.abs(preview.area-preview.total)>.02)
+    giIssue(issues,'tiling','Plot subdivisions do not completely cover the property.');
+  for(const building of city.buildings){
+    if(building.propertyId!==property.id)continue;
+    if(!shapeContained(building.footprint,polygon)){
+      giIssue(issues,'building','Building '+building.id+' would extend outside the edited property.',building.id);
+      break;
+    }
+  }
+  return {ok:issues.length===0,status:issues.length?'invalid':'valid',issues,preview};
+}
+
+// Apply is one transaction: entire project cloned; parent, plots, building-to-
+// plot links and open-space area reconciled; schema+portable checks gate commit.
+export function preparePropertyApply3I(project,workspace,session){
+  const inspected=inspectPropertyEdit3I(project,session);
+  if(!inspected.ok)return {...inspected,candidate:null};
+  if(!session.isPending)return {ok:false,status:'unchanged',issues:[{code:'unchanged',message:'The property preview has no changes to apply.'}],preview:inspected.preview,candidate:null};
+  try{
+    const candidate=copyJson(project),city=candidate.city;
+    const original=city.properties.find(p=>p.id===session.propertyId);
+    const preview=inspected.preview;
+    original.boundary=copyJson(preview.boundary);
+    original.frontage=copyJson([preview.boundary[0],preview.boundary[1]]);
+    original.area=polygonSignedArea(preview.boundary);
+    original.local=propertyLocalBounds3I(original,preview.boundary);
+    for(const row of preview.plots){
+      const plot=city.plots.find(p=>p.id===row.id);
+      if(!plot||plot.propertyId!==original.id)throw new Error('The original plot ownership changed.');
+      plot.boundary=copyJson(row.boundary);
+    }
+    for(const building of city.buildings){
+      if(building.propertyId!==original.id)continue;
+      building.plotIds=deriveOccupiedPlots(city,original,building);
+      if(!building.plotIds.length)throw new Error('Edited plots no longer contain building '+building.id+'.');
+    }
+    const open=city.openSpaces.find(record=>record.blockId===original.blockId);
+    const block=city.blocks.find(record=>record.id===original.blockId);
+    if(open&&block)
+      open.area=Math.max(0,block.area-city.properties.filter(p=>p.blockId===block.id).reduce((sum,p)=>sum+p.area,0));
+    validateStoredProject(candidate);
+    const saved=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
+    if(!giSame(candidate.city,saved.project.city))throw new Error('Portable project round-trip altered the accepted geometry.');
+    return {ok:true,status:'valid',issues:[],preview,candidate:saved.project};
+  }catch(error){
+    return {ok:false,status:'invalid',issues:[{code:'project',message:'Property edit rejected: '+error.message}],preview:inspected.preview,candidate:null};
+  }
+}
