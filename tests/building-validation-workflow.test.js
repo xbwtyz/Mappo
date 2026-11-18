@@ -47,8 +47,10 @@ test('3G-C4 validated Apply commits once, preserves IDs and persists schema-9 sa
   const beforeRevision=app.state().files.revision;
   assert.equal(session.setTransform(entry.transform),true);
   assert.equal(app.el('buildingPreviewApply').disabled,false,app.el('buildingPreviewStatus').textContent);
+  const preflight=prepareBuildingApply(initial,app.capture().workspace,entry.building.id,entry.transform);
+  assert.equal(preflight.ok,true,JSON.stringify(preflight.issues));
   const result=app.el('buildingPreviewApply').handlers.click();
-  assert.equal(result,true);
+  assert.equal(result,true,app.el('buildingPreviewStatus').textContent);
   const updated=app.state().project,changed=updated.city.buildings.find(b=>b.id===entry.building.id);
   assert.equal(updated.schemaVersion,9);
   assert.equal(updated.city.buildings.length,initial.city.buildings.length);
