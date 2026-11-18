@@ -2,6 +2,9 @@ import {
   WorkspaceShell
 } from './ui/workspace.js';
 import {
+  WorkspaceMenus
+} from './ui/workspace-menus.js';
+import {
   registerWorkspaceInspectors
 } from './ui/workspace-inspectors.js';
 import {
@@ -75,6 +78,10 @@ let fortificationPanel;
 let waterPanel;
 let terrainPanel;
 let workspaceShell;
+const workspaceMenus = new WorkspaceMenus({
+  getElement: $
+});
+workspaceMenus.bind();
 const layers = {
   buildings: true,
   properties: false,
@@ -283,7 +290,7 @@ $('seedInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') generate();
 });
 window.addEventListener('keydown', e => {
-  if (['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(document.activeElement?.tagName)) return;
+  if (e.defaultPrevented || ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'SUMMARY'].includes(document.activeElement?.tagName)) return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
     e.preventDefault();
     if (terrainPanel && terrainPanel.editor.mode !== 'pan') terrainPanel.editor.undo();
@@ -710,7 +717,8 @@ function applyProjectDocument(document) {
 files = new ProjectFiles({
   getElement: $,
   capture: captureWorkspace,
-  apply: applyProjectDocument
+  apply: applyProjectDocument,
+  onStatus: state => workspaceMenus.projectStatus(state)
 });
 files.bind();
 files.start();

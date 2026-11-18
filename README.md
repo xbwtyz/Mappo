@@ -2,13 +2,15 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.ui1 — Workspace shell and navigation
+## Current build: 0.1-dev.ui2 — City, Project and Layers organization
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui1.html`](dist/mappo-0.1-dev.ui1.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui2.html`](dist/mappo-0.1-dev.ui2.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### UI overhaul: Phase 1
+### UI overhaul: Phases 1–2
+
+Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) lists the new homes of the existing controls.
 
 The working editor now opens in **City**, with **Landscape**, **Districts** and **Defenses** tabs showing one tool section at a time. Use the arrow buttons to collapse the tools or inspector; the live map takes the available space. **Tools** and **Inspector** buttons reopen the panels. **Generate city** stays available beneath the active tools.
 
@@ -16,7 +18,7 @@ The inspector opens when you select a district on the map or activate/select an 
 
 Switching sections stops tools whose controls are being hidden while preserving completed drafts, history, pending inputs and the accepted city. An in-progress gesture is cancelled through its original editor. Panel collapse resizes the Canvas without changing the city or camera position/zoom. Shell layout preferences are runtime state in this phase; their portable persistence is planned for Phase 6. Existing project saves and recovery still restore their original city geometry and editor drafts.
 
-See [UI_OVERHAUL_PLAN.md](UI_OVERHAUL_PLAN.md) for completed Phase 1 goals and the next review checkpoint, and [WORKSPACE_UI.md](WORKSPACE_UI.md) for the modular shell/inspector architecture.
+See [UI_OVERHAUL_PLAN.md](UI_OVERHAUL_PLAN.md) for completed Phase 1–2 goals and the next review checkpoint, and [WORKSPACE_UI.md](WORKSPACE_UI.md) for the modular shell/inspector architecture.
 
 ### Workflow
 
@@ -204,7 +206,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui1.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui2.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -232,7 +234,8 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3e5:** Multiple independently editable lakes, closed shoreline guidance, inland access streets and schema-8 compatibility.
 - **0.1-dev.3e6:** Editable mountain ranges around/inside the city, ridge peaks, connected road passes and schema-9 compatibility.
 - **0.1-dev.ui1:** UI overhaul Phase 1 — modular workspace shell, section navigation, collapsible panels and extensible selection summaries.
-- **UI overhaul, Phases 2–7:** Control organization, landscape list, full contextual editing, readability and workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
+- **0.1-dev.ui2:** UI overhaul Phase 2 — compact City controls, expandable seeds, shared Project/Layers menus and map navigation.
+- **UI overhaul, Phases 3–7:** Control organization, landscape list, full contextual editing, readability and workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 

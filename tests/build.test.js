@@ -23,7 +23,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui1.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui2.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -404,7 +404,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
 test('standalone app downloads, previews and restores complete projects and recovers them after a reload', async () => {
   const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
   const originalScript = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
-  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel, waterPanel, terrainPanel, workspaceShell });\n})();');
+  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel, waterPanel, terrainPanel, workspaceShell, workspaceMenus });\n})();');
   const memory = new Map(),
     downloaded = [];
   const storage = {
@@ -580,6 +580,8 @@ test('standalone app downloads, previews and restores complete projects and reco
   });
   assert.equal(first.state().project.city.name, 'Replace this temporary city');
   assert.equal(first.el('loadPreview').hidden, false);
+  assert.equal(first.el('projectMenu').hidden, false, 'Validated preview is revealed in the shared Project menu');
+  assert.equal(first.el('projectMenuAttention').hidden, false);
   assert.equal(await first.el('openProjectButton').handlers.click(), true);
   assert.deepEqual(copy(first.state().project), expectedProject);
   assert.deepEqual(copy(first.state().editor.snapshot()), expectedDraft);
@@ -593,6 +595,7 @@ test('standalone app downloads, previews and restores complete projects and reco
   const beforeReload = [...memory.values()][0];
   const reloaded = await app();
   assert.equal(reloaded.state().files.suspended, true);
+  assert.equal(reloaded.el('projectMenuAttention').hidden, false, 'Recovery choice is visible on the shared Project button');
   assert.equal([...memory.values()][0], beforeReload);
   reloaded.el('restoreRecoveryButton').handlers.click();
   assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
@@ -608,6 +611,8 @@ test('standalone app downloads, previews and restores complete projects and reco
   });
   assert.deepEqual(copy(reloaded.state().project), loadedBefore);
   assert.match(reloaded.el('fileStatus').textContent, /standalone HTML/);
+  assert.equal(reloaded.state().workspaceMenus.active, 'project');
+  assert.equal(reloaded.el('projectMenu').hidden, false);
   const legacyText = await readFile(resolve(root, 'tests/fixtures/save-3b1-format1-schema2.json'), 'utf8');
   const legacyCity = JSON.parse(legacyText).project.city;
   await reloaded.state().files.stageFile({

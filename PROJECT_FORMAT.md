@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current release is **0.1-dev.ui1**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current release is **0.1-dev.ui2**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.ui1",
+  "appVersion": "0.1-dev.ui2",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -195,3 +195,5 @@ The optional `workspace.terrainEditor` stores independent terrain definitions, a
 ## UI overhaul Phase 1
 
 The workspace shell adds runtime-only navigation, panel visibility/pinning and inspector selection. It does not add fields to project schema 9 or workspace schema 1. Geometry, draft controls and editor histories retain their existing save contracts. Loading an existing water/terrain editing mode reveals Landscape; a restored district selection can open its inspector, while an active outline tool reveals City. Persisting shell preferences is deferred to the approved later UI phase and will require explicit workspace validation and compatibility tests.
+
+UI Phase 2 (`0.1-dev.ui2`) changes control placement without adding schema fields. Project loading/recovery still stages a validated document and requires Open project. The existing camera, all seven visibility fields and pending generation inputs round-trip through their original workspace fields; new menu and generation-disclosure visibility is runtime-only.

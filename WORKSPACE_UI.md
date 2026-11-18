@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui1` build implements Phase 1 of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui2` build implements Phases 1–2 of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -8,6 +8,7 @@ The `0.1-dev.ui1` build implements Phase 1 of `UI_OVERHAUL_PLAN.md` around the e
 | --- | --- |
 | `core/workspace-state.js` | Four section definitions, pure navigation/selection transitions and derived inspector visibility |
 | `ui/workspace.js` | Tabs, panel collapse/pinning, focus routing, layout-change notification and generic inspector rendering |
+| `ui/workspace-menus.js` | Shared nonmodal Project/Layers panels, focus/dismissal and project-status attention adapter |
 | `ui/workspace-inspectors.js` | Read-only adapters from current district/water/terrain records to inspector descriptors |
 | `app.js` | Connect existing editors to shell selection, cancel tools leaving a section and resize the live Canvas |
 | `index.template.html` | Stable DOM controls grouped under four tabpanels, inspector slots and shared generation action |
@@ -34,3 +35,9 @@ Current providers resolve district selection, water tool/feature selection and m
 This phase adds no persisted shell fields and keeps project schema 9, workspace schema 1 and container format 1. Existing city geometry, unfinished drafts, controls and editor histories continue to load/save unchanged. Restored active editor modes reveal the corresponding controls; new workspace navigation defaults remain sensible for older files. Phase 6 owns portable shell preferences.
 
 Focused tests cover initial state, tab visibility/focus, panel collapse, selection/pinning, invalidated records, reusable providers, safe text rendering and read-only record adapters. The compiled app checks completed draft/history/input preservation across all sections, cancellation of an in-progress water gesture, real inspector selection, pin/clear behavior and save/load compatibility. Graphical Chrome checks cover actual Canvas resizing and absence of page overflow with both side panels collapsed. Native Firefox and the wider responsive/ultrawide matrix remain later verification checkpoints.
+
+## Phase 2 organization
+
+`WorkspaceMenus` manages presentation only: one open menu, keyboard entry, Escape/outside/focus dismissal and safe focus transfer. `ProjectFiles.onStatus` reports existing validated-load/recovery/error state; it does not delegate file parsing, applying or persistence to the menu. New staged previews and errors reveal Project even after asynchronous file selection. Passive recovery/status updates mark the opener without repeatedly reopening dismissed previews.
+
+All seven existing visibility controls move intact to Layers, retaining their IDs, render bindings and saved workspace fields. The original combined Select/Pan control moves to the shared map rail alongside Fit and zoom. Seeds and optional City shapes use native details/summary controls. Summary keyboard activation is excluded from map shortcuts. New menu/disclosure state stays runtime-only until Phase 6. See [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) for the full control-family inventory.

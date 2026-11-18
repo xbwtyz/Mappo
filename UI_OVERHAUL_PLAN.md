@@ -1,6 +1,6 @@
 # Mappo UI overhaul — goals and acceptance checklist
 
-Status: Phase 1 implemented in `0.1-dev.ui1`; Phases 2–7 remain planned. This document records the agreed direction and the refinements proposed after the mockup review. Further implementation follows discussion and approval.
+Status: Phases 1–2 implemented; current build `0.1-dev.ui2`. Phases 3–7 remain planned. This document records the agreed direction and the refinements proposed after the mockup review. Further implementation follows discussion and approval.
 
 Baseline: Mappo `0.1-dev.3e6`, project schema 9. The UI overhaul comes before the planned 3F building inspector. The first UI implementation build is `0.1-dev.ui1`; accepted city schema remains 9.
 
@@ -39,16 +39,18 @@ Phase 1 scope: existing editing forms remain in their respective sections. Inspe
 
 ## Phase 2 — City, Project, and Layers organization
 
-- [ ] Put outline, center, street pattern, and density controls together under City.
-- [ ] Keep drawing methods and starting-shape presets easy to discover without exposing every option at once.
-- [ ] Move seeds and less-used generation options into expandable Generation settings sections.
-- [ ] Move Download project, Load project, and recovery/backup actions into a Project menu.
-- [ ] Retain validated load preview and explicit Open project behavior.
-- [ ] Consolidate building, property, plot, district, and fortification visibility settings into one Layers menu.
-- [ ] Keep Select, Pan, Fit, and zoom accessible from every section.
-- [ ] Replace decorative sidebar headlines and repeated paragraphs with concise labels and active-tool guidance.
+- [x] Put outline, center, street pattern, and density controls together under City.
+- [x] Keep drawing methods and starting-shape presets easy to discover without exposing every option at once.
+- [x] Move seeds and less-used generation options into expandable Generation settings sections.
+- [x] Move Download project, Load project, and recovery/backup actions into a Project menu.
+- [x] Retain validated load preview and explicit Open project behavior.
+- [x] Consolidate building, property, plot, district, and fortification visibility settings into one Layers menu.
+- [x] Keep Select, Pan, Fit, and zoom accessible from every section.
+- [x] Replace decorative sidebar headlines and repeated paragraphs with concise labels and active-tool guidance.
 
 Acceptance: users can shape the city, manage files, and change visibility without searching a long sidebar. Every existing option has a documented new home and retains its current behavior.
+
+Phase 2 scope: the City panel is compact, seeds live in local expandable settings, Project is a shared top-bar menu, all seven visibility fields share Layers, and the map rail exposes the existing combined Select/Pan interaction, Fit and zoom. The validated file preview and explicit Open project are unchanged. See [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) for every existing control family's new home.
 
 ## Phase 3 — Landscape list and selection inspector
 
@@ -125,7 +127,8 @@ Work in the phase order above. Each phase is a reviewable implementation chunk. 
 
 - Planning/documentation: committed reference checklist.
 - Phase 1: implemented with focused workspace tests, the existing regression suite and Chrome graphical checks; native Firefox verification remains pending.
-- Next discussion: Phase 2 City/Project/Layers organization.
+- Phase 2: implemented with 129 passing automated tests and Chrome menu, recovery preview/cancel, layer and shared map-control checks.
+- Next discussion: Phase 3 Landscape list and selection inspector.
 - After the UI overhaul: resume the planned 3F building inspector within the new inspector architecture.
 
 Mark checkboxes complete only after the corresponding production behavior has been implemented and verified. A visual mockup alone does not complete an implementation goal.

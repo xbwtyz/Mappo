@@ -21,7 +21,8 @@ export class ProjectFiles {
     download = downloadProjectText,
     clock = () => new Date().toISOString(),
     delay = 800,
-    timers = globalThis
+    timers = globalThis,
+    onStatus = () => {}
   }) {
     this.$ = getElement;
     this.capture = capture;
@@ -31,6 +32,7 @@ export class ProjectFiles {
     this.clock = clock;
     this.delay = delay;
     this.timers = timers;
+    this.onStatus = onStatus;
     this.base = null;
     this.store = null;
     this.timer = null;
@@ -50,6 +52,12 @@ export class ProjectFiles {
   status(message, error = false) {
     this.$('fileStatus').textContent = message;
     this.$('fileStatus').classList.toggle('error', error);
+    this.onStatus({
+      message,
+      error,
+      pending: this.pending,
+      recovery: this.suspended && !this.$('recoveryChoice').hidden
+    });
   }
   captureDocument() {
     const state = this.capture();

@@ -8,7 +8,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     travel = 0,
     tapPoint = null;
   window.addEventListener('keydown', e => {
-    if (e.code === 'Space' && !['INPUT', 'SELECT', 'BUTTON'].includes(document.activeElement?.tagName)) {
+    if (!e.defaultPrevented && e.code === 'Space' && !['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'SUMMARY'].includes(document.activeElement?.tagName)) {
       space = true;
       e.preventDefault();
     }

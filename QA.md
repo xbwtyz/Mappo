@@ -222,3 +222,9 @@ Automated coverage adds workspace navigation and accessibility state, provider r
 Graphical Chrome checks confirm City opens first, Landscape uses the working feature editors, adding a lake opens its live summary, an empty pinned inspector stays visible, unpinning collapses an empty inspector, and restoring/collapsing panels resizes the actual Canvas. Both collapsed panels give the Canvas the full map width without page overflow. Navigation controls retain visible selected/focus styling.
 
 Native Firefox verification and the wider desktop/ultrawide/narrow-screen matrix remain pending. Full inspector editing, a combined landscape feature list and persisted shell preferences are later phases, not part of this build.
+
+## UI overhaul Phase 2 (`0.1-dev.ui2`)
+
+All 129 automated tests passed. New tests cover shared menu keyboard/focus/dismissal behavior, asynchronous file-result visibility, recovery attention, and actual template ancestry/unique IDs for compact City, shared file/layer/map controls and expandable seeds. The compiled standalone workflow checks revealed load previews, explicit Open project, recovery and invalid-file errors alongside existing exact project/draft/history/input/layer restoration.
+
+Chrome checks verify the actual City layout, Project recovery staging/cancellation, shared Layers access from Defenses and working property/plot/fortification visibility toggles. Native Firefox and the broader responsive/ultrawide matrix remain pending. Schema and generation/geometry modules are unchanged.
