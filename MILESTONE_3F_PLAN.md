@@ -1,6 +1,7 @@
 # Mappo Milestone 3F — Property and Building Inspector
 
-Status: **3F-A and 3F-Aa verified; 3F-B implemented, verification in progress; 3F-C–D not started**.
+Status: **3F-A, 3F-Aa and 3F-B complete and verified; current build `0.1-dev.3fb`; 3F-C–D not started**.
+3F-B verification: 193/193 Node tests, 16/16 browser cases, exact standalone parity. See [information Inspector QA](MILESTONE_3FB_QA.md).
 3F-Aa verification: 185/185 Node tests, 16/16 browser cases, exact standalone parity. See [property-first QA](MILESTONE_3FAA_QA.md).
 3F-A verification: 177/177 Node tests, 16/16 browser cases, exact standalone parity. See [checkpoint QA](MILESTONE_3FA_QA.md).
 Branch: `feature/building-inspector-3f`, branched from `main` after the Phase 7 UI overhaul merge (`40e64fb`).

@@ -18,7 +18,8 @@ Build: **0.1-dev.3fb**. Branch: `feature/building-inspector-3f`.
 - Focused coverage includes frozen source records, property/wing plot differences, distinct frontage references, accepted courtyard net area, readable row/L/compound shapes, missing/mismatched links, historical block/district context, literal HTML-like text, unknown type codes and refreshed district names.
 - The compiled app tests exercise real district rebuild/undo controls, preserving property and building selection and restoring exact accepted city records. Inspection itself preserves the complete accepted project byte-for-byte.
 - Live Chrome preview: inspected property and building facts, rebuilt districts while retaining the selected child and observed its changed district, then undid and confirmed the original district returned.
-- Firefox/Chromium browser matrices: pending feature-branch CI. Both existing standalone smoke checks and extended property/child information/navigation checks cover 1440×900, 5120×1440, 768×1024 and 390×844. Desktop cases additionally exercise local district rebuild/undo and refreshed child facts.
+- Firefox/Chromium browser matrices: **16/16 passed** in [CI run 44256693693](https://github.com/xbwtyz/Mappo/actions/runs/44256693693), on implementation commit `7de1194`. Both existing standalone smoke checks and extended property/child information/navigation checks cover 1440×900, 5120×1440, 768×1024 and 390×844. Desktop cases additionally exercise local district rebuild/undo and refreshed child facts.
+- Browser screenshots and the checkpoint HTML were uploaded as CI artifacts.
 - Exact root/standalone SHA256: `8e4e257acf1fae223e600631aea653a4ccb239c3e7c16862e0fe9909413e74ce`. No external scripts/styles or added runtime network requirements.
 - Project schema **9**, workspace schema **1**; no migrations, metadata fields or geometry changes.
 
