@@ -1167,6 +1167,13 @@ $('structureApply').addEventListener('click',applyStructurePlacement3H);
 $('structureCancel').addEventListener('click',exitStructurePlacement3H);
 $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
+function keepPropertyEditorVisible3I() {
+  // Refreshing the selected property can reopen the narrow-screen Inspector.
+  // Keep the floating edit tools accessible through Apply and Undo/Redo.
+  if (propertyEditSession?.isActive && Number.isFinite(window.innerWidth)
+      && window.innerWidth <= 900 && workspaceShell?.state.inspectorCollapsed === false)
+    workspaceShell.dispatch({type:'inspector',collapsed:true});
+}
 function applyPropertyEdit3I() {
   const session=propertyEditSession;
   if(!project||!session?.isActive||!session.isPending||session.drag
@@ -1187,7 +1194,7 @@ function applyPropertyEdit3I() {
   session.start(project.city,propertyId);
   updateDetails();
   workspaceShell.select({kind:'property',id:propertyId});
-  workspaceShell.refresh();requestDraw();workspaceChanged();
+  workspaceShell.refresh();keepPropertyEditorVisible3I();requestDraw();workspaceChanged();
   $('statusMessage').textContent='Applied validated property and plot edits to '+propertyId+'. Download a project to preserve your change.';
   return true;
 }
@@ -1205,7 +1212,7 @@ function movePropertyHistory3I(direction){
   project=receipt.candidate;
   propertyHistory.accept(receipt.entry,direction);
   session.start(project.city,id);
-  updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+  updateDetails();workspaceShell.refresh();keepPropertyEditorVisible3I();requestDraw();workspaceChanged();
   $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' property and plot edit for '+id+'.';
   return true;
 }
