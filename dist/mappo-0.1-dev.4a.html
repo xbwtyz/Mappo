@@ -13711,6 +13711,10 @@ function movePropertyDeletion4A(direction) {
   buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
   identityWorkspace.reset();
   workspaceShell.select(direction==='undo'?{kind:'property',id}:null,{reveal:false});
+  // Restoring selection can reopen the mobile Inspector over Redo Delete.
+  // Keep map-level deletion history controls reachable after both directions.
+  if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900 && !workspaceShell.state.inspectorCollapsed)
+    workspaceShell.dispatch({type:'inspector',collapsed:true});
   propertyWorkspace.refresh();buildingWorkspace.refresh();
   updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
   $('statusMessage').textContent=(direction==='undo'?'Restored ':'Deleted again: ')+id+
