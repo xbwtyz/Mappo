@@ -1,0 +1,26 @@
+name: Temporary 3H reproducible standalone rebuild
+on:
+  push:
+    branches: ['feature/building-management-3h']
+    paths: ['.github/workflows/compile-3h.yml']
+permissions:
+  contents: write
+jobs:
+  compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Generate the standalone HTML from modular source
+        run: |
+          npm run build
+          cmp index.html dist/mappo-0.1-dev.3he.html
+      - name: Commit only generated artifacts to the approved feature branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html dist/mappo-0.1-dev.3he.html
+          git commit -m "build(3h-e): refresh standalone for mobile inspector restoration" || exit 0
+          git push origin HEAD:feature/building-management-3h
