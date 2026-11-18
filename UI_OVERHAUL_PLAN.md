@@ -1,6 +1,6 @@
 # Mappo UI overhaul — goals and acceptance checklist
 
-Status: Phases 1–5 are merged into `main`, and the approved standalone distributions are published through GitHub Pages. Phase 6A–6D is implemented in the unmerged `feature/ui-phase-6` branch through `0.1-dev.ui6d`; all 161 automated regressions passed. The complete standalone parity check is tracked by its GitHub Actions run. Phase 7 remains comprehensive native Firefox/Chrome graphical validation and final release QA; the planned 3F building inspector follows.
+Status: Phases 1–6 are merged into `main`. Approved Phase 7 is underway on `feature/ui-phase-7`; 7A inventories all 93 interactive controls from 3E.6 against the current template, with integration, graphical QA and release readiness still to verify. Project schema remains 9.
 
 Baseline: Mappo `0.1-dev.3e6`, project schema 9. The UI overhaul comes before the planned 3F building inspector. The first UI implementation build is `0.1-dev.ui1`; accepted city schema remains 9.
 

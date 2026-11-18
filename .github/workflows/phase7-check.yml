@@ -1,0 +1,48 @@
+name: Mappo Phase 7 validation
+
+on:
+  push:
+    branches: [feature/ui-phase-7]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mappo-phase7
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and run Node regression suite
+        run: npm run check
+      - name: Verify exact standalone build parity
+        run: |
+          version=$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")
+          cmp index.html "dist/mappo-$version.html"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+      - name: Attach standalone HTML for this checkpoint
+        uses: actions/upload-artifact@v4
+        with:
+          name: mappo-${{ github.sha }}
+          path: |
+            index.html
+            dist/mappo-${{ env.VERSION }}.html
+          if-no-files-found: error
+      - name: Commit verified standalone build to Phase 7 branch
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html "dist/mappo-$VERSION.html"
+          if ! git diff --cached --quiet; then
+            git commit -m "build: record $VERSION standalone distribution [skip ci]"
+            git push origin HEAD:feature/ui-phase-7
+          fi

@@ -19,11 +19,12 @@ import {
   resolve
 } from 'node:path';
 import vm from 'node:vm';
+import { APP_VERSION } from '../src/core/version.js';
 
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui6d.html'), 'utf8');
+  const bundled = await readFile(resolve(root, `dist/mappo-${APP_VERSION}.html`), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
