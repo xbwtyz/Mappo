@@ -6,7 +6,6 @@ import { PropertyWorkspace } from './ui/property-workspace.js';
 import { IdentityWorkspace } from './ui/identity-workspace.js';
 import { BuildingEditSession } from './editor/building.js';
 import { buildingFrame } from './core/building-transform.js';
-import { inspectBuildingPreview, prepareBuildingApply } from './editor/building-application.js';
 import {
   WorkspaceShell
 } from './ui/workspace.js';
@@ -81,6 +80,7 @@ import {
   OutlineEditor,
   makeStartingOutline
 } from './editor/outline.js';
+import { inspectBuildingPreview, prepareBuildingApply } from './editor/building-application.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
