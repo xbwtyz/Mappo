@@ -28,7 +28,7 @@ export function describeUndoContext({
   return {
     kind, controlId: scope.controlId, label: scope.label,
     available: count > 0,
-    description: count ? \`Undo the last \${scope.noun} (\${count} available).\`
-      : \`No \${scope.noun} to undo.\`
+    description: count ? `Undo the last ${scope.noun} (${count} available).`
+      : `No ${scope.noun} to undo.`
   };
 }
