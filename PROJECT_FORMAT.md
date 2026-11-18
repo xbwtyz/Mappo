@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current release is **0.1-dev.ui2**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current release is **0.1-dev.ui3**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.ui2",
+  "appVersion": "0.1-dev.ui3",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -197,3 +197,10 @@ The optional `workspace.terrainEditor` stores independent terrain definitions, a
 The workspace shell adds runtime-only navigation, panel visibility/pinning and inspector selection. It does not add fields to project schema 9 or workspace schema 1. Geometry, draft controls and editor histories retain their existing save contracts. Loading an existing water/terrain editing mode reveals Landscape; a restored district selection can open its inspector, while an active outline tool reveals City. Persisting shell preferences is deferred to the approved later UI phase and will require explicit workspace validation and compatibility tests.
 
 UI Phase 2 (`0.1-dev.ui2`) changes control placement without adding schema fields. Project loading/recovery still stages a validated document and requires Open project. The existing camera, all seven visibility fields and pending generation inputs round-trip through their original workspace fields; new menu and generation-disclosure visibility is runtime-only.
+
+
+## UI overhaul Phase 3 — optional landscape reference
+
+`workspace.view.landscapeSelection` is an additive optional `null` or `{kind: "water" | "terrain", id: string}` reference, with a nonempty ID up to 128 characters. Compatible extra fields are retained. New captures write the selected landscape reference or null; creation-form references are runtime-only. The accepted project schema remains 9, workspace schema 1 and envelope format 1.
+
+On load, resolution uses restored water/terrain draft records. A missing record clears landscape selection safely; it does not reject or regenerate the accepted city. Older saves without this field use their existing active-editor-mode/district fallback. Existing raw selected-feature controls, IDs, geometry and scoped histories retain their contracts. The running editor caches raw inputs per feature when switching selections, but unselected caches, filters, creation presentation and complete shell preferences await Phase 6 persistence.

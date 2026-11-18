@@ -1,6 +1,6 @@
 # Mappo UI overhaul — goals and acceptance checklist
 
-Status: Phases 1–2 implemented; current build `0.1-dev.ui2`. Phases 3–7 remain planned. This document records the agreed direction and the refinements proposed after the mockup review. Further implementation follows discussion and approval.
+Status: Phases 1–3 implemented; current build `0.1-dev.ui3`. Phases 4–7 remain planned. This document records the agreed direction and the refinements proposed after the mockup review. Further implementation follows discussion and approval.
 
 Baseline: Mappo `0.1-dev.3e6`, project schema 9. The UI overhaul comes before the planned 3F building inspector. The first UI implementation build is `0.1-dev.ui1`; accepted city schema remains 9.
 
@@ -54,18 +54,20 @@ Phase 2 scope: the City panel is compact, seeds live in local expandable setting
 
 ## Phase 3 — Landscape list and selection inspector
 
-- [ ] Show the river, coast, individual lakes, and individual mountain ranges in one selectable feature list.
-- [ ] Offer All, Water, and Mountains filters.
-- [ ] Identify features by stable record ID; use existing names or readable fallback labels.
-- [ ] Provide one Add feature entry point, with the creation form opening in the inspector.
-- [ ] Show only the selected feature's shape, movement, generation, crossing, and removal controls.
-- [ ] Retain river/coast independence, multiple lakes/ranges, current limits, and feature-specific geometry guidance.
-- [ ] Select features directly from the map in Select/Pan mode; make hit priority and clearing selection predictable.
-- [ ] Highlight and reveal the matching list entry when a feature is selected on the map.
-- [ ] Add clear hover and selected outlines, including when features are small or close together.
-- [ ] Preserve selection by ID after applicable regeneration, undo, and load operations; clear missing selections safely.
+- [x] Show the river, coast, individual lakes, and individual mountain ranges in one selectable feature list.
+- [x] Offer All, Water, and Mountains filters.
+- [x] Identify features by stable record ID; use existing names or readable fallback labels.
+- [x] Provide one Add feature entry point, with the creation form opening in the inspector.
+- [x] Show only the selected feature's shape, movement, generation, crossing, and removal controls.
+- [x] Retain river/coast independence, multiple lakes/ranges, current limits, and feature-specific geometry guidance.
+- [x] Select features directly from the map in Select/Pan mode; make hit priority and clearing selection predictable.
+- [x] Highlight and reveal the matching list entry when a feature is selected on the map.
+- [x] Add clear hover and selected outlines, including when features are small or close together.
+- [x] Preserve selection by ID after applicable regeneration, undo, and load operations; clear missing selections safely.
 
 Acceptance: users can select a lake or range from either the map or list and edit it through the same inspector. Editing or removing one feature preserves unrelated features. Live geometry and actual generation replace all simulated mockup actions.
+
+Phase 3 scope: the live Landscape list and inspector reuse the original water/terrain controllers. Selection uses draft record IDs, predictable map hit priority and hover/selected halos. A bounded optional `view.landscapeSelection` restores existing selected records even in Select/Pan; missing references clear safely. Full shell preferences, filters, creation-form state and portable per-feature input caches remain Phase 6.
 
 ## Phase 4 — District and defense workflows
 
@@ -128,7 +130,8 @@ Work in the phase order above. Each phase is a reviewable implementation chunk. 
 - Planning/documentation: committed reference checklist.
 - Phase 1: implemented with focused workspace tests, the existing regression suite and Chrome graphical checks; native Firefox verification remains pending.
 - Phase 2: implemented with 129 passing automated tests and Chrome menu, recovery preview/cancel, layer and shared map-control checks.
-- Next discussion: Phase 3 Landscape list and selection inspector.
+- Phase 3: implemented with 135 passing automated tests, focused final integration checks and Chrome creation, map/list selection, filters, removal/undo and explicit file-load checks.
+- Next discussion: Phase 4 District and defense workflows.
 - After the UI overhaul: resume the planned 3F building inspector within the new inspector architecture.
 
 Mark checkboxes complete only after the corresponding production behavior has been implemented and verified. A visual mockup alone does not complete an implementation goal.

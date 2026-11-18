@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui2` build implements Phases 1–2 of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui3` build implements Phases 1–3 of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -10,6 +10,9 @@ The `0.1-dev.ui2` build implements Phases 1–2 of `UI_OVERHAUL_PLAN.md` around 
 | `ui/workspace.js` | Tabs, panel collapse/pinning, focus routing, layout-change notification and generic inspector rendering |
 | `ui/workspace-menus.js` | Shared nonmodal Project/Layers panels, focus/dismissal and project-status attention adapter |
 | `ui/workspace-inspectors.js` | Read-only adapters from current district/water/terrain records to inspector descriptors |
+| `core/landscape-selection.js` | Pure draft-record inventory, readable labels, polygon adapters and deterministic map hits |
+| `ui/landscape.js` | Keyed feature list, filters, creation/selection routing, contextual form visibility and runtime input cache |
+| `renderer/landscape-selection.js` | Canvas hover and selected halos independent of feature generation |
 | `app.js` | Connect existing editors to shell selection, cancel tools leaving a section and resize the live Canvas |
 | `index.template.html` | Stable DOM controls grouped under four tabpanels, inspector slots and shared generation action |
 | `styles/app.css` | Workspace tracks, collapsed panel behavior, responsive panel placement and accessible control states |
@@ -28,11 +31,11 @@ Shell selection is a small `{kind, id}` reference, separate from generated recor
 
 Providers register by kind with a `resolve(id)` function. They return a descriptor containing `type`, `title`, `description`, an optional target `section`/`controlLabel`, and reusable `sections` with a title and label/value rows. Text is rendered through textContent. The shell does not import feature generators or mutate records. Tests demonstrate registration of an additional building provider without changing the shell; the actual 3F building inspector remains future work.
 
-Current providers resolve district selection, water tool/feature selection and mountain tool/feature selection against the existing records. They show live summaries and an Open controls shortcut. Existing forms retain their original IDs and event bindings in their respective sections. Landscape map hit testing, the combined feature list and full inspector forms are later UI phases.
+Current providers resolve district selection, water tool/feature selection and mountain tool/feature selection against the existing records. They show live summaries and an Open controls shortcut. Water/terrain forms now live once in the inspector, retaining their original IDs and event bindings. The landscape adapter shows one feature group at a time; district forms remain in their section until Phase 4. The shell exposes a generic onInspect callback without importing feature geometry.
 
 ## Persistence and verification
 
-This phase adds no persisted shell fields and keeps project schema 9, workspace schema 1 and container format 1. Existing city geometry, unfinished drafts, controls and editor histories continue to load/save unchanged. Restored active editor modes reveal the corresponding controls; new workspace navigation defaults remain sensible for older files. Phase 6 owns portable shell preferences.
+Project schema 9, workspace schema 1 and container format 1 remain unchanged. Phase 3 adds only an optional bounded landscape reference in view.landscapeSelection; full shell preferences remain later work. Existing city geometry, unfinished drafts, controls and editor histories continue to load/save unchanged. Restored active editor modes reveal the corresponding controls; new workspace navigation defaults remain sensible for older files. Phase 6 owns portable shell preferences.
 
 Focused tests cover initial state, tab visibility/focus, panel collapse, selection/pinning, invalidated records, reusable providers, safe text rendering and read-only record adapters. The compiled app checks completed draft/history/input preservation across all sections, cancellation of an in-progress water gesture, real inspector selection, pin/clear behavior and save/load compatibility. Graphical Chrome checks cover actual Canvas resizing and absence of page overflow with both side panels collapsed. Native Firefox and the wider responsive/ultrawide matrix remain later verification checkpoints.
 
@@ -41,3 +44,13 @@ Focused tests cover initial state, tab visibility/focus, panel collapse, selecti
 `WorkspaceMenus` manages presentation only: one open menu, keyboard entry, Escape/outside/focus dismissal and safe focus transfer. `ProjectFiles.onStatus` reports existing validated-load/recovery/error state; it does not delegate file parsing, applying or persistence to the menu. New staged previews and errors reveal Project even after asynchronous file selection. Passive recovery/status updates mark the opener without repeatedly reopening dismissed previews.
 
 All seven existing visibility controls move intact to Layers, retaining their IDs, render bindings and saved workspace fields. The original combined Select/Pan control moves to the shared map rail alongside Fit and zoom. Seeds and optional City shapes use native details/summary controls. Summary keyboard activation is excluded from map shortcuts. New menu/disclosure state stays runtime-only until Phase 6. See [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) for the full control-family inventory.
+
+## Phase 3 landscape behavior
+
+The inventory reads draft editor features, so new/removed shapes appear immediately without changing accepted city data. Keys combine kind and stable ID. Rows survive hover, selection and input refreshes without replacing their buttons. Selecting a map feature resets a conflicting filter to All and scrolls the row into view. Inspecting does not activate a shape editor; original editing buttons still own modes and validation. Selecting a different feature cancels gestures through the original editors and clears district highlights.
+
+The creation picker uses the same mounted controls, showing creation fields and actions for one type. Singleton river/coast availability and lake/range limits derive from current records. Successful creation switches to that actual new record; validation errors stay beside the form. Shape/bridge/pass controllers keep their existing identities, composition checks, scoped histories and generation behavior. The adapter remembers raw fields per feature during the running session, including removal/undo. The selected feature's raw controls remain portable through existing fields; unselected cached fields and creation presentation remain runtime-only until Phase 6.
+
+Map hit testing uses an eight-CSS-pixel edge tolerance divided by zoom. Edges beat interiors, nearest edges win, smaller interior footprints win, and stable IDs break exact ties. Coastal interiors use the ocean polygon while coastal edge selection/highlights use the actual shoreline. Landscape hits precede district block hits; empty land clears the selection. Pointer movement only updates hover in Select/Pan and never edits geometry. Renderer halos use constant screen widths to stay visible around small features.
+
+Editor callbacks reconcile selection by ID. Missing selected records clear without selecting an arbitrary replacement. Undo retains a still-valid selected record even if its snapshot held another active ID. Full rebuilds preserve IDs where the original generators do. Loading resolves the optional landscape reference against restored draft records, clears missing IDs and never regenerates saved geometry. Older saves retain the existing active-mode fallback. Inspector scroll resets for a different selection and remains stable during edits.

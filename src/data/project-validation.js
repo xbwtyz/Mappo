@@ -443,6 +443,10 @@ export function validateWorkspace(workspace, project) {
   if (!DENSITIES.includes(controls.size) || !PATTERNS.includes(controls.morphology)) throw new Error('Unsupported draft generation settings.');
   if (!['radial', 'organic', 'linear', 'planned', 'wedge', 'twin', 'branching', 'crescent'].includes(controls.preset)) throw new Error('Unsupported starting outline.');
   const view = requireRecord(workspace.view, 'Map view');
+  if (view.landscapeSelection !== undefined && view.landscapeSelection !== null) {
+    const selection = requireRecord(view.landscapeSelection, 'Landscape selection');
+    if (!['water', 'terrain'].includes(selection.kind) || typeof selection.id !== 'string' || !selection.id || selection.id.length > 128) throw new Error('Invalid landscape selection.');
+  }
   requireRecord(view.camera, 'Camera');
   requirePoint(view.camera, 'Camera');
   if (!Number.isFinite(view.camera.zoom) || view.camera.zoom < .18 || view.camera.zoom > 12) throw new Error('Invalid map zoom.');

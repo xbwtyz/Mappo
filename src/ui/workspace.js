@@ -13,7 +13,8 @@ export class WorkspaceShell {
     onNavigate = () => {},
     onLayout = () => {},
     changed = () => {},
-    clearSelection = () => {}
+    clearSelection = () => {},
+    onInspect = () => {}
   }) {
     this.$ = getElement;
     this.document = document;
@@ -21,6 +22,7 @@ export class WorkspaceShell {
     this.onLayout = onLayout;
     this.changed = changed;
     this.onClearSelection = clearSelection;
+    this.onInspect = onInspect;
     this.providers = new Map();
     this.state = workspaceInitialState();
   }
@@ -96,6 +98,7 @@ export class WorkspaceShell {
     this.$('workspaceClearSelection').hidden = !descriptor;
     if (!descriptor) {
       this.$('workspaceSelectionSections').replaceChildren();
+      this.onInspect(this.state.selection);
       return;
     }
     this.$('workspaceSelectionType').textContent = descriptor.type ?? 'Selection';
@@ -109,6 +112,7 @@ export class WorkspaceShell {
     }));
     this.$('workspaceShowControls').hidden = !descriptor.section;
     this.$('workspaceShowControls').textContent = descriptor.controlLabel ?? 'Open editing controls';
+    this.onInspect(this.state.selection);
   }
   render() {
     this.$('workspaceApp').classList.toggle('workspace-tools-collapsed', this.state.toolsCollapsed);

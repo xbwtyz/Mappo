@@ -790,3 +790,35 @@ test('native 3B.1 schema-2 files migrate to unassigned districts without changin
   assert.equal(annotated.project.city.properties[0].districtId, 'OPAQUE');
   assert.deepEqual(decodeProjectDocument(encodeProjectDocument(annotated)), annotated);
 });
+
+test('optional landscape selection remains bounded, preserves compatible data and accepts older saves', () => {
+  const document = documentFixture();
+  for (const selection of [null, {
+      kind: 'water',
+      id: 'draft-lake'
+    }, {
+      kind: 'terrain',
+      id: 'range-1',
+      extension: {
+        future: true
+      }
+    }]) {
+    document.workspace.view.landscapeSelection = selection;
+    assert.deepEqual(decodeProjectDocument(encodeProjectDocument(document)).workspace.view.landscapeSelection, selection);
+  }
+  for (const selection of [{
+      kind: 'district',
+      id: 'x'
+    }, {
+      kind: 'water',
+      id: ''
+    }, {
+      kind: 'water',
+      id: 'x'.repeat(129)
+    }, 'bad']) {
+    document.workspace.view.landscapeSelection = selection;
+    assert.throws(() => encodeProjectDocument(document), /Landscape selection|landscape selection/);
+  }
+  delete document.workspace.view.landscapeSelection;
+  assert.equal(decodeProjectDocument(encodeProjectDocument(document)).workspace.view.landscapeSelection, undefined);
+});

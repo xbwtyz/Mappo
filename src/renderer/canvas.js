@@ -3,6 +3,12 @@ import {
   drawTerrainDraft
 } from './terrain.js';
 import {
+  drawLandscapeSelection
+} from './landscape-selection.js';
+import {
+  landscapeRecords
+} from '../core/landscape-selection.js';
+import {
   drawWater,
   drawBridges,
   drawWaterDraft
@@ -221,7 +227,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null) {
+export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null, landscapeSelection = null, landscapeHover = null) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -258,6 +264,7 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
   if (editor && !(city.waterFeatures?.some(f => f.kind === 'coast') && !editor.dirty && editor.mode === 'pan')) drawOutline(ctx, camera, editor);
   drawWaterDraft(ctx, camera, waterEditor, editor?.boundary ?? city.survey.boundary);
   drawTerrainDraft(ctx, camera, terrainEditor);
+  drawLandscapeSelection(ctx, camera, landscapeRecords(waterEditor?.features ?? city.waterFeatures, terrainEditor?.features ?? city.terrainFeatures), landscapeSelection, landscapeHover);
 
   ctx.textAlign = 'left';
   ctx.fillStyle = 'rgba(52, 73, 75, 0.67)';

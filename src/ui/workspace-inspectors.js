@@ -1,3 +1,6 @@
+import {
+  landscapeLabel
+} from '../core/landscape-selection.js';
 // Inspector providers translate existing records into display sections. The
 // shell knows no feature geometry and can accept additional providers later.
 export function registerWorkspaceInspectors(shell, {
@@ -39,7 +42,11 @@ export function registerWorkspaceInspectors(shell, {
       const type = feature.kind === 'lake' ? 'Lake' : feature.kind === 'coast' ? 'Coastline' : 'River';
       return {
         type,
-        title: typeof feature.name === 'string' ? feature.name : `${type} · ${feature.id}`,
+        title: landscapeLabel({
+          kind: 'water',
+          id,
+          feature
+        }).name,
         description: editor.dirty ? 'Water draft pending city generation.' : 'Geometry from the current city.',
         section: 'landscape',
         controlLabel: 'Open water controls',
@@ -64,7 +71,11 @@ export function registerWorkspaceInspectors(shell, {
       if (!feature) return null;
       return {
         type: 'Mountain range',
-        title: feature.name,
+        title: landscapeLabel({
+          kind: 'terrain',
+          id,
+          feature
+        }).name,
         description: editor.dirty ? 'Terrain draft pending city generation.' : 'Geometry from the current city.',
         section: 'landscape',
         controlLabel: 'Open mountain controls',

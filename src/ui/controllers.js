@@ -1,4 +1,4 @@
-export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, onTap = () => {}) {
+export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, onTap = () => {}, onHover = () => {}) {
   let active = false,
     panning = false,
     lastX = 0,
@@ -41,6 +41,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     event.preventDefault();
     canvas.focus();
     active = true;
+    onHover(null);
     panning = space || event.button === 1 || editor.mode === 'pan';
     lastX = event.clientX;
     lastY = event.clientY;
@@ -52,7 +53,10 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     else editor.down(world(event), camera.zoom);
   });
   canvas.addEventListener('pointermove', event => {
-    if (!active) return;
+    if (!active) {
+      onHover(editor.mode === 'pan' ? world(event) : null);
+      return;
+    }
     if (panning) {
       travel += Math.hypot(event.clientX - lastX, event.clientY - lastY);
       camera.pan(event.clientX - lastX, event.clientY - lastY);
@@ -63,6 +67,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     } else editor.move(world(event), camera.zoom);
   });
   canvas.addEventListener('pointerup', () => finish());
+  canvas.addEventListener('pointerleave', () => onHover(null));
   canvas.addEventListener('pointercancel', () => finish(true));
   canvas.addEventListener('lostpointercapture', () => finish(true));
   canvas.addEventListener('dblclick', event => {

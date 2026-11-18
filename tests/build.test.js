@@ -23,7 +23,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui2.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui3.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -93,7 +93,17 @@ test('compiled HTML initializes and responds to UI events with stubbed Canvas', 
       getElementById: el,
       createElement: () => ({
         value: '',
-        textContent: ''
+        textContent: '',
+        classList: {
+          toggle() {}
+        },
+        setAttribute() {},
+        addEventListener(name, fn) {
+          (this.handlers ??= {})[name] = fn;
+        },
+        replaceChildren(...children) {
+          this.children = children;
+        }
       }),
       activeElement: {
         tagName: 'BODY'
@@ -163,7 +173,17 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
     getElementById: el,
     createElement: () => ({
       value: '',
-      textContent: ''
+      textContent: '',
+      classList: {
+        toggle() {}
+      },
+      setAttribute() {},
+      addEventListener(name, fn) {
+        (this.handlers ??= {})[name] = fn;
+      },
+      replaceChildren(...children) {
+        this.children = children;
+      }
     })
   };
 
@@ -404,7 +424,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
 test('standalone app downloads, previews and restores complete projects and recovers them after a reload', async () => {
   const bundled = await readFile(resolve(root, 'index.html'), 'utf8');
   const originalScript = bundled.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
-  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel, waterPanel, terrainPanel, workspaceShell, workspaceMenus });\n})();');
+  const script = originalScript.replace(/\n\}\)\(\);\s*$/, '\nglobalThis.inspectSavedApp = () => ({ project, editor, camera, layers, files, districtPanel, fortificationPanel, waterPanel, terrainPanel, workspaceShell, workspaceMenus, landscapeWorkspace });\n})();');
   const memory = new Map(),
     downloaded = [];
   const storage = {
@@ -430,6 +450,16 @@ test('standalone app downloads, previews and restores complete projects and reco
       addEventListener() {},
       createElement() {
         return {
+          classList: {
+            toggle() {}
+          },
+          setAttribute() {},
+          addEventListener(name, fn) {
+            (this.handlers ??= {})[name] = fn;
+          },
+          replaceChildren(...children) {
+            this.children = children;
+          },
           click() {
             downloaded.push({
               filename: this.download,
@@ -1028,5 +1058,66 @@ test('standalone app downloads, previews and restores complete projects and reco
   reloaded.el('editTerrainButton').handlers.click();
   assert.equal(shell.state.selection.kind, 'terrain');
   assert.equal(reloaded.el('workspaceSelectionName').textContent, terrainEditor.activeFeature().name);
+
+  // Phase 3: real list, map, inspector and file adapters share stable references.
+  const landscape = reloaded.state().landscapeWorkspace;
+  const lakesForUI = guidedEditor.features.filter(f => f.kind === 'lake');
+  assert.ok(lakesForUI.length >= 2);
+  const selectedRef = {
+    kind: 'water',
+    id: lakesForUI[0].id
+  };
+  landscape.select(selectedRef);
+  reloaded.el('lakeSeedInput').value = 'pending-selected-lake';
+  const uiBefore = copy([guidedEditor.features, terrainEditor.features]);
+  landscape.rows.get('water:' + lakesForUI[1].id).button.handlers.click();
+  landscape.select(selectedRef);
+  assert.equal(reloaded.el('lakeSeedInput').value, 'pending-selected-lake');
+  assert.equal(guidedEditor.mode, 'pan');
+  assert.deepEqual(copy([guidedEditor.features, terrainEditor.features]), uiBefore);
+  assert.equal(reloaded.el('landscapeLakeControls').hidden, false);
+  assert.equal(reloaded.el('landscapeRiverControls').hidden, true);
+  reloaded.el('landscapeFilter-mountains').handlers.click();
+  const mapLake = reloaded.state().camera.worldToScreen(lakesForUI[0].center);
+  fire('pointermove', mapLake);
+  assert.equal(landscape.hover.id, selectedRef.id);
+  fire('pointerdown', mapLake);
+  fire('pointerup', mapLake);
+  assert.deepEqual(copy(shell.state.selection), selectedRef);
+  assert.equal(landscape.filter, 'all', 'Map selection reveals a record hidden by a filter');
+  assert.equal(reloaded.el('editLakeButton').hidden, false);
+  reloaded.el('removeLakeButton').handlers.click();
+  assert.equal(shell.state.selection, null);
+  assert.ok(!guidedEditor.features.some(f => f.id === selectedRef.id));
+  assert.deepEqual(copy(guidedEditor.features), uiBefore[0].filter(f => f.id !== selectedRef.id));
+  reloaded.el('undoWaterButton').handlers.click();
+  landscape.select(selectedRef);
+  reloaded.el('lakeSeedInput').value = 'portable-selected-lake';
+  await reloaded.el('saveProjectButton').handlers.click();
+  const selectedText = await downloaded.at(-1).blob.text(),
+    selectedSave = JSON.parse(selectedText);
+  assert.deepEqual(selectedSave.workspace.view.landscapeSelection, selectedRef);
+  shell.clear();
+  await reloaded.state().files.stageFile({
+    size: selectedText.length,
+    text: async () => selectedText
+  });
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.deepEqual(copy(shell.state.selection), selectedRef);
+  assert.equal(guidedEditor.mode, 'pan');
+  assert.equal(reloaded.el('lakeSeedInput').value, 'portable-selected-lake');
+  assert.deepEqual(copy(reloaded.state().project), selectedSave.project);
+  const stale = copy(selectedSave);
+  stale.workspace.view.landscapeSelection.id = 'removed-record';
+  stale.workspace.waterEditor.mode = 'river';
+  const staleText = JSON.stringify(stale);
+  await reloaded.state().files.stageFile({
+    size: staleText.length,
+    text: async () => staleText
+  });
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.equal(shell.state.selection, null);
+  assert.equal(guidedEditor.mode, 'pan');
+  assert.deepEqual(copy(reloaded.state().project), selectedSave.project);
 
 });

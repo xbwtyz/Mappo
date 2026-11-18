@@ -120,3 +120,29 @@
 .workspace-shell #workspaceSection-city .city-control-section{padding-bottom:14px;margin-bottom:14px}
 .workspace-shell #workspaceSection-city .city-control-section h2{margin-bottom:10px}
 .workspace-shell #workspaceSection-city .control-group{margin-bottom:14px}
+
+/* UI phase 3: one landscape inventory and contextual, mounted editor forms. */
+.landscape-list-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.landscape-list-heading h2{font:650 16px system-ui,sans-serif;letter-spacing:0;color:#e5d6bd}
+#landscapeFeatureCount{font-size:11px;color:#a9bfad;white-space:nowrap}
+.landscape-filters{display:flex;gap:5px;margin:17px 0}
+.landscape-filters button{flex:1;min-height:35px;padding:5px;border:1px solid #4b645b;border-radius:5px;background:transparent;color:#b9cfc0;font-size:11px}
+.landscape-filters button[aria-pressed=true]{background:#d1a579;color:#192b2b;border-color:#d1a579;font-weight:700}
+.landscape-feature-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.landscape-feature-button{width:100%;text-align:left;white-space:pre-line;line-height:1.8;overflow-wrap:anywhere;padding:10px 12px;border:1px solid #496158;border-radius:6px;background:#15292b;color:#a9c2b1;font-size:12px}
+.landscape-feature-button::first-line{font-weight:700;color:#ecdfc4}
+.landscape-feature-button:hover,.landscape-feature-button.is-hovered{background:#29423d;border-color:#87b2ac}
+.landscape-feature-button[aria-pressed=true]{background:#3a3e30;border-color:#dba56c;box-shadow:inset 3px 0 #dba56c}
+.landscape-history-tools{margin-top:22px;padding-top:12px;border-top:1px solid #40564d}
+.landscape-history-tools>.hint{margin:0 0 10px}
+.landscape-inspector-controls .water-panel{padding:0;border:0;background:transparent;margin:16px 0}
+.landscape-inspector-controls .water-feature{margin:0 0 16px;padding:0;border:0}
+.landscape-inspector-controls .water-feature>legend{display:none}
+.landscape-inspector-controls .control-group{margin-bottom:14px}
+.landscape-inspector-controls .control-group label{font-size:12px;line-height:1.5}
+.landscape-inspector-controls .tool-button,.landscape-inspector-controls .minor-button{font-size:11px;min-height:36px}
+.landscape-inspector-controls .file-status{font-size:11px;line-height:1.7}
+.landscape-inspector-controls .hint{font-size:11px}
+.landscape-inspector-controls select{appearance:auto;padding:0 8px;font-size:12px}
+.landscape-inspector-controls .tool-grid .control-group label{font-size:11px}
+.workspace-shell .map-viewport canvas.feature-hover{cursor:pointer}

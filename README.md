@@ -2,19 +2,23 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.ui2 — City, Project and Layers organization
+## Current build: 0.1-dev.ui3 — Landscape list and contextual editing
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui2.html`](dist/mappo-0.1-dev.ui2.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui3.html`](dist/mappo-0.1-dev.ui3.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### UI overhaul: Phases 1–2
+### UI overhaul: Phases 1–3
 
 Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) lists the new homes of the existing controls.
 
 The working editor now opens in **City**, with **Landscape**, **Districts** and **Defenses** tabs showing one tool section at a time. Use the arrow buttons to collapse the tools or inspector; the live map takes the available space. **Tools** and **Inspector** buttons reopen the panels. **Generate city** stays available beneath the active tools.
 
-The inspector opens when you select a district on the map or activate/select an existing water or mountain tool. It shows live record summaries and an **Open editing controls** shortcut. **Clear selection** closes an unpinned inspector; **Pin** keeps it open, including its expandable city report. Existing editing forms remain in their sections for this first phase. The landscape feature list and full inspector editing arrive in later phases.
+Open **Landscape** for one list of every river, coastline, lake and mountain range. Filter **All / Water / Mountains** or use **Add feature**. Choose a feature type and create its preview in the inspector. Existing river/coast entries are disabled in the creation picker; lakes and ranges retain their independent limits.
+
+Select a feature from the list or map in **Select / Pan** to open only its own editing controls. Selection alone leaves the map in Select/Pan; choose a shape, move or crossing button to edit. Hover and selected outlines use a light halo, with orange marking selection. Nearby feature edges take priority over broad interiors; smaller interiors win overlap ties, then stable IDs break equal ties. Map selection reveals the matching list row, switching a conflicting filter to All. Click a city block to inspect its district; click empty land to clear selection.
+
+**Clear selection** closes an unpinned inspector; **Pin** keeps it open, including its expandable city report. District editing remains in Districts until Phase 4. Water and terrain retain separate histories, with Undo actions also accessible from the Landscape list after removal. Selected landscape IDs now survive saves even in Select/Pan mode. Full shell/filter/layout persistence remains Phase 6.
 
 Switching sections stops tools whose controls are being hidden while preserving completed drafts, history, pending inputs and the accepted city. An in-progress gesture is cancelled through its original editor. Panel collapse resizes the Canvas without changing the city or camera position/zoom. Shell layout preferences are runtime state in this phase; their portable persistence is planned for Phase 6. Existing project saves and recovery still restore their original city geometry and editor drafts.
 
@@ -23,11 +27,11 @@ See [UI_OVERHAUL_PLAN.md](UI_OVERHAUL_PLAN.md) for completed Phase 1–2 goals a
 ### Workflow
 
 1. Choose **Freehand** and drag an outline; release to close it. Alternatively, use **Click points**, place the corners, and press **Close outline** or Enter.
-2. Use **Edit points** to drag corners. Double-click an edge to add a corner; select a corner and press Delete to remove it. **Undo edit** reverses outline and center changes.
+2. Use **Edit outline points** to drag corners. Double-click an edge to add a corner; select a corner and press Delete to remove it. **Undo outline edit** reverses outline and center changes.
 3. Choose **Place main square**, then click inside the boundary, away from the edge. Mappo initially chooses a location with room for a square.
 4. Select an **Organic**, **Planned**, **Radial** or **Linear** street pattern, street density and seed. Click **Generate city**.
 
-Changing street settings does not reshape your boundary. **New street seed** regenerates within the same outline and keeps the chosen center. Density changes block spacing, not the size of a custom outline. Use **Revert edits** to restore the outline, center and settings of the last generated city.
+Changing street settings does not reshape your boundary. **New street seed** regenerates within the same outline and keeps the chosen center. Density changes block spacing, not the size of a custom outline. Use **Revert outline & street edits** to restore the outline, center and settings of the last generated city.
 
 Eight editable starting outlines are available: rounded, organic, long, rectangular, wedge, twin-core, branching and horseshoe. Select one and click **Use**, then adjust it. Applying a preset changes the draft; it does not silently replace the generated city.
 
@@ -49,7 +53,7 @@ The current file limit is 20 MiB. Unsupported newer schemas are rejected rather 
 
 Newly generated cities receive connected neighborhoods automatically. The **Neighborhoods** panel lets you choose an automatic count or 1–12 districts and an independent district seed, then **Generate / rebuild districts**. Only district data changes; streets, block shapes, properties and building footprints remain fixed. A separate connected block group receives at least one district if it cannot share a region with the rest of the city.
 
-- Click a block in **Pan map** mode to select its neighborhood and inspect its block, property and building counts. Dragging the map does not select a block.
+- Click a block in **Select / Pan** mode to select its neighborhood and inspect its block, property and building counts. Dragging the map does not select a block.
 - Select a neighborhood from the district inspector list, edit its name and color, and click **Apply name & color**.
 - With a block selected, choose a neighboring district and click **Move selected block**. The receiving district must share a street edge. Moving a block cannot split its source district or leave a district empty. All properties and buildings in the block inherit the new district.
 - Toggle district **Colors**, **Borders** and **Labels** independently of roof/property/plot layers.
@@ -63,7 +67,7 @@ See [`DISTRICTS.md`](DISTRICTS.md) for the module boundaries and extension point
 
 ### Mountain ranges and passes
 
-**Mountains & Passes** supports up to **six independent mountain ranges**, both around the settlement and inside its outline. Choose **Surrounding landscape**, **Inside the city**, or **Across the city edge**, set a seed, size and peak height, then **Add mountain range**. Repeat to add more. Terrain starts empty in fresh and older cities.
+**Landscape → Add feature → Mountain range** supports up to **six independent mountain ranges**, both around the settlement and inside its outline. Choose **Surrounding landscape**, **Inside the city**, or **Across the city edge**, set a seed, size and peak height, then **Create mountain range**. Repeat to add more. Terrain starts empty in fresh and older cities.
 
 - **Edit foothills** reshapes the closed footprint. Drag handles, double-click any edge to add a handle, and Delete a selected handle when the ridge and banks remain safe. Sharp edits self-adjust. Up to 32 footprint handles are supported.
 - **Edit ridge / peaks** moves three ridge handles. Select a handle and change **Peak height** to set its elevation. Heights affect contour detail and peak symbols; this release uses a reserved steep-ground footprint rather than calculating a continuous slope simulation.
@@ -77,20 +81,20 @@ See [`TERRAIN.md`](TERRAIN.md) for the separate geometry, guidance, generation, 
 
 ### Lakes
 
-Use **Add lake** in **Water & Bridges → Lakes** to create an independent lake preview. Repeat to add more; this release supports **up to eight lakes**, alongside a river and coastline. Each lake has its own stable ID, seed and editable closed shoreline.
+Use **Landscape → Add feature → Lake → Create lake** to create an independent lake preview. Repeat to add more; this release supports **up to eight lakes**, alongside a river and coastline. Each lake has its own stable ID, seed and editable closed shoreline.
 
-- Choose a lake in **Selected lake**, then **Edit lake shape**. Drag any shoreline handle; sharp or crossing drags stop at a safe bank shape. Double-click any shore edge, including the closing edge, to add a handle. Delete removes a selected handle when the remaining bank stays safe. Up to 32 handles per lake are supported.
+- Select a lake from the list or map, then **Edit lake shape**. Drag any shoreline handle; sharp or crossing drags stop at a safe bank shape. Double-click any shore edge, including the closing edge, to add a handle. Delete removes a selected handle when the remaining bank stays safe. Up to 32 handles per lake are supported.
 - Choose **Move lake** and drag its center marker to move the entire shoreline. Guided movement keeps its banks inside the city outline. Keep lakes away from the main square and river bridges.
-- **Lake size** and **Lake seed** control Add lake or **Regenerate selected**. Regeneration keeps the selected lake's identity, center, name and compatible metadata. **Remove selected lake** removes only that lake. Water undo restores additions, edits, regeneration and removal.
+- **Lake size** and **Lake seed** control Create lake or **Regenerate selected**. Regeneration keeps the selected lake's identity, center, name and compatible metadata. **Remove selected lake** removes only that lake. Water undo restores additions, edits, regeneration and removal.
 - Click **Generate city** to apply the draft. Inland waterfront streets connect to the surrounding street network, buildings keep shore setbacks, and reserved water faces participate in exact map coverage. Generation proposes lakes on available land; if the requested size will not fit, reduce it or enlarge the outline.
 
 Project files and browser recovery retain every lake, unfinished shape edits, active selection, pending inputs and water undo history. Existing saves migrate without adding lakes or changing accepted geometry. Closed shore guidance and geometry live in dedicated modules so future lake types, styling and tools can be added separately.
 
 ### Coastlines
 
-**Water & Bridges** has independent **River**, **Coastline** and **Lakes** sections. A city can contain both at once. A coastline has open ocean on one side and buildable land on the other. Generating, rerolling, editing or removing a river retains the coast; the same applies in reverse. Each has its own seed and controls. The accepted city stays open until Generate city succeeds. Water undo restores the last water edit.
+**Landscape** lists rivers, coastlines and individual lakes independently. Select one to expose its controls in the inspector. A city can contain all these water types at once. A coastline has open ocean on one side and buildable land on the other. Generating, rerolling, editing or removing a river retains the coast; the same applies in reverse. Each has its own seed and controls. The accepted city stays open until Generate city succeeds. Water undo restores the last water edit.
 
-1. Choose a **coast seed** and **Ocean direction**: north, east, south or west. Click **Generate coastline** for an editable preview. **New coast seed** rerolls only the coastline using the pending ocean direction.
+1. Use **Add feature → Coastline**. Choose a **coast seed** and **Ocean direction**: north, east, south or west. Click **Create coastline** for an editable preview. **New coast seed** rerolls only the coastline using the pending ocean direction.
 2. Drag shoreline handles. Handles stay ordered and neighboring handles ease tight bends automatically. Double-click near the shoreline to add a point; select an interior point and Delete or **Remove selected** to remove it. Use **Edit shoreline** for coast handles and **Edit river points** for river handles.
 3. **Swap land / water** reverses the current coast's ocean side. Keep the main square on land; move the shore or square if the preview reports it would be submerged. Ocean direction controls the next generated coastline, while Swap edits the existing draft.
 4. Click **Generate city** to build around the coast. Waterfront roads follow the land side, properties retain shoreline setbacks, and defenses are removed from submerged portions of the outer perimeter. An invalid shoreline retains the last valid city.
@@ -109,7 +113,7 @@ River editing now guides handles into valid positions as you drag. Handles stay 
 
 New river proposals are checked with the same geometry and bridge rules used when applying them. Unsuitable candidates are tidied or retried before a preview is returned. Existing saved city geometry and unfinished drafts load exactly; loading never tidies or regenerates them.
 
-Water is optional. Existing and fresh cities start on dry land until you choose a water feature in **Water & Bridges**. Generation uses the river seed and proposes a river course with bridge locations, keeping any coast intact. When a coast exists, new rivers favor a course toward its ocean and bridge suggestions remain inland. It creates a preview; the current city stays open.
+Water is optional. Existing and fresh cities start on dry land until you choose **Landscape → Add feature → River**. Generation uses the river seed and proposes a river course with bridge locations, keeping any coast intact. When a coast exists, new rivers favor a course toward its ocean and bridge suggestions remain inland. It creates a preview; the current city stays open.
 
 1. Choose a river seed and a river width of **10–90 survey units**, then **Generate river**. **New river seed** proposes another course without changing the street seed.
 2. Choose **Edit river points**. Drag the handles, including endpoints; double-click near the course to add an interior point. Select an interior point and press Delete or **Remove selected** to remove it. Endpoints must remain beyond the city.
@@ -118,7 +122,7 @@ Water is optional. Existing and fresh cities start on dry land until you choose 
 
 Bridges create actual street connections to both banks. Waterfront streets follow a reserved bank corridor; buildings stay on land. Water boundary edges close the planar arrangement without appearing as roads. Walls leave river openings and keep towers and street gates clear of the water.
 
-Water edits are independent of outline edits. **Undo water edit** keeps up to 20 previous water definitions; **Revert water draft** restores the current city's accepted water. **Remove river** removes only the river and its bridges from the draft; **Remove coastline** removes only the coast. Apply either removal with Generate city. The map's fit control includes river handles while water is being edited. Escape or **Pan map** leaves the water tool; Space-drag and middle-button drag pan in every tool.
+Water edits are independent of outline edits. **Undo water edit** keeps up to 20 previous water definitions; **Revert water draft** restores the current city's accepted water. **Remove river** removes only the river and its bridges from the draft; **Remove coastline** removes only the coast. Apply either removal with Generate city. The map's fit control includes river handles while water is being edited. Escape or **Select / Pan** leaves the water tool; Space-drag and middle-button drag pan in every tool.
 
 Invalid bridge locations, overlapping crossings, sharp/backtracking river bends, water at the square and disconnected banks retain the last valid city and show an explanation. A draft may temporarily have no bridges or invalid river geometry and can still be saved for later correction. Saving/loading never applies or regenerates a draft.
 
@@ -131,7 +135,7 @@ New native cities default to an exterior perimeter wall, connected gates and def
 - **Walls enabled** plus **Build / update** builds or enables defenses. Uncheck it and apply to disable defenses while retaining their geometry, IDs and metadata.
 - Choose **1–8 gates**, **40–200 survey units** of tower spacing and an independent fortification seed, then apply. Changing these settings rebuilds defenses only. Smaller spacing adds towers where clearance allows; corners also receive towers when safe.
 - Gates connect to real perimeter street junctions through saved approach paths. Walls have actual openings. If the requested gate count cannot fit safely, Mappo reports the smaller actual count.
-- **Show fortification layer** changes display only. It does not change whether defenses are enabled or erase saved records.
+- **Layers → Defenses → Fortifications** changes display only. It does not change whether defenses are enabled or erase saved records.
 - **Undo fortification edit** restores up to 10 previous defense states, including the first build or disabling. History and pending controls travel with project files and browser recovery.
 
 Walls sit outside the perimeter streets. Existing streets, buildings, properties, blocks, neighborhoods and the square remain fixed. Narrow inlets may be bridged by the exterior wall where following them would create an unsafe crossing. Imported older cities stay unchanged and unfortified: enable walls, then choose **Build / update** to add defenses explicitly.
@@ -146,17 +150,17 @@ Generated forms include small houses and shops, broader halls and workshops, L-s
 
 Open ground remains for yards, gardens, gaps and undeveloped space. Buildings are set back from the full rendered street width and the civic square remains clear. Very small or awkward blocks may remain unbuilt.
 
-Under **Map layers** in the left panel:
+Under **Layers → Buildings & land** in the map header:
 
 - **Building footprints** shows or hides roofs.
 - **Property boundaries** outlines allocated sites.
-- **Underlying plot divisions** shows the smaller plots, including divisions beneath buildings that occupy multiple plots.
+- **Plot divisions** shows the smaller plots, including divisions beneath buildings that occupy multiple plots.
 
-The report counts buildings, properties, combined-plot properties and base plots. These layers only change display; they do not regenerate or edit the city. The report itself is hidden on narrower viewports, while the layer controls remain available in the left panel.
+The report counts buildings, properties, combined-plot properties and base plots. These layers only change display; they do not regenerate or edit the city. The expandable city report is available in the inspector; Layers remains available in the map header.
 
 ### Navigation
 
-- Pan using **Pan map**, middle-button drag, or Space + drag in any tool.
+- Pan using **Select / Pan**, middle-button drag, or Space + drag in any tool.
 - Scroll to zoom; `+` and `−` also zoom.
 - Press `0` or use the fit button to fit the current city, including enabled fortifications (or the outline while editing).
 - Escape returns to pan mode. Ctrl/Cmd + Z undoes an outline edit when focus is on the map.
@@ -168,7 +172,7 @@ Hosted URLs can initialize a preset with `?seed=demo&size=large&shape=organic`. 
 - One continuous outer boundary; a river or coastline is represented separately. Concave and branching boundaries are supported.
 - Crossed or self-touching outlines are rejected. Freehand drawing is simplified before point editing. Boundaries must have enough area for streets and a town center; very narrow necks are rejected with a correction message.
 - Project save/load and browser recovery are available. PNG export remains a later milestone. Keep portable project downloads as backups; clearing browser data can remove recovery.
-- Green ground includes the open portions of city blocks. Individual building selection, renaming, manual footprint editing, functional district themes, lakes, terrain, interiors and three-dimensional rendering remain later phases.
+- Green ground includes the open portions of city blocks. Individual building selection, renaming, manual footprint editing, functional district themes, interiors and three-dimensional rendering remain later phases.
 - Road centerlines and blocks respect the boundary. Rendered street strokes have width and may extend slightly beyond it along the perimeter.
 - The 3B population stage leaves the 3A.2 street graph, block geometry, plaza and outline intact for the same settings. Building generation is reproducible within this version; future generator revisions may change results.
 
@@ -206,7 +210,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui2.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui3.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -235,7 +239,8 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.3e6:** Editable mountain ranges around/inside the city, ridge peaks, connected road passes and schema-9 compatibility.
 - **0.1-dev.ui1:** UI overhaul Phase 1 — modular workspace shell, section navigation, collapsible panels and extensible selection summaries.
 - **0.1-dev.ui2:** UI overhaul Phase 2 — compact City controls, expandable seeds, shared Project/Layers menus and map navigation.
-- **UI overhaul, Phases 3–7:** Control organization, landscape list, full contextual editing, readability and workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
+- **0.1-dev.ui3:** UI overhaul Phase 3 — unified landscape list, inline creation/contextual forms, map hits/highlights and portable landscape selection.
+- **UI overhaul, Phases 4–7:** District/defense workflows, draft feedback, readability and full workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 

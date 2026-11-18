@@ -228,3 +228,10 @@ Native Firefox verification and the wider desktop/ultrawide/narrow-screen matrix
 All 129 automated tests passed. New tests cover shared menu keyboard/focus/dismissal behavior, asynchronous file-result visibility, recovery attention, and actual template ancestry/unique IDs for compact City, shared file/layer/map controls and expandable seeds. The compiled standalone workflow checks revealed load previews, explicit Open project, recovery and invalid-file errors alongside existing exact project/draft/history/input/layer restoration.
 
 Chrome checks verify the actual City layout, Project recovery staging/cancellation, shared Layers access from Defenses and working property/plot/fortification visibility toggles. Native Firefox and the broader responsive/ultrawide matrix remain pending. Schema and generation/geometry modules are unchanged.
+
+
+## UI overhaul Phase 3 (`0.1-dev.ui3`)
+
+The full suite passes 135 tests. New focused tests cover hit priority and zoom tolerance, no geometry mutation during selection/hover/filtering, keyed rows, creation visibility/limits, pending per-feature controls, missing-record clearing and selection identity through undo. The compiled app additionally exercises actual map pointer selection and matching inspector forms, conflicting filter reset, scoped removal/undo, portable Select/Pan selection, pending seed restoration and safe stale-reference loading. Save validation checks optional selection bounds, compatible fields and older files.
+
+Chrome checks create a river, coastline, two lakes and a mountain range through the new picker and successfully rebuild the city with all five records. List and actual map clicks open the corresponding selected-feature form in Select/Pan. Filters retain records/geometry, blank clicks clear selection, removal hides only the selected lake, and shared water undo restores it. Actual project download → validated preview → explicit Open restores the selected lake and pending seed while loading 297 saved buildings directly. Final layout has no horizontal page overflow at 1363 px. Native Firefox and the full responsive/ultrawide matrix remain pending.

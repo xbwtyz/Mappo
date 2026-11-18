@@ -1,4 +1,7 @@
 import {
+  LandscapeWorkspace
+} from './ui/landscape.js';
+import {
   WorkspaceShell
 } from './ui/workspace.js';
 import {
@@ -78,6 +81,7 @@ let fortificationPanel;
 let waterPanel;
 let terrainPanel;
 let workspaceShell;
+let landscapeWorkspace;
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -97,7 +101,7 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor);
+    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover);
   });
 }
 
@@ -408,15 +412,9 @@ waterPanel = new WaterPanel({
       id: waterPanel.editor.activeFeature().id
     });
     $('waterPanel').open = true;
-    fitMap();
   },
   changed: () => {
-    if (waterPanel?.editor.mode !== 'pan' && waterPanel?.editor.activeFeature()) workspaceShell?.select({
-      kind: 'water',
-      id: waterPanel.editor.activeFeature().id
-    }, {
-      reveal: false
-    });
+    landscapeWorkspace?.editorChanged('water');
     workspaceShell?.refresh();
     updateMapIndicators();
     requestDraw();
@@ -443,15 +441,9 @@ terrainPanel = new TerrainPanel({
       id: terrainPanel.editor.activeFeature().id
     });
     $('terrainPanel').open = true;
-    fitMap();
   },
   changed: () => {
-    if (terrainPanel?.editor.mode !== 'pan' && terrainPanel?.editor.activeFeature()) workspaceShell?.select({
-      kind: 'terrain',
-      id: terrainPanel.editor.activeFeature().id
-    }, {
-      reveal: false
-    });
+    landscapeWorkspace?.editorChanged('terrain');
     workspaceShell?.refresh();
     updateMapIndicators();
     requestDraw();
@@ -491,7 +483,11 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
   getElement: $,
   onNavigate: (previous, next) => stopWorkspaceTools(next),
   onLayout: () => resize(),
-  changed: () => files?.changed(),
+  changed: () => {
+    files?.changed();
+    requestDraw();
+  },
+  onInspect: () => landscapeWorkspace?.render(),
   clearSelection: () => {
     stopWorkspaceTools();
     districtPanel.editor.selectedDistrictId = null;
@@ -505,7 +501,22 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
   getWaterPanel: () => waterPanel,
   getTerrainPanel: () => terrainPanel
 });
+landscapeWorkspace = new LandscapeWorkspace({
+  getElement: $,
+  shell: workspaceShell,
+  water: waterPanel,
+  terrain: terrainPanel,
+  stopTools: stopWorkspaceTools,
+  onSelect: () => {
+    districtPanel.editor.selectedDistrictId = null;
+    districtPanel.editor.selectedBlockId = null;
+    districtPanel.refresh();
+  },
+  changed: () => files?.changed(),
+  draw: requestDraw
+});
 workspaceShell.bind();
+landscapeWorkspace.bind();
 
 const activeMapEditor = () => terrainPanel.editor.mode !== 'pan' ? terrainPanel.editor : waterPanel.editor.mode !== 'pan' ? waterPanel.editor : editor;
 const runMapEdit = (method, args) => {
@@ -522,7 +533,21 @@ const mapEditor = {
   addPoint: (...args) => activeMapEditor().addPoint(...args)
 };
 
-bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => districtPanel.selectAt(point));
+bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => {
+  const hit = landscapeWorkspace.hit(point, camera.zoom);
+  if (hit) {
+    landscapeWorkspace.select(hit, {
+      fromMap: true
+    });
+  } else {
+    districtPanel.selectAt(point);
+    if (!districtPanel.editor.selectedDistrictId) workspaceShell.clear();
+  }
+}, point => {
+  const hit = landscapeWorkspace.hit(point, camera.zoom);
+  landscapeWorkspace.setHover(hit);
+  canvas.classList.toggle('feature-hover', Boolean(hit));
+});
 if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
 else window.addEventListener('resize', resize);
 resize();
@@ -598,6 +623,9 @@ function captureWorkspace() {
         preset: $('presetInput').value
       },
       view: {
+        landscapeSelection: ['water', 'terrain'].includes(workspaceShell.state.selection?.kind) ? {
+          ...workspaceShell.state.selection
+        } : null,
         camera: {
           x: camera.x,
           y: camera.y,
@@ -613,6 +641,7 @@ function captureWorkspace() {
 }
 
 function applyProjectDocument(document) {
+  landscapeWorkspace.restoring = true;
   const next = copyJson(document.project),
     workspace = copyJson(document.workspace),
     draft = workspace.editor;
@@ -693,7 +722,7 @@ function applyProjectDocument(document) {
   $('districtPanel').open = workspace.panels?.districts ?? Boolean(districtPanel.editor.selectedDistrictId);
   $('fortificationPanel').open = workspace.panels?.fortifications ?? true;
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[workspace.controls.morphology];
-  const restoredSelection = terrainPanel.editor.mode !== 'pan' && terrainPanel.editor.activeFeature() ? {
+  const legacySelection = terrainPanel.editor.mode !== 'pan' && terrainPanel.editor.activeFeature() ? {
     kind: 'terrain',
     id: terrainPanel.editor.activeFeature().id
   } : waterPanel.editor.mode !== 'pan' && waterPanel.editor.activeFeature() ? {
@@ -703,6 +732,27 @@ function applyProjectDocument(document) {
     kind: 'district',
     id: districtPanel.editor.selectedDistrictId
   } : null;
+  const savedSelection = workspace.view.landscapeSelection;
+  if (savedSelection && !landscapeWorkspace.record(savedSelection)) {
+    // A stale reference must not leave a restored tool editing a different,
+    // hidden feature. Definitions and pending fields remain loaded exactly.
+    waterPanel.editor.setMode('pan');
+    terrainPanel.editor.setMode('pan');
+  }
+  const restoredSelection = savedSelection !== undefined ? (landscapeWorkspace.record(savedSelection) ? savedSelection : districtPanel.editor.selectedDistrictId ? {
+    kind: 'district',
+    id: districtPanel.editor.selectedDistrictId
+  } : null) : legacySelection;
+  if (restoredSelection?.kind === 'water') {
+    waterPanel.editor.selectFeature(restoredSelection.id);
+    if (waterPanel.editor.activeFeature()?.kind === 'lake') waterPanel.selectedLakeId = restoredSelection.id;
+    waterPanel.refresh();
+  }
+  if (restoredSelection?.kind === 'terrain') {
+    terrainPanel.editor.select(restoredSelection.id);
+    terrainPanel.refresh();
+  }
+  landscapeWorkspace.reset();
   workspaceShell.reset({
     section: restoredSelection?.kind === 'district' ? 'districts' : restoredSelection ? 'landscape' : 'city',
     selection: restoredSelection

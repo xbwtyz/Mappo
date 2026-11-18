@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.ui2</title>
+  <title>Mappo — City editor · 0.1-dev.ui3</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -127,12 +127,38 @@
 .workspace-shell #workspaceSection-city .city-control-section h2{margin-bottom:10px}
 .workspace-shell #workspaceSection-city .control-group{margin-bottom:14px}
 
+/* UI phase 3: one landscape inventory and contextual, mounted editor forms. */
+.landscape-list-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.landscape-list-heading h2{font:650 16px system-ui,sans-serif;letter-spacing:0;color:#e5d6bd}
+#landscapeFeatureCount{font-size:11px;color:#a9bfad;white-space:nowrap}
+.landscape-filters{display:flex;gap:5px;margin:17px 0}
+.landscape-filters button{flex:1;min-height:35px;padding:5px;border:1px solid #4b645b;border-radius:5px;background:transparent;color:#b9cfc0;font-size:11px}
+.landscape-filters button[aria-pressed=true]{background:#d1a579;color:#192b2b;border-color:#d1a579;font-weight:700}
+.landscape-feature-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.landscape-feature-button{width:100%;text-align:left;white-space:pre-line;line-height:1.8;overflow-wrap:anywhere;padding:10px 12px;border:1px solid #496158;border-radius:6px;background:#15292b;color:#a9c2b1;font-size:12px}
+.landscape-feature-button::first-line{font-weight:700;color:#ecdfc4}
+.landscape-feature-button:hover,.landscape-feature-button.is-hovered{background:#29423d;border-color:#87b2ac}
+.landscape-feature-button[aria-pressed=true]{background:#3a3e30;border-color:#dba56c;box-shadow:inset 3px 0 #dba56c}
+.landscape-history-tools{margin-top:22px;padding-top:12px;border-top:1px solid #40564d}
+.landscape-history-tools>.hint{margin:0 0 10px}
+.landscape-inspector-controls .water-panel{padding:0;border:0;background:transparent;margin:16px 0}
+.landscape-inspector-controls .water-feature{margin:0 0 16px;padding:0;border:0}
+.landscape-inspector-controls .water-feature>legend{display:none}
+.landscape-inspector-controls .control-group{margin-bottom:14px}
+.landscape-inspector-controls .control-group label{font-size:12px;line-height:1.5}
+.landscape-inspector-controls .tool-button,.landscape-inspector-controls .minor-button{font-size:11px;min-height:36px}
+.landscape-inspector-controls .file-status{font-size:11px;line-height:1.7}
+.landscape-inspector-controls .hint{font-size:11px}
+.landscape-inspector-controls select{appearance:auto;padding:0 8px;font-size:12px}
+.landscape-inspector-controls .tool-grid .control-group label{font-size:11px}
+.workspace-shell .map-viewport canvas.feature-hover{cursor:pointer}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.ui2</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.ui3</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -146,7 +172,7 @@
         </section>
     </div>
     <nav class="workspace-tabs" role="tablist" aria-label="Editor sections"><button id="workspaceTab-city" role="tab" aria-controls="workspaceSection-city" aria-selected="true" tabindex="0">City</button><button id="workspaceTab-landscape" role="tab" aria-controls="workspaceSection-landscape" aria-selected="false" tabindex="-1">Landscape</button><button id="workspaceTab-districts" role="tab" aria-controls="workspaceSection-districts" aria-selected="false" tabindex="-1">Districts</button><button id="workspaceTab-defenses" role="tab" aria-controls="workspaceSection-defenses" aria-selected="false" tabindex="-1">Defenses</button></nav>
-    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>WORKSPACE · PHASE 2</span></div>
+    <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span>WORKSPACE · PHASE 3</span></div>
   </header>
   <div class="workspace">
     <aside id="workspaceTools" class="sidebar sidebar-left" aria-label="City design tools">
@@ -176,61 +202,15 @@
           </details>
           <button id="cancelButton" class="minor-button full-width city-revert">Revert outline &amp; street edits</button>
         </section>
-        <section id="workspaceSection-landscape" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-landscape" hidden>        <details id="waterPanel" class="water-panel" open>
-          <summary>WATER &amp; BRIDGES</summary>
-          <p id="waterStats" class="hint">Generate lakes, a river and a coastline independently, then edit each preview.</p>
-          <fieldset class="water-feature"><legend>RIVER</legend>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
-          <div class="control-group"><label for="waterSeedInput">River seed</label><input id="waterSeedInput" maxlength="64" value="river" spellcheck="false"></div>
-          <button id="rerollRiverButton" class="minor-button full-width">New river seed</button>
-          </details>
-          <div class="control-group"><label for="riverWidthInput">River width · survey units</label><input id="riverWidthInput" type="number" min="10" max="90" step="1" value="28"></div>
-          <div class="tool-grid"><button id="generateRiverButton" class="tool-button">Generate river</button><button id="editRiverButton" class="tool-button" aria-pressed="false">Edit river points</button><button id="removeRiverButton" class="minor-button">Remove river</button></div>
-          <button id="tidyRiverButton" class="minor-button full-width actions">Tidy river bends</button>
-          <p class="hint">River handles stay in order and nearby handles adjust to ease tight bends as you drag. Tidy repairs older drafts; Generate city also tidies them before applying.</p>
-          <div class="tool-grid actions"><button id="editBridgesButton" class="tool-button" aria-pressed="false">Move bridges</button><button id="addBridgeButton" class="minor-button" aria-pressed="false">Add bridge</button></div>
-          </fieldset>
-          <fieldset class="water-feature"><legend>COASTLINE</legend>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
-          <div class="control-group"><label for="coastSeedInput">Coast seed</label><input id="coastSeedInput" maxlength="64" value="coast" spellcheck="false"></div>
-          <button id="rerollCoastButton" class="minor-button full-width">New coast seed</button>
-          </details>
-          <div class="control-group"><label for="coastDirectionInput">Ocean direction · new coastline</label><select id="coastDirectionInput"><option value="north">North</option><option value="east" selected>East</option><option value="south">South</option><option value="west">West</option></select></div>
-          <div class="tool-grid"><button id="generateCoastButton" class="tool-button">Generate coastline</button><button id="editCoastButton" class="tool-button" aria-pressed="false">Edit shoreline</button><button id="flipCoastButton" class="minor-button">Swap land / water</button></div>
-          <button id="tidyCoastButton" class="minor-button full-width actions">Tidy shoreline bends</button>
-          <p class="hint">Shoreline handles self-adjust like river handles. Tidy repairs older drafts; Generate city tidies both water features before applying.</p>
-          <button id="removeCoastButton" class="minor-button full-width actions">Remove coastline</button>
-          </fieldset>
-          <fieldset class="water-feature"><legend>LAKES</legend>
-          <div class="control-group"><label for="lakeSelect">Selected lake</label><select id="lakeSelect"><option value="">No lakes yet</option></select></div>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
-          <div class="control-group"><label for="lakeSeedInput">Lake seed</label><input id="lakeSeedInput" maxlength="64" value="lake" spellcheck="false"></div>
-          </details>
-          <div class="control-group"><label for="lakeRadiusInput">Lake size · new / regenerated lake</label><input id="lakeRadiusInput" type="number" min="18" max="100" value="28"></div>
-          <div class="tool-grid"><button id="addLakeButton" class="tool-button">Add lake</button><button id="regenerateLakeButton" class="minor-button">Regenerate selected</button><button id="editLakeButton" class="tool-button" aria-pressed="false">Edit lake shape</button><button id="moveLakeButton" class="tool-button" aria-pressed="false">Move lake</button></div>
-          <button id="removeLakeButton" class="minor-button full-width actions">Remove selected lake</button>
-          <p class="hint">Up to eight independent lakes. Drag shoreline points to reshape; double-click a shore edge to add a point. Move lake uses its center marker. Guided handles keep banks from tangling. Generate city applies the draft.</p>
-          </fieldset>
-          <p class="hint">Lakes, river and coast controls are independent. Generating, editing or removing one retains the other. Water joins where the river meets the ocean.</p>
-          <button id="removeWaterItemButton" class="minor-button full-width">Remove selected point / bridge</button>
-          <div class="tool-grid actions"><button id="undoWaterButton" class="minor-button">Undo water edit</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
-          <p id="waterMessage" class="file-status" role="status" aria-live="polite">Water edits are previews. Generate city below to rebuild streets, buildings, districts and defenses around them. The last valid city stays open if a crossing cannot connect.</p>
-        </details>
-        <details id="terrainPanel" class="water-panel" open>
-          <summary>MOUNTAINS &amp; PASSES</summary>
-          <p id="terrainStats" class="hint">Generate editable mountain ranges around or inside the city.</p>
-          <div class="control-group"><label for="terrainSelect">Selected mountain range</label><select id="terrainSelect"><option value="">No mountain ranges yet</option></select></div>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
-          <div class="control-group"><label for="terrainSeedInput">Mountain seed</label><input id="terrainSeedInput" maxlength="64" value="mountains" spellcheck="false"></div>
-          </details>
-          <div class="control-group"><label for="terrainPlacementInput">Placement · new / regenerated range</label><select id="terrainPlacementInput"><option value="surrounding">Surrounding landscape</option><option value="inside">Inside the city</option><option value="crossing">Across the city edge</option></select></div>
-          <div class="tool-grid"><div class="control-group"><label for="terrainSizeInput">Range size</label><input id="terrainSizeInput" type="number" min="40" max="220" value="70"></div><div class="control-group"><label for="terrainHeightInput">Peak height · selected / new</label><input id="terrainHeightInput" type="number" min="50" max="3000" value="900"></div></div>
-          <div class="tool-grid"><button id="addTerrainButton" class="tool-button">Add mountain range</button><button id="regenerateTerrainButton" class="minor-button">Regenerate selected</button><button id="editTerrainButton" class="tool-button" aria-pressed="false">Edit foothills</button><button id="moveTerrainButton" class="tool-button" aria-pressed="false">Move range</button><button id="editRidgeButton" class="tool-button" aria-pressed="false">Edit ridge / peaks</button><button id="removeTerrainButton" class="minor-button">Remove selected range</button><button id="editPassButton" class="tool-button" aria-pressed="false">Move passes</button><button id="addPassButton" class="minor-button" aria-pressed="false">Add road pass</button></div>
-          <button id="removeTerrainItemButton" class="minor-button full-width actions">Remove selected foothill point / pass</button>
-          <div class="tool-grid actions"><button id="undoTerrainButton" class="minor-button">Undo terrain edit</button><button id="revertTerrainButton" class="minor-button">Revert terrain draft</button></div>
-          <p class="hint">Up to six ranges, inside or outside the outline. Footprint and ridge handles self-adjust. Buildings avoid steep ground; roads cross through designated passes. Keep mountains and water separated. Heights control map contours and peak symbols.</p>
-          <p id="terrainMessage" class="file-status" role="status" aria-live="polite">Terrain edits are previews. Generate city applies the draft and rebuilds streets, buildings, districts and defenses.</p>
-        </details>
+        <section id="workspaceSection-landscape" class="workspace-section landscape-list-panel" role="tabpanel" aria-labelledby="workspaceTab-landscape" hidden>
+          <div class="landscape-list-heading"><h2>Landscape</h2><span id="landscapeFeatureCount"></span></div>
+          <button id="landscapeAddButton" class="tool-button full-width">+ Add feature</button>
+          <div class="landscape-filters" role="group" aria-label="Landscape filters"><button id="landscapeFilter-all" aria-pressed="true">All</button><button id="landscapeFilter-water" aria-pressed="false">Water</button><button id="landscapeFilter-mountains" aria-pressed="false">Mountains</button></div>
+          <ul id="landscapeFeatureList" class="landscape-feature-list" aria-label="Landscape features"></ul>
+          <p id="landscapeEmpty" class="hint">Add a river, coastline, lake or mountain range.</p>
+          <p class="hint">Select a feature here or click it on the map. Its editing controls open in the inspector.</p>
+          <details class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a city block to inspect its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
+          <div id="landscapeHistoryTools" class="landscape-history-tools"><p class="hint">Draft histories</p><div class="tool-grid"><button id="landscapeUndoWater" class="minor-button">Undo water</button><button id="landscapeUndoTerrain" class="minor-button">Undo mountains</button></div></div>
         </section>
         <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>        <details id="districtPanel" class="district-panel" aria-label="Neighborhood tools">
           <summary>NEIGHBORHOODS · <span id="districtCount">0</span></summary>
@@ -290,9 +270,69 @@
     </main>
     <aside id="workspaceInspector" class="sidebar sidebar-right" aria-label="Selection inspector" hidden>
       <div class="sidebar-heading workspace-panel-heading"><span>INSPECTOR</span><div class="workspace-panel-actions"><button id="workspacePinInspector" class="workspace-pin-button" aria-label="Pin inspector open" aria-pressed="false">Pin</button><button id="workspaceCloseInspector" class="workspace-icon-button" aria-label="Collapse inspector" title="Collapse inspector">›</button></div></div>
-      <div class="sidebar-content">
-        <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a block to inspect its district, or choose a water or mountain editing tool. Pin this panel to keep the city report available.</p></div>
+      <div id="workspaceInspectorScroll" class="sidebar-content">
+        <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a landscape feature or city block, or use Add feature in Landscape. Pin this panel to keep the city report available.</p></div>
         <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+        <div id="landscapeInspectorControls" class="landscape-inspector-controls" hidden>
+          <div id="landscapeCreationType" class="control-group" hidden><label for="landscapeTypeInput">Feature type</label><select id="landscapeTypeInput"><option value="river">River</option><option value="coast">Coastline</option><option value="lake">Lake</option><option value="terrain">Mountain range</option></select><p id="landscapeCreationHelp" class="hint"></p></div>
+<details id="waterPanel" class="water-panel" open>
+          <summary hidden>Water controls</summary>
+          <p id="waterStats" class="hint">Generate lakes, a river and a coastline independently, then edit each preview.</p>
+          <fieldset id="landscapeRiverControls" class="water-feature"><legend>RIVER</legend>
+          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
+          <div class="control-group"><label for="waterSeedInput">River seed</label><input id="waterSeedInput" maxlength="64" value="river" spellcheck="false"></div>
+          <button id="rerollRiverButton" class="minor-button full-width">New river seed</button>
+          </details>
+          <div class="control-group"><label for="riverWidthInput">River width · survey units</label><input id="riverWidthInput" type="number" min="10" max="90" step="1" value="28"></div>
+          <div class="tool-grid"><button id="generateRiverButton" class="tool-button">Generate river</button><button id="editRiverButton" class="tool-button" aria-pressed="false">Edit river points</button><button id="removeRiverButton" class="minor-button">Remove river</button></div>
+          <button id="tidyRiverButton" class="minor-button full-width actions">Tidy river bends</button>
+          <p class="hint">River handles stay in order and nearby handles adjust to ease tight bends as you drag. Tidy repairs older drafts; Generate city also tidies them before applying.</p>
+          <div class="tool-grid actions"><button id="editBridgesButton" class="tool-button" aria-pressed="false">Move bridges</button><button id="addBridgeButton" class="minor-button" aria-pressed="false">Add bridge</button></div>
+          </fieldset>
+          <fieldset id="landscapeCoastControls" class="water-feature"><legend>COASTLINE</legend>
+          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
+          <div class="control-group"><label for="coastSeedInput">Coast seed</label><input id="coastSeedInput" maxlength="64" value="coast" spellcheck="false"></div>
+          <button id="rerollCoastButton" class="minor-button full-width">New coast seed</button>
+          </details>
+          <div class="control-group"><label for="coastDirectionInput">Ocean direction · new coastline</label><select id="coastDirectionInput"><option value="north">North</option><option value="east" selected>East</option><option value="south">South</option><option value="west">West</option></select></div>
+          <div class="tool-grid"><button id="generateCoastButton" class="tool-button">Generate coastline</button><button id="editCoastButton" class="tool-button" aria-pressed="false">Edit shoreline</button><button id="flipCoastButton" class="minor-button">Swap land / water</button></div>
+          <button id="tidyCoastButton" class="minor-button full-width actions">Tidy shoreline bends</button>
+          <p class="hint">Shoreline handles self-adjust like river handles. Tidy repairs older drafts; Generate city tidies both water features before applying.</p>
+          <button id="removeCoastButton" class="minor-button full-width actions">Remove coastline</button>
+          </fieldset>
+          <fieldset id="landscapeLakeControls" class="water-feature"><legend>LAKES</legend>
+          <div class="control-group" hidden><label for="lakeSelect">Selected lake</label><select id="lakeSelect"><option value="">No lakes yet</option></select></div>
+          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
+          <div class="control-group"><label for="lakeSeedInput">Lake seed</label><input id="lakeSeedInput" maxlength="64" value="lake" spellcheck="false"></div>
+          </details>
+          <div class="control-group"><label for="lakeRadiusInput">Lake size · new / regenerated lake</label><input id="lakeRadiusInput" type="number" min="18" max="100" value="28"></div>
+          <div class="tool-grid"><button id="addLakeButton" class="tool-button">Add lake</button><button id="regenerateLakeButton" class="minor-button">Regenerate selected</button><button id="editLakeButton" class="tool-button" aria-pressed="false">Edit lake shape</button><button id="moveLakeButton" class="tool-button" aria-pressed="false">Move lake</button></div>
+          <button id="removeLakeButton" class="minor-button full-width actions">Remove selected lake</button>
+          <p class="hint">Up to eight independent lakes. Drag shoreline points to reshape; double-click a shore edge to add a point. Move lake uses its center marker. Guided handles keep banks from tangling. Generate city applies the draft.</p>
+          </fieldset>
+          <div id="landscapeWaterShared">
+          <p class="hint">Other landscape features are retained. Generate city applies the draft.</p>
+          <button id="removeWaterItemButton" class="minor-button full-width">Remove selected point / bridge</button>
+          <div class="tool-grid actions"><button id="undoWaterButton" class="minor-button">Undo water edit</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
+          </div>
+          <p id="waterMessage" class="file-status" role="status" aria-live="polite">Water edits are previews. Generate city below to rebuild streets, buildings, districts and defenses around them. The last valid city stays open if a crossing cannot connect.</p>
+        </details>
+        <details id="terrainPanel" class="water-panel" open>
+          <summary hidden>Mountain controls</summary>
+          <p id="terrainStats" class="hint">Generate editable mountain ranges around or inside the city.</p>
+          <div class="control-group" hidden><label for="terrainSelect">Selected mountain range</label><select id="terrainSelect"><option value="">No mountain ranges yet</option></select></div>
+          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
+          <div class="control-group"><label for="terrainSeedInput">Mountain seed</label><input id="terrainSeedInput" maxlength="64" value="mountains" spellcheck="false"></div>
+          </details>
+          <div class="control-group"><label for="terrainPlacementInput">Placement · new / regenerated range</label><select id="terrainPlacementInput"><option value="surrounding">Surrounding landscape</option><option value="inside">Inside the city</option><option value="crossing">Across the city edge</option></select></div>
+          <div class="tool-grid"><div class="control-group"><label for="terrainSizeInput">Range size</label><input id="terrainSizeInput" type="number" min="40" max="220" value="70"></div><div class="control-group"><label for="terrainHeightInput">Peak height · selected / new</label><input id="terrainHeightInput" type="number" min="50" max="3000" value="900"></div></div>
+          <div class="tool-grid"><button id="addTerrainButton" class="tool-button">Add mountain range</button><button id="regenerateTerrainButton" class="minor-button">Regenerate selected</button><button id="editTerrainButton" class="tool-button" aria-pressed="false">Edit foothills</button><button id="moveTerrainButton" class="tool-button" aria-pressed="false">Move range</button><button id="editRidgeButton" class="tool-button" aria-pressed="false">Edit ridge / peaks</button><button id="removeTerrainButton" class="minor-button">Remove selected range</button><button id="editPassButton" class="tool-button" aria-pressed="false">Move passes</button><button id="addPassButton" class="minor-button" aria-pressed="false">Add road pass</button></div>
+          <button id="removeTerrainItemButton" class="minor-button full-width actions">Remove selected foothill point / pass</button>
+          <div class="tool-grid actions"><button id="undoTerrainButton" class="minor-button">Undo terrain edit</button><button id="revertTerrainButton" class="minor-button">Revert terrain draft</button></div>
+          <p class="hint">Up to six ranges, inside or outside the outline. Footprint and ridge handles self-adjust. Buildings avoid steep ground; roads cross through designated passes. Keep mountains and water separated. Heights control map contours and peak symbols.</p>
+          <p id="terrainMessage" class="file-status" role="status" aria-live="polite">Terrain edits are previews. Generate city applies the draft and rebuilds streets, buildings, districts and defenses.</p>
+        </details>
+        </div>
         <details id="workspaceCityReport" class="workspace-city-report"><summary>City report &amp; workspace guide</summary>
 
         <p class="eyebrow">CURRENT GENERATED CITY</p><h2>City report<span class="gold-dot">.</span></h2><p class="intro">Buildings and varied properties shaped by your streets. Green space remains for yards, gardens and gaps.</p>
@@ -314,452 +354,6 @@
 <script>
 (function(){
 'use strict';
-// src/core/workspace-state.js
-const WORKSPACE_SECTIONS = Object.freeze([{
-  id: 'city',
-  label: 'City',
-  title: 'City layout'
-}, {
-  id: 'landscape',
-  label: 'Landscape',
-  title: 'Landscape'
-}, {
-  id: 'districts',
-  label: 'Districts',
-  title: 'Neighborhoods'
-}, {
-  id: 'defenses',
-  label: 'Defenses',
-  title: 'Fortifications'
-}]);
-function workspaceInitialState() {
-  return {
-    section: 'city',
-    toolsCollapsed: false,
-    inspectorCollapsed: false,
-    inspectorPinned: false,
-    selection: null
-  };
-}
-function workspaceInspectorVisible(state) {
-  return !state.inspectorCollapsed && (state.inspectorPinned || state.selection !== null);
-}
-function workspaceSelectionEqual(a, b) {
-  return a === b || Boolean(a && b && a.kind === b.kind && a.id === b.id);
-}
-// Navigation and selection describe the workspace only. They never own or
-// mutate a generated city, an editor definition, or a geometry history.
-function workspaceTransition(state, action) {
-  switch (action.type) {
-    case 'navigate':
-      if (!WORKSPACE_SECTIONS.some(s => s.id === action.section)) throw new Error('Unknown workspace section.');
-      return {
-        ...state, section: action.section, toolsCollapsed: false
-      };
-    case 'tools':
-      return {
-        ...state, toolsCollapsed: action.collapsed
-      };
-    case 'pin':
-      return {
-        ...state, inspectorPinned: !state.inspectorPinned, inspectorCollapsed: false
-      };
-    case 'inspector':
-      return {
-        ...state, inspectorCollapsed: action.collapsed, inspectorPinned: !action.collapsed && !state.selection ? true : state.inspectorPinned
-      };
-    case 'select': {
-      const selection = action.selection;
-      if (selection !== null && (!selection || typeof selection.kind !== 'string' || !selection.kind || selection.kind.length > 64 || typeof selection.id !== 'string' || !selection.id || selection.id.length > 128)) throw new Error('Invalid workspace selection.');
-      return {
-        ...state,
-        selection: selection ? {
-          kind: selection.kind,
-          id: selection.id
-        } : null,
-        inspectorCollapsed: selection && (!workspaceSelectionEqual(state.selection, selection) || action.reveal) ? false : state.inspectorCollapsed
-      };
-    }
-    default:
-      throw new Error('Unknown workspace action.');
-  }
-}
-
-
-// src/ui/workspace.js
-
-class WorkspaceShell {
-  constructor({
-    getElement,
-    document = globalThis.document,
-    onNavigate = () => {},
-    onLayout = () => {},
-    changed = () => {},
-    clearSelection = () => {}
-  }) {
-    this.$ = getElement;
-    this.document = document;
-    this.onNavigate = onNavigate;
-    this.onLayout = onLayout;
-    this.changed = changed;
-    this.onClearSelection = clearSelection;
-    this.providers = new Map();
-    this.state = workspaceInitialState();
-  }
-  registerInspector(kind, provider) {
-    if (typeof kind !== 'string' || !kind || !provider || typeof provider.resolve !== 'function') throw new Error('An inspector provider needs a kind and a resolver.');
-    this.providers.set(kind, provider);
-    return this;
-  }
-  descriptor() {
-    const selection = this.state.selection;
-    return selection ? this.providers.get(selection.kind)?.resolve(selection.id) ?? null : null;
-  }
-  dispatch(action) {
-    const previous = this.state;
-    this.state = workspaceTransition(previous, action);
-    this.render();
-    if (previous.toolsCollapsed !== this.state.toolsCollapsed || workspaceInspectorVisible(previous) !== workspaceInspectorVisible(this.state)) this.onLayout();
-    this.changed();
-  }
-  navigate(section) {
-    if (!WORKSPACE_SECTIONS.some(s => s.id === section)) throw new Error('Unknown workspace section.');
-    if (section !== this.state.section) this.onNavigate(this.state.section, section);
-    this.dispatch({
-      type: 'navigate',
-      section
-    });
-  }
-  select(selection, {
-    reveal = true
-  } = {}) {
-    if (selection && !this.providers.has(selection.kind)) throw new Error('No inspector provider for this selection.');
-    if (workspaceSelectionEqual(selection, this.state.selection) && (!reveal || !this.state.inspectorCollapsed)) {
-      this.renderInspector();
-      return;
-    }
-    this.dispatch({
-      type: 'select',
-      selection,
-      reveal
-    });
-  }
-  clear() {
-    this.onClearSelection();
-    this.select(null);
-  }
-  refresh() {
-    if (this.state.selection && !this.descriptor()) this.select(null, {
-      reveal: false
-    });
-    else this.renderInspector();
-  }
-  reset({
-    section = 'city',
-    selection = null
-  } = {}) {
-    this.state = workspaceInitialState();
-    this.state = workspaceTransition(this.state, {
-      type: 'navigate',
-      section
-    });
-    if (selection) this.state = workspaceTransition(this.state, {
-      type: 'select',
-      selection,
-      reveal: true
-    });
-    this.render();
-    this.onLayout();
-  }
-  renderInspector() {
-    const descriptor = this.descriptor();
-    this.$('workspaceEmptyInspector').hidden = Boolean(descriptor);
-    this.$('workspaceSelectionInspector').hidden = !descriptor;
-    this.$('workspaceClearSelection').hidden = !descriptor;
-    if (!descriptor) {
-      this.$('workspaceSelectionSections').replaceChildren();
-      return;
-    }
-    this.$('workspaceSelectionType').textContent = descriptor.type ?? 'Selection';
-    this.$('workspaceSelectionName').textContent = descriptor.title ?? this.state.selection.id;
-    this.$('workspaceSelectionDescription').textContent = descriptor.description ?? '';
-    this.$('workspaceSelectionSections').replaceChildren(...(descriptor.sections ?? []).map(section => {
-      const element = this.document.createElement('section');
-      element.className = 'workspace-inspector-section';
-      element.textContent = [section.title ?? '', ...(section.rows ?? []).map(([label, value]) => `${label}: ${value}`)].filter(Boolean).join('\n');
-      return element;
-    }));
-    this.$('workspaceShowControls').hidden = !descriptor.section;
-    this.$('workspaceShowControls').textContent = descriptor.controlLabel ?? 'Open editing controls';
-  }
-  render() {
-    this.$('workspaceApp').classList.toggle('workspace-tools-collapsed', this.state.toolsCollapsed);
-    const visible = workspaceInspectorVisible(this.state);
-    this.$('workspaceApp').classList.toggle('workspace-inspector-visible', visible);
-    this.$('workspaceTools').hidden = this.state.toolsCollapsed;
-    this.$('workspaceInspector').hidden = !visible;
-    this.$('workspaceOpenTools').hidden = !this.state.toolsCollapsed;
-    this.$('workspaceOpenInspector').hidden = visible;
-    this.$('workspacePinInspector').setAttribute('aria-pressed', String(this.state.inspectorPinned));
-    this.$('workspacePinInspector').textContent = this.state.inspectorPinned ? 'Unpin' : 'Pin';
-    this.$('workspacePinInspector').setAttribute('aria-label', this.state.inspectorPinned ? 'Unpin inspector' : 'Pin inspector open');
-    for (const section of WORKSPACE_SECTIONS) {
-      const active = section.id === this.state.section;
-      this.$(`workspaceTab-${section.id}`).setAttribute('aria-selected', String(active));
-      this.$(`workspaceTab-${section.id}`).tabIndex = active ? 0 : -1;
-      this.$(`workspaceSection-${section.id}`).hidden = !active;
-      this.$(`workspaceSection-${section.id}`).inert = !active;
-    }
-    this.$('workspaceSectionTitle').textContent = WORKSPACE_SECTIONS.find(s => s.id === this.state.section).title;
-    this.renderInspector();
-  }
-  bind() {
-    for (const [index, section] of WORKSPACE_SECTIONS.entries()) {
-      const button = this.$(`workspaceTab-${section.id}`);
-      button.addEventListener('click', () => this.navigate(section.id));
-      button.addEventListener('keydown', event => {
-        let next;
-        if (event.key === 'ArrowRight') next = (index + 1) % WORKSPACE_SECTIONS.length;
-        else if (event.key === 'ArrowLeft') next = (index + WORKSPACE_SECTIONS.length - 1) % WORKSPACE_SECTIONS.length;
-        else if (event.key === 'Home') next = 0;
-        else if (event.key === 'End') next = WORKSPACE_SECTIONS.length - 1;
-        else return;
-        event.preventDefault();
-        this.navigate(WORKSPACE_SECTIONS[next].id);
-        this.$(`workspaceTab-${WORKSPACE_SECTIONS[next].id}`).focus();
-      });
-    }
-    this.$('workspaceCollapseTools').addEventListener('click', () => {
-      this.dispatch({
-        type: 'tools',
-        collapsed: true
-      });
-      this.$('workspaceOpenTools').focus();
-    });
-    this.$('workspaceOpenTools').addEventListener('click', () => {
-      this.dispatch({
-        type: 'tools',
-        collapsed: false
-      });
-      this.$(`workspaceTab-${this.state.section}`).focus();
-    });
-    this.$('workspaceCloseInspector').addEventListener('click', () => {
-      this.dispatch({
-        type: 'inspector',
-        collapsed: true
-      });
-      this.$('workspaceOpenInspector').focus();
-    });
-    this.$('workspaceOpenInspector').addEventListener('click', () => this.dispatch({
-      type: 'inspector',
-      collapsed: false
-    }));
-    this.$('workspacePinInspector').addEventListener('click', () => this.dispatch({
-      type: 'pin'
-    }));
-    this.$('workspaceClearSelection').addEventListener('click', () => this.clear());
-    this.$('workspaceShowControls').addEventListener('click', () => {
-      const descriptor = this.descriptor();
-      if (descriptor?.section) this.navigate(descriptor.section);
-    });
-    this.render();
-  }
-}
-
-
-// src/ui/workspace-menus.js
-// Shared, nonmodal panels. Feature controllers continue to own their controls.
-class WorkspaceMenus {
-  constructor({
-    getElement,
-    document = globalThis.document
-  }) {
-    this.$ = getElement;
-    this.document = document;
-    this.active = null;
-    this.projectPending = null;
-    this.entries = {
-      project: {
-        button: 'projectMenuButton',
-        panel: 'projectMenu',
-        first: 'saveProjectButton'
-      },
-      layers: {
-        button: 'layersMenuButton',
-        panel: 'layersMenu',
-        first: 'buildingsLayer'
-      }
-    };
-  }
-  contains(name, target) {
-    const entry = this.entries[name];
-    return this.$(entry.button) === target || this.$(entry.button).contains?.(target) || this.$(entry.panel).contains?.(target);
-  }
-  close({
-    restoreFocus = false
-  } = {}) {
-    const previous = this.active;
-    this.active = null;
-    for (const entry of Object.values(this.entries)) {
-      this.$(entry.panel).hidden = true;
-      this.$(entry.button).setAttribute('aria-expanded', 'false');
-    }
-    if (restoreFocus && previous) this.$(this.entries[previous].button).focus();
-  }
-  open(name, {
-    focus = true
-  } = {}) {
-    if (!this.entries[name]) throw new Error('Unknown workspace menu.');
-    const leavingPanel = this.active && this.$(this.entries[this.active].panel).contains?.(this.document.activeElement);
-    this.close();
-    this.active = name;
-    const entry = this.entries[name];
-    this.$(entry.panel).hidden = false;
-    this.$(entry.button).setAttribute('aria-expanded', 'true');
-    if (focus || leavingPanel) this.$(entry.first).focus();
-  }
-  projectStatus({
-    message,
-    error,
-    pending,
-    recovery
-  }) {
-    const attention = Boolean(error || pending || recovery);
-    this.$('projectMenuAttention').hidden = !attention;
-    this.$('projectMenuButton').setAttribute('aria-label', attention ? 'Project — action needed' : 'Project');
-    this.$('projectMenuButton').title = message;
-    // File selection is asynchronous: reveal the validated preview or error even
-    // if the user has closed the menu while the file was being read.
-    if (error || (pending && pending !== this.projectPending)) this.open('project', {
-      focus: false
-    });
-    this.projectPending = pending;
-  }
-  bind() {
-    this.close();
-    for (const [name, entry] of Object.entries(this.entries)) {
-      this.$(entry.button).addEventListener('click', () => this.active === name ? this.close() : this.open(name));
-      this.$(entry.button).addEventListener('keydown', event => {
-        if (event.key === 'ArrowDown') {
-          event.preventDefault();
-          this.open(name);
-        }
-      });
-    }
-    this.$('projectMenuClose').addEventListener('click', () => this.close({
-      restoreFocus: true
-    }));
-    this.$('layersMenuClose').addEventListener('click', () => this.close({
-      restoreFocus: true
-    }));
-    this.document.addEventListener?.('pointerdown', event => {
-      if (this.active && !this.contains(this.active, event.target)) this.close({
-        restoreFocus: true
-      });
-    });
-    this.document.addEventListener?.('focusin', event => {
-      if (this.active && !this.contains(this.active, event.target)) this.close();
-    });
-    this.document.addEventListener?.('keydown', event => {
-      if (this.active && event.key === 'Escape') {
-        event.preventDefault();
-        event.stopPropagation();
-        this.close({
-          restoreFocus: true
-        });
-      }
-    }, true);
-  }
-}
-
-
-// src/ui/workspace-inspectors.js
-// Inspector providers translate existing records into display sections. The
-// shell knows no feature geometry and can accept additional providers later.
-function registerWorkspaceInspectors(shell, {
-  getCity,
-  getDistrictPanel,
-  getWaterPanel,
-  getTerrainPanel
-}) {
-  shell.registerInspector('district', {
-    resolve: id => {
-      const city = getCity(),
-        panel = getDistrictPanel(),
-        district = city?.districtState.status === 'assigned' ? city.districts.find(d => d.id === id) : null;
-      if (!district || panel.editor.selectedDistrictId !== id) return null;
-      return {
-        type: 'Neighborhood',
-        title: district.name,
-        description: 'A connected group of city blocks.',
-        section: 'districts',
-        controlLabel: 'Open district controls',
-        sections: [{
-          title: 'District summary',
-          rows: [
-            ['Blocks', district.blockIds.length],
-            ['Properties', city.properties.filter(p => p.districtId === id).length],
-            ['Buildings', city.buildings.filter(b => b.districtId === id).length], ...(panel.editor.selectedBlockId ? [
-              ['Selected block', panel.editor.selectedBlockId]
-            ] : [])
-          ]
-        }]
-      };
-    }
-  });
-  shell.registerInspector('water', {
-    resolve: id => {
-      const editor = getWaterPanel()?.editor,
-        feature = editor?.features.find(f => f.id === id);
-      if (!feature) return null;
-      const type = feature.kind === 'lake' ? 'Lake' : feature.kind === 'coast' ? 'Coastline' : 'River';
-      return {
-        type,
-        title: typeof feature.name === 'string' ? feature.name : `${type} · ${feature.id}`,
-        description: editor.dirty ? 'Water draft pending city generation.' : 'Geometry from the current city.',
-        section: 'landscape',
-        controlLabel: 'Open water controls',
-        sections: [{
-          title: 'Water feature',
-          rows: [
-            ['Shape handles', feature.path.length], ...(feature.kind === 'river' ? [
-              ['Width', feature.width],
-              ['Bridges', editor.bridges.filter(b => b.waterId === id).length]
-            ] : feature.kind === 'coast' ? [
-              ['Ocean side', feature.waterSide]
-            ] : [])
-          ]
-        }]
-      };
-    }
-  });
-  shell.registerInspector('terrain', {
-    resolve: id => {
-      const editor = getTerrainPanel()?.editor,
-        feature = editor?.features.find(f => f.id === id);
-      if (!feature) return null;
-      return {
-        type: 'Mountain range',
-        title: feature.name,
-        description: editor.dirty ? 'Terrain draft pending city generation.' : 'Geometry from the current city.',
-        section: 'landscape',
-        controlLabel: 'Open mountain controls',
-        sections: [{
-          title: 'Range summary',
-          rows: [
-            ['Foothill handles', feature.path.length],
-            ['Ridge peaks', feature.ridge.length],
-            ['Highest peak', Math.max(...feature.ridge.map(p => p.height))],
-            ['Road passes', editor.passes.filter(p => p.terrainId === id).length]
-          ]
-        }]
-      };
-    }
-  });
-  return shell;
-}
-
-
 // src/core/geometry.js
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -1562,6 +1156,854 @@ function terrainPassGeometry(feature, pass, boundary) {
     ends: [span.a, span.b],
     approach: [a, end]
   };
+}
+
+
+// src/core/landscape-selection.js
+
+
+
+function landscapeRecords(water = [], terrain = []) {
+  return [...water.map(feature => ({
+      kind: 'water',
+      id: feature.id,
+      feature
+    })),
+    ...terrain.map(feature => ({
+      kind: 'terrain',
+      id: feature.id,
+      feature
+    }))
+  ];
+}
+function landscapeLabel(record) {
+  const type = record.kind === 'terrain' ? 'Mountain range' : record.feature.kind === 'coast' ? 'Coastline' : record.feature.kind === 'lake' ? 'Lake' : 'River';
+  return {
+    type,
+    name: record.feature.name || (['river', 'coast'].includes(record.feature.kind) ? type : `${type} · ${record.id}`)
+  };
+}
+function landscapePolygon(record) {
+  return record.kind === 'water' ? waterFeaturePolygon(record.feature) : record.feature.path;
+}
+// Screen-sized edge tolerance makes small features usable at every zoom. Edges
+// beat interiors; then distance, smaller footprint, and stable ID break ties.
+function hitLandscape(point, records, zoom = 1) {
+  if (!point) return null;
+  const tolerance = 8 / Math.max(.18, zoom),
+    candidates = [];
+  for (const record of records) {
+    try {
+      const polygon = landscapePolygon(record),
+        path = record.feature.kind === 'coast' ? record.feature.path : polygon;
+      const closed = record.feature.kind !== 'coast';
+      let distance = Infinity;
+      for (let i = 1; i < path.length; i++) distance = Math.min(distance, distanceToSegment(point, path[i - 1], path[i]));
+      if (closed && path.length > 2) distance = Math.min(distance, distanceToSegment(point, path.at(-1), path[0]));
+      if (distance <= tolerance || pointInPolygon(point, polygon)) candidates.push({
+        record,
+        edge: distance <= tolerance ? 0 : 1,
+        distance,
+        area: Math.abs(polygonSignedArea(polygon))
+      });
+    } catch {
+      /* An invalid legacy draft is still selectable from the list. */
+    }
+  }
+  candidates.sort((a, b) => a.edge - b.edge || (a.edge === 0 ? a.distance - b.distance : 0) || a.area - b.area || `${a.record.kind}:${a.record.id}`.localeCompare(`${b.record.kind}:${b.record.id}`));
+  const hit = candidates[0]?.record;
+  return hit ? {
+    kind: hit.kind,
+    id: hit.id
+  } : null;
+}
+
+
+// src/ui/landscape.js
+
+
+
+const LANDSCAPE_FIELDS = {
+  river: ['waterSeedInput', 'riverWidthInput'],
+  coast: ['coastSeedInput', 'coastDirectionInput'],
+  lake: ['lakeSeedInput', 'lakeRadiusInput'],
+  terrain: ['terrainSeedInput', 'terrainSizeInput', 'terrainHeightInput', 'terrainPlacementInput']
+};
+class LandscapeWorkspace {
+  constructor({
+    getElement,
+    document = globalThis.document,
+    shell,
+    water,
+    terrain,
+    stopTools,
+    onSelect = () => {},
+    changed = () => {},
+    draw = () => {}
+  }) {
+    this.$ = getElement;
+    this.document = document;
+    this.shell = shell;
+    this.water = water;
+    this.terrain = terrain;
+    this.stopTools = stopTools;
+    this.onSelect = onSelect;
+    this.changed = changed;
+    this.draw = draw;
+    this.filter = 'all';
+    this.hover = null;
+    this.rows = new Map();
+    this.controlCache = new Map();
+    this.context = null;
+    this.selecting = false;
+    this.restoring = false;
+    this.historyLengths = {
+      water: water.editor.history.length,
+      terrain: terrain.editor.history.length
+    };
+    shell.registerInspector('landscape-add', {
+      resolve: id => LANDSCAPE_FIELDS[id] ? {
+        type: 'Add landscape feature',
+        title: 'New feature',
+        description: 'Create a landscape preview, then Generate city to build around it.',
+        sections: []
+      } : null
+    });
+  }
+  records() {
+    return landscapeRecords(this.water.editor.features, this.terrain.editor.features);
+  }
+  record(ref) {
+    return this.records().find(r => r.kind === ref?.kind && r.id === ref?.id);
+  }
+  refKey(ref) {
+    return ref ? `${ref.kind}:${ref.id}` : '';
+  }
+  type(ref) {
+    return ref?.kind === 'landscape-add' ? ref.id : ref?.kind === 'terrain' ? 'terrain' : this.record(ref)?.feature.kind ?? null;
+  }
+  available(type) {
+    if (!LANDSCAPE_FIELDS[type]) return false;
+    return type === 'terrain' ? this.terrain.editor.features.length < TERRAIN_LIMIT : type === 'lake' ? this.water.editor.features.filter(f => f.kind === 'lake').length < LAKE_LIMIT : !this.water.editor.features.some(f => f.kind === type);
+  }
+  stash() {
+    if (!this.context) return;
+    // Removal notifies after deleting the record; retain the mounted form's
+    // pending values so undo can bring that same feature back intact.
+    const type = this.type(this.context) ?? this.contextType;
+    if (LANDSCAPE_FIELDS[type]) this.controlCache.set(this.refKey(this.context), Object.fromEntries(LANDSCAPE_FIELDS[type].map(id => [id, this.$(id).value])));
+  }
+  loadControls(ref) {
+    const record = this.record(ref),
+      f = record?.feature,
+      type = this.type(ref);
+    const defaults = type === 'river' ? {
+      waterSeedInput: f?.generation?.seed ?? 'river',
+      riverWidthInput: f?.width ?? 28
+    } : type === 'coast' ? {
+      coastSeedInput: f?.generation?.seed ?? 'coast',
+      coastDirectionInput: f?.direction ?? 'east'
+    } : type === 'lake' ? {
+      lakeSeedInput: f?.generation?.seed ?? 'lake',
+      lakeRadiusInput: f?.generation?.radius ?? 28
+    } : {
+      terrainSeedInput: f?.generation?.seed ?? 'mountains',
+      terrainSizeInput: f?.generation?.size ?? 70,
+      terrainHeightInput: f ? Math.max(...f.ridge.map(p => p.height)) : 900,
+      terrainPlacementInput: f?.generation?.placement ?? 'surrounding'
+    };
+    for (const [id, value] of Object.entries({
+        ...defaults,
+        ...this.controlCache.get(this.refKey(ref))
+      })) this.$(id).value = String(value);
+    this.context = ref;
+    this.contextType = type;
+  }
+  select(ref, {
+    fromMap = false
+  } = {}) {
+    const record = this.record(ref);
+    if (!record) return false;
+    this.stash();
+    this.selecting = true;
+    try {
+      this.stopTools();
+      this.onSelect();
+      if (record.kind === 'water') {
+        this.water.editor.selectFeature(record.id);
+        if (record.feature.kind === 'lake') this.water.selectedLakeId = record.id;
+        this.water.refresh();
+      } else {
+        this.terrain.editor.select(record.id);
+        this.terrain.refresh();
+      }
+      this.loadControls(ref);
+      if ((this.filter === 'water' && ref.kind !== 'water') || (this.filter === 'mountains' && ref.kind !== 'terrain')) this.filter = 'all';
+      this.shell.navigate('landscape');
+      this.shell.select(ref);
+      this.setHover(null);
+      this.draw();
+      this.changed();
+      if (fromMap) this.rows.get(this.refKey(ref))?.button.scrollIntoView?.({
+        block: 'nearest'
+      });
+      return true;
+    } finally {
+      this.selecting = false;
+    }
+  }
+  beginAdd(type = null) {
+    const choice = type && this.available(type) ? type : Object.keys(LANDSCAPE_FIELDS).find(t => this.available(t) && (this.filter === 'mountains' ? t === 'terrain' : this.filter === 'water' ? t !== 'terrain' : true)) ?? Object.keys(LANDSCAPE_FIELDS).find(t => this.available(t));
+    if (!choice) return;
+    this.stash();
+    this.selecting = true;
+    try {
+      this.stopTools();
+      this.onSelect();
+      this.shell.navigate('landscape');
+      const ref = {
+        kind: 'landscape-add',
+        id: choice
+      };
+      this.loadControls(ref);
+      this.shell.select(ref);
+      this.setHover(null);
+      this.$('landscapeTypeInput').focus?.();
+    } finally {
+      this.selecting = false;
+    }
+  }
+  editorChanged(kind) {
+    if (this.selecting || this.restoring) return;
+    const selection = this.shell.state.selection,
+      editor = kind === 'water' ? this.water.editor : this.terrain.editor;
+    const undoing = editor.history.length < this.historyLengths[kind];
+    this.historyLengths[kind] = editor.history.length;
+    if (selection?.kind === kind && !this.record(selection)) {
+      this.stash();
+      this.context = null;
+      this.selecting = true;
+      editor.setMode('pan');
+      this.selecting = false;
+      this.shell.select(null, {
+        reveal: false
+      });
+      this.$('landscapeAddButton').focus?.();
+    } else if (undoing && selection?.kind === kind && this.record(selection)) {
+      if (kind === 'water') {
+        editor.selectFeature(selection.id);
+        this.water.refresh();
+      } else {
+        editor.select(selection.id);
+        this.terrain.refresh();
+      }
+    } else if (editor.mode !== 'pan' && editor.activeFeature()) {
+      this.onSelect();
+      const ref = {
+        kind,
+        id: editor.activeFeature().id
+      };
+      if (this.refKey(ref) !== this.refKey(selection)) {
+        this.stash();
+        this.context = ref;
+        this.contextType = this.type(ref);
+      }
+      if ((this.filter === 'water' && kind !== 'water') || (this.filter === 'mountains' && kind !== 'terrain')) this.filter = 'all';
+      this.shell.select(ref, {
+        reveal: false
+      });
+      if (selection?.kind === 'landscape-add') {
+        const button = kind === 'terrain' ? 'editTerrainButton' : editor.activeFeature().kind === 'lake' ? 'editLakeButton' : editor.activeFeature().kind === 'coast' ? 'editCoastButton' : 'editRiverButton';
+        this.$(button).focus?.();
+      }
+    }
+    this.render();
+    this.setHover(null);
+  }
+  setHover(ref) {
+    if (this.refKey(ref) === this.refKey(this.hover)) return;
+    this.hover = ref;
+    this.renderList();
+    this.draw();
+  }
+  hit(point, zoom) {
+    return hitLandscape(point, this.records(), zoom);
+  }
+  reset() {
+    this.controlCache.clear();
+    this.context = null;
+    this.hover = null;
+    this.restoring = false;
+    this.historyLengths = {
+      water: this.water.editor.history.length,
+      terrain: this.terrain.editor.history.length
+    };
+  }
+  renderList() {
+    const records = this.records(),
+      visible = records.filter(r => this.filter === 'all' || (this.filter === 'water' ? r.kind === 'water' : r.kind === 'terrain'));
+    for (const record of records) {
+      const key = this.refKey(record);
+      if (!this.rows.has(key)) {
+        const item = this.document.createElement('li'),
+          button = this.document.createElement('button');
+        button.className = 'landscape-feature-button';
+        button.type = 'button';
+        button.addEventListener('click', () => this.select({
+          kind: record.kind,
+          id: record.id
+        }));
+        button.addEventListener('pointerenter', () => this.setHover({
+          kind: record.kind,
+          id: record.id
+        }));
+        button.addEventListener('pointerleave', () => this.setHover(null));
+        item.replaceChildren(button);
+        this.rows.set(key, {
+          item,
+          button
+        });
+      }
+      const row = this.rows.get(key),
+        label = landscapeLabel(record),
+        pending = record.kind === 'water' ? this.water.editor.dirty : this.terrain.editor.dirty;
+      row.button.textContent = `${label.name}\n${label.name === label.type ? (pending ? 'Draft' : 'Saved geometry') : label.type + (pending ? ' · Draft' : '')}`;
+      row.button.setAttribute('aria-pressed', String(key === this.refKey(this.shell.state.selection)));
+      row.button.classList.toggle('is-hovered', key === this.refKey(this.hover));
+    }
+    for (const key of this.rows.keys())
+      if (!records.some(r => this.refKey(r) === key)) this.rows.delete(key);
+    const signature = visible.map(r => this.refKey(r)).join('|');
+    if (signature !== this.listSignature) {
+      this.$('landscapeFeatureList').replaceChildren(...visible.map(r => this.rows.get(this.refKey(r)).item));
+      this.listSignature = signature;
+    }
+    this.$('landscapeFeatureCount').textContent = `${records.length} ${records.length === 1 ? 'feature' : 'features'}`;
+    this.$('landscapeEmpty').hidden = visible.length > 0;
+    this.$('landscapeEmpty').textContent = records.length ? 'No features match this filter.' : 'Add a river, coastline, lake or mountain range.';
+    for (const filter of ['all', 'water', 'mountains']) this.$(`landscapeFilter-${filter}`).setAttribute('aria-pressed', String(this.filter === filter));
+    this.$('landscapeAddButton').disabled = !Object.keys(LANDSCAPE_FIELDS).some(t => this.available(t));
+    this.$('landscapeUndoWater').disabled = !this.water.editor.history.length;
+    this.$('landscapeUndoTerrain').disabled = !this.terrain.editor.history.length;
+  }
+  render() {
+    if (this.restoring) return;
+    this.renderList();
+    const selection = this.shell.state.selection,
+      record = this.record(selection),
+      creating = selection?.kind === 'landscape-add',
+      type = this.type(selection);
+    const key = this.refKey(selection);
+    if (key !== this.inspectorKey) {
+      this.$('workspaceInspectorScroll').scrollTop = 0;
+      this.inspectorKey = key;
+    }
+    const visible = Boolean(record || creating);
+    this.$('landscapeInspectorControls').hidden = !visible;
+    if (!visible) {
+      this.stash();
+      this.context = null;
+      return;
+    }
+    if (!this.context) {
+      this.context = selection;
+      this.contextType = type;
+    }
+    this.$('workspaceShowControls').hidden = true;
+    this.$('landscapeCreationType').hidden = !creating;
+    this.$('landscapeTypeInput').value = creating ? type : 'lake';
+    for (const option of Array.from(this.$('landscapeTypeInput').options ?? [])) option.disabled = !this.available(option.value);
+    this.$('landscapeCreationHelp').textContent = `One river, one coastline, up to ${LAKE_LIMIT} lakes and ${TERRAIN_LIMIT} ranges. Existing features stay intact.`;
+    this.$('waterPanel').hidden = type === 'terrain';
+    this.$('terrainPanel').hidden = type !== 'terrain';
+    if (type === 'terrain') this.$('terrainPanel').open = true;
+    else this.$('waterPanel').open = true;
+    for (const [kind, id] of [
+        ['river', 'landscapeRiverControls'],
+        ['coast', 'landscapeCoastControls'],
+        ['lake', 'landscapeLakeControls']
+      ]) this.$(id).hidden = type !== kind;
+    for (const id of ['editRiverButton', 'tidyRiverButton', 'removeRiverButton', 'editBridgesButton', 'addBridgeButton', 'editCoastButton', 'flipCoastButton', 'tidyCoastButton', 'removeCoastButton', 'editLakeButton', 'moveLakeButton', 'removeLakeButton', 'regenerateLakeButton', 'editTerrainButton', 'moveTerrainButton', 'editRidgeButton', 'removeTerrainButton', 'editPassButton', 'addPassButton', 'regenerateTerrainButton', 'removeTerrainItemButton', 'undoTerrainButton', 'revertTerrainButton']) this.$(id).hidden = creating;
+    this.$('landscapeWaterShared').hidden = creating;
+    this.$('addLakeButton').hidden = !creating;
+    this.$('addTerrainButton').hidden = !creating;
+    this.$('generateRiverButton').textContent = creating ? 'Create river' : 'Regenerate river';
+    this.$('generateCoastButton').textContent = creating ? 'Create coastline' : 'Regenerate coastline';
+    this.$('addLakeButton').textContent = 'Create lake';
+    this.$('addTerrainButton').textContent = 'Create mountain range';
+    // Errors must remain visible while a new feature proposal is being validated.
+    this.$('waterMessage').hidden = false;
+  }
+  bind() {
+    for (const filter of ['all', 'water', 'mountains']) this.$(`landscapeFilter-${filter}`).addEventListener('click', () => {
+      this.filter = filter;
+      this.renderList();
+    });
+    this.$('landscapeAddButton').addEventListener('click', () => this.beginAdd());
+    this.$('landscapeTypeInput').addEventListener('change', () => this.beginAdd(this.$('landscapeTypeInput').value));
+    this.$('landscapeUndoWater').addEventListener('click', () => this.$('undoWaterButton').click());
+    this.$('landscapeUndoTerrain').addEventListener('click', () => this.$('undoTerrainButton').click());
+    this.render();
+  }
+}
+
+
+// src/core/workspace-state.js
+const WORKSPACE_SECTIONS = Object.freeze([{
+  id: 'city',
+  label: 'City',
+  title: 'City layout'
+}, {
+  id: 'landscape',
+  label: 'Landscape',
+  title: 'Landscape'
+}, {
+  id: 'districts',
+  label: 'Districts',
+  title: 'Neighborhoods'
+}, {
+  id: 'defenses',
+  label: 'Defenses',
+  title: 'Fortifications'
+}]);
+function workspaceInitialState() {
+  return {
+    section: 'city',
+    toolsCollapsed: false,
+    inspectorCollapsed: false,
+    inspectorPinned: false,
+    selection: null
+  };
+}
+function workspaceInspectorVisible(state) {
+  return !state.inspectorCollapsed && (state.inspectorPinned || state.selection !== null);
+}
+function workspaceSelectionEqual(a, b) {
+  return a === b || Boolean(a && b && a.kind === b.kind && a.id === b.id);
+}
+// Navigation and selection describe the workspace only. They never own or
+// mutate a generated city, an editor definition, or a geometry history.
+function workspaceTransition(state, action) {
+  switch (action.type) {
+    case 'navigate':
+      if (!WORKSPACE_SECTIONS.some(s => s.id === action.section)) throw new Error('Unknown workspace section.');
+      return {
+        ...state, section: action.section, toolsCollapsed: false
+      };
+    case 'tools':
+      return {
+        ...state, toolsCollapsed: action.collapsed
+      };
+    case 'pin':
+      return {
+        ...state, inspectorPinned: !state.inspectorPinned, inspectorCollapsed: false
+      };
+    case 'inspector':
+      return {
+        ...state, inspectorCollapsed: action.collapsed, inspectorPinned: !action.collapsed && !state.selection ? true : state.inspectorPinned
+      };
+    case 'select': {
+      const selection = action.selection;
+      if (selection !== null && (!selection || typeof selection.kind !== 'string' || !selection.kind || selection.kind.length > 64 || typeof selection.id !== 'string' || !selection.id || selection.id.length > 128)) throw new Error('Invalid workspace selection.');
+      return {
+        ...state,
+        selection: selection ? {
+          kind: selection.kind,
+          id: selection.id
+        } : null,
+        inspectorCollapsed: selection && (!workspaceSelectionEqual(state.selection, selection) || action.reveal) ? false : state.inspectorCollapsed
+      };
+    }
+    default:
+      throw new Error('Unknown workspace action.');
+  }
+}
+
+
+// src/ui/workspace.js
+
+class WorkspaceShell {
+  constructor({
+    getElement,
+    document = globalThis.document,
+    onNavigate = () => {},
+    onLayout = () => {},
+    changed = () => {},
+    clearSelection = () => {},
+    onInspect = () => {}
+  }) {
+    this.$ = getElement;
+    this.document = document;
+    this.onNavigate = onNavigate;
+    this.onLayout = onLayout;
+    this.changed = changed;
+    this.onClearSelection = clearSelection;
+    this.onInspect = onInspect;
+    this.providers = new Map();
+    this.state = workspaceInitialState();
+  }
+  registerInspector(kind, provider) {
+    if (typeof kind !== 'string' || !kind || !provider || typeof provider.resolve !== 'function') throw new Error('An inspector provider needs a kind and a resolver.');
+    this.providers.set(kind, provider);
+    return this;
+  }
+  descriptor() {
+    const selection = this.state.selection;
+    return selection ? this.providers.get(selection.kind)?.resolve(selection.id) ?? null : null;
+  }
+  dispatch(action) {
+    const previous = this.state;
+    this.state = workspaceTransition(previous, action);
+    this.render();
+    if (previous.toolsCollapsed !== this.state.toolsCollapsed || workspaceInspectorVisible(previous) !== workspaceInspectorVisible(this.state)) this.onLayout();
+    this.changed();
+  }
+  navigate(section) {
+    if (!WORKSPACE_SECTIONS.some(s => s.id === section)) throw new Error('Unknown workspace section.');
+    if (section !== this.state.section) this.onNavigate(this.state.section, section);
+    this.dispatch({
+      type: 'navigate',
+      section
+    });
+  }
+  select(selection, {
+    reveal = true
+  } = {}) {
+    if (selection && !this.providers.has(selection.kind)) throw new Error('No inspector provider for this selection.');
+    if (workspaceSelectionEqual(selection, this.state.selection) && (!reveal || !this.state.inspectorCollapsed)) {
+      this.renderInspector();
+      return;
+    }
+    this.dispatch({
+      type: 'select',
+      selection,
+      reveal
+    });
+  }
+  clear() {
+    this.onClearSelection();
+    this.select(null);
+  }
+  refresh() {
+    if (this.state.selection && !this.descriptor()) this.select(null, {
+      reveal: false
+    });
+    else this.renderInspector();
+  }
+  reset({
+    section = 'city',
+    selection = null
+  } = {}) {
+    this.state = workspaceInitialState();
+    this.state = workspaceTransition(this.state, {
+      type: 'navigate',
+      section
+    });
+    if (selection) this.state = workspaceTransition(this.state, {
+      type: 'select',
+      selection,
+      reveal: true
+    });
+    this.render();
+    this.onLayout();
+  }
+  renderInspector() {
+    const descriptor = this.descriptor();
+    this.$('workspaceEmptyInspector').hidden = Boolean(descriptor);
+    this.$('workspaceSelectionInspector').hidden = !descriptor;
+    this.$('workspaceClearSelection').hidden = !descriptor;
+    if (!descriptor) {
+      this.$('workspaceSelectionSections').replaceChildren();
+      this.onInspect(this.state.selection);
+      return;
+    }
+    this.$('workspaceSelectionType').textContent = descriptor.type ?? 'Selection';
+    this.$('workspaceSelectionName').textContent = descriptor.title ?? this.state.selection.id;
+    this.$('workspaceSelectionDescription').textContent = descriptor.description ?? '';
+    this.$('workspaceSelectionSections').replaceChildren(...(descriptor.sections ?? []).map(section => {
+      const element = this.document.createElement('section');
+      element.className = 'workspace-inspector-section';
+      element.textContent = [section.title ?? '', ...(section.rows ?? []).map(([label, value]) => `${label}: ${value}`)].filter(Boolean).join('\n');
+      return element;
+    }));
+    this.$('workspaceShowControls').hidden = !descriptor.section;
+    this.$('workspaceShowControls').textContent = descriptor.controlLabel ?? 'Open editing controls';
+    this.onInspect(this.state.selection);
+  }
+  render() {
+    this.$('workspaceApp').classList.toggle('workspace-tools-collapsed', this.state.toolsCollapsed);
+    const visible = workspaceInspectorVisible(this.state);
+    this.$('workspaceApp').classList.toggle('workspace-inspector-visible', visible);
+    this.$('workspaceTools').hidden = this.state.toolsCollapsed;
+    this.$('workspaceInspector').hidden = !visible;
+    this.$('workspaceOpenTools').hidden = !this.state.toolsCollapsed;
+    this.$('workspaceOpenInspector').hidden = visible;
+    this.$('workspacePinInspector').setAttribute('aria-pressed', String(this.state.inspectorPinned));
+    this.$('workspacePinInspector').textContent = this.state.inspectorPinned ? 'Unpin' : 'Pin';
+    this.$('workspacePinInspector').setAttribute('aria-label', this.state.inspectorPinned ? 'Unpin inspector' : 'Pin inspector open');
+    for (const section of WORKSPACE_SECTIONS) {
+      const active = section.id === this.state.section;
+      this.$(`workspaceTab-${section.id}`).setAttribute('aria-selected', String(active));
+      this.$(`workspaceTab-${section.id}`).tabIndex = active ? 0 : -1;
+      this.$(`workspaceSection-${section.id}`).hidden = !active;
+      this.$(`workspaceSection-${section.id}`).inert = !active;
+    }
+    this.$('workspaceSectionTitle').textContent = WORKSPACE_SECTIONS.find(s => s.id === this.state.section).title;
+    this.renderInspector();
+  }
+  bind() {
+    for (const [index, section] of WORKSPACE_SECTIONS.entries()) {
+      const button = this.$(`workspaceTab-${section.id}`);
+      button.addEventListener('click', () => this.navigate(section.id));
+      button.addEventListener('keydown', event => {
+        let next;
+        if (event.key === 'ArrowRight') next = (index + 1) % WORKSPACE_SECTIONS.length;
+        else if (event.key === 'ArrowLeft') next = (index + WORKSPACE_SECTIONS.length - 1) % WORKSPACE_SECTIONS.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = WORKSPACE_SECTIONS.length - 1;
+        else return;
+        event.preventDefault();
+        this.navigate(WORKSPACE_SECTIONS[next].id);
+        this.$(`workspaceTab-${WORKSPACE_SECTIONS[next].id}`).focus();
+      });
+    }
+    this.$('workspaceCollapseTools').addEventListener('click', () => {
+      this.dispatch({
+        type: 'tools',
+        collapsed: true
+      });
+      this.$('workspaceOpenTools').focus();
+    });
+    this.$('workspaceOpenTools').addEventListener('click', () => {
+      this.dispatch({
+        type: 'tools',
+        collapsed: false
+      });
+      this.$(`workspaceTab-${this.state.section}`).focus();
+    });
+    this.$('workspaceCloseInspector').addEventListener('click', () => {
+      this.dispatch({
+        type: 'inspector',
+        collapsed: true
+      });
+      this.$('workspaceOpenInspector').focus();
+    });
+    this.$('workspaceOpenInspector').addEventListener('click', () => this.dispatch({
+      type: 'inspector',
+      collapsed: false
+    }));
+    this.$('workspacePinInspector').addEventListener('click', () => this.dispatch({
+      type: 'pin'
+    }));
+    this.$('workspaceClearSelection').addEventListener('click', () => this.clear());
+    this.$('workspaceShowControls').addEventListener('click', () => {
+      const descriptor = this.descriptor();
+      if (descriptor?.section) this.navigate(descriptor.section);
+    });
+    this.render();
+  }
+}
+
+
+// src/ui/workspace-menus.js
+// Shared, nonmodal panels. Feature controllers continue to own their controls.
+class WorkspaceMenus {
+  constructor({
+    getElement,
+    document = globalThis.document
+  }) {
+    this.$ = getElement;
+    this.document = document;
+    this.active = null;
+    this.projectPending = null;
+    this.entries = {
+      project: {
+        button: 'projectMenuButton',
+        panel: 'projectMenu',
+        first: 'saveProjectButton'
+      },
+      layers: {
+        button: 'layersMenuButton',
+        panel: 'layersMenu',
+        first: 'buildingsLayer'
+      }
+    };
+  }
+  contains(name, target) {
+    const entry = this.entries[name];
+    return this.$(entry.button) === target || this.$(entry.button).contains?.(target) || this.$(entry.panel).contains?.(target);
+  }
+  close({
+    restoreFocus = false
+  } = {}) {
+    const previous = this.active;
+    this.active = null;
+    for (const entry of Object.values(this.entries)) {
+      this.$(entry.panel).hidden = true;
+      this.$(entry.button).setAttribute('aria-expanded', 'false');
+    }
+    if (restoreFocus && previous) this.$(this.entries[previous].button).focus();
+  }
+  open(name, {
+    focus = true
+  } = {}) {
+    if (!this.entries[name]) throw new Error('Unknown workspace menu.');
+    const leavingPanel = this.active && this.$(this.entries[this.active].panel).contains?.(this.document.activeElement);
+    this.close();
+    this.active = name;
+    const entry = this.entries[name];
+    this.$(entry.panel).hidden = false;
+    this.$(entry.button).setAttribute('aria-expanded', 'true');
+    if (focus || leavingPanel) this.$(entry.first).focus();
+  }
+  projectStatus({
+    message,
+    error,
+    pending,
+    recovery
+  }) {
+    const attention = Boolean(error || pending || recovery);
+    this.$('projectMenuAttention').hidden = !attention;
+    this.$('projectMenuButton').setAttribute('aria-label', attention ? 'Project — action needed' : 'Project');
+    this.$('projectMenuButton').title = message;
+    // File selection is asynchronous: reveal the validated preview or error even
+    // if the user has closed the menu while the file was being read.
+    if (error || (pending && pending !== this.projectPending)) this.open('project', {
+      focus: false
+    });
+    this.projectPending = pending;
+  }
+  bind() {
+    this.close();
+    for (const [name, entry] of Object.entries(this.entries)) {
+      this.$(entry.button).addEventListener('click', () => this.active === name ? this.close() : this.open(name));
+      this.$(entry.button).addEventListener('keydown', event => {
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          this.open(name);
+        }
+      });
+    }
+    this.$('projectMenuClose').addEventListener('click', () => this.close({
+      restoreFocus: true
+    }));
+    this.$('layersMenuClose').addEventListener('click', () => this.close({
+      restoreFocus: true
+    }));
+    this.document.addEventListener?.('pointerdown', event => {
+      if (this.active && !this.contains(this.active, event.target)) this.close({
+        restoreFocus: true
+      });
+    });
+    this.document.addEventListener?.('focusin', event => {
+      if (this.active && !this.contains(this.active, event.target)) this.close();
+    });
+    this.document.addEventListener?.('keydown', event => {
+      if (this.active && event.key === 'Escape') {
+        event.preventDefault();
+        event.stopPropagation();
+        this.close({
+          restoreFocus: true
+        });
+      }
+    }, true);
+  }
+}
+
+
+// src/ui/workspace-inspectors.js
+
+// Inspector providers translate existing records into display sections. The
+// shell knows no feature geometry and can accept additional providers later.
+function registerWorkspaceInspectors(shell, {
+  getCity,
+  getDistrictPanel,
+  getWaterPanel,
+  getTerrainPanel
+}) {
+  shell.registerInspector('district', {
+    resolve: id => {
+      const city = getCity(),
+        panel = getDistrictPanel(),
+        district = city?.districtState.status === 'assigned' ? city.districts.find(d => d.id === id) : null;
+      if (!district || panel.editor.selectedDistrictId !== id) return null;
+      return {
+        type: 'Neighborhood',
+        title: district.name,
+        description: 'A connected group of city blocks.',
+        section: 'districts',
+        controlLabel: 'Open district controls',
+        sections: [{
+          title: 'District summary',
+          rows: [
+            ['Blocks', district.blockIds.length],
+            ['Properties', city.properties.filter(p => p.districtId === id).length],
+            ['Buildings', city.buildings.filter(b => b.districtId === id).length], ...(panel.editor.selectedBlockId ? [
+              ['Selected block', panel.editor.selectedBlockId]
+            ] : [])
+          ]
+        }]
+      };
+    }
+  });
+  shell.registerInspector('water', {
+    resolve: id => {
+      const editor = getWaterPanel()?.editor,
+        feature = editor?.features.find(f => f.id === id);
+      if (!feature) return null;
+      const type = feature.kind === 'lake' ? 'Lake' : feature.kind === 'coast' ? 'Coastline' : 'River';
+      return {
+        type,
+        title: landscapeLabel({
+          kind: 'water',
+          id,
+          feature
+        }).name,
+        description: editor.dirty ? 'Water draft pending city generation.' : 'Geometry from the current city.',
+        section: 'landscape',
+        controlLabel: 'Open water controls',
+        sections: [{
+          title: 'Water feature',
+          rows: [
+            ['Shape handles', feature.path.length], ...(feature.kind === 'river' ? [
+              ['Width', feature.width],
+              ['Bridges', editor.bridges.filter(b => b.waterId === id).length]
+            ] : feature.kind === 'coast' ? [
+              ['Ocean side', feature.waterSide]
+            ] : [])
+          ]
+        }]
+      };
+    }
+  });
+  shell.registerInspector('terrain', {
+    resolve: id => {
+      const editor = getTerrainPanel()?.editor,
+        feature = editor?.features.find(f => f.id === id);
+      if (!feature) return null;
+      return {
+        type: 'Mountain range',
+        title: landscapeLabel({
+          kind: 'terrain',
+          id,
+          feature
+        }).name,
+        description: editor.dirty ? 'Terrain draft pending city generation.' : 'Geometry from the current city.',
+        section: 'landscape',
+        controlLabel: 'Open mountain controls',
+        sections: [{
+          title: 'Range summary',
+          rows: [
+            ['Foothill handles', feature.path.length],
+            ['Ridge peaks', feature.ridge.length],
+            ['Highest peak', Math.max(...feature.ridge.map(p => p.height))],
+            ['Road passes', editor.passes.filter(p => p.terrainId === id).length]
+          ]
+        }]
+      };
+    }
+  });
+  return shell;
 }
 
 
@@ -5696,7 +6138,7 @@ class DistrictPanel {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.ui2';
+const APP_VERSION = '0.1-dev.ui3';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -6205,6 +6647,10 @@ function validateWorkspace(workspace, project) {
   if (!DENSITIES.includes(controls.size) || !PATTERNS.includes(controls.morphology)) throw new Error('Unsupported draft generation settings.');
   if (!['radial', 'organic', 'linear', 'planned', 'wedge', 'twin', 'branching', 'crescent'].includes(controls.preset)) throw new Error('Unsupported starting outline.');
   const view = requireRecord(workspace.view, 'Map view');
+  if (view.landscapeSelection !== undefined && view.landscapeSelection !== null) {
+    const selection = requireRecord(view.landscapeSelection, 'Landscape selection');
+    if (!['water', 'terrain'].includes(selection.kind) || typeof selection.id !== 'string' || !selection.id || selection.id.length > 128) throw new Error('Invalid landscape selection.');
+  }
   requireRecord(view.camera, 'Camera');
   requirePoint(view.camera, 'Camera');
   if (!Number.isFinite(view.camera.zoom) || view.camera.zoom < .18 || view.camera.zoom > 12) throw new Error('Invalid map zoom.');
@@ -7980,6 +8426,40 @@ function drawTerrainDraft(ctx, camera, editor) {
 }
 
 
+// src/renderer/landscape-selection.js
+
+function drawLandscapeSelection(ctx, camera, records, selection, hover) {
+  for (const [ref, selected] of [
+      [hover, false],
+      [selection, true]
+    ]) {
+    const record = records.find(r => r.kind === ref?.kind && r.id === ref?.id);
+    if (!record || (!selected && ref?.kind === selection?.kind && ref?.id === selection?.id)) continue;
+    try {
+      const path = record.feature.kind === 'coast' ? record.feature.path : landscapePolygon(record);
+      ctx.save();
+      ctx.beginPath();
+      path.forEach((point, i) => {
+        const p = camera.worldToScreen(point);
+        if (i) ctx.lineTo(p.x, p.y);
+        else ctx.moveTo(p.x, p.y);
+      });
+      if (record.feature.kind !== 'coast') ctx.closePath();
+      ctx.setLineDash([]);
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = selected ? 7 : 5;
+      ctx.strokeStyle = '#fff9e5';
+      ctx.stroke();
+      ctx.lineWidth = selected ? 3 : 2;
+      ctx.strokeStyle = selected ? '#b35f24' : '#297a87';
+      ctx.stroke();
+      ctx.restore();
+    } catch {
+      /* The list remains available for invalid older draft geometry. */ }
+  }
+}
+
+
 // src/renderer/water.js
 
 function waterDrawPolygon(ctx, camera, polygon, fill, stroke) {
@@ -8401,6 +8881,8 @@ function drawDevelopment(ctx, camera, city, layers) {
 
 
 
+
+
 const INK = '#34494b';
 const ACCENT = '#ad8054';
 const ROAD_STYLES = Object.freeze({
@@ -8596,7 +9078,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null) {
+function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null, landscapeSelection = null, landscapeHover = null) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -8633,6 +9115,7 @@ function renderMap(canvas, camera, project, editor, layers = {}, districtSelecti
   if (editor && !(city.waterFeatures?.some(f => f.kind === 'coast') && !editor.dirty && editor.mode === 'pan')) drawOutline(ctx, camera, editor);
   drawWaterDraft(ctx, camera, waterEditor, editor?.boundary ?? city.survey.boundary);
   drawTerrainDraft(ctx, camera, terrainEditor);
+  drawLandscapeSelection(ctx, camera, landscapeRecords(waterEditor?.features ?? city.waterFeatures, terrainEditor?.features ?? city.terrainFeatures), landscapeSelection, landscapeHover);
 
   ctx.textAlign = 'left';
   ctx.fillStyle = 'rgba(52, 73, 75, 0.67)';
@@ -8687,7 +9170,7 @@ function drawOutline(ctx, camera, editor) {
 
 
 // src/ui/controllers.js
-function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, onTap = () => {}) {
+function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, onTap = () => {}, onHover = () => {}) {
   let active = false,
     panning = false,
     lastX = 0,
@@ -8730,6 +9213,7 @@ function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, edit
     event.preventDefault();
     canvas.focus();
     active = true;
+    onHover(null);
     panning = space || event.button === 1 || editor.mode === 'pan';
     lastX = event.clientX;
     lastY = event.clientY;
@@ -8741,7 +9225,10 @@ function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, edit
     else editor.down(world(event), camera.zoom);
   });
   canvas.addEventListener('pointermove', event => {
-    if (!active) return;
+    if (!active) {
+      onHover(editor.mode === 'pan' ? world(event) : null);
+      return;
+    }
     if (panning) {
       travel += Math.hypot(event.clientX - lastX, event.clientY - lastY);
       camera.pan(event.clientX - lastX, event.clientY - lastY);
@@ -8752,6 +9239,7 @@ function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, edit
     } else editor.move(world(event), camera.zoom);
   });
   canvas.addEventListener('pointerup', () => finish());
+  canvas.addEventListener('pointerleave', () => onHover(null));
   canvas.addEventListener('pointercancel', () => finish(true));
   canvas.addEventListener('lostpointercapture', () => finish(true));
   canvas.addEventListener('dblclick', event => {
@@ -9071,6 +9559,7 @@ class OutlineEditor {
 
 
 
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -9095,6 +9584,7 @@ let fortificationPanel;
 let waterPanel;
 let terrainPanel;
 let workspaceShell;
+let landscapeWorkspace;
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -9114,7 +9604,7 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor);
+    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover);
   });
 }
 
@@ -9425,15 +9915,9 @@ waterPanel = new WaterPanel({
       id: waterPanel.editor.activeFeature().id
     });
     $('waterPanel').open = true;
-    fitMap();
   },
   changed: () => {
-    if (waterPanel?.editor.mode !== 'pan' && waterPanel?.editor.activeFeature()) workspaceShell?.select({
-      kind: 'water',
-      id: waterPanel.editor.activeFeature().id
-    }, {
-      reveal: false
-    });
+    landscapeWorkspace?.editorChanged('water');
     workspaceShell?.refresh();
     updateMapIndicators();
     requestDraw();
@@ -9460,15 +9944,9 @@ terrainPanel = new TerrainPanel({
       id: terrainPanel.editor.activeFeature().id
     });
     $('terrainPanel').open = true;
-    fitMap();
   },
   changed: () => {
-    if (terrainPanel?.editor.mode !== 'pan' && terrainPanel?.editor.activeFeature()) workspaceShell?.select({
-      kind: 'terrain',
-      id: terrainPanel.editor.activeFeature().id
-    }, {
-      reveal: false
-    });
+    landscapeWorkspace?.editorChanged('terrain');
     workspaceShell?.refresh();
     updateMapIndicators();
     requestDraw();
@@ -9508,7 +9986,11 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
   getElement: $,
   onNavigate: (previous, next) => stopWorkspaceTools(next),
   onLayout: () => resize(),
-  changed: () => files?.changed(),
+  changed: () => {
+    files?.changed();
+    requestDraw();
+  },
+  onInspect: () => landscapeWorkspace?.render(),
   clearSelection: () => {
     stopWorkspaceTools();
     districtPanel.editor.selectedDistrictId = null;
@@ -9522,7 +10004,22 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
   getWaterPanel: () => waterPanel,
   getTerrainPanel: () => terrainPanel
 });
+landscapeWorkspace = new LandscapeWorkspace({
+  getElement: $,
+  shell: workspaceShell,
+  water: waterPanel,
+  terrain: terrainPanel,
+  stopTools: stopWorkspaceTools,
+  onSelect: () => {
+    districtPanel.editor.selectedDistrictId = null;
+    districtPanel.editor.selectedBlockId = null;
+    districtPanel.refresh();
+  },
+  changed: () => files?.changed(),
+  draw: requestDraw
+});
 workspaceShell.bind();
+landscapeWorkspace.bind();
 
 const activeMapEditor = () => terrainPanel.editor.mode !== 'pan' ? terrainPanel.editor : waterPanel.editor.mode !== 'pan' ? waterPanel.editor : editor;
 const runMapEdit = (method, args) => {
@@ -9539,7 +10036,21 @@ const mapEditor = {
   addPoint: (...args) => activeMapEditor().addPoint(...args)
 };
 
-bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => districtPanel.selectAt(point));
+bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => {
+  const hit = landscapeWorkspace.hit(point, camera.zoom);
+  if (hit) {
+    landscapeWorkspace.select(hit, {
+      fromMap: true
+    });
+  } else {
+    districtPanel.selectAt(point);
+    if (!districtPanel.editor.selectedDistrictId) workspaceShell.clear();
+  }
+}, point => {
+  const hit = landscapeWorkspace.hit(point, camera.zoom);
+  landscapeWorkspace.setHover(hit);
+  canvas.classList.toggle('feature-hover', Boolean(hit));
+});
 if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
 else window.addEventListener('resize', resize);
 resize();
@@ -9615,6 +10126,9 @@ function captureWorkspace() {
         preset: $('presetInput').value
       },
       view: {
+        landscapeSelection: ['water', 'terrain'].includes(workspaceShell.state.selection?.kind) ? {
+          ...workspaceShell.state.selection
+        } : null,
         camera: {
           x: camera.x,
           y: camera.y,
@@ -9630,6 +10144,7 @@ function captureWorkspace() {
 }
 
 function applyProjectDocument(document) {
+  landscapeWorkspace.restoring = true;
   const next = copyJson(document.project),
     workspace = copyJson(document.workspace),
     draft = workspace.editor;
@@ -9710,7 +10225,7 @@ function applyProjectDocument(document) {
   $('districtPanel').open = workspace.panels?.districts ?? Boolean(districtPanel.editor.selectedDistrictId);
   $('fortificationPanel').open = workspace.panels?.fortifications ?? true;
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[workspace.controls.morphology];
-  const restoredSelection = terrainPanel.editor.mode !== 'pan' && terrainPanel.editor.activeFeature() ? {
+  const legacySelection = terrainPanel.editor.mode !== 'pan' && terrainPanel.editor.activeFeature() ? {
     kind: 'terrain',
     id: terrainPanel.editor.activeFeature().id
   } : waterPanel.editor.mode !== 'pan' && waterPanel.editor.activeFeature() ? {
@@ -9720,6 +10235,27 @@ function applyProjectDocument(document) {
     kind: 'district',
     id: districtPanel.editor.selectedDistrictId
   } : null;
+  const savedSelection = workspace.view.landscapeSelection;
+  if (savedSelection && !landscapeWorkspace.record(savedSelection)) {
+    // A stale reference must not leave a restored tool editing a different,
+    // hidden feature. Definitions and pending fields remain loaded exactly.
+    waterPanel.editor.setMode('pan');
+    terrainPanel.editor.setMode('pan');
+  }
+  const restoredSelection = savedSelection !== undefined ? (landscapeWorkspace.record(savedSelection) ? savedSelection : districtPanel.editor.selectedDistrictId ? {
+    kind: 'district',
+    id: districtPanel.editor.selectedDistrictId
+  } : null) : legacySelection;
+  if (restoredSelection?.kind === 'water') {
+    waterPanel.editor.selectFeature(restoredSelection.id);
+    if (waterPanel.editor.activeFeature()?.kind === 'lake') waterPanel.selectedLakeId = restoredSelection.id;
+    waterPanel.refresh();
+  }
+  if (restoredSelection?.kind === 'terrain') {
+    terrainPanel.editor.select(restoredSelection.id);
+    terrainPanel.refresh();
+  }
+  landscapeWorkspace.reset();
   workspaceShell.reset({
     section: restoredSelection?.kind === 'district' ? 'districts' : restoredSelection ? 'landscape' : 'city',
     selection: restoredSelection
