@@ -1,0 +1,26 @@
+name: Compile Mappo 3I-C distribution
+on:
+  push:
+    branches: [feature/property-plot-editing-3i]
+    paths: ['.github/workflows/compile-3ic.yml']
+permissions:
+  contents: write
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build 3I-C standalone distribution
+        run: npm run build
+      - name: Commit compiled versioned checkpoint
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html dist/mappo-0.1-dev.3ic.html
+          if ! git diff --cached --quiet; then
+            git commit -m "build(3I-C): compile validated property edit standalone"
+            git push origin HEAD:feature/property-plot-editing-3i
+          fi
