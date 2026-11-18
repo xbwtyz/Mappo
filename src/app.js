@@ -4,6 +4,7 @@ import {
 import { BuildingWorkspace } from './ui/building-workspace.js';
 import { PropertyWorkspace } from './ui/property-workspace.js';
 import { IdentityWorkspace } from './ui/identity-workspace.js';
+import { BuildingEditSession } from './editor/building.js';
 import {
   WorkspaceShell
 } from './ui/workspace.js';
@@ -106,6 +107,7 @@ let terrainPanel;
 let workspaceShell;
 let landscapeWorkspace;
 let buildingWorkspace;
+let buildingEditSession;
 let propertyWorkspace;
 let identityWorkspace;
 const workspaceMenus = new WorkspaceMenus({
@@ -185,18 +187,20 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover, buildingWorkspace?.hover, propertyWorkspace?.hover);
+    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover, buildingWorkspace?.hover, propertyWorkspace?.hover, buildingEditSession);
   });
 }
 
 function updateMapIndicators() {
   clearMapHover();
   const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
-    waterActive = waterPanel && waterPanel.editor.mode !== 'pan';
+    waterActive = waterPanel && waterPanel.editor.mode !== 'pan',
+    buildingActive = buildingEditSession?.isActive ?? false;
+  canvas.classList.toggle('building-edit-mode', buildingActive);
   canvas.classList.toggle('drawing', Boolean(terrainActive || waterActive || editor.mode !== 'pan'));
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!terrainActive && !waterActive && editor.mode === mode));
-  $('toolHint').textContent = terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
-  $('draftBadge').textContent = editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
+  $('toolHint').textContent = buildingActive ? 'BUILDING EDIT MODE · Click another roof on this property · Drag to pan · Escape to exit · No geometry changes in 3G-A' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+  $('draftBadge').textContent = buildingActive ? '● BUILDING EDIT MODE' : editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
 }
 
 function updateViewport() {
@@ -206,6 +210,7 @@ function updateViewport() {
 }
 
 function editorChanged() {
+  if (editor.mode !== 'pan') buildingEditSession?.stop();
   clearMapHover();
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(editor.mode === mode));
   if (editor.mode !== 'pan' && workspaceShell?.state.section !== 'city') workspaceShell?.navigate('city');
@@ -276,6 +281,7 @@ function generate({ discardIdentities = false } = {}) {
         seed: $('fortificationSeedInput').value || $('seedInput').value
       }
     });
+    buildingEditSession?.stop();
     identityWorkspace?.reset();
     propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
@@ -333,6 +339,7 @@ function updatePattern() {
 for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
+    if (key === 'buildings' && layers.buildings === false) buildingEditSession?.stop();
     if (['buildings', 'properties', 'plots'].includes(key)) {
       clearMapHover();
       propertyWorkspace?.refresh();
@@ -349,6 +356,7 @@ $('editButton').addEventListener('click', () => {
   editor.notify('Drag outline points. Double-click an edge to add a point.');
 });
 $('panButton').addEventListener('click', () => {
+  buildingEditSession?.stop();
   terrainPanel?.editor.setMode('pan');
   waterPanel?.editor.setMode('pan');
   editor.setMode('pan');
@@ -585,6 +593,7 @@ function syncWorkspaceDistrictSelection() {
 }
 
 function stopWorkspaceTools(targetSection = null) {
+  if (targetSection !== 'city') buildingEditSession?.stop();
   clearMapHover();
   // Cancel only a tool whose controls are leaving the visible section.
   // Completed drafts and their histories stay with the original editors.
@@ -615,6 +624,7 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
     identityWorkspace?.render();
   },
   clearSelection: () => {
+    buildingEditSession?.stop();
     stopWorkspaceTools();
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -634,6 +644,7 @@ landscapeWorkspace = new LandscapeWorkspace({
   terrain: terrainPanel,
   stopTools: stopWorkspaceTools,
   onSelect: () => {
+    buildingEditSession?.stop();
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
     districtPanel.refresh();
@@ -641,11 +652,26 @@ landscapeWorkspace = new LandscapeWorkspace({
   changed: () => files?.changed(),
   draw: requestDraw
 });
+buildingEditSession = new BuildingEditSession(() => {
+  updateMapIndicators();
+  workspaceShell?.refresh();
+  requestDraw();
+});
+function enterBuildingEditing(id) {
+  if (!project) return false;
+  if (workspaceShell.state.section !== 'city') workspaceShell.navigate('city');
+  stopWorkspaceTools('city');
+  if (editor.mode !== 'pan') editor.setMode('pan');
+  return buildingEditSession.start(project.city, layers, id);
+}
 buildingWorkspace = new BuildingWorkspace({
   shell: workspaceShell,
   getCity: () => project?.city,
   getLayers: () => layers,
   getProperties: () => propertyWorkspace,
+  getEditSession: () => buildingEditSession,
+  enterEditing: enterBuildingEditing,
+  exitEditing: () => buildingEditSession.stop(),
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -658,6 +684,7 @@ propertyWorkspace = new PropertyWorkspace({
   getCity: () => project?.city,
   getLayers: () => layers,
   buildings: buildingWorkspace,
+  exitEditing: () => buildingEditSession.stop(),
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -699,6 +726,11 @@ const mapEditor = {
 };
 
 bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => {
+  if (buildingEditSession?.isActive) {
+    const building = buildingWorkspace.hit(point, camera.zoom);
+    if (building && buildingEditSession.allows(project?.city, layers, building.id)) buildingWorkspace.select(building);
+    return; // Other properties and non-roof land do not steal the active edit context.
+  }
   const hit = landscapeWorkspace.hit(point, camera.zoom);
   if (hit) {
     landscapeWorkspace.select(hit, {
@@ -709,6 +741,15 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     if (!districtPanel.editor.selectedDistrictId) workspaceShell.clear();
   }
 }, point => {
+  if (buildingEditSession?.isActive) {
+    landscapeWorkspace.setHover(null);
+    propertyWorkspace.setHover(null);
+    const building = buildingWorkspace.hit(point, camera.zoom);
+    const allowed = building && buildingEditSession.allows(project?.city, layers, building.id);
+    buildingWorkspace.setHover(allowed ? building : null);
+    canvas.classList.toggle('feature-hover', Boolean(allowed));
+    return;
+  }
   const hit = landscapeWorkspace.hit(point, camera.zoom);
   landscapeWorkspace.setHover(hit);
   const propertyHit = hit ? null : propertyWorkspace.hit(point, camera.zoom);
@@ -824,6 +865,7 @@ function applyProjectDocument(document) {
   const next = copyJson(document.project),
     workspace = copyJson(document.workspace),
     draft = workspace.editor;
+  buildingEditSession?.stop();
   identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
