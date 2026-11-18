@@ -77,6 +77,9 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
           roadId: property.frontageRoadId, district: city.districts.find(d => d.id === property.districtId)?.name };
       }, id);
       let informationText = await page.locator('#workspaceSelectionSections').innerText();
+      // Dev 4d: summary stays readable, and unbuilt is explicitly an estimate.
+      for(const label of ['Street frontage length:', 'Estimated unbuilt area:', 'not guaranteed buildable'])
+        assert.ok(informationText.includes(label), 'Property summary contains '+label);
       for (const text of ['Generated usage:', 'Site area:', 'square survey units', 'Frontage street:',
         siteContext.blockId, siteContext.roadId, ...siteContext.plotIds, ...siteContext.buildingIds])
         assert.ok(informationText.includes(text), `Property information contains ${text}`);
@@ -295,6 +298,8 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.locator('#buildingPreviewApply').isDisabled(), true);
       assert.match(await page.locator('#buildingPreviewStatus').innerText(),/INVALID PLACEMENT/);
       assert.ok(await page.locator('#buildingPreviewIssues li').count() > 0);
+       assert.equal(await page.locator('#mapEditDiagnostic4D').isVisible(),true);
+       assert.match(await page.locator('#mapEditDiagnostic4D').innerText(),/EDIT BLOCKED.*(Property|Road|Building)/);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
       await page.screenshot({ path: new URL(`${label}-building-invalid.png`, output).pathname });
       await page.screenshot({ path: new URL(`${label}-building-preview.png`, output).pathname });
