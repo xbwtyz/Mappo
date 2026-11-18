@@ -137,6 +137,19 @@
             <label>Plot divider <select id="propertyDividerIndex3I" aria-label="Plot divider"></select></label>
             <label>Divider % <input id="propertyDividerPercent3I" type="number" min="0.01" max="99.99" step="0.5" disabled></label>
           </div>
+          <p id="propertyPreviewMeasurements4C" class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
+          <div class="precision-nudge-4c" role="group" aria-label="Selected property corner precision movement">
+            <label>Move increment <select id="propertyNudgeStep4C" aria-label="Selected property corner move increment">
+              <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
+            </select></label>
+            <div class="precision-nudge-buttons-4c">
+              <button type="button" id="propertyNudgeLeft4C" aria-label="Selected property corner left">←</button>
+              <button type="button" id="propertyNudgeRight4C" aria-label="Selected property corner right">→</button>
+              <button type="button" id="propertyNudgeUp4C" aria-label="Selected property corner up">↑</button>
+              <button type="button" id="propertyNudgeDown4C" aria-label="Selected property corner down">↓</button>
+            </div>
+          </div>
+          <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
           <div class="building-transform-actions">
             <button type="button" id="propertyEditApply3I" disabled title="Available after geometry validation in 3I-C">Apply to City</button>
             <button type="button" id="propertyEditReset3I">Reset preview</button>
@@ -164,6 +177,19 @@
             <label>Width <input id="buildingWidth" type="number" min="0.1" step="0.5"></label>
             <label>Depth <input id="buildingDepth" type="number" min="0.1" step="0.5"></label>
           </div>
+          <p id="buildingPreviewMeasurements4C" class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
+          <div class="precision-nudge-4c" role="group" aria-label="Building precision movement">
+            <label>Move increment <select id="buildingNudgeStep4C" aria-label="Building move increment">
+              <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
+            </select></label>
+            <div class="precision-nudge-buttons-4c">
+              <button type="button" id="buildingNudgeLeft4C" aria-label="Building left">←</button>
+              <button type="button" id="buildingNudgeRight4C" aria-label="Building right">→</button>
+              <button type="button" id="buildingNudgeUp4C" aria-label="Building up">↑</button>
+              <button type="button" id="buildingNudgeDown4C" aria-label="Building down">↓</button>
+            </div>
+          </div>
+          <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
           <div class="building-transform-actions">
             <button type="button" id="buildingPreviewApply" disabled>Apply to City</button>
             <button type="button" id="buildingPreviewReset">Reset preview</button>
@@ -197,6 +223,19 @@
             <label>Depth <input id="structureDepth" type="number" min="2" max="250" step="0.5"></label>
             <label>Angle ° <input id="structureAngle" type="number" min="-360" max="360" step="1"></label>
           </div>
+          <p id="structurePreviewMeasurements4C" class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
+          <div class="precision-nudge-4c" role="group" aria-label="Placement precision movement">
+            <label>Move increment <select id="structureNudgeStep4C" aria-label="Placement move increment">
+              <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
+            </select></label>
+            <div class="precision-nudge-buttons-4c">
+              <button type="button" id="structureNudgeLeft4C" aria-label="Placement left">←</button>
+              <button type="button" id="structureNudgeRight4C" aria-label="Placement right">→</button>
+              <button type="button" id="structureNudgeUp4C" aria-label="Placement up">↑</button>
+              <button type="button" id="structureNudgeDown4C" aria-label="Placement down">↓</button>
+            </div>
+          </div>
+          <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
           <div class="building-transform-actions">
             <button type="button" id="structureApply" disabled>Apply to City</button>
             <button type="button" id="structureCancel">Cancel preview</button>

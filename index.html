@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.4b</title>
+  <title>Mappo — City editor · 0.1-dev.4c</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -416,12 +416,24 @@
   .workspace-shell .workspace-panel-restores{flex-wrap:nowrap}
 }
 
+/* Dev 4c: accessible, compact preview-only metrics and position nudges. */
+.precision-measurements-4c{margin:5px 0;line-height:1.45;font:11px ui-sans-serif,system-ui,sans-serif;color:#c3e6d6;overflow-wrap:anywhere}
+.precision-nudge-4c{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:5px 0}
+.precision-nudge-4c label{display:flex;align-items:center;gap:7px;font:10px ui-sans-serif,system-ui,sans-serif;color:#c1d3cf}
+.precision-nudge-4c select{height:30px;width:auto;min-width:66px;max-width:86px;background:#19353a;border:1px solid #678078;border-radius:4px;color:#f5f7ed;padding:3px}
+.precision-nudge-buttons-4c{display:flex;gap:4px}
+.precision-nudge-buttons-4c button{min-height:32px;min-width:32px;background:#25434a;border:1px solid #678078;border-radius:4px;color:#f5f7ed;cursor:pointer}
+.precision-nudge-buttons-4c button:disabled{opacity:.4;cursor:not-allowed}
+.precision-nudge-buttons-4c button:focus-visible,.precision-nudge-4c select:focus-visible{outline:2px solid #edc989;outline-offset:2px}
+.precision-key-hint-4c{font:10px ui-sans-serif,system-ui,sans-serif;color:#a5c5be;margin:4px 0 7px}
+@media(max-width:670px){.precision-nudge-4c{gap:3px}.precision-nudge-buttons-4c button{min-width:29px;min-height:30px}.precision-key-hint-4c{font-size:9px}}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.4b</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.4c</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -550,6 +562,19 @@
             <label>Plot divider <select id="propertyDividerIndex3I" aria-label="Plot divider"></select></label>
             <label>Divider % <input id="propertyDividerPercent3I" type="number" min="0.01" max="99.99" step="0.5" disabled></label>
           </div>
+          <p id="propertyPreviewMeasurements4C" class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
+          <div class="precision-nudge-4c" role="group" aria-label="Selected property corner precision movement">
+            <label>Move increment <select id="propertyNudgeStep4C" aria-label="Selected property corner move increment">
+              <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
+            </select></label>
+            <div class="precision-nudge-buttons-4c">
+              <button type="button" id="propertyNudgeLeft4C" aria-label="Selected property corner left">←</button>
+              <button type="button" id="propertyNudgeRight4C" aria-label="Selected property corner right">→</button>
+              <button type="button" id="propertyNudgeUp4C" aria-label="Selected property corner up">↑</button>
+              <button type="button" id="propertyNudgeDown4C" aria-label="Selected property corner down">↓</button>
+            </div>
+          </div>
+          <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
           <div class="building-transform-actions">
             <button type="button" id="propertyEditApply3I" disabled title="Available after geometry validation in 3I-C">Apply to City</button>
             <button type="button" id="propertyEditReset3I">Reset preview</button>
@@ -577,6 +602,19 @@
             <label>Width <input id="buildingWidth" type="number" min="0.1" step="0.5"></label>
             <label>Depth <input id="buildingDepth" type="number" min="0.1" step="0.5"></label>
           </div>
+          <p id="buildingPreviewMeasurements4C" class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
+          <div class="precision-nudge-4c" role="group" aria-label="Building precision movement">
+            <label>Move increment <select id="buildingNudgeStep4C" aria-label="Building move increment">
+              <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
+            </select></label>
+            <div class="precision-nudge-buttons-4c">
+              <button type="button" id="buildingNudgeLeft4C" aria-label="Building left">←</button>
+              <button type="button" id="buildingNudgeRight4C" aria-label="Building right">→</button>
+              <button type="button" id="buildingNudgeUp4C" aria-label="Building up">↑</button>
+              <button type="button" id="buildingNudgeDown4C" aria-label="Building down">↓</button>
+            </div>
+          </div>
+          <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
           <div class="building-transform-actions">
             <button type="button" id="buildingPreviewApply" disabled>Apply to City</button>
             <button type="button" id="buildingPreviewReset">Reset preview</button>
@@ -610,6 +648,19 @@
             <label>Depth <input id="structureDepth" type="number" min="2" max="250" step="0.5"></label>
             <label>Angle ° <input id="structureAngle" type="number" min="-360" max="360" step="1"></label>
           </div>
+          <p id="structurePreviewMeasurements4C" class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
+          <div class="precision-nudge-4c" role="group" aria-label="Placement precision movement">
+            <label>Move increment <select id="structureNudgeStep4C" aria-label="Placement move increment">
+              <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
+            </select></label>
+            <div class="precision-nudge-buttons-4c">
+              <button type="button" id="structureNudgeLeft4C" aria-label="Placement left">←</button>
+              <button type="button" id="structureNudgeRight4C" aria-label="Placement right">→</button>
+              <button type="button" id="structureNudgeUp4C" aria-label="Placement up">↑</button>
+              <button type="button" id="structureNudgeDown4C" aria-label="Placement down">↓</button>
+            </div>
+          </div>
+          <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
           <div class="building-transform-actions">
             <button type="button" id="structureApply" disabled>Apply to City</button>
             <button type="button" id="structureCancel">Cancel preview</button>
@@ -7796,7 +7847,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.4b';
+const APP_VERSION = '0.1-dev.4c';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -12609,7 +12660,83 @@ function focusCameraOnSelection4B(camera,city,selection) {
 }
 
 
+// src/core/editing-precision-4c.js
+
+
+
+// Dev 4c uses the existing edit-session update APIs. All operations remain
+// preview-only; accepted city geometry changes exclusively through Apply.
+const PRECISION_STEPS_4C = Object.freeze([0.1, 0.5, 1, 5]);
+const validStep = step => PRECISION_STEPS_4C.includes(step);
+const rounded = value => Math.round(value * 1e8) / 1e8;
+const finitePoint = p => p && Number.isFinite(p.x) && Number.isFinite(p.y);
+
+function nudgeBuilding4C(session, axis, direction, step) {
+  if (!session?.isActive || session.drag || !['dx','dy'].includes(axis)
+      || ![1,-1].includes(direction) || !validStep(step)) return false;
+  const value = rounded(session.transform[axis] + direction * step);
+  return session.setTransform({ [axis]: value });
+}
+
+function nudgePropertyCorner4C(session, axis, direction, step) {
+  if (!session?.isActive || session.drag || !['x','y'].includes(axis)
+      || ![1,-1].includes(direction) || !validStep(step)
+      || session.selectedCorner === null) return false;
+  const point = session.boundary?.[session.selectedCorner];
+  if (!finitePoint(point)) return false;
+  return session.setCorner(session.selectedCorner, {
+    ...point, [axis]: rounded(point[axis] + direction * step)
+  });
+}
+
+function nudgeStructure4C(session, axis, direction, step) {
+  if (!session?.isActive || session.drag || !['u','v'].includes(axis)
+      || ![1,-1].includes(direction) || !validStep(step)) return false;
+  return session.update({ [axis]: rounded(session.spec[axis] + direction * step) });
+}
+
+function buildingMeasurements4C(city, session) {
+  const source = session?.isActive ? session.source(city) : null;
+  if (!source) return null;
+  const original = previewBuildingGeometry(source);
+  const preview = previewBuildingGeometry(source, session.transform);
+  const frame = buildingFrame(source), { dx, dy, scaleX, scaleY } = session.transform;
+  return { width:frame.width*scaleX, depth:frame.height*scaleY,
+    area:preview.area, areaDelta:preview.area-original.area,
+    x:frame.x+dx, y:frame.y+dy, dx, dy };
+}
+
+function propertyMeasurements4C(city, session) {
+  const source = session?.isActive ? session.source(city) : null;
+  const preview = session?.boundary;
+  if (!source || !Array.isArray(preview) || !preview.every(finitePoint)) return null;
+  const box=propertyLocalBounds3I(source,preview);
+  const area=Math.abs(polygonSignedArea(preview));
+  const base=Math.abs(polygonSignedArea(source.boundary));
+  const centroid=points=>({
+    x:points.reduce((sum,p)=>sum+p.x,0)/points.length,
+    y:points.reduce((sum,p)=>sum+p.y,0)/points.length
+  });
+  const now=centroid(preview), was=centroid(source.boundary);
+  return { width:box.width,depth:box.depth,area,areaDelta:area-base,
+    x:now.x,y:now.y,dx:now.x-was.x,dy:now.y-was.y };
+}
+
+function placementMeasurements4C(city,session) {
+  if (!session?.isActive) return null;
+  const geometry=session.previewFor(city),spec=session.spec;
+  if (!geometry || !spec) return null;
+  return { width:spec.width,depth:spec.depth,area:Math.abs(geometry.area),
+    u:spec.u,v:spec.v };
+}
+
+function formatPrecision4C(value) {
+  return Number.isFinite(value) ? String(rounded(Number(value.toFixed(2)))) : '—';
+}
+
+
 // src/app.js
+
 
 
 
@@ -12828,6 +12955,12 @@ function syncBuildingTransformUI() {
   const frame = buildingFrame(session.source(project.city));
   const t = session.transform;
   $('buildingPreviewTarget').textContent = session.buildingId;
+  const measured=buildingMeasurements4C(project.city,session);
+  if(measured) $('buildingPreviewMeasurements4C').textContent=
+    'Width '+formatPrecision4C(measured.width)+' · Depth '+formatPrecision4C(measured.depth)+
+    ' · Area '+formatPrecision4C(measured.area)+' (Δ '+formatPrecision4C(measured.areaDelta)+')'+
+    ' · Center '+formatPrecision4C(measured.x)+', '+formatPrecision4C(measured.y)+
+    ' · Offset '+formatPrecision4C(measured.dx)+', '+formatPrecision4C(measured.dy);
   for (const [id,value] of Object.entries({
     buildingOffsetX: t.dx, buildingOffsetY: t.dy,
     buildingAngle: t.angle*180/Math.PI, buildingWidth: frame.width*t.scaleX,
@@ -12988,6 +13121,11 @@ function syncBuildingStructureUI3H() {
     : '';
   if(!shown)return;
   const spec=session.spec;
+  const structureMeasure=placementMeasurements4C(project.city,session);
+  $('structurePreviewMeasurements4C').textContent=structureMeasure
+    ? 'Width '+formatPrecision4C(structureMeasure.width)+' · Depth '+formatPrecision4C(structureMeasure.depth)+
+      ' · Area '+formatPrecision4C(structureMeasure.area)+' · Position '+formatPrecision4C(structureMeasure.u)+
+      ', '+formatPrecision4C(structureMeasure.v) : 'Adjust your draft to preview its measurements.';
   $('structureModeTitle').textContent=session.operation==='replace'?'REPLACE BUILDING':'PLACE NEW BUILDING';
   $('structurePropertyLabel').textContent=session.propertyId;
   for(const [id,value] of Object.entries({
@@ -13107,6 +13245,14 @@ function syncPropertyEditUI3I() {
   $('propertyEditPanel3I').hidden = !active;
   if (!active) return;
   $('propertyEditTarget3I').textContent = session.propertyId;
+  const measured=propertyMeasurements4C(project.city,session);
+  if(measured) $('propertyPreviewMeasurements4C').textContent=
+    'Width '+formatPrecision4C(measured.width)+' · Depth '+formatPrecision4C(measured.depth)+
+    ' · Area '+formatPrecision4C(measured.area)+' (Δ '+formatPrecision4C(measured.areaDelta)+')'+
+    ' · Center '+formatPrecision4C(measured.x)+', '+formatPrecision4C(measured.y)+
+    ' · Offset '+formatPrecision4C(measured.dx)+', '+formatPrecision4C(measured.dy);
+  for(const id of ['propertyNudgeLeft4C','propertyNudgeRight4C','propertyNudgeUp4C','propertyNudgeDown4C'])
+    $(id).disabled=session.selectedCorner===null || Boolean(session.drag);
   $('propertyEditCorner3I').textContent = session.selectedCorner === null
     ? 'Click or drag a highlighted corner to select it.'
     : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
@@ -13406,11 +13552,36 @@ window.addEventListener('keydown', e => {
     return;
   }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+  // Arrow nudges only when the map canvas has focus, never in text inputs.
+  if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)
+      && (e.target===canvas || document.activeElement===canvas)) {
+    const direction=e.key.slice(5), target=propertyEditSession?.isActive?'property'
+      :buildingEditSession?.isActive?'building':buildingPlacementSession?.isActive?'structure':null;
+    const stepId=target==='property'?'propertyNudgeStep4C'
+      :target==='building'?'buildingNudgeStep4C':'structureNudgeStep4C';
+    if(target && precisionNudge4C(target,direction,Number($(stepId).value)))e.preventDefault();
+    if(target)return;
+  }
   if (e.key === 'Enter' && workspaceShell?.state.section === 'city' && editor.mode === 'points') {
     e.preventDefault();
     editor.finish();
   }
   if (e.key === 'Delete' || e.key === 'Backspace') {
+    const previewActive=propertyEditSession?.isActive||buildingEditSession?.isActive||buildingPlacementSession?.isActive;
+    if (workspaceShell?.state.section==='city' && editor.mode==='pan') {
+      // Delete never removes a record behind an active uncommitted preview.
+      if (previewActive)return;
+      if(e.key!=='Delete')return;
+      const selected=workspaceShell.state.selection;
+      if(selected?.kind==='property' && project?.city.properties.some(p=>p.id===selected.id)){
+        e.preventDefault();deleteProperty4A(selected.id);return;
+      }
+      if(selected?.kind==='building'){
+        const building=project?.city.buildings.find(b=>b.id===selected.id);
+        if(building){e.preventDefault();deleteStructureBuilding3H(building.propertyId,building.id);return;}
+      }
+      return;
+    }
     e.preventDefault();
     if (workspaceShell?.state.section === 'landscape' && terrainPanel?.editor.mode !== 'pan') terrainPanel.editor.removePoint();
     else if (workspaceShell?.state.section === 'landscape' && waterPanel?.editor.mode !== 'pan') waterPanel.editor.removePoint();
@@ -13745,6 +13916,27 @@ for (const [id,convert] of Object.entries(buildingPreviewInputs))
       $('buildingPreviewStatus').textContent='Invalid preview value. Width and depth must stay within 20–400% of the original.';
       $(id).value='';
     }
+  });
+// Dev 4c: buttons and numeric/drag inputs share the exact same preview APIs.
+const precisionDirections4C = Object.freeze({
+  Left:['x',-1],Right:['x',1],Up:['y',-1],Down:['y',1]
+});
+function precisionNudge4C(target,direction,step) {
+  const [axis,sign]=precisionDirections4C[direction]??[];
+  if(!axis || !project || workspaceShell?.state.section!=='city')return false;
+  if(target==='building')return nudgeBuilding4C(buildingEditSession,axis==='x'?'dx':'dy',sign,step);
+  if(target==='property')return nudgePropertyCorner4C(propertyEditSession,axis,sign,step);
+  if(target==='structure')return nudgeStructure4C(buildingPlacementSession,axis==='x'?'u':'v',sign,step);
+  return false;
+}
+for(const [target,idPrefix,stepId] of [
+  ['building','buildingNudge','buildingNudgeStep4C'],
+  ['property','propertyNudge','propertyNudgeStep4C'],
+  ['structure','structureNudge','structureNudgeStep4C']
+]) for(const direction of Object.keys(precisionDirections4C))
+  $(idPrefix+direction+'4C').addEventListener('click',()=>{
+    if(!precisionNudge4C(target,direction,Number($(stepId).value)))
+      $('statusMessage').textContent='Choose a valid preview and nudge increment first.';
   });
 $('buildingPreviewReset').addEventListener('click',()=>{
   if (confirmBuildingPreviewDiscard()) buildingEditSession.reset();

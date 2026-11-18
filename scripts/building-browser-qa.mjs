@@ -105,6 +105,16 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         const state=__buildingQA.state();state.camera.x=c.x;state.camera.y=c.y;
         state.camera.zoom=c.zoom;__buildingQA.draw();
       },focusBefore);
+      // Dev 4c: canvas Delete must request, not silently apply, property removal.
+      await page.evaluate(() => document.getElementById('mapCanvas').focus());
+      await Promise.all([
+        page.waitForEvent('dialog').then(dialog => {
+          assert.match(dialog.message(),/Delete property/);
+          return dialog.dismiss();
+        }),
+        page.keyboard.press('Delete')
+      ]);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
       await page.screenshot({ path: new URL(`${label}-selected.png`, output).pathname });
       // 3I-A: real browser property preview must not mutate any accepted land.
       await page.getByRole('button', { name: 'Edit property geometry' }).click();
@@ -112,6 +122,14 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.locator('#propertyEditApply3I').isDisabled(),true);
       assert.equal(await page.evaluate(() => __buildingQA.state().propertyEditSession.propertyId),id);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      // Dev 4c: draft metrics and nudge buttons must not commit accepted land.
+      assert.match(await page.locator('#propertyPreviewMeasurements4C').innerText(),/Width.*Area.*Center/);
+      await page.evaluate(() => __buildingQA.state().propertyEditSession.selectCorner(0));
+      const beforeNudge=await page.evaluate(() => __buildingQA.state().propertyEditSession.boundary[0].x);
+      await page.locator('#propertyNudgeRight4C').click();
+      assert.ok(Math.abs(await page.evaluate(() => __buildingQA.state().propertyEditSession.boundary[0].x)-beforeNudge-.5)<.0001);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      await page.locator('#propertyEditReset3I').click();
       await page.screenshot({ path: new URL(`${label}-3ia-property-preview.png`, output).pathname });
       // 3I-B: change a corner through the public numeric control, then Reset.
       await page.evaluate(() => __buildingQA.state().propertyEditSession.selectCorner(0));
@@ -253,6 +271,10 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#buildingOffsetX').fill('7');
       await page.locator('#buildingOffsetX').press('Tab');
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.transform.dx), 7);
+      assert.match(await page.locator('#buildingPreviewMeasurements4C').innerText(),/Width.*Area.*Center/);
+      await page.locator('#buildingNudgeRight4C').click();
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.transform.dx), 7.5);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
       await page.locator('#buildingToolRotate').click();
       await page.locator('#buildingAngle').fill('30');
       await page.locator('#buildingAngle').press('Tab');
