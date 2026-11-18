@@ -90,6 +90,7 @@ import { PropertyGeometryHistory3I } from './editor/property-history.js';
 import { preparePropertyDeletion4A, PropertyDeletionHistory4A } from './editor/property-deletion.js';
 import { pointInPolygon } from './core/geometry.js';
 import { focusCameraOnSelection4B } from './core/selection-focus-4b.js';
+import { formatEditIssue4D } from './core/inspector-feedback-4d.js';
 import {
   nudgeBuilding4C, nudgePropertyCorner4C, nudgeStructure4C,
   buildingMeasurements4C, propertyMeasurements4C, placementMeasurements4C,
@@ -298,7 +299,10 @@ function syncBuildingTransformUI() {
   issues.hidden = !result.issues.length;
   issues.replaceChildren(...result.issues.map(issue=>{
     const li=document.createElement('li');
-    li.textContent=issue.message;
+    li.textContent=formatEditIssue4D(issue,{
+      buildingId:session.buildingId,propertyId:session.propertyId,
+      frontageRoadId:session.source(project.city)?.frontageRoadId
+    });
     return li;
   }));
   $('buildingPreviewStatus').textContent = !session.isPending
@@ -307,7 +311,10 @@ function syncBuildingTransformUI() {
       ? 'CHECKING · Fast geometry check complete; road access is verified when the drag ends.'
       : result.ok
         ? 'VALID PLACEMENT · Ready to Apply to City. Project compatibility will be rechecked.'
-        : 'INVALID PLACEMENT · Apply is disabled. Adjust the preview to resolve the issues below.';
+        : 'INVALID PLACEMENT · Apply disabled. '+formatEditIssue4D(result.issues?.[0],{
+          buildingId:session.buildingId,propertyId:session.propertyId,
+          frontageRoadId:session.source(project.city)?.frontageRoadId
+        });
 }
 function confirmBuildingPreviewDiscard() {
   if (!buildingEditSession?.isPending) return true;
@@ -329,13 +336,20 @@ function applyBuildingTransform() {
       session.validation=received;
       $('buildingPreviewApply').disabled=true;
       $('buildingTransformPanel').setAttribute('data-validation','invalid');
-      $('buildingPreviewStatus').textContent='CANNOT APPLY · '+(issues[0]?.message??'Preview was rejected.');
+      $('buildingPreviewStatus').textContent='CANNOT APPLY · '+formatEditIssue4D(issues[0],{
+        buildingId:session.buildingId,propertyId:session.propertyId,
+        frontageRoadId:session.source(project.city)?.frontageRoadId
+      });
       const list=$('buildingPreviewIssues');
       list.hidden=!issues.length;
       list.replaceChildren(...issues.map(issue=>{
         const li=document.createElement('li');
-        li.textContent=issue.message;return li;
+        li.textContent=formatEditIssue4D(issue,{
+          buildingId:session.buildingId,propertyId:session.propertyId,
+          frontageRoadId:session.source(project.city)?.frontageRoadId
+        });return li;
       }));
+      syncMapEditDiagnostic4D();
       requestDraw();
       return false;
     }
@@ -461,12 +475,18 @@ function syncBuildingStructureUI3H() {
   issues.hidden=!result.issues?.length;
   issues.replaceChildren(...(result.issues??[]).map(issue=>{
     const el=document.createElement('li');
-    el.textContent=issue.message;return el;
+    el.textContent=formatEditIssue4D(issue,{
+      buildingId:session.buildingId,propertyId:session.propertyId,
+      frontageRoadId:session.property(project.city)?.frontageRoadId
+    });return el;
   }));
   $('structureStatus').textContent=result.status==='checking'
     ? 'CHECKING · Complete placement validation runs when movement ends.'
     : result.ok ? 'VALID · This building can be applied to the selected property.'
-    : 'INVALID · Apply is disabled. '+(result.issues?.[0]?.message??'Adjust your placement.');
+    : 'INVALID · Apply disabled. '+formatEditIssue4D(result.issues?.[0],{
+      buildingId:session.buildingId,propertyId:session.propertyId,
+      frontageRoadId:session.property(project.city)?.frontageRoadId
+    });
 }
 function applyStructurePlacement3H() {
   const session=buildingPlacementSession;
@@ -606,21 +626,39 @@ function syncPropertyEditUI3I() {
   $('propertyEditStatus3I').textContent = result.status==='checking'
     ? 'CHECKING · Release the handle to validate the new property and plots.'
     : !result.ok
-      ? 'INVALID · '+(result.issues?.[0]?.message??'Property geometry cannot be applied.')
+      ? 'INVALID · '+formatEditIssue4D(result.issues?.[0],{propertyId:session.propertyId})
       : session.isPending
         ? 'VALID · Property and plot edits can be applied together.'
         : 'NO PENDING CHANGES · Property and plots match the accepted city.';
   const issues=$('propertyEditIssues3I');
   issues.hidden=!result.issues?.length;
   issues.replaceChildren(...(result.issues??[]).map(issue=>{
-    const item=document.createElement('li');item.textContent=issue.message;return item;
+    const item=document.createElement('li');
+    item.textContent=formatEditIssue4D(issue,{propertyId:session.propertyId});
+    return item;
   }));
+}
+function syncMapEditDiagnostic4D() {
+  // Active city edit previews only; dragging, idle and valid drafts hide stale errors.
+  const session=propertyEditSession?.isActive?propertyEditSession
+    :buildingEditSession?.isActive?buildingEditSession
+    :buildingPlacementSession?.isActive?buildingPlacementSession:null;
+  const result=session?.validation;
+  const issue=result?.status==='invalid'?result.issues?.[0]:null;
+  const box=$('mapEditDiagnostic4D');
+  box.hidden=!issue;
+  if(!issue){box.textContent='';return;}
+  const context={propertyId:session.propertyId,buildingId:session.buildingId,
+    frontageRoadId:session.source?.(project?.city)?.frontageRoadId
+      ?? session.property?.(project?.city)?.frontageRoadId};
+  box.textContent='EDIT BLOCKED · '+formatEditIssue4D(issue,context);
 }
 function updateMapIndicators() {
   clearMapHover();
   syncBuildingTransformUI();
   syncBuildingStructureUI3H();
   syncPropertyEditUI3I();
+  syncMapEditDiagnostic4D();
   syncPropertyDeletionControls4A();
   const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
     waterActive = waterPanel && waterPanel.editor.mode !== 'pan',
