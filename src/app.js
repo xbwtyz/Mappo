@@ -45,6 +45,9 @@ import {
   describeUndoContext
 } from './core/undo-context.js';
 import {
+  rebuildFailureMessage
+} from './core/validation-feedback.js';
+import {
   ProjectFiles
 } from './ui/project-files.js';
 import {
@@ -279,10 +282,12 @@ function generate() {
     $('statusMessage').textContent = `${project.city.buildings.length} buildings · ${project.city.properties.length} properties · ${project.city.properties.filter(p=>p.plotIds.length>1).length} merged sites`;
     updatePendingFeedback();
   } catch (error) {
-    editor.notify(error.message, true);
-    waterPanel?.message(error.message, true);
-    terrainPanel?.message(error.message, true);
-    $('statusMessage').textContent = 'Generation paused — review the error message.';
+    const guidance = rebuildFailureMessage(error.message);
+    editor.notify(guidance, true);
+    if (waterPanel?.editor.dirty) waterPanel.message(guidance, true);
+    if (terrainPanel?.editor.dirty) terrainPanel.message(guidance, true);
+    $('statusMessage').textContent = 'Rebuild blocked — existing city unchanged.';
+    updatePendingFeedback();
   }
 }
 

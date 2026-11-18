@@ -85,12 +85,12 @@ Acceptance: local updates remain visibly distinct from a full city rebuild. Dist
 - [x] Keep Rebuild city visible across all sections (5A).
 - [x] Show a trustworthy pending-change summary based on real outline, street, water, and terrain drafts/settings (5A).
 - [x] Explain rebuild effects inline: streets, buildings/properties, districts, and enabled defenses regenerate; customized district data can be replaced (5A).
-- [ ] Keep routine rebuilds direct and creation forms inline; reduce modal dialogs used only to expose settings.
-- [ ] Keep existing staged project loading and recovery decisions explicit.
+- [x] Keep routine rebuilds direct and creation forms inline; reduce modal dialogs used only to expose settings (5C).
+- [x] Keep existing staged project loading and recovery decisions explicit (5C).
 - [x] Label undo according to the active editor and preserve its existing history boundaries: outline, water, terrain, districts, or defenses (5B).
-- [ ] Make apply/rebuild, revert, and undo outcomes clear in the relevant status area.
-- [ ] Place validation errors near the relevant feature or setting and preserve the last valid city on failure.
-- [ ] Show one concise instruction for the active tool; place longer explanations in expandable help.
+- [x] Make apply/rebuild, revert, and undo outcomes clear in the relevant status area (5C).
+- [x] Place validation errors near the relevant feature or setting and preserve the last valid city on failure (5C).
+- [x] Show one concise instruction for the active tool; place longer explanations in expandable help (5C).
 - [ ] Preserve each section's selection and scroll position when navigating away and back.
 
 Acceptance: users can tell what is selected, which tool is active, which drafts are pending, what a rebuild changes, and which edit Undo will restore. Navigation and panel collapse leave edits intact.

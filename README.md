@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current feature-branch build: 0.1-dev.ui5b — Contextual undo
+## Current feature-branch build: 0.1-dev.ui5c — Validation feedback
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui5b.html`](dist/mappo-0.1-dev.ui5b.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui5c.html`](dist/mappo-0.1-dev.ui5c.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### UI overhaul: Phases 1–3 and Phase 4A–4C
 
@@ -210,7 +210,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui5b.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui5c.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -260,3 +260,7 @@ A live header count distinguishes unapplied city settings, changed outline/main 
 ### Phase 5B — Contextual undo
 
 The map bar now labels Undo by current editor: outline, water, mountains, district or defenses. Active drawing tools take priority; otherwise the current section and selected landscape feature determine the available scoped history. Ctrl/Cmd+Z uses the same routing when focus is not in an editable form. The original per-editor history boundaries and Undo buttons remain authoritative. Revert outline & street settings restores the last accepted city layout controls without changing water, mountains, districts or defenses.
+
+### Phase 5C — Validation without interruptions
+
+When a city rebuild fails, the editor reports why and explicitly confirms that accepted city geometry was preserved. Unfinished water and terrain drafts surface the same failure near their controls without generating new geometry. Invalid gate/tower fields and district editing inputs receive accessible invalid-field states. Routine updates remain inline; staged project loading and browser recovery retain their deliberate confirmation controls.

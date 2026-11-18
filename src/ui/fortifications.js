@@ -4,6 +4,9 @@ import {
 import {
   normalizeFortificationSettings
 } from '../generators/fortifications.js';
+import {
+  defenseInvalidField
+} from '../core/validation-feedback.js';
 
 // Presentation-only: never generate or modify geometry while previewing inputs.
 export function describeDefenseUpdate(city, controls) {
@@ -76,6 +79,9 @@ export class FortificationPanel {
     status.textContent = preview.text;
     status.classList.toggle('error', preview.invalid);
     status.classList.toggle('pending', preview.pending && !preview.invalid);
+    const bad = preview.invalid ? defenseInvalidField(preview.text) : null;
+    for (const id of ['gateCountInput', 'towerSpacingInput', 'fortificationSeedInput'])
+      this.$(id).setAttribute?.('aria-invalid', String(id === bad));
     return preview;
   }
   message(text, error = false) {

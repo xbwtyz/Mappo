@@ -208,3 +208,8 @@
 .workspace-context-undo:disabled{opacity:.52;cursor:not-allowed}
 .workspace-undo-description{font-size:10px;color:#a8c0b1;padding:0 10px}
 @media(max-width:850px){.workspace-undo-description{display:none}.workspace-context-undo{min-width:0}}
+
+
+/* Phase 5C: visible, adjacent validation without blocking dialogs. */
+.workspace-shell input[aria-invalid="true"],.workspace-shell select[aria-invalid="true"]{border-color:#d27e66!important;box-shadow:0 0 0 1px #d27e66aa}
+.workspace-shell .draft-message.error,.workspace-shell .file-status.error{color:#ffd2c7}

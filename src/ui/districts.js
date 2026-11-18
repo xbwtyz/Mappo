@@ -117,10 +117,16 @@ export class DistrictPanel {
       this.formBlockId = null;
       this.refresh();
       this.message(message);
+      for (const id of ['districtNameInput', 'districtColorInput', 'districtTargetInput', 'districtNumberInput']) this.$(id).setAttribute?.('aria-invalid', 'false');
       this.changed();
       return true;
     } catch (error) {
       this.message(error.message, true);
+      const id = /color/i.test(error.message) ? 'districtColorInput'
+        : /name/i.test(error.message) ? 'districtNameInput'
+        : /district count|district number/i.test(error.message) ? 'districtNumberInput'
+        : 'districtTargetInput';
+      this.$(id).setAttribute?.('aria-invalid', 'true');
       return false;
     }
   }
