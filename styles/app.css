@@ -213,3 +213,42 @@
 /* Phase 5C: visible, adjacent validation without blocking dialogs. */
 .workspace-shell input[aria-invalid="true"],.workspace-shell select[aria-invalid="true"]{border-color:#d27e66!important;box-shadow:0 0 0 1px #d27e66aa}
 .workspace-shell .draft-message.error,.workspace-shell .file-status.error{color:#ffd2c7}
+
+/* Phase 6A — accessible density, clear focus, readable workspace controls.
+   Overrides legacy compact styles without changing the DOM or editor behavior. */
+.workspace-shell .control-group label,
+.workspace-shell .district-panel .control-group label,
+.workspace-shell .fortification-panel .control-group label { font-size:13px; line-height:1.45; color:#e6ede7; }
+.workspace-shell .tool-button, .workspace-shell .minor-button,
+.workspace-shell .button-primary, .workspace-shell .button-secondary,
+.workspace-shell .workspace-header-button, .workspace-shell .workspace-map-button,
+.workspace-shell .workspace-context-undo { min-height:38px; font-size:13px; line-height:1.3; }
+.workspace-shell .tool-button, .workspace-shell .minor-button { padding:9px 10px; }
+.workspace-shell input:not([type=checkbox]):not([type=color]),
+.workspace-shell select { min-height:40px; height:auto; font-size:13px; line-height:1.3; }
+.workspace-shell input[type=checkbox] { min-width:17px; min-height:17px; }
+.workspace-shell .hint, .workspace-shell .intro,
+.workspace-shell .file-status, .workspace-shell .draft-message,
+.workspace-shell .workspace-pending-details, .workspace-shell .defense-pending { font-size:12px; line-height:1.55; color:#bbcfc5; }
+.workspace-shell .workspace-section h2,
+.workspace-shell .district-list-heading h2,
+.workspace-shell .landscape-list-heading h2 { color:#f1e3ca; }
+.workspace-shell .sidebar-heading,
+.workspace-shell .workspace-panel-heading { color:#e5d4b8; }
+.workspace-shell summary { color:#e9cfaa; }
+.workspace-shell button:not(:disabled):hover,
+.workspace-shell [role=tab]:hover { filter:brightness(1.14); }
+.workspace-shell button[aria-pressed=true],
+.workspace-shell [role=tab][aria-selected=true] { box-shadow:inset 0 -2px 0 #deb77e; }
+.workspace-shell :is(button,input,select,summary,canvas,[role=tab]):focus-visible {
+  outline:3px solid #f3c68b;
+  outline-offset:2px;
+}
+.workspace-shell button:disabled { opacity:.55; }
+.workspace-shell .map-controls button { min-width:40px; min-height:40px; font-size:13px; }
+.workspace-shell .map-status,
+.workspace-shell .tool-hint { font-size:12px; }
+@media(max-width:670px) {
+  .workspace-shell .tool-button,.workspace-shell .minor-button { min-height:40px; }
+  .workspace-shell .workspace-section .tool-grid { gap:9px; }
+}

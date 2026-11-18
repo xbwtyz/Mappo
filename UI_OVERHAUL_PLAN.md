@@ -97,8 +97,8 @@ Acceptance: users can tell what is selected, which tool is active, which drafts 
 
 ## Phase 6 — Readability, responsive layout, and workspace persistence
 
-- [ ] Increase primary control/label readability; target approximately 13–14 px text and 36–40 px control heights where practical.
-- [ ] Strengthen heading contrast, hover feedback, focus rings, and selected-tool states.
+- [x] Increase primary control/label readability; target approximately 13–14 px text and 36–40 px control heights where practical (6A).
+- [x] Strengthen heading contrast, hover feedback, focus rings, and selected-tool states (6A).
 - [ ] Keep controls labeled and keyboard accessible; use icon-only buttons only with accessible names/tooltips.
 - [ ] Preserve Escape, Delete, Ctrl/Cmd+Z, Space-drag, zoom, and Fit behavior without intercepting normal text entry.
 - [ ] Retain gesture cancellation and prevent a hidden/inactive editor from handling map input.

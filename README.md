@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current feature-branch build: 0.1-dev.ui5d — Phase 5 navigation and integration
+## Current feature-branch build: 0.1-dev.ui6a — Phase 6A readability
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui5d.html`](dist/mappo-0.1-dev.ui5d.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui6a.html`](dist/mappo-0.1-dev.ui6a.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### UI overhaul: Phases 1–5 (Phase 5 on the feature branch)
 
@@ -272,3 +272,7 @@ The shared tool scroller now keeps separate scroll positions for City, Landscape
 ### Phase 5 verification
 
 Build `0.1-dev.ui5d` passed **150/150 automated tests** plus the reproducible build parity check in [GitHub Actions](https://github.com/xbwtyz/Mappo/actions/runs/44221461150). The latest Phase 5 preview is committed on `feature/ui-phase-5` and is **not merged into `main`**. Native Firefox and Chrome layout checks, including narrow and ultrawide viewports, remain planned for Phase 7. Existing project, workspace and container schema versions are unchanged.
+
+### Phase 6A — readability and focus
+
+Larger workspace control labels and buttons, consistent minimum input heights, stronger headings/active states and visible keyboard focus rings improve everyday editing. Generator geometry, editor interaction and project formats are unchanged. Phase 6B–6D are under development on `feature/ui-phase-6`.

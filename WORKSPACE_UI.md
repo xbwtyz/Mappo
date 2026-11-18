@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui5d` feature-branch build implements Phases 1–4 plus Phase 5A–5D of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui6a` feature-branch build implements Phases 1–5 plus Phase 6A of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -79,3 +79,7 @@ Map block selection now calls the district workspace's list-row reveal hook afte
 ## Phase 5B–5D undo, validation and navigation
 
 The contextual Undo selector reads the existing independent outline, water, terrain, district and defense histories. The map toolbar routes the action through the original per-editor button, and Ctrl/Cmd+Z respects the same active tool/section; it never introduces a global undo stack or merges records. A separate Revert action restores accepted outline/street controls. Phase 5C adds actionable rebuild-failure guidance and accessible invalid-input states to local defense/district forms without changing generation. `WorkspaceShell` caches a scroll position for each section during navigation, restoring it on return; clearing a project resets these transient positions. Selection remains handled by existing shell/editor state. Phase 6 owns portable shell/scroll persistence. All UI changes keep the data schema unchanged.
+
+## Phase 6A: readability
+
+The base workspace CSS applies 13px principal labels/buttons, approximately 38–40px controls, a stronger tab/pressed state, and 3px `:focus-visible` outlines. These are scoped presentation overrides; no editor state or geometry is changed. Native browser layout checks remain Phase 7.
