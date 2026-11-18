@@ -15,16 +15,16 @@
 | 3F-C | Complete; merged | Custom identity for properties and buildings |
 | 3F-D | Complete; merged | Portable validated Inspector selection and integration QA |
 
-**Current release:** `0.1-dev.3fd`; [merged PR #2](https://github.com/xbwtyz/Mappo/pull/2) and successful automatic Pages deployment.
+**Stable public release:** `0.1-dev.3fd` from [merged PR #2](https://github.com/xbwtyz/Mappo/pull/2). **3G-A preview:** `0.1-dev.3ga` on `feature/building-editing-3g`, pending explicit PR merge approval.
 
 ## Next proposal: Milestone 3G — Building footprint editing
 
-- **3G-A:** Explicit building edit mode, starting from the parent property workflow.
+- **3G-A:** Implemented on the feature branch, **not merged yet** — transient building edit mode, same-property targeting, visual-only guides, no geometry changes. [Design and QA](history/3g/MILESTONE_3GA_QA.md).
 - **3G-B:** Move, rotate and resize existing building footprints.
 - **3G-C:** Enforce property containment, non-overlap and valid editing feedback.
 - **3G-D:** Scoped Undo, portable persistence, backward compatibility and compiled/browser QA.
 
-**Not yet approved for code implementation.** Keep property-first selection, accepted geometry safety, record relationships, compatibility and standalone distribution intact.
+**3G-A was approved for implementation.** 3G-B through 3G-D remain future proposals requiring separate approval. Protect property-first selection, accepted geometry, record relationships, compatibility and standalone distribution.
 
 ## Later ideas, not committed schedules
 

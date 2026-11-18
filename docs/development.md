@@ -1,6 +1,6 @@
 # Mappo Developer Guide
 
-**Current baseline:** `0.1-dev.3fd` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
+**Current baseline:** `0.1-dev.3ga` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
 
 ## Source organization
 
@@ -11,7 +11,9 @@ src/core/          Geometry, shared model, validation and version
 src/generators/    City, streets, buildings, districts, water, terrain and defense generation
 src/data/          Project persistence, migration, validation and browser recovery
 src/editor/        Gesture controllers, drafts and scoped Undo histories
+src/editor/building.js  Transient 3G-A building editing session (not serialized)
 src/renderer/      Canvas layers and camera
+src/renderer/building-editing.js  Visual-only footprint overlay
 src/ui/            Controls, Inspector, selection and project-file workflow
 src/app.js         Application integration and accepted workspace
 styles/app.css     CSS embedded in output
@@ -23,7 +25,7 @@ index.html        Generated GitHub Pages entrypoint
 dist/             Versioned standalone HTML snapshots
 ```
 
-Properties are primary selected sites; individual buildings are child records with independent identity. Keep accepted geometry distinct from drafts. Validate restored selections against record existence, parent relationships and layer visibility. Do not reattach identities to potentially reused IDs after regeneration.
+Properties are primary selected sites; individual buildings are child records with independent identity. 3G-A adds a temporary building-editing session without changing geometry, persistence envelopes, or project schema. Keep accepted geometry distinct from drafts. Validate restored selections against record existence, parent relationships and layer visibility. Do not reattach identities to potentially reused IDs after regeneration.
 
 ## Build and automated checks
 
@@ -35,11 +37,11 @@ npm test
 npm run check
 ```
 
-The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current output: `dist/mappo-0.1-dev.3fd.html`. External runtime imports are rejected.
+The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current output: `dist/mappo-0.1-dev.3ga.html`. External runtime imports are rejected.
 
 ```bash
-cmp index.html dist/mappo-0.1-dev.3fd.html
-git diff --exit-code -- index.html dist/mappo-0.1-dev.3fd.html
+cmp index.html dist/mappo-0.1-dev.3ga.html
+git diff --exit-code -- index.html dist/mappo-0.1-dev.3ga.html
 ```
 
 Use a Windows binary comparison tool if `cmp` is unavailable. Update paths when the release version changes.
@@ -68,4 +70,4 @@ The last completed 3F-D development run passed **205/205 Node tests** and **16/1
 
 **Unified CI:** [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs version-derived build parity, Node regressions, and both real-browser QA suites for active development branches, pull requests, and `main`. See the [CI guide](CI.md) and [Pass B QA report](PASS_B_QA.md). The old phase-specific validation workflows have been retired.
 
-[Workspace UI reference](reference/WORKSPACE_UI.md) · [UI control map](reference/UI_CONTROL_MAP.md) · [Water](reference/WATER.md) · [Terrain](reference/TERRAIN.md) · [Districts](reference/DISTRICTS.md) · [Fortifications](reference/FORTIFICATIONS.md)
+[3G-A milestone QA and mode semantics](history/3g/MILESTONE_3GA_QA.md) · [Workspace UI reference](reference/WORKSPACE_UI.md) · [UI control map](reference/UI_CONTROL_MAP.md) · [Water](reference/WATER.md) · [Terrain](reference/TERRAIN.md) · [Districts](reference/DISTRICTS.md) · [Fortifications](reference/FORTIFICATIONS.md)
