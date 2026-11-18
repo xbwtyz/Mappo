@@ -9,9 +9,9 @@ const SCOPE = {
 export function describeUndoContext({
   section = 'city', selection = null, outline, water, terrain, district, defense
 }) {
-  const liveMode = terrain?.mode !== 'pan' ? 'terrain'
-    : water?.mode !== 'pan' ? 'water'
-    : outline?.mode !== 'pan' ? 'outline' : null;
+  const liveMode = terrain && terrain.mode !== 'pan' ? 'terrain'
+    : water && water.mode !== 'pan' ? 'water'
+    : outline && outline.mode !== 'pan' ? 'outline' : null;
   const kind = liveMode
     || (section === 'city' ? 'outline'
       : section === 'districts' ? 'district'
