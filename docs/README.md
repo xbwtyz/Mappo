@@ -6,6 +6,7 @@
 | --- | --- |
 | [User Guide](user-guide.md) | City generation, tools, Inspector, navigation and saved projects |
 | [Developer Guide](development.md) | Modules, testing, build pipeline and release process |
+| [Unified CI Guide](CI.md) | Branch and PR tests, browser matrices, artifacts and local commands |
 | [Current Roadmap](ROADMAP.md) | Completed milestones and unapproved future proposals |
 | [Screenshot Gallery](gallery.md) | Captioned visual examples from Inspector development |
 | [Technical References](reference/README.md) | Persistence, workspace and domain modules |

@@ -44,7 +44,7 @@ git diff --exit-code -- index.html dist/mappo-0.1-dev.3fd.html
 
 Use a Windows binary comparison tool if `cmp` is unavailable. Update paths when the release version changes.
 
-Node tests use `node --test tests/*.test.js` and verify geometry, project migrations, editor behavior and simulated compiled-app interactions. For graphical browser checks, install test-only Playwright and Chromium/Firefox as in the [existing 3F workflow](../.github/workflows/milestone-3f-check.yml), then run:
+Node tests use `node --test tests/*.test.js` and verify geometry, project migrations, editor behavior and simulated compiled-app interactions. For graphical browser checks, install test-only Playwright and Chromium/Firefox as described in the [current CI guide](CI.md), then run:
 
 ```bash
 node scripts/browser-qa.mjs
@@ -66,6 +66,6 @@ The last completed 3F-D development run passed **205/205 Node tests** and **16/1
 
 **Pages behavior:** [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) automatically deploys when the generated HTML or `dist/**` changes on `main`. Documentation-only changes do not match its current path filter. Its publication of historical standalone builds is unchanged in this docs-only cleanup.
 
-**CI limitation:** The remaining validation workflows are phase-branch-specific. Consolidating into reusable PR/main checks belongs to **Pass B**, not Pass A.
+**Unified CI:** [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs version-derived build parity, Node regressions, and both real-browser QA suites for active development branches, pull requests, and `main`. See the [CI guide](CI.md) and [Pass B QA report](PASS_B_QA.md). The old phase-specific validation workflows have been retired.
 
 [Workspace UI reference](reference/WORKSPACE_UI.md) · [UI control map](reference/UI_CONTROL_MAP.md) · [Water](reference/WATER.md) · [Terrain](reference/TERRAIN.md) · [Districts](reference/DISTRICTS.md) · [Fortifications](reference/FORTIFICATIONS.md)
