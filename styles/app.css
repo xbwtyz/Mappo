@@ -389,3 +389,18 @@
 .property-edit-panel-3i .building-transform-actions #propertyEditApply3I:disabled{opacity:.45;cursor:not-allowed}
 .property-edit-panel-3i #propertyEditCancel3I{border-color:#a9846c;color:#f0cfb8}
 @media(max-width:670px){.property-edit-panel-3i{left:8px;right:auto;top:auto;bottom:56px;width:min(262px,calc(100% - 18px));max-height:47%}}
+
+/* Dev 4b: compact viewport access, readable controls and contained Inspector scroll. */
+@media(max-width:900px){
+  .workspace-shell .workspace-map-button{min-height:32px;min-width:40px}
+  .workspace-shell .workspace-panel-restores{min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+  .workspace-shell .sidebar-right .sidebar-content{overscroll-behavior:contain;overflow-wrap:anywhere}
+  .workspace-shell .sidebar-right .workspace-inspector-action{min-height:36px}
+}
+@media(max-width:670px){
+  .workspace-shell .map-topline{padding-inline:8px;gap:5px}
+  .workspace-shell .map-breadcrumb{min-width:0}
+  .workspace-shell .map-breadcrumb strong{max-width:94px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .workspace-shell .sidebar-right .sidebar-content{padding:15px 14px}
+  .workspace-shell .workspace-panel-restores{flex-wrap:nowrap}
+}
