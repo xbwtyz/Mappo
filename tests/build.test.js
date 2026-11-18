@@ -333,6 +333,9 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
     if (candidate) break;
   }
   assert.ok(candidate);
+  // This workflow targets district block editing. Roofs now select buildings
+  // first, so hide that layer to make the entire underlying block available.
+  el('buildingsLayer').handlers.change({ target: { checked: false } });
   worldClick(topology.centers.get(candidate.block.id));
   assert.equal(state().districtPanel.editor.selectedBlockId, candidate.block.id);
   assert.equal(el('districtSelect').value, candidate.block.districtId);

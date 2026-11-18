@@ -24,6 +24,7 @@ import {
 import {
   drawDevelopment
 } from './buildings.js';
+import { drawBuildingSelection } from './building-selection.js';
 import {
   STREET_WIDTHS,
   STREET_EDGE_WIDTH
@@ -227,7 +228,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null, landscapeSelection = null, landscapeHover = null) {
+export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null, landscapeSelection = null, landscapeHover = null, buildingHover = null) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -264,6 +265,7 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
   if (editor && !(city.waterFeatures?.some(f => f.kind === 'coast') && !editor.dirty && editor.mode === 'pan')) drawOutline(ctx, camera, editor);
   drawWaterDraft(ctx, camera, waterEditor, editor?.boundary ?? city.survey.boundary);
   drawTerrainDraft(ctx, camera, terrainEditor);
+  drawBuildingSelection(ctx, camera, city.buildings, layers, landscapeSelection, buildingHover);
   drawLandscapeSelection(ctx, camera, landscapeRecords(waterEditor?.features ?? city.waterFeatures, terrainEditor?.features ?? city.terrainFeatures), landscapeSelection, landscapeHover);
 
   ctx.textAlign = 'left';

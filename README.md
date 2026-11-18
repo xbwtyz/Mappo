@@ -2,13 +2,13 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Phase 7 release candidate: 0.1-dev.ui7d — final UI overhaul verification
+## Milestone 3F-A: 0.1-dev.3fa — building selection checkpoint
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui7d.html`](dist/mappo-0.1-dev.ui7d.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3fa.html`](dist/mappo-0.1-dev.3fa.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### UI overhaul: Phases 1–6 merged; Phase 7 release candidate awaiting review
+### UI overhaul complete; Building Inspector in development
 
 Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) lists the new homes of the existing controls.
 
@@ -16,13 +16,21 @@ The working editor now opens in **City**, with **Landscape**, **Districts** and 
 
 Open **Landscape** for one list of every river, coastline, lake and mountain range. Filter **All / Water / Mountains** or use **Add feature**. Choose a feature type and create its preview in the inspector. Existing river/coast entries are disabled in the creation picker; lakes and ranges retain their independent limits.
 
-Select a feature from the list or map in **Select / Pan** to open only its own editing controls. Selection alone leaves the map in Select/Pan; choose a shape, move or crossing button to edit. Hover and selected outlines use a light halo, with orange marking selection. Nearby feature edges take priority over broad interiors; smaller interiors win overlap ties, then stable IDs break equal ties. Map selection reveals the matching list row, switching a conflicting filter to All. Click a city block to inspect its district; click empty land to clear selection.
+Select a feature from the list or map in **Select / Pan** to open only its own editing controls. Selection alone leaves the map in Select/Pan; choose a shape, move or crossing button to edit. Hover and selected outlines use a light halo, with orange marking selection. Nearby feature edges take priority over broad interiors; smaller interiors win overlap ties, then stable IDs break equal ties. Map selection reveals the matching list row, switching a conflicting filter to All. Click a roof to inspect a building, open ground in a city block to inspect its district, or empty land outside the city to clear selection.
 
 **Clear selection** closes an unpinned inspector; **Pin** keeps it open, including its expandable city report. Districts now lists neighborhoods and opens their name/color and connected-block controls in the selection inspector. District count, seed, rebuild and scoped undo remain under Districts; Defenses now groups wall enablement, gate/tower settings and generation seed with a live preview of defense-only changes. Water and terrain retain separate histories, with Undo actions also accessible from the Landscape list after removal. Selected landscape IDs now survive saves even in Select/Pan mode. The workspace's active tab, filter, panel state and draft inputs persist in the optional validated workspace UI state.
 
 Switching sections stops tools whose controls are being hidden while preserving completed drafts, history, pending inputs and the accepted city. An in-progress gesture is cancelled through its original editor. Panel collapse resizes the Canvas without changing the city or camera position/zoom. Shell layout preferences are restored through optional validated workspace presentation fields in saved projects and recovery snapshots. Existing project saves and recovery still restore their original city geometry and editor drafts.
 
 See [UI_OVERHAUL_PLAN.md](UI_OVERHAUL_PLAN.md) for the phase-by-phase goals and review checkpoints, and [WORKSPACE_UI.md](WORKSPACE_UI.md) for the modular shell/inspector architecture.
+
+### Building selection (3F-A)
+
+In **Select / Pan**, hover over a roof for a teal outline and click to select it. An orange outline follows the exact footprint and courtyard walls; the shared Inspector shows **Building** and its unique ID. Each compound wing remains independently selectable. Clicking a courtyard interior does not select its enclosing building. Hidden building layers cannot be selected; turning Buildings off clears building selection.
+
+Landscape features retain hit priority, followed by buildings and then district blocks. Roof interiors beat nearby roof edges; a three-screen-pixel outer-edge tolerance helps with small footprints. Nearest edges win, and equal/overlapping hits follow the renderer's paint order. Dragging remains pan; drawing tools keep their existing gestures and histories. Collapse/reopen the Inspector or switch sections without changing the selected building. A successful full rebuild or project replacement clears selection, including when a generated ID is reused.
+
+This checkpoint is read-only: no geometry, names, uses, or schema changes. Building selection is session-only in 3F-A; saving and recovery remain usable while a building is selected and reopen with no building selected. Detailed facts are 3F-B, customization is 3F-C, and portable building selection is 3F-D. See [MILESTONE_3F_PLAN.md](MILESTONE_3F_PLAN.md) and [MILESTONE_3FA_QA.md](MILESTONE_3FA_QA.md).
 
 ### Workflow
 
@@ -53,7 +61,7 @@ The current file limit is 20 MiB. Unsupported newer schemas are rejected rather 
 
 Newly generated cities receive connected neighborhoods automatically. The **Neighborhoods** panel lets you choose an automatic count or 1–12 districts and an independent district seed, then **Rebuild districts**. Only district data changes; streets, block shapes, properties and building footprints remain fixed. A separate connected block group receives at least one district if it cannot share a region with the rest of the city.
 
-- Click a block in **Select / Pan** mode to select its neighborhood and inspect its block, property and building counts. Dragging the map does not select a block.
+- Click open ground in a block in **Select / Pan** mode to select its neighborhood and inspect its block, property and building counts. Dragging the map does not select a block.
 - Select a neighborhood in the Districts list or click one of its blocks on the map. Edit its name/color in the right inspector and click **Apply district changes**.
 - With a block selected, choose a neighboring district and click **Move selected block**. The receiving district must share a street edge. Moving a block cannot split its source district or leave a district empty. All properties and buildings in the block inherit the new district.
 - Toggle district **Colors**, **Borders** and **Labels** independently of roof/property/plot layers.

@@ -1,6 +1,6 @@
 # Mappo Milestone 3F — Building Inspector
 
-Status: **Plan approved; implementation not started**.
+Status: **3F-A implemented; checkpoint verification in progress. 3F-B–D not started**.
 Branch: `feature/building-inspector-3f`, branched from `main` after the Phase 7 UI overhaul merge (`40e64fb`).
 Baseline: `0.1-dev.ui7d`; accepted city project schema **9** and optional workspace UI schema **1**.
 Owner approval: implement the four ordered checkpoints below, using incremental commits, tests, and a compiled standalone HTML after each. **Do not merge into `main`, tag a release, or publish GitHub Pages without explicit approval.**
@@ -24,12 +24,12 @@ Reuse the Phase 7 selection inspector (`src/ui/workspace.js` and `src/ui/workspa
 
 **Goal:** Click a visible building on the map and open the shared Inspector with that building selected.
 
-- [ ] Add a pure hit-test for building polygons, respecting courtyard holes and nearby overlapping outlines; ensure predictable tie-breaking and appropriate tolerance at different zoom levels.
-- [ ] Integrate click selection only into the existing Select/Pan pathway: landscape first, then buildings, then district/block; empty space clears selection.
-- [ ] Register a `building` selection kind with the generic workspace shell; select by stable building ID, resolve against the current accepted project, and safely clear stale references.
-- [ ] Draw a distinct selected/hover outline in a renderer overlay without modifying the accepted footprint, other render layers, or view camera.
-- [ ] Keep selection consistent with Layers visibility, tool changes, panel collapse, gestures, and project regeneration; do not turn a drag into a click.
-- [ ] Add focused unit/integration tests for polygon holes, zoom, adjacent buildings, hidden layers, hit precedence, stale IDs, and interaction with district and landscape selection.
+- [x] Add a pure hit-test for building polygons, respecting courtyard holes and nearby overlapping outlines; ensure predictable tie-breaking and appropriate tolerance at different zoom levels.
+- [x] Integrate click selection only into the existing Select/Pan pathway: landscape first, then buildings, then district/block; empty space clears selection.
+- [x] Register a `building` selection kind with the generic workspace shell; select by stable building ID, resolve against the current accepted project, and safely clear stale references.
+- [x] Draw a distinct selected/hover outline in a renderer overlay without modifying the accepted footprint, other render layers, or view camera.
+- [x] Keep selection consistent with Layers visibility, tool changes, panel collapse, gestures, and project regeneration; do not turn a drag into a click.
+- [x] Add focused unit/integration tests for polygon holes, zoom, adjacent buildings, hidden layers, hit precedence, stale IDs, and interaction with district and landscape selection.
 
 **Acceptance:** a house, compound wing or courtyard can be selected reliably from the Canvas, the correct record is highlighted, existing water/district selection still works, and no geometry changes.
 

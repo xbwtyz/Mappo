@@ -1,6 +1,7 @@
 import {
   LandscapeWorkspace
 } from './ui/landscape.js';
+import { BuildingWorkspace } from './ui/building-workspace.js';
 import {
   WorkspaceShell
 } from './ui/workspace.js';
@@ -87,7 +88,7 @@ const SHAPE_DESCRIPTIONS = {
   linear: 'Long corridors with cross streets.'
 };
 const TOOL_HINTS = {
-  pan: 'Drag to pan · Click a block to inspect districts · Scroll to zoom',
+  pan: 'Drag to pan · Click a building or open block to inspect · Scroll to zoom',
   freehand: 'Drag an outline · Release to close · Space + drag to pan',
   points: 'Click corners · Click first point or press Enter to close',
   edit: 'Drag corners · Double-click an edge to add a point · Delete to remove',
@@ -102,6 +103,7 @@ let waterPanel;
 let terrainPanel;
 let workspaceShell;
 let landscapeWorkspace;
+let buildingWorkspace;
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -177,11 +179,12 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover);
+    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover, buildingWorkspace?.hover);
   });
 }
 
 function updateMapIndicators() {
+  clearMapHover();
   const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
     waterActive = waterPanel && waterPanel.editor.mode !== 'pan';
   canvas.classList.toggle('drawing', Boolean(terrainActive || waterActive || editor.mode !== 'pan'));
@@ -191,11 +194,13 @@ function updateMapIndicators() {
 }
 
 function updateViewport() {
+  clearMapHover();
   $('zoomValue').textContent = `${Math.round(camera.zoom*100)}%`;
   workspaceChanged();
 }
 
 function editorChanged() {
+  clearMapHover();
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(editor.mode === mode));
   if (editor.mode !== 'pan' && workspaceShell?.state.section !== 'city') workspaceShell?.navigate('city');
   if (editor.mode !== 'pan' && terrainPanel) terrainPanel.editor.setMode('pan');
@@ -263,6 +268,8 @@ function generate() {
         seed: $('fortificationSeedInput').value || $('seedInput').value
       }
     });
+    buildingWorkspace?.refresh({ replaced: true });
+    clearMapHover();
     project = next;
     if (waterPanel) {
       waterPanel.editor.loadCity(next.city);
@@ -316,6 +323,10 @@ function updatePattern() {
 for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
+    if (key === 'buildings') {
+      clearMapHover();
+      buildingWorkspace?.refresh();
+    }
     requestDraw();
     workspaceChanged();
   });
@@ -551,6 +562,7 @@ function syncWorkspaceDistrictSelection() {
 }
 
 function stopWorkspaceTools(targetSection = null) {
+  clearMapHover();
   // Cancel only a tool whose controls are leaving the visible section.
   // Completed drafts and their histories stay with the original editors.
   if (targetSection !== 'landscape') {
@@ -574,6 +586,7 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
     requestDraw();
   },
   onInspect: () => {
+    clearMapHover();
     landscapeWorkspace?.render();
     districtWorkspace?.render();
   },
@@ -602,6 +615,17 @@ landscapeWorkspace = new LandscapeWorkspace({
     districtPanel.refresh();
   },
   changed: () => files?.changed(),
+  draw: requestDraw
+});
+buildingWorkspace = new BuildingWorkspace({
+  shell: workspaceShell,
+  getCity: () => project?.city,
+  getLayers: () => layers,
+  onSelect: () => {
+    districtPanel.editor.selectedDistrictId = null;
+    districtPanel.editor.selectedBlockId = null;
+    districtPanel.refresh();
+  },
   draw: requestDraw
 });
 workspaceShell.bind();
@@ -634,15 +658,22 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     landscapeWorkspace.select(hit, {
       fromMap: true
     });
-  } else {
+  } else if (!buildingWorkspace.select(buildingWorkspace.hit(point, camera.zoom))) {
     districtPanel.selectAt(point);
     if (!districtPanel.editor.selectedDistrictId) workspaceShell.clear();
   }
 }, point => {
   const hit = landscapeWorkspace.hit(point, camera.zoom);
   landscapeWorkspace.setHover(hit);
-  canvas.classList.toggle('feature-hover', Boolean(hit));
+  const buildingHit = hit ? null : buildingWorkspace.hit(point, camera.zoom);
+  buildingWorkspace.setHover(buildingHit);
+  canvas.classList.toggle('feature-hover', Boolean(hit || buildingHit));
 });
+function clearMapHover() {
+  landscapeWorkspace?.setHover(null);
+  buildingWorkspace?.setHover(null);
+  canvas.classList.toggle('feature-hover', false);
+}
 if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
 else window.addEventListener('resize', resize);
 resize();
@@ -667,6 +698,9 @@ function captureWorkspace() {
       schemaVersion: 1,
       ui: {
         ...workspaceShell.snapshot(),
+        // 3F-A selection is session-only. Portable building selection is added
+        // with validation/restoration in 3F-D; downloads and recovery still work.
+        selection: workspaceShell.state.selection?.kind === 'building' ? null : workspaceShell.state.selection,
         disclosures: Object.fromEntries(WORKSPACE_DISCLOSURE_IDS.map(id => [id, Boolean($(id).open)])),
         landscape: landscapeWorkspace.snapshotUI(),
         districts: districtPanel.snapshotUI()
@@ -746,6 +780,8 @@ function applyProjectDocument(document) {
   const next = copyJson(document.project),
     workspace = copyJson(document.workspace),
     draft = workspace.editor;
+  buildingWorkspace.refresh({ replaced: true });
+  clearMapHover();
   project = next;
   editor.boundary = draft.boundary;
   editor.center = draft.center;

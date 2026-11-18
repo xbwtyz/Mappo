@@ -6,6 +6,7 @@ import {
 import {
   registerWorkspaceInspectors
 } from '../src/ui/workspace-inspectors.js';
+import { BuildingWorkspace } from '../src/ui/building-workspace.js';
 import {
   workspaceInitialState,
   workspaceInspectorVisible,
@@ -67,6 +68,42 @@ function shellHarness(providers = {}) {
     })
   };
 }
+test('building selection uses the shared inspector and clears hidden, missing or replaced records without geometry changes', () => {
+  const { shell, el } = shellHarness();
+  let city = { buildings: [{ id: 'BLD-1', footprint: [], holes: [] }] };
+  const layers = { buildings: true };
+  let selections = 0;
+  const workspace = new BuildingWorkspace({ shell, getCity: () => city, getLayers: () => layers, onSelect: () => selections++ });
+  const ref = { kind: 'building', id: 'BLD-1' }, before = JSON.stringify(city);
+  assert.equal(workspace.select(ref), true);
+  assert.equal(el('workspaceSelectionType').textContent, 'Building');
+  assert.equal(el('workspaceSelectionName').textContent, 'BLD-1');
+  assert.equal(el('workspaceInspector').hidden, false);
+  el('workspaceCloseInspector').handlers.click();
+  workspace.select(ref);
+  assert.equal(el('workspaceInspector').hidden, false, 'Reselecting reopens a collapsed inspector');
+  shell.navigate('landscape');
+  assert.equal(shell.state.selection.id, ref.id, 'Changing sections retains valid selection');
+  city = JSON.parse(JSON.stringify(city));
+  workspace.refresh();
+  assert.equal(shell.state.selection.id, ref.id, 'A local record-preserving update retains selection');
+  workspace.setHover(ref);
+  layers.buildings = false;
+  workspace.refresh();
+  assert.equal(shell.state.selection, null);
+  assert.equal(workspace.hover, null);
+  assert.equal(workspace.select(ref), false);
+  layers.buildings = true;
+  workspace.select(ref);
+  workspace.refresh({ replaced: true });
+  assert.equal(shell.state.selection, null, 'A full rebuild clears even a reused building ID');
+  workspace.select(ref);
+  assert.equal(JSON.stringify(city), before, 'Selection and navigation never mutate city records');
+  city.buildings = [];
+  shell.refresh();
+  assert.equal(shell.state.selection, null);
+  assert.equal(selections, 4);
+});
 test('workspace defaults to City with an empty inspector collapsed and one accessible section', () => {
   const {
     shell,
