@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui4b` feature-branch build implements Phases 1–3 plus Phases 4A–4B of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui4c` feature-branch build implements Phases 1–3 plus Phases 4A–4C of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -67,3 +67,7 @@ The district panel retains pending name and color inputs when the selected distr
 The original `FortificationPanel` remains authoritative for applying defense changes and its separate ten-snapshot history. A pure presentation helper (`describeDefenseUpdate`) normalizes enabled settings with the existing fortification normalizer to describe whether **Update defenses** builds the first walls, regenerates defenses after changed settings, disables walls while retaining geometry, re-enables saved records or makes no change. When walls are disabled, pending invalid numeric settings do not prevent disabling or delete existing defense records. Pending validation guidance appears inline without attempting generation or modifying accepted data.
 
 The grouped Defenses panel keeps all existing control IDs. It separates wall enablement, gate/tower targets, optional defense seed and the apply/undo actions. Layer visibility continues to live exclusively in the shared Layers menu. Restoring saved pending controls re-renders the preview after assigning their stored values; it never regenerates or repairs loaded walls. Existing city geometry, districts, water and terrain remain unchanged by defense-only apply/undo, per original model validators.
+
+## Phase 4C district/defense integration
+
+Map block selection now calls the district workspace's list-row reveal hook after the shell has synchronized the selection. This scrolls the corresponding keyed neighborhood row into view without recreating it, changing map geometry or triggering extra selection events. List selection still routes through `DistrictPanel` and its existing editor. The compiled app's integration regression exercises the actual shared UI controllers in order: generate districts, reject an invalid rename without changing the model/history, apply a valid rename/recolor, build defenses, reject invalid tower spacing atomically, regenerate defenses from a new seed, save both histories in one portable file, restore the accepted city without generation, then undo each editor's changes independently back to the starting city. Full city regeneration remains a separate explicit action. No persisted fields or schema versions are added.

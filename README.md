@@ -2,13 +2,13 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current feature-branch build: 0.1-dev.ui4b — District and defense workflows
+## Current feature-branch build: 0.1-dev.ui4c — District and defense integration
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui4b.html`](dist/mappo-0.1-dev.ui4b.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui4c.html`](dist/mappo-0.1-dev.ui4c.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### UI overhaul: Phases 1–3 and Phase 4A–4B
+### UI overhaul: Phases 1–3 and Phase 4A–4C
 
 Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) lists the new homes of the existing controls.
 
@@ -210,7 +210,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui4b.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui4c.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -242,7 +242,8 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.ui3:** UI overhaul Phase 3 — unified landscape list, inline creation/contextual forms, map hits/highlights and portable landscape selection.
 - **0.1-dev.ui4a:** UI overhaul Phase 4A — selectable neighborhood inventory, contextual district editing, shared district history and explicit local district rebuild.
 - **0.1-dev.ui4b:** UI overhaul Phase 4B — scoped defensive settings, clear Update defenses action, live mutation preview and retained independent defense history.
-- **UI overhaul, Phase 4 cross-workflow review onward:** Final district/defense integration review, draft feedback, readability and full workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
+- **0.1-dev.ui4c:** UI overhaul Phase 4C — district map/list reveal and combined local district/defense validation, save/load and independent history regression tests.
+- **UI overhaul, Phase 5 onward:** Draft feedback, readability, full workspace persistence and final browser release checks — [remaining goals](UI_OVERHAUL_PLAN.md).
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 

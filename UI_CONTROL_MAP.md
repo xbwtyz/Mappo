@@ -1,6 +1,6 @@
-# UI control locations — Phase 4B
+# UI control locations — Phase 4C
 
-Build `0.1-dev.ui4b`. This inventory records the new homes of the existing controls. IDs and controller bindings stay stable. Project schema remains 9; shell menu/disclosure visibility is runtime-only until the workspace persistence phase.
+Build `0.1-dev.ui4c`. This inventory records the new homes of the existing controls. IDs and controller bindings stay stable. Project schema remains 9; shell menu/disclosure visibility is runtime-only until the workspace persistence phase.
 
 | Controls | New home | Behavior |
 | --- | --- | --- |
@@ -35,7 +35,7 @@ Build `0.1-dev.ui4b`. This inventory records the new homes of the existing contr
 | Undo water / Undo mountains | Landscape → Draft histories | Existing editor undo remains available after a selected record is removed |
 | District count, Generate/rebuild districts | Districts → Neighborhoods | Existing district-only generation |
 | District seed | Districts → Neighborhoods → Generation settings | Existing pending district seed |
-| District list, selection | Districts → Neighborhoods | Stable district IDs; map clicks and list selection both reveal contextual inspector |
+| District list, selection | Districts → Neighborhoods | Stable district IDs; list and map selection reveal the contextual inspector and map selection scrolls to the matching row |
 | District name/color, Apply district changes, selected block, receiving district, Move selected block | Right selection inspector → Neighborhood | Existing local editing, strict connected membership validation and UI bindings |
 | Undo district edit, district generation/status | Districts → Neighborhoods | Existing 20-snapshot scoped history and generation feedback |
 | Walls enabled, requested gates, tower spacing | Defenses → Perimeter defenses | Existing generation/enable controls, with input feedback that does not alter geometry |

@@ -1,6 +1,6 @@
 # Mappo UI overhaul — goals and acceptance checklist
 
-Status: Phases 1–3 and 4A–4B implemented on the feature branch (`0.1-dev.ui4b`). Phase 4B passed 141 automated tests and exact standalone-build parity; Phase 4 cross-workflow/browser review, Phases 5–7 and the later 3F inspector remain planned. This document records the agreed direction and the refinements proposed after the mockup review. Further implementation follows discussion and approval.
+Status: Phases 1–3 and 4A–4B implemented; Phase 4C cross-workflow integration implemented on the feature branch (`0.1-dev.ui4c`), with automated validation pending. Phases 5–7 and later 3F building inspector remain planned. This document records the agreed direction and the refinements proposed after the mockup review. Further implementation follows discussion and approval.
 
 Baseline: Mappo `0.1-dev.3e6`, project schema 9. The UI overhaul comes before the planned 3F building inspector. The first UI implementation build is `0.1-dev.ui1`; accepted city schema remains 9.
 
@@ -133,7 +133,7 @@ Work in the phase order above. Each phase is a reviewable implementation chunk. 
 - Phase 3: implemented with 135 passing automated tests, focused final integration checks and Chrome creation, map/list selection, filters, removal/undo and explicit file-load checks.
 - Phase 4A: new Districts inventory with contextual district editing, using the existing controller, selection and scoped undo; automated suite passed (138 tests).
 - Phase 4B: grouped Defenses settings, pending-change guidance and explicit local update; `npm run check` passed 141/141 tests on GitHub Actions. Root/index distribution parity checked by `git diff --exit-code`. Native Firefox and broader screen-size verification remain open for Phase 7.
-- Phase 4C next: review district/defense interactions together, scoped undo, validation feedback and explicit project/recovery round trips before closing the phase for review.
+- Phase 4C: combined district and defense edits now have a shared integration regression covering atomic invalid inputs, scoped undo after project reload, and exact city geometry preservation; map selection now scrolls to the corresponding district list item. Acceptance awaits complete automated checks; native Firefox and responsive graphical checks are Phase 7 tasks.
 - After the UI overhaul: resume the planned 3F building inspector within the new inspector architecture.
 
 Mark checkboxes complete only after the corresponding production behavior has been implemented and verified. A visual mockup alone does not complete an implementation goal.

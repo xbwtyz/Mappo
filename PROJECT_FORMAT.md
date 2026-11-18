@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current feature-branch build is **0.1-dev.ui4b**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current feature-branch build is **0.1-dev.ui4c**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.ui4b",
+  "appVersion": "0.1-dev.ui4c",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -212,3 +212,7 @@ The selected district remains `workspace.districtEditor.selectedDistrictId`, wit
 ## UI overhaul Phase 4B — defense workflow presentation
 
 The Defenses section now provides a live description of pending settings and explicit scoped **Update defenses**/**Undo defense edit** actions. The preview is derived from accepted `fortificationState` plus existing unsaved `fortificationEditor.controls`; it introduces no new persisted field. File restore assigns the saved controls and refreshes the preview without generating geometry. All previous save, disabled-wall, history, migration and validation contracts remain in force; city schema 9, workspace schema 1 and container version 1 remain unchanged.
+
+## UI overhaul Phase 4C — combined local workflows
+
+The existing project document stores the complete authoritative city, district editor snapshot/history and defense editor snapshot/history in their unchanged fields. Combined local updates are validated independently, preserve unaffected city geometry, and can be undone in either editor without rewriting the other's records. Loading the saved city directly restores both accepted datasets and editor histories without invoking street or feature generation. The only added behavior is scrolling the matched neighborhood list row into view on map selection. Schema/container versions remain unchanged.
