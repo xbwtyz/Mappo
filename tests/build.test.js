@@ -23,7 +23,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui4b.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui4c.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -183,6 +183,9 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
       },
       replaceChildren(...children) {
         this.children = children;
+      },
+      scrollIntoView() {
+        this.revealed = true;
       }
     })
   };
@@ -331,6 +334,8 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
   assert.equal(el('workspaceSection-districts').hidden, false, 'Map selection opens Districts');
   assert.equal(el('districtInspectorControls').hidden, false, 'District form is visible in inspector');
   assert.equal(el('workspaceShowControls').hidden, true, 'A shortcut is unnecessary for inline forms');
+  const selectedDistrictIndex = state().project.city.districts.findIndex(d => d.id === candidate.block.districtId);
+  assert.equal(el('districtList').options[selectedDistrictIndex].children[0].revealed, true, 'Map block selection scrolls to its matching district row');
   el('districtNameInput').value = 'Test Quarter';
   el('districtColorInput').value = '#123abc';
   el('applyDistrictButton').handlers.click();
@@ -717,6 +722,95 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(reloaded.state().project.city.fortificationState.enabled, true);
   assert.equal(reloaded.el('undoFortificationButton').handlers.click(), true);
   assert.deepEqual(copy(reloaded.state().project.city), beforeWalls);
+  // Phase 4C: exercise the district and defense controllers together,
+  // including validation failures, complete portable saves and scoped undo.
+  const crossBaseline = copy(reloaded.state().project.city);
+  assert.equal(crossBaseline.districtState.status, 'unassigned');
+  assert.equal(reloaded.el('generateDistrictButton').handlers.click(), true);
+  const crossDistrictId = reloaded.state().project.city.districts[0].id;
+  const crossDistrictOriginalName = reloaded.state().project.city.districts[0].name;
+  const crossRows = reloaded.el('districtList').options;
+  assert.equal(crossRows.length, reloaded.state().project.city.districts.length);
+  crossRows[0].children[0].handlers.click();
+  assert.equal(reloaded.state().workspaceShell.state.selection.id, crossDistrictId);
+  assert.equal(reloaded.el('districtInspectorControls').hidden, false);
+  const beforeInvalidDistrict = copy(reloaded.state().project.city);
+  const districtHistoryBeforeInvalid = reloaded.state().districtPanel.editor.history.length;
+  reloaded.el('districtNameInput').value = '';
+  assert.equal(reloaded.el('applyDistrictButton').handlers.click(), false);
+  assert.match(reloaded.el('districtMessage').textContent, /District names must contain/);
+  assert.deepEqual(copy(reloaded.state().project.city), beforeInvalidDistrict);
+  assert.equal(reloaded.state().districtPanel.editor.history.length, districtHistoryBeforeInvalid);
+  reloaded.el('districtNameInput').value = 'Cross-workflow District';
+  reloaded.el('districtColorInput').value = '#335577';
+  assert.equal(reloaded.el('applyDistrictButton').handlers.click(), true);
+  assert.equal(reloaded.state().project.city.districts[0].name, 'Cross-workflow District');
+  const afterDistrictOnly = copy(reloaded.state().project.city);
+  reloaded.el('wallsEnabledInput').checked = true;
+  reloaded.el('gateCountInput').value = '3';
+  reloaded.el('towerSpacingInput').value = '90';
+  reloaded.el('fortificationSeedInput').value = 'phase4c-fort';
+  reloaded.el('fortificationSeedInput').handlers.input();
+  assert.match(reloaded.el('defensePendingMessage').textContent, /build walls/);
+  assert.equal(reloaded.el('applyFortificationButton').handlers.click(), true);
+  assert.equal(reloaded.state().project.city.fortificationState.seed, 'phase4c-fort');
+  const builtDefenses = copy(reloaded.state().project.city);
+  for (const key of ['nodes', 'roads', 'blocks', 'plots', 'properties', 'buildings', 'districts', 'waterFeatures', 'terrainFeatures']) {
+    assert.deepEqual(copy(builtDefenses[key]), afterDistrictOnly[key], 'Defense build preserved '+key);
+  }
+  const defenseHistoryBeforeInvalid = reloaded.state().fortificationPanel.editor.history.length;
+  reloaded.el('towerSpacingInput').value = 'not-a-spacing';
+  reloaded.el('towerSpacingInput').handlers.input();
+  assert.match(reloaded.el('defensePendingMessage').textContent, /Tower spacing/);
+  assert.equal(reloaded.el('applyFortificationButton').handlers.click(), false);
+  assert.deepEqual(copy(reloaded.state().project.city), builtDefenses);
+  assert.equal(reloaded.state().fortificationPanel.editor.history.length, defenseHistoryBeforeInvalid);
+  reloaded.el('towerSpacingInput').value = '90';
+  reloaded.el('fortificationSeedInput').value = 'phase4c-rebuild';
+  reloaded.el('fortificationSeedInput').handlers.input();
+  assert.match(reloaded.el('defensePendingMessage').textContent, /regenerate only walls/);
+  assert.equal(reloaded.el('applyFortificationButton').handlers.click(), true);
+  const crossExpected = copy(reloaded.state().project.city);
+  assert.equal(crossExpected.fortificationState.seed, 'phase4c-rebuild');
+  assert.equal(crossExpected.districts[0].name, 'Cross-workflow District');
+  for (const key of ['nodes', 'roads', 'blocks', 'plots', 'properties', 'buildings', 'districts', 'waterFeatures', 'terrainFeatures']) {
+    assert.deepEqual(copy(crossExpected[key]), afterDistrictOnly[key], 'Defense update preserved '+key);
+  }
+  assert.ok(await reloaded.el('saveProjectButton').handlers.click());
+  const crossText = await downloaded.at(-1).blob.text();
+  const crossFile = JSON.parse(crossText);
+  assert.deepEqual(crossFile.project.city, crossExpected);
+  assert.ok(crossFile.workspace.districtEditor.history.length >= 2);
+  assert.ok(crossFile.workspace.fortificationEditor.history.length >= 2);
+  // Change the in-memory state, then reload the combined save without regenerating.
+  assert.equal(reloaded.el('undoDistrictButton').handlers.click(), true);
+  assert.equal(reloaded.el('undoFortificationButton').handlers.click(), true);
+  await reloaded.state().files.stageFile({ size: crossText.length, text: async () => crossText });
+  assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
+  assert.deepEqual(copy(reloaded.state().project.city), crossExpected);
+  assert.equal(reloaded.state().workspaceShell.state.selection.id, crossDistrictId);
+  assert.equal(reloaded.el('districtInspectorControls').hidden, false);
+  assert.equal(reloaded.el('defensePendingMessage').textContent, 'No defense changes pending. The accepted city and fortifications are unchanged.');
+  // Undo operations remain independent across the loaded district and defense histories.
+  assert.equal(reloaded.el('undoFortificationButton').handlers.click(), true);
+  assert.equal(reloaded.state().project.city.fortificationState.seed, 'phase4c-fort');
+  assert.equal(reloaded.state().project.city.districts[0].name, 'Cross-workflow District');
+  const crossDefenseAfterUndo = copy({
+    walls: reloaded.state().project.city.walls,
+    gates: reloaded.state().project.city.gates,
+    towers: reloaded.state().project.city.towers
+  });
+  assert.equal(reloaded.el('undoDistrictButton').handlers.click(), true);
+  assert.equal(reloaded.state().project.city.districts[0].name, crossDistrictOriginalName);
+  assert.deepEqual(copy({
+    walls: reloaded.state().project.city.walls,
+    gates: reloaded.state().project.city.gates,
+    towers: reloaded.state().project.city.towers
+  }), crossDefenseAfterUndo);
+  assert.equal(reloaded.el('undoFortificationButton').handlers.click(), true);
+  assert.equal(reloaded.state().project.city.fortificationState.status, 'unbuilt');
+  assert.equal(reloaded.el('undoDistrictButton').handlers.click(), true);
+  assert.deepEqual(copy(reloaded.state().project.city), crossBaseline, 'Cross-workflow undo restores exact original city');
   // Water remains a draft until its complete street/bridge generation succeeds.
   const dryProject = copy(reloaded.state().project);
   reloaded.el('waterSeedInput').value = 'river-stress';

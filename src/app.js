@@ -380,6 +380,7 @@ districtWorkspace = new DistrictWorkspace({
   getShell: () => workspaceShell
 });
 districtPanel.onRefresh = () => districtWorkspace.render();
+districtPanel.onMapSelect = () => districtWorkspace.reveal();
 fortificationPanel = new FortificationPanel({
   getElement: $,
   getCity: () => project.city,

@@ -28,6 +28,7 @@ export class DistrictPanel {
     this.formDistrictId = null;
     this.formBlockId = null;
     this.onRefresh = () => {};
+    this.onMapSelect = () => {};
   }
   message(text, error = false) {
     for (const id of ['districtMessage', 'districtGenerationMessage']) {
@@ -105,10 +106,7 @@ export class DistrictPanel {
     this.refresh();
     this.changed();
     if (block) this.$('districtPanel').open = true;
-    if (block) this.$('districtPanel').scrollIntoView?.({
-      block: 'nearest',
-      behavior: 'smooth'
-    });
+    if (block) this.onMapSelect();
   }
   operation(action, message) {
     try {
