@@ -36,7 +36,9 @@ export function drawBuildingEditOverlay(ctx, camera, city, layers, edit) {
   ctx.fillStyle = 'rgba(32, 140, 151, .18)';
   ctx.fill('evenodd');
   ctx.strokeStyle = '#fffaf0'; ctx.lineWidth = 5; ctx.setLineDash([]); ctx.stroke();
-  ctx.strokeStyle = '#14788a'; ctx.lineWidth = 2.5; ctx.setLineDash([8,3]); ctx.stroke();
+  const invalid = edit.validation?.status === 'invalid';
+  ctx.strokeStyle = invalid ? '#d65045' : edit.validation?.status === 'valid' ? '#218b65' : '#14788a';
+  ctx.lineWidth = 2.5; ctx.setLineDash([8,3]); ctx.stroke();
   ctx.setLineDash([]);
   const points = buildingPreviewHandles(building,edit.transform,camera.zoom)
     .filter(h => h.kind === edit.tool);
@@ -54,6 +56,18 @@ export function drawBuildingEditOverlay(ctx, camera, city, layers, edit) {
     else ctx.arc(p.x,p.y,7,0,Math.PI*2);
     ctx.fillStyle = '#fffaf0'; ctx.fill();
     ctx.strokeStyle = '#14788a'; ctx.lineWidth = 2; ctx.stroke();
+  }
+  const target = edit.validation?.issues?.find(issue=>issue.targetId)?.targetId;
+  const conflicting = target && (city.properties?.find(p=>p.id===target)?.boundary
+    || city.buildings?.find(b=>b.id===target)?.footprint);
+  if(conflicting){
+    ctx.beginPath();
+    conflicting.forEach((point,i)=>{
+      const p=camera.worldToScreen(point);
+      if(!i)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle='#d65045';ctx.lineWidth=3;ctx.setLineDash([4,3]);ctx.stroke();
   }
   ctx.restore();
 }

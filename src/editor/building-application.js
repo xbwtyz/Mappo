@@ -99,7 +99,7 @@ export function prepareBuildingCandidate(project, buildingId, transform) {
   const accessCity={...city,buildings:city.buildings.map(b=>b.id===buildingId?candidateBuilding:b)};
   const route=reattachFrontage(accessCity,candidateBuilding);
   if(!route)issues.push({code:'access',message:'No unobstructed entrance can connect to the existing frontage road.'});
-  else Object.assign(candidateBuilding,route,{frontageRoadId:original.frontageRoadId});
+  else Object.assign(candidateBuilding,{entrance:route.entrance,accessPath:route.accessPath,frontageRoadId:original.frontageRoadId});
   if(issues.length)return {ok:false,status:'invalid',issues,preview:base.preview,property:base.property,candidate:null};
   // The candidate is a full independent project. Any error below discards it.
   const candidate=copyJson(project);

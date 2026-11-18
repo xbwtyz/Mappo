@@ -6,6 +6,7 @@ import { PropertyWorkspace } from './ui/property-workspace.js';
 import { IdentityWorkspace } from './ui/identity-workspace.js';
 import { BuildingEditSession } from './editor/building.js';
 import { buildingFrame } from './core/building-transform.js';
+import { inspectBuildingPreview, prepareBuildingApply } from './editor/building-application.js';
 import {
   WorkspaceShell
 } from './ui/workspace.js';
@@ -208,9 +209,27 @@ function syncBuildingTransformUI() {
   })) $(id).value = Number(value.toFixed(2)).toString();
   for (const tool of ['Move','Rotate','Resize'])
     $('buildingTool'+tool).setAttribute('aria-pressed',String(session.tool===tool.toLowerCase()));
-  $('buildingPreviewStatus').textContent = session.isPending
-    ? 'UNSAVED PREVIEW · No city changes. Leaving or switching buildings discards this draft.'
-    : 'Preview only. Nothing is applied or saved. Select Move, Rotate or Resize.';
+  const result = session.isPending
+    ? inspectBuildingPreview(project,session.buildingId,t,Boolean(session.drag))
+    : {ok:false,status:'idle',issues:[]};
+  session.validation = result;
+  const eligible = session.isPending && !session.drag && result.status==='valid';
+  $('buildingPreviewApply').disabled = !eligible;
+  $('buildingTransformPanel').setAttribute('data-validation',result.status);
+  const issues = $('buildingPreviewIssues');
+  issues.hidden = !result.issues.length;
+  issues.replaceChildren(...result.issues.map(issue=>{
+    const li=document.createElement('li');
+    li.textContent=issue.message;
+    return li;
+  }));
+  $('buildingPreviewStatus').textContent = !session.isPending
+    ? 'Choose Move, Rotate or Resize. Only a validated, changed building can be applied.'
+    : result.status==='checking'
+      ? 'CHECKING · Fast geometry check complete; road access is verified when the drag ends.'
+      : result.ok
+        ? 'VALID PLACEMENT · Ready to Apply to City. Project compatibility will be rechecked.'
+        : 'INVALID PLACEMENT · Apply is disabled. Adjust the preview to resolve the issues below.';
 }
 function confirmBuildingPreviewDiscard() {
   if (!buildingEditSession?.isPending) return true;
@@ -766,6 +785,7 @@ $('buildingPreviewReset').addEventListener('click',()=>{
   if (confirmBuildingPreviewDiscard()) buildingEditSession.reset();
 });
 $('buildingPreviewCancel').addEventListener('click',exitBuildingEditing);
+$('buildingPreviewApply').addEventListener('click',applyBuildingTransform);
 
 const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
 // An editor cannot receive map input unless its section is visible.

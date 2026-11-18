@@ -142,10 +142,12 @@
             <label>Depth <input id="buildingDepth" type="number" min="0.1" step="0.5"></label>
           </div>
           <div class="building-transform-actions">
+            <button type="button" id="buildingPreviewApply" disabled>Apply to City</button>
             <button type="button" id="buildingPreviewReset">Reset preview</button>
             <button type="button" id="buildingPreviewCancel">Cancel preview</button>
           </div>
-          <p id="buildingPreviewStatus" role="status" aria-live="polite">Draft only. No changes are applied or saved. Leaving edit mode discards the preview.</p>
+          <p id="buildingPreviewStatus" role="status" aria-live="polite">Change a building to check its placement.</p>
+          <ul id="buildingPreviewIssues" class="building-preview-issues" aria-label="Building validation problems" hidden></ul>
         </section>
         <div class="map-controls workspace-map-controls" role="group" aria-label="Map navigation">
           <button id="panButton" title="Click a property, landscape feature or open block to inspect; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
