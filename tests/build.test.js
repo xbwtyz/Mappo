@@ -756,7 +756,7 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(reloaded.state().project.city.fortificationState.seed, 'phase4c-fort');
   const builtDefenses = copy(reloaded.state().project.city);
   for (const key of ['nodes', 'roads', 'blocks', 'plots', 'properties', 'buildings', 'districts', 'waterFeatures', 'terrainFeatures']) {
-    assert.deepEqual(copy(builtDefenses[key]), afterDistrictOnly[key], 'Defense build preserved '+key);
+    assert.deepEqual(copy(builtDefenses[key] ?? null), copy(afterDistrictOnly[key] ?? null), 'Defense build preserved '+key);
   }
   const defenseHistoryBeforeInvalid = reloaded.state().fortificationPanel.editor.history.length;
   reloaded.el('towerSpacingInput').value = 'not-a-spacing';
@@ -774,7 +774,7 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(crossExpected.fortificationState.seed, 'phase4c-rebuild');
   assert.equal(crossExpected.districts[0].name, 'Cross-workflow District');
   for (const key of ['nodes', 'roads', 'blocks', 'plots', 'properties', 'buildings', 'districts', 'waterFeatures', 'terrainFeatures']) {
-    assert.deepEqual(copy(crossExpected[key]), afterDistrictOnly[key], 'Defense update preserved '+key);
+    assert.deepEqual(copy(crossExpected[key] ?? null), copy(afterDistrictOnly[key] ?? null), 'Defense update preserved '+key);
   }
   assert.ok(await reloaded.el('saveProjectButton').handlers.click());
   const crossText = await downloaded.at(-1).blob.text();
