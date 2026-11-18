@@ -75,6 +75,6 @@ Portable files retain accepted geometry, applied identities, editor state, camer
 
 ## 7. Known limits
 
-Building geometry Undo/Redo is session-only and unavailable after reopening a project. Placing/replacing buildings, PNG export and 3D visualization are not implemented yet. See [Roadmap](ROADMAP.md).
+Building geometry and structural Undo/Redo are session-only and unavailable after reopening a project. Building placement is confined to existing properties; cross-property transfers, editing property/plot boundaries, PNG export and 3D visualization are not implemented yet. See [Roadmap](ROADMAP.md).
 
 The [archived complete 3F-D README](history/README-pre-cleanup-3fd.md) includes more extensive feature notes and historical milestone descriptions.
