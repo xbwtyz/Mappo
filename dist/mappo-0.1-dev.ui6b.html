@@ -6544,6 +6544,20 @@ function describeUndoContext({
 }
 
 
+// src/core/shortcut-scope.js
+// Keyboard map commands must never steal text-entry or menu navigation.
+function isEditableShortcutTarget(target) {
+  if (!target) return false;
+  if (target.isContentEditable === true) return true;
+  if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'SUMMARY'].includes(String(target.tagName || '').toUpperCase())) return true;
+  return Boolean(target.closest?.('[contenteditable=""],[contenteditable="true"],[role="textbox"]'));
+}
+function isMapShortcutEvent(event, activeElement) {
+  return !event?.defaultPrevented && !isEditableShortcutTarget(event?.target)
+    && !isEditableShortcutTarget(activeElement);
+}
+
+
 // src/core/version.js
 const APP_VERSION = '0.1-dev.ui6b';
 const PROJECT_SCHEMA_VERSION = 9;
@@ -9573,20 +9587,6 @@ function drawOutline(ctx, camera, editor) {
     ctx.lineTo(s.x, s.y + 16);
     ctx.stroke();
   }
-}
-
-
-// src/core/shortcut-scope.js
-// Keyboard map commands must never steal text-entry or menu navigation.
-function isEditableShortcutTarget(target) {
-  if (!target) return false;
-  if (target.isContentEditable === true) return true;
-  if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'SUMMARY'].includes(String(target.tagName || '').toUpperCase())) return true;
-  return Boolean(target.closest?.('[contenteditable=""],[contenteditable="true"],[role="textbox"]'));
-}
-function isMapShortcutEvent(event, activeElement) {
-  return !event?.defaultPrevented && !isEditableShortcutTarget(event?.target)
-    && !isEditableShortcutTarget(activeElement);
 }
 
 
