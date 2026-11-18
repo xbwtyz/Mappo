@@ -2,13 +2,13 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current feature-branch build: 0.1-dev.ui6d — Phase 6D workspace persistence
+## Phase 7 release candidate: 0.1-dev.ui7d — final UI overhaul verification
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui6d.html`](dist/mappo-0.1-dev.ui6d.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui7d.html`](dist/mappo-0.1-dev.ui7d.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### UI overhaul: Phases 1–5 on main; Phase 6 on its feature branch
+### UI overhaul: Phases 1–6 merged; Phase 7 release candidate awaiting review
 
 Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) lists the new homes of the existing controls.
 
@@ -18,9 +18,9 @@ Open **Landscape** for one list of every river, coastline, lake and mountain ran
 
 Select a feature from the list or map in **Select / Pan** to open only its own editing controls. Selection alone leaves the map in Select/Pan; choose a shape, move or crossing button to edit. Hover and selected outlines use a light halo, with orange marking selection. Nearby feature edges take priority over broad interiors; smaller interiors win overlap ties, then stable IDs break equal ties. Map selection reveals the matching list row, switching a conflicting filter to All. Click a city block to inspect its district; click empty land to clear selection.
 
-**Clear selection** closes an unpinned inspector; **Pin** keeps it open, including its expandable city report. Districts now lists neighborhoods and opens their name/color and connected-block controls in the selection inspector. District count, seed, rebuild and scoped undo remain under Districts; Defenses now groups wall enablement, gate/tower settings and generation seed with a live preview of defense-only changes. Water and terrain retain separate histories, with Undo actions also accessible from the Landscape list after removal. Selected landscape IDs now survive saves even in Select/Pan mode. Full shell/filter/layout persistence remains Phase 6.
+**Clear selection** closes an unpinned inspector; **Pin** keeps it open, including its expandable city report. Districts now lists neighborhoods and opens their name/color and connected-block controls in the selection inspector. District count, seed, rebuild and scoped undo remain under Districts; Defenses now groups wall enablement, gate/tower settings and generation seed with a live preview of defense-only changes. Water and terrain retain separate histories, with Undo actions also accessible from the Landscape list after removal. Selected landscape IDs now survive saves even in Select/Pan mode. The workspace's active tab, filter, panel state and draft inputs persist in the optional validated workspace UI state.
 
-Switching sections stops tools whose controls are being hidden while preserving completed drafts, history, pending inputs and the accepted city. An in-progress gesture is cancelled through its original editor. Panel collapse resizes the Canvas without changing the city or camera position/zoom. Shell layout preferences are runtime state in this phase; their portable persistence is planned for Phase 6. Existing project saves and recovery still restore their original city geometry and editor drafts.
+Switching sections stops tools whose controls are being hidden while preserving completed drafts, history, pending inputs and the accepted city. An in-progress gesture is cancelled through its original editor. Panel collapse resizes the Canvas without changing the city or camera position/zoom. Shell layout preferences are restored through optional validated workspace presentation fields in saved projects and recovery snapshots. Existing project saves and recovery still restore their original city geometry and editor drafts.
 
 See [UI_OVERHAUL_PLAN.md](UI_OVERHAUL_PLAN.md) for the phase-by-phase goals and review checkpoints, and [WORKSPACE_UI.md](WORKSPACE_UI.md) for the modular shell/inspector architecture.
 
@@ -291,4 +291,12 @@ Schema-1 workspace files add optional validated UI fields for the active section
 
 ### Phase 6 regression results
 
-The full Phase 6 source completed **161/161 automated tests** covering editor reliability, layout invariants, schema-9/1 compatibility, unknown-key retention, raw draft cache preservation, native project file round trips and browser recovery. The [standalone reproducibility check](https://github.com/xbwtyz/Mappo/actions/runs/44227085307) verifies the committed `0.1-dev.ui6d` HTML against Mappo's official modular builder. `feature/ui-phase-6` remains **unmerged**; GitHub Pages still publishes the current approved `main` build. Native Firefox, Chrome and full ultrawide/narrow graphical testing remain Phase 7 work.
+The full Phase 6 source completed **161/161 automated tests** covering editor reliability, layout invariants, schema-9/1 compatibility, unknown-key retention, raw draft cache preservation, native project file round trips and browser recovery. The [standalone reproducibility check](https://github.com/xbwtyz/Mappo/actions/runs/44227085307) verifies the committed `0.1-dev.ui6d` HTML against Mappo's official modular builder. Phase 6 has since been merged into `main`. Phase 7 is now isolated on `feature/ui-phase-7` and GitHub Pages still publishes the approved `main` build. Chromium/Firefox graphical and narrow-screen checks are covered by Phase 7 CI.
+
+### Phase 7 UI overhaul release candidate (`0.1-dev.ui7d`)
+
+Phase 7 isolates final validation from the production `main` branch. The UI legacy inventory check confirms 93 out of 93 pre-overhaul static interactive controls are retained. The 7B suite passed 166/166 automated tests for exact schema-9 geometry round trips, browser recovery, pending edits, scoped undo, and existing generator and editor behavior. The 7C suite added a narrow overlay regression and passed 167/167 tests plus **8/8 real Chromium and Firefox smoke checks** at 1440×900, 5120×1440, 768×1024 and 390×844. The browser run uncovered and corrected map-toolbar overlap of narrow-screen drawer controls.
+
+The final 7D CI run also checks project file download/reopen in real desktop browsers, byte-for-byte root/standalone parity, compiled script/style self-containment and source/package version consistency. No project-format migration was necessary: project schema 9, workspace schema 1 and container format 1 remain unchanged. The output is an offline standalone HTML file; GitHub Pages is **not** republished until an approved merge.
+
+A browser smoke matrix is not exhaustive human testing of every draggable terrain gesture, bridge or district edit. See [PHASE7_QA.md](PHASE7_QA.md) for verified checks and remaining manual review items before approving the release.

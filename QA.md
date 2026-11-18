@@ -281,3 +281,12 @@ The optional workspace UI state is validated with strict bounded values and safe
 ### Phase 6 final automated verification
 
 The complete `0.1-dev.ui6d` application suite passed **161/161 tests**, including unchanged schema-9 geometry, legacy workspace defaults, optional bounded UI state, unknown compatible key preservation, recoverable stale selections, restored district/landscape drafts, valid section/panel/scroll restoration and intact editor histories. The root/distribution exact-build check is recorded in [GitHub Actions](https://github.com/xbwtyz/Mappo/actions/runs/44227085307). Native Firefox/Chrome graphical and 32:9/narrow-screen checks remain Phase 7 and are not implied by the automated suite.
+
+## Phase 7 final UI overhaul QA (`0.1-dev.ui7d` review candidate)
+
+- Phase 7A: [163/163 automated tests](https://github.com/xbwtyz/Mappo/actions/runs/44236130079). All 93 static interactive controls from `0.1-dev.3e6` remain in the redesigned template.
+- Phase 7B: [166/166 tests](https://github.com/xbwtyz/Mappo/actions/runs/44236853696) with explicit schema-9 geometry round trips, optional workspace UI state, browser-recovery previous/current snapshots, scoped Undo and pending-change immutability.
+- Phase 7C: [167/167 Node tests and 8/8 real-browser viewports](https://github.com/xbwtyz/Mappo/actions/runs/44238779274). Chromium and Firefox tested at 1440×900, 5120×1440, 768×1024, and 390×844. Test screenshots reviewed and narrow drawer pointer-blocking regression corrected in the CSS stacking model.
+- Phase 7D: source/package/distribution version alignment and offline standalone parity checked by `npm run check` and GitHub Actions. The browser suite additionally covers exporting a portable project and reopening it from staged file selection on desktop. Final CI evidence and manual-gesture limitations are maintained in `PHASE7_QA.md`.
+
+The Phase 7 release candidate does not introduce generator changes or a city/workspace/container schema migration. The branch remains unmerged pending explicit approval. Headless browser smoke testing is not a replacement for in-person full drawing, pen/touch gestures, or device-specific usability review.

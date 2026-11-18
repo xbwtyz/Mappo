@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui6d` feature-branch build implements Phases 1–5 plus Phase 6A–6D of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui7d` release candidate consolidates the UI overhaul Phases 1–6 and adds Phase 7 integration and browser verification on `feature/ui-phase-7`. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -95,3 +95,9 @@ CSS defines a stable map-first grid with explicit zero-minimum columns, ~900px o
 ## Phase 6D: portable UI state and bounded input caches
 
 Workspace format 1 gains an optional additive `workspace.ui` record, validated separately from the accepted city; it holds shell state, scroll positions, disclosure flags, landscape filter/input caches and district name/color drafts. The existing `workspace.view.landscapeSelection` remains for legacy compatibility. `createProjectDocument` retains unknown compatible nested UI keys alongside known values. New projects and older saved cities without `ui` use the original fallback selection and City defaults. Loads never regenerate accepted roads/buildings/blocks or change project schema 9. The same canonical envelope flows through browser recovery.
+
+## Phase 7C–7D: browser and release validation
+
+The compiled, dependency-free HTML is exercised by `scripts/browser-qa.mjs` with Playwright as a **test-only** dependency. Chromium and Firefox run four screen sizes (1440×900, 5120×1440, 768×1024, 390×844). Checks cover menus, keyboard dismissal, section navigation, drawer collapse, inspector, landscape creation form routing, horizontal overflow and readable screenshots. Narrow drawer stacking is explicitly scoped above map controls so panel action targets are not hidden behind the map toolbar. Phone tests close the Tools drawer before interacting with controls underneath it.
+
+The 7D desktop file workflow also downloads and validates a real `.mappo.json`, stages it back through the app's file picker, and reopens it without changing project schema 9. Browser tests do not replace human verification of all geometry drag gestures and extreme edge cases. The whole runtime continues to compile to one offline HTML with inlined JS and CSS; versioning/build modules stay separate during development.
