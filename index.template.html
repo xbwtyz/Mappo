@@ -142,6 +142,11 @@
             <button type="button" id="propertyEditReset3I">Reset preview</button>
             <button type="button" id="propertyEditCancel3I">Cancel preview</button>
           </div>
+          <div class="building-history-actions" role="group" aria-label="Property geometry history">
+            <button type="button" id="propertyHistoryUndo3I" disabled>Undo property</button>
+            <button type="button" id="propertyHistoryRedo3I" disabled>Redo property</button>
+          </div>
+          <p id="propertyHistoryStatus3I" class="building-history-status" role="status" aria-live="polite">Session-only property history</p>
           <p id="propertyEditStatus3I" role="status" aria-live="polite">Move a corner or divider to preview a validated property change.</p>
           <ul id="propertyEditIssues3I" class="building-preview-issues" aria-label="Property validation problems" hidden></ul>
         </section>
