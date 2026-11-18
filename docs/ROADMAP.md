@@ -20,17 +20,17 @@
 | 3G-D | Complete; merged | Session-only building footprint Undo/Redo and portable persistence |
 | 3H | Complete; merged | Property-first manual building placement, replacement, deletion and structural Undo/Redo |
 
-**Stable main baseline:** `0.1-dev.3he` from [merged PR #10](https://github.com/xbwtyz/Mappo/pull/10). **3I checkpoint preview:** `0.1-dev.3ia` on `feature/property-plot-editing-3i`, not yet merged.
+**Stable main baseline:** `0.1-dev.3he` from [merged PR #10](https://github.com/xbwtyz/Mappo/pull/10). **3I release candidate:** `0.1-dev.3ie` on `feature/property-plot-editing-3i`, not yet merged.
 
 ## Active milestone — 3I Editable properties and plots
 
-[Approved five-checkpoint plan](history/3i/MILESTONE_3I_PLAN.md) · [3I-A QA](history/3i/MILESTONE_3IA_QA.md).
+[Approved five-checkpoint plan](history/3i/MILESTONE_3I_PLAN.md) · [3I QA](history/3i/MILESTONE_3I_QA.md) · [3I-A QA](history/3i/MILESTONE_3IA_QA.md).
 
-- **3I-A:** Property-first isolated preview/editor foundation, corner selection, Reset/Cancel and disabled Apply; compiled checkpoint `0.1-dev.3ia`. Implemented on feature branch, awaiting CI.
-- **3I-B:** Coordinated convex-quadrilateral boundary and plot divider manipulation with stable plot IDs.
-- **3I-C:** Exact geometry and reference validation, coherent recalculation and atomic Apply.
-- **3I-D:** Bounded property-scoped Undo/Redo, compatible with prior building histories.
-- **3I-E:** Cross-browser regression, portable save/load safeguards, documentation and distribution.
+- **3I-A:** Implemented on feature branch — isolated preview, corner selection, Reset/Cancel, compiled checkpoint `0.1-dev.3ia`.
+- **3I-B:** Implemented on feature branch — draggable corners, numeric controls, linked convex plot reflow and compiled checkpoint `0.1-dev.3ib`.
+- **3I-C:** Implemented on feature branch — precise street/neighbor/building validation, references and atomic schema-safe Apply; checkpoint `0.1-dev.3ic`.
+- **3I-D:** Implemented on feature branch — bounded property-scoped session history and cross-editor conflict rules; checkpoint `0.1-dev.3id`.
+- **3I-E:** In final verification — new Node/browser regression, portable save/load and release candidate `0.1-dev.3ie`.
 
 No separate merge authorization has been provided for the 3I PR.
 
