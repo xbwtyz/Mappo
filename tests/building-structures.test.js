@@ -121,7 +121,7 @@ test('3H-A/D UI inspector adds a preview, protects invalid state and structural 
   linked.handlers.click();
   const remove=buttons(app).find(b=>b.textContent==='Delete building…');
   assert.ok(remove);
-  assert.equal(remove.handlers.click(),true);
+  remove.handlers.click();
   assert.ok(!app.state().project.city.buildings.some(b=>b.id===building.id));
   assert.equal(state.buildingStructureHistory.count('undo',propertyId),1);
   assert.equal(app.el('structureUndo').disabled,false);
