@@ -1,4 +1,5 @@
 name: Temporary 3H compiler and Node validation
+# Restart after fixing hidden-layer Inspector compatibility.
 on:
   push:
     branches: ['feature/building-management-3h']
