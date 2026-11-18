@@ -18,7 +18,7 @@ export function drawDevelopment(ctx, camera, city, layers) {
       ctx.fillStyle = ROOF_COLORS[building.roofTone % ROOF_COLORS.length];
       ctx.fill('evenodd');
       ctx.strokeStyle = '#756552';
-      ctx.lineWidth = Math.max(.45, .85 * camera.zoom);
+      ctx.lineWidth = Math.min(2.3,Math.max(.65,.85*camera.zoom));
       ctx.stroke();
       if (camera.zoom > .6) {
         ctx.save();
@@ -47,15 +47,15 @@ export function drawDevelopment(ctx, camera, city, layers) {
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
         ctx.strokeStyle = 'rgba(95,69,49,.35)';
-        ctx.lineWidth = Math.max(.45, .65 * camera.zoom);
+        ctx.lineWidth = Math.min(1.5,Math.max(.55,.65*camera.zoom));
         ctx.stroke();
         ctx.restore();
       }
     }
   }
   if (layers.properties) {
-    ctx.strokeStyle = 'rgba(108,82,47,.7)';
-    ctx.lineWidth = 1.1;
+    ctx.strokeStyle = 'rgba(108,82,47,.84)';
+    ctx.lineWidth = Math.min(1.7,Math.max(.95,1.1*camera.zoom));
     ctx.setLineDash([5, 3]);
     for (const property of city.properties) {
       ctx.beginPath();
@@ -65,8 +65,8 @@ export function drawDevelopment(ctx, camera, city, layers) {
     ctx.setLineDash([]);
   }
   if (layers.plots) {
-    ctx.strokeStyle = 'rgba(45,89,112,.75)';
-    ctx.lineWidth = .8;
+    ctx.strokeStyle = 'rgba(45,89,112,.86)';
+    ctx.lineWidth = Math.min(1.4,Math.max(.8,.8*camera.zoom));
     ctx.setLineDash([2, 3]);
     for (const plot of city.plots) {
       ctx.beginPath();
