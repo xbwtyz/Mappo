@@ -389,3 +389,8 @@
 .property-edit-panel-3i .building-transform-actions #propertyEditApply3I:disabled{opacity:.45;cursor:not-allowed}
 .property-edit-panel-3i #propertyEditCancel3I{border-color:#a9846c;color:#f0cfb8}
 @media(max-width:670px){.property-edit-panel-3i{left:8px;right:auto;top:auto;bottom:56px;width:min(262px,calc(100% - 18px));max-height:47%}}
+
+/* Dev 4a: independent, always-reachable property deletion history controls. */
+#propertyDeletionUndo4A,#propertyDeletionRedo4A{white-space:nowrap;font-size:10px;border-color:#7a6552}
+.workspace-shell .map-topline .workspace-panel-restores{flex-wrap:wrap;gap:5px}
+@media(max-width:670px){#propertyDeletionUndo4A,#propertyDeletionRedo4A{padding:5px 6px;font-size:9px}}

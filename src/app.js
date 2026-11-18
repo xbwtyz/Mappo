@@ -87,6 +87,7 @@ import { BuildingStructureHistory3H } from './editor/building-structure-history.
 import { PropertyEditSession3I } from './editor/property-edit.js';
 import { inspectPropertyEdit3I, preparePropertyApply3I } from './editor/property-application.js';
 import { PropertyGeometryHistory3I } from './editor/property-history.js';
+import { preparePropertyDeletion4A, PropertyDeletionHistory4A } from './editor/property-deletion.js';
 import { pointInPolygon } from './core/geometry.js';
 
 const $ = id => document.getElementById(id),
@@ -120,6 +121,7 @@ let buildingEditSession;
 const buildingHistory = new BuildingGeometryHistory(20);
 const buildingStructureHistory = new BuildingStructureHistory3H(20);
 const propertyHistory = new PropertyGeometryHistory3I(20);
+const propertyDeletionHistory4A = new PropertyDeletionHistory4A(20);
 let buildingPlacementSession;
 let propertyEditSession;
 let propertyWorkspace;
@@ -187,6 +189,10 @@ function currentUndoContext() {
       description: buildingEditSession.isPending ? 'Reset or Apply the preview before undoing accepted geometry.'
         : available ? 'Undo the last accepted edit to this building.' : 'No accepted building edit to undo.'};
   }
+  if (propertyDeletionHistory4A.can('undo',project)
+      && !propertyEditSession?.isActive && !buildingPlacementSession?.isActive && !buildingEditSession?.isActive)
+    return {kind:'property-deletion',controlId:'propertyDeletionUndo4A',label:'Undo deletion',available:true,
+      description:'Restore the last deleted property, its plots and buildings.'};
   return describeUndoContext({
     section: workspaceShell?.state.section ?? 'city',
     selection: workspaceShell?.state.selection ?? null,
@@ -213,10 +219,21 @@ function undoCurrentScope() {
   return true;
 }
 function workspaceChanged() {
+  syncPropertyDeletionControls4A();
   updatePendingFeedback();
   files?.changed();
 }
 
+function syncPropertyDeletionControls4A() {
+  const busy=Boolean(propertyEditSession?.isActive || buildingPlacementSession?.isActive || buildingEditSession?.isActive);
+  for(const [direction,id] of [['undo','propertyDeletionUndo4A'],['redo','propertyDeletionRedo4A']]) {
+    const available=propertyDeletionHistory4A.can(direction,project);
+    const button=$(id);
+    button.hidden=!available;
+    button.disabled=busy||!available;
+    button.title=direction==='undo'?'Restore the last deleted property, plots and buildings':'Delete the property again';
+  }
+}
 function requestDraw() {
   if (drawPending) return;
   drawPending = true;
@@ -315,6 +332,7 @@ function applyBuildingTransform() {
     if(project!==previous || session.buildingId!==buildingId) return false;
     if (!buildingHistory.record(previous,received.candidate,buildingId)) return false;
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     project=received.candidate;
     session.reset();
     updateDetails();
@@ -346,6 +364,7 @@ function moveBuildingHistory(direction) {
   }
   buildingHistory.accept(receipt.entry,direction);
   propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
   project=receipt.candidate;
   session.reset();
   updateDetails();
@@ -448,6 +467,7 @@ function applyStructurePlacement3H() {
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,request.operation))return false;
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     project=result.candidate;
     buildingHistory.clear();
     session.stop();
@@ -471,6 +491,7 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'delete'))return false;
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     project=result.candidate;
     buildingHistory.clear();
     updateDetails();
@@ -490,6 +511,7 @@ function moveStructureHistory3H(direction) {
   if(!result.ok){$('statusMessage').textContent='Cannot '+direction+' structure: '+result.issues[0]?.message;return false;}
   buildingStructureHistory.accept(result.entry,direction);
   propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
   project=result.candidate;
   buildingHistory.clear();
   updateDetails();
@@ -574,6 +596,7 @@ function updateMapIndicators() {
   syncBuildingTransformUI();
   syncBuildingStructureUI3H();
   syncPropertyEditUI3I();
+  syncPropertyDeletionControls4A();
   const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
     waterActive = waterPanel && waterPanel.editor.mode !== 'pan',
     buildingActive = buildingEditSession?.isActive ?? false,
@@ -669,6 +692,7 @@ function generate({ discardIdentities = false } = {}) {
     propertyEditSession?.stop();
     buildingStructureHistory.clear();
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     identityWorkspace?.reset();
     propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
@@ -1111,6 +1135,7 @@ propertyWorkspace = new PropertyWorkspace({
   exitEditing: () => exitBuildingEditing() && exitStructurePlacement3H() && exitPropertyEditing3I(),
   startBuilding: propertyId => startStructurePlacement3H(propertyId),
   startPropertyEdit: enterPropertyEditing3I,
+  deleteProperty: deleteProperty4A,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -1167,6 +1192,61 @@ $('structureApply').addEventListener('click',applyStructurePlacement3H);
 $('structureCancel').addEventListener('click',exitStructurePlacement3H);
 $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
+// Dev 4a: deleting a parcel removes its dependent records, never neighboring land.
+function deleteProperty4A(propertyId) {
+  const selected=workspaceShell?.state.selection;
+  const property=project?.city?.properties.find(p=>p.id===propertyId);
+  if(!property || selected?.kind!=='property' || selected.id!==propertyId)return false;
+  const plots=project.city.plots.filter(p=>p.propertyId===propertyId).length;
+  const buildings=project.city.buildings.filter(b=>b.propertyId===propertyId).length;
+  const name=property.customName || property.id;
+  if(typeof window.confirm==='function' && !window.confirm(
+    'Delete property "'+name+'"? This also deletes '+plots+' plot(s) and '+buildings+
+    ' building(s). Neighboring properties and streets are untouched. Undo is available in this session.'
+  ))return false;
+  if(!exitPropertyEditing3I() || !exitStructurePlacement3H() || !exitBuildingEditing())return false;
+  const previous=project;
+  const receipt=preparePropertyDeletion4A(previous,captureWorkspace().workspace,propertyId);
+  if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
+  if(project!==previous || workspaceShell.state.selection?.id!==propertyId)return false;
+  try{
+    propertyDeletionHistory4A.record(previous,receipt.candidate,propertyId);
+    project=receipt.candidate;
+    buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
+    identityWorkspace.reset();
+    workspaceShell.select(null,{reveal:false});
+    // On narrow layouts the Inspector overlays map controls; reveal the global Undo.
+    if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900 && !workspaceShell.state.inspectorCollapsed)
+      workspaceShell.dispatch({type:'inspector',collapsed:true});
+    propertyWorkspace.refresh();buildingWorkspace.refresh();
+    updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+    $('statusMessage').textContent='Deleted '+name+' and its '+plots+' plots / '+buildings+
+      ' buildings. Use Undo deletion to restore them during this session.';
+    return true;
+  }catch(error){$('statusMessage').textContent='Deletion failed: '+error.message;return false;}
+}
+function movePropertyDeletion4A(direction) {
+  if(!project||propertyEditSession?.isActive||buildingPlacementSession?.isActive||buildingEditSession?.isActive)return false;
+  const receipt=propertyDeletionHistory4A.prepare(project,captureWorkspace().workspace,direction);
+  if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
+  const id=receipt.entry.snapshot.propertyId;
+  project=receipt.candidate;
+  propertyDeletionHistory4A.accept(receipt.entry,direction);
+  buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
+  identityWorkspace.reset();
+  workspaceShell.select(direction==='undo'?{kind:'property',id}:null,{reveal:false});
+  // Restoring selection can reopen the mobile Inspector over Redo Delete.
+  // Keep map-level deletion history controls reachable after both directions.
+  if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900 && !workspaceShell.state.inspectorCollapsed)
+    workspaceShell.dispatch({type:'inspector',collapsed:true});
+  propertyWorkspace.refresh();buildingWorkspace.refresh();
+  updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+  $('statusMessage').textContent=(direction==='undo'?'Restored ':'Deleted again: ')+id+
+    ' (property, plots and buildings).';
+  return true;
+}
+$('propertyDeletionUndo4A').addEventListener('click',()=>movePropertyDeletion4A('undo'));
+$('propertyDeletionRedo4A').addEventListener('click',()=>movePropertyDeletion4A('redo'));
 function keepPropertyEditorVisible3I() {
   // Refreshing the selected property can reopen the narrow-screen Inspector.
   // Keep the floating edit tools accessible through Apply and Undo/Redo.
@@ -1191,6 +1271,7 @@ function applyPropertyEdit3I() {
   project=received.candidate;
   buildingHistory.clear();
   buildingStructureHistory.clear();
+  propertyDeletionHistory4A.clear();
   session.start(project.city,propertyId);
   updateDetails();
   workspaceShell.select({kind:'property',id:propertyId});
@@ -1211,6 +1292,7 @@ function movePropertyHistory3I(direction){
   }
   project=receipt.candidate;
   propertyHistory.accept(receipt.entry,direction);
+  propertyDeletionHistory4A.clear();
   session.start(project.city,id);
   updateDetails();workspaceShell.refresh();keepPropertyEditorVisible3I();requestDraw();workspaceChanged();
   $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' property and plot edit for '+id+'.';
@@ -1467,6 +1549,7 @@ function applyProjectDocument(document) {
   buildingPlacementSession?.stop();
   buildingStructureHistory.clear();
   propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
   identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });

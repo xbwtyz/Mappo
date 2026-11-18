@@ -128,6 +128,35 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.locator('#propertyEditPanel3I').isVisible(),false);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
 
+      // Dev 4a: delete through the real Inspector and restore the exact city.
+      const countBefore=await page.evaluate(() => {
+        const c=__buildingQA.state().project.city;
+        return {properties:c.properties.length,plots:c.plots.length,buildings:c.buildings.length};
+      });
+      page.once('dialog',async dialog=>{
+        assert.ok(dialog.message().includes('plot(s)') && dialog.message().includes('building(s)'));
+        await dialog.accept();
+      });
+      await page.getByRole('button',{name:'Delete property…'}).click();
+      assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.some(p=>p.id===id),id),false);
+      const countAfter=await page.evaluate(() => {
+        const c=__buildingQA.state().project.city;
+        return {properties:c.properties.length,plots:c.plots.length,buildings:c.buildings.length};
+      });
+      assert.equal(countAfter.properties,countBefore.properties-1);
+      assert.equal(countAfter.plots,countBefore.plots-siteContext.plotIds.length);
+      assert.equal(countAfter.buildings,countBefore.buildings-siteContext.buildingIds.length);
+      assert.equal(await page.locator('#propertyDeletionUndo4A').isVisible(),true);
+      await page.locator('#propertyDeletionUndo4A').click();
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      assert.equal(await page.locator('#propertyDeletionRedo4A').isVisible(),true);
+      await page.locator('#propertyDeletionRedo4A').click();
+      assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.some(p=>p.id===id),id),false);
+      await page.locator('#propertyDeletionUndo4A').click();
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      if(viewport.width<=900 && await page.locator('#workspaceOpenInspector').isVisible())
+        await page.locator('#workspaceOpenInspector').click();
+
       // 3H: property-first Add starts a ghost, not a committed building.
       await page.getByRole('button', { name: 'Add building to this property' }).click();
       assert.equal(await page.locator('#buildingStructurePanel').isVisible(),true);

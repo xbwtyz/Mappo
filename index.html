@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.3ie</title>
+  <title>Mappo — City editor · 0.1-dev.4a</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -396,12 +396,17 @@
 .property-edit-panel-3i #propertyEditCancel3I{border-color:#a9846c;color:#f0cfb8}
 @media(max-width:670px){.property-edit-panel-3i{left:8px;right:auto;top:auto;bottom:56px;width:min(262px,calc(100% - 18px));max-height:47%}}
 
+/* Dev 4a: independent, always-reachable property deletion history controls. */
+#propertyDeletionUndo4A,#propertyDeletionRedo4A{white-space:nowrap;font-size:10px;border-color:#7a6552}
+.workspace-shell .map-topline .workspace-panel-restores{flex-wrap:wrap;gap:5px}
+@media(max-width:670px){#propertyDeletionUndo4A,#propertyDeletionRedo4A{padding:5px 6px;font-size:9px}}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3ie</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.4a</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -509,7 +514,7 @@
       </div>
     </aside>
     <main class="map-shell" aria-label="City map workspace">
-      <div class="map-topline"><div class="workspace-panel-restores"><button id="workspaceOpenTools" class="workspace-map-button" aria-label="Show tools" hidden>Tools</button><button id="workspaceOpenInspector" class="workspace-map-button" aria-label="Show inspector">Inspector</button></div><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><div class="workspace-menu-anchor layers-menu-anchor"><button id="layersMenuButton" class="workspace-map-button" aria-expanded="false" aria-controls="layersMenu">Layers <span aria-hidden="true">⌄</span></button>
+      <div class="map-topline"><div class="workspace-panel-restores"><button id="workspaceOpenTools" class="workspace-map-button" aria-label="Show tools" hidden>Tools</button><button id="workspaceOpenInspector" class="workspace-map-button" aria-label="Show inspector">Inspector</button><button id="propertyDeletionUndo4A" class="workspace-map-button" title="Undo last property deletion" hidden>Undo Delete</button><button id="propertyDeletionRedo4A" class="workspace-map-button" title="Redo last property deletion" hidden>Redo Delete</button></div><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><div class="workspace-menu-anchor layers-menu-anchor"><button id="layersMenuButton" class="workspace-map-button" aria-expanded="false" aria-controls="layersMenu">Layers <span aria-hidden="true">⌄</span></button>
           <section id="layersMenu" class="workspace-menu layer-panel" aria-labelledby="layersMenuButton" hidden>
             <div class="workspace-menu-heading"><h2>Layers</h2><button id="layersMenuClose" class="workspace-icon-button" aria-label="Close Layers menu">×</button></div>
             <fieldset><legend>Buildings &amp; land</legend><label><input type="checkbox" id="buildingsLayer" checked> Building footprints</label><label><input type="checkbox" id="propertiesLayer"> Property boundaries</label><label><input type="checkbox" id="plotsLayer"> Plot divisions</label></fieldset>
@@ -2280,8 +2285,8 @@ function buildingsOnProperty(city, property) {
 
 
 class PropertyWorkspace {
-  constructor({ shell, getCity, getLayers, buildings, exitEditing = () => {}, startBuilding = () => false, startPropertyEdit = () => false, onSelect = () => {}, draw = () => {} }) {
-    Object.assign(this, { shell, getCity, getLayers, buildings, exitEditing, startBuilding, startPropertyEdit, onSelect, draw });
+  constructor({ shell, getCity, getLayers, buildings, exitEditing = () => {}, startBuilding = () => false, startPropertyEdit = () => false, deleteProperty = () => false, onSelect = () => {}, draw = () => {} }) {
+    Object.assign(this, { shell, getCity, getLayers, buildings, exitEditing, startBuilding, startPropertyEdit, deleteProperty, onSelect, draw });
     this.hover = null;
     shell.registerInspector('property', { resolve: id => this.descriptor(id) });
   }
@@ -2307,6 +2312,7 @@ class PropertyWorkspace {
     }));
     buildingSection.actions.push({label:'Add building to this property',disabled:this.getLayers().buildings===false,run:()=>this.startBuilding(property.id)});
     information.sections.push({title:'Property geometry (3I)',rows:[['Edit status','Draft geometry is validated before atomic Apply; accepted land is unchanged until then.']],actions:[{label:'Edit property geometry',run:()=>this.startPropertyEdit(property.id)}]});
+    information.sections.push({title:'Property actions (Dev 4a)', rows:[['Deletion','Removes this property and all owned plots and buildings; safe session Undo is available.']], actions:[{label:'Delete property…',run:()=>this.deleteProperty(property.id)}]});
     return {
       type: 'Property', title: information.title,
       description: 'The site containing these plots and buildings. ' + (this.getLayers().buildings === false
@@ -7772,7 +7778,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.3ie';
+const APP_VERSION = '0.1-dev.4a';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -12377,7 +12383,151 @@ class PropertyGeometryHistory3I {
 }
 
 
+// src/editor/property-deletion.js
+
+
+// Dev 4a: all parcel deletion and restoration occurs on cloned project data.
+// History stays session-only and never enters portable documents.
+const d4aCopy = copyJson;
+const d4aEqual = (a,b) => JSON.stringify(a) === JSON.stringify(b);
+const d4aRows = (records, predicate) => records
+  .map((record,index) => ({index,record:d4aCopy(record)}))
+  .filter(row => predicate(row.record));
+const d4aIndex = (rows) => rows.map(row => row.record.id).sort();
+const d4aFail = message => ({ok:false,reason:message,candidate:null});
+
+function d4aSnapshot(project,propertyId) {
+  const city=project?.city, index=city?.properties.findIndex(p => p.id===propertyId) ?? -1;
+  if(index<0) throw new Error('The selected property no longer exists.');
+  const property=d4aCopy(city.properties[index]);
+  const plots=d4aRows(city.plots,p=>p.propertyId===propertyId);
+  const buildings=d4aRows(city.buildings,b=>b.propertyId===propertyId);
+  if(!d4aEqual(d4aIndex(plots),[...property.plotIds].sort())
+     || !d4aEqual(d4aIndex(buildings),[...property.buildingIds].sort()))
+    throw new Error('Property contents have inconsistent references.');
+  const open=city.openSpaces.find(o=>o.blockId===property.blockId)??null;
+  return {propertyId,propertyIndex:index,property,plots,buildings,
+    openSpaceId:open?.id??null,openArea:open?.area??null};
+}
+
+function d4aOpenArea(city, snapshot) {
+  if(snapshot.openSpaceId===null) return null;
+  const record=city.openSpaces.find(o=>o.id===snapshot.openSpaceId&&o.blockId===snapshot.property.blockId);
+  if(!record) throw new Error('The block open-ground record has changed.');
+  return record.area;
+}
+
+function d4aDeleteCandidate(project,snapshot) {
+  const candidate=d4aCopy(project), city=candidate.city, propertyId=snapshot.propertyId;
+  const current=d4aSnapshot(project,propertyId);
+  if(!d4aEqual(current,snapshot)) throw new Error('Property changed before deletion.');
+  city.properties=city.properties.filter(p=>p.id!==propertyId);
+  city.plots=city.plots.filter(p=>p.propertyId!==propertyId);
+  city.buildings=city.buildings.filter(b=>b.propertyId!==propertyId);
+  if(snapshot.openSpaceId!==null){
+    const open=city.openSpaces.find(o=>o.id===snapshot.openSpaceId);
+    const block=city.blocks.find(b=>b.id===snapshot.property.blockId);
+    if(!open||!block) throw new Error('Block open-ground accounting is unavailable.');
+    open.area=Math.max(0,block.area-city.properties
+      .filter(p=>p.blockId===block.id).reduce((sum,p)=>sum+p.area,0));
+  }
+  return candidate;
+}
+
+function d4aInsert(records,rows) {
+  for(const row of [...rows].sort((a,b)=>a.index-b.index))
+    records.splice(Math.min(row.index,records.length),0,d4aCopy(row.record));
+}
+
+function d4aRestoreCandidate(project,snapshot) {
+  const candidate=d4aCopy(project),city=candidate.city;
+  if(city.properties.some(p=>p.id===snapshot.propertyId)
+      ||snapshot.plots.some(row=>city.plots.some(p=>p.id===row.record.id))
+      ||snapshot.buildings.some(row=>city.buildings.some(b=>b.id===row.record.id)))
+    throw new Error('Property or child IDs have been reused.');
+  city.properties.splice(Math.min(snapshot.propertyIndex,city.properties.length),0,d4aCopy(snapshot.property));
+  d4aInsert(city.plots,snapshot.plots);
+  d4aInsert(city.buildings,snapshot.buildings);
+  if(snapshot.openSpaceId!==null){
+    const open=city.openSpaces.find(o=>o.id===snapshot.openSpaceId);
+    if(!open) throw new Error('The block open-ground record no longer exists.');
+    open.area=snapshot.openArea;
+  }
+  return candidate;
+}
+
+function d4aPortable(candidate,workspace) {
+  validateStoredProject(candidate);
+  const roundTrip=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
+  if(!d4aEqual(roundTrip.project.city,candidate.city))
+    throw new Error('Portable project round-trip changed city records.');
+  return roundTrip.project;
+}
+
+function preparePropertyDeletion4A(project,workspace,propertyId) {
+  try {
+    const snapshot=d4aSnapshot(project,propertyId);
+    const candidate=d4aPortable(d4aDeleteCandidate(project,snapshot),workspace);
+    return {ok:true,candidate,snapshot,removed:{
+      propertyId,propertyName:snapshot.property.customName??propertyId,
+      plotCount:snapshot.plots.length,buildingCount:snapshot.buildings.length
+    }};
+  } catch(error) {return d4aFail('Property deletion rejected: '+error.message);}
+}
+
+class PropertyDeletionHistory4A {
+  constructor(limit=20) {
+    if(!Number.isInteger(limit)||limit<1||limit>200)throw new Error('Invalid deletion history limit.');
+    this.limit=limit;this.past=[];this.future=[];
+  }
+  clear(){this.past=[];this.future=[];}
+  get lastDeleted(){return this.past.at(-1)?.snapshot.propertyId??null;}
+  record(before,after,propertyId) {
+    const snapshot=d4aSnapshot(before,propertyId);
+    if(after.city.properties.some(p=>p.id===propertyId))throw new Error('Property was not deleted.');
+    const afterOpenArea=d4aOpenArea(after.city,snapshot);
+    this.past.push({snapshot,afterOpenArea});
+    this.future=[];
+    if(this.past.length>this.limit)this.past.shift();
+  }
+  entry(direction){return (direction==='undo'?this.past:this.future).at(-1)??null;}
+  can(direction,project) {
+    if(!project||!['undo','redo'].includes(direction))return false;
+    const entry=this.entry(direction);
+    if(!entry)return false;
+    const snap=entry.snapshot,city=project.city;
+    try {
+      const actualOpen=d4aOpenArea(city,snap);
+      if(actualOpen!==(direction==='undo'?entry.afterOpenArea:snap.openArea))return false;
+      if(direction==='undo') {
+        return !city.properties.some(p=>p.id===snap.propertyId)
+          && !snap.plots.some(row=>city.plots.some(p=>p.id===row.record.id))
+          && !snap.buildings.some(row=>city.buildings.some(b=>b.id===row.record.id));
+      }
+      return d4aEqual(d4aSnapshot(project,snap.propertyId),snap);
+    }catch{return false;}
+  }
+  prepare(project,workspace,direction) {
+    if(!this.can(direction,project))return d4aFail('No compatible property deletion to '+direction+'.');
+    const entry=this.entry(direction);
+    try {
+      const candidate=direction==='undo'
+        ? d4aRestoreCandidate(project,entry.snapshot)
+        : d4aDeleteCandidate(project,entry.snapshot);
+      return {ok:true,entry,candidate:d4aPortable(candidate,workspace)};
+    }catch(error){return d4aFail('Cannot '+direction+' property deletion: '+error.message);}
+  }
+  accept(entry,direction) {
+    const from=direction==='undo'?this.past:this.future,to=direction==='undo'?this.future:this.past;
+    if(from.at(-1)!==entry)throw new Error('Property deletion history changed.');
+    from.pop();to.push(entry);
+    if(to.length>this.limit)to.shift();
+  }
+}
+
+
 // src/app.js
+
 
 
 
@@ -12447,6 +12597,7 @@ let buildingEditSession;
 const buildingHistory = new BuildingGeometryHistory(20);
 const buildingStructureHistory = new BuildingStructureHistory3H(20);
 const propertyHistory = new PropertyGeometryHistory3I(20);
+const propertyDeletionHistory4A = new PropertyDeletionHistory4A(20);
 let buildingPlacementSession;
 let propertyEditSession;
 let propertyWorkspace;
@@ -12514,6 +12665,10 @@ function currentUndoContext() {
       description: buildingEditSession.isPending ? 'Reset or Apply the preview before undoing accepted geometry.'
         : available ? 'Undo the last accepted edit to this building.' : 'No accepted building edit to undo.'};
   }
+  if (propertyDeletionHistory4A.can('undo',project)
+      && !propertyEditSession?.isActive && !buildingPlacementSession?.isActive && !buildingEditSession?.isActive)
+    return {kind:'property-deletion',controlId:'propertyDeletionUndo4A',label:'Undo deletion',available:true,
+      description:'Restore the last deleted property, its plots and buildings.'};
   return describeUndoContext({
     section: workspaceShell?.state.section ?? 'city',
     selection: workspaceShell?.state.selection ?? null,
@@ -12540,10 +12695,21 @@ function undoCurrentScope() {
   return true;
 }
 function workspaceChanged() {
+  syncPropertyDeletionControls4A();
   updatePendingFeedback();
   files?.changed();
 }
 
+function syncPropertyDeletionControls4A() {
+  const busy=Boolean(propertyEditSession?.isActive || buildingPlacementSession?.isActive || buildingEditSession?.isActive);
+  for(const [direction,id] of [['undo','propertyDeletionUndo4A'],['redo','propertyDeletionRedo4A']]) {
+    const available=propertyDeletionHistory4A.can(direction,project);
+    const button=$(id);
+    button.hidden=!available;
+    button.disabled=busy||!available;
+    button.title=direction==='undo'?'Restore the last deleted property, plots and buildings':'Delete the property again';
+  }
+}
 function requestDraw() {
   if (drawPending) return;
   drawPending = true;
@@ -12642,6 +12808,7 @@ function applyBuildingTransform() {
     if(project!==previous || session.buildingId!==buildingId) return false;
     if (!buildingHistory.record(previous,received.candidate,buildingId)) return false;
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     project=received.candidate;
     session.reset();
     updateDetails();
@@ -12673,6 +12840,7 @@ function moveBuildingHistory(direction) {
   }
   buildingHistory.accept(receipt.entry,direction);
   propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
   project=receipt.candidate;
   session.reset();
   updateDetails();
@@ -12775,6 +12943,7 @@ function applyStructurePlacement3H() {
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,request.operation))return false;
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     project=result.candidate;
     buildingHistory.clear();
     session.stop();
@@ -12798,6 +12967,7 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'delete'))return false;
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     project=result.candidate;
     buildingHistory.clear();
     updateDetails();
@@ -12817,6 +12987,7 @@ function moveStructureHistory3H(direction) {
   if(!result.ok){$('statusMessage').textContent='Cannot '+direction+' structure: '+result.issues[0]?.message;return false;}
   buildingStructureHistory.accept(result.entry,direction);
   propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
   project=result.candidate;
   buildingHistory.clear();
   updateDetails();
@@ -12901,6 +13072,7 @@ function updateMapIndicators() {
   syncBuildingTransformUI();
   syncBuildingStructureUI3H();
   syncPropertyEditUI3I();
+  syncPropertyDeletionControls4A();
   const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
     waterActive = waterPanel && waterPanel.editor.mode !== 'pan',
     buildingActive = buildingEditSession?.isActive ?? false,
@@ -12996,6 +13168,7 @@ function generate({ discardIdentities = false } = {}) {
     propertyEditSession?.stop();
     buildingStructureHistory.clear();
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     identityWorkspace?.reset();
     propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
@@ -13438,6 +13611,7 @@ propertyWorkspace = new PropertyWorkspace({
   exitEditing: () => exitBuildingEditing() && exitStructurePlacement3H() && exitPropertyEditing3I(),
   startBuilding: propertyId => startStructurePlacement3H(propertyId),
   startPropertyEdit: enterPropertyEditing3I,
+  deleteProperty: deleteProperty4A,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -13494,6 +13668,61 @@ $('structureApply').addEventListener('click',applyStructurePlacement3H);
 $('structureCancel').addEventListener('click',exitStructurePlacement3H);
 $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
+// Dev 4a: deleting a parcel removes its dependent records, never neighboring land.
+function deleteProperty4A(propertyId) {
+  const selected=workspaceShell?.state.selection;
+  const property=project?.city?.properties.find(p=>p.id===propertyId);
+  if(!property || selected?.kind!=='property' || selected.id!==propertyId)return false;
+  const plots=project.city.plots.filter(p=>p.propertyId===propertyId).length;
+  const buildings=project.city.buildings.filter(b=>b.propertyId===propertyId).length;
+  const name=property.customName || property.id;
+  if(typeof window.confirm==='function' && !window.confirm(
+    'Delete property "'+name+'"? This also deletes '+plots+' plot(s) and '+buildings+
+    ' building(s). Neighboring properties and streets are untouched. Undo is available in this session.'
+  ))return false;
+  if(!exitPropertyEditing3I() || !exitStructurePlacement3H() || !exitBuildingEditing())return false;
+  const previous=project;
+  const receipt=preparePropertyDeletion4A(previous,captureWorkspace().workspace,propertyId);
+  if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
+  if(project!==previous || workspaceShell.state.selection?.id!==propertyId)return false;
+  try{
+    propertyDeletionHistory4A.record(previous,receipt.candidate,propertyId);
+    project=receipt.candidate;
+    buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
+    identityWorkspace.reset();
+    workspaceShell.select(null,{reveal:false});
+    // On narrow layouts the Inspector overlays map controls; reveal the global Undo.
+    if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900 && !workspaceShell.state.inspectorCollapsed)
+      workspaceShell.dispatch({type:'inspector',collapsed:true});
+    propertyWorkspace.refresh();buildingWorkspace.refresh();
+    updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+    $('statusMessage').textContent='Deleted '+name+' and its '+plots+' plots / '+buildings+
+      ' buildings. Use Undo deletion to restore them during this session.';
+    return true;
+  }catch(error){$('statusMessage').textContent='Deletion failed: '+error.message;return false;}
+}
+function movePropertyDeletion4A(direction) {
+  if(!project||propertyEditSession?.isActive||buildingPlacementSession?.isActive||buildingEditSession?.isActive)return false;
+  const receipt=propertyDeletionHistory4A.prepare(project,captureWorkspace().workspace,direction);
+  if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
+  const id=receipt.entry.snapshot.propertyId;
+  project=receipt.candidate;
+  propertyDeletionHistory4A.accept(receipt.entry,direction);
+  buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
+  identityWorkspace.reset();
+  workspaceShell.select(direction==='undo'?{kind:'property',id}:null,{reveal:false});
+  // Restoring selection can reopen the mobile Inspector over Redo Delete.
+  // Keep map-level deletion history controls reachable after both directions.
+  if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900 && !workspaceShell.state.inspectorCollapsed)
+    workspaceShell.dispatch({type:'inspector',collapsed:true});
+  propertyWorkspace.refresh();buildingWorkspace.refresh();
+  updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+  $('statusMessage').textContent=(direction==='undo'?'Restored ':'Deleted again: ')+id+
+    ' (property, plots and buildings).';
+  return true;
+}
+$('propertyDeletionUndo4A').addEventListener('click',()=>movePropertyDeletion4A('undo'));
+$('propertyDeletionRedo4A').addEventListener('click',()=>movePropertyDeletion4A('redo'));
 function keepPropertyEditorVisible3I() {
   // Refreshing the selected property can reopen the narrow-screen Inspector.
   // Keep the floating edit tools accessible through Apply and Undo/Redo.
@@ -13518,6 +13747,7 @@ function applyPropertyEdit3I() {
   project=received.candidate;
   buildingHistory.clear();
   buildingStructureHistory.clear();
+  propertyDeletionHistory4A.clear();
   session.start(project.city,propertyId);
   updateDetails();
   workspaceShell.select({kind:'property',id:propertyId});
@@ -13538,6 +13768,7 @@ function movePropertyHistory3I(direction){
   }
   project=receipt.candidate;
   propertyHistory.accept(receipt.entry,direction);
+  propertyDeletionHistory4A.clear();
   session.start(project.city,id);
   updateDetails();workspaceShell.refresh();keepPropertyEditorVisible3I();requestDraw();workspaceChanged();
   $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' property and plot edit for '+id+'.';
@@ -13794,6 +14025,7 @@ function applyProjectDocument(document) {
   buildingPlacementSession?.stop();
   buildingStructureHistory.clear();
   propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
   identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
