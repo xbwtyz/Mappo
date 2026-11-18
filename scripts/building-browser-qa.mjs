@@ -82,6 +82,19 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         assert.ok(informationText.includes(text), `Property information contains ${text}`);
       if (siteContext.district) assert.ok(informationText.includes(siteContext.district));
       await page.screenshot({ path: new URL(`${label}-selected.png`, output).pathname });
+      // 3H: property-first Add starts a ghost, not a committed building.
+      await page.getByRole('button', { name: 'Add building to this property' }).click();
+      assert.equal(await page.locator('#buildingStructurePanel').isVisible(),true);
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingPlacementSession.isActive),true);
+      await page.locator('#structurePreset').selectOption('T');
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingPlacementSession.spec.preset),'T');
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      await page.screenshot({ path: new URL(`${label}-3h-ghost.png`, output).pathname });
+      page.once('dialog',dialog=>dialog.accept());
+      await page.locator('#structureCancel').click();
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingPlacementSession.isActive),false);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+
 
       // A courtyard belongs to the site, including its open center.
       const hasCourtyard = await page.evaluate(() => {
@@ -101,6 +114,17 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
 
       // Native buttons support keyboard selection of a child and parent return.
       const buildingId = await page.evaluate(() => __buildingQA.buildingId);
+      // 3H-D: the actual browser Delete and structural Undo restore all links.
+      await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).click();
+      page.once('dialog',dialog=>dialog.accept());
+      await page.getByRole('button', { name: 'Delete building…' }).click();
+      assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.some(b=>b.id===id),buildingId),false);
+      assert.equal(await page.locator('#structureUndo').isDisabled(),false);
+      await page.locator('#workspaceCloseInspector').click();
+      await page.locator('#structureUndo').click();
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      assert.equal(await page.locator('#structureRedo').isDisabled(),false);
+      await page.screenshot({ path: new URL(`${label}-3h-structure-undo.png`,output).pathname });
       await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).press('Enter');
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Building');
       assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes(buildingId));
