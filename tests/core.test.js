@@ -101,7 +101,7 @@ test('morphology is validated and persisted in reproducible projects', () => {
     });
     assert.equal(project.options.morphology, morphology);
     assert.equal(project.city.survey.morphology, morphology);
-    assert.equal(project.generatorVersion, '0.1-dev.ui5a');
+    assert.equal(project.generatorVersion, '0.1-dev.ui5b');
     assert.deepEqual(project, createProject({
       seed: 'growth-123',
       size: 'medium',

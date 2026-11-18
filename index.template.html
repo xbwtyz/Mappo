@@ -50,7 +50,7 @@
             <button id="newSeedButton" class="minor-button full-width">New street seed</button>
             <p class="hint">The same outline, square, street settings and seed reproduce the city.</p>
           </details>
-          <button id="cancelButton" class="minor-button full-width city-revert">Revert outline &amp; street edits</button>
+          <button id="cancelButton" class="minor-button full-width city-revert" title="Restore the last accepted outline and street settings. This does not undo district, water, mountain or defense edits.">Revert outline &amp; street settings</button>
         </section>
         <section id="workspaceSection-landscape" class="workspace-section landscape-list-panel" role="tabpanel" aria-labelledby="workspaceTab-landscape" hidden>
           <div class="landscape-list-heading"><h2>Landscape</h2><span id="landscapeFeatureCount"></span></div>
@@ -125,12 +125,13 @@
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div class="map-controls workspace-map-controls" role="group" aria-label="Map navigation">
           <button id="panButton" title="Click to select a district; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
+          <button id="workspaceUndoButton" class="workspace-context-undo" title="No outline edit to undo" disabled>Undo outline</button>
           <button id="fitButton" title="Fit outline (0)" aria-label="Fit outline">Fit</button>
           <div class="workspace-zoom-controls"><button id="zoomInButton" title="Zoom in (+)" aria-label="Zoom in">+</button><button id="zoomOutButton" title="Zoom out (-)" aria-label="Zoom out">−</button></div>
         </div>
         <div class="map-legend"><span class="legend-mark"></span><span>CITY BOUNDARY</span><span class="legend-sep">/</span><span class="center-mark">⊙</span><span>TOWN CENTER</span><span class="legend-sep">/</span><span class="roof-mark"></span><span>BUILDINGS</span></div>
       </div>
-      <div class="map-status"><span id="statusMessage" role="status">Generating city plan…</span><span class="status-readout">ZOOM <strong id="zoomValue">100%</strong></span></div>
+      <div class="map-status"><span id="statusMessage" role="status">Generating city plan…</span><span id="workspaceUndoDescription" class="workspace-undo-description">No outline edit to undo.</span><span class="status-readout">ZOOM <strong id="zoomValue">100%</strong></span></div>
     </main>
     <aside id="workspaceInspector" class="sidebar sidebar-right" aria-label="Selection inspector" hidden>
       <div class="sidebar-heading workspace-panel-heading"><span>INSPECTOR</span><div class="workspace-panel-actions"><button id="workspacePinInspector" class="workspace-pin-button" aria-label="Pin inspector open" aria-pressed="false">Pin</button><button id="workspaceCloseInspector" class="workspace-icon-button" aria-label="Collapse inspector" title="Collapse inspector">›</button></div></div>

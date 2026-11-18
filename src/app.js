@@ -42,6 +42,9 @@ import {
   REBUILD_EFFECTS
 } from './core/pending-changes.js';
 import {
+  describeUndoContext
+} from './core/undo-context.js';
+import {
   ProjectFiles
 } from './ui/project-files.js';
 import {
@@ -128,6 +131,32 @@ function updatePendingFeedback() {
     : 'No unapplied city or local changes.';
   $('workspaceRebuildImpact').textContent = REBUILD_EFFECTS;
   $('workspaceRebuildImpact').classList.toggle('pending', status.cityPending);
+  updateUndoFeedback();
+}
+function currentUndoContext() {
+  return describeUndoContext({
+    section: workspaceShell?.state.section ?? 'city',
+    selection: workspaceShell?.state.selection ?? null,
+    outline: editor,
+    water: waterPanel?.editor, terrain: terrainPanel?.editor,
+    district: districtPanel?.editor, defense: fortificationPanel?.editor
+  });
+}
+function updateUndoFeedback() {
+  const scope = currentUndoContext();
+  $('workspaceUndoButton').textContent = scope.label;
+  $('workspaceUndoButton').disabled = !scope.available;
+  $('workspaceUndoButton').setAttribute('title', scope.description);
+  $('workspaceUndoDescription').textContent = scope.description;
+}
+function undoCurrentScope() {
+  const scope = currentUndoContext();
+  if (!scope.available) return false;
+  const button = $(scope.controlId);
+  if (typeof button.click === 'function') button.click();
+  else button.handlers?.click?.(); // test DOM shim
+  updateUndoFeedback();
+  return true;
 }
 function workspaceChanged() {
   updatePendingFeedback();
@@ -294,6 +323,7 @@ $('panButton').addEventListener('click', () => {
 $('centerButton').addEventListener('click', () => editor.setMode('center'));
 $('finishButton').addEventListener('click', () => editor.finish());
 $('undoButton').addEventListener('click', () => editor.undo());
+$('workspaceUndoButton').addEventListener('click', undoCurrentScope);
 $('cancelButton').addEventListener('click', () => {
   if (!project) return;
   editor.remember();
@@ -337,10 +367,7 @@ $('seedInput').addEventListener('keydown', e => {
 window.addEventListener('keydown', e => {
   if (e.defaultPrevented || ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'SUMMARY'].includes(document.activeElement?.tagName)) return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
-    e.preventDefault();
-    if (terrainPanel && terrainPanel.editor.mode !== 'pan') terrainPanel.editor.undo();
-    else if (waterPanel?.editor.mode !== 'pan') waterPanel.editor.undo();
-    else editor.undo();
+    if (undoCurrentScope()) e.preventDefault();
     return;
   }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
