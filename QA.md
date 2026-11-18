@@ -269,3 +269,7 @@ Readability stylesheet regression checks cover principal label/control size, foc
 ## Phase 6B (`0.1-dev.ui6b`)
 
 Shortcut scope and multi-pointer regressions verify form editing immunity, active map shortcuts, exclusive pointer ownership, cancellation and no double completion. Existing compiled-app Space-drag, Undo, map gestures, generator and save/recovery tests remain authoritative. Browser-specific keyboard QA remains Phase 7.
+
+## Phase 6C (`0.1-dev.ui6c`)
+
+CSS media breakpoints are exercised by a source contract test for desktop/ultrawide/mobile rules, with Camera resizing unit checks for unchanged world center, zoom and screen conversions. Native Firefox and Chrome graphical layout checks remain Phase 7 tasks and are not claimed here.

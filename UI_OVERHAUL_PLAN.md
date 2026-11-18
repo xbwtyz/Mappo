@@ -102,7 +102,7 @@ Acceptance: users can tell what is selected, which tool is active, which drafts 
 - [x] Keep controls labeled and keyboard accessible; use icon-only buttons only with accessible names/tooltips (6B).
 - [x] Preserve Escape, Delete, Ctrl/Cmd+Z, Space-drag, zoom, and Fit behavior without intercepting normal text entry (6B).
 - [x] Retain gesture cancellation and prevent a hidden/inactive editor from handling map input (6B).
-- [ ] Adapt the panel layout for ordinary desktops, a 32:9 ultrawide display, and narrow screens while keeping map access available.
+- [x] Adapt the panel layout for ordinary desktops, a 32:9 ultrawide display, and narrow screens while keeping map access available (6C; native graphical review in Phase 7).
 - [ ] Save/restore active section, panel collapse/pin states, relevant selections, and pending inputs alongside the existing editor drafts/history.
 - [ ] Define additive workspace fields with safe defaults for older saves; preserve unknown compatible data.
 - [ ] Keep accepted city geometry authoritative on load and browser recovery.

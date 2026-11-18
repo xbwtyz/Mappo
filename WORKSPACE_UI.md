@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui6b` feature-branch build implements Phases 1–5 plus Phase 6A–6B of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui6c` feature-branch build implements Phases 1–5 plus Phase 6A–6C of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -87,3 +87,7 @@ The base workspace CSS applies 13px principal labels/buttons, approximately 38�
 ## Phase 6B: map input routing
 
 `core/shortcut-scope.js` excludes native text fields, rich-text nodes and menu controls from global map shortcuts; canvas Space-drag uses the same guard. The canvas controller binds each pointer gesture to its initiating pointer ID and cancels safely on capture loss/blur. `activeMapEditor` grants editing commands exclusively to the visible City or Landscape editor; every other section falls back to a passive pan-only proxy. This changes neither editor histories nor generation geometry.
+
+## Phase 6C: responsive map geometry
+
+CSS defines a stable map-first grid with explicit zero-minimum columns, ~900px overlay transition, narrow viewport drawers, and bounded sidebar widths for 32:9 ultrawides. Camera.resize() remains geometry-neutral: resizing controls preserves center and zoom. Narrow viewport and ultrawide graphical testing remains for the separate release-quality Phase 7.
