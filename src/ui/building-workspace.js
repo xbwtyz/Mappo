@@ -5,11 +5,14 @@ import { buildingInformation } from '../core/selection-information.js';
 // Building inspection owns only transient view state. Accepted city records,
 // geometry tools and their histories remain owned by their existing modules.
 export class BuildingWorkspace {
-  constructor({ shell, getCity, getLayers, getProperties = () => null, onSelect = () => {}, draw = () => {} }) {
+  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, exitEditing = () => false, onSelect = () => {}, draw = () => {} }) {
     this.shell = shell;
     this.getCity = getCity;
     this.getLayers = getLayers;
     this.getProperties = getProperties;
+    this.getEditSession = getEditSession;
+    this.enterEditing = enterEditing;
+    this.exitEditing = exitEditing;
     this.onSelect = onSelect;
     this.draw = draw;
     this.hover = null;
@@ -20,10 +23,26 @@ export class BuildingWorkspace {
         const property = properties?.propertyForBuilding(building);
         if (!building) return null;
         const information = buildingInformation(this.getCity(), building);
+        const editing = this.getEditSession()?.isEditing(id) ?? false;
         if (property) information.sections.find(section => section.title === 'Parent property').actions = [{
           label: 'Back to property', selection: { kind: 'property', id: property.id },
           run: () => properties.select({ kind: 'property', id: property.id })
         }];
+        information.sections.push({
+          title: 'Building footprint editing',
+          rows: editing ? [
+            ['Mode', 'Active · 3G-A context only'],
+            ['Controls', 'Click another roof on this property; drag to pan; Escape to exit.'],
+            ['Geometry', 'Unchanged; move, rotate and resize arrive in 3G-B.']
+          ] : [
+            ['Mode', 'Inspection only'],
+            ['Geometry', 'Edit mode prepares the building without changing its shape.']
+          ],
+          actions: [{
+            label: editing ? 'Exit building editing' : 'Edit building footprint',
+            run: () => editing ? this.exitEditing() : this.enterEditing(id)
+          }]
+        });
         return {
           type: 'Building',
           title: information.title,
@@ -42,6 +61,8 @@ export class BuildingWorkspace {
   }
   select(ref) {
     if (!this.record(ref)) return false;
+    const edit = this.getEditSession();
+    if (edit?.isActive && !edit.focus(this.getCity(), this.getLayers(), ref.id)) edit.stop();
     this.onSelect();
     this.setHover(null);
     this.shell.select(ref);
@@ -54,6 +75,8 @@ export class BuildingWorkspace {
     this.draw();
   }
   refresh({ replaced = false } = {}) {
+    if (replaced) this.getEditSession()?.stop();
+    else this.getEditSession()?.reconcile(this.getCity(), this.getLayers(), this.shell.state.selection);
     if (replaced || !this.record(this.hover)) this.setHover(null);
     const selection = this.shell.state.selection;
     if (selection?.kind === 'building' && (replaced || !this.record(selection)))

@@ -114,6 +114,15 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         assert.ok(informationText.includes(text), `Building information contains ${text}`);
       assert.deepEqual(await page.evaluate(() => __buildingQA.state().files.captureDocument().workspace.ui.selection), { kind: 'building', id: buildingId });
       await page.screenshot({ path: new URL(`${label}-child.png`, output).pathname });
+      // 3G-A: use the real Inspector action and verify a visual-only mode in every viewport.
+      await page.getByRole('button', { name: 'Edit building footprint' }).click();
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isEditing(__buildingQA.buildingId)), true);
+      assert.equal(await page.evaluate(() => document.getElementById('draftBadge').textContent), '● BUILDING EDIT MODE');
+      assert.equal(await page.evaluate(() => __buildingQA.state().files.captureDocument().workspace.ui.selection?.id), buildingId);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
+      await page.screenshot({ path: new URL(`${label}-building-edit.png`, output).pathname });
+      await page.getByRole('button', { name: 'Exit building editing' }).click();
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isActive), false);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 3), 'Child Inspector must not overflow horizontally');
       await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');

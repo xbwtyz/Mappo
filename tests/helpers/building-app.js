@@ -4,7 +4,7 @@ import vm from 'node:vm';
 // Test-only access to closure state; the distributed app exposes no QA globals.
 export const buildingObservation = `
 globalThis.__buildingQA = {
-  state: () => ({ project, camera, editor, layers, workspaceShell, buildingWorkspace, propertyWorkspace, identityWorkspace,
+  state: () => ({ project, camera, editor, layers, workspaceShell, buildingWorkspace, buildingEditSession, propertyWorkspace, identityWorkspace,
     landscapeWorkspace, districtPanel, waterPanel, terrainPanel, fortificationPanel, files }),
   capture: captureWorkspace, apply: applyProjectDocument, draw: requestDraw
 };

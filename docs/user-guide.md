@@ -1,6 +1,6 @@
 # Mappo User Guide
 
-**Version:** `0.1-dev.3fd` · [Live app](https://xbwtyz.github.io/Mappo/) · [Standalone HTML](../dist/mappo-0.1-dev.3fd.html) · [Docs index](README.md)
+**Version:** `0.1-dev.3ga` · [Stable published app](https://xbwtyz.github.io/Mappo/) · [Standalone HTML](../dist/mappo-0.1-dev.3ga.html) · [Docs index](README.md)
 
 Mappo opens directly from its HTML file with no server. Portable project downloads are the recommended backup.
 
@@ -31,6 +31,14 @@ Properties remain selectable if at least one of **Buildings**, **Properties** or
 Expand **Edit property identity** or **Edit building identity**. Enter a name, choose a descriptive use (or **Other** for custom text), then **Apply identity**. **Discard draft** cancels unapplied changes; blank fields remove overrides and show generated descriptions. Each field allows up to 80 characters.
 
 Properties and buildings have independent identities, including separate compound wings. Applied names/uses survive save/load, but identity drafts and the 20-step **Undo identity** history are **session-only**. Full city regeneration may replace building IDs and discard identities; Mappo warns before this happens. Local district/defense updates retain them.
+
+### Building Edit Mode (3G-A preview)
+
+In the Property Inspector, choose a linked building. In its Building Inspector, choose **Edit building footprint**. A turquoise footprint outline and non-draggable guide points show the active structure; the parent property remains highlighted. Click another roof **on the same property** to focus that building. Clicking land outside the current property does not steal edit focus. Ordinary dragging, Space + drag, middle-button drag and scrolling still pan/zoom as usual.
+
+Choose **Exit building editing**, press Escape, click **Back to property**, or switch to another workspace tool to leave edit mode. Hiding the Buildings layer, rebuilding the city or loading another project also exits safely. Edit mode is *temporary*: your saved project retains a valid selected building, not an active editing mode.
+
+**3G-A has no geometry operations.** Corner markers are visual guides only. Moving, rotating, resizing and overlap checks are planned for later 3G checkpoints.
 
 ## 4. Landscape tools
 

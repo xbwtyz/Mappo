@@ -7,7 +7,8 @@
 | [User Guide](user-guide.md) | City generation, tools, Inspector, navigation and saved projects |
 | [Developer Guide](development.md) | Modules, testing, build pipeline and release process |
 | [Unified CI Guide](CI.md) | Branch and PR tests, browser matrices, artifacts and local commands |
-| [Current Roadmap](ROADMAP.md) | Completed milestones and unapproved future proposals |
+| [Current Roadmap](ROADMAP.md) | Completed milestones and separately proposed future work |
+| [3G-A Checkpoint](history/3g/MILESTONE_3GA_QA.md) | Visual building edit mode design, scope and verification |
 | [Screenshot Gallery](gallery.md) | Captioned visual examples from Inspector development |
 | [Technical References](reference/README.md) | Persistence, workspace and domain modules |
 | [Historical Archives](history/README.md) | Prior plans, QA reports and original detailed README |
