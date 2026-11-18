@@ -1,6 +1,6 @@
-# UI control locations — Phase 5
+# UI control locations — Phase 6
 
-Build `0.1-dev.ui5d` on `feature/ui-phase-5`. This inventory records the new homes of the existing controls. IDs and controller bindings stay stable. Project schema remains 9; shell menu/disclosure visibility is runtime-only until the workspace persistence phase.
+Build `0.1-dev.ui6d` on `feature/ui-phase-6`. This inventory records the existing controls and their new persistence boundaries. IDs and controller bindings stay stable. Project schema remains 9, workspace schema 1; the UI state is optional and additive.
 
 | Controls | New home | Behavior |
 | --- | --- | --- |
@@ -61,4 +61,17 @@ Creation uses the corresponding inspector form with Create actions. Selecting an
 | Inline error and input invalid states | Current district/defense form, water/terrain messages and rebuild footer | Failed operations preserve accepted city geometry and explain what to correct |
 | Per-section scroll position | Shared tools scroller | Retains City, Landscape, Districts and Defenses positions within the current session; project reset clears the cache |
 
-No accepted city, project, workspace or container schema was changed by Phase 5. Portable shell/scroll state remains a Phase 6 task.
+Phase 6 adds optional bounded UI presentation fields without changing accepted geometry, project schema 9, workspace schema 1, or container version 1.
+
+## Phase 6 additions
+
+| Controls | Persistence and behavior |
+| --- | --- |
+| Active tab; Tools and Inspector collapse/pin | `workspace.ui.section`, `toolsCollapsed`, `inspectorCollapsed`, `inspectorPinned` |
+| Selected district, landscape or creation form | `workspace.ui.selection`; legacy `view.landscapeSelection` remains accepted and stale IDs clear |
+| Tool/inspector scroll positions | `workspace.ui.sectionScroll`, `inspectorScroll` |
+| Expandable generation and help panels | `workspace.ui.disclosures` |
+| Landscape filter and per-feature inputs | `workspace.ui.landscape` bounded cache |
+| Pending district names and colors | `workspace.ui.districts` bounded cache |
+| Editing shortcuts and pointer ownership | Native text entry remains unaffected; active visible editor owns map input, original undo histories remain scoped |
+| Desktop, ultrawide and narrow layout | CSS adapts map/panels; `workspace.view.camera` remains authoritative and geometry-neutral |

@@ -277,3 +277,7 @@ CSS media breakpoints are exercised by a source contract test for desktop/ultraw
 ## Phase 6D (`0.1-dev.ui6d`)
 
 The optional workspace UI state is validated with strict bounded values and safe defaults, including selection resolution and per-feature input caches. Compatibility checks confirm schema-9 saved geometry, legacy no-UI files and retained extension properties survive round trips. Browser recovery uses the same validated document. Full compiled-app and save/load regressions and root/distribution build parity are required before Phase 6 sign-off; native Firefox/Chrome graphical QA remains scheduled for Phase 7.
+
+### Phase 6 final automated verification
+
+The complete `0.1-dev.ui6d` application suite passed **161/161 tests**, including unchanged schema-9 geometry, legacy workspace defaults, optional bounded UI state, unknown compatible key preservation, recoverable stale selections, restored district/landscape drafts, valid section/panel/scroll restoration and intact editor histories. The root/distribution exact-build check is recorded in [GitHub Actions](https://github.com/xbwtyz/Mappo/actions/runs/44227085307). Native Firefox/Chrome graphical and 32:9/narrow-screen checks remain Phase 7 and are not implied by the automated suite.

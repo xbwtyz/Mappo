@@ -36,7 +36,7 @@ Current providers resolve district selection, water tool/feature selection and m
 
 ## Persistence and verification
 
-Project schema 9, workspace schema 1 and container format 1 remain unchanged. Phase 3 adds only an optional bounded landscape reference in view.landscapeSelection; full shell preferences remain later work. Existing city geometry, unfinished drafts, controls and editor histories continue to load/save unchanged. Restored active editor modes reveal the corresponding controls; new workspace navigation defaults remain sensible for older files. Phase 6 owns portable shell preferences.
+Project schema 9, workspace schema 1 and container format 1 remain unchanged. Phase 3 adds only an optional bounded landscape reference in view.landscapeSelection; full shell preferences remain later work. Existing city geometry, unfinished drafts, controls and editor histories continue to load/save unchanged. Restored active editor modes reveal the corresponding controls; new workspace navigation defaults remain sensible for older files. Phase 6D persists portable shell preferences through optional `workspace.ui` fields.
 
 Focused tests cover initial state, tab visibility/focus, panel collapse, selection/pinning, invalidated records, reusable providers, safe text rendering and read-only record adapters. The compiled app checks completed draft/history/input preservation across all sections, cancellation of an in-progress water gesture, real inspector selection, pin/clear behavior and save/load compatibility. Graphical Chrome checks cover actual Canvas resizing and absence of page overflow with both side panels collapsed. Native Firefox and the wider responsive/ultrawide matrix remain later verification checkpoints.
 
@@ -44,7 +44,7 @@ Focused tests cover initial state, tab visibility/focus, panel collapse, selecti
 
 `WorkspaceMenus` manages presentation only: one open menu, keyboard entry, Escape/outside/focus dismissal and safe focus transfer. `ProjectFiles.onStatus` reports existing validated-load/recovery/error state; it does not delegate file parsing, applying or persistence to the menu. New staged previews and errors reveal Project even after asynchronous file selection. Passive recovery/status updates mark the opener without repeatedly reopening dismissed previews.
 
-All seven existing visibility controls move intact to Layers, retaining their IDs, render bindings and saved workspace fields. The original combined Select/Pan control moves to the shared map rail alongside Fit and zoom. Seeds and optional City shapes use native details/summary controls. Summary keyboard activation is excluded from map shortcuts. New menu/disclosure state stays runtime-only until Phase 6. See [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) for the full control-family inventory.
+All seven existing visibility controls move intact to Layers, retaining their IDs, render bindings and saved workspace fields. The original combined Select/Pan control moves to the shared map rail alongside Fit and zoom. Seeds and optional City shapes use native details/summary controls. Summary keyboard activation is excluded from map shortcuts. Phase 6D persists the disclosure open states, while transient nonmodal menu visibility remains runtime-only. See [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) for the full control-family inventory.
 
 ## Phase 3 landscape behavior
 
@@ -60,7 +60,7 @@ Editor callbacks reconcile selection by ID. Missing selected records clear witho
 
 The district adapter reads authoritative accepted districts, creates stable keyed rows and mirrors the original `DistrictEditor` selected district ID. Map block clicks and list buttons select the same district, open Districts and reveal the contextual right-hand form. The existing district panel continues to own generation, input validation, membership propagation, 20-history undo, and failure messages. Rebuild and undo stay in Districts; name/color and block transfers live in the inspector; layer visibility stays in Layers. No generator, validation or schema logic changed.
 
-The district panel retains pending name and color inputs when the selected district stays the same (including clicking other blocks in it) but restores accepted values when the selection changes or a local mutation succeeds. The receiving-district input retains a pending target only while the selected block and target remain valid. The existing saved single-selected-district control values remain authoritative for portable files; portable per-district input caches belong to Phase 6.
+The district panel retains pending name and color inputs when the selected district stays the same (including clicking other blocks in it) but restores accepted values when the selection changes or a local mutation succeeds. The receiving-district input retains a pending target only while the selected block and target remain valid. The existing saved single-selected-district control values remain authoritative for portable files; portable per-district input caches are implemented in Phase 6D under `workspace.ui.districts`.
 
 ## Phase 4B defense-only controls and update preview
 

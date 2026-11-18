@@ -8,7 +8,7 @@ Draw a city boundary, place its main square, and generate connected streets, var
 
 Open [`dist/mappo-0.1-dev.ui6d.html`](dist/mappo-0.1-dev.ui6d.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### UI overhaul: Phases 1–5 (Phase 5 on the feature branch)
+### UI overhaul: Phases 1–5 on main; Phase 6 on its feature branch
 
 Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) lists the new homes of the existing controls.
 
@@ -288,3 +288,7 @@ The workspace uses deliberate 901–1340px desktop track sizing, 2400px+ ultrawi
 ### Phase 6D — portable workspace preferences
 
 Schema-1 workspace files add optional validated UI fields for the active section, side-panel pin/collapse state, selection, per-section scroll, expandable details, landscape filter and per-feature unsaved inputs. District input drafts and browser-recovery UI state use the same envelope. Historical schema-9 cities and older saves remain compatible; no generation or geometry migration occurs on load. Unknown compatible UI extension keys are retained when re-saving.
+
+### Phase 6 regression results
+
+The full Phase 6 source completed **161/161 automated tests** covering editor reliability, layout invariants, schema-9/1 compatibility, unknown-key retention, raw draft cache preservation, native project file round trips and browser recovery. The [standalone reproducibility check](https://github.com/xbwtyz/Mappo/actions/runs/44227085307) verifies the committed `0.1-dev.ui6d` HTML against Mappo's official modular builder. `feature/ui-phase-6` remains **unmerged**; GitHub Pages still publishes the current approved `main` build. Native Firefox, Chrome and full ultrawide/narrow graphical testing remain Phase 7 work.

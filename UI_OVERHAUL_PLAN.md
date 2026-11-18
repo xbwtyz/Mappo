@@ -1,6 +1,6 @@
 # Mappo UI overhaul — goals and acceptance checklist
 
-Status: Phases 1–4 are on `main`; Phase 5 (5A–5D) is implemented on `feature/ui-phase-5` through build `0.1-dev.ui5d`. Its regression suite passed 150/150 tests with exact standalone-build parity. Phase 5 is not merged. Phases 6–7 and the later 3F building inspector remain planned; native Firefox and responsive/ultrawide graphical checks are Phase 7 requirements. Further implementation follows discussion and approval.
+Status: Phases 1–5 are merged into `main`, and the approved standalone distributions are published through GitHub Pages. Phase 6A–6D is implemented in the unmerged `feature/ui-phase-6` branch through `0.1-dev.ui6d`; all 161 automated regressions passed. The complete standalone parity check is tracked by its GitHub Actions run. Phase 7 remains comprehensive native Firefox/Chrome graphical validation and final release QA; the planned 3F building inspector follows.
 
 Baseline: Mappo `0.1-dev.3e6`, project schema 9. The UI overhaul comes before the planned 3F building inspector. The first UI implementation build is `0.1-dev.ui1`; accepted city schema remains 9.
 
@@ -135,7 +135,8 @@ Work in the phase order above. Each phase is a reviewable implementation chunk. 
 - Phase 4B: grouped Defenses settings, pending-change guidance and explicit local update; `npm run check` passed 141/141 tests on GitHub Actions. Root/index distribution parity checked by `git diff --exit-code`. Native Firefox and broader screen-size verification remain open for Phase 7.
 - Phase 4C: complete. Joint district/defense integration validates atomic invalid inputs, scoped undo after native project reload and preserved geometry, plus map-to-neighborhood list reveal. Build `0.1-dev.ui4c` passed `npm run check` (141/141 tests) and standalone parity checks in [GitHub Actions](https://github.com/xbwtyz/Mappo/actions/runs/44217250343). Native Firefox and responsive graphical checks remain Phase 7 tasks.
 - Phase 5: 5A pending/rebuild feedback, 5B contextual independent Undo, 5C actionable inline validation, and 5D section scroll/restoration and integration are implemented on `feature/ui-phase-5`. The complete `0.1-dev.ui5d` build passed `npm run check` (150/150) and exact standalone parity in [GitHub Actions](https://github.com/xbwtyz/Mappo/actions/runs/44221461150). Native Firefox and graphical responsive checks are still scheduled for Phase 7.
-- Next discussion: Phase 6, readability, responsive layout and portable workspace persistence.
+- Phase 6: readability (6A), scoped shortcuts/gestures (6B), desktop/ultrawide/narrow CSS (6C) and portable UI state (6D) are implemented on `feature/ui-phase-6`. 161 of 161 automated tests passed; [final build parity run](https://github.com/xbwtyz/Mappo/actions/runs/44227085307). Native Firefox/Chrome graphical checks remain Phase 7.
+- Next discussion: Phase 7 final integration, graphical QA and release readiness.
 - After the UI overhaul: resume the planned 3F building inspector within the new inspector architecture.
 
 Mark checkboxes complete only after the corresponding production behavior has been implemented and verified. A visual mockup alone does not complete an implementation goal.
