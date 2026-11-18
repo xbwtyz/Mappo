@@ -4,6 +4,8 @@ import { createProject } from '../src/core/city-model.js';
 import { PropertyEditSession3I } from '../src/editor/property-edit.js';
 import { propertyDividerFractions3I, propertyGeometryPreview3I } from '../src/core/property-geometry.js';
 import { inspectPropertyEdit3I, preparePropertyApply3I } from '../src/editor/property-application.js';
+import { PropertyGeometryHistory3I } from '../src/editor/property-history.js';
+import { copyJson } from '../src/data/project-format.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
 import { buildingAppHarness } from './helpers/building-app.js';
 
@@ -132,4 +134,42 @@ test('3I-C fresh validation rejects a parcel that crosses existing buildings',()
   const result=inspectPropertyEdit3I(project,session);
   assert.equal(result.ok,false);
   assert.ok(result.issues.some(issue=>['building','shape','plot'].includes(issue.code)),JSON.stringify(result.issues));
+});
+
+test('3I-D property-scoped geometry Undo/Redo restores plots without overwriting edited identity',()=>{
+  const project=createProject({seed:'3i-property-history',size:'small',morphology:'organic'});
+  const workspace=defaultWorkspace(project);
+  let accepted=null,property=null;
+  for(const candidate of project.city.properties){
+    const session=new PropertyEditSession3I();
+    if(!session.start(project.city,candidate.id))continue;
+    for(const index of [2,3]){
+      const point=candidate.boundary[index],axis=candidate.frame.inward;
+      session.setCorner(index,{x:point.x-.1*axis.x,y:point.y-.1*axis.y});
+    }
+    const trial=preparePropertyApply3I(project,workspace,session);
+    if(trial.ok){accepted=trial.candidate;property=candidate;break;}
+  }
+  assert.ok(accepted,'Expected a valid property edit.');
+  const history=new PropertyGeometryHistory3I(20);
+  assert.equal(history.record(project,accepted,property.id),true);
+  const changed=copyJson(accepted);
+  changed.city.properties.find(p=>p.id===property.id).customName='Copper Quarter';
+  assert.equal(history.can('undo',changed,property.id),true,'Identity changes must not invalidate geometry history.');
+  const undo=history.prepare(changed,defaultWorkspace(changed),property.id,'undo');
+  assert.equal(undo.ok,true,undo.reason);
+  assert.deepEqual(undo.candidate.city.properties.find(p=>p.id===property.id).boundary,property.boundary);
+  assert.equal(undo.candidate.city.properties.find(p=>p.id===property.id).customName,'Copper Quarter');
+  history.accept(undo.entry,'undo');
+  assert.equal(history.can('redo',undo.candidate,property.id),true);
+  const redo=history.prepare(undo.candidate,defaultWorkspace(undo.candidate),property.id,'redo');
+  assert.equal(redo.ok,true,redo.reason);
+  assert.deepEqual(redo.candidate.city.properties.find(p=>p.id===property.id).boundary,
+    accepted.city.properties.find(p=>p.id===property.id).boundary);
+  assert.equal(redo.candidate.city.properties.find(p=>p.id===property.id).customName,'Copper Quarter');
+  history.accept(redo.entry,'redo');
+  assert.equal(history.count('undo',property.id),1);
+  assert.equal(history.count('redo',property.id),0);
+  assert.equal(project.schemaVersion,9);
+  assert.deepEqual(project.city.properties.find(p=>p.id===property.id).boundary,property.boundary);
 });
