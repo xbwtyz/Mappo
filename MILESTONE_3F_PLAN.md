@@ -1,6 +1,6 @@
 # Mappo Milestone 3F — Property and Building Inspector
 
-Status: **3F-A and 3F-Aa complete and verified; current build `0.1-dev.3faa`; 3F-B–D not started**.
+Status: **3F-A and 3F-Aa verified; 3F-B implemented, verification in progress; 3F-C–D not started**.
 3F-Aa verification: 185/185 Node tests, 16/16 browser cases, exact standalone parity. See [property-first QA](MILESTONE_3FAA_QA.md).
 3F-A verification: 177/177 Node tests, 16/16 browser cases, exact standalone parity. See [checkpoint QA](MILESTONE_3FA_QA.md).
 Branch: `feature/building-inspector-3f`, branched from `main` after the Phase 7 UI overhaul merge (`40e64fb`).
@@ -47,14 +47,14 @@ Reuse the Phase 7 selection inspector (`src/ui/workspace.js` and `src/ui/workspa
 
 **Goal:** Expand the property-first Inspector with accurate existing facts, retaining child building inspection.
 
-- [ ] Property view: readable label/fallback ID, generated usage, site area, district, block, constituent plot IDs/count, frontage road, and linked building count/IDs.
-- [ ] Building view: readable label/fallback ID, generated type/shape, footprint area excluding courtyard holes, occupied plot IDs/count, parent property, district/block and frontage road.
-- [ ] Resolve links safely with human-readable missing-context fallbacks; keep property usage separate from individual generated building type and any later custom use.
-- [ ] Support courtyard, row, compound wings and multi-plot sites, retaining individual identities and parent return navigation.
-- [ ] Refresh facts after relevant local changes without losing a valid property/building selection or regenerating accepted geometry.
-- [ ] Keep both views readable and safe in desktop, ultrawide, tablet and phone layouts; test shared properties, missing context and selection transitions.
+- [x] Property view: readable label/fallback ID, generated usage, site area, district, block, constituent plot IDs/count, frontage road, and linked building count/IDs.
+- [x] Building view: readable label/fallback ID, generated type/shape, footprint area excluding courtyard holes, occupied plot IDs/count, parent property, district/block and frontage road.
+- [x] Resolve links safely with human-readable missing-context fallbacks; keep property usage separate from individual generated building type and any later custom use.
+- [x] Support courtyard, row, compound wings and multi-plot sites, retaining individual identities and parent return navigation.
+- [x] Refresh facts after relevant local changes without losing a valid property/building selection or regenerating accepted geometry.
+- [x] Keep both views readable and safe in desktop, ultrawide, tablet and phone layouts; test shared properties, missing context and selection transitions.
 
-**Checkpoint output:** implementation commits, passing `npm run check`, browser verification, and `dist/mappo-0.1-dev.3fb.html` with root parity. 3F-B is not implemented by the 3F-Aa adjustment.
+**Checkpoint output:** implementation commits, passing `npm run check`, browser verification, and `dist/mappo-0.1-dev.3fb.html` with root parity. See [3F-B QA](MILESTONE_3FB_QA.md) for the verified results and limits.
 
 ## 3F-C — Property identity and optional building customization (scope to review)
 

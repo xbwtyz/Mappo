@@ -447,6 +447,12 @@ districtPanel = new DistrictPanel({
     workspaceChanged();
   },
   commit: city => {
+    // Rebuilding/undoing districts is a local update. Keep a valid property or
+    // building in the Inspector rather than adopting the editor's default ward.
+    if (['property', 'building'].includes(workspaceShell?.state.selection?.kind)) {
+      districtPanel.editor.selectedDistrictId = null;
+      districtPanel.editor.selectedBlockId = null;
+    }
     project = {
       ...project,
       city
@@ -479,6 +485,7 @@ fortificationPanel = new FortificationPanel({
       ...project,
       city
     };
+    workspaceShell?.refresh();
     requestDraw();
     workspaceChanged();
   },

@@ -66,7 +66,7 @@ test('compiled property click/hover reveals the correct inspector, preserves geo
   assert.equal(app.state().propertyWorkspace.hover.id, target.propertyId);
   app.tap(screen());
   assert.deepEqual(copy(app.state().workspaceShell.state.selection), { kind: 'property', id: target.propertyId });
-  assert.equal(app.el('workspaceSelectionName').textContent, target.propertyId);
+  assert.ok(app.el('workspaceSelectionName').textContent.includes(target.propertyId));
   assert.equal(app.el('workspaceSelectionType').textContent, 'Property');
   assert.equal(app.state().districtPanel.editor.selectedDistrictId, null);
   app.el('workspaceCloseInspector').handlers.click();

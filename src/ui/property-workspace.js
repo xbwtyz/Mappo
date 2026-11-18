@@ -1,5 +1,6 @@
 import { hitProperty, propertySelectionVisible, buildingsOnProperty } from '../core/property-selection.js';
 import { workspaceSelectionEqual } from '../core/workspace-state.js';
+import { propertyInformation, inspectionValue } from '../core/selection-information.js';
 
 export class PropertyWorkspace {
   constructor({ shell, getCity, getLayers, buildings, onSelect = () => {}, draw = () => {} }) {
@@ -19,23 +20,19 @@ export class PropertyWorkspace {
     const property = this.record({ kind: 'property', id });
     if (!property) return null;
     const structures = buildingsOnProperty(this.getCity(), property);
+    const information = propertyInformation(this.getCity(), property);
+    const buildingSection = information.sections.find(section => section.title === 'Buildings on this property');
+    buildingSection.actions = structures.map(building => ({
+      label: `${inspectionValue(building.type)} · ${inspectionValue(building.shape)} · ${building.id}`,
+      selection: { kind: 'building', id: building.id },
+      disabled: this.getLayers().buildings === false,
+      run: () => this.selectBuilding(property.id, building.id)
+    }));
     return {
-      type: 'Property', title: property.id,
+      type: 'Property', title: information.title,
       description: 'The site containing these plots and buildings. ' + (this.getLayers().buildings === false
         ? 'Turn on Buildings in Layers to inspect individual footprints.' : 'Choose a building below to inspect its footprint.'),
-      sections: [{ title: 'Property summary', rows: [
-        ['Generated usage', property.usage || 'Unspecified'],
-        ['Plots', property.plotIds.length], ['Buildings', structures.length]
-      ] }, {
-        title: 'Buildings on this property',
-        rows: structures.length ? [] : [['Structures', 'No buildings recorded']],
-        actions: structures.map(building => ({
-          label: `${building.id} · ${building.type} · ${building.shape}`,
-          selection: { kind: 'building', id: building.id },
-          disabled: this.getLayers().buildings === false,
-          run: () => this.selectBuilding(property.id, building.id)
-        }))
-      }]
+      sections: information.sections
     };
   }
   hit(point, zoom) {

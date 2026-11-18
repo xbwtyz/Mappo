@@ -86,14 +86,16 @@ test('property inspector supports safe building navigation, parent return, hidde
   properties.select({ kind: 'property', id: 'PROP-1' });
   assert.equal(el('workspaceSelectionType').textContent, 'Property');
   assert.equal(shell.descriptor().sections[0].rows[0][1], '<img src=x>');
-  const buttons = el('workspaceSelectionSections').children[1].children.slice(1);
+  const buttons = el('workspaceSelectionSections').children.flatMap(section => section.children ?? [])
+    .filter(button => button.attributes?.['data-inspector-kind'] === 'building');
   assert.equal(buttons.length, 2);
   assert.match(buttons[0].textContent, /west/);
   buttons[0].handlers.click();
   assert.deepEqual(shell.state.selection, { kind: 'building', id: 'west' });
   assert.equal(el('workspaceSelectionName').focused, true);
   assert.equal(properties.selectBuilding('other-property', 'east'), false);
-  const back = el('workspaceSelectionSections').children[0].children[1];
+  const back = el('workspaceSelectionSections').children.flatMap(section => section.children ?? [])
+    .find(button => button.attributes?.['data-inspector-kind'] === 'property');
   assert.equal(back.textContent, 'Back to property');
   back.handlers.click();
   assert.equal(shell.state.selection.kind, 'property');
@@ -107,7 +109,7 @@ test('property inspector supports safe building navigation, parent return, hidde
   properties.refresh();
   buildings.refresh();
   assert.deepEqual(shell.state.selection, { kind: 'property', id: 'PROP-1' });
-  assert.ok(shell.descriptor().sections[1].actions.every(a => a.disabled));
+  assert.ok(shell.descriptor().sections.find(section => section.actions)?.actions.every(a => a.disabled));
   assert.equal(properties.selectBuilding('PROP-1', 'east'), false);
   properties.setHover({ kind: 'property', id: 'PROP-1' });
   layers.properties = false;

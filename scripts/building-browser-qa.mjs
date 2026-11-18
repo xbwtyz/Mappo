@@ -68,8 +68,19 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.evaluate(() => __buildingQA.state().propertyWorkspace.hover?.id), id);
       await page.mouse.click(p.x, p.y);
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
-      assert.equal(await page.locator('#workspaceSelectionName').innerText(), id);
+      assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes(id));
       assert.equal(await page.locator('#workspaceInspector').isVisible(), true);
+      const siteContext = await page.evaluate(id => {
+        const city = __buildingQA.state().project.city;
+        const property = city.properties.find(p => p.id === id);
+        return { plotIds: property.plotIds, buildingIds: property.buildingIds, blockId: property.blockId,
+          roadId: property.frontageRoadId, district: city.districts.find(d => d.id === property.districtId)?.name };
+      }, id);
+      let informationText = await page.locator('#workspaceSelectionSections').innerText();
+      for (const text of ['Generated usage:', 'Site area:', 'square survey units', 'Frontage street:',
+        siteContext.blockId, siteContext.roadId, ...siteContext.plotIds, ...siteContext.buildingIds])
+        assert.ok(informationText.includes(text), `Property information contains ${text}`);
+      if (siteContext.district) assert.ok(informationText.includes(siteContext.district));
       await page.screenshot({ path: new URL(`${label}-selected.png`, output).pathname });
 
       // A courtyard belongs to the site, including its open center.
@@ -85,20 +96,28 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       p = await target();
       await page.mouse.click(p.x, p.y);
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
-      assert.equal(await page.locator('#workspaceSelectionName').innerText(), id);
+      assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes(id));
       await page.evaluate(() => { __buildingQA.target = __buildingQA.roofTarget; });
 
       // Native buttons support keyboard selection of a child and parent return.
       const buildingId = await page.evaluate(() => __buildingQA.buildingId);
       await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).press('Enter');
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Building');
-      assert.equal(await page.locator('#workspaceSelectionName').innerText(), buildingId);
+      assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes(buildingId));
+      informationText = await page.locator('#workspaceSelectionSections').innerText();
+      const childContext = await page.evaluate(id => {
+        const building = __buildingQA.state().project.city.buildings.find(b => b.id === id);
+        return { plots: building.plotIds, frontage: building.frontageRoadId };
+      }, buildingId);
+      for (const text of ['Generated type:', 'Footprint shape:', 'Footprint area:',
+        `Occupied plots: ${childContext.plots.length}`, 'square survey units', childContext.frontage, id, ...childContext.plots])
+        assert.ok(informationText.includes(text), `Building information contains ${text}`);
       assert.equal(await page.evaluate(() => __buildingQA.state().files.captureDocument().workspace.ui.selection), null);
       await page.screenshot({ path: new URL(`${label}-child.png`, output).pathname });
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 3), 'Child Inspector must not overflow horizontally');
       await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
-      assert.equal(await page.locator('#workspaceSelectionName').innerText(), id);
+      assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes(id));
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 3), 'Property Inspector must not overflow horizontally');
 
       // Collapsing and reselecting uses the same record at the resized camera.
@@ -118,7 +137,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), null);
       p = await target();
       await page.mouse.click(p.x, p.y);
-      assert.equal(await page.locator('#workspaceSelectionName').innerText(), id);
+      assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes(id));
       await page.locator('#workspaceCloseInspector').click();
 
       await page.locator('#layersMenuButton').click();
@@ -149,6 +168,28 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.mouse.click(p.x, p.y);
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
+      if (viewport.name === 'desktop') {
+        // Local district generation and undo must refresh the selected child,
+        // not replace inspection with the district editor's default selection.
+        const beforeDistricts = await page.evaluate(() => __buildingQA.state().project.city);
+        await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).click();
+        await page.locator('#workspaceTab-districts').click();
+        if (await page.locator('#districtGenerationSettings').getAttribute('open') === null)
+          await page.locator('#districtGenerationSettings > summary').click();
+        await page.locator('#districtSeedInput').fill('3fb-browser-local-districts');
+        await page.locator('#generateDistrictButton').click();
+        assert.deepEqual(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), { kind: 'building', id: buildingId });
+        const ward = await page.evaluate(id => {
+          const city = __buildingQA.state().project.city;
+          const building = city.buildings.find(b => b.id === id);
+          return city.districts.find(d => d.id === building.districtId).name;
+        }, buildingId);
+        assert.ok((await page.locator('#workspaceSelectionSections').innerText()).includes(ward));
+        await page.locator('#undoDistrictButton').click();
+        assert.deepEqual(await page.evaluate(() => __buildingQA.state().project.city), beforeDistricts);
+        assert.deepEqual(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), { kind: 'building', id: buildingId });
+        await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
+      }
       const saved = await page.evaluate(() => __buildingQA.state().files.captureDocument());
       assert.equal(saved.project.schemaVersion, 9);
       assert.equal(saved.workspace.schemaVersion, 1);
@@ -159,7 +200,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), null);
       assert.ok(await page.evaluate(id => __buildingQA.state().project.city.properties.some(p => p.id === id), id));
       assert.equal(errors.length, 0, errors.join('; '));
-      console.log(`PASS property ${label}: roof/courtyard, child keyboard navigation, parent return, drag, layers, save safety, regeneration`);
+      console.log(`PASS property ${label}: property/child facts, courtyard, keyboard navigation, local updates, layers, save safety, regeneration`);
     } catch (error) {
       failures.push(`${label}: ${error.message}`);
       await page.screenshot({ path: new URL(`${label}-failure.png`, output).pathname });

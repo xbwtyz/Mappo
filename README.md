@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Milestone 3F-Aa: 0.1-dev.3faa — property-first selection
+## Milestone 3F-B: 0.1-dev.3fb — property and building information
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3faa.html`](dist/mappo-0.1-dev.3faa.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3fb.html`](dist/mappo-0.1-dev.3fb.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### UI overhaul complete; Building Inspector in development
 
@@ -30,7 +30,15 @@ In **Select / Pan**, a roof, yard or courtyard selects its **property**. Hover p
 
 Properties are selectable whenever **Buildings**, **Properties**, or **Plots** is visible. The selection overlay reveals the property boundary even when its ordinary outline layer is off. Hiding roofs disables the individual building choices; if a child was selected and another development layer remains visible, selection returns to its property. Hide all three development layers to select underlying district blocks across their full area. Landscape hit priority and drawing-tool ownership are preserved. Dragging still pans.
 
-Selection remains read-only and session-only. Downloads and browser recovery retain exact accepted geometry and all existing metadata, but reopen without a property/building selected. A successful full rebuild or project replacement clears both kinds of selection, including reused IDs. Future 3F-B expands read-only property and building facts; 3F-C adds identity customization; 3F-D adds portable selection. See [MILESTONE_3F_PLAN.md](MILESTONE_3F_PLAN.md), [MILESTONE_3FAA_PLAN.md](MILESTONE_3FAA_PLAN.md), and [MILESTONE_3FAA_QA.md](MILESTONE_3FAA_QA.md). The prior [3F-A build](dist/mappo-0.1-dev.3fa.html) remains available.
+Selection remains read-only and session-only. Downloads and browser recovery retain exact accepted geometry and all existing metadata, but reopen without a property/building selected. A successful full rebuild or project replacement clears both kinds of selection, including reused IDs. 3F-B adds read-only property and building facts; 3F-C adds identity customization; 3F-D adds portable selection. See [MILESTONE_3F_PLAN.md](MILESTONE_3F_PLAN.md), [MILESTONE_3FAA_PLAN.md](MILESTONE_3FAA_PLAN.md), and [MILESTONE_3FAA_QA.md](MILESTONE_3FAA_QA.md). The prior [3F-A build](dist/mappo-0.1-dev.3fa.html) remains available.
+
+### Read-only property and building facts (3F-B)
+
+Both Inspectors now show readable generated labels alongside stable IDs. Properties show generated usage, **site area**, plot/building counts and IDs, district, block and frontage street. Selecting an individual building shows its own generated type, footprint shape, **net footprint area**, occupied plots, district/block/frontage and parent property. Compound wings keep their own areas and occupied plot subsets; those values are never copied from the whole property. Existing courtyard footprint area already excludes its open center.
+
+Areas use square survey units. Street names appear only where the record actually has a name; IDs and the generated street category remain available. Unassigned districts and unavailable links have explicit fallback text, with missing reference IDs retained for context. No values are invented or written back to accepted records. Property generated usage and building generated type remain separate from later custom descriptive uses.
+
+Local district rebuild/undo refreshes the selected property's or building's context while retaining that valid selection. Deliberately selecting a district still opens its Inspector. Building buttons, parent return navigation, layer visibility, drawing tools and scoped histories retain the 3F-Aa behavior. Inspection remains read-only and session-only: names/uses become editable in 3F-C, and portable property/building selection is 3F-D. See [MILESTONE_3FB_QA.md](MILESTONE_3FB_QA.md). Previous [3F-Aa](dist/mappo-0.1-dev.3faa.html) and [3F-A](dist/mappo-0.1-dev.3fa.html) builds remain available.
 
 ### Workflow
 

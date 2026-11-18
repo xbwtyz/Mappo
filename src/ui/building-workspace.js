@@ -1,5 +1,6 @@
 import { hitBuilding } from '../core/building-selection.js';
 import { workspaceSelectionEqual } from '../core/workspace-state.js';
+import { buildingInformation } from '../core/selection-information.js';
 
 // Building inspection owns only transient view state. Accepted city records,
 // geometry tools and their histories remain owned by their existing modules.
@@ -17,15 +18,18 @@ export class BuildingWorkspace {
         const building = this.record({ kind: 'building', id });
         const properties = this.getProperties();
         const property = properties?.propertyForBuilding(building);
-        return building ? {
+        if (!building) return null;
+        const information = buildingInformation(this.getCity(), building);
+        if (property) information.sections.find(section => section.title === 'Parent property').actions = [{
+          label: 'Back to property', selection: { kind: 'property', id: property.id },
+          run: () => properties.select({ kind: 'property', id: property.id })
+        }];
+        return {
           type: 'Building',
-          title: building.id,
-          description: 'Selected footprint in the current city.',
-          sections: property ? [{ title: 'Parent property', rows: [['Property', property.id]], actions: [{
-            label: 'Back to property', selection: { kind: 'property', id: property.id },
-            run: () => properties.select({ kind: 'property', id: property.id })
-          }] }] : []
-        } : null;
+          title: information.title,
+          description: 'Details from the current city. Footprint area excludes open courtyard space.',
+          sections: information.sections
+        };
       }
     });
   }
