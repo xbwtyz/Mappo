@@ -1,7 +1,7 @@
-name: Mappo Phase 4 check
+name: Mappo Phase 5 check
 on:
   push:
-    branches: [feature/ui-phase-4]
+    branches: [feature/ui-phase-5]
   workflow_dispatch:
 jobs:
   test:
@@ -14,4 +14,4 @@ jobs:
         with:
           node-version: '22'
       - run: npm run check
-      - run: git diff --exit-code -- index.html dist/mappo-0.1-dev.ui4c.html
+      - run: git diff --exit-code -- index.html dist/mappo-0.1-dev.ui5a.html

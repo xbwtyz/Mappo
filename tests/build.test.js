@@ -23,7 +23,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 
 test('compiled HTML is standalone with all styles and script embedded', async () => {
-  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui4c.html'), 'utf8');
+  const bundled = await readFile(resolve(root, 'dist/mappo-0.1-dev.ui5a.html'), 'utf8');
   const index = await readFile(resolve(root, 'index.html'), 'utf8');
   assert.equal(index, bundled);
   assert.match(bundled, /<style>[\s\S]*<\/style>/);
@@ -138,7 +138,11 @@ test('compiled HTML initializes and responds to UI events with stubbed Canvas', 
   const firstName = el('cityName').textContent;
   assert.ok(firstName.length > 3);
   el('seedInput').value = 'a-different-seed';
+  el('seedInput').handlers.input();
+  assert.match(el('workspacePendingDetails').textContent, /Street generation settings/);
+  assert.match(el('workspaceRebuildImpact').textContent, /Custom neighborhood names/);
   el('generateButton').handlers.click();
+  assert.equal(el('workspacePendingCount').textContent, 'Up to date');
   assert.equal(el('citySeed').textContent, 'a-different-seed');
   assert.equal(el('reportCityName').textContent, el('cityName').textContent);
   el('morphologyInput').value = 'linear';

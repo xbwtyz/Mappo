@@ -82,9 +82,9 @@ Acceptance: local updates remain visibly distinct from a full city rebuild. Dist
 
 ## Phase 5 — Draft feedback, undo, and fewer interruptions
 
-- [ ] Keep Rebuild city visible across all sections.
-- [ ] Show a trustworthy pending-change summary based on real outline, street, water, and terrain drafts/settings.
-- [ ] Explain rebuild effects inline: streets, buildings/properties, districts, and enabled defenses regenerate; customized district data can be replaced.
+- [x] Keep Rebuild city visible across all sections (5A).
+- [x] Show a trustworthy pending-change summary based on real outline, street, water, and terrain drafts/settings (5A).
+- [x] Explain rebuild effects inline: streets, buildings/properties, districts, and enabled defenses regenerate; customized district data can be replaced (5A).
 - [ ] Keep routine rebuilds direct and creation forms inline; reduce modal dialogs used only to expose settings.
 - [ ] Keep existing staged project loading and recovery decisions explicit.
 - [ ] Label undo according to the active editor and preserve its existing history boundaries: outline, water, terrain, districts, or defenses.

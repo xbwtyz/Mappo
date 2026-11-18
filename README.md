@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current feature-branch build: 0.1-dev.ui4c — District and defense integration
+## Current feature-branch build: 0.1-dev.ui5a — Pending-change feedback
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui4c.html`](dist/mappo-0.1-dev.ui4c.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui5a.html`](dist/mappo-0.1-dev.ui5a.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### UI overhaul: Phases 1–3 and Phase 4A–4C
 
@@ -210,7 +210,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui4c.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui5a.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -252,3 +252,7 @@ Copyright © 2026 Mappo contributors.
 ### Phase 4 integration verification
 
 The `0.1-dev.ui4c` feature-branch build passed 141 automated tests, including combined district and defense edits, invalid-input atomicity, native save/load with both undo histories, exact geometry restoration, and a reproducible standalone HTML build. [See the passing CI run](https://github.com/xbwtyz/Mappo/actions/runs/44217250343). Native Firefox and the responsive graphical matrix remain scheduled for the final UI phase; this is not yet a merged main-branch release.
+
+### Phase 5A — Pending and rebuild feedback
+
+A live header count distinguishes unapplied city settings, changed outline/main square, water and mountain drafts from local neighborhood and defense edits. The shared **Rebuild city** footer describes actual pending categories and explains that the rebuild can replace streets, buildings, districts and enabled defenses. Current city geometry and the save schema are unchanged. Work on Phase 5B–5D continues in `feature/ui-phase-5`.

@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui4c` feature-branch build implements Phases 1–3 plus Phases 4A–4C of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui5a` feature-branch build implements Phases 1–4 plus Phase 5A of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -71,3 +71,7 @@ The grouped Defenses panel keeps all existing control IDs. It separates wall ena
 ## Phase 4C district/defense integration
 
 Map block selection now calls the district workspace's list-row reveal hook after the shell has synchronized the selection. This scrolls the corresponding keyed neighborhood row into view without recreating it, changing map geometry or triggering extra selection events. List selection still routes through `DistrictPanel` and its existing editor. The compiled app's integration regression exercises the actual shared UI controllers in order: generate districts, reject an invalid rename without changing the model/history, apply a valid rename/recolor, build defenses, reject invalid tower spacing atomically, regenerate defenses from a new seed, save both histories in one portable file, restore the accepted city without generation, then undo each editor's changes independently back to the starting city. Full city regeneration remains a separate explicit action. No persisted fields or schema versions are added.
+
+## Phase 5A read-only pending state
+
+`core/pending-changes.js` compares the authoritative accepted outline/main square with the current editor geometry, compares accepted street settings and tracks water/terrain draft dirty flags. Unapplied district fields and fortification previews are presented separately as local updates. The adapter is read-only, never causes generation or changes history, and adds no fields to the project format. A count is shown in the top bar and an expandable rebuild-effects guide is permanently accessible beneath the section tools.

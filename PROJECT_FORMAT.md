@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current feature-branch build is **0.1-dev.ui4c**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current feature-branch build is **0.1-dev.ui5a**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.ui4c",
+  "appVersion": "0.1-dev.ui5a",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -216,3 +216,7 @@ The Defenses section now provides a live description of pending settings and exp
 ## UI overhaul Phase 4C — combined local workflows
 
 The existing project document stores the complete authoritative city, district editor snapshot/history and defense editor snapshot/history in their unchanged fields. Combined local updates are validated independently, preserve unaffected city geometry, and can be undone in either editor without rewriting the other's records. Loading the saved city directly restores both accepted datasets and editor histories without invoking street or feature generation. The only added behavior is scrolling the matched neighborhood list row into view on map selection. Schema/container versions remain unchanged.
+
+## Phase 5A pending-state presentation
+
+Pending city and local edit counts are derived at runtime from existing accepted project records, editor drafts and pending form fields. They are never stored or used to regenerate geometry. Saving and loading still use project schema 9, workspace schema 1 and container format 1.
