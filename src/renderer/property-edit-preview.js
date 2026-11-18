@@ -14,12 +14,22 @@ export function drawPropertyEditPreview3I(ctx, camera, city, session) {
     ctx.closePath();
   };
   ctx.save();
+  // Show the actual prospective plot tiling, without touching stored city plots.
+  for (const plot of session.plotsFor(city) ?? []) {
+    trace(plot.boundary);
+    ctx.fillStyle = 'rgba(26,100,124,.055)';
+    ctx.fill();
+    ctx.strokeStyle = '#408c91';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4,4]);
+    ctx.stroke();
+  }
   trace(boundary);
   ctx.fillStyle = 'rgba(45,127,114,.12)';
   ctx.fill();
   ctx.setLineDash([7, 5]);
   ctx.lineWidth = 2.5;
-  ctx.strokeStyle = '#167f7d';
+  ctx.strokeStyle = session.validation?.status === 'invalid' ? '#c54e49' : '#167f7d';
   ctx.stroke();
   ctx.setLineDash([]);
   boundary.forEach((point, index) => {
