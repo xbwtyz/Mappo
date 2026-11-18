@@ -307,12 +307,6 @@ $('cancelButton').addEventListener('click', () => {
 $('presetButton').addEventListener('click', loadPreset);
 $('presetInput').addEventListener('change', () => files?.changed());
 $('generateButton').addEventListener('click', generate);
-for (const id of ['districtNumberInput', 'districtSeedInput', 'districtNameInput', 'districtColorInput',
-  'districtTargetInput', 'wallsEnabledInput', 'gateCountInput', 'towerSpacingInput',
-  'fortificationSeedInput', 'riverWidthInput']) {
-  $(id).addEventListener('input', updatePendingFeedback);
-  $(id).addEventListener('change', updatePendingFeedback);
-}
 $('newSeedButton').addEventListener('click', () => {
   const v = new Uint32Array(2);
   if (globalThis.crypto?.getRandomValues) globalThis.crypto.getRandomValues(v);
