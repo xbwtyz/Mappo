@@ -16,6 +16,7 @@ export class DistrictWorkspace {
     this.panel.editor.selectedBlockId = null;
     this.panel.refresh();
     this.panel.changed(); // app synchronizes map, shell and saved state.
+    this.render();
     this.reveal();
     return true;
   }
