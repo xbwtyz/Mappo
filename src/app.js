@@ -86,6 +86,7 @@ import { BuildingPlacementSession3H, buildingLocalPoint3H, prepareBuildingStruct
 import { BuildingStructureHistory3H } from './editor/building-structure-history.js';
 import { PropertyEditSession3I } from './editor/property-edit.js';
 import { inspectPropertyEdit3I, preparePropertyApply3I } from './editor/property-application.js';
+import { PropertyGeometryHistory3I } from './editor/property-history.js';
 import { pointInPolygon } from './core/geometry.js';
 
 const $ = id => document.getElementById(id),
@@ -118,6 +119,7 @@ let buildingWorkspace;
 let buildingEditSession;
 const buildingHistory = new BuildingGeometryHistory(20);
 const buildingStructureHistory = new BuildingStructureHistory3H(20);
+const propertyHistory = new PropertyGeometryHistory3I(20);
 let buildingPlacementSession;
 let propertyEditSession;
 let propertyWorkspace;
@@ -164,6 +166,14 @@ function updatePendingFeedback() {
   updateUndoFeedback();
 }
 function currentUndoContext() {
+  if(propertyEditSession?.isActive){
+    const id=propertyEditSession.propertyId;
+    const available=!propertyEditSession.isPending&&!propertyEditSession.drag&&propertyHistory.can('undo',project,id);
+    return {kind:'property',controlId:'propertyHistoryUndo3I',label:'Undo property',available,
+      description:propertyEditSession.isPending
+        ? 'Apply or reset your parcel draft before Undo.'
+        : available?'Undo the last accepted property and plot edit.':'No accepted property edit to undo.'};
+  }
   const structuralProperty=structureHistoryProperty3H();
   if (!buildingEditSession?.isActive && !buildingPlacementSession?.isActive
       && structuralProperty && buildingStructureHistory.can('undo',project,structuralProperty)) {
@@ -304,6 +314,7 @@ function applyBuildingTransform() {
     // existing schema. Record and UI updates cannot affect pre-commit checks.
     if(project!==previous || session.buildingId!==buildingId) return false;
     if (!buildingHistory.record(previous,received.candidate,buildingId)) return false;
+    propertyHistory.clear();
     project=received.candidate;
     session.reset();
     updateDetails();
@@ -334,6 +345,7 @@ function moveBuildingHistory(direction) {
     return false;
   }
   buildingHistory.accept(receipt.entry,direction);
+  propertyHistory.clear();
   project=receipt.candidate;
   session.reset();
   updateDetails();
@@ -385,7 +397,7 @@ function syncBuildingStructureUI3H() {
   $('buildingStructurePanel').hidden=!shown;
   const propertyId=structureHistoryProperty3H();
   const historyShown=Boolean(project && propertyId && workspaceShell?.state.section==='city'
-    && !buildingEditSession?.isActive);
+    && !buildingEditSession?.isActive && !propertyEditSession?.isActive);
   $('buildingStructureHistoryPanel').hidden=!historyShown;
   const idle=Boolean(session?.isActive);
   const canHistory=historyShown && !idle;
@@ -435,6 +447,7 @@ function applyStructurePlacement3H() {
   if(project!==previous || session.active?.buildingId!==request.buildingId)return false;
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,request.operation))return false;
+    propertyHistory.clear();
     project=result.candidate;
     buildingHistory.clear();
     session.stop();
@@ -457,6 +470,7 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
   if(!result.ok){$('statusMessage').textContent='Deletion rejected: '+result.issues[0]?.message;return false;}
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'delete'))return false;
+    propertyHistory.clear();
     project=result.candidate;
     buildingHistory.clear();
     updateDetails();
@@ -475,6 +489,7 @@ function moveStructureHistory3H(direction) {
   const result=buildingStructureHistory.prepare(project,captureWorkspace().workspace,propertyId,direction);
   if(!result.ok){$('statusMessage').textContent='Cannot '+direction+' structure: '+result.issues[0]?.message;return false;}
   buildingStructureHistory.accept(result.entry,direction);
+  propertyHistory.clear();
   project=result.candidate;
   buildingHistory.clear();
   updateDetails();
@@ -532,6 +547,11 @@ function syncPropertyEditUI3I() {
   dividerIndex.value=String(session.selectedDivider);
   dividerInput.disabled=dividers.length===0;
   dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
+  const canHistory=!session.isPending&&!session.drag;
+  $('propertyHistoryUndo3I').disabled=!(canHistory&&propertyHistory.can('undo',project,session.propertyId));
+  $('propertyHistoryRedo3I').disabled=!(canHistory&&propertyHistory.can('redo',project,session.propertyId));
+  $('propertyHistoryStatus3I').textContent='Property history · '+propertyHistory.count('undo',session.propertyId)
+    +' undo / '+propertyHistory.count('redo',session.propertyId)+' redo (session only).';
   const result=session.drag ? {ok:false,status:'checking',issues:[]} : inspectPropertyEdit3I(project,session);
   session.validation=result;
   $('propertyEditPanel3I').setAttribute('data-validation',result.status);
@@ -648,6 +668,7 @@ function generate({ discardIdentities = false } = {}) {
     buildingPlacementSession?.stop();
     propertyEditSession?.stop();
     buildingStructureHistory.clear();
+    propertyHistory.clear();
     identityWorkspace?.reset();
     propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
@@ -779,7 +800,8 @@ $('seedInput').addEventListener('keydown', e => {
 window.addEventListener('keydown', e => {
   if (!isMapShortcutEvent(e, document.activeElement)) return;
   if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
-    if (buildingEditSession?.isActive && moveBuildingHistory('redo')) e.preventDefault();
+    if (propertyEditSession?.isActive && movePropertyHistory3I('redo')) e.preventDefault();
+    else if (buildingEditSession?.isActive && moveBuildingHistory('redo')) e.preventDefault();
     else if (!buildingPlacementSession?.isActive && moveStructureHistory3H('redo')) e.preventDefault();
     return;
   }
@@ -799,7 +821,7 @@ window.addEventListener('keydown', e => {
     else if (workspaceShell?.state.section === 'city') editor.removePoint();
   }
   if (e.key === 'Escape') {
-    if (!exitBuildingEditing() || !exitStructurePlacement3H()) return;
+    if (!exitPropertyEditing3I() || !exitBuildingEditing() || !exitStructurePlacement3H()) return;
     stopWorkspaceTools();
     e.preventDefault();
   }
@@ -1158,10 +1180,11 @@ function applyPropertyEdit3I() {
     syncPropertyEditUI3I();requestDraw();return false;
   }
   if(project!==before||session.propertyId!==propertyId)return false;
+  if(!propertyHistory.record(before,received.candidate,propertyId))return false;
   project=received.candidate;
   buildingHistory.clear();
   buildingStructureHistory.clear();
-  session.stop();
+  session.start(project.city,propertyId);
   updateDetails();
   workspaceShell.select({kind:'property',id:propertyId});
   workspaceShell.refresh();requestDraw();workspaceChanged();
@@ -1171,6 +1194,23 @@ function applyPropertyEdit3I() {
 $('propertyEditReset3I').addEventListener('click',()=>propertyEditSession?.reset());
 $('propertyEditCancel3I').addEventListener('click',exitPropertyEditing3I);
 $('propertyEditApply3I').addEventListener('click',applyPropertyEdit3I);
+function movePropertyHistory3I(direction){
+  const session=propertyEditSession;
+  if(!project||!session?.isActive||session.isPending||session.drag)return false;
+  const id=session.propertyId;
+  const receipt=propertyHistory.prepare(project,captureWorkspace().workspace,id,direction);
+  if(!receipt.ok){
+    $('statusMessage').textContent=receipt.reason;return false;
+  }
+  project=receipt.candidate;
+  propertyHistory.accept(receipt.entry,direction);
+  session.start(project.city,id);
+  updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+  $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' property and plot edit for '+id+'.';
+  return true;
+}
+$('propertyHistoryUndo3I').addEventListener('click',()=>movePropertyHistory3I('undo'));
+$('propertyHistoryRedo3I').addEventListener('click',()=>movePropertyHistory3I('redo'));
 for(const [id,axis] of [['propertyCornerX3I','x'],['propertyCornerY3I','y']])
   $(id).addEventListener('change',()=>{
     const session=propertyEditSession;
