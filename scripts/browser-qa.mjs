@@ -39,6 +39,12 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.locator('#projectMenu').isVisible(), true, `${label}: project menu opens`);
       await page.keyboard.press('Escape');
       assert.equal(await page.locator('#projectMenu').isHidden(), true, `${label}: Escape closes project menu`);
+      if (viewport.width <= 670) {
+        // On phones the Tools drawer intentionally overlays the map header.
+        // Close it before interacting with map controls instead of clicking through it.
+        await page.locator('#workspaceCollapseTools').click();
+        assert.equal(await page.locator('#workspaceTools').isHidden(), true);
+      }
       await page.locator('#layersMenuButton').click();
       assert.equal(await page.locator('#layersMenu').isVisible(), true, `${label}: layers menu opens`);
       await page.keyboard.press('Escape');
@@ -55,6 +61,10 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#workspaceOpenTools').click();
       assert.equal(await page.locator('#workspaceTools').isVisible(), true, `${label}: tools reopen`);
 
+      if (viewport.width <= 670) {
+        await page.locator('#workspaceCollapseTools').click();
+        assert.equal(await page.locator('#workspaceTools').isHidden(), true);
+      }
       await page.locator('#workspaceOpenInspector').click();
       assert.equal(await page.locator('#workspaceInspector').isVisible(), true, `${label}: inspector opens`);
       await page.locator('#workspaceCloseInspector').click();
