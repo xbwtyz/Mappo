@@ -1215,6 +1215,9 @@ function deleteProperty4A(propertyId) {
     buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
     identityWorkspace.reset();
     workspaceShell.select(null,{reveal:false});
+    // On narrow layouts the Inspector overlays map controls; reveal the global Undo.
+    if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900 && !workspaceShell.state.inspectorCollapsed)
+      workspaceShell.dispatch({type:'inspector',collapsed:true});
     propertyWorkspace.refresh();buildingWorkspace.refresh();
     updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
     $('statusMessage').textContent='Deleted '+name+' and its '+plots+' plots / '+buildings+
