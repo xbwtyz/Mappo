@@ -15,7 +15,8 @@ Build: **0.1-dev.3faa**. Branch: `feature/building-inspector-3f`.
 
 - Node regression suite: **185/185 passed**, including eight additional property/navigation tests beyond 3F-A.
 - Live Chrome preview: courtyard selected the property; child button opened the corresponding building; Back to property restored the site; the heading received focus after navigation.
-- Firefox/Chromium matrices: pending feature-branch CI. The existing native standalone file smoke script and the extended property/child interaction script each cover 1440×900, 5120×1440, 768×1024 and 390×844 in both engines. The latter uses an intercepted normal origin with a test-only state observer; shipped HTML has neither test globals nor network dependencies.
+- Firefox/Chromium matrices: **16/16 passed** in [CI run 44254201594](https://github.com/xbwtyz/Mappo/actions/runs/44254201594), on implementation commit `f1cfead`. The existing native standalone file smoke script and the extended property/child interaction script each cover 1440×900, 5120×1440, 768×1024 and 390×844 in both engines. The latter uses an intercepted normal origin with a test-only state observer; shipped HTML has neither test globals nor network dependencies.
+- Exact standalone SHA256: `ccec4326768ed2d3cefe826148420f3f650273015dc017ffc72a682cf5d10a90`. Browser screenshots and the standalone HTML are archived in the successful CI run.
 - Project schema **9**, workspace schema **1**; no migration or metadata edits.
 
 ![Primary Property Inspector](docs/images/mappo-3faa-property.jpg)

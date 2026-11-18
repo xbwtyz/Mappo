@@ -1,10 +1,11 @@
 # Mappo Milestone 3F — Property and Building Inspector
 
-Status: **3F-A verified; 3F-Aa property-first selection implemented, verification in progress; 3F-B–D not started**.
+Status: **3F-A and 3F-Aa complete and verified; current build `0.1-dev.3faa`; 3F-B–D not started**.
+3F-Aa verification: 185/185 Node tests, 16/16 browser cases, exact standalone parity. See [property-first QA](MILESTONE_3FAA_QA.md).
 3F-A verification: 177/177 Node tests, 16/16 browser cases, exact standalone parity. See [checkpoint QA](MILESTONE_3FA_QA.md).
 Branch: `feature/building-inspector-3f`, branched from `main` after the Phase 7 UI overhaul merge (`40e64fb`).
 Baseline: `0.1-dev.ui7d`; accepted city project schema **9** and optional workspace UI schema **1**.
-Owner approval: implement the four ordered checkpoints below, using incremental commits, tests, and a compiled standalone HTML after each. **Do not merge into `main`, tag a release, or publish GitHub Pages without explicit approval.**
+Owner approval: implement the ordered checkpoints below, using incremental commits, tests, and a compiled standalone HTML after each. **Do not merge into `main`, tag a release, or publish GitHub Pages without explicit approval.**
 
 ## Purpose and constraints
 
@@ -73,10 +74,10 @@ Reuse the Phase 7 selection inspector (`src/ui/workspace.js` and `src/ui/workspa
 
 ## 3F-D — Persistence, compatibility, integration, and release candidate
 
-**Goal:** Make inspector selection and per-building edits portable and backward compatible.
+**Goal:** Make property/building inspector selection and the identity edits agreed in 3F-C portable and backward compatible.
 
-- [ ] Persist optional building metadata in the actual project record so `.mappo.json` downloads and browser recovery round-trip the edits.
-- [ ] Persist valid building selection in optional `workspace.ui.selection` without making old saved files require new fields. Safely clear selection when its target is missing.
+- [ ] Persist the optional property/building metadata agreed in 3F-C in the actual project records so `.mappo.json` downloads and browser recovery round-trip the edits.
+- [ ] Persist valid property or building selection in optional `workspace.ui.selection` without making old saved files require new fields. Safely clear selection when its target is missing.
 - [ ] Keep city project schema **9** and workspace schema **1** unless a contract-breaking issue is demonstrated and explicitly reviewed.
 - [ ] Validate incoming metadata at the persistence boundary; preserve unknown compatible fields and exact accepted geometry during load/recovery. Confirm historical schema migrations still load.
 - [ ] Test full save -> load -> inspect -> edit -> undo workflows, browser recovery, local district/defense changes, and full rebuild warning/reset semantics.
