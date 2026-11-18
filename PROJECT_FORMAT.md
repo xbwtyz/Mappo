@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current feature-branch build is **0.1-dev.ui5a**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current feature-branch build is **0.1-dev.ui5d**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.ui5a",
+  "appVersion": "0.1-dev.ui5d",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -220,3 +220,7 @@ The existing project document stores the complete authoritative city, district e
 ## Phase 5A pending-state presentation
 
 Pending city and local edit counts are derived at runtime from existing accepted project records, editor drafts and pending form fields. They are never stored or used to regenerate geometry. Saving and loading still use project schema 9, workspace schema 1 and container format 1.
+
+## Phase 5B–5D workspace feedback
+
+Contextual Undo labels, validation error indicators and per-section scroll positions are runtime-only UI state. Undo invokes the existing editor histories and the existing project/save system stores these unmodified histories as before. Section scroll memory resets on project load; portable persistence of the workspace shell is reserved for Phase 6. No project, workspace or envelope schema additions were made (9/1/1).

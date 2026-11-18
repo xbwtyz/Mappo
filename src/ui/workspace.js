@@ -25,6 +25,7 @@ export class WorkspaceShell {
     this.onInspect = onInspect;
     this.providers = new Map();
     this.state = workspaceInitialState();
+    this.sectionScroll = new Map();
   }
   registerInspector(kind, provider) {
     if (typeof kind !== 'string' || !kind || !provider || typeof provider.resolve !== 'function') throw new Error('An inspector provider needs a kind and a resolver.');
@@ -44,11 +45,17 @@ export class WorkspaceShell {
   }
   navigate(section) {
     if (!WORKSPACE_SECTIONS.some(s => s.id === section)) throw new Error('Unknown workspace section.');
-    if (section !== this.state.section) this.onNavigate(this.state.section, section);
+    const previous = this.state.section;
+    if (section !== previous) {
+      const scroll = Number(this.$('workspaceToolScroll').scrollTop ?? 0);
+      this.sectionScroll.set(previous, Number.isFinite(scroll) ? Math.max(0, scroll) : 0);
+      this.onNavigate(previous, section);
+    }
     this.dispatch({
       type: 'navigate',
       section
     });
+    if (section !== previous) this.$('workspaceToolScroll').scrollTop = this.sectionScroll.get(section) ?? 0;
   }
   select(selection, {
     reveal = true
@@ -78,6 +85,8 @@ export class WorkspaceShell {
     section = 'city',
     selection = null
   } = {}) {
+    this.sectionScroll.clear();
+    this.$('workspaceToolScroll').scrollTop = 0;
     this.state = workspaceInitialState();
     this.state = workspaceTransition(this.state, {
       type: 'navigate',

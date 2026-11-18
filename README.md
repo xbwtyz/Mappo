@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current feature-branch build: 0.1-dev.ui5c — Validation feedback
+## Current feature-branch build: 0.1-dev.ui5d — Phase 5 navigation and integration
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui5c.html`](dist/mappo-0.1-dev.ui5c.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui5d.html`](dist/mappo-0.1-dev.ui5d.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### UI overhaul: Phases 1–3 and Phase 4A–4C
 
@@ -210,7 +210,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui5c.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui5d.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -264,3 +264,7 @@ The map bar now labels Undo by current editor: outline, water, mountains, distri
 ### Phase 5C — Validation without interruptions
 
 When a city rebuild fails, the editor reports why and explicitly confirms that accepted city geometry was preserved. Unfinished water and terrain drafts surface the same failure near their controls without generating new geometry. Invalid gate/tower fields and district editing inputs receive accessible invalid-field states. Routine updates remain inline; staged project loading and browser recovery retain their deliberate confirmation controls.
+
+### Phase 5D — Navigation and regression hardening
+
+The shared tool scroller now keeps separate scroll positions for City, Landscape, Districts and Defenses as you switch sections, without rebuilding or discarding any selected feature or editor draft. Loading a different project resets these runtime-only scroll positions. The acceptance suite additionally verifies pending and undo selection logic, local validation, compiled HTML, persistence and geometry. File formats remain unchanged. Browser-specific visual checks remain scheduled for UI Phase 7.

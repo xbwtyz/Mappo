@@ -91,7 +91,7 @@ Acceptance: local updates remain visibly distinct from a full city rebuild. Dist
 - [x] Make apply/rebuild, revert, and undo outcomes clear in the relevant status area (5C).
 - [x] Place validation errors near the relevant feature or setting and preserve the last valid city on failure (5C).
 - [x] Show one concise instruction for the active tool; place longer explanations in expandable help (5C).
-- [ ] Preserve each section's selection and scroll position when navigating away and back.
+- [x] Preserve active selection and each section's scroll position when navigating away and back (5D, session-only).
 
 Acceptance: users can tell what is selected, which tool is active, which drafts are pending, what a rebuild changes, and which edit Undo will restore. Navigation and panel collapse leave edits intact.
 

@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui5a` feature-branch build implements Phases 1–4 plus Phase 5A of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui5d` feature-branch build implements Phases 1–4 plus Phase 5A–5D of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -75,3 +75,7 @@ Map block selection now calls the district workspace's list-row reveal hook afte
 ## Phase 5A read-only pending state
 
 `core/pending-changes.js` compares the authoritative accepted outline/main square with the current editor geometry, compares accepted street settings and tracks water/terrain draft dirty flags. Unapplied district fields and fortification previews are presented separately as local updates. The adapter is read-only, never causes generation or changes history, and adds no fields to the project format. A count is shown in the top bar and an expandable rebuild-effects guide is permanently accessible beneath the section tools.
+
+## Phase 5B–5D undo, validation and navigation
+
+The contextual Undo selector reads the existing independent outline, water, terrain, district and defense histories. The map toolbar routes the action through the original per-editor button, and Ctrl/Cmd+Z respects the same active tool/section; it never introduces a global undo stack or merges records. A separate Revert action restores accepted outline/street controls. Phase 5C adds actionable rebuild-failure guidance and accessible invalid-input states to local defense/district forms without changing generation. `WorkspaceShell` caches a scroll position for each section during navigation, restoring it on return; clearing a project resets these transient positions. Selection remains handled by existing shell/editor state. Phase 6 owns portable shell/scroll persistence. All UI changes keep the data schema unchanged.

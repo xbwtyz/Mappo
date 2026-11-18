@@ -315,3 +315,34 @@ test('existing district, water and terrain inspector adapters read source record
     terrain
   }), before);
 });
+
+
+test('per-section tool scroll positions and current selection survive navigation; project reset clears session positions', () => {
+  const descriptor = {
+    type: 'Lake', title: 'Northmere', section: 'landscape', sections: []
+  };
+  const { shell, el } = shellHarness({
+    water: { resolve: id => id === 'lake' ? descriptor : null }
+  });
+  const pane = el('workspaceToolScroll');
+  pane.scrollTop = 125;
+  shell.navigate('landscape');
+  assert.equal(pane.scrollTop, 0);
+  shell.select({ kind: 'water', id: 'lake' });
+  pane.scrollTop = 230;
+  shell.navigate('districts');
+  assert.equal(pane.scrollTop, 0);
+  assert.deepEqual(shell.state.selection, { kind: 'water', id: 'lake' });
+  pane.scrollTop = 48;
+  shell.navigate('city');
+  assert.equal(pane.scrollTop, 125);
+  shell.navigate('landscape');
+  assert.equal(pane.scrollTop, 230);
+  assert.equal(shell.state.selection.id, 'lake');
+  shell.navigate('districts');
+  assert.equal(pane.scrollTop, 48);
+  shell.reset({ section: 'city' });
+  assert.equal(pane.scrollTop, 0);
+  shell.navigate('landscape');
+  assert.equal(pane.scrollTop, 0, 'previous project scroll does not leak into newly opened projects');
+});

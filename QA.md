@@ -255,3 +255,7 @@ The Phase 4C compiled-app integration test exercises invalid district naming and
 ## Phase 5A (`0.1-dev.ui5a`)
 
 Focused unit tests cover unchanged accepted geometry despite stale dirty flags, changed outline/center, street generation controls, water and terrain drafts, local district input and invalid defense settings. The compiled app test checks pending seed change and post-rebuild clearing. Full regression and generated standalone parity remain required before considering this chunk complete.
+
+## Phase 5B–5D (`0.1-dev.ui5d`)
+
+The new undo selector unit tests cover editor priority, section routing, landscape selection and disabled empty histories. Validation guidance tests cover atomic failure messages and relevant field targeting. Section tool scroll tests verify separate positions for all tabs, selection preservation across navigation and reset on project load. The full regression suite and exact compiled HTML parity must pass in the Phase 5 branch CI before sign-off. Native Firefox and desktop/ultrawide/narrow graphical passes remain Phase 7 tasks.

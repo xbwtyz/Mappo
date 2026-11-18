@@ -14,4 +14,4 @@ jobs:
         with:
           node-version: '22'
       - run: npm run check
-      - run: git diff --exit-code -- index.html dist/mappo-0.1-dev.ui5c.html
+      - run: git diff --exit-code -- index.html dist/mappo-0.1-dev.ui5d.html
