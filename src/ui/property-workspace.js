@@ -28,7 +28,7 @@ export class PropertyWorkspace {
       disabled: this.getLayers().buildings === false,
       run: () => this.selectBuilding(property.id, building.id)
     }));
-    buildingSection.actions.push({label:'Add building to this property',run:()=>this.startBuilding(property.id)});
+    buildingSection.actions.push({label:'Add building to this property',disabled:this.getLayers().buildings===false,run:()=>this.startBuilding(property.id)});
     return {
       type: 'Property', title: information.title,
       description: 'The site containing these plots and buildings. ' + (this.getLayers().buildings === false
