@@ -1,6 +1,6 @@
-# UI control locations — Phase 4C
+# UI control locations — Phase 5
 
-Build `0.1-dev.ui4c`. This inventory records the new homes of the existing controls. IDs and controller bindings stay stable. Project schema remains 9; shell menu/disclosure visibility is runtime-only until the workspace persistence phase.
+Build `0.1-dev.ui5d` on `feature/ui-phase-5`. This inventory records the new homes of the existing controls. IDs and controller bindings stay stable. Project schema remains 9; shell menu/disclosure visibility is runtime-only until the workspace persistence phase.
 
 | Controls | New home | Behavior |
 | --- | --- | --- |
@@ -49,3 +49,16 @@ Project and Layers are nonmodal panels with normal buttons, form controls and Ta
 Generation settings and Starting shape disclosures keep their DOM controls mounted. Closing them or switching sections leaves pending values unchanged. New disclosure/menu visibility has no persistence fields in this phase; saved inputs and layer values retain their existing format and exact load behavior.
 
 Creation uses the corresponding inspector form with Create actions. Selecting an existing feature exposes only its own regeneration, shape/movement, crossings and removal controls. The list replaces the former lake/range dropdowns as the visible selection surface. Those old elements stay mounted for controller and file compatibility.
+
+## Phase 5 additions
+
+| Controls | Location | Behavior |
+| --- | --- | --- |
+| Pending update count | Top bar | Counts actual unapplied outline/center/street/water/terrain changes separately from local district/defense pending values |
+| Rebuild city, pending update categories, rebuild consequences | Shared tools footer | Full city rebuild action remains visible from every section; expandable explanation makes replacement scope explicit |
+| Contextual Undo and scope guidance | Shared map rail/status | Delegates to existing independent history for active tool or section; Ctrl/Cmd+Z follows the same selection |
+| Revert outline & street settings | City | Restores accepted outline and street generation controls without affecting other editors |
+| Inline error and input invalid states | Current district/defense form, water/terrain messages and rebuild footer | Failed operations preserve accepted city geometry and explain what to correct |
+| Per-section scroll position | Shared tools scroller | Retains City, Landscape, Districts and Defenses positions within the current session; project reset clears the cache |
+
+No accepted city, project, workspace or container schema was changed by Phase 5. Portable shell/scroll state remains a Phase 6 task.

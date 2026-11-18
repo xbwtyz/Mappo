@@ -8,7 +8,7 @@ Draw a city boundary, place its main square, and generate connected streets, var
 
 Open [`dist/mappo-0.1-dev.ui5d.html`](dist/mappo-0.1-dev.ui5d.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### UI overhaul: Phases 1–3 and Phase 4A–4C
+### UI overhaul: Phases 1–5 (Phase 5 on the feature branch)
 
 Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) lists the new homes of the existing controls.
 
@@ -268,3 +268,7 @@ When a city rebuild fails, the editor reports why and explicitly confirms that a
 ### Phase 5D — Navigation and regression hardening
 
 The shared tool scroller now keeps separate scroll positions for City, Landscape, Districts and Defenses as you switch sections, without rebuilding or discarding any selected feature or editor draft. Loading a different project resets these runtime-only scroll positions. The acceptance suite additionally verifies pending and undo selection logic, local validation, compiled HTML, persistence and geometry. File formats remain unchanged. Browser-specific visual checks remain scheduled for UI Phase 7.
+
+### Phase 5 verification
+
+Build `0.1-dev.ui5d` passed **150/150 automated tests** plus the reproducible build parity check in [GitHub Actions](https://github.com/xbwtyz/Mappo/actions/runs/44221461150). The latest Phase 5 preview is committed on `feature/ui-phase-5` and is **not merged into `main`**. Native Firefox and Chrome layout checks, including narrow and ultrawide viewports, remain planned for Phase 7. Existing project, workspace and container schema versions are unchanged.
