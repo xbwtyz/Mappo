@@ -495,7 +495,8 @@ function exitBuildingEditing() {
 }
 function exitPropertyEditing3I() {
   if (!propertyEditSession?.isActive) return true;
-  // 3I-A has no mutable draft, so exiting is always lossless.
+  if (propertyEditSession.isPending && typeof window.confirm === 'function'
+      && !window.confirm('Discard your unsaved property boundary and plot preview?'))return false;
   propertyEditSession.stop();
   if (Number.isFinite(window.innerWidth) && window.innerWidth <= 900
       && workspaceShell?.state.inspectorCollapsed)
@@ -509,10 +510,31 @@ function syncPropertyEditUI3I() {
   if (!active) return;
   $('propertyEditTarget3I').textContent = session.propertyId;
   $('propertyEditCorner3I').textContent = session.selectedCorner === null
-    ? 'Click a highlighted corner to select it.'
-    : 'Corner '+(session.selectedCorner + 1)+' selected · coordinate editing is planned for 3I-B.';
+    ? 'Click or drag a highlighted corner to select it.'
+    : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
+  const corner = session.selectedCorner === null ? null : session.boundary[session.selectedCorner];
+  for(const [id,value] of [['propertyCornerX3I',corner?.x],['propertyCornerY3I',corner?.y]]){
+    $(id).disabled = !corner;
+    $(id).value = corner ? String(Number(value.toFixed(2))) : '';
+  }
+  const dividerIndex=$('propertyDividerIndex3I'), dividerInput=$('propertyDividerPercent3I');
+  const dividers=session.dividers;
+  const previous=dividerIndex.options?.length??-1;
+  if(previous!==dividers.length){
+    const options=dividers.map((_,i)=>{
+      const option=document.createElement('option');
+      option.value=String(i);option.textContent='Divider '+(i+1);return option;
+    });
+    dividerIndex.replaceChildren(...options);
+  }
+  dividerIndex.disabled=dividers.length===0;
+  dividerIndex.value=String(session.selectedDivider);
+  dividerInput.disabled=dividers.length===0;
+  dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
   $('propertyEditApply3I').disabled = true;
-  $('propertyEditStatus3I').textContent = 'PREVIEW ONLY · No accepted city geometry or project file has changed.';
+  $('propertyEditStatus3I').textContent = session.isPending
+    ? 'UNSAVED PREVIEW · Property and plot geometry are unchanged until a validated Apply in 3I-C.'
+    : 'NO PENDING CHANGES · The map shows the original property and plot boundaries.';
 }
 function updateMapIndicators() {
   clearMapHover();
@@ -527,7 +549,7 @@ function updateMapIndicators() {
   canvas.classList.toggle('building-edit-mode', buildingActive);
   canvas.classList.toggle('drawing', Boolean(terrainActive || waterActive || editor.mode !== 'pan'));
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!terrainActive && !waterActive && editor.mode === mode));
-  $('toolHint').textContent = propertyActive ? 'PROPERTY PREVIEW · Select a highlighted corner · Boundary editing arrives in 3I-B' : structureActive ? 'BUILDING PLACEMENT · Click property ground or drag the ghost · Use numeric controls for exact size and rotation' : buildingActive ? 'BUILDING EDIT · Move, Rotate, Resize · Space/middle drag pans · No geometry changes until validated Apply' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+  $('toolHint').textContent = propertyActive ? 'PROPERTY PREVIEW · Drag corners or edit coordinates and plot dividers · Apply unlocks after validation' : structureActive ? 'BUILDING PLACEMENT · Click property ground or drag the ghost · Use numeric controls for exact size and rotation' : buildingActive ? 'BUILDING EDIT · Move, Rotate, Resize · Space/middle drag pans · No geometry changes until validated Apply' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
   $('draftBadge').textContent = propertyActive ? '● PROPERTY PREVIEW ONLY' : structureActive ? '● BUILDING PLACEMENT PREVIEW' : buildingActive ? '● BUILDING EDIT MODE' : editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
 }
 
@@ -1112,6 +1134,29 @@ $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
 $('propertyEditReset3I').addEventListener('click',()=>propertyEditSession?.reset());
 $('propertyEditCancel3I').addEventListener('click',exitPropertyEditing3I);
+for(const [id,axis] of [['propertyCornerX3I','x'],['propertyCornerY3I','y']])
+  $(id).addEventListener('change',()=>{
+    const session=propertyEditSession;
+    if(!session?.isActive||session.selectedCorner===null)return;
+    const value=Number($(id).value);
+    if($(id).value===''||!Number.isFinite(value)){syncPropertyEditUI3I();return;}
+    session.setCorner(session.selectedCorner,{...session.boundary[session.selectedCorner],[axis]:value});
+  });
+$('propertyDividerIndex3I').addEventListener('change',()=>{
+  if(!propertyEditSession?.isActive)return;
+  const index=Number($('propertyDividerIndex3I').value);
+  if(Number.isInteger(index)&&index>=0&&index<propertyEditSession.dividers.length){
+    propertyEditSession.selectedDivider=index;
+    updateMapIndicators();
+  }
+});
+$('propertyDividerPercent3I').addEventListener('change',()=>{
+  const session=propertyEditSession;
+  if(!session?.isActive)return;
+  const value=Number($('propertyDividerPercent3I').value);
+  if($('propertyDividerPercent3I').value===''||!Number.isFinite(value)
+      ||!session.setDivider(session.selectedDivider,value/100))syncPropertyEditUI3I();
+});
 
 const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
 // An editor cannot receive map input unless its section is visible.
@@ -1181,6 +1226,13 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
   canvas.classList.toggle('feature-hover', Boolean(hit || propertyHit));
 }, {
   begin: (point,zoom) => {
+    if(propertyEditSession?.isActive){
+      const index=propertyEditSession.hitCorner(project?.city,point,zoom);
+      if(index===null)return false;
+      propertyEditSession.drag={index,original:{...propertyEditSession.boundary[index]}};
+      propertyEditSession.selectCorner(index);
+      return true;
+    }
     if(buildingPlacementSession?.isActive){
       const polygon=buildingPlacementSession.previewFor(project?.city)?.footprint;
       if(polygon?.length && pointInPolygon(point,polygon)){
@@ -1193,7 +1245,9 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     return Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom));
   },
   move: point => {
-    if(buildingPlacementSession?.drag){
+    if(propertyEditSession?.drag){
+      propertyEditSession.setCorner(propertyEditSession.drag.index,point);
+    }else if(buildingPlacementSession?.drag){
       const property=buildingPlacementSession.property(project.city);
       const now=buildingLocalPoint3H(property,point),drag=buildingPlacementSession.drag;
       if(now && drag.start)buildingPlacementSession.update({
@@ -1202,7 +1256,12 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     }else buildingEditSession?.moveGesture(point);
   },
   end: cancelled => {
-    if(buildingPlacementSession?.drag){
+    if(propertyEditSession?.drag){
+      const drag=propertyEditSession.drag;
+      propertyEditSession.drag=null;
+      if(cancelled)propertyEditSession.setCorner(drag.index,drag.original);
+      syncPropertyEditUI3I();
+    }else if(buildingPlacementSession?.drag){
       const drag=buildingPlacementSession.drag;
       buildingPlacementSession.drag=null;
       if(cancelled)buildingPlacementSession.update(drag.spec);
