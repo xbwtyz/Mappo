@@ -1,6 +1,6 @@
-# UI control locations — Phase 4A
+# UI control locations — Phase 4B
 
-Build `0.1-dev.ui4a`. This inventory records the new homes of the existing controls. IDs and controller bindings stay stable. Project schema remains 9; shell menu/disclosure visibility is runtime-only until the workspace persistence phase.
+Build `0.1-dev.ui4b`. This inventory records the new homes of the existing controls. IDs and controller bindings stay stable. Project schema remains 9; shell menu/disclosure visibility is runtime-only until the workspace persistence phase.
 
 | Controls | New home | Behavior |
 | --- | --- | --- |
@@ -38,7 +38,8 @@ Build `0.1-dev.ui4a`. This inventory records the new homes of the existing contr
 | District list, selection | Districts → Neighborhoods | Stable district IDs; map clicks and list selection both reveal contextual inspector |
 | District name/color, Apply district changes, selected block, receiving district, Move selected block | Right selection inspector → Neighborhood | Existing local editing, strict connected membership validation and UI bindings |
 | Undo district edit, district generation/status | Districts → Neighborhoods | Existing 20-snapshot scoped history and generation feedback |
-| Walls enabled, gates, tower spacing, Build/update, Undo, defense status | Defenses → Fortifications | Existing defense-only updates |
+| Walls enabled, requested gates, tower spacing | Defenses → Perimeter defenses | Existing generation/enable controls, with input feedback that does not alter geometry |
+| Update defenses, Undo defense edit, status/preview | Defenses → Perimeter defenses | Scoped apply and undo; distinguishes building, disabling, re-enabling and regenerating walls without full city rebuild |
 | Fortification seed | Defenses → Fortifications → Generation settings | Existing pending defense seed |
 | Inspector summaries, Clear selection, Pin, city report/guide | Shared right inspector | Landscape and district contextual forms; defense controls remain in Defenses |
 | Collapse/reopen tools and inspector, four section tabs | Shared panel headings/map header/top bar | Same Phase 1 shell state and draft-safe navigation |

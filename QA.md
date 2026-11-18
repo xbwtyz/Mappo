@@ -239,3 +239,7 @@ Chrome checks create a river, coastline, two lakes and a mountain range through 
 ## UI overhaul Phase 4A (`0.1-dev.ui4a`)
 
 Additional focused tests cover the keyed district list, contextual inspector visibility, district selection and editor input preservation. The compiled application tests also assert that map block selection opens Districts and the right-hand district form, and that reselecting a block does not destroy an unfinished district name. Full verification and the native Firefox graphical pass are tracked separately; implementation and test additions are not themselves proof that browser checks passed.
+
+## UI overhaul Phase 4B (`0.1-dev.ui4b`)
+
+The new defense workflow tests cover initial build, no-op, enable-only, disable-only, changed-settings regeneration, invalid enabled settings, disabled walls with temporarily invalid numeric controls, pending-preview input events and geometry immutability during preview. The compiled-app workflow additionally verifies inline preview transitions around an imported unfortified project, first defense update, disabled walls and saved controls. Full suite/CI verification is recorded separately; native Firefox and the responsive graphical matrix remain outstanding.

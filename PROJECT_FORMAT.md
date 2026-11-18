@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current feature-branch build is **0.1-dev.ui4a**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current feature-branch build is **0.1-dev.ui4b**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.ui4a",
+  "appVersion": "0.1-dev.ui4b",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -208,3 +208,7 @@ On load, resolution uses restored water/terrain draft records. A missing record 
 ## UI overhaul Phase 4A — district inspector organization
 
 The selected district remains `workspace.districtEditor.selectedDistrictId`, with the optional selected block, existing pending single-selection controls and district history unchanged. A keyed district list and right-hand inspector are UI adapters, not new persistent geometry or workspace fields. Accepted city schema remains 9, workspace schema remains 1, and file container version remains 1. Defense editing is unchanged in Phase 4A.
+
+## UI overhaul Phase 4B — defense workflow presentation
+
+The Defenses section now provides a live description of pending settings and explicit scoped **Update defenses**/**Undo defense edit** actions. The preview is derived from accepted `fortificationState` plus existing unsaved `fortificationEditor.controls`; it introduces no new persisted field. File restore assigns the saved controls and refreshes the preview without generating geometry. All previous save, disabled-wall, history, migration and validation contracts remain in force; city schema 9, workspace schema 1 and container version 1 remain unchanged.

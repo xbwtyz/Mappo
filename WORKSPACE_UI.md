@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui4a` feature-branch build implements Phases 1–3 plus Phase 4A of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui4b` feature-branch build implements Phases 1–3 plus Phases 4A–4B of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -61,3 +61,9 @@ Editor callbacks reconcile selection by ID. Missing selected records clear witho
 The district adapter reads authoritative accepted districts, creates stable keyed rows and mirrors the original `DistrictEditor` selected district ID. Map block clicks and list buttons select the same district, open Districts and reveal the contextual right-hand form. The existing district panel continues to own generation, input validation, membership propagation, 20-history undo, and failure messages. Rebuild and undo stay in Districts; name/color and block transfers live in the inspector; layer visibility stays in Layers. No generator, validation or schema logic changed.
 
 The district panel retains pending name and color inputs when the selected district stays the same (including clicking other blocks in it) but restores accepted values when the selection changes or a local mutation succeeds. The receiving-district input retains a pending target only while the selected block and target remain valid. The existing saved single-selected-district control values remain authoritative for portable files; portable per-district input caches belong to Phase 6.
+
+## Phase 4B defense-only controls and update preview
+
+The original `FortificationPanel` remains authoritative for applying defense changes and its separate ten-snapshot history. A pure presentation helper (`describeDefenseUpdate`) normalizes enabled settings with the existing fortification normalizer to describe whether **Update defenses** builds the first walls, regenerates defenses after changed settings, disables walls while retaining geometry, re-enables saved records or makes no change. When walls are disabled, pending invalid numeric settings do not prevent disabling or delete existing defense records. Pending validation guidance appears inline without attempting generation or modifying accepted data.
+
+The grouped Defenses panel keeps all existing control IDs. It separates wall enablement, gate/tower targets, optional defense seed and the apply/undo actions. Layer visibility continues to live exclusively in the shared Layers menu. Restoring saved pending controls re-renders the preview after assigning their stored values; it never regenerates or repairs loaded walls. Existing city geometry, districts, water and terrain remain unchanged by defense-only apply/undo, per original model validators.
