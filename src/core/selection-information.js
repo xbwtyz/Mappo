@@ -1,3 +1,5 @@
+import { propertyOverview4D } from './inspector-feedback-4d.js';
+
 // Read-only adapters over accepted records. No caches, generated facts or model
 // writes: every refresh resolves current links, including local district edits.
 const INSPECTION_LABELS = Object.freeze({
@@ -61,13 +63,20 @@ function inspectionLocation(city, record) {
 
 export function propertyInformation(city, property) {
   if (!property) return null;
+  const overview=propertyOverview4D(city,property);
+  const length=overview?.frontageLength;
+  const frontageText=length===null || !Number.isFinite(length)
+    ? 'Not recorded' : length.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1})+' survey units';
   return {
     title: inspectionTitle(property, 'usage'),
     sections: [{ title: 'Property summary', rows: [
       ['Generated usage', inspectionValue(property.usage)],
-      ['Site area', inspectionArea(property.area)],
+      ['Site area', inspectionArea(overview.area)],
+      ['Street frontage length', frontageText],
       ['Plots', inspectionCount(property.plotIds)],
       ['Buildings', inspectionCount(property.buildingIds)],
+      ['Estimated unbuilt area', inspectionArea(overview.estimatedUnbuiltArea)],
+      ['Unbuilt area note', 'Site area minus occupied building footprints; not guaranteed buildable space.'],
       ['Custom name', property.customName || 'Not set'],
       ['Descriptive use', property.customUse || 'Not set']
     ] }, inspectionLocation(city, property), {

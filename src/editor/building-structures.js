@@ -98,16 +98,16 @@ export class BuildingPlacementSession3H {
 // Validation and transaction are performed against fresh independent project
 // objects; no draft or temporary generated building is ever accepted blindly.
 export function prepareBuildingStructure3H(project,workspace,request,{quick=false}={}) {
-  const issue=(code,message)=>({ok:false,status:'invalid',issues:[{code,message}],candidate:null});
+  const issue=(code,message,targetId=null)=>({ok:false,status:'invalid',issues:[{code,message,targetId}],candidate:null});
   const {operation,propertyId,buildingId,spec}=request??{};
   const property=project?.city?.properties.find(p=>p.id===propertyId);
-  if(!property)return issue('property','Select a valid property first.');
+  if(!property)return issue('property','Select a valid property first.',propertyId);
   if(!['add','replace','delete'].includes(operation))return issue('operation','Unsupported building action.');
   const existing=project.city.buildings.find(b=>b.id===buildingId);
   if(operation==='add' && (existing || typeof buildingId!=='string' || !buildingId.startsWith('BLD-MAN-')))
     return issue('id','New building identifier must be unique.');
   if(operation!=='add' && (!existing || existing.propertyId!==propertyId))
-    return issue('target','The target building is not on this property.');
+    return issue('target','The target building is not on this property.',buildingId);
   let geometry=null;
   if(operation!=='delete') {
     try{geometry=makeBuildingShape3H(property,spec);}

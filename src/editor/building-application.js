@@ -93,12 +93,12 @@ export function prepareBuildingCandidate(project, buildingId, transform) {
   const city=project.city,original=city.buildings.find(b=>b.id===buildingId);
   const issues=[];
   const plotIds=deriveOccupiedPlots(city,base.property,base.preview);
-  if(!plotIds.length)issues.push({code:'plots',message:'Building no longer occupies a valid plot on its property.'});
+  if(!plotIds.length)issues.push({code:'plots',targetId:base.property?.id,message:'Building no longer occupies a valid plot on its property.'});
   const candidateBuilding={...base.preview,plotIds};
   // Check clearance against transformed building, not the accepted original.
   const accessCity={...city,buildings:city.buildings.map(b=>b.id===buildingId?candidateBuilding:b)};
   const route=reattachFrontage(accessCity,candidateBuilding);
-  if(!route)issues.push({code:'access',message:'No unobstructed entrance can connect to the existing frontage road.'});
+  if(!route)issues.push({code:'access',targetId:original.frontageRoadId,message:'No unobstructed entrance can connect to the existing frontage road.'});
   else Object.assign(candidateBuilding,{entrance:route.entrance,accessPath:route.accessPath,frontageRoadId:original.frontageRoadId});
   if(issues.length)return {ok:false,status:'invalid',issues,preview:base.preview,property:base.property,candidate:null};
   // The candidate is a full independent project. Any error below discards it.
