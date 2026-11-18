@@ -11010,14 +11010,18 @@ function applyProjectDocument(document) {
   landscapeWorkspace.restoreUI(workspace.ui?.landscape);
   districtPanel.restoreUI(workspace.ui?.districts);
   const savedUISelection = workspace.ui?.selection;
+  // A stale legacy landscape reference invalidates any conflicting saved
+  // presentation selection; never resurrect a different feature by accident.
+  const staleLegacySelection = Boolean(savedSelection && !landscapeWorkspace.record(savedSelection));
   const isValidSelection = ref => ref?.kind === 'district'
     ? next.city.districts.some(d => d.id === ref.id)
     : ['water', 'terrain'].includes(ref?.kind)
       ? Boolean(landscapeWorkspace.record(ref))
       : ref?.kind === 'landscape-add' && landscapeWorkspace.available(ref.id);
-  const selectedUIRef = workspace.ui && Object.hasOwn(workspace.ui, 'selection')
-    ? (savedUISelection && isValidSelection(savedUISelection) ? savedUISelection : null)
-    : restoredSelection;
+  const selectedUIRef = staleLegacySelection ? null
+    : workspace.ui && Object.hasOwn(workspace.ui, 'selection')
+      ? (savedUISelection && isValidSelection(savedUISelection) ? savedUISelection : null)
+      : restoredSelection;
   if (selectedUIRef?.kind === 'district' && districtPanel.editor.selectedDistrictId !== selectedUIRef.id) {
     districtPanel.editor.selectedDistrictId = selectedUIRef.id;
     districtPanel.editor.selectedBlockId = null;

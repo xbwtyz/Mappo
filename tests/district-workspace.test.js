@@ -83,7 +83,7 @@ test('district list handles missing records, unassigned cities, and unrelated in
   assert.equal(el('districtEmpty').hidden, false);
 });
 
-test('district refresh preserves unfinished values for the same selection and clears on selection change', () => {
+test('district refresh caches unfinished values when changing selection and restores them on return', () => {
   const { el } = harness();
   const city = {
     id: 'seed', districtState: { status: 'assigned', requestedCount: 1, seed: 'seed' },
@@ -113,5 +113,9 @@ test('district refresh preserves unfinished values for the same selection and cl
   assert.equal(el('districtNameInput').value, '');
   panel.editor.selectedDistrictId = 'D1';
   panel.refresh();
-  assert.equal(el('districtNameInput').value, 'Old');
+  assert.equal(el('districtNameInput').value, 'Unapplied name');
+  assert.equal(el('districtColorInput').value, '#abcdef');
+  assert.deepEqual(panel.snapshotUI().formCache, [{id:'D1',name:'Unapplied name',color:'#abcdef'}]);
+  panel.refresh(true);
+  assert.equal(el('districtNameInput').value, 'Old', 'applying or regenerating clears stale cached forms');
 });
