@@ -9,10 +9,10 @@ Baseline: `0.1-dev.ui6d`, city schema 9, optional workspace UI state in workspac
 - [ ] Audit drawing, generation, local update, layer, project, and recovery paths.
 
 ## 7B: Functional and persistence regressions
-- [ ] Navigation/selection/scroll and panel state (7B test coverage added)
-- [ ] Tool routing, independent undo histories, pending updates (7B test coverage added)
-- [ ] Schema-9 exact-geometry project save/load/recovery and older-file migration (7B test coverage added)
-- [ ] Geometry, water (rivers/coasts/lakes), terrain, districts and defenses
+- [x] Navigation/selection/scroll and panel state (7B 166/166 regressions)
+- [x] Tool routing, independent undo histories, pending updates (7B 166/166 regressions)
+- [x] Schema-9 exact-geometry project save/load/recovery and older-file migration (7B 166/166 regressions)
+- [x] Geometry, water (rivers/coasts/lakes), terrain, districts and defenses (7B full Node suite)
 
 ## 7C: Native browser and viewport QA
 - [ ] Chromium and Firefox

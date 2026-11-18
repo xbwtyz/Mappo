@@ -28,6 +28,19 @@ jobs:
           version=$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")
           cmp index.html "dist/mappo-$version.html"
           echo "VERSION=$version" >> "$GITHUB_ENV"
+      - name: Install real Chromium and Firefox for browser QA
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium firefox
+      - name: Verify graphical layout and interactions
+        run: node scripts/browser-qa.mjs
+      - name: Archive browser QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-qa-${{ github.sha }}
+          path: artifacts/browser-qa/
+          if-no-files-found: warn
       - name: Attach standalone HTML for this checkpoint
         uses: actions/upload-artifact@v4
         with:

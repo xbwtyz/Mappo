@@ -1,6 +1,6 @@
 # Mappo UI overhaul — goals and acceptance checklist
 
-Status: Phases 1–6 are merged into `main`. Approved Phase 7 is underway on `feature/ui-phase-7`; 7A passed 163/163 tests, and 7B adds full save/recovery/undo integration coverage. Graphical QA and final release readiness remain to verify. Project schema remains 9.
+Status: Phases 1–6 are merged into `main`. Approved Phase 7 is underway on `feature/ui-phase-7`; 7A passed 163/163 tests, and 7B passed 166/166 Node regressions. 7C adds real Chromium/Firefox viewport tests and screenshot artifacts; final release readiness remains to verify. Project schema remains 9.
 
 Baseline: Mappo `0.1-dev.3e6`, project schema 9. The UI overhaul comes before the planned 3F building inspector. The first UI implementation build is `0.1-dev.ui1`; accepted city schema remains 9.
 
@@ -112,8 +112,8 @@ Acceptance: the workspace is readable and navigable across supported layouts, an
 ## Phase 7 — Integration, regression checks, and release
 
 - [x] Check the complete old-to-new control inventory against the working 3E.6 build (93/93 retained; automated 7A check).
-- [ ] Add focused UI/state tests for navigation, selection, tool routing, panel behavior, draft counts, undo scope, and workspace round trips.
-- [ ] Run the existing geometry, water, terrain, district, defense, and persistence regression suite with `npm run check`.
+- [x] Add focused UI/state tests for navigation, selection, tool routing, panel behavior, draft counts, undo scope, and workspace round trips (7B passing suite).
+- [x] Run the existing geometry, water, terrain, district, defense, and persistence regression suite with `npm run check` (7B: 166/166).
 - [ ] Exercise the actual standalone HTML through outline editing, all landscape types, crossings, local updates, full rebuilds, save/load, and recovery.
 - [ ] Perform graphical browser checks in Firefox and Chrome, including desktop, ultrawide, and narrow layouts.
 - [ ] Verify collapsed panels resize the live map correctly and that there is no inaccessible overflow or focus trap.
