@@ -1,0 +1,30 @@
+name: Temporary 3H compiler and Node validation
+on:
+  push:
+    branches: ['feature/building-management-3h']
+    paths: ['.github/workflows/compile-3h.yml']
+permissions:
+  contents: write
+jobs:
+  compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and run complete Node regression suite
+        run: npm run check
+      - name: Verify bundle includes new building management functionality
+        run: |
+          grep -q 'BuildingPlacementSession3H' index.html
+          grep -q 'buildingStructurePanel' index.html
+          cmp index.html dist/mappo-0.1-dev.3he.html
+      - name: Commit standalone generated output on feature branch only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html dist/mappo-0.1-dev.3he.html
+          git commit -m "build(3h-e): compile verified standalone 0.1-dev.3he" || exit 0
+          git push origin HEAD:feature/building-management-3h
