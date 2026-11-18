@@ -390,7 +390,7 @@
 }
 
 /* 3I-A: bounded, non-destructive property preview tools. */
-.property-edit-panel-3i{left:16px;right:auto;top:62px;border-color:#428f84}
+.property-edit-panel-3i{z-index:14;left:16px;right:auto;top:62px;border-color:#428f84}
 .property-edit-panel-3i .building-transform-actions #propertyEditApply3I{grid-column:1/-1;background:#266c63;border-color:#4eaba1;color:#fff}
 .property-edit-panel-3i .building-transform-actions #propertyEditApply3I:disabled{opacity:.45;cursor:not-allowed}
 .property-edit-panel-3i #propertyEditCancel3I{border-color:#a9846c;color:#f0cfb8}
@@ -13494,6 +13494,13 @@ $('structureApply').addEventListener('click',applyStructurePlacement3H);
 $('structureCancel').addEventListener('click',exitStructurePlacement3H);
 $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
+function keepPropertyEditorVisible3I() {
+  // Refreshing the selected property can reopen the narrow-screen Inspector.
+  // Keep the floating edit tools accessible through Apply and Undo/Redo.
+  if (propertyEditSession?.isActive && Number.isFinite(window.innerWidth)
+      && window.innerWidth <= 900 && workspaceShell?.state.inspectorCollapsed === false)
+    workspaceShell.dispatch({type:'inspector',collapsed:true});
+}
 function applyPropertyEdit3I() {
   const session=propertyEditSession;
   if(!project||!session?.isActive||!session.isPending||session.drag
@@ -13514,7 +13521,7 @@ function applyPropertyEdit3I() {
   session.start(project.city,propertyId);
   updateDetails();
   workspaceShell.select({kind:'property',id:propertyId});
-  workspaceShell.refresh();requestDraw();workspaceChanged();
+  workspaceShell.refresh();keepPropertyEditorVisible3I();requestDraw();workspaceChanged();
   $('statusMessage').textContent='Applied validated property and plot edits to '+propertyId+'. Download a project to preserve your change.';
   return true;
 }
@@ -13532,7 +13539,7 @@ function movePropertyHistory3I(direction){
   project=receipt.candidate;
   propertyHistory.accept(receipt.entry,direction);
   session.start(project.city,id);
-  updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+  updateDetails();workspaceShell.refresh();keepPropertyEditorVisible3I();requestDraw();workspaceChanged();
   $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' property and plot edit for '+id+'.';
   return true;
 }
