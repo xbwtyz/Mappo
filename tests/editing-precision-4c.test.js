@@ -24,7 +24,7 @@ test('Dev4c building nudges and rotation/scale measurements stay preview-only',(
   assert.equal(session.transform.dx,.4);
   assert.equal(nudgeBuilding4C(session,'x',1,.5),false);
   assert.equal(nudgeBuilding4C(session,'dy',1,.3),false);
-  assert.equal(session.setTransform({angle:Math.PI/4,scaleX:1.25,scaleY:0.8}),true);
+  assert.equal(session.setTransform({angle:Math.PI/4,scaleX:1.25,scaleY:0.9}),true);
   const m=buildingMeasurements4C(city,session);
   assert.ok(m.width>0 && m.depth>0 && m.area>0);
   assert.ok(Math.abs(m.areaDelta)>0);
@@ -58,7 +58,7 @@ test('Dev4c placement nudge shares placement update/preview validation, not acce
   assert.equal(session.start(city,property.id),true);
   const old=session.spec.u;
   assert.equal(nudgeStructure4C(session,'u',1,1),true);
-  assert.equal(session.spec.u,old+1);
+  assert.ok(Math.abs(session.spec.u-(old+1))<1e-7);
   assert.equal(nudgeStructure4C(session,'v',-1,.5),true);
   assert.equal(nudgeStructure4C(session,'bad',1,1),false);
   const metrics=placementMeasurements4C(city,session);

@@ -105,6 +105,16 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         const state=__buildingQA.state();state.camera.x=c.x;state.camera.y=c.y;
         state.camera.zoom=c.zoom;__buildingQA.draw();
       },focusBefore);
+      // Dev 4c: canvas Delete must request, not silently apply, property removal.
+      await page.evaluate(() => document.getElementById('mapCanvas').focus());
+      await Promise.all([
+        page.waitForEvent('dialog').then(dialog => {
+          assert.match(dialog.message(),/Delete property/);
+          return dialog.dismiss();
+        }),
+        page.keyboard.press('Delete')
+      ]);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
       await page.screenshot({ path: new URL(`${label}-selected.png`, output).pathname });
       // 3I-A: real browser property preview must not mutate any accepted land.
       await page.getByRole('button', { name: 'Edit property geometry' }).click();
