@@ -671,11 +671,17 @@ test('standalone app downloads, previews and restores complete projects and reco
   delete restored.towers;
   assert.deepEqual(restored, legacyCity);
   const beforeWalls = copy(reloaded.state().project.city);
+  assert.match(reloaded.el('defensePendingMessage').textContent, /No defenses are built/i);
   reloaded.el('wallsEnabledInput').checked = true;
+  reloaded.el('wallsEnabledInput').handlers.change();
+  assert.match(reloaded.el('defensePendingMessage').textContent, /build walls/i);
   reloaded.el('gateCountInput').value = '3';
   reloaded.el('towerSpacingInput').value = '80';
   reloaded.el('fortificationSeedInput').value = 'portable-forts';
+  reloaded.el('fortificationSeedInput').handlers.input();
+  assert.match(reloaded.el('defensePendingMessage').textContent, /without rebuilding streets/i);
   assert.equal(reloaded.el('applyFortificationButton').handlers.click(), true);
+  assert.match(reloaded.el('defensePendingMessage').textContent, /No defense changes pending/i);
   assert.equal(reloaded.state().project.city.fortificationState.status, 'built');
   assert.equal(reloaded.state().layers.fortifications, true);
   for (const key of ['nodes', 'roads', 'blocks', 'properties', 'buildings', 'districts']) assert.deepEqual(copy(reloaded.state().project.city[key]), beforeWalls[key]);
@@ -695,8 +701,12 @@ test('standalone app downloads, previews and restores complete projects and reco
     fortifiedText = await fortifiedFile.blob.text();
   assert.ok(JSON.parse(fortifiedText).workspace.fortificationEditor.history.length > 0);
   reloaded.el('wallsEnabledInput').checked = false;
+  reloaded.el('wallsEnabledInput').handlers.change();
+  assert.match(reloaded.el('defensePendingMessage').textContent, /disable the visible walls/i);
   reloaded.el('towerSpacingInput').value = '';
+  reloaded.el('towerSpacingInput').handlers.input();
   assert.equal(reloaded.el('applyFortificationButton').handlers.click(), true);
+  assert.match(reloaded.el('defensePendingMessage').textContent, /saved defenses are retained/i);
   assert.equal(reloaded.state().project.city.fortificationState.enabled, false);
   assert.deepEqual(copy(reloaded.state().project.city.gates), fortData.gates);
   await reloaded.state().files.stageFile({

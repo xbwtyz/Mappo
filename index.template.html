@@ -78,18 +78,30 @@
             <p class="hint">Select a neighborhood here or click a city block. Name, color and connected block editing open in the inspector. Visibility controls are under Layers.</p>
           </details>
         </section>
-        <section id="workspaceSection-defenses" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-defenses" hidden>        <details id="fortificationPanel" class="fortification-panel" open>
-          <summary>FORTIFICATIONS</summary>
-          <label class="fortification-check"><input type="checkbox" id="wallsEnabledInput" checked> Walls enabled</label>
-          <p id="fortificationStats" class="hint">Build perimeter walls, connected gates and defensive towers.</p>
-          <div class="tool-grid"><div class="control-group"><label for="gateCountInput">Requested gates</label><select id="gateCountInput"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
-          <div class="control-group"><label for="towerSpacingInput">Tower spacing</label><input id="towerSpacingInput" type="number" min="40" max="200" step="10" value="100"></div></div>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
-          <div class="control-group"><label for="fortificationSeedInput">Fortification seed</label><input id="fortificationSeedInput" maxlength="64" value="fortifications" spellcheck="false"></div>
+        <section id="workspaceSection-defenses" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-defenses" hidden>
+          <details id="fortificationPanel" class="fortification-panel defense-workflow" open>
+            <summary>PERIMETER DEFENSES</summary>
+            <p class="hint defense-intro">Update walls, road-connected gates and defensive towers independently of the city layout.</p>
+            <p id="fortificationStats" class="defense-stats">No perimeter defenses built yet.</p>
+            <div class="defense-control-group">
+              <label class="fortification-check"><input type="checkbox" id="wallsEnabledInput" checked> <span>Walls enabled <small>Disable without deleting saved defenses</small></span></label>
+            </div>
+            <div class="defense-control-group">
+              <h3>Gates &amp; towers</h3>
+              <div class="tool-grid"><div class="control-group"><label for="gateCountInput">Requested gates</label><select id="gateCountInput"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
+              <div class="control-group"><label for="towerSpacingInput">Tower spacing</label><input id="towerSpacingInput" type="number" min="40" max="200" step="10" value="100"></div></div>
+              <p class="hint">Gates must connect to existing streets. The requested count is a maximum; safe clearance may reduce it.</p>
+            </div>
+            <details class="workspace-settings feature-generation-settings defense-generation-settings"><summary>Generation settings</summary>
+              <div class="control-group"><label for="fortificationSeedInput">Defense seed</label><input id="fortificationSeedInput" maxlength="64" value="fortifications" spellcheck="false"></div>
+              <p class="hint">Changing the seed regenerates defenses only when walls are enabled.</p>
+            </details>
+            <p id="defensePendingMessage" class="defense-pending" role="status" aria-live="polite">No defense changes pending.</p>
+            <button id="applyFortificationButton" class="tool-button full-width defense-apply">Update defenses</button>
+            <button id="undoFortificationButton" class="minor-button full-width actions" disabled>Undo defense edit</button>
+            <p id="fortificationMessage" class="file-status" role="status" aria-live="polite">Defenses can be updated without rebuilding the city.</p>
+            <p class="hint defense-layer-hint">Layers controls display only. Walls enabled controls whether saved defenses are active.</p>
           </details>
-          <div class="tool-grid"><button id="applyFortificationButton" class="tool-button">Build / update</button><button id="undoFortificationButton" class="minor-button" disabled>Undo fortification edit</button></div>
-          <p id="fortificationMessage" class="file-status" role="status" aria-live="polite">Walls sit outside the perimeter streets. Disabling retains their saved geometry. Changing gate count, spacing or seed rebuilds fortifications only.</p>
-        </details>
         </section>
       </div>
       <div class="workspace-apply"><button id="generateButton" class="button-primary">↻ Generate city</button><p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p></div>

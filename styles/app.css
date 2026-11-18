@@ -167,3 +167,25 @@
 .district-inspector-controls .control-group{margin:15px 0 9px}
 .district-inspector-controls .control-group label{font-size:12px}
 .district-inspector-controls .hint{font-size:11px;line-height:1.6}
+
+
+/* UI Phase 4B: defensive configuration and scoped update feedback. */
+.workspace-shell .defense-workflow{padding:15px}
+.defense-intro{font-size:11px;line-height:1.65;margin-bottom:14px!important}
+.defense-stats{font-size:12px;color:#e2dac6;border:1px solid #4c5d51;background:#21332e;border-radius:5px;padding:11px 12px;margin:9px 0 15px}
+.defense-control-group{padding:12px 0;border-top:1px solid #3c5049}
+.defense-control-group h3{font:650 13px system-ui,sans-serif;color:#e8d6ba;margin:0 0 5px}
+.defense-workflow .fortification-check{margin:0;font-size:12px;align-items:flex-start}
+.defense-workflow .fortification-check input{flex:none;margin-top:3px}
+.defense-workflow .fortification-check span{display:block}
+.defense-workflow .fortification-check small{display:block;font-size:10px;color:#9eb4a7;line-height:1.6;margin-top:5px}
+.defense-workflow .tool-grid{gap:8px}
+.defense-workflow .tool-grid .control-group{min-width:0}
+.defense-workflow .control-group label{font-size:11px}
+.defense-workflow .defense-generation-settings{margin:10px 0 14px}
+.defense-workflow .defense-pending{font-size:11px;line-height:1.6;color:#b2c5ba;border:1px solid #4f6258;border-radius:5px;padding:10px 12px;margin:14px 0;background:#23342e}
+.defense-workflow .defense-pending.pending{border-color:#9d896b;color:#e6ceb0;background:#38362c}
+.defense-workflow .defense-pending.error{border-color:#9f5b4b;color:#ffd2c7;background:#3b2e2e}
+.defense-workflow .defense-apply{min-height:40px;font-size:12px;background:#334c43;border-color:#ab9978}
+.defense-workflow .defense-apply:hover{background:#405e50}
+.defense-workflow .defense-layer-hint{border-top:1px solid #3c5049;padding-top:12px;margin-top:16px}

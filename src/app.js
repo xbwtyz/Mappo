@@ -733,6 +733,7 @@ function applyProjectDocument(document) {
     $('towerSpacingInput').value = fortControls.towerSpacing;
     $('fortificationSeedInput').value = fortControls.seed;
   }
+  fortificationPanel.syncPreview();
   $('districtPanel').open = workspace.panels?.districts ?? Boolean(districtPanel.editor.selectedDistrictId);
   $('fortificationPanel').open = workspace.panels?.fortifications ?? true;
   $('shapeDescription').textContent = SHAPE_DESCRIPTIONS[workspace.controls.morphology];
