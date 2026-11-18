@@ -2,13 +2,13 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current build: 0.1-dev.ui4a — District list and inspector (Phase 4A)
+## Current feature-branch build: 0.1-dev.ui4b — District and defense workflows
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui4a.html`](dist/mappo-0.1-dev.ui4a.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui4b.html`](dist/mappo-0.1-dev.ui4b.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### UI overhaul: Phases 1–3 and Phase 4A
+### UI overhaul: Phases 1–3 and Phase 4A–4B
 
 Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) lists the new homes of the existing controls.
 
@@ -18,7 +18,7 @@ Open **Landscape** for one list of every river, coastline, lake and mountain ran
 
 Select a feature from the list or map in **Select / Pan** to open only its own editing controls. Selection alone leaves the map in Select/Pan; choose a shape, move or crossing button to edit. Hover and selected outlines use a light halo, with orange marking selection. Nearby feature edges take priority over broad interiors; smaller interiors win overlap ties, then stable IDs break equal ties. Map selection reveals the matching list row, switching a conflicting filter to All. Click a city block to inspect its district; click empty land to clear selection.
 
-**Clear selection** closes an unpinned inspector; **Pin** keeps it open, including its expandable city report. Districts now lists neighborhoods and opens their name/color and connected-block controls in the selection inspector. District count, seed, rebuild and scoped undo remain under Districts; defense reorganization is next. Water and terrain retain separate histories, with Undo actions also accessible from the Landscape list after removal. Selected landscape IDs now survive saves even in Select/Pan mode. Full shell/filter/layout persistence remains Phase 6.
+**Clear selection** closes an unpinned inspector; **Pin** keeps it open, including its expandable city report. Districts now lists neighborhoods and opens their name/color and connected-block controls in the selection inspector. District count, seed, rebuild and scoped undo remain under Districts; Defenses now groups wall enablement, gate/tower settings and generation seed with a live preview of defense-only changes. Water and terrain retain separate histories, with Undo actions also accessible from the Landscape list after removal. Selected landscape IDs now survive saves even in Select/Pan mode. Full shell/filter/layout persistence remains Phase 6.
 
 Switching sections stops tools whose controls are being hidden while preserving completed drafts, history, pending inputs and the accepted city. An in-progress gesture is cancelled through its original editor. Panel collapse resizes the Canvas without changing the city or camera position/zoom. Shell layout preferences are runtime state in this phase; their portable persistence is planned for Phase 6. Existing project saves and recovery still restore their original city geometry and editor drafts.
 
@@ -132,13 +132,13 @@ River mode supports **one river, up to 32 course points, and 1–8 bridges** in 
 
 New native cities default to an exterior perimeter wall, connected gates and defensive towers. Open the **Fortifications** panel to change them independently of the city. The Fortifications and Neighborhoods panels collapse separately, and their open state is saved.
 
-- **Walls enabled** plus **Build / update** builds or enables defenses. Uncheck it and apply to disable defenses while retaining their geometry, IDs and metadata.
+- **Walls enabled** plus **Update defenses** builds, enables or updates defenses. Uncheck it and apply to disable defenses while retaining their geometry, IDs and metadata. A live summary explains what the update will change.
 - Choose **1–8 gates**, **40–200 survey units** of tower spacing and an independent fortification seed, then apply. Changing these settings rebuilds defenses only. Smaller spacing adds towers where clearance allows; corners also receive towers when safe.
 - Gates connect to real perimeter street junctions through saved approach paths. Walls have actual openings. If the requested gate count cannot fit safely, Mappo reports the smaller actual count.
 - **Layers → Defenses → Fortifications** changes display only. It does not change whether defenses are enabled or erase saved records.
-- **Undo fortification edit** restores up to 10 previous defense states, including the first build or disabling. History and pending controls travel with project files and browser recovery.
+- **Undo defense edit** restores up to 10 previous defense states, including the first build or disabling. History and pending controls travel with project files and browser recovery.
 
-Walls sit outside the perimeter streets. Existing streets, buildings, properties, blocks, neighborhoods and the square remain fixed. Narrow inlets may be bridged by the exterior wall where following them would create an unsafe crossing. Imported older cities stay unchanged and unfortified: enable walls, then choose **Build / update** to add defenses explicitly.
+Walls sit outside the perimeter streets. Existing streets, buildings, properties, blocks, neighborhoods and the square remain fixed. Narrow inlets may be bridged by the exterior wall where following them would create an unsafe crossing. Imported older cities stay unchanged and unfortified: enable walls, then choose **Update defenses** to add defenses explicitly.
 
 This milestone supports one outer wall ring, round towers and street gates. Custom wall drawing, inner walls, alternate tower/gate forms and gate editing remain future extensions. See [`FORTIFICATIONS.md`](FORTIFICATIONS.md) for geometry contracts and extension points.
 
@@ -210,7 +210,7 @@ Use Node.js 20.11 or newer. No package installation is required.
 ```bash
 npm run check  # compile the standalone file, then run all automated tests
 npm test       # test the existing compiled artifact and source
-npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui4a.html
+npm run build  # regenerate index.html and dist/mappo-0.1-dev.ui4b.html
 ```
 
 The build embeds local ES modules and rejects external runtime dependencies. Both current HTML outputs must be byte-for-byte identical.
@@ -241,7 +241,8 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.ui2:** UI overhaul Phase 2 — compact City controls, expandable seeds, shared Project/Layers menus and map navigation.
 - **0.1-dev.ui3:** UI overhaul Phase 3 — unified landscape list, inline creation/contextual forms, map hits/highlights and portable landscape selection.
 - **0.1-dev.ui4a:** UI overhaul Phase 4A — selectable neighborhood inventory, contextual district editing, shared district history and explicit local district rebuild.
-- **UI overhaul, Phase 4B onward:** Defense workflow organization, integration, draft feedback, readability and full workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
+- **0.1-dev.ui4b:** UI overhaul Phase 4B — scoped defensive settings, clear Update defenses action, live mutation preview and retained independent defense history.
+- **UI overhaul, Phase 4 integration onward:** Integration, draft feedback, readability and full workspace persistence — [remaining goals](UI_OVERHAUL_PLAN.md).
 - **3F:** Building inspector with names, notes and undo — planned.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 
