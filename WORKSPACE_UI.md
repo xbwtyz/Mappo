@@ -129,3 +129,15 @@ Both property and building UI references are deliberately captured as null until
 Both Inspector providers compose the pure sections with the existing safe native-button actions. Readable headings combine the generated usage/type with the stable ID, falling back to the ID alone. District names and optional actual street names remain textContent data. Property and child sections use the existing wrapping/scrollable Inspector layout. No editing controls or serialized fields are added.
 
 A local district operation may cause DistrictEditor to choose a default ward. When a property or building is being inspected, the app clears that incidental district selection at commit, refreshes the Inspector against the new accepted city, and retains the inspected record. Explicit district map/list/dropdown selection still follows the original routing. District history and accepted geometry retain their original ownership. Defense-only commits also refresh the current Inspector. Project schema 9 and workspace schema 1 are unchanged; property/building view selection remains session-only until 3F-D.
+
+## Milestone 3F-C: explicit identity editing
+
+`core/identity.js` owns optional customName/customUse validation/normalization, target lookup and metadata-only copy-on-write commits. IdentityEditor holds a separate 20-entry session history of ref/before/after identity fields. Undo checks the current record and expected metadata, then changes only these optional fields, preserving all current geometry, unrelated metadata and local district/defense changes.
+
+`ui/identity-workspace.js` mounts static, accessible inputs in an expandable Inspector section. It maintains per-record pending drafts bounded by the accepted city's records, Apply/Discard/local errors, an explicit Other-use input and separate Undo. The shared Inspector can refresh without recreating active form inputs. Headings/building choices use accepted custom names; generated facts remain available. Property/building identities never propagate implicitly.
+
+The pending-state helper reports identity drafts as local updates, not city-generation changes. Contextual Undo prioritizes active geometry tools, then property/building identity history, then existing section histories. Native text-field undo is still excluded from map shortcut routing.
+
+Generation preflight counts customized records and pending identity drafts and presents an inline loss confirmation. New street seed generation defers seed assignment until confirmation. Only a successful new accepted city resets the identity editor/drafts; failed generation preserves accepted metadata and history. Project loading resets session history/drafts and cancels any stale confirmation callback before restoring accepted records.
+
+Project validation recognizes the optional bounded strings on properties/buildings. Old files without the fields still load; valid compatible extension fields are retained, and no geometry/schema migration occurs. Applied metadata already round-trips in the actual project. Selection, identity history and identity drafts are still session-only; 3F-D owns further portability/integration.

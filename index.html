@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.3fb</title>
+  <title>Mappo — City editor · 0.1-dev.3fc</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -332,12 +332,20 @@
 .workspace-inspector-action:disabled{opacity:.55;cursor:default}
 .workspace-inspector-section{overflow-wrap:anywhere}
 
+/* 3F-C: local identity form and explicit rebuild-loss feedback. */
+.identity-inspector{margin:18px 0;padding:14px;border:1px solid #65756b;border-radius:6px;background:#213234}
+.identity-inspector summary{font-weight:700;cursor:pointer;color:#efdfc5}
+.identity-inspector .control-group{margin:14px 0}.identity-inspector input,.identity-inspector select{width:100%;min-width:0;box-sizing:border-box}
+.identity-inspector .tool-grid{grid-template-columns:1fr 1fr}.identity-inspector button{white-space:normal;min-height:40px}
+.identity-rebuild-warning{padding:12px;margin-bottom:12px;border:1px solid #d1a579;background:#443a2d;color:#f0dfc8;font-size:12px;line-height:1.6}
+.identity-rebuild-warning button{margin-top:8px;white-space:normal}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3fb</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3fc</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -434,7 +442,11 @@
         </section>
       </div>
       <div class="workspace-apply">
-        <button id="generateButton" class="button-primary">↻ Rebuild city</button>
+        <section id="identityRebuildWarning" class="identity-rebuild-warning" hidden aria-label="Confirm identity loss">
+          <p id="identityRebuildMessage" role="status"></p>
+          <button id="identityConfirmRebuildButton" class="tool-button full-width">Rebuild and discard identities</button>
+          <button id="identityCancelRebuildButton" class="minor-button full-width">Keep editing</button>
+        </section><button id="generateButton" class="button-primary">↻ Rebuild city</button>
         <p id="workspacePendingDetails" class="workspace-pending-details" role="status" aria-live="polite">No unapplied city or local changes.</p>
         <details id="workspaceRebuildGuide" class="workspace-rebuild-guide"><summary>What rebuilding changes</summary><p id="workspaceRebuildImpact"></p></details>
         <p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p>
@@ -466,7 +478,17 @@
       <div class="sidebar-heading workspace-panel-heading"><span>INSPECTOR</span><div class="workspace-panel-actions"><button id="workspacePinInspector" class="workspace-pin-button" aria-label="Pin inspector open" aria-pressed="false">Pin</button><button id="workspaceCloseInspector" class="workspace-icon-button" aria-label="Collapse inspector" title="Collapse inspector">›</button></div></div>
       <div id="workspaceInspectorScroll" class="sidebar-content">
         <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a landscape feature or city block, or use Add feature in Landscape. Pin this panel to keep the city report available.</p></div>
-        <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+        <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><details id="identityInspector" class="identity-inspector" hidden>
+          <summary id="identityEditorTitle">Property identity</summary>
+          <p class="hint">Name and use apply only to this selected record. Blank fields restore its generated label. Undo identity keeps the last 20 applied edits in this session.</p>
+          <div class="control-group"><label for="identityNameInput">Custom name</label><input id="identityNameInput" maxlength="80" placeholder="Use generated label" autocomplete="off"></div>
+          <div class="control-group"><label for="identityUseInput">Descriptive use</label><select id="identityUseInput"><option value="">No override</option><option>Residence</option><option>Inn / Tavern</option><option>Shop</option><option>Workshop</option><option>Guildhall</option><option>Temple</option><option>Warehouse</option><option value="other">Other…</option></select></div>
+          <div id="identityOtherUseGroup" class="control-group" hidden><label for="identityOtherUseInput">Other descriptive use</label><input id="identityOtherUseInput" maxlength="80" placeholder="Describe this place" autocomplete="off"></div>
+          <p id="identityDraftState" class="hint">Up to date</p>
+          <button id="identityApplyButton" class="tool-button full-width">Apply identity</button>
+          <div class="tool-grid actions"><button id="identityDiscardButton" class="minor-button">Discard draft</button><button id="identityUndoButton" class="minor-button" disabled>Undo identity</button></div>
+          <p id="identityStatus" class="file-status" role="status" aria-live="polite"></p>
+        </details><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
         <div id="districtInspectorControls" class="district-inspector-controls" hidden>
           <p id="districtStats" class="hint"></p>
           <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>
@@ -1892,6 +1914,7 @@ function inspectionValue(value, fallback = 'Not recorded') {
 }
 
 function inspectionTitle(record, field) {
+  if (typeof record.customName === 'string' && record.customName.trim()) return `${record.customName.trim()} · ${record.id}`;
   return typeof record[field] === 'string' && record[field].trim()
     ? `${inspectionValue(record[field])} · ${record.id}` : record.id;
 }
@@ -1946,7 +1969,9 @@ function propertyInformation(city, property) {
       ['Generated usage', inspectionValue(property.usage)],
       ['Site area', inspectionArea(property.area)],
       ['Plots', inspectionCount(property.plotIds)],
-      ['Buildings', inspectionCount(property.buildingIds)]
+      ['Buildings', inspectionCount(property.buildingIds)],
+      ['Custom name', property.customName || 'Not set'],
+      ['Descriptive use', property.customUse || 'Not set']
     ] }, inspectionLocation(city, property), {
       title: 'Property plots', rows: [['Plot IDs', inspectionReferences(city?.plots, property.plotIds, property.id)]]
     }, {
@@ -1963,7 +1988,9 @@ function buildingInformation(city, building) {
       ['Generated type', inspectionValue(building.type)],
       ['Footprint shape', inspectionValue(building.shape)],
       ['Footprint area', inspectionArea(building.area)],
-      ['Occupied plots', inspectionCount(building.plotIds)]
+      ['Occupied plots', inspectionCount(building.plotIds)],
+      ['Custom name', building.customName || 'Not set'],
+      ['Descriptive use', building.customUse || 'Not set']
     ] }, inspectionLocation(city, building), {
       title: 'Occupied plots', rows: [['Plot IDs', inspectionReferences(city?.plots, building.plotIds, building.propertyId)]]
     }, {
@@ -2100,7 +2127,7 @@ class PropertyWorkspace {
     const information = propertyInformation(this.getCity(), property);
     const buildingSection = information.sections.find(section => section.title === 'Buildings on this property');
     buildingSection.actions = structures.map(building => ({
-      label: `${inspectionValue(building.type)} · ${inspectionValue(building.shape)} · ${building.id}`,
+      label: `${building.customName || inspectionValue(building.type)} · ${inspectionValue(building.shape)} · ${building.id}`,
       selection: { kind: 'building', id: building.id },
       disabled: this.getLayers().buildings === false,
       run: () => this.selectBuilding(property.id, building.id)
@@ -2147,6 +2174,224 @@ class PropertyWorkspace {
       const property = this.propertyForBuilding(building);
       this.shell.select(property ? { kind: 'property', id: property.id } : null, { reveal: false });
     } else this.shell.refresh();
+  }
+}
+
+
+// src/core/identity.js
+const IDENTITY_TEXT_LIMIT = 80;
+const IDENTITY_HISTORY_LIMIT = 20;
+const IDENTITY_USE_PRESETS = Object.freeze(['Residence', 'Inn / Tavern', 'Shop', 'Workshop', 'Guildhall', 'Temple', 'Warehouse']);
+const IDENTITY_FIELDS = ['customName', 'customUse'];
+
+function validateIdentity(record) {
+  for (const field of IDENTITY_FIELDS) if (Object.hasOwn(record, field)) {
+    const value = record[field];
+    if (typeof value !== 'string' || !value.trim() || value.length > IDENTITY_TEXT_LIMIT || /[\u0000-\u001f\u007f]/u.test(value))
+      throw new Error(`${field === 'customName' ? 'Custom name' : 'Descriptive use'} must be text of 1–${IDENTITY_TEXT_LIMIT} characters without control characters.`);
+  }
+}
+function normalizeIdentity(input) {
+  const result = {};
+  for (const field of IDENTITY_FIELDS) {
+    const value = input[field] ?? '';
+    if (typeof value !== 'string' || value.length > IDENTITY_TEXT_LIMIT || /[\u0000-\u001f\u007f]/u.test(value))
+      throw new Error(`${field === 'customName' ? 'Custom name' : 'Descriptive use'} must be at most ${IDENTITY_TEXT_LIMIT} characters without control characters.`);
+    const text = value.trim().replace(/\s+/gu, ' ');
+    if (text) result[field] = text;
+  }
+  return result;
+}
+function identityRecord(city, ref) {
+  const key = ref?.kind === 'property' ? 'properties' : ref?.kind === 'building' ? 'buildings' : null;
+  return key && typeof ref.id === 'string' ? city?.[key]?.find(record => record.id === ref.id) ?? null : null;
+}
+function identitySnapshot(record) {
+  return Object.fromEntries(IDENTITY_FIELDS.filter(field => Object.hasOwn(record, field)).map(field => [field, record[field]]));
+}
+function replaceIdentity(city, ref, identity) {
+  const key = ref.kind === 'property' ? 'properties' : 'buildings';
+  return { ...city, [key]: city[key].map(record => {
+    if (record.id !== ref.id) return record;
+    const next = { ...record };
+    for (const field of IDENTITY_FIELDS) delete next[field];
+    return Object.assign(next, identity);
+  }) };
+}
+function customizedIdentityCounts(city) {
+  const edited = record => Boolean(record.customName || record.customUse);
+  return { properties: (city?.properties ?? []).filter(edited).length, buildings: (city?.buildings ?? []).filter(edited).length };
+}
+class IdentityEditor {
+  constructor() { this.history = []; }
+  apply(city, ref, input) {
+    const record = identityRecord(city, ref);
+    if (!record) throw new Error('The selected property or building is no longer available.');
+    validateIdentity(record);
+    const before = identitySnapshot(record), after = normalizeIdentity(input);
+    if (JSON.stringify(before) === JSON.stringify(after)) return city;
+    const next = replaceIdentity(city, ref, after);
+    this.history.push({ ref: { ...ref }, before, after });
+    if (this.history.length > IDENTITY_HISTORY_LIMIT) this.history.shift();
+    return next;
+  }
+  undo(city) {
+    const entry = this.history.at(-1);
+    if (!entry) throw new Error('There is no identity edit to undo.');
+    const record = identityRecord(city, entry.ref);
+    if (!record || JSON.stringify(identitySnapshot(record)) !== JSON.stringify(entry.after))
+      throw new Error('That identity has changed or is no longer available. Its undo was not applied.');
+    const next = replaceIdentity(city, entry.ref, entry.before);
+    this.history.pop();
+    return next;
+  }
+  reset() { this.history = []; }
+}
+
+
+// src/ui/identity-workspace.js
+
+class IdentityWorkspace {
+  constructor({ getElement, shell, getCity, commit, changed = () => {} }) {
+    Object.assign(this, { $: getElement, shell, getCity, commit, changed });
+    this.editor = new IdentityEditor();
+    this.drafts = new Map();
+    this.mounted = null;
+    this.rebuildAction = null;
+    this.message = '';
+  }
+  key(ref) { return ref ? `${ref.kind}:${ref.id}` : ''; }
+  ref() { return ['property', 'building'].includes(this.shell.state.selection?.kind) ? this.shell.state.selection : null; }
+  fields() {
+    return { customName: this.$('identityNameInput').value,
+      customUse: this.$('identityUseInput').value === 'other' ? this.$('identityOtherUseInput').value : this.$('identityUseInput').value,
+      useChoice: this.$('identityUseInput').value };
+  }
+  pending(draft, record) {
+    try {
+      if (draft.useChoice === 'other' && !draft.customUse.trim()) return true;
+      return JSON.stringify(normalizeIdentity(draft)) !== JSON.stringify(normalizeIdentity(identitySnapshot(record)));
+    } catch { return true; }
+  }
+  stash() {
+    const record = identityRecord(this.getCity(), this.mounted);
+    if (!record) return;
+    const draft = this.fields(), key = this.key(this.mounted);
+    if (this.pending(draft, record)) this.drafts.set(key, draft);
+    else this.drafts.delete(key);
+  }
+  hasPending() {
+    this.stash();
+    for (const [key, draft] of this.drafts) {
+      const split = key.indexOf(':');
+      const record = identityRecord(this.getCity(), { kind: key.slice(0, split), id: key.slice(split + 1) });
+      if (!record || !this.pending(draft, record)) this.drafts.delete(key);
+    }
+    return this.drafts.size > 0;
+  }
+  showMessage(text, error = false) {
+    this.message = text;
+    this.$('identityStatus').textContent = text;
+    this.$('identityStatus').classList.toggle('error', error);
+  }
+  render({ reload = false } = {}) {
+    this.stash();
+    const ref = this.ref(), record = identityRecord(this.getCity(), ref);
+    this.$('identityInspector').hidden = !record;
+    if (!record) { this.mounted = null; return; }
+    if (reload || this.key(ref) !== this.key(this.mounted)) {
+      const draft = this.drafts.get(this.key(ref));
+      const use = draft?.customUse ?? record.customUse ?? '';
+      this.$('identityNameInput').value = draft?.customName ?? record.customName ?? '';
+      this.$('identityUseInput').value = draft?.useChoice ?? (use && !IDENTITY_USE_PRESETS.includes(use) ? 'other' : use);
+      this.$('identityOtherUseInput').value = use && !IDENTITY_USE_PRESETS.includes(use) ? use : '';
+      this.mounted = { ...ref };
+      this.showMessage(draft ? 'Unapplied identity changes.' : 'Changes apply only to this ' + ref.kind + '.');
+    }
+    this.$('identityEditorTitle').textContent = ref.kind === 'property' ? 'Edit property identity' : 'Edit building identity';
+    this.$('identityOtherUseGroup').hidden = this.$('identityUseInput').value !== 'other';
+    this.$('identityUndoButton').disabled = !this.editor.history.length;
+    this.$('identityDraftState').textContent = this.pending(this.fields(), record) ? 'Unapplied changes' : 'Up to date';
+    if (this.rebuildAction) this.updateRebuildWarning();
+  }
+  apply() {
+    try {
+      const ref = this.ref();
+      if (!ref || this.key(ref) !== this.key(this.mounted)) throw new Error('Select the property or building again before applying.');
+      const input = this.fields();
+      if (input.useChoice === 'other' && !input.customUse.trim()) throw new Error('Enter a descriptive use for Other, or choose no override.');
+      const next = this.editor.apply(this.getCity(), ref, input);
+      this.drafts.delete(this.key(ref));
+      this.mounted = null;
+      this.commit(next);
+      this.render({ reload: true });
+      this.showMessage('Identity applied. Generated data and geometry are unchanged.');
+      for (const id of ['identityNameInput', 'identityOtherUseInput']) this.$(id).setAttribute('aria-invalid', 'false');
+      this.changed();
+      return true;
+    } catch (error) {
+      this.showMessage(error.message, true);
+      this.$('identityNameInput').setAttribute('aria-invalid', String(/name/i.test(error.message)));
+      this.$('identityOtherUseInput').setAttribute('aria-invalid', String(/use|Other/i.test(error.message)));
+      return false;
+    }
+  }
+  undo() {
+    try {
+      this.stash();
+      const target = this.editor.history.at(-1)?.ref;
+      const next = this.editor.undo(this.getCity());
+      // Undo affects accepted identity only; preserve independently pending fields.
+      this.mounted = null;
+      this.commit(next);
+      this.render({ reload: true });
+      this.showMessage(`Identity edit undone for ${target.kind} ${target.id}. Other editor histories are unchanged.`);
+      this.changed();
+      return true;
+    } catch (error) { this.showMessage(error.message, true); return false; }
+  }
+  discard() {
+    const ref = this.ref();
+    this.drafts.delete(this.key(ref));
+    this.mounted = null;
+    this.render({ reload: true });
+    this.showMessage('Unapplied identity changes discarded.');
+    this.changed();
+  }
+  updateRebuildWarning() {
+    const counts = customizedIdentityCounts(this.getCity());
+    this.$('identityRebuildMessage').textContent = `Rebuilding replaces customized properties (${counts.properties}) and buildings (${counts.buildings}). Their names and descriptive uses, plus pending identity drafts (${this.drafts.size}), will be discarded. Keep editing to apply drafts and download a project copy before rebuilding.`;
+  }
+  requestRebuild(action) {
+    const counts = customizedIdentityCounts(this.getCity());
+    if (!this.hasPending() && !counts.properties && !counts.buildings) return action();
+    this.rebuildAction = action;
+    this.updateRebuildWarning();
+    this.$('identityRebuildWarning').hidden = false;
+    this.$('identityCancelRebuildButton').focus?.();
+    return false;
+  }
+  reset() {
+    this.editor.reset(); this.drafts.clear(); this.mounted = null; this.rebuildAction = null;
+    this.$('identityRebuildWarning').hidden = true;
+    this.$('identityInspector').hidden = true;
+  }
+  bind() {
+    for (const id of ['identityNameInput', 'identityUseInput', 'identityOtherUseInput'])
+      for (const event of ['input', 'change']) this.$(id).addEventListener(event, () => {
+        this.stash(); this.render(); this.showMessage('Unapplied identity changes. Choose Apply identity to save them.'); this.changed();
+      });
+    this.$('identityApplyButton').addEventListener('click', () => this.apply());
+    this.$('identityDiscardButton').addEventListener('click', () => this.discard());
+    this.$('identityUndoButton').addEventListener('click', () => this.undo());
+    this.$('identityCancelRebuildButton').addEventListener('click', () => {
+      this.rebuildAction = null; this.$('identityRebuildWarning').hidden = true;
+    });
+    this.$('identityConfirmRebuildButton').addEventListener('click', () => {
+      const action = this.rebuildAction;
+      this.rebuildAction = null; this.$('identityRebuildWarning').hidden = true;
+      if (action) action();
+    });
   }
 }
 
@@ -6954,7 +7199,7 @@ const str = (v, fallback = '') => String(v ?? fallback);
 
 function describePendingChanges({
   project, outline, water, terrain, controls = {}, districtEditor,
-  districtControls = {}, defensePreview
+  districtControls = {}, defensePreview, identityPending = false
 }) {
   if (!project?.city) return { city: [], local: [], count: 0, cityPending: false };
   const { city, options } = project, rebuild = [], local = [];
@@ -6977,6 +7222,7 @@ function describePendingChanges({
   } else if (str(districtControls.count, 'auto') !== 'auto') local.push('District generation');
   if (defensePreview?.pending)
     local.push(defensePreview.invalid ? 'Defense settings need correction' : 'Defense update');
+  if (identityPending) local.push('Identity edits — use Apply identity');
   return { city: rebuild, local, count: rebuild.length + local.length, cityPending: Boolean(rebuild.length) };
 }
 
@@ -6992,16 +7238,18 @@ const SCOPE = {
   water: { controlId: 'undoWaterButton', label: 'Undo water', noun: 'water draft edit' },
   terrain: { controlId: 'undoTerrainButton', label: 'Undo mountains', noun: 'mountain draft edit' },
   district: { controlId: 'undoDistrictButton', label: 'Undo district', noun: 'district assignment/edit' },
-  defense: { controlId: 'undoFortificationButton', label: 'Undo defenses', noun: 'defense update' }
+  defense: { controlId: 'undoFortificationButton', label: 'Undo defenses', noun: 'defense update' },
+  identity: { controlId: 'identityUndoButton', label: 'Undo identity', noun: 'property/building identity edit' }
 };
 function describeUndoContext({
-  section = 'city', selection = null, outline, water, terrain, district, defense
+  section = 'city', selection = null, outline, water, terrain, district, defense, identity
 }) {
   const liveMode = terrain && terrain.mode !== 'pan' ? 'terrain'
     : water && water.mode !== 'pan' ? 'water'
     : outline && outline.mode !== 'pan' ? 'outline' : null;
   const kind = liveMode
-    || (section === 'city' ? 'outline'
+    || (identity && ['property', 'building'].includes(selection?.kind) ? 'identity'
+      : section === 'city' ? 'outline'
       : section === 'districts' ? 'district'
       : section === 'defenses' ? 'defense'
       : section === 'landscape' && ['water', 'terrain'].includes(selection?.kind) ? selection.kind
@@ -7010,7 +7258,7 @@ function describeUndoContext({
     kind: null, controlId: null, label: 'Undo', available: false,
     description: 'Select a water or mountain feature, or use the landscape history buttons.'
   };
-  const editor = { outline, water, terrain, district, defense }[kind],
+  const editor = { outline, water, terrain, district, defense, identity }[kind],
     count = editor?.history?.length ?? 0,
     scope = SCOPE[kind];
   return {
@@ -7120,7 +7368,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.3fb';
+const APP_VERSION = '0.1-dev.3fc';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -7224,6 +7472,7 @@ function validateLayout(layout, boundary) {
 
 
 // src/data/project-validation.js
+
 
 
 
@@ -7484,6 +7733,7 @@ function validateStoredProject(project) {
   if (!insideOrOn(project.options.center, boundary)) throw new Error('Town center is outside the city boundary.');
   const maps = {};
   for (const [name, max] of Object.entries(LIMITS)) maps[name] = indexedRecords(requireList(name.startsWith('terrain') ? (city[name] ?? []) : city[name], name, max), name);
+  for (const record of [...city.properties, ...city.buildings]) validateIdentity(record);
   if (!city.nodes.length || !city.roads.length || !city.blocks.length) throw new Error('The city is missing its street plan.');
   for (const n of city.nodes) {
     requirePoint(n, 'Road junction');
@@ -10646,6 +10896,7 @@ class OutlineEditor {
 
 
 
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -10674,6 +10925,7 @@ let workspaceShell;
 let landscapeWorkspace;
 let buildingWorkspace;
 let propertyWorkspace;
+let identityWorkspace;
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -10702,7 +10954,8 @@ function updatePendingFeedback() {
       name: $('districtNameInput').value, color: $('districtColorInput').value,
       target: $('districtTargetInput').value
     },
-    defensePreview: fortificationPanel.syncPreview()
+    defensePreview: fortificationPanel.syncPreview(),
+    identityPending: identityWorkspace?.hasPending() ?? false
   });
   $('workspacePendingCount').textContent = status.count ? status.count + ' pending' : 'Up to date';
   $('workspacePendingCount').classList.toggle('pending', Boolean(status.count));
@@ -10720,7 +10973,8 @@ function currentUndoContext() {
     selection: workspaceShell?.state.selection ?? null,
     outline: editor,
     water: waterPanel?.editor, terrain: terrainPanel?.editor,
-    district: districtPanel?.editor, defense: fortificationPanel?.editor
+    district: districtPanel?.editor, defense: fortificationPanel?.editor,
+    identity: identityWorkspace?.editor
   });
 }
 function updateUndoFeedback() {
@@ -10817,7 +11071,9 @@ function updateDetails() {
     })) $(id).textContent = value;
 }
 
-function generate() {
+function generate({ discardIdentities = false } = {}) {
+  if (!discardIdentities && identityWorkspace)
+    return identityWorkspace.requestRebuild(() => generate({ discardIdentities: true }));
   try {
     editor.validate();
     if (waterPanel?.editor.features.some(f => f.kind === 'river')) waterPanel.editor.width($('riverWidthInput').value);
@@ -10838,6 +11094,7 @@ function generate() {
         seed: $('fortificationSeedInput').value || $('seedInput').value
       }
     });
+    identityWorkspace?.reset();
     propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
     clearMapHover();
@@ -10932,6 +11189,7 @@ $('presetButton').addEventListener('click', loadPreset);
 $('presetInput').addEventListener('change', () => files?.changed());
 $('generateButton').addEventListener('click', generate);
 $('newSeedButton').addEventListener('click', () => {
+  const rebuild = () => {
   const v = new Uint32Array(2);
   if (globalThis.crypto?.getRandomValues) globalThis.crypto.getRandomValues(v);
   else {
@@ -10939,7 +11197,10 @@ $('newSeedButton').addEventListener('click', () => {
     v[1] = Math.random() * 2 ** 32;
   }
   $('seedInput').value = `${v[0].toString(36)}-${v[1].toString(36)}`;
-  generate();
+  generate({ discardIdentities: true });
+  };
+  if (identityWorkspace) identityWorkspace.requestRebuild(rebuild);
+  else rebuild();
 });
 $('fitButton').addEventListener('click', fitMap);
 $('zoomInButton').addEventListener('click', () => {
@@ -11169,6 +11430,7 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
     clearMapHover();
     landscapeWorkspace?.render();
     districtWorkspace?.render();
+    identityWorkspace?.render();
   },
   clearSelection: () => {
     stopWorkspaceTools();
@@ -11221,6 +11483,15 @@ propertyWorkspace = new PropertyWorkspace({
   },
   draw: requestDraw
 });
+identityWorkspace = new IdentityWorkspace({
+  getElement: $, shell: workspaceShell, getCity: () => project?.city,
+  commit: city => {
+    project = { ...project, city };
+    updateDetails(); workspaceShell.refresh(); requestDraw();
+  },
+  changed: workspaceChanged
+});
+identityWorkspace.bind();
 workspaceShell.bind();
 landscapeWorkspace.bind();
 
@@ -11374,6 +11645,7 @@ function applyProjectDocument(document) {
   const next = copyJson(document.project),
     workspace = copyJson(document.workspace),
     draft = workspace.editor;
+  identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
   clearMapHover();

@@ -1,6 +1,6 @@
 # Mappo Milestone 3F — Property and Building Inspector
 
-Status: **3F-A, 3F-Aa and 3F-B complete and verified; current build `0.1-dev.3fb`; 3F-C–D not started**.
+Status: **3F-A through 3F-B verified; 3F-C implemented, verification in progress; 3F-D not started**.
 3F-B verification: 193/193 Node tests, 16/16 browser cases, exact standalone parity. See [information Inspector QA](MILESTONE_3FB_QA.md).
 3F-Aa verification: 185/185 Node tests, 16/16 browser cases, exact standalone parity. See [property-first QA](MILESTONE_3FAA_QA.md).
 3F-A verification: 177/177 Node tests, 16/16 browser cases, exact standalone parity. See [checkpoint QA](MILESTONE_3FA_QA.md).
@@ -57,27 +57,25 @@ Reuse the Phase 7 selection inspector (`src/ui/workspace.js` and `src/ui/workspa
 
 **Checkpoint output:** implementation commits, passing `npm run check`, browser verification, and `dist/mappo-0.1-dev.3fb.html` with root parity. See [3F-B QA](MILESTONE_3FB_QA.md) for the verified results and limits.
 
-## 3F-C — Property identity and optional building customization (scope to review)
+## 3F-C — Property identity and independent building customization
 
-**Goal:** Customize the selected property's identity, with explicit individual-building overrides where useful. Review the exact metadata fields and actions against the new property-first workflow before implementation. The earlier building-specific checklist below is retained as a design input and must be revised during that review; it is not an instruction to silently propagate names between records.
+**Approved:** the user requested continuing 3F-C after reviewing 3F-B. Implementation uses properties as primary sites and independently editable child identities.
 
-- [ ] Add editable **custom name** (including clearing it back to the generated fallback) and **descriptive use** (suggested options: residence, inn/tavern, shop, workshop, guildhall, temple, warehouse, and custom/other).
-- [ ] Keep generated `type` and `shape` read-only. A compound may have separately named wings; do not implicitly rename the property or other wings.
-- [ ] Validate lengths, whitespace, valid use choices/free text, stale building IDs, and malformed imported metadata; reject invalid edits atomically and show local feedback.
-- [ ] Use an explicit Apply/Save action and clear pending-edit feedback; do not silently overwrite accepted metadata as a user types.
-- [ ] Add a small **building-only** undo/restore mechanism (e.g., bounded snapshots), with no interference in the existing outline, water, terrain, districts, or defenses histories.
-- [ ] Preserve the selected building, its geometry, plot assignments, street access, and district on metadata-only commits.
-- [ ] Warn clearly that **full city regeneration can replace individual buildings and their customizations**; never use reused sequential IDs to reattach old metadata to unrelated new footprints.
+- [x] Add optional per-record `customName` and `customUse` strings, 1–80 characters when present; clearing removes the optional field. Trim/collapse whitespace on Apply. Reject control characters, invalid types and oversized values atomically.
+- [x] Expose name, preset descriptive uses and Other free text in the existing Inspector, behind an expandable identity editor. Generated property usage/building type/shape remain read-only. Never implicitly copy identities between a property and its buildings.
+- [x] Use explicit Apply identity and Discard draft actions, per-record session drafts, local validation/pending feedback, and safe text rendering of accepted custom names.
+- [x] Add an independent 20-entry property/building identity history holding metadata-only before/after snapshots. Preserve selected records and unrelated local changes. Route contextual Undo to identity while maintaining active-tool/native-text precedence.
+- [x] Validate optional identity fields at the persistence boundary; accepted metadata round-trips through existing project files/recovery without a city/workspace schema change. History/drafts remain session-only in this checkpoint.
+- [x] Confirm actual identity/draft loss before full generation and new street seed actions. Defer new seed assignment until confirmation, preserve identities/history on cancel or failed generation, and clear history/drafts after accepted project replacement or successful full rebuild. Never transfer identities by reused generated IDs.
+- [x] Verify scope isolation, stale references, no-op edits, bounded history, reset semantics, save/load validation, UI navigation and browser workflows.
 
-**Acceptance:** editing one building changes only its optional descriptive metadata, supports undo, and does not alter any other building or accepted geometry.
-
-**Checkpoint output:** implementation commit(s), passing `npm run check`, and `dist/mappo-0.1-dev.3fc.html` with root parity.
+**Checkpoint output:** commits, passing `npm run check`, browser checks and `dist/mappo-0.1-dev.3fc.html` matching root `index.html`. See [3F-C QA](MILESTONE_3FC_QA.md).
 
 ## 3F-D — Persistence, compatibility, integration, and release candidate
 
 **Goal:** Make property/building inspector selection and the identity edits agreed in 3F-C portable and backward compatible.
 
-- [ ] Persist the optional property/building metadata agreed in 3F-C in the actual project records so `.mappo.json` downloads and browser recovery round-trip the edits.
+- [ ] Harden the 3F-C metadata round-trip with full recovery/compatibility workflows; decide whether to make bounded identity history and pending identity drafts portable, and validate any newly persisted fields.
 - [ ] Persist valid property or building selection in optional `workspace.ui.selection` without making old saved files require new fields. Safely clear selection when its target is missing.
 - [ ] Keep city project schema **9** and workspace schema **1** unless a contract-breaking issue is demonstrated and explicitly reviewed.
 - [ ] Validate incoming metadata at the persistence boundary; preserve unknown compatible fields and exact accepted geometry during load/recovery. Confirm historical schema migrations still load.

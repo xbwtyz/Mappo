@@ -105,7 +105,11 @@
         </section>
       </div>
       <div class="workspace-apply">
-        <button id="generateButton" class="button-primary">↻ Rebuild city</button>
+        <section id="identityRebuildWarning" class="identity-rebuild-warning" hidden aria-label="Confirm identity loss">
+          <p id="identityRebuildMessage" role="status"></p>
+          <button id="identityConfirmRebuildButton" class="tool-button full-width">Rebuild and discard identities</button>
+          <button id="identityCancelRebuildButton" class="minor-button full-width">Keep editing</button>
+        </section><button id="generateButton" class="button-primary">↻ Rebuild city</button>
         <p id="workspacePendingDetails" class="workspace-pending-details" role="status" aria-live="polite">No unapplied city or local changes.</p>
         <details id="workspaceRebuildGuide" class="workspace-rebuild-guide"><summary>What rebuilding changes</summary><p id="workspaceRebuildImpact"></p></details>
         <p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p>
@@ -137,7 +141,17 @@
       <div class="sidebar-heading workspace-panel-heading"><span>INSPECTOR</span><div class="workspace-panel-actions"><button id="workspacePinInspector" class="workspace-pin-button" aria-label="Pin inspector open" aria-pressed="false">Pin</button><button id="workspaceCloseInspector" class="workspace-icon-button" aria-label="Collapse inspector" title="Collapse inspector">›</button></div></div>
       <div id="workspaceInspectorScroll" class="sidebar-content">
         <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a landscape feature or city block, or use Add feature in Landscape. Pin this panel to keep the city report available.</p></div>
-        <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+        <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><details id="identityInspector" class="identity-inspector" hidden>
+          <summary id="identityEditorTitle">Property identity</summary>
+          <p class="hint">Name and use apply only to this selected record. Blank fields restore its generated label. Undo identity keeps the last 20 applied edits in this session.</p>
+          <div class="control-group"><label for="identityNameInput">Custom name</label><input id="identityNameInput" maxlength="80" placeholder="Use generated label" autocomplete="off"></div>
+          <div class="control-group"><label for="identityUseInput">Descriptive use</label><select id="identityUseInput"><option value="">No override</option><option>Residence</option><option>Inn / Tavern</option><option>Shop</option><option>Workshop</option><option>Guildhall</option><option>Temple</option><option>Warehouse</option><option value="other">Other…</option></select></div>
+          <div id="identityOtherUseGroup" class="control-group" hidden><label for="identityOtherUseInput">Other descriptive use</label><input id="identityOtherUseInput" maxlength="80" placeholder="Describe this place" autocomplete="off"></div>
+          <p id="identityDraftState" class="hint">Up to date</p>
+          <button id="identityApplyButton" class="tool-button full-width">Apply identity</button>
+          <div class="tool-grid actions"><button id="identityDiscardButton" class="minor-button">Discard draft</button><button id="identityUndoButton" class="minor-button" disabled>Undo identity</button></div>
+          <p id="identityStatus" class="file-status" role="status" aria-live="polite"></p>
+        </details><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
         <div id="districtInspectorControls" class="district-inspector-controls" hidden>
           <p id="districtStats" class="hint"></p>
           <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>

@@ -194,13 +194,81 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(saved.project.schemaVersion, 9);
       assert.equal(saved.workspace.schemaVersion, 1);
       assert.equal(saved.workspace.ui.selection, null, 'Session-only 3F-Aa selection does not break saving');
+      // 3F-C: native identity editing, scoped undo and portable metadata.
+      if (await page.locator('#identityInspector').getAttribute('open') === null)
+        await page.locator('#identityEditorTitle').click();
+      const histories = await page.evaluate(() => {
+        const s = __buildingQA.state();
+        return [s.editor, s.waterPanel.editor, s.terrainPanel.editor, s.districtPanel.editor, s.fortificationPanel.editor].map(e => e.history.length);
+      });
+      await page.locator('#identityNameInput').fill('The Silver Stag');
+      await page.locator('#identityUseInput').selectOption('Inn / Tavern');
+      assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.find(p => p.id === id).customName, id), undefined);
+      assert.match(await page.locator('#identityDraftState').innerText(), /Unapplied/);
+      await page.locator('#identityApplyButton').click();
+      assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes('The Silver Stag'));
+      await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).click();
+      assert.equal(await page.locator('#identityNameInput').inputValue(), '');
+      await page.locator('#identityNameInput').fill('West Wing');
+      await page.locator('#identityUseInput').selectOption('other');
+      await page.locator('#identityOtherUseInput').fill('Apothecary');
+      await page.locator('#identityApplyButton').click();
+      assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes('West Wing'));
+      await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
+      await page.locator('#identityNameInput').fill('Pending property name');
+      await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).click();
+      assert.equal(await page.locator('#identityNameInput').inputValue(), 'West Wing');
+      await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
+      assert.equal(await page.locator('#identityNameInput').inputValue(), 'Pending property name');
+      await page.locator('#identityDiscardButton').click();
+      assert.equal(await page.locator('#identityNameInput').inputValue(), 'The Silver Stag');
+      await page.locator('#identityUndoButton').click();
+      assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id).customName, buildingId), undefined);
+      await page.locator('#workspaceUndoButton').click();
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry, 'Undo restores the exact city without touching geometry');
+      assert.deepEqual(await page.evaluate(() => {
+        const s = __buildingQA.state();
+        return [s.editor, s.waterPanel.editor, s.terrainPanel.editor, s.districtPanel.editor, s.fortificationPanel.editor].map(e => e.history.length);
+      }), histories);
+      await page.locator('#identityNameInput').fill('The Silver Stag');
+      await page.locator('#identityUseInput').selectOption('Inn / Tavern');
+      await page.locator('#identityApplyButton').click();
+      const identityDocument = await page.evaluate(() => __buildingQA.state().files.captureDocument());
+      assert.equal(identityDocument.project.city.properties.find(p => p.id === id).customName, 'The Silver Stag');
+      assert.equal(identityDocument.project.city.properties.find(p => p.id === id).customUse, 'Inn / Tavern');
+      const invalid = structuredClone(identityDocument);
+      invalid.project.city.properties.find(p => p.id === id).customName = 42;
+      await page.locator('#projectFileInput').setInputFiles({ name: 'invalid-identity.mappo.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(invalid)) });
+      await page.waitForFunction(() => document.querySelector('#fileStatus').textContent.includes('Custom name'));
+      assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.find(p => p.id === id).customName, id), 'The Silver Stag');
+      await page.locator('#projectMenuClose').click();
+      await page.locator('#projectFileInput').setInputFiles({ name: 'identity.mappo.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(identityDocument)) });
+      await page.locator('#loadPreview').waitFor({ state: 'visible' });
+      await page.locator('#openProjectButton').click();
+      await page.waitForFunction(() => document.querySelector('#fileStatus').textContent.startsWith('Opened '));
+      await page.locator('#projectMenuClose').click();
+      assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.find(p => p.id === id).customName, id), 'The Silver Stag');
+      assert.equal(await page.evaluate(() => __buildingQA.state().identityWorkspace.editor.history.length), 0);
+      p = await target();
+      await page.mouse.click(p.x, p.y);
+      if (await page.locator('#identityInspector').getAttribute('open') === null)
+        await page.locator('#identityEditorTitle').click();
+      assert.equal(await page.locator('#identityNameInput').inputValue(), 'The Silver Stag');
+      await page.screenshot({ path: new URL(`${label}-identity.png`, output).pathname });
       if (await page.locator('#workspaceInspector').isVisible()) await page.locator('#workspaceCloseInspector').click();
       if (viewport.width <= 670) await page.locator('#workspaceOpenTools').click();
       await page.locator('#generateButton').click();
+      assert.equal(await page.locator('#identityRebuildWarning').isVisible(), true);
+      await page.locator('#identityCancelRebuildButton').click();
+      assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.find(p => p.id === id).customName, id), 'The Silver Stag');
+      await page.locator('#generateButton').click();
+      await page.locator('#identityConfirmRebuildButton').click();
+      assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.find(p => p.id === id).customName, id), undefined);
+
       assert.equal(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), null);
       assert.ok(await page.evaluate(id => __buildingQA.state().project.city.properties.some(p => p.id === id), id));
       assert.equal(errors.length, 0, errors.join('; '));
-      console.log(`PASS property ${label}: property/child facts, courtyard, keyboard navigation, local updates, layers, save safety, regeneration`);
+      console.log(`PASS property ${label}: identity apply/drafts/undo, property/child facts, import validation, save/load, rebuild confirmation`);
     } catch (error) {
       failures.push(`${label}: ${error.message}`);
       await page.screenshot({ path: new URL(`${label}-failure.png`, output).pathname });

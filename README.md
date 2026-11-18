@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Milestone 3F-B: 0.1-dev.3fb — property and building information
+## Milestone 3F-C: 0.1-dev.3fc — property and building identity
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3fb.html`](dist/mappo-0.1-dev.3fb.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3fc.html`](dist/mappo-0.1-dev.3fc.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### UI overhaul complete; Building Inspector in development
 
@@ -30,7 +30,7 @@ In **Select / Pan**, a roof, yard or courtyard selects its **property**. Hover p
 
 Properties are selectable whenever **Buildings**, **Properties**, or **Plots** is visible. The selection overlay reveals the property boundary even when its ordinary outline layer is off. Hiding roofs disables the individual building choices; if a child was selected and another development layer remains visible, selection returns to its property. Hide all three development layers to select underlying district blocks across their full area. Landscape hit priority and drawing-tool ownership are preserved. Dragging still pans.
 
-Selection remains read-only and session-only. Downloads and browser recovery retain exact accepted geometry and all existing metadata, but reopen without a property/building selected. A successful full rebuild or project replacement clears both kinds of selection, including reused IDs. 3F-B adds read-only property and building facts; 3F-C adds identity customization; 3F-D adds portable selection. See [MILESTONE_3F_PLAN.md](MILESTONE_3F_PLAN.md), [MILESTONE_3FAA_PLAN.md](MILESTONE_3FAA_PLAN.md), and [MILESTONE_3FAA_QA.md](MILESTONE_3FAA_QA.md). The prior [3F-A build](dist/mappo-0.1-dev.3fa.html) remains available.
+Map selection remains session-only; 3F-C adds explicit identity editing. Downloads and browser recovery retain exact accepted geometry and all existing metadata, but reopen without a property/building selected. A successful full rebuild or project replacement clears both kinds of selection, including reused IDs. 3F-B adds read-only property and building facts; 3F-C adds identity customization; 3F-D adds portable selection. See [MILESTONE_3F_PLAN.md](MILESTONE_3F_PLAN.md), [MILESTONE_3FAA_PLAN.md](MILESTONE_3FAA_PLAN.md), and [MILESTONE_3FAA_QA.md](MILESTONE_3FAA_QA.md). The prior [3F-A build](dist/mappo-0.1-dev.3fa.html) remains available.
 
 ### Read-only property and building facts (3F-B)
 
@@ -38,7 +38,19 @@ Both Inspectors now show readable generated labels alongside stable IDs. Propert
 
 Areas use square survey units. Street names appear only where the record actually has a name; IDs and the generated street category remain available. Unassigned districts and unavailable links have explicit fallback text, with missing reference IDs retained for context. No values are invented or written back to accepted records. Property generated usage and building generated type remain separate from later custom descriptive uses.
 
-Local district rebuild/undo refreshes the selected property's or building's context while retaining that valid selection. Deliberately selecting a district still opens its Inspector. Building buttons, parent return navigation, layer visibility, drawing tools and scoped histories retain the 3F-Aa behavior. Inspection remains read-only and session-only: names/uses become editable in 3F-C, and portable property/building selection is 3F-D. See [MILESTONE_3FB_QA.md](MILESTONE_3FB_QA.md). Previous [3F-Aa](dist/mappo-0.1-dev.3faa.html) and [3F-A](dist/mappo-0.1-dev.3fa.html) builds remain available.
+Local district rebuild/undo refreshes the selected property's or building's context while retaining that valid selection. Deliberately selecting a district still opens its Inspector. Building buttons, parent return navigation, layer visibility, drawing tools and scoped histories retain the 3F-Aa behavior. Generated facts remain read-only. Names and descriptive uses are editable in 3F-C; portable property/building selection is 3F-D. See [MILESTONE_3FB_QA.md](MILESTONE_3FB_QA.md). Previous [3F-Aa](dist/mappo-0.1-dev.3faa.html) and [3F-A](dist/mappo-0.1-dev.3fa.html) builds remain available.
+
+### Names and descriptive uses (3F-C)
+
+Select a property or a building, then expand **Edit property identity** or **Edit building identity** in the Inspector. Enter a custom name and choose a descriptive use, or choose **Other** and enter your own description. Each field allows up to 80 characters. **Apply identity** commits both fields together. Blank values remove the override and restore the generated label. Pending changes remain separate from accepted data; **Discard draft** restores the accepted identity. Switching records retains each record's unapplied draft for this session.
+
+Property and building identities are independent. Naming a property does not rename its buildings; a compound wing can have its own name/use. Custom names appear in Inspector headings and building choices. Generated property usage, building type, shape, area, references and geometry remain unchanged. Descriptive uses do not instruct generation or simulate occupations.
+
+**Undo identity** restores the last applied property/building identity edit, up to 20 edits in the current session, without restoring old geometry or district membership. The map Undo/Ctrl+Z routes to identity history while a property/building is selected; active geometry tools and native input text undo retain precedence. Existing water, terrain, outline, district and defense histories remain independent.
+
+Applied identities are optional `customName` and `customUse` strings on the actual accepted record. Downloads and browser recovery retain them, and malformed imported identity fields are rejected before opening the project. No schema migration is needed: city schema 9 and workspace schema 1 remain unchanged. Identity undo history and unapplied form drafts are session-only in 3F-C; portable selection and further integration remain 3F-D.
+
+Full city generation can replace properties/buildings, including reusing their sequential IDs. If applied identities or pending identity drafts exist, an inline warning requires **Rebuild and discard identities** or **Keep editing** before the rebuild proceeds. **New street seed** defers changing its seed until confirmed. Canceling preserves the accepted city; a failed rebuild preserves identities/history. A successful full rebuild clears identities and identity history, with no automatic reattachment to reused IDs. Local district and defense updates retain identities. See [MILESTONE_3FC_QA.md](MILESTONE_3FC_QA.md).
 
 ### Workflow
 

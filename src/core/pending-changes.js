@@ -4,7 +4,7 @@ const str = (v, fallback = '') => String(v ?? fallback);
 
 export function describePendingChanges({
   project, outline, water, terrain, controls = {}, districtEditor,
-  districtControls = {}, defensePreview
+  districtControls = {}, defensePreview, identityPending = false
 }) {
   if (!project?.city) return { city: [], local: [], count: 0, cityPending: false };
   const { city, options } = project, rebuild = [], local = [];
@@ -27,6 +27,7 @@ export function describePendingChanges({
   } else if (str(districtControls.count, 'auto') !== 'auto') local.push('District generation');
   if (defensePreview?.pending)
     local.push(defensePreview.invalid ? 'Defense settings need correction' : 'Defense update');
+  if (identityPending) local.push('Identity edits — use Apply identity');
   return { city: rebuild, local, count: rebuild.length + local.length, cityPending: Boolean(rebuild.length) };
 }
 

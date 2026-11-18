@@ -3,6 +3,7 @@ import {
 } from './ui/landscape.js';
 import { BuildingWorkspace } from './ui/building-workspace.js';
 import { PropertyWorkspace } from './ui/property-workspace.js';
+import { IdentityWorkspace } from './ui/identity-workspace.js';
 import {
   WorkspaceShell
 } from './ui/workspace.js';
@@ -106,6 +107,7 @@ let workspaceShell;
 let landscapeWorkspace;
 let buildingWorkspace;
 let propertyWorkspace;
+let identityWorkspace;
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -134,7 +136,8 @@ function updatePendingFeedback() {
       name: $('districtNameInput').value, color: $('districtColorInput').value,
       target: $('districtTargetInput').value
     },
-    defensePreview: fortificationPanel.syncPreview()
+    defensePreview: fortificationPanel.syncPreview(),
+    identityPending: identityWorkspace?.hasPending() ?? false
   });
   $('workspacePendingCount').textContent = status.count ? status.count + ' pending' : 'Up to date';
   $('workspacePendingCount').classList.toggle('pending', Boolean(status.count));
@@ -152,7 +155,8 @@ function currentUndoContext() {
     selection: workspaceShell?.state.selection ?? null,
     outline: editor,
     water: waterPanel?.editor, terrain: terrainPanel?.editor,
-    district: districtPanel?.editor, defense: fortificationPanel?.editor
+    district: districtPanel?.editor, defense: fortificationPanel?.editor,
+    identity: identityWorkspace?.editor
   });
 }
 function updateUndoFeedback() {
@@ -249,7 +253,9 @@ function updateDetails() {
     })) $(id).textContent = value;
 }
 
-function generate() {
+function generate({ discardIdentities = false } = {}) {
+  if (!discardIdentities && identityWorkspace)
+    return identityWorkspace.requestRebuild(() => generate({ discardIdentities: true }));
   try {
     editor.validate();
     if (waterPanel?.editor.features.some(f => f.kind === 'river')) waterPanel.editor.width($('riverWidthInput').value);
@@ -270,6 +276,7 @@ function generate() {
         seed: $('fortificationSeedInput').value || $('seedInput').value
       }
     });
+    identityWorkspace?.reset();
     propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
     clearMapHover();
@@ -364,6 +371,7 @@ $('presetButton').addEventListener('click', loadPreset);
 $('presetInput').addEventListener('change', () => files?.changed());
 $('generateButton').addEventListener('click', generate);
 $('newSeedButton').addEventListener('click', () => {
+  const rebuild = () => {
   const v = new Uint32Array(2);
   if (globalThis.crypto?.getRandomValues) globalThis.crypto.getRandomValues(v);
   else {
@@ -371,7 +379,10 @@ $('newSeedButton').addEventListener('click', () => {
     v[1] = Math.random() * 2 ** 32;
   }
   $('seedInput').value = `${v[0].toString(36)}-${v[1].toString(36)}`;
-  generate();
+  generate({ discardIdentities: true });
+  };
+  if (identityWorkspace) identityWorkspace.requestRebuild(rebuild);
+  else rebuild();
 });
 $('fitButton').addEventListener('click', fitMap);
 $('zoomInButton').addEventListener('click', () => {
@@ -601,6 +612,7 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
     clearMapHover();
     landscapeWorkspace?.render();
     districtWorkspace?.render();
+    identityWorkspace?.render();
   },
   clearSelection: () => {
     stopWorkspaceTools();
@@ -653,6 +665,15 @@ propertyWorkspace = new PropertyWorkspace({
   },
   draw: requestDraw
 });
+identityWorkspace = new IdentityWorkspace({
+  getElement: $, shell: workspaceShell, getCity: () => project?.city,
+  commit: city => {
+    project = { ...project, city };
+    updateDetails(); workspaceShell.refresh(); requestDraw();
+  },
+  changed: workspaceChanged
+});
+identityWorkspace.bind();
 workspaceShell.bind();
 landscapeWorkspace.bind();
 
@@ -806,6 +827,7 @@ function applyProjectDocument(document) {
   const next = copyJson(document.project),
     workspace = copyJson(document.workspace),
     draft = workspace.editor;
+  identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
   clearMapHover();

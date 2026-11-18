@@ -1,6 +1,7 @@
 import {
   TERRAIN_LIMIT
 } from '../core/terrain-geometry.js';
+import { validateIdentity } from '../core/identity.js';
 import {
   validateWorkspacePresentation
 } from '../core/workspace-presentation.js';
@@ -300,6 +301,7 @@ export function validateStoredProject(project) {
   if (!insideOrOn(project.options.center, boundary)) throw new Error('Town center is outside the city boundary.');
   const maps = {};
   for (const [name, max] of Object.entries(LIMITS)) maps[name] = indexedRecords(requireList(name.startsWith('terrain') ? (city[name] ?? []) : city[name], name, max), name);
+  for (const record of [...city.properties, ...city.buildings]) validateIdentity(record);
   if (!city.nodes.length || !city.roads.length || !city.blocks.length) throw new Error('The city is missing its street plan.');
   for (const n of city.nodes) {
     requirePoint(n, 'Road junction');

@@ -12,6 +12,7 @@ export function inspectionValue(value, fallback = 'Not recorded') {
 }
 
 export function inspectionTitle(record, field) {
+  if (typeof record.customName === 'string' && record.customName.trim()) return `${record.customName.trim()} · ${record.id}`;
   return typeof record[field] === 'string' && record[field].trim()
     ? `${inspectionValue(record[field])} · ${record.id}` : record.id;
 }
@@ -66,7 +67,9 @@ export function propertyInformation(city, property) {
       ['Generated usage', inspectionValue(property.usage)],
       ['Site area', inspectionArea(property.area)],
       ['Plots', inspectionCount(property.plotIds)],
-      ['Buildings', inspectionCount(property.buildingIds)]
+      ['Buildings', inspectionCount(property.buildingIds)],
+      ['Custom name', property.customName || 'Not set'],
+      ['Descriptive use', property.customUse || 'Not set']
     ] }, inspectionLocation(city, property), {
       title: 'Property plots', rows: [['Plot IDs', inspectionReferences(city?.plots, property.plotIds, property.id)]]
     }, {
@@ -83,7 +86,9 @@ export function buildingInformation(city, building) {
       ['Generated type', inspectionValue(building.type)],
       ['Footprint shape', inspectionValue(building.shape)],
       ['Footprint area', inspectionArea(building.area)],
-      ['Occupied plots', inspectionCount(building.plotIds)]
+      ['Occupied plots', inspectionCount(building.plotIds)],
+      ['Custom name', building.customName || 'Not set'],
+      ['Descriptive use', building.customUse || 'Not set']
     ] }, inspectionLocation(city, building), {
       title: 'Occupied plots', rows: [['Plot IDs', inspectionReferences(city?.plots, building.plotIds, building.propertyId)]]
     }, {

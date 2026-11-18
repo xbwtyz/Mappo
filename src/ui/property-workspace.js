@@ -23,7 +23,7 @@ export class PropertyWorkspace {
     const information = propertyInformation(this.getCity(), property);
     const buildingSection = information.sections.find(section => section.title === 'Buildings on this property');
     buildingSection.actions = structures.map(building => ({
-      label: `${inspectionValue(building.type)} · ${inspectionValue(building.shape)} · ${building.id}`,
+      label: `${building.customName || inspectionValue(building.type)} · ${inspectionValue(building.shape)} · ${building.id}`,
       selection: { kind: 'building', id: building.id },
       disabled: this.getLayers().buildings === false,
       run: () => this.selectBuilding(property.id, building.id)

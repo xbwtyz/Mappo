@@ -2,6 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { describeUndoContext } from '../src/core/undo-context.js';
 const h = n => ({ mode: 'pan', history: Array(n).fill({}) });
+test('property/building inspection routes identity undo while active geometry tools retain precedence', () => {
+  const state = { section: 'districts', selection: { kind: 'property', id: 'P' }, identity: h(2), outline: h(3), district: h(4) };
+  assert.equal(describeUndoContext(state).controlId, 'identityUndoButton');
+  state.selection = { kind: 'building', id: 'B' };
+  assert.equal(describeUndoContext(state).available, true);
+  state.outline.mode = 'edit';
+  assert.equal(describeUndoContext(state).kind, 'outline');
+  state.outline.mode = 'pan'; state.selection = { kind: 'district', id: 'D' };
+  assert.equal(describeUndoContext(state).kind, 'district');
+});
 test('undo follows active editing tool, then current workspace section', () => {
   const state = {
     section: 'districts', selection: { kind: 'district', id: 'D1' },
