@@ -59,7 +59,7 @@
           <ul id="landscapeFeatureList" class="landscape-feature-list" aria-label="Landscape features"></ul>
           <p id="landscapeEmpty" class="hint">Add a river, coastline, lake or mountain range.</p>
           <p class="hint">Select a feature here or click it on the map. Its editing controls open in the inspector.</p>
-          <details id="landscapeHelpSettings" class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a roof to inspect a building, or open ground in a city block to inspect its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
+          <details id="landscapeHelpSettings" class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a roof, yard or courtyard to inspect its property. Choose an individual building in the Property Inspector. Open ground outside properties selects its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
           <div id="landscapeHistoryTools" class="landscape-history-tools"><p class="hint">Draft histories</p><div class="tool-grid"><button id="landscapeUndoWater" class="minor-button">Undo water</button><button id="landscapeUndoTerrain" class="minor-button">Undo mountains</button></div></div>
         </section>
         <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>
@@ -124,7 +124,7 @@
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div class="map-controls workspace-map-controls" role="group" aria-label="Map navigation">
-          <button id="panButton" title="Click a building, landscape feature or open block to inspect; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
+          <button id="panButton" title="Click a property, landscape feature or open block to inspect; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
           <button id="workspaceUndoButton" class="workspace-context-undo" title="No outline edit to undo" disabled>Undo outline</button>
           <button id="fitButton" title="Fit outline (0)" aria-label="Fit outline">Fit</button>
           <div class="workspace-zoom-controls"><button id="zoomInButton" title="Zoom in (+)" aria-label="Zoom in">+</button><button id="zoomOutButton" title="Zoom out (-)" aria-label="Zoom out">−</button></div>
@@ -143,7 +143,7 @@
           <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>
           <button id="applyDistrictButton" class="tool-button full-width" disabled>Apply district changes</button>
           <div class="sidebar-rule"></div>
-          <p id="selectedDistrictBlock" class="hint">Click open ground in a city block in Select / Pan to change its district.</p>
+          <p id="selectedDistrictBlock" class="hint">Click open ground outside properties in Select / Pan to change its district. Hide Buildings, Properties and Plots to target entire blocks.</p>
           <div class="control-group"><label for="districtTargetInput">Receiving neighborhood</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select></div>
           <button id="moveDistrictButton" class="minor-button full-width" disabled>Move selected block</button>
           <p class="hint">Blocks can move only to an adjacent district. Neither neighborhood may become empty or disconnected.</p>

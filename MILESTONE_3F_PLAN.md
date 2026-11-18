@@ -1,6 +1,6 @@
-# Mappo Milestone 3F — Building Inspector
+# Mappo Milestone 3F — Property and Building Inspector
 
-Status: **3F-A complete and verified (`0.1-dev.3fa`); 3F-B–D not started**.
+Status: **3F-A verified; 3F-Aa property-first selection implemented, verification in progress; 3F-B–D not started**.
 3F-A verification: 177/177 Node tests, 16/16 browser cases, exact standalone parity. See [checkpoint QA](MILESTONE_3FA_QA.md).
 Branch: `feature/building-inspector-3f`, branched from `main` after the Phase 7 UI overhaul merge (`40e64fb`).
 Baseline: `0.1-dev.ui7d`; accepted city project schema **9** and optional workspace UI schema **1**.
@@ -8,17 +8,17 @@ Owner approval: implement the four ordered checkpoints below, using incremental 
 
 ## Purpose and constraints
 
-Let a user click an individual generated building, inspect its existing attributes, and optionally give it a custom name and descriptive use, **without altering its footprint or silently regenerating the city**.
+Use properties as the primary map selection and buildings as individually selectable children in the Inspector. Inspect existing attributes and later customize identity **without altering geometry or silently regenerating the city**. The user approved the property-first adjustment as **3F-Aa**, before 3F-B. See [the adjustment plan](MILESTONE_3FAA_PLAN.md).
 
 Reuse the Phase 7 selection inspector (`src/ui/workspace.js` and `src/ui/workspace-inspectors.js`). Building records already have stable IDs within an accepted city (`BLD-...`), and contain `blockId`, `propertyId`, `plotIds`, `frontageRoadId`, `type`, `shape`, `footprint`, `holes`, `area`, `entrance`, `orientation`, and `roofTone`. The renderer already draws actual footprints and courtyard holes (`src/renderer/buildings.js`).
 
 ### Architectural rules
 
-1. Separate **view selection** from **building metadata edits**. No generator or geometry coupling is needed to open an inspector.
+1. Separate **view selection** from **property/building metadata edits**. No generator or geometry coupling is needed to open an inspector.
 2. Preserve generated `type`, `shape`, footprint, holes, property/plot references, roof information, and existing property `usage`. User-selected use is descriptive metadata, not a generator instruction.
-3. Prefer optional, bounded, validated **per-building** fields for `customName` and `customUse` on the accepted record. Keep project schema 9 if this remains a backward-compatible addition; write a migration only if an actual data-contract change makes one necessary. Decide exact field representation during 3F-C and document it.
-4. IDs are only stable **within the accepted city**. A full rebuild may reuse `BLD-...` IDs for different structures. Do not transplant manual names/uses by matching generated ID after a rebuild. Make potential loss of customizations explicit before a full regeneration; local district and defense updates should retain them.
-5. Respect active tool ownership: drawing/geometry tools keep precedence and their original independent undo histories. In Select/Pan, preserve landscape hit priority, then choose a visible building before the underlying district/block; dragging remains pan, not a click selection. Hidden building layers must not produce invisible building hits.
+3. Plan optional, bounded, validated identity fields on the **property** as the primary customizable site, with explicit per-building identity where needed. Do not duplicate or propagate names implicitly between a property and its structures. No identity fields are added in 3F-Aa; decide exact field representation and customization scope during 3F-C. Keep project schema 9 if this remains a backward-compatible addition; write a migration only if an actual data-contract change makes one necessary. Document the reviewed representation in 3F-C.
+4. Property and building IDs are only stable **within the accepted city**. A full rebuild may reuse `PROP-...` and `BLD-...` IDs for different sites/structures. Do not transplant manual names/uses by matching generated ID after a rebuild. Make potential loss of customizations explicit before a full regeneration; local district and defense updates should retain them.
+5. Respect active tool ownership: drawing/geometry tools keep precedence and their original independent undo histories. In Select/Pan, preserve landscape hit priority, then property selection before district/block; select individual buildings through the Property Inspector. Dragging remains pan. Properties require at least one visible development layer (buildings/properties/plots); hidden roofs cannot be selected as individual buildings.
 6. Maintain a modular source + deterministic single-file offline HTML distribution, with no additional runtime dependencies. Preserve existing keyboard, mobile drawer, and accessibility behavior.
 
 ## 3F-A — Building selection and visual identity
@@ -36,24 +36,28 @@ Reuse the Phase 7 selection inspector (`src/ui/workspace.js` and `src/ui/workspa
 
 **Checkpoint output:** implementation commit(s), passing `npm run check`, and `dist/mappo-0.1-dev.3fa.html` matching root `index.html` exactly.
 
-## 3F-B — Read-only building information
+## 3F-Aa — Property-first selection and child building navigation
 
-**Goal:** Show meaningful existing information in the same selection inspector; no invented simulation data.
+**Approved adjustment:** implemented after 3F-A and before 3F-B. Map clicks on roofs, yards and courtyards select their property. The property boundary is highlighted and its Inspector lists the individually selectable buildings; a building view includes Back to property and a dashed parent boundary. Selection remains session-only; no geometry, generation, metadata or schema contract changes.
 
-- [ ] Render display label/fallback ID, generated `type` and `shape`, footprint area, related district (if assigned), block, property, occupied plot count/IDs, and frontage road.
-- [ ] Resolve linked records safely; give human-readable fallbacks for missing optional context and never mistake property usage for a custom building use.
-- [ ] Support courtyard, row, compound wings, and multi-plot buildings without losing unique identities.
-- [ ] Update inspector on selection and relevant non-geometric district edits, avoiding stale summaries.
-- [ ] Keep UI readable in desktop, ultrawide, tablet, and narrow layouts; use textContent/safe DOM construction.
-- [ ] Test references, multiple wings of one property, optional district membership, and null/missing-selection transitions.
+**Checkpoint output:** commits, regression and browser checks, and `dist/mappo-0.1-dev.3faa.html` matching root `index.html`. See [scope](MILESTONE_3FAA_PLAN.md) and [QA](MILESTONE_3FAA_QA.md).
 
-**Acceptance:** each selected building displays accurate, stable facts from the accepted city, with no changes to its model.
+## 3F-B — Read-only property and building information
 
-**Checkpoint output:** implementation commit(s), passing `npm run check`, and `dist/mappo-0.1-dev.3fb.html` with root parity.
+**Goal:** Expand the property-first Inspector with accurate existing facts, retaining child building inspection.
 
-## 3F-C — Building name and descriptive use customization
+- [ ] Property view: readable label/fallback ID, generated usage, site area, district, block, constituent plot IDs/count, frontage road, and linked building count/IDs.
+- [ ] Building view: readable label/fallback ID, generated type/shape, footprint area excluding courtyard holes, occupied plot IDs/count, parent property, district/block and frontage road.
+- [ ] Resolve links safely with human-readable missing-context fallbacks; keep property usage separate from individual generated building type and any later custom use.
+- [ ] Support courtyard, row, compound wings and multi-plot sites, retaining individual identities and parent return navigation.
+- [ ] Refresh facts after relevant local changes without losing a valid property/building selection or regenerating accepted geometry.
+- [ ] Keep both views readable and safe in desktop, ultrawide, tablet and phone layouts; test shared properties, missing context and selection transitions.
 
-**Goal:** Customize a building's identity without editing shape, placement, roads, or district structure.
+**Checkpoint output:** implementation commits, passing `npm run check`, browser verification, and `dist/mappo-0.1-dev.3fb.html` with root parity. 3F-B is not implemented by the 3F-Aa adjustment.
+
+## 3F-C — Property identity and optional building customization (scope to review)
+
+**Goal:** Customize the selected property's identity, with explicit individual-building overrides where useful. Review the exact metadata fields and actions against the new property-first workflow before implementation. The earlier building-specific checklist below is retained as a design input and must be revised during that review; it is not an instruction to silently propagate names between records.
 
 - [ ] Add editable **custom name** (including clearing it back to the generated fallback) and **descriptive use** (suggested options: residence, inn/tavern, shop, workshop, guildhall, temple, warehouse, and custom/other).
 - [ ] Keep generated `type` and `shape` read-only. A compound may have separately named wings; do not implicitly rename the property or other wings.
@@ -94,7 +98,7 @@ Reuse the Phase 7 selection inspector (`src/ui/workspace.js` and `src/ui/workspa
 
 ## Release discipline
 
-1. Build **3F-A → 3F-B → 3F-C → 3F-D** sequentially on this branch. At each checkpoint, run tests, record what was actually verified, commit source/tests/docs, and build a **compiled standalone HTML file**.
+1. Build **3F-A → 3F-Aa → 3F-B → 3F-C → 3F-D** sequentially on this branch. At each checkpoint, run tests, record what was actually verified, commit source/tests/docs, and build a **compiled standalone HTML file**.
 2. Preserve previous checkpoint distributions where practical; root `index.html` must always match the latest checkpoint output byte-for-byte.
 3. Test both saved files and browser recovery, including older projects; explain remaining unsupported manual or touch checks rather than claiming unperformed coverage.
 4. Do not merge, tag, or deploy until user approval. After 3F-D, propose a PR for review and keep 3G/3H separate.

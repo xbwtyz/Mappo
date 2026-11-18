@@ -35,7 +35,7 @@ jobs:
           npx playwright install --with-deps chromium firefox
       - name: Existing standalone browser smoke matrix
         run: node scripts/browser-qa.mjs
-      - name: Building selection browser matrix
+      - name: Property and building browser matrix
         run: node scripts/building-browser-qa.mjs
       - name: Archive browser evidence
         if: always()

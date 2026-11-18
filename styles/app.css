@@ -319,3 +319,9 @@
 @media(max-width:670px) {
   .workspace-shell .sidebar-left{z-index:10}
 }
+
+/* 3F-Aa: keyboard-accessible property/building inspector navigation. */
+.workspace-inspector-action{display:block;width:100%;min-height:40px;margin-top:9px;padding:9px 11px;border:1px solid #61756c;border-radius:5px;background:#213638;color:#e5dfcf;font:inherit;line-height:1.5;text-align:left;white-space:normal;overflow-wrap:anywhere;cursor:pointer}
+.workspace-inspector-action:hover{background:#304b49;border-color:#b5a17e}
+.workspace-inspector-action:disabled{opacity:.55;cursor:default}
+.workspace-inspector-section{overflow-wrap:anywhere}

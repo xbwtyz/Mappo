@@ -111,3 +111,13 @@ The 7D desktop file workflow also downloads and validates a real `.mappo.json`, 
 `renderer/building-selection.js` strokes exact outer and inner footprint rings in screen coordinates without filling or modifying them; selection and hover have distinct widths/colors. The overlay draws above city layers and below the landscape selection overlay. Workspace panel sizing preserves camera center/zoom.
 
 The existing persistence validator does not yet accept a building reference. For this checkpoint, capture explicitly records `workspace.ui.selection: null` when a building is selected. This keeps downloads and recovery valid without widening the saved UI contract early. 3F-D owns validated portable building selection and restoration. City schema remains 9 and workspace schema remains 1.
+
+## Milestone 3F-Aa: properties as the primary selection
+
+`core/property-selection.js` tests accepted property boundaries, including yards and courtyard interiors. At least one development layer (Buildings, Properties or Plots) enables hits. Actual interiors beat nearby edges, with a three-CSS-pixel tolerance and deterministic boundary paint-order ties. The existing building hit test and footprint overlay remain available for individual structures.
+
+`ui/property-workspace.js` registers the property provider, resolves two-way property/building references, renders basic property facts and linked building actions, and validates every child navigation request. `ui/building-workspace.js` supplies a Back to property action. The generic shell accepts optional section actions as native buttons with safe textContent, wrapping labels, stable data attributes and heading focus after navigation. Existing providers without actions retain their original rendering.
+
+The map routes landscape → property → district, while existing editor/pointer ownership remains authoritative. `renderer/property-selection.js` adds teal hover/orange selected property boundaries; when a building is selected its parent's outline becomes dashed and the existing building overlay highlights the exact child footprint. Hidden child roofs cannot be selected. Hiding roofs returns a selected child to its parent if another development layer is visible; hiding all development layers clears the selection. Full replacement clears both property and child selections even if IDs are reused. Missing records clear safely.
+
+Both property and building UI references are deliberately captured as null until 3F-D adds portable validation and restoration. No generator, accepted record, metadata, city schema (9), workspace schema (1), history or geometry format changes. Detailed read-only property/child facts remain 3F-B.

@@ -4,7 +4,7 @@ import vm from 'node:vm';
 // Test-only access to closure state; the distributed app exposes no QA globals.
 export const buildingObservation = `
 globalThis.__buildingQA = {
-  state: () => ({ project, camera, editor, layers, workspaceShell, buildingWorkspace,
+  state: () => ({ project, camera, editor, layers, workspaceShell, buildingWorkspace, propertyWorkspace,
     landscapeWorkspace, districtPanel, waterPanel, terrainPanel, fortificationPanel, files }),
   capture: captureWorkspace, apply: applyProjectDocument, draw: requestDraw
 };
@@ -23,7 +23,8 @@ export async function buildingAppHarness() {
     activeElement: { tagName: 'BODY' },
     getElementById: el,
     createElement: () => ({
-      classList: { toggle() {} }, setAttribute() {},
+      classList: { toggle() {} }, attributes: {},
+      setAttribute(name, value) { this.attributes[name] = value; },
       addEventListener(name, fn) { (this.handlers ??= {})[name] = fn; },
       replaceChildren(...children) { this.children = children; },
       scrollIntoView() {}

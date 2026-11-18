@@ -4,21 +4,27 @@ import { workspaceSelectionEqual } from '../core/workspace-state.js';
 // Building inspection owns only transient view state. Accepted city records,
 // geometry tools and their histories remain owned by their existing modules.
 export class BuildingWorkspace {
-  constructor({ shell, getCity, getLayers, onSelect = () => {}, draw = () => {} }) {
+  constructor({ shell, getCity, getLayers, getProperties = () => null, onSelect = () => {}, draw = () => {} }) {
     this.shell = shell;
     this.getCity = getCity;
     this.getLayers = getLayers;
+    this.getProperties = getProperties;
     this.onSelect = onSelect;
     this.draw = draw;
     this.hover = null;
     shell.registerInspector('building', {
       resolve: id => {
         const building = this.record({ kind: 'building', id });
+        const properties = this.getProperties();
+        const property = properties?.propertyForBuilding(building);
         return building ? {
           type: 'Building',
           title: building.id,
           description: 'Selected footprint in the current city.',
-          sections: []
+          sections: property ? [{ title: 'Parent property', rows: [['Property', property.id]], actions: [{
+            label: 'Back to property', selection: { kind: 'property', id: property.id },
+            run: () => properties.select({ kind: 'property', id: property.id })
+          }] }] : []
         } : null;
       }
     });

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.3fa</title>
+  <title>Mappo — City editor · 0.1-dev.3faa</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -326,12 +326,18 @@
   .workspace-shell .sidebar-left{z-index:10}
 }
 
+/* 3F-Aa: keyboard-accessible property/building inspector navigation. */
+.workspace-inspector-action{display:block;width:100%;min-height:40px;margin-top:9px;padding:9px 11px;border:1px solid #61756c;border-radius:5px;background:#213638;color:#e5dfcf;font:inherit;line-height:1.5;text-align:left;white-space:normal;overflow-wrap:anywhere;cursor:pointer}
+.workspace-inspector-action:hover{background:#304b49;border-color:#b5a17e}
+.workspace-inspector-action:disabled{opacity:.55;cursor:default}
+.workspace-inspector-section{overflow-wrap:anywhere}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3fa</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3faa</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -382,7 +388,7 @@
           <ul id="landscapeFeatureList" class="landscape-feature-list" aria-label="Landscape features"></ul>
           <p id="landscapeEmpty" class="hint">Add a river, coastline, lake or mountain range.</p>
           <p class="hint">Select a feature here or click it on the map. Its editing controls open in the inspector.</p>
-          <details id="landscapeHelpSettings" class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a roof to inspect a building, or open ground in a city block to inspect its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
+          <details id="landscapeHelpSettings" class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a roof, yard or courtyard to inspect its property. Choose an individual building in the Property Inspector. Open ground outside properties selects its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
           <div id="landscapeHistoryTools" class="landscape-history-tools"><p class="hint">Draft histories</p><div class="tool-grid"><button id="landscapeUndoWater" class="minor-button">Undo water</button><button id="landscapeUndoTerrain" class="minor-button">Undo mountains</button></div></div>
         </section>
         <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>
@@ -447,7 +453,7 @@
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div class="map-controls workspace-map-controls" role="group" aria-label="Map navigation">
-          <button id="panButton" title="Click a building, landscape feature or open block to inspect; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
+          <button id="panButton" title="Click a property, landscape feature or open block to inspect; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
           <button id="workspaceUndoButton" class="workspace-context-undo" title="No outline edit to undo" disabled>Undo outline</button>
           <button id="fitButton" title="Fit outline (0)" aria-label="Fit outline">Fit</button>
           <div class="workspace-zoom-controls"><button id="zoomInButton" title="Zoom in (+)" aria-label="Zoom in">+</button><button id="zoomOutButton" title="Zoom out (-)" aria-label="Zoom out">−</button></div>
@@ -466,7 +472,7 @@
           <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>
           <button id="applyDistrictButton" class="tool-button full-width" disabled>Apply district changes</button>
           <div class="sidebar-rule"></div>
-          <p id="selectedDistrictBlock" class="hint">Click open ground in a city block in Select / Pan to change its district.</p>
+          <p id="selectedDistrictBlock" class="hint">Click open ground outside properties in Select / Pan to change its district. Hide Buildings, Properties and Plots to target entire blocks.</p>
           <div class="control-group"><label for="districtTargetInput">Receiving neighborhood</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select></div>
           <button id="moveDistrictButton" class="minor-button full-width" disabled>Move selected block</button>
           <p class="hint">Blocks can move only to an adjacent district. Neither neighborhood may become empty or disconnected.</p>
@@ -1877,21 +1883,27 @@ function workspaceTransition(state, action) {
 // Building inspection owns only transient view state. Accepted city records,
 // geometry tools and their histories remain owned by their existing modules.
 class BuildingWorkspace {
-  constructor({ shell, getCity, getLayers, onSelect = () => {}, draw = () => {} }) {
+  constructor({ shell, getCity, getLayers, getProperties = () => null, onSelect = () => {}, draw = () => {} }) {
     this.shell = shell;
     this.getCity = getCity;
     this.getLayers = getLayers;
+    this.getProperties = getProperties;
     this.onSelect = onSelect;
     this.draw = draw;
     this.hover = null;
     shell.registerInspector('building', {
       resolve: id => {
         const building = this.record({ kind: 'building', id });
+        const properties = this.getProperties();
+        const property = properties?.propertyForBuilding(building);
         return building ? {
           type: 'Building',
           title: building.id,
           description: 'Selected footprint in the current city.',
-          sections: []
+          sections: property ? [{ title: 'Parent property', rows: [['Property', property.id]], actions: [{
+            label: 'Back to property', selection: { kind: 'property', id: property.id },
+            run: () => properties.select({ kind: 'property', id: property.id })
+          }] }] : []
         } : null;
       }
     });
@@ -1921,6 +1933,123 @@ class BuildingWorkspace {
     const selection = this.shell.state.selection;
     if (selection?.kind === 'building' && (replaced || !this.record(selection)))
       this.shell.select(null, { reveal: false });
+  }
+}
+
+
+// src/core/property-selection.js
+
+
+// Roofs, property boundaries and plots all provide visible land-use context.
+// Selection feedback reveals the property boundary even when its layer is off.
+function propertySelectionVisible(layers = {}) {
+  return layers.buildings !== false || layers.properties === true || layers.plots === true;
+}
+
+function hitProperty(point, properties = [], zoom = 1, layers = {}) {
+  if (!point || !propertySelectionVisible(layers)) return null;
+  const tolerance = 3 / Math.max(.18, zoom);
+  let best = null;
+  for (const property of properties) {
+    const polygon = property.boundary;
+    if (!polygon || polygon.length < 3) continue;
+    const bounds = boundsOf(polygon);
+    if (point.x < bounds.minX - tolerance || point.x > bounds.maxX + tolerance
+      || point.y < bounds.minY - tolerance || point.y > bounds.maxY + tolerance) continue;
+    let distance = Infinity;
+    for (let i = 0; i < polygon.length; i++)
+      distance = Math.min(distance, distanceToSegment(point, polygon[i], polygon[(i + 1) % polygon.length]));
+    const interior = pointInPolygon(point, polygon) || distance <= 1e-7;
+    if (!interior && distance > tolerance) continue;
+    const rank = interior ? 0 : 1;
+    // Interiors outrank nearby edges; equal hits follow boundary paint order.
+    if (!best || rank < best.rank || (rank === best.rank && (interior || distance <= best.distance)))
+      best = { property, rank, distance };
+  }
+  return best ? { kind: 'property', id: best.property.id } : null;
+}
+
+function buildingsOnProperty(city, property) {
+  const ids = new Set(property.buildingIds ?? []);
+  return (city?.buildings ?? []).filter(building => ids.has(building.id) && building.propertyId === property.id);
+}
+
+
+// src/ui/property-workspace.js
+
+
+class PropertyWorkspace {
+  constructor({ shell, getCity, getLayers, buildings, onSelect = () => {}, draw = () => {} }) {
+    Object.assign(this, { shell, getCity, getLayers, buildings, onSelect, draw });
+    this.hover = null;
+    shell.registerInspector('property', { resolve: id => this.descriptor(id) });
+  }
+  record(ref) {
+    return ref?.kind === 'property' && propertySelectionVisible(this.getLayers())
+      ? this.getCity()?.properties.find(property => property.id === ref.id) ?? null : null;
+  }
+  propertyForBuilding(building) {
+    const property = this.record({ kind: 'property', id: building?.propertyId });
+    return property?.buildingIds.includes(building?.id) ? property : null;
+  }
+  descriptor(id) {
+    const property = this.record({ kind: 'property', id });
+    if (!property) return null;
+    const structures = buildingsOnProperty(this.getCity(), property);
+    return {
+      type: 'Property', title: property.id,
+      description: 'The site containing these plots and buildings. ' + (this.getLayers().buildings === false
+        ? 'Turn on Buildings in Layers to inspect individual footprints.' : 'Choose a building below to inspect its footprint.'),
+      sections: [{ title: 'Property summary', rows: [
+        ['Generated usage', property.usage || 'Unspecified'],
+        ['Plots', property.plotIds.length], ['Buildings', structures.length]
+      ] }, {
+        title: 'Buildings on this property',
+        rows: structures.length ? [] : [['Structures', 'No buildings recorded']],
+        actions: structures.map(building => ({
+          label: `${building.id} · ${building.type} · ${building.shape}`,
+          selection: { kind: 'building', id: building.id },
+          disabled: this.getLayers().buildings === false,
+          run: () => this.selectBuilding(property.id, building.id)
+        }))
+      }]
+    };
+  }
+  hit(point, zoom) {
+    return hitProperty(point, this.getCity()?.properties, zoom, this.getLayers());
+  }
+  select(ref) {
+    if (!this.record(ref)) return false;
+    this.onSelect();
+    this.setHover(null);
+    this.buildings.setHover(null);
+    this.shell.select(ref);
+    return true;
+  }
+  selectBuilding(propertyId, buildingId) {
+    const property = this.record({ kind: 'property', id: propertyId });
+    const building = this.buildings.record({ kind: 'building', id: buildingId });
+    if (!property || !building || this.propertyForBuilding(building)?.id !== property.id) return false;
+    return this.buildings.select({ kind: 'building', id: building.id });
+  }
+  setHover(ref) {
+    const next = this.record(ref) ? ref : null;
+    if (workspaceSelectionEqual(next, this.hover)) return;
+    this.hover = next;
+    this.draw();
+  }
+  refresh({ replaced = false } = {}) {
+    if (replaced || !this.record(this.hover)) this.setHover(null);
+    const ref = this.shell.state.selection;
+    if (!['property', 'building'].includes(ref?.kind)) return;
+    if (replaced || (ref.kind === 'property' && !this.record(ref))) {
+      this.shell.select(null, { reveal: false });
+    } else if (ref.kind === 'building' && (!this.buildings.record(ref)
+      || !this.propertyForBuilding(this.getCity()?.buildings.find(b => b.id === ref.id)))) {
+      const building = this.getCity()?.buildings.find(b => b.id === ref.id);
+      const property = this.propertyForBuilding(building);
+      this.shell.select(property ? { kind: 'property', id: property.id } : null, { reveal: false });
+    } else this.shell.refresh();
   }
 }
 
@@ -2069,6 +2198,28 @@ class WorkspaceShell {
       const element = this.document.createElement('section');
       element.className = 'workspace-inspector-section';
       element.textContent = [section.title ?? '', ...(section.rows ?? []).map(([label, value]) => `${label}: ${value}`)].filter(Boolean).join('\n');
+      if (section.actions?.length) {
+        const summary = this.document.createElement('div');
+        summary.textContent = element.textContent;
+        element.textContent = '';
+        element.replaceChildren(summary, ...section.actions.map(action => {
+          const button = this.document.createElement('button');
+          button.type = 'button';
+          button.className = 'workspace-inspector-action';
+          button.textContent = action.label;
+          button.disabled = Boolean(action.disabled);
+          if (action.selection) {
+            button.setAttribute('data-inspector-kind', action.selection.kind);
+            button.setAttribute('data-inspector-id', action.selection.id);
+          }
+          button.addEventListener('click', () => {
+            action.run();
+            this.$('workspaceSelectionName').setAttribute('tabindex', '-1');
+            this.$('workspaceSelectionName').focus?.();
+          });
+          return button;
+        }));
+      }
       return element;
     }));
     this.$('workspaceShowControls').hidden = !descriptor.section;
@@ -6872,7 +7023,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.3fa';
+const APP_VERSION = '0.1-dev.3faa';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -9653,7 +9804,41 @@ function drawBuildingSelection(ctx, camera, buildings, layers, selection, hover)
 }
 
 
+// src/renderer/property-selection.js
+
+function drawPropertySelection(ctx, camera, city, layers, selection, hover) {
+  if (!propertySelectionVisible(layers)) return;
+  const building = selection?.kind === 'building' && layers.buildings !== false
+    ? city.buildings.find(b => b.id === selection.id) : null;
+  const selectedId = selection?.kind === 'property' ? selection.id : building?.propertyId;
+  for (const [ref, selected] of [[hover, false], [selectedId ? { kind: 'property', id: selectedId } : null, true]]) {
+    if (ref?.kind !== 'property' || (!selected && ref.id === selectedId)) continue;
+    const property = city.properties.find(p => p.id === ref.id);
+    if (!property) continue;
+    const context = selected && Boolean(building);
+    ctx.save();
+    ctx.beginPath();
+    property.boundary.forEach((point, i) => {
+      const p = camera.worldToScreen(point);
+      if (i) ctx.lineTo(p.x, p.y);
+      else ctx.moveTo(p.x, p.y);
+    });
+    ctx.closePath();
+    ctx.lineJoin = 'round';
+    ctx.setLineDash(context ? [6, 4] : []);
+    ctx.lineWidth = selected && !context ? 6 : 4;
+    ctx.strokeStyle = '#fff9e5';
+    ctx.stroke();
+    ctx.lineWidth = selected && !context ? 2.5 : 1.5;
+    ctx.strokeStyle = selected ? '#b35f24' : '#297a87';
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+
 // src/renderer/canvas.js
+
 
 
 
@@ -9859,7 +10044,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null, landscapeSelection = null, landscapeHover = null, buildingHover = null) {
+function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null, landscapeSelection = null, landscapeHover = null, buildingHover = null, propertyHover = null) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -9896,6 +10081,7 @@ function renderMap(canvas, camera, project, editor, layers = {}, districtSelecti
   if (editor && !(city.waterFeatures?.some(f => f.kind === 'coast') && !editor.dirty && editor.mode === 'pan')) drawOutline(ctx, camera, editor);
   drawWaterDraft(ctx, camera, waterEditor, editor?.boundary ?? city.survey.boundary);
   drawTerrainDraft(ctx, camera, terrainEditor);
+  drawPropertySelection(ctx, camera, city, layers, landscapeSelection, propertyHover);
   drawBuildingSelection(ctx, camera, city.buildings, layers, landscapeSelection, buildingHover);
   drawLandscapeSelection(ctx, camera, landscapeRecords(waterEditor?.features ?? city.waterFeatures, terrainEditor?.features ?? city.terrainFeatures), landscapeSelection, landscapeHover);
 
@@ -10362,6 +10548,7 @@ class OutlineEditor {
 
 
 
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -10373,7 +10560,7 @@ const SHAPE_DESCRIPTIONS = {
   linear: 'Long corridors with cross streets.'
 };
 const TOOL_HINTS = {
-  pan: 'Drag to pan · Click a building or open block to inspect · Scroll to zoom',
+  pan: 'Drag to pan · Click a property to inspect · Scroll to zoom',
   freehand: 'Drag an outline · Release to close · Space + drag to pan',
   points: 'Click corners · Click first point or press Enter to close',
   edit: 'Drag corners · Double-click an edge to add a point · Delete to remove',
@@ -10389,6 +10576,7 @@ let terrainPanel;
 let workspaceShell;
 let landscapeWorkspace;
 let buildingWorkspace;
+let propertyWorkspace;
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -10464,7 +10652,7 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover, buildingWorkspace?.hover);
+    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover, buildingWorkspace?.hover, propertyWorkspace?.hover);
   });
 }
 
@@ -10553,6 +10741,7 @@ function generate() {
         seed: $('fortificationSeedInput').value || $('seedInput').value
       }
     });
+    propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
     clearMapHover();
     project = next;
@@ -10608,8 +10797,9 @@ function updatePattern() {
 for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
-    if (key === 'buildings') {
+    if (['buildings', 'properties', 'plots'].includes(key)) {
       clearMapHover();
+      propertyWorkspace?.refresh();
       buildingWorkspace?.refresh();
     }
     requestDraw();
@@ -10733,6 +10923,7 @@ districtPanel = new DistrictPanel({
       city
     };
     updateDetails();
+    workspaceShell?.refresh();
     requestDraw();
     workspaceChanged();
   },
@@ -10906,6 +11097,19 @@ buildingWorkspace = new BuildingWorkspace({
   shell: workspaceShell,
   getCity: () => project?.city,
   getLayers: () => layers,
+  getProperties: () => propertyWorkspace,
+  onSelect: () => {
+    districtPanel.editor.selectedDistrictId = null;
+    districtPanel.editor.selectedBlockId = null;
+    districtPanel.refresh();
+  },
+  draw: requestDraw
+});
+propertyWorkspace = new PropertyWorkspace({
+  shell: workspaceShell,
+  getCity: () => project?.city,
+  getLayers: () => layers,
+  buildings: buildingWorkspace,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -10943,20 +11147,21 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     landscapeWorkspace.select(hit, {
       fromMap: true
     });
-  } else if (!buildingWorkspace.select(buildingWorkspace.hit(point, camera.zoom))) {
+  } else if (!propertyWorkspace.select(propertyWorkspace.hit(point, camera.zoom))) {
     districtPanel.selectAt(point);
     if (!districtPanel.editor.selectedDistrictId) workspaceShell.clear();
   }
 }, point => {
   const hit = landscapeWorkspace.hit(point, camera.zoom);
   landscapeWorkspace.setHover(hit);
-  const buildingHit = hit ? null : buildingWorkspace.hit(point, camera.zoom);
-  buildingWorkspace.setHover(buildingHit);
-  canvas.classList.toggle('feature-hover', Boolean(hit || buildingHit));
+  const propertyHit = hit ? null : propertyWorkspace.hit(point, camera.zoom);
+  propertyWorkspace.setHover(propertyHit);
+  canvas.classList.toggle('feature-hover', Boolean(hit || propertyHit));
 });
 function clearMapHover() {
   landscapeWorkspace?.setHover(null);
   buildingWorkspace?.setHover(null);
+  propertyWorkspace?.setHover(null);
   canvas.classList.toggle('feature-hover', false);
 }
 if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
@@ -10983,9 +11188,9 @@ function captureWorkspace() {
       schemaVersion: 1,
       ui: {
         ...workspaceShell.snapshot(),
-        // 3F-A selection is session-only. Portable building selection is added
-        // with validation/restoration in 3F-D; downloads and recovery still work.
-        selection: workspaceShell.state.selection?.kind === 'building' ? null : workspaceShell.state.selection,
+        // Property/building selection is session-only until validated portable
+        // references and restoration are introduced in 3F-D.
+        selection: ['property', 'building'].includes(workspaceShell.state.selection?.kind) ? null : workspaceShell.state.selection,
         disclosures: Object.fromEntries(WORKSPACE_DISCLOSURE_IDS.map(id => [id, Boolean($(id).open)])),
         landscape: landscapeWorkspace.snapshotUI(),
         districts: districtPanel.snapshotUI()
@@ -11065,6 +11270,7 @@ function applyProjectDocument(document) {
   const next = copyJson(document.project),
     workspace = copyJson(document.workspace),
     draft = workspace.editor;
+  propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
   clearMapHover();
   project = next;

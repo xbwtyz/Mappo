@@ -35,21 +35,25 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       if (viewport.width <= 670) await page.locator('#workspaceCollapseTools').click();
       const geometry = await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city));
       const id = await page.evaluate(() => {
-        const { project, camera, buildingWorkspace, landscapeWorkspace } = __buildingQA.state();
+        const { project, camera, buildingWorkspace, propertyWorkspace, landscapeWorkspace } = __buildingQA.state();
         camera.zoom = 3;
-        for (const building of project.city.buildings) {
+        const candidates = [...project.city.buildings].sort((a, b) => b.holes.length - a.holes.length);
+        for (const building of candidates) {
           const center = building.footprint.reduce((p, v) => ({
             x: p.x + v.x / building.footprint.length, y: p.y + v.y / building.footprint.length
           }), { x: 0, y: 0 });
           for (let i = 0; i < building.footprint.length; i++) {
             const a = building.footprint[i], b = building.footprint[(i + 1) % building.footprint.length];
             const point = { x: .45 * (a.x + b.x) + .1 * center.x, y: .45 * (a.y + b.y) + .1 * center.y };
-            if (buildingWorkspace.hit(point, camera.zoom)?.id !== building.id || landscapeWorkspace.hit(point, camera.zoom)) continue;
+            if (buildingWorkspace.hit(point, camera.zoom)?.id !== building.id
+              || propertyWorkspace.hit(point, camera.zoom)?.id !== building.propertyId || landscapeWorkspace.hit(point, camera.zoom)) continue;
             camera.x = point.x;
             camera.y = point.y;
             __buildingQA.target = point;
+            __buildingQA.roofTarget = point;
+            __buildingQA.buildingId = building.id;
             __buildingQA.draw();
-            return building.id;
+            return building.propertyId;
           }
         }
         throw new Error('No generated roof available');
@@ -61,12 +65,41 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       };
       let p = await target();
       await page.mouse.move(p.x, p.y);
-      assert.equal(await page.evaluate(() => __buildingQA.state().buildingWorkspace.hover?.id), id);
+      assert.equal(await page.evaluate(() => __buildingQA.state().propertyWorkspace.hover?.id), id);
       await page.mouse.click(p.x, p.y);
-      assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Building');
+      assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
       assert.equal(await page.locator('#workspaceSelectionName').innerText(), id);
       assert.equal(await page.locator('#workspaceInspector').isVisible(), true);
       await page.screenshot({ path: new URL(`${label}-selected.png`, output).pathname });
+
+      // A courtyard belongs to the site, including its open center.
+      const hasCourtyard = await page.evaluate(() => {
+        const building = __buildingQA.state().project.city.buildings.find(b => b.id === __buildingQA.buildingId);
+        const hole = building.holes[0];
+        if (!hole) return false;
+        __buildingQA.target = hole.reduce((p, v) => ({ x: p.x + v.x / hole.length, y: p.y + v.y / hole.length }), { x: 0, y: 0 });
+        return true;
+      });
+      assert.ok(hasCourtyard, 'Fixture should include a courtyard property');
+      await page.locator('#workspaceCloseInspector').click();
+      p = await target();
+      await page.mouse.click(p.x, p.y);
+      assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
+      assert.equal(await page.locator('#workspaceSelectionName').innerText(), id);
+      await page.evaluate(() => { __buildingQA.target = __buildingQA.roofTarget; });
+
+      // Native buttons support keyboard selection of a child and parent return.
+      const buildingId = await page.evaluate(() => __buildingQA.buildingId);
+      await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).press('Enter');
+      assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Building');
+      assert.equal(await page.locator('#workspaceSelectionName').innerText(), buildingId);
+      assert.equal(await page.evaluate(() => __buildingQA.state().files.captureDocument().workspace.ui.selection), null);
+      await page.screenshot({ path: new URL(`${label}-child.png`, output).pathname });
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 3), 'Child Inspector must not overflow horizontally');
+      await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
+      assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
+      assert.equal(await page.locator('#workspaceSelectionName').innerText(), id);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 3), 'Property Inspector must not overflow horizontally');
 
       // Collapsing and reselecting uses the same record at the resized camera.
       await page.locator('#workspaceCloseInspector').click();
@@ -89,12 +122,23 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#workspaceCloseInspector').click();
 
       await page.locator('#layersMenuButton').click();
+      await page.locator('#propertiesLayer').check();
       await page.locator('#buildingsLayer').uncheck();
+      await page.locator('#layersMenuClose').click();
+      assert.equal(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection?.id), id);
+      p = await target();
+      await page.mouse.click(p.x, p.y);
+      assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
+      assert.equal(await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).isDisabled(), true);
+      await page.locator('#workspaceCloseInspector').click();
+      await page.locator('#layersMenuButton').click();
+      await page.locator('#propertiesLayer').uncheck();
+      await page.locator('#plotsLayer').uncheck();
       await page.locator('#layersMenuClose').click();
       assert.equal(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), null);
       p = await target();
       await page.mouse.click(p.x, p.y);
-      assert.notEqual(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection?.kind), 'building');
+      assert.equal(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection?.kind), 'district');
       // A district inspector/drawer may now cover map controls on narrow layouts.
       if (await page.locator('#workspaceInspector').isVisible()) await page.locator('#workspaceCloseInspector').click();
       if (viewport.width <= 670 && await page.locator('#workspaceTools').isVisible()) await page.locator('#workspaceCollapseTools').click();
@@ -103,19 +147,19 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#layersMenuClose').click();
       p = await target();
       await page.mouse.click(p.x, p.y);
-      assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Building');
+      assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
       const saved = await page.evaluate(() => __buildingQA.state().files.captureDocument());
       assert.equal(saved.project.schemaVersion, 9);
       assert.equal(saved.workspace.schemaVersion, 1);
-      assert.equal(saved.workspace.ui.selection, null, 'Session-only 3F-A selection does not break saving');
+      assert.equal(saved.workspace.ui.selection, null, 'Session-only 3F-Aa selection does not break saving');
       if (await page.locator('#workspaceInspector').isVisible()) await page.locator('#workspaceCloseInspector').click();
       if (viewport.width <= 670) await page.locator('#workspaceOpenTools').click();
       await page.locator('#generateButton').click();
       assert.equal(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), null);
-      assert.ok(await page.evaluate(id => __buildingQA.state().project.city.buildings.some(b => b.id === id), id));
+      assert.ok(await page.evaluate(id => __buildingQA.state().project.city.properties.some(p => p.id === id), id));
       assert.equal(errors.length, 0, errors.join('; '));
-      console.log(`PASS building ${label}: roof hit, hover, inspector, drag, layers, save safety, regeneration`);
+      console.log(`PASS property ${label}: roof/courtyard, child keyboard navigation, parent return, drag, layers, save safety, regeneration`);
     } catch (error) {
       failures.push(`${label}: ${error.message}`);
       await page.screenshot({ path: new URL(`${label}-failure.png`, output).pathname });
@@ -130,4 +174,4 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
   await browser.close();
 }
 if (failures.length) throw new Error(`Building browser QA failures:\n${failures.join('\n')}`);
-console.log('Building browser QA: 8/8 browser-viewport checks passed.');
+console.log('Property/building browser QA: 8/8 browser-viewport checks passed.');

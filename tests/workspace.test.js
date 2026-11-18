@@ -7,6 +7,7 @@ import {
   registerWorkspaceInspectors
 } from '../src/ui/workspace-inspectors.js';
 import { BuildingWorkspace } from '../src/ui/building-workspace.js';
+import { PropertyWorkspace } from '../src/ui/property-workspace.js';
 import {
   workspaceInitialState,
   workspaceInspectorVisible,
@@ -50,7 +51,12 @@ function shellHarness(providers = {}) {
   const shell = new WorkspaceShell({
     getElement: el,
     document: {
-      createElement: () => ({})
+      createElement: () => ({
+        attributes: {}, handlers: {},
+        setAttribute(name, value) { this.attributes[name] = value; },
+        addEventListener(name, fn) { this.handlers[name] = fn; },
+        replaceChildren(...children) { this.children = children; }
+      })
     },
     onLayout: () => layouts++,
     onNavigate: () => navigations++,
@@ -68,6 +74,58 @@ function shellHarness(providers = {}) {
     })
   };
 }
+test('property inspector supports safe building navigation, parent return, hidden layers, local refresh and stale references', () => {
+  const { shell, el } = shellHarness();
+  let city = { properties: [{ id: 'PROP-1', usage: '<img src=x>', plotIds: ['plot-1', 'plot-2'], buildingIds: ['west', 'east'] }],
+    buildings: [{ id: 'west', propertyId: 'PROP-1', type: 'temple', shape: 'compound-wing' },
+      { id: 'east', propertyId: 'PROP-1', type: 'temple', shape: 'compound-wing' }] };
+  const before = JSON.stringify(city), layers = { buildings: true, properties: false, plots: false };
+  let properties;
+  const buildings = new BuildingWorkspace({ shell, getCity: () => city, getLayers: () => layers, getProperties: () => properties });
+  properties = new PropertyWorkspace({ shell, getCity: () => city, getLayers: () => layers, buildings });
+  properties.select({ kind: 'property', id: 'PROP-1' });
+  assert.equal(el('workspaceSelectionType').textContent, 'Property');
+  assert.equal(shell.descriptor().sections[0].rows[0][1], '<img src=x>');
+  const buttons = el('workspaceSelectionSections').children[1].children.slice(1);
+  assert.equal(buttons.length, 2);
+  assert.match(buttons[0].textContent, /west/);
+  buttons[0].handlers.click();
+  assert.deepEqual(shell.state.selection, { kind: 'building', id: 'west' });
+  assert.equal(el('workspaceSelectionName').focused, true);
+  assert.equal(properties.selectBuilding('other-property', 'east'), false);
+  const back = el('workspaceSelectionSections').children[0].children[1];
+  assert.equal(back.textContent, 'Back to property');
+  back.handlers.click();
+  assert.equal(shell.state.selection.kind, 'property');
+  assert.equal(properties.selectBuilding('PROP-1', 'east'), true);
+  assert.equal(shell.state.selection.id, 'east');
+  city = JSON.parse(JSON.stringify(city));
+  properties.refresh();
+  assert.equal(shell.state.selection.id, 'east', 'Local record-preserving changes retain the selected child');
+  layers.properties = true;
+  layers.buildings = false;
+  properties.refresh();
+  buildings.refresh();
+  assert.deepEqual(shell.state.selection, { kind: 'property', id: 'PROP-1' });
+  assert.ok(shell.descriptor().sections[1].actions.every(a => a.disabled));
+  assert.equal(properties.selectBuilding('PROP-1', 'east'), false);
+  properties.setHover({ kind: 'property', id: 'PROP-1' });
+  layers.properties = false;
+  properties.refresh();
+  assert.equal(shell.state.selection, null);
+  assert.equal(properties.hover, null);
+  layers.plots = true;
+  properties.select({ kind: 'property', id: 'PROP-1' });
+  shell.navigate('landscape');
+  assert.equal(shell.state.selection.id, 'PROP-1');
+  assert.equal(JSON.stringify(city), before);
+  properties.refresh({ replaced: true });
+  assert.equal(shell.state.selection, null, 'Full replacement clears even reused property IDs');
+  properties.select({ kind: 'property', id: 'PROP-1' });
+  city.properties = [];
+  properties.refresh();
+  assert.equal(shell.state.selection, null);
+});
 test('building selection uses the shared inspector and clears hidden, missing or replaced records without geometry changes', () => {
   const { shell, el } = shellHarness();
   let city = { buildings: [{ id: 'BLD-1', footprint: [], holes: [] }] };

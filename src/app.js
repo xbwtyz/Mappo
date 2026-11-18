@@ -2,6 +2,7 @@ import {
   LandscapeWorkspace
 } from './ui/landscape.js';
 import { BuildingWorkspace } from './ui/building-workspace.js';
+import { PropertyWorkspace } from './ui/property-workspace.js';
 import {
   WorkspaceShell
 } from './ui/workspace.js';
@@ -88,7 +89,7 @@ const SHAPE_DESCRIPTIONS = {
   linear: 'Long corridors with cross streets.'
 };
 const TOOL_HINTS = {
-  pan: 'Drag to pan · Click a building or open block to inspect · Scroll to zoom',
+  pan: 'Drag to pan · Click a property to inspect · Scroll to zoom',
   freehand: 'Drag an outline · Release to close · Space + drag to pan',
   points: 'Click corners · Click first point or press Enter to close',
   edit: 'Drag corners · Double-click an edge to add a point · Delete to remove',
@@ -104,6 +105,7 @@ let terrainPanel;
 let workspaceShell;
 let landscapeWorkspace;
 let buildingWorkspace;
+let propertyWorkspace;
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -179,7 +181,7 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover, buildingWorkspace?.hover);
+    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover, buildingWorkspace?.hover, propertyWorkspace?.hover);
   });
 }
 
@@ -268,6 +270,7 @@ function generate() {
         seed: $('fortificationSeedInput').value || $('seedInput').value
       }
     });
+    propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
     clearMapHover();
     project = next;
@@ -323,8 +326,9 @@ function updatePattern() {
 for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
-    if (key === 'buildings') {
+    if (['buildings', 'properties', 'plots'].includes(key)) {
       clearMapHover();
+      propertyWorkspace?.refresh();
       buildingWorkspace?.refresh();
     }
     requestDraw();
@@ -448,6 +452,7 @@ districtPanel = new DistrictPanel({
       city
     };
     updateDetails();
+    workspaceShell?.refresh();
     requestDraw();
     workspaceChanged();
   },
@@ -621,6 +626,19 @@ buildingWorkspace = new BuildingWorkspace({
   shell: workspaceShell,
   getCity: () => project?.city,
   getLayers: () => layers,
+  getProperties: () => propertyWorkspace,
+  onSelect: () => {
+    districtPanel.editor.selectedDistrictId = null;
+    districtPanel.editor.selectedBlockId = null;
+    districtPanel.refresh();
+  },
+  draw: requestDraw
+});
+propertyWorkspace = new PropertyWorkspace({
+  shell: workspaceShell,
+  getCity: () => project?.city,
+  getLayers: () => layers,
+  buildings: buildingWorkspace,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -658,20 +676,21 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     landscapeWorkspace.select(hit, {
       fromMap: true
     });
-  } else if (!buildingWorkspace.select(buildingWorkspace.hit(point, camera.zoom))) {
+  } else if (!propertyWorkspace.select(propertyWorkspace.hit(point, camera.zoom))) {
     districtPanel.selectAt(point);
     if (!districtPanel.editor.selectedDistrictId) workspaceShell.clear();
   }
 }, point => {
   const hit = landscapeWorkspace.hit(point, camera.zoom);
   landscapeWorkspace.setHover(hit);
-  const buildingHit = hit ? null : buildingWorkspace.hit(point, camera.zoom);
-  buildingWorkspace.setHover(buildingHit);
-  canvas.classList.toggle('feature-hover', Boolean(hit || buildingHit));
+  const propertyHit = hit ? null : propertyWorkspace.hit(point, camera.zoom);
+  propertyWorkspace.setHover(propertyHit);
+  canvas.classList.toggle('feature-hover', Boolean(hit || propertyHit));
 });
 function clearMapHover() {
   landscapeWorkspace?.setHover(null);
   buildingWorkspace?.setHover(null);
+  propertyWorkspace?.setHover(null);
   canvas.classList.toggle('feature-hover', false);
 }
 if ('ResizeObserver' in window) new ResizeObserver(resize).observe(viewport);
@@ -698,9 +717,9 @@ function captureWorkspace() {
       schemaVersion: 1,
       ui: {
         ...workspaceShell.snapshot(),
-        // 3F-A selection is session-only. Portable building selection is added
-        // with validation/restoration in 3F-D; downloads and recovery still work.
-        selection: workspaceShell.state.selection?.kind === 'building' ? null : workspaceShell.state.selection,
+        // Property/building selection is session-only until validated portable
+        // references and restoration are introduced in 3F-D.
+        selection: ['property', 'building'].includes(workspaceShell.state.selection?.kind) ? null : workspaceShell.state.selection,
         disclosures: Object.fromEntries(WORKSPACE_DISCLOSURE_IDS.map(id => [id, Boolean($(id).open)])),
         landscape: landscapeWorkspace.snapshotUI(),
         districts: districtPanel.snapshotUI()
@@ -780,6 +799,7 @@ function applyProjectDocument(document) {
   const next = copyJson(document.project),
     workspace = copyJson(document.workspace),
     draft = workspace.editor;
+  propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
   clearMapHover();
   project = next;
