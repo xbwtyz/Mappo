@@ -29,7 +29,7 @@ export class PropertyWorkspace {
       run: () => this.selectBuilding(property.id, building.id)
     }));
     buildingSection.actions.push({label:'Add building to this property',disabled:this.getLayers().buildings===false,run:()=>this.startBuilding(property.id)});
-    information.sections.push({title:'Property geometry (3I)',rows:[['Edit status','Preview-only; accepted land and plots are unchanged.']],actions:[{label:'Edit property geometry',run:()=>this.startPropertyEdit(property.id)}]});
+    information.sections.push({title:'Property geometry (3I)',rows:[['Edit status','Draft geometry is validated before atomic Apply; accepted land is unchanged until then.']],actions:[{label:'Edit property geometry',run:()=>this.startPropertyEdit(property.id)}]});
     return {
       type: 'Property', title: information.title,
       description: 'The site containing these plots and buildings. ' + (this.getLayers().buildings === false
