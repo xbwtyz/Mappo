@@ -357,6 +357,10 @@ function exitStructurePlacement3H() {
   if(!buildingPlacementSession?.isActive)return true;
   if(!confirmStructureDiscard3H())return false;
   buildingPlacementSession.stop();
+  // Like footprint editing, leave a clear route back to the Inspector on phones.
+  if(Number.isFinite(window.innerWidth) && window.innerWidth<=900
+      && workspaceShell?.state.inspectorCollapsed)
+    workspaceShell.dispatch({type:'inspector',collapsed:false});
   return true;
 }
 function startStructurePlacement3H(propertyId,buildingId=null) {
