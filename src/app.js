@@ -85,6 +85,7 @@ import { BuildingGeometryHistory } from './editor/building-history.js';
 import { BuildingPlacementSession3H, buildingLocalPoint3H, prepareBuildingStructure3H } from './editor/building-structures.js';
 import { BuildingStructureHistory3H } from './editor/building-structure-history.js';
 import { PropertyEditSession3I } from './editor/property-edit.js';
+import { inspectPropertyEdit3I, preparePropertyApply3I } from './editor/property-application.js';
 import { pointInPolygon } from './core/geometry.js';
 
 const $ = id => document.getElementById(id),
@@ -531,10 +532,22 @@ function syncPropertyEditUI3I() {
   dividerIndex.value=String(session.selectedDivider);
   dividerInput.disabled=dividers.length===0;
   dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
-  $('propertyEditApply3I').disabled = true;
-  $('propertyEditStatus3I').textContent = session.isPending
-    ? 'UNSAVED PREVIEW · Property and plot geometry are unchanged until a validated Apply in 3I-C.'
-    : 'NO PENDING CHANGES · The map shows the original property and plot boundaries.';
+  const result=session.drag ? {ok:false,status:'checking',issues:[]} : inspectPropertyEdit3I(project,session);
+  session.validation=result;
+  $('propertyEditPanel3I').setAttribute('data-validation',result.status);
+  $('propertyEditApply3I').disabled=!(session.isPending&&result.ok&&!session.drag);
+  $('propertyEditStatus3I').textContent = result.status==='checking'
+    ? 'CHECKING · Release the handle to validate the new property and plots.'
+    : !result.ok
+      ? 'INVALID · '+(result.issues?.[0]?.message??'Property geometry cannot be applied.')
+      : session.isPending
+        ? 'VALID · Property and plot edits can be applied together.'
+        : 'NO PENDING CHANGES · Property and plots match the accepted city.';
+  const issues=$('propertyEditIssues3I');
+  issues.hidden=!result.issues?.length;
+  issues.replaceChildren(...(result.issues??[]).map(issue=>{
+    const item=document.createElement('li');item.textContent=issue.message;return item;
+  }));
 }
 function updateMapIndicators() {
   clearMapHover();
@@ -1132,8 +1145,32 @@ $('structureApply').addEventListener('click',applyStructurePlacement3H);
 $('structureCancel').addEventListener('click',exitStructurePlacement3H);
 $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
+function applyPropertyEdit3I() {
+  const session=propertyEditSession;
+  if(!project||!session?.isActive||!session.isPending||session.drag
+    ||workspaceShell?.state.selection?.kind!=='property'
+    ||workspaceShell.state.selection.id!==session.propertyId)return false;
+  const before=project,propertyId=session.propertyId;
+  const received=preparePropertyApply3I(before,captureWorkspace().workspace,session);
+  if(!received.ok) {
+    session.validation=received;
+    $('statusMessage').textContent='Property Apply blocked: '+(received.issues[0]?.message??'Invalid geometry.');
+    syncPropertyEditUI3I();requestDraw();return false;
+  }
+  if(project!==before||session.propertyId!==propertyId)return false;
+  project=received.candidate;
+  buildingHistory.clear();
+  buildingStructureHistory.clear();
+  session.stop();
+  updateDetails();
+  workspaceShell.select({kind:'property',id:propertyId});
+  workspaceShell.refresh();requestDraw();workspaceChanged();
+  $('statusMessage').textContent='Applied validated property and plot edits to '+propertyId+'. Download a project to preserve your change.';
+  return true;
+}
 $('propertyEditReset3I').addEventListener('click',()=>propertyEditSession?.reset());
 $('propertyEditCancel3I').addEventListener('click',exitPropertyEditing3I);
+$('propertyEditApply3I').addEventListener('click',applyPropertyEdit3I);
 for(const [id,axis] of [['propertyCornerX3I','x'],['propertyCornerY3I','y']])
   $(id).addEventListener('change',()=>{
     const session=propertyEditSession;
