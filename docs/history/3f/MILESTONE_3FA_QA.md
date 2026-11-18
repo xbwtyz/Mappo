@@ -23,7 +23,7 @@ Build: **0.1-dev.3fa**. Branch: `feature/building-inspector-3f`.
 - Live Chrome preview: verified building Inspector and courtyard-wall outline, courtyard interior selecting its district, and hiding Buildings clearing the building selection.
 - Automated Firefox/Chromium matrices: **16/16 passed** (8 existing standalone smoke cases and 8 building interaction cases) in [CI run 44251205913](https://github.com/xbwtyz/Mappo/actions/runs/44251205913), on source/test commit `37e7dc7`. `.github/workflows/milestone-3f-check.yml` runs both the existing standalone smoke script and the new building interaction script at 1440×900, 5120×1440, 768×1024 and 390×844. The building script adds only a test-time closure observer to the compiled document and serves it through an intercepted normal HTTP origin with all other requests blocked; the existing smoke script opens the actual unchanged standalone file. This avoids an opaque-origin storage warning masking the controls. Both matrices passed in both engines at all four sizes. Browser screenshots and the standalone build were uploaded as CI artifacts.
 
-![Selected courtyard building in the shared Inspector](docs/images/mappo-3fa-building-selection.jpg)
+![Selected courtyard building in the shared Inspector](../../images/mappo-3fa-building-selection.jpg)
 
 ## Scope and limitations
 

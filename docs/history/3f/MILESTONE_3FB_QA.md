@@ -23,9 +23,9 @@ Build: **0.1-dev.3fb**. Branch: `feature/building-inspector-3f`.
 - Exact root/standalone SHA256: `8e4e257acf1fae223e600631aea653a4ccb239c3e7c16862e0fe9909413e74ce`. No external scripts/styles or added runtime network requirements.
 - Project schema **9**, workspace schema **1**; no migrations, metadata fields or geometry changes.
 
-![Property information](docs/images/mappo-3fb-property.jpg)
+![Property information](../../images/mappo-3fb-property.jpg)
 
-![Individual building information](docs/images/mappo-3fb-building.jpg)
+![Individual building information](../../images/mappo-3fb-building.jpg)
 
 ## Remaining milestones and limits
 
