@@ -409,3 +409,15 @@
   .workspace-shell .sidebar-right .sidebar-content{padding:15px 14px}
   .workspace-shell .workspace-panel-restores{flex-wrap:nowrap}
 }
+
+/* Dev 4c: accessible, compact preview-only metrics and position nudges. */
+.precision-measurements-4c{margin:5px 0;line-height:1.45;font:11px ui-sans-serif,system-ui,sans-serif;color:#c3e6d6;overflow-wrap:anywhere}
+.precision-nudge-4c{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:5px 0}
+.precision-nudge-4c label{display:flex;align-items:center;gap:7px;font:10px ui-sans-serif,system-ui,sans-serif;color:#c1d3cf}
+.precision-nudge-4c select{height:30px;width:auto;min-width:66px;max-width:86px;background:#19353a;border:1px solid #678078;border-radius:4px;color:#f5f7ed;padding:3px}
+.precision-nudge-buttons-4c{display:flex;gap:4px}
+.precision-nudge-buttons-4c button{min-height:32px;min-width:32px;background:#25434a;border:1px solid #678078;border-radius:4px;color:#f5f7ed;cursor:pointer}
+.precision-nudge-buttons-4c button:disabled{opacity:.4;cursor:not-allowed}
+.precision-nudge-buttons-4c button:focus-visible,.precision-nudge-4c select:focus-visible{outline:2px solid #edc989;outline-offset:2px}
+.precision-key-hint-4c{font:10px ui-sans-serif,system-ui,sans-serif;color:#a5c5be;margin:4px 0 7px}
+@media(max-width:670px){.precision-nudge-4c{gap:3px}.precision-nudge-buttons-4c button{min-width:29px;min-height:30px}.precision-key-hint-4c{font-size:9px}}

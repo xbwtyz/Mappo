@@ -90,6 +90,11 @@ import { PropertyGeometryHistory3I } from './editor/property-history.js';
 import { preparePropertyDeletion4A, PropertyDeletionHistory4A } from './editor/property-deletion.js';
 import { pointInPolygon } from './core/geometry.js';
 import { focusCameraOnSelection4B } from './core/selection-focus-4b.js';
+import {
+  nudgeBuilding4C, nudgePropertyCorner4C, nudgeStructure4C,
+  buildingMeasurements4C, propertyMeasurements4C, placementMeasurements4C,
+  formatPrecision4C
+} from './core/editing-precision-4c.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
@@ -269,6 +274,12 @@ function syncBuildingTransformUI() {
   const frame = buildingFrame(session.source(project.city));
   const t = session.transform;
   $('buildingPreviewTarget').textContent = session.buildingId;
+  const measured=buildingMeasurements4C(project.city,session);
+  if(measured) $('buildingPreviewMeasurements4C').textContent=
+    'Width '+formatPrecision4C(measured.width)+' · Depth '+formatPrecision4C(measured.depth)+
+    ' · Area '+formatPrecision4C(measured.area)+' (Δ '+formatPrecision4C(measured.areaDelta)+')'+
+    ' · Center '+formatPrecision4C(measured.x)+', '+formatPrecision4C(measured.y)+
+    ' · Offset '+formatPrecision4C(measured.dx)+', '+formatPrecision4C(measured.dy);
   for (const [id,value] of Object.entries({
     buildingOffsetX: t.dx, buildingOffsetY: t.dy,
     buildingAngle: t.angle*180/Math.PI, buildingWidth: frame.width*t.scaleX,
@@ -429,6 +440,11 @@ function syncBuildingStructureUI3H() {
     : '';
   if(!shown)return;
   const spec=session.spec;
+  const structureMeasure=placementMeasurements4C(project.city,session);
+  $('structurePreviewMeasurements4C').textContent=structureMeasure
+    ? 'Width '+formatPrecision4C(structureMeasure.width)+' · Depth '+formatPrecision4C(structureMeasure.depth)+
+      ' · Area '+formatPrecision4C(structureMeasure.area)+' · Position '+formatPrecision4C(structureMeasure.u)+
+      ', '+formatPrecision4C(structureMeasure.v) : 'Adjust your draft to preview its measurements.';
   $('structureModeTitle').textContent=session.operation==='replace'?'REPLACE BUILDING':'PLACE NEW BUILDING';
   $('structurePropertyLabel').textContent=session.propertyId;
   for(const [id,value] of Object.entries({
@@ -548,6 +564,14 @@ function syncPropertyEditUI3I() {
   $('propertyEditPanel3I').hidden = !active;
   if (!active) return;
   $('propertyEditTarget3I').textContent = session.propertyId;
+  const measured=propertyMeasurements4C(project.city,session);
+  if(measured) $('propertyPreviewMeasurements4C').textContent=
+    'Width '+formatPrecision4C(measured.width)+' · Depth '+formatPrecision4C(measured.depth)+
+    ' · Area '+formatPrecision4C(measured.area)+' (Δ '+formatPrecision4C(measured.areaDelta)+')'+
+    ' · Center '+formatPrecision4C(measured.x)+', '+formatPrecision4C(measured.y)+
+    ' · Offset '+formatPrecision4C(measured.dx)+', '+formatPrecision4C(measured.dy);
+  for(const id of ['propertyNudgeLeft4C','propertyNudgeRight4C','propertyNudgeUp4C','propertyNudgeDown4C'])
+    $(id).disabled=session.selectedCorner===null || Boolean(session.drag);
   $('propertyEditCorner3I').textContent = session.selectedCorner === null
     ? 'Click or drag a highlighted corner to select it.'
     : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
@@ -847,11 +871,36 @@ window.addEventListener('keydown', e => {
     return;
   }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+  // Arrow nudges only when the map canvas has focus, never in text inputs.
+  if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)
+      && (e.target===canvas || document.activeElement===canvas)) {
+    const direction=e.key.slice(5), target=propertyEditSession?.isActive?'property'
+      :buildingEditSession?.isActive?'building':buildingPlacementSession?.isActive?'structure':null;
+    const stepId=target==='property'?'propertyNudgeStep4C'
+      :target==='building'?'buildingNudgeStep4C':'structureNudgeStep4C';
+    if(target && precisionNudge4C(target,direction,Number($(stepId).value)))e.preventDefault();
+    if(target)return;
+  }
   if (e.key === 'Enter' && workspaceShell?.state.section === 'city' && editor.mode === 'points') {
     e.preventDefault();
     editor.finish();
   }
   if (e.key === 'Delete' || e.key === 'Backspace') {
+    const previewActive=propertyEditSession?.isActive||buildingEditSession?.isActive||buildingPlacementSession?.isActive;
+    if (workspaceShell?.state.section==='city' && editor.mode==='pan') {
+      // Delete never removes a record behind an active uncommitted preview.
+      if (previewActive)return;
+      if(e.key!=='Delete')return;
+      const selected=workspaceShell.state.selection;
+      if(selected?.kind==='property' && project?.city.properties.some(p=>p.id===selected.id)){
+        e.preventDefault();deleteProperty4A(selected.id);return;
+      }
+      if(selected?.kind==='building'){
+        const building=project?.city.buildings.find(b=>b.id===selected.id);
+        if(building){e.preventDefault();deleteStructureBuilding3H(building.propertyId,building.id);return;}
+      }
+      return;
+    }
     e.preventDefault();
     if (workspaceShell?.state.section === 'landscape' && terrainPanel?.editor.mode !== 'pan') terrainPanel.editor.removePoint();
     else if (workspaceShell?.state.section === 'landscape' && waterPanel?.editor.mode !== 'pan') waterPanel.editor.removePoint();
@@ -1186,6 +1235,27 @@ for (const [id,convert] of Object.entries(buildingPreviewInputs))
       $('buildingPreviewStatus').textContent='Invalid preview value. Width and depth must stay within 20–400% of the original.';
       $(id).value='';
     }
+  });
+// Dev 4c: buttons and numeric/drag inputs share the exact same preview APIs.
+const precisionDirections4C = Object.freeze({
+  Left:['x',-1],Right:['x',1],Up:['y',-1],Down:['y',1]
+});
+function precisionNudge4C(target,direction,step) {
+  const [axis,sign]=precisionDirections4C[direction]??[];
+  if(!axis || !project || workspaceShell?.state.section!=='city')return false;
+  if(target==='building')return nudgeBuilding4C(buildingEditSession,axis==='x'?'dx':'dy',sign,step);
+  if(target==='property')return nudgePropertyCorner4C(propertyEditSession,axis,sign,step);
+  if(target==='structure')return nudgeStructure4C(buildingPlacementSession,axis==='x'?'u':'v',sign,step);
+  return false;
+}
+for(const [target,idPrefix,stepId] of [
+  ['building','buildingNudge','buildingNudgeStep4C'],
+  ['property','propertyNudge','propertyNudgeStep4C'],
+  ['structure','structureNudge','structureNudgeStep4C']
+]) for(const direction of Object.keys(precisionDirections4C))
+  $(idPrefix+direction+'4C').addEventListener('click',()=>{
+    if(!precisionNudge4C(target,direction,Number($(stepId).value)))
+      $('statusMessage').textContent='Choose a valid preview and nudge increment first.';
   });
 $('buildingPreviewReset').addEventListener('click',()=>{
   if (confirmBuildingPreviewDiscard()) buildingEditSession.reset();
