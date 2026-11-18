@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { PropertyEditSession3I } from '../src/editor/property-edit.js';
+import { propertyDividerFractions3I, propertyGeometryPreview3I } from '../src/core/property-geometry.js';
 import { buildingAppHarness } from './helpers/building-app.js';
 
 test('3I-A property preview clones geometry, preserves accepted records, selects corners and resets safely',()=>{
@@ -54,4 +55,31 @@ test('3I-A compiled UI starts, resets and cancels property preview without chang
   assert.equal(state.propertyEditSession.isActive,false);
   assert.equal(app.el('propertyEditPanel3I').hidden,true);
   assert.equal(JSON.stringify(state.project.city),original);
+});
+
+test('3I-B controlled quadrilateral reflow preserves plot IDs, exact area, and accepted city',()=>{
+  const project=createProject({seed:'3i-property-reflow',size:'small',morphology:'organic'});
+  const property=project.city.properties.find(p=>p.plotIds.length>1&&p.boundary.length===4);
+  assert.ok(property,'Expected a property containing multiple base plots.');
+  const original=JSON.stringify(project.city);
+  const divisions=propertyDividerFractions3I(project.city,property);
+  assert.equal(divisions.length,property.plotIds.length-1);
+  const preview=propertyGeometryPreview3I(project.city,property.id,property.boundary,divisions);
+  assert.ok(Math.abs(preview.area-preview.total)<.000001);
+  assert.deepEqual(preview.plots.map(p=>p.id),property.plotIds);
+  const moved=property.boundary.map(p=>({...p}));
+  moved[2]={x:moved[2].x-.1,y:moved[2].y-.1};
+  const changed=propertyGeometryPreview3I(project.city,property.id,moved,divisions);
+  assert.ok(Math.abs(changed.area-changed.total)<.000001);
+  assert.deepEqual(changed.plots.map(p=>p.id),property.plotIds);
+  assert.notDeepEqual(changed.plots,preview.plots);
+  const session=new PropertyEditSession3I();
+  assert.equal(session.start(project.city,property.id),true);
+  assert.equal(session.setCorner(2,moved[2]),true);
+  assert.equal(session.isPending,true);
+  assert.equal(session.setDivider(0,divisions[0]-.001),true);
+  assert.equal(session.plotsFor(project.city).length,property.plotIds.length);
+  session.reset();
+  assert.equal(session.isPending,false);
+  assert.equal(JSON.stringify(project.city),original);
 });
