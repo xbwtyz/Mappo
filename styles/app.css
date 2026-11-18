@@ -338,7 +338,7 @@
 .workspace-shell .map-viewport canvas.building-edit-mode{cursor:crosshair}
 
 /* 3G-B: compact floating controls for transient building geometry previews. */
-.building-transform-panel{position:absolute;z-index:4;top:62px;left:16px;width:286px;max-width:calc(100% - 110px);max-height:calc(100% - 137px);overflow:auto;background:rgba(19,38,42,.96);color:#e8ede5;border:1px solid #58858a;box-shadow:0 8px 28px #142c3480;border-radius:8px;padding:12px;font-size:11px}
+.building-transform-panel{position:absolute;z-index:11;top:62px;left:16px;width:286px;max-width:calc(100% - 110px);max-height:calc(100% - 137px);overflow:auto;background:rgba(19,38,42,.96);color:#e8ede5;border:1px solid #58858a;box-shadow:0 8px 28px #142c3480;border-radius:8px;padding:12px;font-size:11px}
 .building-transform-heading{display:flex;justify-content:space-between;gap:7px;align-items:center;color:#93ced0;font:700 10px ui-monospace,monospace;letter-spacing:.08em}
 .building-transform-heading span{font-size:9px;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .building-transform-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:11px 0}

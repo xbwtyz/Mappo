@@ -220,6 +220,8 @@ function exitBuildingEditing() {
   if (!buildingEditSession?.isActive) return true;
   if (!confirmBuildingPreviewDiscard()) return false;
   buildingEditSession.stop();
+  if (Number.isFinite(window.innerWidth) && window.innerWidth <= 900 && workspaceShell?.state.selection?.kind === 'building'
+    && workspaceShell.state.inspectorCollapsed) workspaceShell.dispatch({ type: 'inspector', collapsed: false });
   return true;
 }
 function updateMapIndicators() {
@@ -695,7 +697,12 @@ function enterBuildingEditing(id) {
   if (workspaceShell.state.section !== 'city') workspaceShell.navigate('city');
   stopWorkspaceTools('city');
   if (editor.mode !== 'pan') editor.setMode('pan');
-  return buildingEditSession.start(project.city, layers, id);
+  const started = buildingEditSession.start(project.city, layers, id);
+  // On narrow screens the Inspector is a map-covering drawer. Clear the map
+  // before showing draggable controls, then reopen the Inspector on exit.
+  if (started && Number.isFinite(window.innerWidth) && window.innerWidth <= 900)
+    workspaceShell.dispatch({ type: 'inspector', collapsed: true });
+  return started;
 }
 buildingWorkspace = new BuildingWorkspace({
   shell: workspaceShell,

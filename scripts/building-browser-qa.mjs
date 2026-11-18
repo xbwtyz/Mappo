@@ -144,8 +144,10 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       page.once('dialog',dialog=>dialog.accept());
       await page.locator('#buildingPreviewReset').click();
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isPending), false);
-      await page.getByRole('button', { name: 'Exit building editing' }).click();
+      if (viewport.width <= 900) await page.locator('#buildingPreviewCancel').click();
+      else await page.getByRole('button', { name: 'Exit building editing' }).click();
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isActive), false);
+      assert.equal(await page.locator('#workspaceInspector').isVisible(), true);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 3), 'Child Inspector must not overflow horizontally');
       await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
