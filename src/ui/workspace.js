@@ -38,9 +38,15 @@ export class WorkspaceShell {
   }
   dispatch(action) {
     const previous = this.state;
+    if (action.type === 'tools' && action.collapsed && !previous.toolsCollapsed) {
+      const scroll = Number(this.$('workspaceToolScroll').scrollTop ?? 0);
+      this.sectionScroll.set(previous.section, Number.isFinite(scroll) ? Math.max(0, scroll) : 0);
+    }
     this.state = workspaceTransition(previous, action);
     this.render();
     if (previous.toolsCollapsed !== this.state.toolsCollapsed || workspaceInspectorVisible(previous) !== workspaceInspectorVisible(this.state)) this.onLayout();
+    if (previous.toolsCollapsed && !this.state.toolsCollapsed)
+      this.$('workspaceToolScroll').scrollTop = this.sectionScroll.get(this.state.section) ?? 0;
     this.changed();
   }
   navigate(section) {
@@ -81,23 +87,48 @@ export class WorkspaceShell {
     });
     else this.renderInspector();
   }
+  snapshot() {
+    const scroll = Object.fromEntries(this.sectionScroll);
+    const current = Number(this.$('workspaceToolScroll').scrollTop ?? 0);
+    if (!this.state.toolsCollapsed || scroll[this.state.section] === undefined)
+      scroll[this.state.section] = Number.isFinite(current) ? Math.max(0, current) : 0;
+    const inspectorScroll = Number(this.$('workspaceInspectorScroll').scrollTop ?? 0);
+    return {
+      section: this.state.section,
+      toolsCollapsed: this.state.toolsCollapsed,
+      inspectorCollapsed: this.state.inspectorCollapsed,
+      inspectorPinned: this.state.inspectorPinned,
+      selection: this.state.selection ? { ...this.state.selection } : null,
+      sectionScroll: scroll,
+      inspectorScroll: Number.isFinite(inspectorScroll) ? Math.max(0, inspectorScroll) : 0
+    };
+  }
   reset({
     section = 'city',
-    selection = null
+    selection = null,
+    ui = null
   } = {}) {
     this.sectionScroll.clear();
-    this.$('workspaceToolScroll').scrollTop = 0;
-    this.state = workspaceInitialState();
-    this.state = workspaceTransition(this.state, {
+    for (const [id, value] of Object.entries(ui?.sectionScroll ?? {}))
+      if (WORKSPACE_SECTIONS.some(s => s.id === id) && Number.isFinite(value))
+        this.sectionScroll.set(id, Math.max(0, value));
+    const destination = ui?.section ?? section;
+    this.state = workspaceTransition(workspaceInitialState(), {
       type: 'navigate',
-      section
+      section: destination
     });
     if (selection) this.state = workspaceTransition(this.state, {
-      type: 'select',
-      selection,
-      reveal: true
+      type: 'select', selection, reveal: true
     });
+    if (ui) this.state = {
+      ...this.state,
+      toolsCollapsed: ui.toolsCollapsed ?? false,
+      inspectorCollapsed: ui.inspectorCollapsed ?? false,
+      inspectorPinned: ui.inspectorPinned ?? false
+    };
     this.render();
+    this.$('workspaceToolScroll').scrollTop = this.sectionScroll.get(destination) ?? 0;
+    this.$('workspaceInspectorScroll').scrollTop = ui?.inspectorScroll ?? 0;
     this.onLayout();
   }
   renderInspector() {
@@ -145,6 +176,8 @@ export class WorkspaceShell {
     this.renderInspector();
   }
   bind() {
+    this.$('workspaceToolScroll').addEventListener('scroll', () => this.changed());
+    this.$('workspaceInspectorScroll').addEventListener('scroll', () => this.changed());
     for (const [index, section] of WORKSPACE_SECTIONS.entries()) {
       const button = this.$(`workspaceTab-${section.id}`);
       button.addEventListener('click', () => this.navigate(section.id));

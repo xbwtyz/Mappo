@@ -216,7 +216,23 @@ export class LandscapeWorkspace {
   hit(point, zoom) {
     return hitLandscape(point, this.records(), zoom);
   }
+  snapshotUI() {
+    this.stash();
+    return {
+      filter: this.filter,
+      formCache: [...this.controlCache].slice(0, 80).map(([key, controls]) => ({
+        key, controls: { ...controls }
+      }))
+    };
+  }
+  restoreUI(saved) {
+    this.reset();
+    this.filter = saved?.filter ?? 'all';
+    for (const entry of saved?.formCache ?? [])
+      this.controlCache.set(entry.key, { ...entry.controls });
+  }
   reset() {
+    this.filter = 'all';
     this.controlCache.clear();
     this.context = null;
     this.hover = null;

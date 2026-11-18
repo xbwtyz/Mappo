@@ -51,6 +51,9 @@ import {
   isMapShortcutEvent
 } from './core/shortcut-scope.js';
 import {
+  WORKSPACE_DISCLOSURE_IDS
+} from './core/workspace-presentation.js';
+import {
   ProjectFiles
 } from './ui/project-files.js';
 import {
@@ -662,6 +665,12 @@ function captureWorkspace() {
     project,
     workspace: {
       schemaVersion: 1,
+      ui: {
+        ...workspaceShell.snapshot(),
+        disclosures: Object.fromEntries(WORKSPACE_DISCLOSURE_IDS.map(id => [id, Boolean($(id).open)])),
+        landscape: landscapeWorkspace.snapshotUI(),
+        districts: districtPanel.snapshotUI()
+      },
       panels: {
         districts: Boolean($('districtPanel').open),
         fortifications: Boolean($('fortificationPanel').open),
@@ -845,11 +854,41 @@ function applyProjectDocument(document) {
     terrainPanel.editor.select(restoredSelection.id);
     terrainPanel.refresh();
   }
-  landscapeWorkspace.reset();
+  landscapeWorkspace.restoreUI(workspace.ui?.landscape);
+  districtPanel.restoreUI(workspace.ui?.districts);
+  const savedUISelection = workspace.ui?.selection;
+  const isValidSelection = ref => ref?.kind === 'district'
+    ? next.city.districts.some(d => d.id === ref.id)
+    : ['water', 'terrain'].includes(ref?.kind)
+      ? Boolean(landscapeWorkspace.record(ref))
+      : ref?.kind === 'landscape-add' && landscapeWorkspace.available(ref.id);
+  const selectedUIRef = workspace.ui && Object.hasOwn(workspace.ui, 'selection')
+    ? (savedUISelection && isValidSelection(savedUISelection) ? savedUISelection : null)
+    : restoredSelection;
+  if (selectedUIRef?.kind === 'district' && districtPanel.editor.selectedDistrictId !== selectedUIRef.id) {
+    districtPanel.editor.selectedDistrictId = selectedUIRef.id;
+    districtPanel.editor.selectedBlockId = null;
+    districtPanel.refresh();
+  }
+  if (selectedUIRef?.kind === 'water') {
+    waterPanel.editor.selectFeature(selectedUIRef.id);
+    waterPanel.refresh();
+  }
+  if (selectedUIRef?.kind === 'terrain') {
+    terrainPanel.editor.select(selectedUIRef.id);
+    terrainPanel.refresh();
+  }
   workspaceShell.reset({
-    section: restoredSelection?.kind === 'district' ? 'districts' : restoredSelection ? 'landscape' : 'city',
-    selection: restoredSelection
+    section: selectedUIRef?.kind === 'district' ? 'districts' : selectedUIRef ? 'landscape' : 'city',
+    selection: selectedUIRef,
+    ui: workspace.ui
   });
+  if (['water', 'terrain', 'landscape-add'].includes(selectedUIRef?.kind))
+    landscapeWorkspace.loadControls(selectedUIRef);
+  landscapeWorkspace.render();
+  for (const id of WORKSPACE_DISCLOSURE_IDS)
+    if (workspace.ui?.disclosures?.[id] !== undefined)
+      $(id).open = workspace.ui.disclosures[id];
   editor.notify(draft.dirty ? 'Loaded city and unfinished outline edits. Generate only when ready to rebuild.' : 'Loaded city. Its exact saved geometry is ready to use.', Boolean(draft.error));
   updateDetails();
   updateViewport();

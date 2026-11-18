@@ -27,8 +27,28 @@ export class DistrictPanel {
     this.editor = new DistrictEditor();
     this.formDistrictId = null;
     this.formBlockId = null;
+    this.formCache = new Map();
     this.onRefresh = () => {};
     this.onMapSelect = () => {};
+  }
+  stashDraft() {
+    if (this.formDistrictId) this.formCache.set(this.formDistrictId, {
+      name: String(this.$('districtNameInput').value),
+      color: String(this.$('districtColorInput').value)
+    });
+  }
+  snapshotUI() {
+    this.stashDraft();
+    return {
+      formCache: [...this.formCache].slice(0, 80).map(([id, values]) => ({
+        id, ...values
+      }))
+    };
+  }
+  restoreUI(saved) {
+    this.formCache = new Map((saved?.formCache ?? []).map(entry => [
+      entry.id, { name: entry.name, color: entry.color }
+    ]));
   }
   message(text, error = false) {
     for (const id of ['districtMessage', 'districtGenerationMessage']) {
@@ -58,9 +78,12 @@ export class DistrictPanel {
       label: d.name
     })) : [])], district?.id);
     const selectionChanged = this.formDistrictId !== (district?.id ?? null);
+    if (selectionChanged && !resetControls) this.stashDraft();
+    if (resetControls) this.formCache.clear();
     if (resetControls || selectionChanged) {
-      this.$('districtNameInput').value = district?.name ?? '';
-      this.$('districtColorInput').value = district?.color ?? '#cba480';
+      const saved = !resetControls && district ? this.formCache.get(district.id) : null;
+      this.$('districtNameInput').value = saved?.name ?? district?.name ?? '';
+      this.$('districtColorInput').value = saved?.color ?? district?.color ?? '#cba480';
     }
     this.formDistrictId = district?.id ?? null;
     this.$('applyDistrictButton').disabled = !district;
@@ -113,6 +136,7 @@ export class DistrictPanel {
       const city = action();
       this.commit(city);
       // Refill committed values without clearing independent generation inputs.
+      if (this.formDistrictId) this.formCache.delete(this.formDistrictId);
       this.formDistrictId = null;
       this.formBlockId = null;
       this.refresh();
