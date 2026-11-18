@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The current feature-branch build is **0.1-dev.ui5d**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The current feature-branch build is **0.1-dev.ui6d**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.ui5d",
+  "appVersion": "0.1-dev.ui6d",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -224,3 +224,7 @@ Pending city and local edit counts are derived at runtime from existing accepted
 ## Phase 5B–5D workspace feedback
 
 Contextual Undo labels, validation error indicators and per-section scroll positions are runtime-only UI state. Undo invokes the existing editor histories and the existing project/save system stores these unmodified histories as before. Section scroll memory resets on project load; portable persistence of the workspace shell is reserved for Phase 6. No project, workspace or envelope schema additions were made (9/1/1).
+
+## Phase 6D additive workspace presentation fields (schema remains 1)
+
+`workspace.ui` is optional in every project and recovery snapshot. It includes a known active section (`city`, `landscape`, `districts`, `defenses`), panel collapse/pinning booleans, a nullable `{kind,id}` inspector selection, nonnegative bounded scroll positions, known disclosure open flags, a landscape filter and bounded per-feature raw input entries, plus per-district unfinished name/color drafts. All known fields are type-checked before restoration; unknown compatible nested properties survive re-saving. Historical files without `workspace.ui` load using the previous active-mode/selection fallbacks. Geometry/IDs remain authoritative in `project`, with no rebuild during file load or recovery. Project schema 9, workspace schema 1, container version 1 are unchanged.

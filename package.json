@@ -1,6 +1,6 @@
 {
   "name": "mappo",
-  "version": "0.1.0-dev.ui6c",
+  "version": "0.1.0-dev.ui6d",
   "private": true,
   "type": "module",
   "description": "Offline-first procedural medieval city mapper",

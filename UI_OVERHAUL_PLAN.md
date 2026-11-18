@@ -103,9 +103,9 @@ Acceptance: users can tell what is selected, which tool is active, which drafts 
 - [x] Preserve Escape, Delete, Ctrl/Cmd+Z, Space-drag, zoom, and Fit behavior without intercepting normal text entry (6B).
 - [x] Retain gesture cancellation and prevent a hidden/inactive editor from handling map input (6B).
 - [x] Adapt the panel layout for ordinary desktops, a 32:9 ultrawide display, and narrow screens while keeping map access available (6C; native graphical review in Phase 7).
-- [ ] Save/restore active section, panel collapse/pin states, relevant selections, and pending inputs alongside the existing editor drafts/history.
-- [ ] Define additive workspace fields with safe defaults for older saves; preserve unknown compatible data.
-- [ ] Keep accepted city geometry authoritative on load and browser recovery.
+- [x] Save/restore active section, panel collapse/pin states, relevant selections, and pending inputs alongside the existing editor drafts/history (6D).
+- [x] Define additive workspace fields with safe defaults for older saves; preserve unknown compatible data (6D).
+- [x] Keep accepted city geometry authoritative on load and browser recovery (6D).
 
 Acceptance: the workspace is readable and navigable across supported layouts, and save/load/recovery restore the intended UI state without changing saved geometry. Older projects open with sensible navigation defaults.
 

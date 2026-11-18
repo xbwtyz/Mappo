@@ -1,6 +1,6 @@
 # Workspace UI architecture
 
-The `0.1-dev.ui6c` feature-branch build implements Phases 1–5 plus Phase 6A–6C of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
+The `0.1-dev.ui6d` feature-branch build implements Phases 1–5 plus Phase 6A–6D of `UI_OVERHAUL_PLAN.md` around the existing working editor. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 
 ## Module boundaries
 
@@ -91,3 +91,7 @@ The base workspace CSS applies 13px principal labels/buttons, approximately 38�
 ## Phase 6C: responsive map geometry
 
 CSS defines a stable map-first grid with explicit zero-minimum columns, ~900px overlay transition, narrow viewport drawers, and bounded sidebar widths for 32:9 ultrawides. Camera.resize() remains geometry-neutral: resizing controls preserves center and zoom. Narrow viewport and ultrawide graphical testing remains for the separate release-quality Phase 7.
+
+## Phase 6D: portable UI state and bounded input caches
+
+Workspace format 1 gains an optional additive `workspace.ui` record, validated separately from the accepted city; it holds shell state, scroll positions, disclosure flags, landscape filter/input caches and district name/color drafts. The existing `workspace.view.landscapeSelection` remains for legacy compatibility. `createProjectDocument` retains unknown compatible nested UI keys alongside known values. New projects and older saved cities without `ui` use the original fallback selection and City defaults. Loads never regenerate accepted roads/buildings/blocks or change project schema 9. The same canonical envelope flows through browser recovery.

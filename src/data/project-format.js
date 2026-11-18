@@ -144,6 +144,20 @@ export function createProjectDocument(project, workspace = defaultWorkspace(proj
       ...(copyJson(workspace.fortificationEditor?.controls || {}))
     };
   }
+  if (workspace.ui !== undefined || previous.ui !== undefined) {
+    const oldUI = previous.ui || {}, newUI = workspace.ui || {};
+    document.workspace.ui = {
+      ...oldUI, ...copyJson(newUI),
+      sectionScroll: { ...(oldUI.sectionScroll || {}), ...(newUI.sectionScroll || {}) },
+      disclosures: { ...(oldUI.disclosures || {}), ...(newUI.disclosures || {}) },
+      landscape: {
+        ...(oldUI.landscape || {}), ...(newUI.landscape || {})
+      },
+      districts: {
+        ...(oldUI.districts || {}), ...(newUI.districts || {})
+      }
+    };
+  }
   if (workspace.districtEditor === undefined && previous.districtEditor === undefined) delete document.workspace.districtEditor;
   return document;
 }

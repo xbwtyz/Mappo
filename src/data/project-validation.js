@@ -2,6 +2,9 @@ import {
   TERRAIN_LIMIT
 } from '../core/terrain-geometry.js';
 import {
+  validateWorkspacePresentation
+} from '../core/workspace-presentation.js';
+import {
   validateTerrainCity
 } from '../core/terrain-model.js';
 import {
@@ -459,5 +462,6 @@ export function validateWorkspace(workspace, project) {
   if (view.layers.fortifications !== undefined && typeof view.layers.fortifications !== 'boolean') throw new Error('Invalid fortification layer visibility.');
   if (project) validateFortificationEditorState(workspace.fortificationEditor, project.city);
   if (workspace.panels !== undefined && (!workspace.panels || typeof workspace.panels.districts !== 'boolean' || typeof workspace.panels.fortifications !== 'boolean' || (workspace.panels.water !== undefined && typeof workspace.panels.water !== 'boolean') || (workspace.panels.terrain !== undefined && typeof workspace.panels.terrain !== 'boolean'))) throw new Error('Invalid saved panel state.');
+  validateWorkspacePresentation(workspace.ui);
   return workspace;
 }

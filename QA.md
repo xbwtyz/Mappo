@@ -273,3 +273,7 @@ Shortcut scope and multi-pointer regressions verify form editing immunity, activ
 ## Phase 6C (`0.1-dev.ui6c`)
 
 CSS media breakpoints are exercised by a source contract test for desktop/ultrawide/mobile rules, with Camera resizing unit checks for unchanged world center, zoom and screen conversions. Native Firefox and Chrome graphical layout checks remain Phase 7 tasks and are not claimed here.
+
+## Phase 6D (`0.1-dev.ui6d`)
+
+The optional workspace UI state is validated with strict bounded values and safe defaults, including selection resolution and per-feature input caches. Compatibility checks confirm schema-9 saved geometry, legacy no-UI files and retained extension properties survive round trips. Browser recovery uses the same validated document. Full compiled-app and save/load regressions and root/distribution build parity are required before Phase 6 sign-off; native Firefox/Chrome graphical QA remains scheduled for Phase 7.
