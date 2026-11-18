@@ -154,6 +154,40 @@
           <p id="buildingPreviewStatus" role="status" aria-live="polite">Change a building to check its placement.</p>
           <ul id="buildingPreviewIssues" class="building-preview-issues" aria-label="Building validation problems" hidden></ul>
         </section>
+        <section id="buildingStructurePanel" class="building-transform-panel building-structure-panel" aria-label="Add or replace a building" hidden>
+          <div class="building-transform-heading"><strong id="structureModeTitle">PLACE BUILDING</strong><span id="structurePropertyLabel">—</span></div>
+          <p class="hint">Drag the ghost or click within the property to position it. New buildings only exist after Apply to City.</p>
+          <div class="building-transform-values">
+            <label>Footprint <select id="structurePreset">
+              <option value="rectangle">Rectangle</option><option value="L">L-shape</option>
+              <option value="courtyard">Courtyard</option><option value="T">T-shape</option>
+            </select></label>
+            <label>Use <select id="structureType">
+              <option value="house">House</option><option value="shop">Shop</option>
+              <option value="workshop">Workshop</option><option value="inn">Inn</option>
+              <option value="warehouse">Warehouse</option><option value="guildhall">Guildhall</option>
+              <option value="temple">Temple</option>
+            </select></label>
+            <label>Frontage position <input id="structureU" type="number" step="0.5"></label>
+            <label>Inward position <input id="structureV" type="number" step="0.5"></label>
+            <label>Width <input id="structureWidth" type="number" min="2" max="250" step="0.5"></label>
+            <label>Depth <input id="structureDepth" type="number" min="2" max="250" step="0.5"></label>
+            <label>Angle ° <input id="structureAngle" type="number" min="-360" max="360" step="1"></label>
+          </div>
+          <div class="building-transform-actions">
+            <button type="button" id="structureApply" disabled>Apply to City</button>
+            <button type="button" id="structureCancel">Cancel preview</button>
+          </div>
+          <p id="structureStatus" role="status" aria-live="polite">Choose a location to place the footprint.</p>
+          <ul id="structureIssues" class="building-preview-issues" aria-label="Building placement problems" hidden></ul>
+        </section>
+        <section id="buildingStructureHistoryPanel" class="building-structure-history" aria-label="Property building change history" hidden>
+          <p id="structureHistoryStatus">Structural changes to this property · session-only history</p>
+          <div class="building-history-actions">
+            <button type="button" id="structureUndo" disabled>Undo structure</button>
+            <button type="button" id="structureRedo" disabled>Redo structure</button>
+          </div>
+        </section>
         <div class="map-controls workspace-map-controls" role="group" aria-label="Map navigation">
           <button id="panButton" title="Click a property, landscape feature or open block to inspect; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
           <button id="workspaceUndoButton" class="workspace-context-undo" title="No outline edit to undo" disabled>Undo outline</button>
