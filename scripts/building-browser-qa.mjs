@@ -81,6 +81,30 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         siteContext.blockId, siteContext.roadId, ...siteContext.plotIds, ...siteContext.buildingIds])
         assert.ok(informationText.includes(text), `Property information contains ${text}`);
       if (siteContext.district) assert.ok(informationText.includes(siteContext.district));
+      // Dev 4b: focus is based on the actual selected property bounds, not
+      // the map cursor or the city's overall extent. It must not edit city data.
+      const focusBefore=await page.evaluate(()=>{
+        const c=__buildingQA.state().camera;return {x:c.x,y:c.y,zoom:c.zoom};
+      });
+      await page.getByRole('button',{name:'Zoom to this property'}).click();
+      const focused=await page.evaluate(id=>{
+        const {camera,project,workspaceShell}=__buildingQA.state();
+        const p=project.city.properties.find(p=>p.id===id),xs=p.boundary.map(q=>q.x),ys=p.boundary.map(q=>q.y);
+        return {x:camera.x,y:camera.y,zoom:camera.zoom,
+          expectedX:(Math.min(...xs)+Math.max(...xs))/2,
+          expectedY:(Math.min(...ys)+Math.max(...ys))/2,
+          selected:workspaceShell.state.selection?.id};
+      },id);
+      assert.ok(Math.abs(focused.x-focused.expectedX)<.001);
+      assert.ok(Math.abs(focused.y-focused.expectedY)<.001);
+      assert.ok(focused.zoom>=.18&&focused.zoom<=12);
+      assert.equal(focused.selected,id);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      if(viewport.width<=900)await page.locator('#workspaceOpenInspector').click();
+      await page.evaluate(c=>{
+        const state=__buildingQA.state();state.camera.x=c.x;state.camera.y=c.y;
+        state.camera.zoom=c.zoom;__buildingQA.draw();
+      },focusBefore);
       await page.screenshot({ path: new URL(`${label}-selected.png`, output).pathname });
       // 3I-A: real browser property preview must not mutate any accepted land.
       await page.getByRole('button', { name: 'Edit property geometry' }).click();

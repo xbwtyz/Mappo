@@ -28,6 +28,7 @@ import { drawBuildingSelection } from './building-selection.js';
 import { drawBuildingEditOverlay } from './building-editing.js';
 import { drawBuildingStructurePreview3H } from './building-structure-preview.js';
 import { drawPropertySelection } from './property-selection.js';
+import { drawSelectionAccents4B } from './selection-accents-4b.js';
 import { drawPropertyEditPreview3I } from './property-edit-preview.js';
 import {
   STREET_WIDTHS,
@@ -271,6 +272,7 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
   drawTerrainDraft(ctx, camera, terrainEditor);
   drawPropertySelection(ctx, camera, city, layers, landscapeSelection, propertyHover);
   drawBuildingSelection(ctx, camera, city.buildings, layers, landscapeSelection, buildingHover);
+  drawSelectionAccents4B(ctx,camera,city,layers,landscapeSelection);
   drawLandscapeSelection(ctx, camera, landscapeRecords(waterEditor?.features ?? city.waterFeatures, terrainEditor?.features ?? city.terrainFeatures), landscapeSelection, landscapeHover);
   drawBuildingEditOverlay(ctx, camera, city, layers, buildingEditSession);
   drawBuildingStructurePreview3H(ctx, camera, city, layers, buildingPlacementSession);

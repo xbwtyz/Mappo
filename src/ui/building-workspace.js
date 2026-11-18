@@ -5,7 +5,7 @@ import { buildingInformation } from '../core/selection-information.js';
 // Building inspection owns only transient view state. Accepted city records,
 // geometry tools and their histories remain owned by their existing modules.
 export class BuildingWorkspace {
-  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, exitEditing = () => false, startReplacement = () => false, deleteBuilding = () => false, confirmPreviewDiscard = () => true, onSelect = () => {}, draw = () => {} }) {
+  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, exitEditing = () => false, startReplacement = () => false, deleteBuilding = () => false, focusSelection = () => false, confirmPreviewDiscard = () => true, onSelect = () => {}, draw = () => {} }) {
     this.shell = shell;
     this.getCity = getCity;
     this.getLayers = getLayers;
@@ -15,6 +15,7 @@ export class BuildingWorkspace {
     this.exitEditing = exitEditing;
     this.startReplacement = startReplacement;
     this.deleteBuilding = deleteBuilding;
+    this.focusSelection = focusSelection;
     this.confirmPreviewDiscard = confirmPreviewDiscard;
     this.onSelect = onSelect;
     this.draw = draw;
@@ -52,6 +53,7 @@ export class BuildingWorkspace {
             run:()=>this.deleteBuilding(property?.id,id)
           }]
         });
+        information.sections.push({title:'Map navigation',rows:[],actions:[{label:'Zoom to this building',run:()=>this.focusSelection({kind:'building',id:building.id})}]});
         return {
           type: 'Building',
           title: information.title,
