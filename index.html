@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.3ga</title>
+  <title>Mappo — City editor · 0.1-dev.3gb</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -343,12 +343,28 @@
 /* 3G-A: temporary building editing state, not an accepted geometry draft. */
 .workspace-shell .map-viewport canvas.building-edit-mode{cursor:crosshair}
 
+/* 3G-B: compact floating controls for transient building geometry previews. */
+.building-transform-panel{position:absolute;z-index:11;top:62px;left:16px;width:286px;max-width:calc(100% - 110px);max-height:calc(100% - 137px);overflow:auto;background:rgba(19,38,42,.96);color:#e8ede5;border:1px solid #58858a;box-shadow:0 8px 28px #142c3480;border-radius:8px;padding:12px;font-size:11px}
+.building-transform-heading{display:flex;justify-content:space-between;gap:7px;align-items:center;color:#93ced0;font:700 10px ui-monospace,monospace;letter-spacing:.08em}
+.building-transform-heading span{font-size:9px;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.building-transform-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:11px 0}
+.building-transform-panel button{min-height:30px;border:1px solid #547077;border-radius:4px;background:#20373c;color:#e9f0e9;font:650 11px ui-sans-serif,system-ui,sans-serif}
+.building-transform-panel button:hover{background:#305158}
+.building-transform-panel button[aria-pressed=true]{background:#9cd1d4;color:#173338;border-color:#a2e1e2}
+.building-transform-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.building-transform-values label{display:flex;flex-direction:column;gap:4px;color:#c2d4cd;font-size:10px}
+.building-transform-values input{width:100%;height:32px;min-width:0;padding:5px 7px;font:12px ui-monospace,monospace;background:#10282d;border:1px solid #547077;color:#e4eee8}
+.building-transform-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.building-transform-panel #buildingPreviewCancel{border-color:#a9846c;color:#f0cfb8}
+.building-transform-panel p{margin:9px 0 1px;color:#b8d3d1;font-size:10px;line-height:1.5}
+@media(max-width:670px){.building-transform-panel{left:8px;top:auto;bottom:56px;width:min(262px,calc(100% - 18px));max-width:none;max-height:47%;padding:9px}.building-transform-values{gap:5px}.building-transform-values input{height:29px}}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3ga</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.3gb</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -467,6 +483,26 @@
       <div id="mapViewport" class="map-viewport">
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
+        <section id="buildingTransformPanel" class="building-transform-panel" aria-label="Building transform preview tools" hidden>
+          <div class="building-transform-heading"><strong>BUILDING PREVIEW</strong><span id="buildingPreviewTarget">—</span></div>
+          <div class="building-transform-modes" role="group" aria-label="Choose building transform tool">
+            <button type="button" id="buildingToolMove" aria-pressed="true">Move</button>
+            <button type="button" id="buildingToolRotate" aria-pressed="false">Rotate</button>
+            <button type="button" id="buildingToolResize" aria-pressed="false">Resize</button>
+          </div>
+          <div class="building-transform-values">
+            <label>X offset <input id="buildingOffsetX" type="number" step="0.5" value="0"></label>
+            <label>Y offset <input id="buildingOffsetY" type="number" step="0.5" value="0"></label>
+            <label>Angle ° <input id="buildingAngle" type="number" step="1" value="0"></label>
+            <label>Width <input id="buildingWidth" type="number" min="0.1" step="0.5"></label>
+            <label>Depth <input id="buildingDepth" type="number" min="0.1" step="0.5"></label>
+          </div>
+          <div class="building-transform-actions">
+            <button type="button" id="buildingPreviewReset">Reset preview</button>
+            <button type="button" id="buildingPreviewCancel">Cancel preview</button>
+          </div>
+          <p id="buildingPreviewStatus" role="status" aria-live="polite">Draft only. No changes are applied or saved. Leaving edit mode discards the preview.</p>
+        </section>
         <div class="map-controls workspace-map-controls" role="group" aria-label="Map navigation">
           <button id="panButton" title="Click a property, landscape feature or open block to inspect; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
           <button id="workspaceUndoButton" class="workspace-context-undo" title="No outline edit to undo" disabled>Undo outline</button>
@@ -2010,7 +2046,7 @@ function buildingInformation(city, building) {
 // Building inspection owns only transient view state. Accepted city records,
 // geometry tools and their histories remain owned by their existing modules.
 class BuildingWorkspace {
-  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, exitEditing = () => false, onSelect = () => {}, draw = () => {} }) {
+  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, exitEditing = () => false, confirmPreviewDiscard = () => true, onSelect = () => {}, draw = () => {} }) {
     this.shell = shell;
     this.getCity = getCity;
     this.getLayers = getLayers;
@@ -2018,6 +2054,7 @@ class BuildingWorkspace {
     this.getEditSession = getEditSession;
     this.enterEditing = enterEditing;
     this.exitEditing = exitEditing;
+    this.confirmPreviewDiscard = confirmPreviewDiscard;
     this.onSelect = onSelect;
     this.draw = draw;
     this.hover = null;
@@ -2036,12 +2073,12 @@ class BuildingWorkspace {
         information.sections.push({
           title: 'Building footprint editing',
           rows: editing ? [
-            ['Mode', 'Active · 3G-A context only'],
-            ['Controls', 'Click another roof on this property; drag to pan; Escape to exit.'],
-            ['Geometry', 'Unchanged; move, rotate and resize arrive in 3G-B.']
+            ['Mode', '3G-B preview · ' + this.getEditSession().tool],
+            ['Controls', 'Drag with Move, Rotate or Resize; numeric adjustments appear on the map.'],
+            ['Geometry', this.getEditSession().isPending ? 'Unsaved preview · not applied' : 'Original geometry unchanged']
           ] : [
             ['Mode', 'Inspection only'],
-            ['Geometry', 'Edit mode prepares the building without changing its shape.']
+            ['Geometry', 'Edit mode previews transformations without altering saved geometry.']
           ],
           actions: [{
             label: editing ? 'Exit building editing' : 'Edit building footprint',
@@ -2067,6 +2104,7 @@ class BuildingWorkspace {
   select(ref) {
     if (!this.record(ref)) return false;
     const edit = this.getEditSession();
+    if (edit?.isActive && edit.buildingId !== ref.id && !this.confirmPreviewDiscard()) return false;
     if (edit?.isActive && !edit.focus(this.getCity(), this.getLayers(), ref.id)) edit.stop();
     this.onSelect();
     this.setHover(null);
@@ -2170,7 +2208,7 @@ class PropertyWorkspace {
   }
   select(ref) {
     if (!this.record(ref)) return false;
-    this.exitEditing();
+    if (this.exitEditing() === false) return false;
     this.onSelect();
     this.setHover(null);
     this.buildings.setHover(null);
@@ -2423,13 +2461,113 @@ class IdentityWorkspace {
 }
 
 
+// src/core/building-transform.js
+
+const BUILDING_TRANSFORM_LIMITS = Object.freeze({ minimumScale: 0.2, maximumScale: 4 });
+const EMPTY_BUILDING_TRANSFORM = Object.freeze({ dx: 0, dy: 0, angle: 0, scaleX: 1, scaleY: 1 });
+
+function buildingFrame(building) {
+  if (!Array.isArray(building?.footprint) || building.footprint.length < 3) throw new Error('A building needs a footprint.');
+  const b = boundsOf(building.footprint);
+  return { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2,
+    width: Math.max(1e-6, b.maxX - b.minX), height: Math.max(1e-6, b.maxY - b.minY) };
+}
+
+function normalizeBuildingTransform(values = {}) {
+  const value = { ...EMPTY_BUILDING_TRANSFORM, ...values };
+  for (const key of ['dx', 'dy', 'angle', 'scaleX', 'scaleY'])
+    if (!Number.isFinite(value[key])) throw new Error('Building transform fields must be finite numbers.');
+  for (const key of ['scaleX', 'scaleY'])
+    if (value[key] < BUILDING_TRANSFORM_LIMITS.minimumScale || value[key] > BUILDING_TRANSFORM_LIMITS.maximumScale)
+      throw new Error('Preview scale must remain between 20% and 400%.');
+  if (Math.abs(value.dx) > 1e5 || Math.abs(value.dy) > 1e5 || Math.abs(value.angle) > Math.PI * 400)
+    throw new Error('Preview position or rotation is outside the supported range.');
+  return value;
+}
+
+function buildingTransformDirty(value) {
+  return Boolean(value && (Math.abs(value.dx) > 1e-8 || Math.abs(value.dy) > 1e-8
+    || Math.abs(value.angle) > 1e-8 || Math.abs(value.scaleX - 1) > 1e-8
+    || Math.abs(value.scaleY - 1) > 1e-8));
+}
+
+function transformBuildingPoint(point, frame, input = {}) {
+  const transform = normalizeBuildingTransform(input);
+  const x = (point.x - frame.x) * transform.scaleX;
+  const y = (point.y - frame.y) * transform.scaleY;
+  const c = Math.cos(transform.angle), s = Math.sin(transform.angle);
+  return { x: frame.x + transform.dx + x * c - y * s, y: frame.y + transform.dy + x * s + y * c };
+}
+
+function previewBuildingGeometry(building, input = {}) {
+  const transform = normalizeBuildingTransform(input);
+  const frame = buildingFrame(building);
+  const map = point => transformBuildingPoint(point, frame, transform);
+  const footprint = building.footprint.map(map);
+  const holes = (building.holes ?? []).map(hole => hole.map(map));
+  const area = Math.abs(polygonSignedArea(footprint))
+    - holes.reduce((total, hole) => total + Math.abs(polygonSignedArea(hole)), 0);
+  return { ...building, footprint, holes,
+    entrance: building.entrance ? map(building.entrance) : null,
+    accessPath: (building.accessPath ?? []).map(map),
+    orientation: (building.orientation ?? 0) + transform.angle,
+    area
+  };
+}
+
+function buildingPreviewPivot(building, transform = EMPTY_BUILDING_TRANSFORM) {
+  const frame = buildingFrame(building);
+  return { x: frame.x + transform.dx, y: frame.y + transform.dy };
+}
+
+function buildingPreviewHandles(building, input = {}, zoom = 1) {
+  const transform = normalizeBuildingTransform(input);
+  const frame = buildingFrame(building);
+  const rot = transform.angle, c = Math.cos(rot), s = Math.sin(rot);
+  const halfW = frame.width * transform.scaleX / 2, halfH = frame.height * transform.scaleY / 2;
+  const center = buildingPreviewPivot(building, transform);
+  const localPoint = (sx, sy, outside = 0) => ({
+    x: center.x + sx * halfW * c - (sy * halfH + outside) * s,
+    y: center.y + sx * halfW * s + (sy * halfH + outside) * c
+  });
+  const points = [];
+  for (const [sx, sy] of [[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]])
+    points.push({ ...localPoint(sx, sy), kind: 'resize', sx, sy });
+  points.push({ ...localPoint(0, -1, -28 / Math.max(0.18, zoom)), kind: 'rotate', sx: 0, sy: -1 });
+  return points;
+}
+
+function buildingPreviewHit(building, transform, point, tool, zoom = 1) {
+  const handles = buildingPreviewHandles(building, transform, zoom);
+  if (tool === 'rotate' || tool === 'resize') {
+    const hits = handles.filter(h => h.kind === tool)
+      .map(handle => ({ handle, d: Math.hypot(handle.x - point.x, handle.y - point.y) * zoom }))
+      .filter(x => x.d <= 13).sort((a,b) => a.d - b.d);
+    return hits[0]?.handle ?? null;
+  }
+  if (tool !== 'move') return null;
+  const preview = previewBuildingGeometry(building, transform);
+  if (!pointInPolygon(point, preview.footprint) ||
+    preview.holes.some(hole => pointInPolygon(point, hole))) return null;
+  return { kind: 'move' };
+}
+
+
 // src/editor/building.js
-// Transient building edit context: no mutations to city records or saved projects.
+
+// All 3G-B transforms are ephemeral preview state, never accepted city geometry.
 class BuildingEditSession {
-  constructor(changed = () => {}) { this.active = null; this.changed = changed; }
+  constructor(changed = () => {}) {
+    this.active = null;
+    this.changed = changed;
+    this.tool = 'move';
+    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
+    this.drag = null;
+  }
   get isActive() { return this.active !== null; }
   get buildingId() { return this.active?.buildingId ?? null; }
   get propertyId() { return this.active?.propertyId ?? null; }
+  get isPending() { return this.isActive && buildingTransformDirty(this.transform); }
   isEditing(id) { return Boolean(this.active && this.active.buildingId === id); }
   resolve(city, layers, id, propertyId = null) {
     if (!city || layers?.buildings === false || typeof id !== 'string') return null;
@@ -2439,11 +2577,23 @@ class BuildingEditSession {
     if (propertyId !== null && property.id !== propertyId) return null;
     return { buildingId: id, propertyId: property.id };
   }
+  source(city) {
+    return this.isActive ? city?.buildings?.find(b => b.id === this.buildingId && b.propertyId === this.propertyId) ?? null : null;
+  }
+  previewFor(city) {
+    const source = this.source(city);
+    return source ? previewBuildingGeometry(source, this.transform) : null;
+  }
   start(city, layers, id) {
     const target = this.resolve(city, layers, id);
     if (!target) return false;
     if (this.isEditing(id)) return true;
-    this.active = target; this.changed(); return true;
+    this.active = target;
+    this.drag = null;
+    this.tool = 'move';
+    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
+    this.changed();
+    return true;
   }
   allows(city, layers, id) {
     return Boolean(this.active && this.resolve(city, layers, id, this.active.propertyId));
@@ -2452,11 +2602,44 @@ class BuildingEditSession {
     if (!this.allows(city, layers, id)) return false;
     if (this.isEditing(id)) return true;
     this.active = this.resolve(city, layers, id, this.active.propertyId);
-    this.changed(); return true;
+    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
+    this.drag = null;
+    this.tool = 'move';
+    this.changed();
+    return true;
+  }
+  setTool(tool) {
+    if (!this.isActive || !['move','rotate','resize'].includes(tool)) return false;
+    if (this.drag) this.endGesture(true);
+    if (this.tool === tool) return true;
+    this.tool = tool;
+    this.changed();
+    return true;
+  }
+  setTransform(values) {
+    if (!this.isActive) return false;
+    let next;
+    try { next = normalizeBuildingTransform({ ...this.transform, ...values }); }
+    catch { return false; }
+    this.transform = next;
+    this.changed();
+    return true;
+  }
+  reset() {
+    if (!this.isActive) return false;
+    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
+    this.drag = null;
+    this.changed();
+    return true;
   }
   stop() {
     if (!this.active) return false;
-    this.active = null; this.changed(); return true;
+    this.active = null;
+    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
+    this.drag = null;
+    this.tool = 'move';
+    this.changed();
+    return true;
   }
   reconcile(city, layers, selection) {
     if (!this.active) return true;
@@ -2464,6 +2647,42 @@ class BuildingEditSession {
     if (!live || selection?.kind !== 'building' || selection.id !== live.buildingId) {
       this.stop(); return false;
     }
+    return true;
+  }
+  beginGesture(city, layers, point, zoom = 1) {
+    if (!this.isActive || this.drag || !this.resolve(city, layers, this.buildingId, this.propertyId)) return false;
+    const source = this.source(city);
+    const handle = buildingPreviewHit(source, this.transform, point, this.tool, zoom);
+    if (!handle) return false;
+    const initial = { ...this.transform };
+    const pivot = buildingPreviewPivot(source, initial);
+    this.drag = { handle, start: { ...point }, initial, pivot,
+      frame: buildingFrame(source), startAngle: Math.atan2(point.y-pivot.y,point.x-pivot.x) };
+    return true;
+  }
+  moveGesture(point) {
+    if (!this.drag || !Number.isFinite(point?.x) || !Number.isFinite(point?.y)) return false;
+    const { handle, initial, start, pivot, frame, startAngle } = this.drag;
+    const dx = point.x - start.x, dy = point.y - start.y;
+    if (handle.kind === 'move') return this.setTransform({ dx: initial.dx + dx, dy: initial.dy + dy });
+    if (handle.kind === 'rotate') {
+      const angle = Math.atan2(point.y-pivot.y,point.x-pivot.x);
+      let delta = angle - startAngle;
+      if (delta > Math.PI) delta -= Math.PI * 2;
+      if (delta < -Math.PI) delta += Math.PI * 2;
+      return this.setTransform({ angle: initial.angle + delta });
+    }
+    const c = Math.cos(initial.angle), s = Math.sin(initial.angle);
+    const localDX = dx*c + dy*s, localDY = -dx*s + dy*c;
+    const scaleX = handle.sx ? Math.min(4,Math.max(.2,initial.scaleX + localDX*2*handle.sx/frame.width)) : initial.scaleX;
+    const scaleY = handle.sy ? Math.min(4,Math.max(.2,initial.scaleY + localDY*2*handle.sy/frame.height)) : initial.scaleY;
+    return this.setTransform({ scaleX, scaleY });
+  }
+  endGesture(cancelled = false) {
+    if (!this.drag) return false;
+    const old = this.drag;
+    this.drag = null;
+    if (cancelled) this.setTransform(old.initial);
     return true;
   }
 }
@@ -7441,7 +7660,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.3ga';
+const APP_VERSION = '0.1-dev.3gb';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -10233,35 +10452,61 @@ function drawBuildingSelection(ctx, camera, buildings, layers, selection, hover)
 
 
 // src/renderer/building-editing.js
-// 3G-A: edit-only visual guides; no draggable handles until 3G-B.
+
+// Temporary overlay: the accepted building is drawn by the normal renderer,
+// while this draft remains a separate, visibly tentative geometry preview.
 function drawBuildingEditOverlay(ctx, camera, city, layers, edit) {
   if (!edit?.isActive || layers?.buildings === false) return;
   const building = city?.buildings?.find(item => item.id === edit.buildingId);
   const property = city?.properties?.find(item => item.id === edit.propertyId);
   if (!building || !property || building.propertyId !== property.id
-    || !(property.buildingIds ?? []).includes(building.id)) return;
-  const polygons = [building.footprint, ...(building.holes ?? [])].filter(points => points?.length >= 3);
-  if (!polygons.length) return;
+      || !(property.buildingIds ?? []).includes(building.id)) return;
+  const preview = edit.previewFor(city);
+  if (!preview?.footprint?.length) return;
+  const trace = geometry => {
+    ctx.beginPath();
+    for (const polygon of [geometry.footprint,...(geometry.holes ?? [])]) {
+      if (!polygon || polygon.length < 3) continue;
+      polygon.forEach((point,i) => {
+        const p = camera.worldToScreen(point);
+        if (i) ctx.lineTo(p.x,p.y);
+        else ctx.moveTo(p.x,p.y);
+      });
+      ctx.closePath();
+    }
+  };
   ctx.save();
   ctx.lineJoin = 'round';
-  ctx.beginPath();
-  for (const polygon of polygons) {
-    polygon.forEach((point, i) => {
-      const p = camera.worldToScreen(point);
-      if (i) ctx.lineTo(p.x, p.y);
-      else ctx.moveTo(p.x, p.y);
-    });
-    ctx.closePath();
+  if (buildingTransformDirty(edit.transform)) {
+    trace(building);
+    ctx.setLineDash([5,5]);
+    ctx.strokeStyle = 'rgba(90, 76, 57, .8)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.setLineDash([]);
   }
-  ctx.fillStyle = 'rgba(32,140,151,.12)';
+  trace(preview);
+  ctx.fillStyle = 'rgba(32, 140, 151, .18)';
   ctx.fill('evenodd');
   ctx.strokeStyle = '#fffaf0'; ctx.lineWidth = 5; ctx.setLineDash([]); ctx.stroke();
-  ctx.strokeStyle = '#14788a'; ctx.lineWidth = 2.5; ctx.stroke();
-  for (const point of building.footprint) {
-    const p = camera.worldToScreen(point);
-    ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#fffaf0'; ctx.fill(); ctx.lineWidth = 1.5;
-    ctx.strokeStyle = '#14788a'; ctx.stroke();
+  ctx.strokeStyle = '#14788a'; ctx.lineWidth = 2.5; ctx.setLineDash([8,3]); ctx.stroke();
+  ctx.setLineDash([]);
+  const points = buildingPreviewHandles(building,edit.transform,camera.zoom)
+    .filter(h => h.kind === edit.tool);
+  if (edit.tool === 'move') {
+    const p = camera.worldToScreen(buildingPreviewPivot(building,edit.transform));
+    ctx.beginPath();
+    ctx.moveTo(p.x-7,p.y); ctx.lineTo(p.x+7,p.y);
+    ctx.moveTo(p.x,p.y-7); ctx.lineTo(p.x,p.y+7);
+    ctx.strokeStyle = '#14788a'; ctx.lineWidth = 2; ctx.stroke();
+  }
+  for (const handle of points) {
+    const p = camera.worldToScreen(handle);
+    ctx.beginPath();
+    if (handle.kind === 'resize') ctx.rect(p.x-5,p.y-5,10,10);
+    else ctx.arc(p.x,p.y,7,0,Math.PI*2);
+    ctx.fillStyle = '#fffaf0'; ctx.fill();
+    ctx.strokeStyle = '#14788a'; ctx.lineWidth = 2; ctx.stroke();
   }
   ctx.restore();
 }
@@ -10604,7 +10849,7 @@ function drawOutline(ctx, camera, editor) {
 
 // src/ui/controllers.js
 
-function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, onTap = () => {}, onHover = () => {}) {
+function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, onTap = () => {}, onHover = () => {}, transform = {}) {
   let active = false,
     panning = false,
     lastX = 0,
@@ -10613,7 +10858,8 @@ function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, edit
     tapEligible = false,
     travel = 0,
     tapPoint = null,
-    activePointer = null;
+    activePointer = null,
+    transforming = false;
   window.addEventListener('keydown', e => {
     if (e.code === 'Space' && isMapShortcutEvent(e, document.activeElement)) {
       space = true;
@@ -10635,7 +10881,10 @@ function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, edit
     if (!active) return;
     active = false;
     activePointer = null;
-    if (!panning) editor.up(camera.zoom, cancelled);
+    if (transforming) {
+      transform.end?.(cancelled);
+      transforming = false;
+    } else if (!panning) editor.up(camera.zoom, cancelled);
     else if (!cancelled && tapEligible && travel <= 4) onTap(tapPoint);
     panning = false;
     canvas.classList.remove('is-dragging');
@@ -10657,9 +10906,11 @@ function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, edit
     travel = 0;
     tapEligible = event.button === 0 && !space && editor.mode === 'pan';
     tapPoint = world(event);
+    transforming = event.button === 0 && !space && editor.mode === 'pan' && Boolean(transform.begin?.(tapPoint, camera.zoom));
+    if (transforming) { panning = false; tapEligible = false; }
     canvas.setPointerCapture(event.pointerId);
     if (panning) canvas.classList.add('is-dragging');
-    else editor.down(world(event), camera.zoom);
+    else if (!transforming) editor.down(world(event), camera.zoom);
   });
   canvas.addEventListener('pointermove', event => {
     if (active && activePointer !== event.pointerId) return;
@@ -10667,7 +10918,10 @@ function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, edit
       onHover(editor.mode === 'pan' ? world(event) : null);
       return;
     }
-    if (panning) {
+    if (transforming) {
+      transform.move?.(world(event));
+      requestDraw();
+    } else if (panning) {
       travel += Math.hypot(event.clientX - lastX, event.clientY - lastY);
       camera.pan(event.clientX - lastX, event.clientY - lastY);
       lastX = event.clientX;
@@ -11016,6 +11270,7 @@ class OutlineEditor {
 
 
 
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -11127,15 +11382,48 @@ function requestDraw() {
   });
 }
 
+// Preview controls show transient geometry; never write into project or its save envelope.
+function syncBuildingTransformUI() {
+  const session = buildingEditSession;
+  const shown = Boolean(session?.isActive && project && session.source(project.city));
+  $('buildingTransformPanel').hidden = !shown;
+  if (!shown) return;
+  const frame = buildingFrame(session.source(project.city));
+  const t = session.transform;
+  $('buildingPreviewTarget').textContent = session.buildingId;
+  for (const [id,value] of Object.entries({
+    buildingOffsetX: t.dx, buildingOffsetY: t.dy,
+    buildingAngle: t.angle*180/Math.PI, buildingWidth: frame.width*t.scaleX,
+    buildingDepth: frame.height*t.scaleY
+  })) $(id).value = Number(value.toFixed(2)).toString();
+  for (const tool of ['Move','Rotate','Resize'])
+    $('buildingTool'+tool).setAttribute('aria-pressed',String(session.tool===tool.toLowerCase()));
+  $('buildingPreviewStatus').textContent = session.isPending
+    ? 'UNSAVED PREVIEW · No city changes. Leaving or switching buildings discards this draft.'
+    : 'Preview only. Nothing is applied or saved. Select Move, Rotate or Resize.';
+}
+function confirmBuildingPreviewDiscard() {
+  if (!buildingEditSession?.isPending) return true;
+  return typeof window.confirm !== 'function' || window.confirm('Discard the unsaved building preview? The city remains unchanged.');
+}
+function exitBuildingEditing() {
+  if (!buildingEditSession?.isActive) return true;
+  if (!confirmBuildingPreviewDiscard()) return false;
+  buildingEditSession.stop();
+  if (Number.isFinite(window.innerWidth) && window.innerWidth <= 900 && workspaceShell?.state.selection?.kind === 'building'
+    && workspaceShell.state.inspectorCollapsed) workspaceShell.dispatch({ type: 'inspector', collapsed: false });
+  return true;
+}
 function updateMapIndicators() {
   clearMapHover();
+  syncBuildingTransformUI();
   const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
     waterActive = waterPanel && waterPanel.editor.mode !== 'pan',
     buildingActive = buildingEditSession?.isActive ?? false;
   canvas.classList.toggle('building-edit-mode', buildingActive);
   canvas.classList.toggle('drawing', Boolean(terrainActive || waterActive || editor.mode !== 'pan'));
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!terrainActive && !waterActive && editor.mode === mode));
-  $('toolHint').textContent = buildingActive ? 'BUILDING EDIT MODE · Click another roof on this property · Drag to pan · Escape to exit · No geometry changes in 3G-A' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+  $('toolHint').textContent = buildingActive ? 'BUILDING PREVIEW · Move, Rotate or Resize · Space/middle drag pans · Escape discards · No geometry changes are saved' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
   $('draftBadge').textContent = buildingActive ? '● BUILDING EDIT MODE' : editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
 }
 
@@ -11292,7 +11580,7 @@ $('editButton').addEventListener('click', () => {
   editor.notify('Drag outline points. Double-click an edge to add a point.');
 });
 $('panButton').addEventListener('click', () => {
-  buildingEditSession?.stop();
+  if (!exitBuildingEditing()) return;
   terrainPanel?.editor.setMode('pan');
   waterPanel?.editor.setMode('pan');
   editor.setMode('pan');
@@ -11363,6 +11651,7 @@ window.addEventListener('keydown', e => {
     else if (workspaceShell?.state.section === 'city') editor.removePoint();
   }
   if (e.key === 'Escape') {
+    if (!exitBuildingEditing()) return;
     stopWorkspaceTools();
     e.preventDefault();
   }
@@ -11598,7 +11887,12 @@ function enterBuildingEditing(id) {
   if (workspaceShell.state.section !== 'city') workspaceShell.navigate('city');
   stopWorkspaceTools('city');
   if (editor.mode !== 'pan') editor.setMode('pan');
-  return buildingEditSession.start(project.city, layers, id);
+  const started = buildingEditSession.start(project.city, layers, id);
+  // On narrow screens the Inspector is a map-covering drawer. Clear the map
+  // before showing draggable controls, then reopen the Inspector on exit.
+  if (started && Number.isFinite(window.innerWidth) && window.innerWidth <= 900)
+    workspaceShell.dispatch({ type: 'inspector', collapsed: true });
+  return started;
 }
 buildingWorkspace = new BuildingWorkspace({
   shell: workspaceShell,
@@ -11607,7 +11901,8 @@ buildingWorkspace = new BuildingWorkspace({
   getProperties: () => propertyWorkspace,
   getEditSession: () => buildingEditSession,
   enterEditing: enterBuildingEditing,
-  exitEditing: () => buildingEditSession.stop(),
+  exitEditing: exitBuildingEditing,
+  confirmPreviewDiscard: confirmBuildingPreviewDiscard,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -11620,7 +11915,7 @@ propertyWorkspace = new PropertyWorkspace({
   getCity: () => project?.city,
   getLayers: () => layers,
   buildings: buildingWorkspace,
-  exitEditing: () => buildingEditSession.stop(),
+  exitEditing: exitBuildingEditing,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -11639,6 +11934,28 @@ identityWorkspace = new IdentityWorkspace({
 identityWorkspace.bind();
 workspaceShell.bind();
 landscapeWorkspace.bind();
+for (const tool of ['Move','Rotate','Resize'])
+  $('buildingTool'+tool).addEventListener('click',()=>buildingEditSession.setTool(tool.toLowerCase()));
+const buildingPreviewInputs = {
+  buildingOffsetX: (v,frame) => ({dx:v}),
+  buildingOffsetY: (v,frame) => ({dy:v}),
+  buildingAngle: (v,frame) => ({angle:v*Math.PI/180}),
+  buildingWidth: (v,frame) => ({scaleX:v/frame.width}),
+  buildingDepth: (v,frame) => ({scaleY:v/frame.height})
+};
+for (const [id,convert] of Object.entries(buildingPreviewInputs))
+  $(id).addEventListener('change',()=>{
+    if (!buildingEditSession?.isActive || !project) return;
+    const n=Number($(id).value), frame=buildingFrame(buildingEditSession.source(project.city));
+    if ($(id).value==='' || !Number.isFinite(n) || !buildingEditSession.setTransform(convert(n,frame))) {
+      $('buildingPreviewStatus').textContent='Invalid preview value. Width and depth must stay within 20–400% of the original.';
+      $(id).value='';
+    }
+  });
+$('buildingPreviewReset').addEventListener('click',()=>{
+  if (confirmBuildingPreviewDiscard()) buildingEditSession.reset();
+});
+$('buildingPreviewCancel').addEventListener('click',exitBuildingEditing);
 
 const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
 // An editor cannot receive map input unless its section is visible.
@@ -11691,6 +12008,10 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
   const propertyHit = hit ? null : propertyWorkspace.hit(point, camera.zoom);
   propertyWorkspace.setHover(propertyHit);
   canvas.classList.toggle('feature-hover', Boolean(hit || propertyHit));
+}, {
+  begin: (point,zoom) => Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom)),
+  move: point => buildingEditSession?.moveGesture(point),
+  end: cancelled => buildingEditSession?.endGesture(cancelled)
 });
 function clearMapHover() {
   landscapeWorkspace?.setHover(null);

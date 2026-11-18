@@ -5,7 +5,7 @@ import { buildingInformation } from '../core/selection-information.js';
 // Building inspection owns only transient view state. Accepted city records,
 // geometry tools and their histories remain owned by their existing modules.
 export class BuildingWorkspace {
-  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, exitEditing = () => false, onSelect = () => {}, draw = () => {} }) {
+  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, exitEditing = () => false, confirmPreviewDiscard = () => true, onSelect = () => {}, draw = () => {} }) {
     this.shell = shell;
     this.getCity = getCity;
     this.getLayers = getLayers;
@@ -13,6 +13,7 @@ export class BuildingWorkspace {
     this.getEditSession = getEditSession;
     this.enterEditing = enterEditing;
     this.exitEditing = exitEditing;
+    this.confirmPreviewDiscard = confirmPreviewDiscard;
     this.onSelect = onSelect;
     this.draw = draw;
     this.hover = null;
@@ -31,12 +32,12 @@ export class BuildingWorkspace {
         information.sections.push({
           title: 'Building footprint editing',
           rows: editing ? [
-            ['Mode', 'Active · 3G-A context only'],
-            ['Controls', 'Click another roof on this property; drag to pan; Escape to exit.'],
-            ['Geometry', 'Unchanged; move, rotate and resize arrive in 3G-B.']
+            ['Mode', '3G-B preview · ' + this.getEditSession().tool],
+            ['Controls', 'Drag with Move, Rotate or Resize; numeric adjustments appear on the map.'],
+            ['Geometry', this.getEditSession().isPending ? 'Unsaved preview · not applied' : 'Original geometry unchanged']
           ] : [
             ['Mode', 'Inspection only'],
-            ['Geometry', 'Edit mode prepares the building without changing its shape.']
+            ['Geometry', 'Edit mode previews transformations without altering saved geometry.']
           ],
           actions: [{
             label: editing ? 'Exit building editing' : 'Edit building footprint',
@@ -62,6 +63,7 @@ export class BuildingWorkspace {
   select(ref) {
     if (!this.record(ref)) return false;
     const edit = this.getEditSession();
+    if (edit?.isActive && edit.buildingId !== ref.id && !this.confirmPreviewDiscard()) return false;
     if (edit?.isActive && !edit.focus(this.getCity(), this.getLayers(), ref.id)) edit.stop();
     this.onSelect();
     this.setHover(null);

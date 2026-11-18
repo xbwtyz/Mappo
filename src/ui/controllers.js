@@ -1,6 +1,6 @@
 import { isMapShortcutEvent } from '../core/shortcut-scope.js';
 
-export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, onTap = () => {}, onHover = () => {}) {
+export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, onTap = () => {}, onHover = () => {}, transform = {}) {
   let active = false,
     panning = false,
     lastX = 0,
@@ -9,7 +9,8 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     tapEligible = false,
     travel = 0,
     tapPoint = null,
-    activePointer = null;
+    activePointer = null,
+    transforming = false;
   window.addEventListener('keydown', e => {
     if (e.code === 'Space' && isMapShortcutEvent(e, document.activeElement)) {
       space = true;
@@ -31,7 +32,10 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     if (!active) return;
     active = false;
     activePointer = null;
-    if (!panning) editor.up(camera.zoom, cancelled);
+    if (transforming) {
+      transform.end?.(cancelled);
+      transforming = false;
+    } else if (!panning) editor.up(camera.zoom, cancelled);
     else if (!cancelled && tapEligible && travel <= 4) onTap(tapPoint);
     panning = false;
     canvas.classList.remove('is-dragging');
@@ -53,9 +57,11 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     travel = 0;
     tapEligible = event.button === 0 && !space && editor.mode === 'pan';
     tapPoint = world(event);
+    transforming = event.button === 0 && !space && editor.mode === 'pan' && Boolean(transform.begin?.(tapPoint, camera.zoom));
+    if (transforming) { panning = false; tapEligible = false; }
     canvas.setPointerCapture(event.pointerId);
     if (panning) canvas.classList.add('is-dragging');
-    else editor.down(world(event), camera.zoom);
+    else if (!transforming) editor.down(world(event), camera.zoom);
   });
   canvas.addEventListener('pointermove', event => {
     if (active && activePointer !== event.pointerId) return;
@@ -63,7 +69,10 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
       onHover(editor.mode === 'pan' ? world(event) : null);
       return;
     }
-    if (panning) {
+    if (transforming) {
+      transform.move?.(world(event));
+      requestDraw();
+    } else if (panning) {
       travel += Math.hypot(event.clientX - lastX, event.clientY - lastY);
       camera.pan(event.clientX - lastX, event.clientY - lastY);
       lastX = event.clientX;

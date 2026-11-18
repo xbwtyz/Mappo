@@ -2,9 +2,9 @@
 
 **Mappo** is an offline-first procedural medieval city mapper built from modular JavaScript and distributed as a **single standalone HTML file**.
 
-[**Launch stable Mappo (main)**](https://xbwtyz.github.io/Mappo/) · [**Download 3G-A preview HTML**](dist/mappo-0.1-dev.3ga.html) · [**User Guide**](docs/user-guide.md) · [**Roadmap**](docs/ROADMAP.md)
+[**Launch stable Mappo (main)**](https://xbwtyz.github.io/Mappo/) · [**Download 3G-B preview HTML**](dist/mappo-0.1-dev.3gb.html) · [**User Guide**](docs/user-guide.md) · [**Roadmap**](docs/ROADMAP.md)
 
-**3G-A preview version:** `0.1-dev.3ga` (feature branch; not yet merged). **Stable published release:** 3F-D (`0.1-dev.3fd`). **Next proposed implementation:** 3G-B.
+**3G-B preview:** `0.1-dev.3gb` on `feature/building-transform-3gb` (not yet merged). **Stable published version:** 3G-A (`0.1-dev.3ga`). **Next proposed checkpoint:** 3G-C validation.
 
 ## What it can do
 
@@ -12,12 +12,12 @@
 - Generate connected streets, a civic square, plots, varied properties and individual building footprints in **Organic**, **Planned**, **Radial** or **Linear** patterns.
 - Add and edit rivers, coastlines, lakes, mountain ranges and bridges; manage districts and perimeter defenses.
 - Select properties first, inspect their individual buildings, and apply independent custom names and descriptive uses.
-- Enter **Building Edit Mode** from a building Inspector, switch between structures on that property, and see visual-only footprint guides (3G-A).
+- Enter **Building Edit Mode** from the Inspector. In the 3G-B preview, drag to move, rotate or resize individual building footprints or enter precise values. All transforms are temporary visuals—not applied to the city or portable saves.
 - Download and load portable `.mappo.json` projects, with browser-local recovery snapshots.
 
 ## Start here
 
-1. Open the [hosted stable app](https://xbwtyz.github.io/Mappo/), or save [the 3G-A standalone preview](dist/mappo-0.1-dev.3ga.html) from this branch and open it in a modern browser.
+1. Open the [hosted stable app](https://xbwtyz.github.io/Mappo/), or save [the 3G-B standalone preview](dist/mappo-0.1-dev.3gb.html) from this branch and open it in a modern browser.
 2. In **City**, draw or choose an outline, then place a main square.
 3. Select a street pattern and seed, then click **Generate city**.
 4. Use **Landscape**, **Districts**, **Defenses**, **Layers**, and the **Inspector** to explore and edit.
@@ -38,7 +38,7 @@ See the [User Guide](docs/user-guide.md) for controls, save/recovery details and
 The build embeds local JavaScript modules and CSS into a self-contained HTML artifact. **Node.js 20.11+** is required for development, but neither installation nor a server is required to run the resulting HTML. Standard build/Node tests need no `npm install`.
 
 ```bash
-npm run build   # write index.html and dist/mappo-0.1-dev.3ga.html
+npm run build   # write index.html and dist/mappo-0.1-dev.3gb.html
 npm test        # run Node regression tests
 npm run check   # build, then test
 ```
@@ -49,4 +49,4 @@ The generated root `index.html` and matching versioned `dist/` HTML are byte-for
 
 [Documentation index](docs/README.md) · [Developer Guide](docs/development.md) · [Technical references](docs/reference/README.md) · [Development history](docs/history/README.md) · [Roadmap](docs/ROADMAP.md)
 
-**Current limits:** Building Edit Mode is *visual and selection-only* in 3G-A; moving, rotating, resizing, adding or replacing buildings, PNG export and 3D viewing are not implemented. The portable project schema remains version 9. [3G-A design and QA](docs/history/3g/MILESTONE_3GA_QA.md).
+**Current limits:** 3G-B Move/Rotate/Resize is **preview-only**. No transformation is applied or saved until later checkpoints establish geometry validation and persistence. Building placement/replacement, PNG export and 3D remain future work. Portable project schema stays at 9. [3G-B QA](docs/history/3g/MILESTONE_3GB_QA.md).

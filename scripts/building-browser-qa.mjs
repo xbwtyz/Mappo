@@ -121,8 +121,33 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.evaluate(() => __buildingQA.state().files.captureDocument().workspace.ui.selection?.id), buildingId);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
       await page.screenshot({ path: new URL(`${label}-building-edit.png`, output).pathname });
-      await page.getByRole('button', { name: 'Exit building editing' }).click();
+      // 3G-B: modify all three preview axes through actual UI controls, then
+      // verify unchanged accepted geometry and a clean reset before exiting.
+      await page.locator('#buildingOffsetX').fill('7');
+      await page.locator('#buildingOffsetX').press('Tab');
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.transform.dx), 7);
+      await page.locator('#buildingToolRotate').click();
+      await page.locator('#buildingAngle').fill('30');
+      await page.locator('#buildingAngle').press('Tab');
+      assert.ok(await page.evaluate(() => Math.abs(__buildingQA.state().buildingEditSession.transform.angle)>0.4));
+      await page.locator('#buildingToolResize').click();
+      const currentWidth=await page.evaluate(() => {
+        const b=__buildingQA.state().buildingEditSession.source(__buildingQA.state().project.city);
+        return Math.max(...b.footprint.map(p=>p.x))-Math.min(...b.footprint.map(p=>p.x));
+      });
+      await page.locator('#buildingWidth').fill(String(currentWidth*1.2));
+      await page.locator('#buildingWidth').press('Tab');
+      assert.ok(await page.evaluate(() => __buildingQA.state().buildingEditSession.transform.scaleX>1.1));
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
+      assert.ok(await page.evaluate(() => __buildingQA.state().buildingEditSession.isPending));
+      await page.screenshot({ path: new URL(`${label}-building-preview.png`, output).pathname });
+      page.once('dialog',dialog=>dialog.accept());
+      await page.locator('#buildingPreviewReset').click();
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isPending), false);
+      if (viewport.width <= 900) await page.locator('#buildingPreviewCancel').click();
+      else await page.getByRole('button', { name: 'Exit building editing' }).click();
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isActive), false);
+      assert.equal(await page.locator('#workspaceInspector').isVisible(), true);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 3), 'Child Inspector must not overflow horizontally');
       await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Property');
