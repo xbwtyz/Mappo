@@ -1,7 +1,7 @@
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 
-const giCopy=copyJson, giSame=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const giCopy=copyJson, giPropertyHistorySame=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const PROPERTY_FIELDS=Object.freeze(['boundary','frontage','area','local','frame']);
 
 function snapshot(project,propertyId){
@@ -23,7 +23,7 @@ function snapshot(project,propertyId){
 function restore(project,propertyId,target){
   const candidate=giCopy(project),city=candidate.city,site=city.properties.find(p=>p.id===propertyId);
   if(!site||site.blockId!==target.blockId
-      ||!giSame(site.plotIds,target.plotIds)||!giSame(site.buildingIds,target.buildingIds))
+      ||!giPropertyHistorySame(site.plotIds,target.plotIds)||!giPropertyHistorySame(site.buildingIds,target.buildingIds))
     throw new Error('Property memberships changed since this edit.');
   for(const key of PROPERTY_FIELDS)site[key]=giCopy(target.geometry[key]);
   for(const plotRef of target.plots){
@@ -54,7 +54,7 @@ export class PropertyGeometryHistory3I {
   entry(direction,id){return (direction==='undo'?this.past:this.future).findLast(row=>row.propertyId===id)??null;}
   record(before,after,propertyId){
     const from=snapshot(before,propertyId),to=snapshot(after,propertyId);
-    if(giSame(from,to))return false;
+    if(giPropertyHistorySame(from,to))return false;
     this.future=this.future.filter(row=>row.propertyId!==propertyId);
     this.past.push({propertyId,from,to,serial:++this.serial});
     while(this.past.length+this.future.length>this.limit){
@@ -68,7 +68,7 @@ export class PropertyGeometryHistory3I {
     if(!['undo','redo'].includes(direction)||!propertyId)return false;
     const entry=this.entry(direction,propertyId);
     if(!entry)return false;
-    try{return giSame(snapshot(project,propertyId),direction==='undo'?entry.to:entry.from);}
+    try{return giPropertyHistorySame(snapshot(project,propertyId),direction==='undo'?entry.to:entry.from);}
     catch{return false;}
   }
   prepare(project,workspace,propertyId,direction){
@@ -79,7 +79,7 @@ export class PropertyGeometryHistory3I {
       const candidate=restore(project,propertyId,direction==='undo'?entry.from:entry.to);
       validateStoredProject(candidate);
       const saved=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
-      if(!giSame(candidate.city,saved.project.city))throw new Error('Portable save/load changed the restored city.');
+      if(!giPropertyHistorySame(candidate.city,saved.project.city))throw new Error('Portable save/load changed the restored city.');
       return {ok:true,candidate:saved.project,entry};
     }catch(error){return {ok:false,reason:'Property '+direction+' rejected: '+error.message};}
   }
