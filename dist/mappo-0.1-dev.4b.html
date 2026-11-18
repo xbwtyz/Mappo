@@ -396,6 +396,11 @@
 .property-edit-panel-3i #propertyEditCancel3I{border-color:#a9846c;color:#f0cfb8}
 @media(max-width:670px){.property-edit-panel-3i{left:8px;right:auto;top:auto;bottom:56px;width:min(262px,calc(100% - 18px));max-height:47%}}
 
+/* Dev 4a: independent, always-reachable property deletion history controls. */
+#propertyDeletionUndo4A,#propertyDeletionRedo4A{white-space:nowrap;font-size:10px;border-color:#7a6552}
+.workspace-shell .map-topline .workspace-panel-restores{flex-wrap:wrap;gap:5px}
+@media(max-width:670px){#propertyDeletionUndo4A,#propertyDeletionRedo4A{padding:5px 6px;font-size:9px}}
+
 /* Dev 4b: compact viewport access, readable controls and contained Inspector scroll. */
 @media(max-width:900px){
   .workspace-shell .workspace-map-button{min-height:32px;min-width:40px}
@@ -524,7 +529,7 @@
       </div>
     </aside>
     <main class="map-shell" aria-label="City map workspace">
-      <div class="map-topline"><div class="workspace-panel-restores"><button id="workspaceOpenTools" class="workspace-map-button" aria-label="Show tools" hidden>Tools</button><button id="workspaceOpenInspector" class="workspace-map-button" aria-label="Show inspector">Inspector</button></div><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><div class="workspace-menu-anchor layers-menu-anchor"><button id="layersMenuButton" class="workspace-map-button" aria-expanded="false" aria-controls="layersMenu">Layers <span aria-hidden="true">⌄</span></button>
+      <div class="map-topline"><div class="workspace-panel-restores"><button id="workspaceOpenTools" class="workspace-map-button" aria-label="Show tools" hidden>Tools</button><button id="workspaceOpenInspector" class="workspace-map-button" aria-label="Show inspector">Inspector</button><button id="propertyDeletionUndo4A" class="workspace-map-button" title="Undo last property deletion" hidden>Undo Delete</button><button id="propertyDeletionRedo4A" class="workspace-map-button" title="Redo last property deletion" hidden>Redo Delete</button></div><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><div class="workspace-menu-anchor layers-menu-anchor"><button id="layersMenuButton" class="workspace-map-button" aria-expanded="false" aria-controls="layersMenu">Layers <span aria-hidden="true">⌄</span></button>
           <section id="layersMenu" class="workspace-menu layer-panel" aria-labelledby="layersMenuButton" hidden>
             <div class="workspace-menu-heading"><h2>Layers</h2><button id="layersMenuClose" class="workspace-icon-button" aria-label="Close Layers menu">×</button></div>
             <fieldset><legend>Buildings &amp; land</legend><label><input type="checkbox" id="buildingsLayer" checked> Building footprints</label><label><input type="checkbox" id="propertiesLayer"> Property boundaries</label><label><input type="checkbox" id="plotsLayer"> Plot divisions</label></fieldset>
@@ -2297,8 +2302,8 @@ function buildingsOnProperty(city, property) {
 
 
 class PropertyWorkspace {
-  constructor({ shell, getCity, getLayers, buildings, exitEditing = () => {}, startBuilding = () => false, startPropertyEdit = () => false, focusSelection = () => false, onSelect = () => {}, draw = () => {} }) {
-    Object.assign(this, { shell, getCity, getLayers, buildings, exitEditing, startBuilding, startPropertyEdit, focusSelection, onSelect, draw });
+  constructor({ shell, getCity, getLayers, buildings, exitEditing = () => {}, startBuilding = () => false, startPropertyEdit = () => false, deleteProperty = () => false, focusSelection = () => false, onSelect = () => {}, draw = () => {} }) {
+    Object.assign(this, { shell, getCity, getLayers, buildings, exitEditing, startBuilding, startPropertyEdit, deleteProperty, focusSelection, onSelect, draw });
     this.hover = null;
     shell.registerInspector('property', { resolve: id => this.descriptor(id) });
   }
@@ -2324,6 +2329,7 @@ class PropertyWorkspace {
     }));
     buildingSection.actions.push({label:'Add building to this property',disabled:this.getLayers().buildings===false,run:()=>this.startBuilding(property.id)});
     information.sections.push({title:'Property geometry (3I)',rows:[['Edit status','Draft geometry is validated before atomic Apply; accepted land is unchanged until then.']],actions:[{label:'Edit property geometry',run:()=>this.startPropertyEdit(property.id)}]});
+    information.sections.push({title:'Property actions (Dev 4a)', rows:[['Deletion','Removes this property and all owned plots and buildings; safe session Undo is available.']], actions:[{label:'Delete property…',run:()=>this.deleteProperty(property.id)}]});
     information.sections.push({title:'Map navigation',rows:[],actions:[{label:'Zoom to this property',run:()=>this.focusSelection({kind:'property',id:property.id})}]});
     return {
       type: 'Property', title: information.title,
@@ -12460,7 +12466,151 @@ function focusCameraOnSelection4B(camera,city,selection) {
 }
 
 
+// src/editor/property-deletion.js
+
+
+// Dev 4a: all parcel deletion and restoration occurs on cloned project data.
+// History stays session-only and never enters portable documents.
+const d4aCopy = copyJson;
+const d4aEqual = (a,b) => JSON.stringify(a) === JSON.stringify(b);
+const d4aRows = (records, predicate) => records
+  .map((record,index) => ({index,record:d4aCopy(record)}))
+  .filter(row => predicate(row.record));
+const d4aIndex = (rows) => rows.map(row => row.record.id).sort();
+const d4aFail = message => ({ok:false,reason:message,candidate:null});
+
+function d4aSnapshot(project,propertyId) {
+  const city=project?.city, index=city?.properties.findIndex(p => p.id===propertyId) ?? -1;
+  if(index<0) throw new Error('The selected property no longer exists.');
+  const property=d4aCopy(city.properties[index]);
+  const plots=d4aRows(city.plots,p=>p.propertyId===propertyId);
+  const buildings=d4aRows(city.buildings,b=>b.propertyId===propertyId);
+  if(!d4aEqual(d4aIndex(plots),[...property.plotIds].sort())
+     || !d4aEqual(d4aIndex(buildings),[...property.buildingIds].sort()))
+    throw new Error('Property contents have inconsistent references.');
+  const open=city.openSpaces.find(o=>o.blockId===property.blockId)??null;
+  return {propertyId,propertyIndex:index,property,plots,buildings,
+    openSpaceId:open?.id??null,openArea:open?.area??null};
+}
+
+function d4aOpenArea(city, snapshot) {
+  if(snapshot.openSpaceId===null) return null;
+  const record=city.openSpaces.find(o=>o.id===snapshot.openSpaceId&&o.blockId===snapshot.property.blockId);
+  if(!record) throw new Error('The block open-ground record has changed.');
+  return record.area;
+}
+
+function d4aDeleteCandidate(project,snapshot) {
+  const candidate=d4aCopy(project), city=candidate.city, propertyId=snapshot.propertyId;
+  const current=d4aSnapshot(project,propertyId);
+  if(!d4aEqual(current,snapshot)) throw new Error('Property changed before deletion.');
+  city.properties=city.properties.filter(p=>p.id!==propertyId);
+  city.plots=city.plots.filter(p=>p.propertyId!==propertyId);
+  city.buildings=city.buildings.filter(b=>b.propertyId!==propertyId);
+  if(snapshot.openSpaceId!==null){
+    const open=city.openSpaces.find(o=>o.id===snapshot.openSpaceId);
+    const block=city.blocks.find(b=>b.id===snapshot.property.blockId);
+    if(!open||!block) throw new Error('Block open-ground accounting is unavailable.');
+    open.area=Math.max(0,block.area-city.properties
+      .filter(p=>p.blockId===block.id).reduce((sum,p)=>sum+p.area,0));
+  }
+  return candidate;
+}
+
+function d4aInsert(records,rows) {
+  for(const row of [...rows].sort((a,b)=>a.index-b.index))
+    records.splice(Math.min(row.index,records.length),0,d4aCopy(row.record));
+}
+
+function d4aRestoreCandidate(project,snapshot) {
+  const candidate=d4aCopy(project),city=candidate.city;
+  if(city.properties.some(p=>p.id===snapshot.propertyId)
+      ||snapshot.plots.some(row=>city.plots.some(p=>p.id===row.record.id))
+      ||snapshot.buildings.some(row=>city.buildings.some(b=>b.id===row.record.id)))
+    throw new Error('Property or child IDs have been reused.');
+  city.properties.splice(Math.min(snapshot.propertyIndex,city.properties.length),0,d4aCopy(snapshot.property));
+  d4aInsert(city.plots,snapshot.plots);
+  d4aInsert(city.buildings,snapshot.buildings);
+  if(snapshot.openSpaceId!==null){
+    const open=city.openSpaces.find(o=>o.id===snapshot.openSpaceId);
+    if(!open) throw new Error('The block open-ground record no longer exists.');
+    open.area=snapshot.openArea;
+  }
+  return candidate;
+}
+
+function d4aPortable(candidate,workspace) {
+  validateStoredProject(candidate);
+  const roundTrip=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
+  if(!d4aEqual(roundTrip.project.city,candidate.city))
+    throw new Error('Portable project round-trip changed city records.');
+  return roundTrip.project;
+}
+
+function preparePropertyDeletion4A(project,workspace,propertyId) {
+  try {
+    const snapshot=d4aSnapshot(project,propertyId);
+    const candidate=d4aPortable(d4aDeleteCandidate(project,snapshot),workspace);
+    return {ok:true,candidate,snapshot,removed:{
+      propertyId,propertyName:snapshot.property.customName??propertyId,
+      plotCount:snapshot.plots.length,buildingCount:snapshot.buildings.length
+    }};
+  } catch(error) {return d4aFail('Property deletion rejected: '+error.message);}
+}
+
+class PropertyDeletionHistory4A {
+  constructor(limit=20) {
+    if(!Number.isInteger(limit)||limit<1||limit>200)throw new Error('Invalid deletion history limit.');
+    this.limit=limit;this.past=[];this.future=[];
+  }
+  clear(){this.past=[];this.future=[];}
+  get lastDeleted(){return this.past.at(-1)?.snapshot.propertyId??null;}
+  record(before,after,propertyId) {
+    const snapshot=d4aSnapshot(before,propertyId);
+    if(after.city.properties.some(p=>p.id===propertyId))throw new Error('Property was not deleted.');
+    const afterOpenArea=d4aOpenArea(after.city,snapshot);
+    this.past.push({snapshot,afterOpenArea});
+    this.future=[];
+    if(this.past.length>this.limit)this.past.shift();
+  }
+  entry(direction){return (direction==='undo'?this.past:this.future).at(-1)??null;}
+  can(direction,project) {
+    if(!project||!['undo','redo'].includes(direction))return false;
+    const entry=this.entry(direction);
+    if(!entry)return false;
+    const snap=entry.snapshot,city=project.city;
+    try {
+      const actualOpen=d4aOpenArea(city,snap);
+      if(actualOpen!==(direction==='undo'?entry.afterOpenArea:snap.openArea))return false;
+      if(direction==='undo') {
+        return !city.properties.some(p=>p.id===snap.propertyId)
+          && !snap.plots.some(row=>city.plots.some(p=>p.id===row.record.id))
+          && !snap.buildings.some(row=>city.buildings.some(b=>b.id===row.record.id));
+      }
+      return d4aEqual(d4aSnapshot(project,snap.propertyId),snap);
+    }catch{return false;}
+  }
+  prepare(project,workspace,direction) {
+    if(!this.can(direction,project))return d4aFail('No compatible property deletion to '+direction+'.');
+    const entry=this.entry(direction);
+    try {
+      const candidate=direction==='undo'
+        ? d4aRestoreCandidate(project,entry.snapshot)
+        : d4aDeleteCandidate(project,entry.snapshot);
+      return {ok:true,entry,candidate:d4aPortable(candidate,workspace)};
+    }catch(error){return d4aFail('Cannot '+direction+' property deletion: '+error.message);}
+  }
+  accept(entry,direction) {
+    const from=direction==='undo'?this.past:this.future,to=direction==='undo'?this.future:this.past;
+    if(from.at(-1)!==entry)throw new Error('Property deletion history changed.');
+    from.pop();to.push(entry);
+    if(to.length>this.limit)to.shift();
+  }
+}
+
+
 // src/app.js
+
 
 
 
@@ -12531,6 +12681,7 @@ let buildingEditSession;
 const buildingHistory = new BuildingGeometryHistory(20);
 const buildingStructureHistory = new BuildingStructureHistory3H(20);
 const propertyHistory = new PropertyGeometryHistory3I(20);
+const propertyDeletionHistory4A = new PropertyDeletionHistory4A(20);
 let buildingPlacementSession;
 let propertyEditSession;
 let propertyWorkspace;
@@ -12598,6 +12749,10 @@ function currentUndoContext() {
       description: buildingEditSession.isPending ? 'Reset or Apply the preview before undoing accepted geometry.'
         : available ? 'Undo the last accepted edit to this building.' : 'No accepted building edit to undo.'};
   }
+  if (propertyDeletionHistory4A.can('undo',project)
+      && !propertyEditSession?.isActive && !buildingPlacementSession?.isActive && !buildingEditSession?.isActive)
+    return {kind:'property-deletion',controlId:'propertyDeletionUndo4A',label:'Undo deletion',available:true,
+      description:'Restore the last deleted property, its plots and buildings.'};
   return describeUndoContext({
     section: workspaceShell?.state.section ?? 'city',
     selection: workspaceShell?.state.selection ?? null,
@@ -12624,10 +12779,21 @@ function undoCurrentScope() {
   return true;
 }
 function workspaceChanged() {
+  syncPropertyDeletionControls4A();
   updatePendingFeedback();
   files?.changed();
 }
 
+function syncPropertyDeletionControls4A() {
+  const busy=Boolean(propertyEditSession?.isActive || buildingPlacementSession?.isActive || buildingEditSession?.isActive);
+  for(const [direction,id] of [['undo','propertyDeletionUndo4A'],['redo','propertyDeletionRedo4A']]) {
+    const available=propertyDeletionHistory4A.can(direction,project);
+    const button=$(id);
+    button.hidden=!available;
+    button.disabled=busy||!available;
+    button.title=direction==='undo'?'Restore the last deleted property, plots and buildings':'Delete the property again';
+  }
+}
 function requestDraw() {
   if (drawPending) return;
   drawPending = true;
@@ -12726,6 +12892,7 @@ function applyBuildingTransform() {
     if(project!==previous || session.buildingId!==buildingId) return false;
     if (!buildingHistory.record(previous,received.candidate,buildingId)) return false;
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     project=received.candidate;
     session.reset();
     updateDetails();
@@ -12757,6 +12924,7 @@ function moveBuildingHistory(direction) {
   }
   buildingHistory.accept(receipt.entry,direction);
   propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
   project=receipt.candidate;
   session.reset();
   updateDetails();
@@ -12859,6 +13027,7 @@ function applyStructurePlacement3H() {
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,request.operation))return false;
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     project=result.candidate;
     buildingHistory.clear();
     session.stop();
@@ -12882,6 +13051,7 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'delete'))return false;
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     project=result.candidate;
     buildingHistory.clear();
     updateDetails();
@@ -12901,6 +13071,7 @@ function moveStructureHistory3H(direction) {
   if(!result.ok){$('statusMessage').textContent='Cannot '+direction+' structure: '+result.issues[0]?.message;return false;}
   buildingStructureHistory.accept(result.entry,direction);
   propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
   project=result.candidate;
   buildingHistory.clear();
   updateDetails();
@@ -12985,6 +13156,7 @@ function updateMapIndicators() {
   syncBuildingTransformUI();
   syncBuildingStructureUI3H();
   syncPropertyEditUI3I();
+  syncPropertyDeletionControls4A();
   const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
     waterActive = waterPanel && waterPanel.editor.mode !== 'pan',
     buildingActive = buildingEditSession?.isActive ?? false,
@@ -13092,6 +13264,7 @@ function generate({ discardIdentities = false } = {}) {
     propertyEditSession?.stop();
     buildingStructureHistory.clear();
     propertyHistory.clear();
+    propertyDeletionHistory4A.clear();
     identityWorkspace?.reset();
     propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
@@ -13535,6 +13708,7 @@ propertyWorkspace = new PropertyWorkspace({
   exitEditing: () => exitBuildingEditing() && exitStructurePlacement3H() && exitPropertyEditing3I(),
   startBuilding: propertyId => startStructurePlacement3H(propertyId),
   startPropertyEdit: enterPropertyEditing3I,
+  deleteProperty: deleteProperty4A,
   focusSelection: zoomToSelection4B,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
@@ -13592,6 +13766,61 @@ $('structureApply').addEventListener('click',applyStructurePlacement3H);
 $('structureCancel').addEventListener('click',exitStructurePlacement3H);
 $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
+// Dev 4a: deleting a parcel removes its dependent records, never neighboring land.
+function deleteProperty4A(propertyId) {
+  const selected=workspaceShell?.state.selection;
+  const property=project?.city?.properties.find(p=>p.id===propertyId);
+  if(!property || selected?.kind!=='property' || selected.id!==propertyId)return false;
+  const plots=project.city.plots.filter(p=>p.propertyId===propertyId).length;
+  const buildings=project.city.buildings.filter(b=>b.propertyId===propertyId).length;
+  const name=property.customName || property.id;
+  if(typeof window.confirm==='function' && !window.confirm(
+    'Delete property "'+name+'"? This also deletes '+plots+' plot(s) and '+buildings+
+    ' building(s). Neighboring properties and streets are untouched. Undo is available in this session.'
+  ))return false;
+  if(!exitPropertyEditing3I() || !exitStructurePlacement3H() || !exitBuildingEditing())return false;
+  const previous=project;
+  const receipt=preparePropertyDeletion4A(previous,captureWorkspace().workspace,propertyId);
+  if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
+  if(project!==previous || workspaceShell.state.selection?.id!==propertyId)return false;
+  try{
+    propertyDeletionHistory4A.record(previous,receipt.candidate,propertyId);
+    project=receipt.candidate;
+    buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
+    identityWorkspace.reset();
+    workspaceShell.select(null,{reveal:false});
+    // On narrow layouts the Inspector overlays map controls; reveal the global Undo.
+    if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900 && !workspaceShell.state.inspectorCollapsed)
+      workspaceShell.dispatch({type:'inspector',collapsed:true});
+    propertyWorkspace.refresh();buildingWorkspace.refresh();
+    updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+    $('statusMessage').textContent='Deleted '+name+' and its '+plots+' plots / '+buildings+
+      ' buildings. Use Undo deletion to restore them during this session.';
+    return true;
+  }catch(error){$('statusMessage').textContent='Deletion failed: '+error.message;return false;}
+}
+function movePropertyDeletion4A(direction) {
+  if(!project||propertyEditSession?.isActive||buildingPlacementSession?.isActive||buildingEditSession?.isActive)return false;
+  const receipt=propertyDeletionHistory4A.prepare(project,captureWorkspace().workspace,direction);
+  if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
+  const id=receipt.entry.snapshot.propertyId;
+  project=receipt.candidate;
+  propertyDeletionHistory4A.accept(receipt.entry,direction);
+  buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
+  identityWorkspace.reset();
+  workspaceShell.select(direction==='undo'?{kind:'property',id}:null,{reveal:false});
+  // Restoring selection can reopen the mobile Inspector over Redo Delete.
+  // Keep map-level deletion history controls reachable after both directions.
+  if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900 && !workspaceShell.state.inspectorCollapsed)
+    workspaceShell.dispatch({type:'inspector',collapsed:true});
+  propertyWorkspace.refresh();buildingWorkspace.refresh();
+  updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+  $('statusMessage').textContent=(direction==='undo'?'Restored ':'Deleted again: ')+id+
+    ' (property, plots and buildings).';
+  return true;
+}
+$('propertyDeletionUndo4A').addEventListener('click',()=>movePropertyDeletion4A('undo'));
+$('propertyDeletionRedo4A').addEventListener('click',()=>movePropertyDeletion4A('redo'));
 function keepPropertyEditorVisible3I() {
   // Refreshing the selected property can reopen the narrow-screen Inspector.
   // Keep the floating edit tools accessible through Apply and Undo/Redo.
@@ -13616,6 +13845,7 @@ function applyPropertyEdit3I() {
   project=received.candidate;
   buildingHistory.clear();
   buildingStructureHistory.clear();
+  propertyDeletionHistory4A.clear();
   session.start(project.city,propertyId);
   updateDetails();
   workspaceShell.select({kind:'property',id:propertyId});
@@ -13636,6 +13866,7 @@ function movePropertyHistory3I(direction){
   }
   project=receipt.candidate;
   propertyHistory.accept(receipt.entry,direction);
+  propertyDeletionHistory4A.clear();
   session.start(project.city,id);
   updateDetails();workspaceShell.refresh();keepPropertyEditorVisible3I();requestDraw();workspaceChanged();
   $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' property and plot edit for '+id+'.';
@@ -13892,6 +14123,7 @@ function applyProjectDocument(document) {
   buildingPlacementSession?.stop();
   buildingStructureHistory.clear();
   propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
   identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });

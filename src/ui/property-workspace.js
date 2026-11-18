@@ -3,8 +3,8 @@ import { workspaceSelectionEqual } from '../core/workspace-state.js';
 import { propertyInformation, inspectionValue } from '../core/selection-information.js';
 
 export class PropertyWorkspace {
-  constructor({ shell, getCity, getLayers, buildings, exitEditing = () => {}, startBuilding = () => false, startPropertyEdit = () => false, focusSelection = () => false, onSelect = () => {}, draw = () => {} }) {
-    Object.assign(this, { shell, getCity, getLayers, buildings, exitEditing, startBuilding, startPropertyEdit, focusSelection, onSelect, draw });
+  constructor({ shell, getCity, getLayers, buildings, exitEditing = () => {}, startBuilding = () => false, startPropertyEdit = () => false, deleteProperty = () => false, focusSelection = () => false, onSelect = () => {}, draw = () => {} }) {
+    Object.assign(this, { shell, getCity, getLayers, buildings, exitEditing, startBuilding, startPropertyEdit, deleteProperty, focusSelection, onSelect, draw });
     this.hover = null;
     shell.registerInspector('property', { resolve: id => this.descriptor(id) });
   }
@@ -30,6 +30,7 @@ export class PropertyWorkspace {
     }));
     buildingSection.actions.push({label:'Add building to this property',disabled:this.getLayers().buildings===false,run:()=>this.startBuilding(property.id)});
     information.sections.push({title:'Property geometry (3I)',rows:[['Edit status','Draft geometry is validated before atomic Apply; accepted land is unchanged until then.']],actions:[{label:'Edit property geometry',run:()=>this.startPropertyEdit(property.id)}]});
+    information.sections.push({title:'Property actions (Dev 4a)', rows:[['Deletion','Removes this property and all owned plots and buildings; safe session Undo is available.']], actions:[{label:'Delete property…',run:()=>this.deleteProperty(property.id)}]});
     information.sections.push({title:'Map navigation',rows:[],actions:[{label:'Zoom to this property',run:()=>this.focusSelection({kind:'property',id:property.id})}]});
     return {
       type: 'Property', title: information.title,

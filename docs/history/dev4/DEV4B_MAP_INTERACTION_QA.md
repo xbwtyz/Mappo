@@ -1,10 +1,10 @@
 # Mappo Dev 4b — Map Interaction and Responsive Clarity
 
-**Status:** Implemented on feature branch; full CI/owner merge approval pending.  
+**Status:** Dev 4a integrated into Dev 4b source; final CI and separate owner merge approval pending.  
 **Version:** `0.1-dev.4b` · **Branch:** `feature/dev4-map-interaction`  
 **Scope:** Four improvements approved in the [Dev 4 roadmap](DEV4_SMALL_IMPROVEMENT_CYCLES_PLAN.md) (the original individual ideas 4b, 4c, 4m, and 4o).
 
-> Branch isolation: work started from stable merged 3I because Dev 4a PR #12 remains separate/unmerged. This development preview does **not** include Dev 4a property deletion. Before merging Dev 4b, merge the separately approved and CI-green Dev 4a, update this branch against that `main` (resolving conflicts and rebuilding the standalone HTML), then rerun all checks on the final 4b head. No stacked PR or automatic merge.
+> Integration: Dev 4a PR #12 passed CI and merged into `main`. This Dev 4b branch incorporates its property deletion code, Inspector controls, browser QA and regression tests alongside the Dev 4b improvements. Combined build and browser checks must pass on the final head before Dev 4b may be separately approved for merging.
 
 ## Checkpoints and acceptance
 
@@ -32,7 +32,7 @@
 
 - [x] `tests/map-interaction-4b.test.js` covers pure camera focus, no mutation, selection layer rules, selected corner overlays, and compiled Inspector actions.
 - [x] `scripts/building-browser-qa.mjs` exercises Zoom to this property on all desktop, ultrawide, tablet and phone viewports in Chromium and Firefox, with camera reset and an unchanged-city assertion.
-- [ ] Green GitHub Actions check on exact current branch SHA: `npm run check`, compiled output parity, and both complete Playwright matrices.
+- [ ] Green GitHub Actions check on integrated branch SHA: `npm run check`, compiled output parity, and both complete Playwright matrices.
 - [ ] Owner review and separate approval before merging. Dev 4a must first be merged; update/recompile/retest this branch afterward.
 
 ## Release compatibility
