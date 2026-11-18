@@ -246,12 +246,20 @@ export class ProjectFiles {
       this.recoveredRevision = -1;
       this.suspended = false;
       this.ready = true;
-      this.status(`Opened ${document.project.city.name}. Saved geometry restored without regeneration.`);
+      // Report project-open completion after recovery settles, so autosave cannot
+      // immediately replace the confirmation shown to the user.
+      let recoveryError = null;
       if (this.store) {
         try {
           await this.flush();
-        } catch {}
+        } catch (error) {
+          recoveryError = error;
+        }
       }
+      const recoveryDetail = recoveryError
+        ? ` Browser recovery failed: ${recoveryError.message} Download a portable copy to preserve this project.`
+        : this.store ? ' Browser recovery updated.' : ' Download a portable copy to preserve this project.';
+      this.status(`Opened ${document.project.city.name}. Saved geometry restored without regeneration.${recoveryDetail}`, Boolean(recoveryError));
       return true;
     } catch (error) {
       try {

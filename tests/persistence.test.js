@@ -480,6 +480,26 @@ test('startup recovery is offered without replacing it with the default generate
   assert.deepEqual(fixture.getLive().project, copyJson(original));
 });
 
+test('project-open confirmation survives recovery write and reports a recovery failure', async () => {
+  const document = documentFixture();
+  document.project.city.name = 'Confirmed import';
+  const fixture = controllerFixture({ store: new RecoveryStore(adapterFixture()) });
+  await fixture.controller.start();
+  fixture.controller.stageDocument(document, 'file');
+  assert.equal(await fixture.controller.openPending(), true);
+  assert.match(fixture.elements('fileStatus').textContent, /^Opened Confirmed import\..*Browser recovery updated\./);
+  assert.equal(fixture.controller.currentRecovery.project.city.name, 'Confirmed import');
+
+  const failed = controllerFixture({ store: {
+    read: async () => ({ current: null, backup: null }),
+    save: async () => { throw new Error('quota blocked'); }
+  } });
+  await failed.controller.start();
+  failed.controller.stageDocument(document, 'file');
+  assert.equal(await failed.controller.openPending(), true);
+  assert.match(failed.elements('fileStatus').textContent, /^Opened Confirmed import\..*Browser recovery failed: quota blocked/);
+  assert.equal(failed.getLive().project.city.name, 'Confirmed import');
+});
 test('invalid staged files and cancel leave the open project and undo draft untouched', async () => {
   const fixture = controllerFixture();
   await fixture.controller.start();

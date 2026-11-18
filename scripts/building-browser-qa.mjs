@@ -224,7 +224,14 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'The Silver Stag');
       await page.locator('#identityUndoButton').click();
       assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id).customName, buildingId), undefined);
+      // At tablet/phone widths the Inspector intentionally overlays map controls.
+      // Close it first to exercise the actual user-accessible map Undo path.
+      if (viewport.width <= 900) {
+        await page.locator('#workspaceCloseInspector').click();
+        assert.equal(await page.locator('#workspaceInspector').isVisible(), false);
+      }
       await page.locator('#workspaceUndoButton').click();
+      if (viewport.width <= 900) await page.locator('#workspaceOpenInspector').click();
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry, 'Undo restores the exact city without touching geometry');
       assert.deepEqual(await page.evaluate(() => {
         const s = __buildingQA.state();
