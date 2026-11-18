@@ -79,6 +79,36 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
           assert.equal(await page.locator(`#${action}`).isVisible(), true, `${label}: ${kind} controls visible`);
         }
       }
+      if (viewport.name === 'desktop') {
+        // Exercise the real standalone file workflow, not merely controller stubs.
+        await page.locator('#projectMenuButton').click();
+        const [download] = await Promise.all([
+          page.waitForEvent('download', { timeout: 20000 }),
+          page.locator('#saveProjectButton').click()
+        ]);
+        assert.match(download.suggestedFilename(), /\\.mappo\\.json$/, 'Portable save filename');
+        const chunks = [];
+        for await (const chunk of await download.createReadStream()) chunks.push(chunk);
+        const portable = Buffer.concat(chunks);
+        const document = JSON.parse(portable.toString('utf8'));
+        assert.equal(document.format, 'mappo-project');
+        assert.equal(document.project.schemaVersion, 9);
+        assert.equal(document.workspace.schemaVersion, 1);
+        const geometry = JSON.stringify(document.project.city);
+        await page.locator('#projectFileInput').setInputFiles({
+          name: 'roundtrip.mappo.json',
+          mimeType: 'application/json',
+          buffer: portable
+        });
+        await page.locator('#loadPreview').waitFor({ state: 'visible', timeout: 20000 });
+        assert.match(await page.locator('#loadSummary').innerText(), /buildings/);
+        await page.locator('#openProjectButton').click();
+        await page.waitForFunction(() => document.querySelector('#fileStatus')?.textContent?.startsWith('Opened '), { timeout: 20000 });
+        const roundtrip = await page.locator('#mapCanvas').boundingBox();
+        assert.ok(roundtrip && roundtrip.width > 150, 'Loaded project still displays the map');
+        assert.ok(geometry.length > 200, 'Downloaded project contains full city geometry');
+        await page.locator('#projectMenuClose').click();
+      }
       const metrics = await page.evaluate(() => ({
         width: document.documentElement.scrollWidth,
         viewport: window.innerWidth,

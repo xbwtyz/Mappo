@@ -1,6 +1,6 @@
-# UI control locations — Phase 6
+# UI control locations — Phase 7 release review
 
-Build `0.1-dev.ui6d` on `feature/ui-phase-6`. This inventory records the existing controls and their new persistence boundaries. IDs and controller bindings stay stable. Project schema remains 9, workspace schema 1; the UI state is optional and additive.
+Build `0.1-dev.ui7d` on `feature/ui-phase-7`. This inventory records the existing controls and their new persistence boundaries. IDs and controller bindings stay stable. Project schema remains 9, workspace schema 1; the UI state is optional and additive.
 
 | Controls | New home | Behavior |
 | --- | --- | --- |
@@ -75,3 +75,7 @@ Phase 6 adds optional bounded UI presentation fields without changing accepted g
 | Pending district names and colors | `workspace.ui.districts` bounded cache |
 | Editing shortcuts and pointer ownership | Native text entry remains unaffected; active visible editor owns map input, original undo histories remain scoped |
 | Desktop, ultrawide and narrow layout | CSS adapts map/panels; `workspace.view.camera` remains authoritative and geometry-neutral |
+
+## Phase 7 control-inventory audit
+
+The scripted inventory comparison of the last pre-overhaul single-file build `0.1-dev.3e6` against the current HTML template found **93/93 original interactive control IDs retained**, with the same button/input/select/textarea element types. The new shared controls are additive. This verifies control presence, not every possible use-case; the Node regression suite and Firefox/Chromium smoke matrix exercise behavior separately. The Phase 7C CSS fix ensures the narrow Tools and Inspector drawer headers receive pointer events above the map toolbar.
