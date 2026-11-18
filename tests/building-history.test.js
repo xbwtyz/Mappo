@@ -67,6 +67,12 @@ test('3G-D1 history capacity and unrelated building records remain independent',
   assert.equal(history.count('undo','b'),1);
   assert.equal(history.can('undo',project(3,6),'a'),true);
   assert.equal(history.can('undo',project(3,6),'b'),true);
+  const second=new BuildingGeometryHistory(2);
+  second.record(project(1,5),project(2,5),'a');
+  second.record(project(2,5),project(2,6),'b');
+  second.accept(second.past[1],'undo');
+  second.record(project(2,5),project(3,5),'a');
+  assert.equal(second.past.length+second.future.length,2,'Combined history must obey capacity.');
 });
 test('3G-D2/D4 accepted UI transactions support scoped Undo/Redo and portable persistence',async()=>{
   const app=await buildingAppHarness();
