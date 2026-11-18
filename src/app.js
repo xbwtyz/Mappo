@@ -48,6 +48,9 @@ import {
   rebuildFailureMessage
 } from './core/validation-feedback.js';
 import {
+  isMapShortcutEvent
+} from './core/shortcut-scope.js';
+import {
   ProjectFiles
 } from './ui/project-files.js';
 import {
@@ -370,26 +373,25 @@ $('seedInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') generate();
 });
 window.addEventListener('keydown', e => {
-  if (e.defaultPrevented || ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'SUMMARY'].includes(document.activeElement?.tagName)) return;
+  if (!isMapShortcutEvent(e, document.activeElement)) return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
     if (undoCurrentScope()) e.preventDefault();
     return;
   }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
-  if (e.key === 'Enter' && editor.mode === 'points') {
+  if (e.key === 'Enter' && workspaceShell?.state.section === 'city' && editor.mode === 'points') {
     e.preventDefault();
     editor.finish();
   }
   if (e.key === 'Delete' || e.key === 'Backspace') {
     e.preventDefault();
-    if (terrainPanel && terrainPanel.editor.mode !== 'pan') terrainPanel.editor.removePoint();
-    else if (waterPanel?.editor.mode !== 'pan') waterPanel.editor.removePoint();
-    else editor.removePoint();
+    if (workspaceShell?.state.section === 'landscape' && terrainPanel?.editor.mode !== 'pan') terrainPanel.editor.removePoint();
+    else if (workspaceShell?.state.section === 'landscape' && waterPanel?.editor.mode !== 'pan') waterPanel.editor.removePoint();
+    else if (workspaceShell?.state.section === 'city') editor.removePoint();
   }
   if (e.key === 'Escape') {
-    terrainPanel?.editor.setMode('pan');
-    waterPanel?.editor.setMode('pan');
-    editor.setMode('pan');
+    stopWorkspaceTools();
+    e.preventDefault();
   }
   if (e.key === '0') {
     fitMap();
@@ -602,7 +604,12 @@ landscapeWorkspace = new LandscapeWorkspace({
 workspaceShell.bind();
 landscapeWorkspace.bind();
 
-const activeMapEditor = () => terrainPanel.editor.mode !== 'pan' ? terrainPanel.editor : waterPanel.editor.mode !== 'pan' ? waterPanel.editor : editor;
+const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
+// An editor cannot receive map input unless its section is visible.
+// Even corrupted/older saved modes cannot activate hidden draft tools.
+const activeMapEditor = () => workspaceShell.state.section === 'landscape'
+  ? (terrainPanel.editor.mode !== 'pan' ? terrainPanel.editor : waterPanel.editor.mode !== 'pan' ? waterPanel.editor : mapPanEditor)
+  : workspaceShell.state.section === 'city' ? editor : mapPanEditor;
 const runMapEdit = (method, args) => {
   const active = activeMapEditor();
   return active === waterPanel.editor ? waterPanel.run(() => active[method](...args)) : active === terrainPanel.editor ? terrainPanel.run(() => active[method](...args)) : active[method](...args);
@@ -613,7 +620,8 @@ const mapEditor = {
   },
   down: (...args) => runMapEdit('down', args),
   move: (...args) => runMapEdit('move', args),
-  up: (...args) => (terrainPanel.editor.dragging ? terrainPanel.editor : waterPanel.editor.dragging ? waterPanel.editor : activeMapEditor()).up(...args),
+  up: (...args) => (workspaceShell.state.section === 'landscape' && terrainPanel.editor.dragging ? terrainPanel.editor
+    : workspaceShell.state.section === 'landscape' && waterPanel.editor.dragging ? waterPanel.editor : activeMapEditor()).up(...args),
   addPoint: (...args) => activeMapEditor().addPoint(...args)
 };
 

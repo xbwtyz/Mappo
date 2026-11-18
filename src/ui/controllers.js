@@ -1,3 +1,5 @@
+import { isMapShortcutEvent } from '../core/shortcut-scope.js';
+
 export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, editor, onTap = () => {}, onHover = () => {}) {
   let active = false,
     panning = false,
@@ -6,9 +8,10 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     space = false,
     tapEligible = false,
     travel = 0,
-    tapPoint = null;
+    tapPoint = null,
+    activePointer = null;
   window.addEventListener('keydown', e => {
-    if (!e.defaultPrevented && e.code === 'Space' && !['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'SUMMARY'].includes(document.activeElement?.tagName)) {
+    if (e.code === 'Space' && isMapShortcutEvent(e, document.activeElement)) {
       space = true;
       e.preventDefault();
     }
@@ -27,6 +30,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
   function finish(cancelled = false) {
     if (!active) return;
     active = false;
+    activePointer = null;
     if (!panning) editor.up(camera.zoom, cancelled);
     else if (!cancelled && tapEligible && travel <= 4) onTap(tapPoint);
     panning = false;
@@ -37,10 +41,11 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     finish(true);
   });
   canvas.addEventListener('pointerdown', event => {
-    if (event.button !== 0 && event.button !== 1) return;
+    if (active || (event.button !== 0 && event.button !== 1)) return;
     event.preventDefault();
     canvas.focus();
     active = true;
+    activePointer = event.pointerId;
     onHover(null);
     panning = space || event.button === 1 || editor.mode === 'pan';
     lastX = event.clientX;
@@ -53,6 +58,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     else editor.down(world(event), camera.zoom);
   });
   canvas.addEventListener('pointermove', event => {
+    if (active && activePointer !== event.pointerId) return;
     if (!active) {
       onHover(editor.mode === 'pan' ? world(event) : null);
       return;
@@ -66,11 +72,18 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
       updateViewport();
     } else editor.move(world(event), camera.zoom);
   });
-  canvas.addEventListener('pointerup', () => finish());
+  canvas.addEventListener('pointerup', event => {
+    if (active && activePointer === event.pointerId) finish();
+  });
   canvas.addEventListener('pointerleave', () => onHover(null));
-  canvas.addEventListener('pointercancel', () => finish(true));
-  canvas.addEventListener('lostpointercapture', () => finish(true));
+  canvas.addEventListener('pointercancel', event => {
+    if (active && activePointer === event.pointerId) finish(true);
+  });
+  canvas.addEventListener('lostpointercapture', event => {
+    if (active && activePointer === event.pointerId) finish(true);
+  });
   canvas.addEventListener('dblclick', event => {
+    if (active || editor.mode === 'pan') return;
     editor.addPoint(world(event), camera.zoom);
     event.preventDefault();
   });

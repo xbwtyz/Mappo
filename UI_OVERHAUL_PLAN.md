@@ -99,9 +99,9 @@ Acceptance: users can tell what is selected, which tool is active, which drafts 
 
 - [x] Increase primary control/label readability; target approximately 13–14 px text and 36–40 px control heights where practical (6A).
 - [x] Strengthen heading contrast, hover feedback, focus rings, and selected-tool states (6A).
-- [ ] Keep controls labeled and keyboard accessible; use icon-only buttons only with accessible names/tooltips.
-- [ ] Preserve Escape, Delete, Ctrl/Cmd+Z, Space-drag, zoom, and Fit behavior without intercepting normal text entry.
-- [ ] Retain gesture cancellation and prevent a hidden/inactive editor from handling map input.
+- [x] Keep controls labeled and keyboard accessible; use icon-only buttons only with accessible names/tooltips (6B).
+- [x] Preserve Escape, Delete, Ctrl/Cmd+Z, Space-drag, zoom, and Fit behavior without intercepting normal text entry (6B).
+- [x] Retain gesture cancellation and prevent a hidden/inactive editor from handling map input (6B).
 - [ ] Adapt the panel layout for ordinary desktops, a 32:9 ultrawide display, and narrow screens while keeping map access available.
 - [ ] Save/restore active section, panel collapse/pin states, relevant selections, and pending inputs alongside the existing editor drafts/history.
 - [ ] Define additive workspace fields with safe defaults for older saves; preserve unknown compatible data.

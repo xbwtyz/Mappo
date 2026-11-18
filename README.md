@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Current feature-branch build: 0.1-dev.ui6a — Phase 6A readability
+## Current feature-branch build: 0.1-dev.ui6b — Phase 6B editor input reliability
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.ui6a.html`](dist/mappo-0.1-dev.ui6a.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.ui6b.html`](dist/mappo-0.1-dev.ui6b.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### UI overhaul: Phases 1–5 (Phase 5 on the feature branch)
 
@@ -276,3 +276,7 @@ Build `0.1-dev.ui5d` passed **150/150 automated tests** plus the reproducible bu
 ### Phase 6A — readability and focus
 
 Larger workspace control labels and buttons, consistent minimum input heights, stronger headings/active states and visible keyboard focus rings improve everyday editing. Generator geometry, editor interaction and project formats are unchanged. Phase 6B–6D are under development on `feature/ui-phase-6`.
+
+### Phase 6B — keyboard and pointer ownership
+
+The map shortcuts ignore native form controls and rich-text entry; Escape cancels active editing gestures, while the existing scoped Undo, Delete, Fit, zoom and Space-drag behavior remain available. Only the pointer that started a gesture may update, release or cancel it. Tools outside the visible editor section cannot edit the map even if a saved mode is active. Existing histories remain independent.

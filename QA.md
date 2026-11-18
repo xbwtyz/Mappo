@@ -265,3 +265,7 @@ The new undo selector unit tests cover editor priority, section routing, landsca
 ## Phase 6A (`0.1-dev.ui6a`)
 
 Readability stylesheet regression checks cover principal label/control size, focus outlines, selected tool states, and narrow-screen spacing. Full generator, history, project and compiled-app regressions remain required, as does byte-for-byte root/dist parity.
+
+## Phase 6B (`0.1-dev.ui6b`)
+
+Shortcut scope and multi-pointer regressions verify form editing immunity, active map shortcuts, exclusive pointer ownership, cancellation and no double completion. Existing compiled-app Space-drag, Undo, map gestures, generator and save/recovery tests remain authoritative. Browser-specific keyboard QA remains Phase 7.

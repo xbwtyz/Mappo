@@ -1,0 +1,11 @@
+// Keyboard map commands must never steal text-entry or menu navigation.
+export function isEditableShortcutTarget(target) {
+  if (!target) return false;
+  if (target.isContentEditable === true) return true;
+  if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'SUMMARY'].includes(String(target.tagName || '').toUpperCase())) return true;
+  return Boolean(target.closest?.('[contenteditable=""],[contenteditable="true"],[role="textbox"]'));
+}
+export function isMapShortcutEvent(event, activeElement) {
+  return !event?.defaultPrevented && !isEditableShortcutTarget(event?.target)
+    && !isEditableShortcutTarget(activeElement);
+}
