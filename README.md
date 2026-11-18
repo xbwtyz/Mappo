@@ -2,11 +2,11 @@
 
 Mappo is an offline procedural medieval city mapper. Development uses modular JavaScript; each milestone also ships as one standalone HTML file with embedded code and styles.
 
-## Milestone 3F-C: 0.1-dev.3fc — property and building identity
+## Milestone 3F-D: 0.1-dev.3fd — portable property/building inspectors
 
 Draw a city boundary, place its main square, and generate connected streets, varied properties and building footprints inside it. Boundary shape and street pattern are independent: a horseshoe, branching outline or twin-core settlement can use any of the four street patterns.
 
-Open [`dist/mappo-0.1-dev.3fc.html`](dist/mappo-0.1-dev.3fc.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
+Open [`dist/mappo-0.1-dev.3fd.html`](dist/mappo-0.1-dev.3fd.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
 ### UI overhaul complete; Building Inspector in development
 
@@ -30,7 +30,7 @@ In **Select / Pan**, a roof, yard or courtyard selects its **property**. Hover p
 
 Properties are selectable whenever **Buildings**, **Properties**, or **Plots** is visible. The selection overlay reveals the property boundary even when its ordinary outline layer is off. Hiding roofs disables the individual building choices; if a child was selected and another development layer remains visible, selection returns to its property. Hide all three development layers to select underlying district blocks across their full area. Landscape hit priority and drawing-tool ownership are preserved. Dragging still pans.
 
-Map selection remains session-only; 3F-C adds explicit identity editing. Downloads and browser recovery retain exact accepted geometry and all existing metadata, but reopen without a property/building selected. A successful full rebuild or project replacement clears both kinds of selection, including reused IDs. 3F-B adds read-only property and building facts; 3F-C adds identity customization; 3F-D adds portable selection. See [MILESTONE_3F_PLAN.md](MILESTONE_3F_PLAN.md), [MILESTONE_3FAA_PLAN.md](MILESTONE_3FAA_PLAN.md), and [MILESTONE_3FAA_QA.md](MILESTONE_3FAA_QA.md). The prior [3F-A build](dist/mappo-0.1-dev.3fa.html) remains available.
+3F-D saves valid property/building selection in optional workspace UI state. Downloads and browser recovery reopen the selected site or structure when it still exists and the required layer is visible, without regenerating accepted city geometry. Missing or hidden references clear safely. A successful full rebuild or project replacement clears both kinds of selection, including reused IDs. 3F-B adds read-only property and building facts; 3F-C adds identity customization; 3F-D adds portable selection. See [MILESTONE_3F_PLAN.md](MILESTONE_3F_PLAN.md), [MILESTONE_3FAA_PLAN.md](MILESTONE_3FAA_PLAN.md), and [MILESTONE_3FAA_QA.md](MILESTONE_3FAA_QA.md). The prior [3F-A build](dist/mappo-0.1-dev.3fa.html) remains available.
 
 ### Read-only property and building facts (3F-B)
 
@@ -48,9 +48,15 @@ Property and building identities are independent. Naming a property does not ren
 
 **Undo identity** restores the last applied property/building identity edit, up to 20 edits in the current session, without restoring old geometry or district membership. The map Undo/Ctrl+Z routes to identity history while a property/building is selected; active geometry tools and native input text undo retain precedence. Existing water, terrain, outline, district and defense histories remain independent.
 
-Applied identities are optional `customName` and `customUse` strings on the actual accepted record. Downloads and browser recovery retain them, and malformed imported identity fields are rejected before opening the project. No schema migration is needed: city schema 9 and workspace schema 1 remain unchanged. Identity undo history and unapplied form drafts are session-only in 3F-C; portable selection and further integration remain 3F-D.
+Applied identities are optional `customName` and `customUse` strings on the actual accepted record. Downloads and browser recovery retain them, and malformed imported identity fields are rejected before opening the project. No schema migration is needed: city schema 9 and workspace schema 1 remain unchanged. Identity Undo history and unapplied form drafts remain session-only; 3F-D makes the Inspector selection portable without persisting drafts or Undo steps.
 
 Full city generation can replace properties/buildings, including reusing their sequential IDs. If applied identities or pending identity drafts exist, an inline warning requires **Rebuild and discard identities** or **Keep editing** before the rebuild proceeds. **New street seed** defers changing its seed until confirmed. Canceling preserves the accepted city; a failed rebuild preserves identities/history. A successful full rebuild clears identities and identity history, with no automatic reattachment to reused IDs. Local district and defense updates retain identities. See [MILESTONE_3FC_QA.md](MILESTONE_3FC_QA.md).
+
+### Portable property and building selection (3F-D)
+
+Property and building Inspector references are now saved as optional `workspace.ui.selection` values. Loading a portable `.mappo.json` or browser recovery snapshot restores the exact selected property or child building when it still exists and its display layers are enabled. Missing or hidden targets clear safely instead of guessing from reused generated IDs. Older saves without an Inspector reference still open unchanged.
+
+Applied `customName` and `customUse` values remain part of the accepted city and survive project round trips. Pending identity drafts and the 20-step identity Undo history intentionally remain session-only, avoiding stale edit history from another project. City schema **9** and workspace UI schema **1** remain unchanged.
 
 ### Workflow
 
@@ -272,7 +278,7 @@ See [`PROJECT_FORMAT.md`](PROJECT_FORMAT.md) for the persistence contract and mi
 - **0.1-dev.ui4b:** UI overhaul Phase 4B — scoped defensive settings, clear Update defenses action, live mutation preview and retained independent defense history.
 - **0.1-dev.ui4c:** UI overhaul Phase 4C — district map/list reveal and combined local district/defense validation, save/load and independent history regression tests.
 - **UI overhaul, Phase 5 onward:** Draft feedback, readability, full workspace persistence and final browser release checks — [remaining goals](UI_OVERHAUL_PLAN.md).
-- **3F:** Property-first Inspector with individual building navigation; detailed facts, identity customization and portable selection follow in 3F-B–D.
+- **3F:** Property-first Inspector with child building navigation, detailed facts, independent identity customization and portable Inspector selection.
 - Later 0.1 phases: rendering polish, PNG export and release hardening.
 
 Copyright © 2026 Mappo contributors.

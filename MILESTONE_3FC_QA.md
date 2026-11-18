@@ -1,7 +1,7 @@
 # Milestone 3F-C — Identity editing checkpoint QA
 
 Branch: `feature/building-inspector-3f`. Build: `0.1-dev.3fc`.
-Status: local and live-browser checks passed; CI browser matrix pending.
+Status: verified, including the 3F-C browser-interaction stabilization follow-up.
 
 ## Behavior
 
@@ -24,3 +24,10 @@ Accepted fields round-trip through schema-9 project files and recovery storage, 
 ## Limits
 
 Browser viewport tests emulate layout and mouse/keyboard interaction; they do not prove physical touchscreen or screen-reader behavior. No identity-driven building generation, footprint editing, automatic inheritance, simulation or map text labels were added. No main merge, release tag or Pages publication is authorized for this checkpoint.
+
+## Final 3F-C stabilization CI
+
+- Commit [`852e54e`](https://github.com/xbwtyz/Mappo/commit/852e54e4b9fd6e7196b9dda1fbe016afa357a56e) makes project-open success messages durable after immediate browser recovery, including a visible warning on recovery-write failures.
+- Responsive Inspector overlays intentionally cover map controls; the browser test now closes the Inspector before exercising contextual toolbar Undo, preserving test coverage without attempting to click through the overlay.
+- [GitHub Actions run 44263780267](https://github.com/xbwtyz/Mappo/actions/runs/44263780267) passed **203/203 Node tests**, exact committed root/standalone build verification, **8/8 existing smoke checks** and **8/8 property/building interaction checks** across Chromium and Firefox (desktop, ultrawide, tablet, phone).
+- The stabilization commit leaves city schema **9**, UI schema **1**, and the `0.1-dev.3fc` offline standalone distribution compatible. Checkpoint 3F-D builds on this verified baseline.

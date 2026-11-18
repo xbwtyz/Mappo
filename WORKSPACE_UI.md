@@ -140,4 +140,10 @@ The pending-state helper reports identity drafts as local updates, not city-gene
 
 Generation preflight counts customized records and pending identity drafts and presents an inline loss confirmation. New street seed generation defers seed assignment until confirmation. Only a successful new accepted city resets the identity editor/drafts; failed generation preserves accepted metadata and history. Project loading resets session history/drafts and cancels any stale confirmation callback before restoring accepted records.
 
-Project validation recognizes the optional bounded strings on properties/buildings. Old files without the fields still load; valid compatible extension fields are retained, and no geometry/schema migration occurs. Applied metadata already round-trips in the actual project. Selection, identity history and identity drafts are still session-only; 3F-D owns further portability/integration.
+Project validation recognizes the optional bounded strings on properties/buildings. Old files without the fields still load; valid compatible extension fields are retained, and no geometry/schema migration occurs. Applied metadata already round-trips in the actual project. At the 3F-C checkpoint, selection, identity history and drafts were session-only; 3F-D adds portable selection.
+
+## Milestone 3F-D: portable Inspector state
+
+`app.js` serializes selected properties and child buildings through the existing optional `workspace.ui.selection`, alongside the previous district/landscape Inspector types. `core/workspace-presentation.js` validates the kind and bounded ID before restoration. The loader applies accepted project records and saved layer flags first, then resolves the requested property/building through existing providers. Missing or hidden targets and broken building-to-parent links clear safely without relying on reused generated IDs.
+
+Applied identity overrides remain in the accepted schema-9 city. Inspector presentation persists in workspace UI schema 1, including portable file and browser recovery snapshots. Old project files without UI selection still load. Unapplied identity drafts and the independent 20-entry identity Undo history remain session-only; other editor histories retain their existing persistence contracts. No runtime dependencies, geometry regeneration or format migrations are introduced.

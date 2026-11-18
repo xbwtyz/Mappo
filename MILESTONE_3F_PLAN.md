@@ -1,6 +1,6 @@
 # Mappo Milestone 3F — Property and Building Inspector
 
-Status: **3F-A through 3F-B verified; 3F-C implemented, verification in progress; 3F-D not started**.
+Status: **3F-A through 3F-C verified; 3F-D implementation committed, final browser CI pending**.
 3F-B verification: 193/193 Node tests, 16/16 browser cases, exact standalone parity. See [information Inspector QA](MILESTONE_3FB_QA.md).
 3F-Aa verification: 185/185 Node tests, 16/16 browser cases, exact standalone parity. See [property-first QA](MILESTONE_3FAA_QA.md).
 3F-A verification: 177/177 Node tests, 16/16 browser cases, exact standalone parity. See [checkpoint QA](MILESTONE_3FA_QA.md).
@@ -75,10 +75,10 @@ Reuse the Phase 7 selection inspector (`src/ui/workspace.js` and `src/ui/workspa
 
 **Goal:** Make property/building inspector selection and the identity edits agreed in 3F-C portable and backward compatible.
 
-- [ ] Harden the 3F-C metadata round-trip with full recovery/compatibility workflows; decide whether to make bounded identity history and pending identity drafts portable, and validate any newly persisted fields.
-- [ ] Persist valid property or building selection in optional `workspace.ui.selection` without making old saved files require new fields. Safely clear selection when its target is missing.
-- [ ] Keep city project schema **9** and workspace schema **1** unless a contract-breaking issue is demonstrated and explicitly reviewed.
-- [ ] Validate incoming metadata at the persistence boundary; preserve unknown compatible fields and exact accepted geometry during load/recovery. Confirm historical schema migrations still load.
+- [x] Keep accepted identity metadata portable; retain identity history and pending drafts only for the current session to prevent stale edits. Validate saved property/building selection in the existing schema.
+- [x] Persist valid property or building selection in optional `workspace.ui.selection` without making old saved files require new fields. Safely clear selection when its target is missing.
+- [x] Keep city project schema **9** and workspace schema **1** unless a contract-breaking issue is demonstrated and explicitly reviewed.
+- [x] Validate incoming metadata at the persistence boundary; preserve unknown compatible fields and exact accepted geometry during load/recovery. Confirm historical schema migrations still load.
 - [ ] Test full save -> load -> inspect -> edit -> undo workflows, browser recovery, local district/defense changes, and full rebuild warning/reset semantics.
 - [ ] Run the existing full regression suite and the actual standalone HTML smoke tests in **Firefox and Chromium** at 1440×900, 5120×1440, 768×1024, and 390×844. Report automated-versus-manual limitations.
 - [ ] Check exact root/dist HTML parity, offline inline JS/CSS, no added runtime network requirements, version metadata, README and architecture/documentation updates.
