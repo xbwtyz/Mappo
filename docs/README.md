@@ -10,5 +10,6 @@
 | [Screenshot Gallery](gallery.md) | Captioned visual examples from Inspector development |
 | [Technical References](reference/README.md) | Persistence, workspace and domain modules |
 | [Historical Archives](history/README.md) | Prior plans, QA reports and original detailed README |
+| [Pass A Cleanup QA](PASS_A_QA.md) | Link validation, protected files, archiving and merge scope |
 
 Historical reports preserve their original status at the time written. The [roadmap](ROADMAP.md) describes current completion status.
