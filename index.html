@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.ui3</title>
+  <title>Mappo — City editor · 0.1-dev.ui4a</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -153,12 +153,33 @@
 .landscape-inspector-controls .tool-grid .control-group label{font-size:11px}
 .workspace-shell .map-viewport canvas.feature-hover{cursor:pointer}
 
+
+/* Phase 4A: district inventory and contextual district editing. */
+.district-list-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;border-top:1px solid #3b5149;margin-top:20px;padding-top:17px}
+.district-list-heading h2{font:650 14px system-ui,sans-serif;letter-spacing:0;color:#e5d6bd}
+.district-list-heading span{font:700 9px ui-monospace,monospace;letter-spacing:.06em;color:#91a9a0}
+.district-feature-list{list-style:none;margin:12px 0;padding:0;display:grid;gap:7px}
+.district-list-item{margin:0;padding:0;min-width:0}
+.district-list-row{width:100%;display:flex;align-items:center;gap:9px;min-height:42px;padding:8px 10px;background:#16282a;border:1px solid #415652;border-radius:5px;color:#e1e7df;text-align:left;font-size:12px}
+.district-list-row:hover{background:#293e3c;border-color:#8f9f8c}
+.district-list-row[aria-pressed=true]{background:#354439;border-color:#d1a579;box-shadow:inset 3px 0 #d1a579}
+.district-list-swatch{display:inline-block;flex:none;width:13px;height:13px;border:1px solid #d0d8c777;border-radius:3px}
+.district-list-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.district-list-count{font:10px ui-monospace,monospace;color:#a2b7ab}
+.district-inspector-controls{border-top:1px solid #3b5149;margin-top:14px;padding-top:9px}
+.district-inspector-controls .district-name-row{grid-template-columns:minmax(0,1fr) 42px;gap:8px;margin:15px 0 10px}
+.district-inspector-controls .district-name-row input{height:39px}
+.district-inspector-controls .district-name-row input[type=color]{width:42px;padding:3px}
+.district-inspector-controls .control-group{margin:15px 0 9px}
+.district-inspector-controls .control-group label{font-size:12px}
+.district-inspector-controls .hint{font-size:11px;line-height:1.6}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.ui3</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.ui4a</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -212,24 +233,21 @@
           <details class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a city block to inspect its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
           <div id="landscapeHistoryTools" class="landscape-history-tools"><p class="hint">Draft histories</p><div class="tool-grid"><button id="landscapeUndoWater" class="minor-button">Undo water</button><button id="landscapeUndoTerrain" class="minor-button">Undo mountains</button></div></div>
         </section>
-        <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>        <details id="districtPanel" class="district-panel" aria-label="Neighborhood tools">
-          <summary>NEIGHBORHOODS · <span id="districtCount">0</span></summary>
-          <div class="control-group"><label for="districtNumberInput">Number of districts</label><select id="districtNumberInput"><option value="auto">Automatic · Suggested for this city</option><option value="1">1 district</option><option value="2">2 districts</option><option value="3">3 districts</option><option value="4">4 districts</option><option value="5">5 districts</option><option value="6">6 districts</option><option value="7">7 districts</option><option value="8">8 districts</option><option value="9">9 districts</option><option value="10">10 districts</option><option value="11">11 districts</option><option value="12">12 districts</option></select></div>
-          <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
-          <div class="control-group"><label for="districtSeedInput">District seed</label><input id="districtSeedInput" maxlength="64" value="districts" spellcheck="false"></div>
+        <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>
+          <details id="districtPanel" class="district-panel" aria-label="Neighborhood generation" open>
+            <summary>NEIGHBORHOODS · <span id="districtCount">0</span></summary>
+            <div class="control-group"><label for="districtNumberInput">Number of districts</label><select id="districtNumberInput"><option value="auto">Automatic · Suggested for this city</option><option value="1">1 district</option><option value="2">2 districts</option><option value="3">3 districts</option><option value="4">4 districts</option><option value="5">5 districts</option><option value="6">6 districts</option><option value="7">7 districts</option><option value="8">8 districts</option><option value="9">9 districts</option><option value="10">10 districts</option><option value="11">11 districts</option><option value="12">12 districts</option></select></div>
+            <details class="workspace-settings feature-generation-settings"><summary>Generation settings</summary><div class="control-group"><label for="districtSeedInput">District seed</label><input id="districtSeedInput" maxlength="64" value="districts" spellcheck="false"></div></details>
+            <button id="generateDistrictButton" class="tool-button full-width">Rebuild districts</button>
+            <p class="hint">Replaces neighborhood names and membership, but preserves streets, properties and buildings. Undo restores the prior assignment.</p>
+            <button id="undoDistrictButton" class="minor-button full-width actions" disabled>Undo district edit</button>
+            <p id="districtGenerationMessage" class="file-status" role="status" aria-live="polite"></p>
+            <div class="district-list-heading"><h2>Neighborhoods</h2><span>SELECT TO EDIT</span></div>
+            <ul id="districtList" class="district-feature-list" aria-label="Neighborhoods"></ul>
+            <p id="districtEmpty" class="hint">Generate districts to create selectable neighborhoods.</p>
+            <div hidden><label for="districtSelect">Selected district</label><select id="districtSelect"><option value="">Choose a neighborhood</option></select></div>
+            <p class="hint">Select a neighborhood here or click a city block. Name, color and connected block editing open in the inspector. Visibility controls are under Layers.</p>
           </details>
-          <button id="generateDistrictButton" class="tool-button full-width">Generate / rebuild districts</button>
-          <p class="hint">Replaces district names and assignments. Streets and buildings stay fixed. Undo district edit restores the previous layout.</p>
-          <div class="sidebar-rule"></div>
-          <div class="control-group"><label for="districtSelect">District inspector</label><select id="districtSelect"><option value="">Choose a neighborhood</option></select></div>
-          <p id="districtStats" class="hint"></p>
-          <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>
-          <button id="applyDistrictButton" class="minor-button full-width" disabled>Apply name &amp; color</button>
-          <p id="selectedDistrictBlock" class="hint">Click a block in Pan map mode to move it.</p>
-          <label class="sr-only" for="districtTargetInput">Receiving district</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select>
-          <div class="tool-grid actions"><button id="moveDistrictButton" class="minor-button" disabled>Move selected block</button><button id="undoDistrictButton" class="minor-button" disabled>Undo district edit</button></div>
-          <p id="districtMessage" class="file-status" role="status" aria-live="polite">Click a neighborhood to inspect it. District names describe places; they do not change building types.</p>
-        </details>
         </section>
         <section id="workspaceSection-defenses" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-defenses" hidden>        <details id="fortificationPanel" class="fortification-panel" open>
           <summary>FORTIFICATIONS</summary>
@@ -273,6 +291,17 @@
       <div id="workspaceInspectorScroll" class="sidebar-content">
         <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a landscape feature or city block, or use Add feature in Landscape. Pin this panel to keep the city report available.</p></div>
         <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+        <div id="districtInspectorControls" class="district-inspector-controls" hidden>
+          <p id="districtStats" class="hint"></p>
+          <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>
+          <button id="applyDistrictButton" class="tool-button full-width" disabled>Apply district changes</button>
+          <div class="sidebar-rule"></div>
+          <p id="selectedDistrictBlock" class="hint">Click a city block in Select / Pan to change its district.</p>
+          <div class="control-group"><label for="districtTargetInput">Receiving neighborhood</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select></div>
+          <button id="moveDistrictButton" class="minor-button full-width" disabled>Move selected block</button>
+          <p class="hint">Blocks can move only to an adjacent district. Neither neighborhood may become empty or disconnected.</p>
+          <p id="districtMessage" class="file-status" role="status" aria-live="polite">Select a neighborhood to edit its name, color or connected blocks.</p>
+        </div>
         <div id="landscapeInspectorControls" class="landscape-inspector-controls" hidden>
           <div id="landscapeCreationType" class="control-group" hidden><label for="landscapeTypeInput">Feature type</label><select id="landscapeTypeInput"><option value="river">River</option><option value="coast">Coastline</option><option value="lake">Lake</option><option value="terrain">Mountain range</option></select><p id="landscapeCreationHelp" class="hint"></p></div>
 <details id="waterPanel" class="water-panel" open>
@@ -6026,10 +6055,15 @@ class DistrictPanel {
     this.changed = changed;
     this.document = document;
     this.editor = new DistrictEditor();
+    this.formDistrictId = null;
+    this.formBlockId = null;
+    this.onRefresh = () => {};
   }
   message(text, error = false) {
-    this.$('districtMessage').textContent = text;
-    this.$('districtMessage').classList.toggle('error', error);
+    for (const id of ['districtMessage', 'districtGenerationMessage']) {
+      this.$(id).textContent = text;
+      this.$(id).classList.toggle('error', error);
+    }
   }
   options(id, items, value) {
     const select = this.$(id);
@@ -6052,8 +6086,12 @@ class DistrictPanel {
       value: d.id,
       label: d.name
     })) : [])], district?.id);
-    this.$('districtNameInput').value = district?.name ?? '';
-    this.$('districtColorInput').value = district?.color ?? '#cba480';
+    const selectionChanged = this.formDistrictId !== (district?.id ?? null);
+    if (resetControls || selectionChanged) {
+      this.$('districtNameInput').value = district?.name ?? '';
+      this.$('districtColorInput').value = district?.color ?? '#cba480';
+    }
+    this.formDistrictId = district?.id ?? null;
     this.$('applyDistrictButton').disabled = !district;
     this.$('districtNameInput').disabled = !district;
     this.$('districtColorInput').disabled = !district;
@@ -6071,14 +6109,18 @@ class DistrictPanel {
     } else this.$('districtStats').textContent = active ? 'Select a district or click a block on the map.' : 'Add neighborhoods without changing this city’s geometry.';
     this.$('selectedDistrictBlock').textContent = block ? `Selected block: ${block.id}` : 'Click a block in Pan map mode to move it.';
     const targets = active && block ? [...new Set([...topology.neighbors.get(block.id)].map(id => topology.blocks.get(id).districtId).filter(id => id !== block.districtId))] : [];
+    const priorTarget = !resetControls && !selectionChanged && this.formBlockId === (block?.id ?? null)
+      ? this.$('districtTargetInput').value : '';
     this.options('districtTargetInput', [{
       value: '',
       label: 'Move to neighboring district'
     }, ...targets.map(id => ({
       value: id,
       label: city.districts.find(d => d.id === id).name
-    }))], '');
+    }))], targets.includes(priorTarget) ? priorTarget : '');
+    this.formBlockId = block?.id ?? null;
     this.$('moveDistrictButton').disabled = !targets.length;
+    this.onRefresh();
   }
   selectAt(point) {
     const city = this.getCity();
@@ -6102,8 +6144,12 @@ class DistrictPanel {
     try {
       const city = action();
       this.commit(city);
+      // Refill committed values without clearing independent generation inputs.
+      this.formDistrictId = null;
+      this.formBlockId = null;
       this.refresh();
       this.message(message);
+      this.changed();
       return true;
     } catch (error) {
       this.message(error.message, true);
@@ -6137,8 +6183,86 @@ class DistrictPanel {
 }
 
 
+// src/ui/district-workspace.js
+// Phase 4A: district list and contextual inspector. The existing district
+// panel and editor continue to own all mutations, validation, and history.
+class DistrictWorkspace {
+  constructor({ getElement, getCity, panel, getShell, document = globalThis.document }) {
+    this.$ = getElement;
+    this.getCity = getCity;
+    this.panel = panel;
+    this.getShell = getShell;
+    this.document = document;
+    this.rows = new Map();
+  }
+  select(id) {
+    const city = this.getCity();
+    if (!city || !city.districts.some(d => d.id === id)) return false;
+    this.panel.editor.selectedDistrictId = id;
+    this.panel.editor.selectedBlockId = null;
+    this.panel.refresh();
+    this.panel.changed(); // app synchronizes map, shell and saved state.
+    this.reveal();
+    return true;
+  }
+  reveal() {
+    const selected = this.panel.editor.selectedDistrictId;
+    this.rows.get(selected)?.button.scrollIntoView?.({ block: 'nearest' });
+  }
+  renderList() {
+    const city = this.getCity();
+    const districts = city?.districtState.status === 'assigned' ? city.districts : [];
+    const selected = this.panel.editor.selectedDistrictId;
+    const activeIds = new Set(districts.map(d => d.id));
+    for (const id of this.rows.keys()) if (!activeIds.has(id)) this.rows.delete(id);
+    const items = districts.map(d => {
+      let entry = this.rows.get(d.id);
+      if (!entry) {
+        const row = this.document.createElement('li');
+        const button = this.document.createElement('button');
+        const swatch = this.document.createElement('span');
+        const name = this.document.createElement('span');
+        const count = this.document.createElement('span');
+        row.className = 'district-list-item';
+        button.type = 'button';
+        button.className = 'district-list-row';
+        swatch.className = 'district-list-swatch';
+        swatch.setAttribute('aria-hidden', 'true');
+        name.className = 'district-list-name';
+        count.className = 'district-list-count';
+        button.replaceChildren(swatch, name, count);
+        row.replaceChildren(button);
+        button.addEventListener('click', () => this.select(d.id));
+        entry = { row, button, swatch, name, count };
+        this.rows.set(d.id, entry);
+      }
+      entry.name.textContent = d.name;
+      entry.count.textContent = String(d.blockIds.length);
+      // District colors are strictly validated as six-digit hex by the model.
+      entry.swatch.setAttribute('style', 'background-color:' + d.color);
+      entry.button.setAttribute('aria-pressed', String(d.id === selected));
+      entry.button.setAttribute('aria-label', d.name + ', ' + d.blockIds.length + ' blocks');
+      return entry.row;
+    });
+    this.$('districtList').replaceChildren(...items);
+    this.$('districtEmpty').hidden = districts.length > 0;
+  }
+  render() {
+    this.renderList();
+    const shell = this.getShell();
+    const selected = shell?.state.selection;
+    const district = selected?.kind === 'district'
+      ? this.getCity()?.districts.find(d => d.id === selected.id)
+      : null;
+    const visible = Boolean(district && district.id === this.panel.editor.selectedDistrictId);
+    this.$('districtInspectorControls').hidden = !visible;
+    if (visible) this.$('workspaceShowControls').hidden = true;
+  }
+}
+
+
 // src/core/version.js
-const APP_VERSION = '0.1-dev.ui3';
+const APP_VERSION = '0.1-dev.ui4a';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -9560,6 +9684,7 @@ class OutlineEditor {
 
 
 
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -9580,6 +9705,7 @@ const TOOL_HINTS = {
 let project, drawPending = false;
 let files;
 let districtPanel;
+let districtWorkspace;
 let fortificationPanel;
 let waterPanel;
 let terrainPanel;
@@ -9872,6 +9998,13 @@ districtPanel = new DistrictPanel({
   }
 });
 districtPanel.bind();
+districtWorkspace = new DistrictWorkspace({
+  getElement: $,
+  getCity: () => project?.city,
+  panel: districtPanel,
+  getShell: () => workspaceShell
+});
+districtPanel.onRefresh = () => districtWorkspace.render();
 fortificationPanel = new FortificationPanel({
   getElement: $,
   getCity: () => project.city,
@@ -9958,13 +10091,13 @@ terrainPanel.refresh(true);
 
 function syncWorkspaceDistrictSelection() {
   const id = districtPanel?.editor.selectedDistrictId;
-  if (id) workspaceShell?.select({
-    kind: 'district',
-    id
-  });
-  else if (workspaceShell?.state.selection?.kind === 'district') workspaceShell.select(null, {
+  if (id) {
+    if (workspaceShell && workspaceShell.state.section !== 'districts') workspaceShell.navigate('districts');
+    workspaceShell?.select({ kind: 'district', id });
+  } else if (workspaceShell?.state.selection?.kind === 'district') workspaceShell.select(null, {
     reveal: false
   });
+  districtWorkspace?.render();
 }
 
 function stopWorkspaceTools(targetSection = null) {
@@ -9990,7 +10123,10 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
     files?.changed();
     requestDraw();
   },
-  onInspect: () => landscapeWorkspace?.render(),
+  onInspect: () => {
+    landscapeWorkspace?.render();
+    districtWorkspace?.render();
+  },
   clearSelection: () => {
     stopWorkspaceTools();
     districtPanel.editor.selectedDistrictId = null;
