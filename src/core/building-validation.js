@@ -4,27 +4,27 @@ import { previewBuildingGeometry } from './building-transform.js';
 
 // Read-only, shape-accurate checks for a single edited building. No schema
 // changes and no mutation of accepted city records.
-const EPS = 1e-7;
-const edge = (polygon, i) => [polygon[i], polygon[(i + 1) % polygon.length]];
-const mid = (a, b) => ({ x: (a.x+b.x)/2, y: (a.y+b.y)/2 });
-const cross = (a,b,c) => (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
+const B3GC_SHAPE_EPS = 1e-7;
+const b3gcShapeEdge = (polygon, i) => [polygon[i], polygon[(i + 1) % polygon.length]];
+const b3gcShapeMid = (a, b) => ({ x: (a.x+b.x)/2, y: (a.y+b.y)/2 });
+const b3gcShapeCross = (a,b,c) => (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
 
-function properCross(a,b,c,d) {
-  const ab1=cross(a,b,c),ab2=cross(a,b,d),cd1=cross(c,d,a),cd2=cross(c,d,b);
-  return ab1*ab2 < -EPS*EPS && cd1*cd2 < -EPS*EPS;
+function b3gcProperCross(a,b,c,d) {
+  const ab1=b3gcShapeCross(a,b,c),ab2=b3gcShapeCross(a,b,d),cd1=b3gcShapeCross(c,d,a),cd2=b3gcShapeCross(c,d,b);
+  return ab1*ab2 < -B3GC_SHAPE_EPS*B3GC_SHAPE_EPS && cd1*cd2 < -B3GC_SHAPE_EPS*B3GC_SHAPE_EPS;
 }
 
 export function shapeWellFormed(points) {
   if (!Array.isArray(points) || points.length<3 || points.length>1024 ||
       !points.every(p=>p && Number.isFinite(p.x) && Number.isFinite(p.y) &&
         Math.abs(p.x)<10000 && Math.abs(p.y)<10000)) return false;
-  if (polygonSignedArea(points)<=EPS) return false;
+  if (polygonSignedArea(points)<=B3GC_SHAPE_EPS) return false;
   for(let i=0;i<points.length;i++){
-    const [a,b]=edge(points,i);
-    if (Math.hypot(a.x-b.x,a.y-b.y)<EPS) return false;
+    const [a,b]=b3gcShapeEdge(points,i);
+    if (Math.hypot(a.x-b.x,a.y-b.y)<B3GC_SHAPE_EPS) return false;
     for(let j=i+2;j<points.length;j++){
       if (i===0 && j===points.length-1) continue;
-      const [c,d]=edge(points,j);
+      const [c,d]=b3gcShapeEdge(points,j);
       if (segmentCuts(a,b,c,d).length) return false;
     }
   }
@@ -34,31 +34,31 @@ export function shapeWellFormed(points) {
 export function shapeContained(inner, outer) {
   if (!inner.length || !outer?.length || !inner.every(p=>insideOrOn(p,outer))) return false;
   for(let i=0;i<inner.length;i++){
-    const [a,b]=edge(inner,i);
-    if(!insideOrOn(mid(a,b),outer)) return false;
+    const [a,b]=b3gcShapeEdge(inner,i);
+    if(!insideOrOn(b3gcShapeMid(a,b),outer)) return false;
     for(let j=0;j<outer.length;j++){
-      const [c,d]=edge(outer,j);
-      if(properCross(a,b,c,d)) return false;
+      const [c,d]=b3gcShapeEdge(outer,j);
+      if(b3gcProperCross(a,b,c,d)) return false;
     }
   }
   return true;
 }
 
-const strictInside=(p,poly)=>pointInPolygon(p,poly)&&clearance(p,poly)>EPS;
+const b3gcStrictInterior=(p,poly)=>pointInPolygon(p,poly)&&clearance(p,poly)>B3GC_SHAPE_EPS;
 export function shapesOverlapInterior(a,b) {
   // Touching boundaries are okay. Concavity, full containment and
   // intersecting edges are checked without approximating a bounding box.
   for(let i=0;i<a.length;i++)for(let j=0;j<b.length;j++){
-    if(properCross(...edge(a,i),...edge(b,j))) return true;
+    if(b3gcProperCross(...b3gcShapeEdge(a,i),...b3gcShapeEdge(b,j))) return true;
   }
   for(const [own,other] of [[a,b],[b,a]]){
     for(let i=0;i<own.length;i++){
-      const [p,q]=edge(own,i),m=mid(p,q);
-      if(strictInside(p,other)||strictInside(m,other)) return true;
+      const [p,q]=b3gcShapeEdge(own,i),m=b3gcShapeMid(p,q);
+      if(b3gcStrictInterior(p,other)||b3gcStrictInterior(m,other)) return true;
       const len=Math.hypot(q.x-p.x,q.y-p.y);
-      if(len<EPS) return true;
+      if(len<B3GC_SHAPE_EPS) return true;
       const inside={x:m.x-(q.y-p.y)/len*1e-4,y:m.y+(q.x-p.x)/len*1e-4};
-      if(strictInside(inside,own)&&strictInside(inside,other)) return true;
+      if(b3gcStrictInterior(inside,own)&&b3gcStrictInterior(inside,other)) return true;
     }
   }
   return false;

@@ -5,28 +5,28 @@ import { inspectBuildingGeometry } from '../core/building-validation.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 
-const EPS = 1e-6;
-const area=polygon=>Math.abs(polygonSignedArea(polygon));
-const pointAt=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
-const closest=(p,a,b)=>{
+const B3GC_ACCESS_EPS = 1e-6;
+const b3gcPlotArea=polygon=>Math.abs(polygonSignedArea(polygon));
+const b3gcPathPoint=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
+const b3gcNearestRoadPoint=(p,a,b)=>{
   const dx=b.x-a.x,dy=b.y-a.y;
   const t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));
-  return pointAt(a,b,t);
+  return b3gcPathPoint(a,b,t);
 };
-const properInside=(p,polygon)=>pointInPolygon(p,polygon)&&clearance(p,polygon)>EPS;
+const b3gcAccessInside=(p,polygon)=>pointInPolygon(p,polygon)&&clearance(p,polygon)>B3GC_ACCESS_EPS;
 
-function crossesOccupiedInterior(a,b,polygon) {
+function b3gcRouteCrossesInterior(a,b,polygon) {
   // Endpoint touches and a route starting on its own wall are allowed;
   // crossing the interior of an occupied footprint is not.
   for(const t of [.01,.08,.2,.35,.5,.65,.8,.92,.99])
-    if(properInside(pointAt(a,b,t),polygon)) return true;
+    if(b3gcAccessInside(b3gcPathPoint(a,b,t),polygon)) return true;
   for(let i=0;i<polygon.length;i++){
     const p=polygon[i],q=polygon[(i+1)%polygon.length];
     const intersections=segmentCuts(a,b,p,q);
-    if(intersections.some(t=>t>EPS&&t<1-EPS)){
-      const before=pointAt(a,b,Math.max(0,Math.min(...intersections)-.001));
-      const after=pointAt(a,b,Math.min(1,Math.max(...intersections)+.001));
-      if(properInside(before,polygon)||properInside(after,polygon)) return true;
+    if(intersections.some(t=>t>B3GC_ACCESS_EPS&&t<1-B3GC_ACCESS_EPS)){
+      const before=b3gcPathPoint(a,b,Math.max(0,Math.min(...intersections)-.001));
+      const after=b3gcPathPoint(a,b,Math.min(1,Math.max(...intersections)+.001));
+      if(b3gcAccessInside(before,polygon)||b3gcAccessInside(after,polygon)) return true;
     }
   }
   return false;
@@ -37,22 +37,22 @@ export function deriveOccupiedPlots(city, property, geometry) {
   return property.plotIds.filter(id=>{
     const plot=own.get(id);
     if(!plot) return false;
-    const outer=area(clipToConvexPolygon(geometry.footprint,plot.boundary));
-    const cutouts=(geometry.holes??[]).reduce((sum,h)=>sum+area(clipToConvexPolygon(h,plot.boundary)),0);
+    const outer=b3gcPlotArea(clipToConvexPolygon(geometry.footprint,plot.boundary));
+    const cutouts=(geometry.holes??[]).reduce((sum,h)=>sum+b3gcPlotArea(clipToConvexPolygon(h,plot.boundary)),0);
     return outer-cutouts>1e-5;
   });
 }
 
-function pathClear(city, building, door, roadPoint) {
-  if(Math.hypot(roadPoint.x-door.x,roadPoint.y-door.y)<EPS)return false;
-  if(crossesOccupiedInterior(door,roadPoint,building.footprint))return false;
+function b3gcRouteClear(city, building, door, roadPoint) {
+  if(Math.hypot(roadPoint.x-door.x,roadPoint.y-door.y)<B3GC_ACCESS_EPS)return false;
+  if(b3gcRouteCrossesInterior(door,roadPoint,building.footprint))return false;
   for(const other of city.buildings){
     if(other.id===building.id)continue;
-    if(crossesOccupiedInterior(door,roadPoint,other.footprint))return false;
+    if(b3gcRouteCrossesInterior(door,roadPoint,other.footprint))return false;
   }
   for(const property of city.properties) {
     if(property.id===building.propertyId)continue;
-    if(crossesOccupiedInterior(door,roadPoint,property.boundary))return false;
+    if(b3gcRouteCrossesInterior(door,roadPoint,property.boundary))return false;
   }
   return true;
 }
@@ -68,8 +68,8 @@ export function reattachFrontage(city, building) {
   for(let i=0;i<building.footprint.length;i++){
     const p=building.footprint[i],q=building.footprint[(i+1)%building.footprint.length];
     for(const t of [.5,.25,.75,.1,.9]){
-      const door=pointAt(p,q,t),destination=closest(door,a,b);
-      if(!pathClear(city,building,door,destination))continue;
+      const door=b3gcPathPoint(p,q,t),destination=b3gcNearestRoadPoint(door,a,b);
+      if(!b3gcRouteClear(city,building,door,destination))continue;
       candidates.push({entrance:door,accessPath:[door,destination],distance:Math.hypot(destination.x-door.x,destination.y-door.y)});
     }
   }
