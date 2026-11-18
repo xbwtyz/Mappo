@@ -20,10 +20,18 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
   const browser = await browserType.launch({ headless: true });
   for (const viewport of viewports) {
     const label = `${browserName}-${viewport.name}`, page = await browser.newPage({ viewport });
+    page.setDefaultTimeout(10000);
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     try {
-      await page.setContent(html, { waitUntil: 'domcontentloaded' });
+      // about:blank/setContent has an opaque origin and blocks browser storage,
+      // causing the real app to open its storage warning over unrelated controls.
+      // Intercept a normal test origin instead; no server or network is needed.
+      await page.route('**/*', route => route.request().url() === 'http://mappo.test/index.html'
+        ? route.fulfill({ contentType: 'text/html', body: html }) : route.abort());
+      await page.goto('http://mappo.test/index.html', { waitUntil: 'domcontentloaded' });
+      await page.waitForFunction(() => __buildingQA.state().files.ready);
+      assert.ok(await page.evaluate(() => Boolean(__buildingQA.state().files.store)), 'Browser fixture needs normal-origin storage');
       if (viewport.width <= 670) await page.locator('#workspaceCollapseTools').click();
       const geometry = await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city));
       const id = await page.evaluate(() => {
@@ -112,6 +120,9 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       failures.push(`${label}: ${error.message}`);
       await page.screenshot({ path: new URL(`${label}-failure.png`, output).pathname });
       console.error(`FAIL building ${label}: ${error.stack}`);
+      console.error(await page.evaluate(() => ({ fileStatus: document.querySelector('#fileStatus')?.textContent,
+        projectMenuVisible: !document.querySelector('#projectMenu')?.hidden,
+        layersMenuVisible: !document.querySelector('#layersMenu')?.hidden })));
     } finally {
       await page.close();
     }
