@@ -8,7 +8,7 @@ Draw a city boundary, place its main square, and generate connected streets, var
 
 Open [`dist/mappo-0.1-dev.3fd.html`](dist/mappo-0.1-dev.3fd.html) directly in a modern desktop browser. No installation, server, network connection or external assets are required. The root `index.html` is the identical compiled file for static hosting.
 
-### UI overhaul complete; Building Inspector in development
+### UI overhaul complete; Building Inspector 3F ready for review
 
 Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](UI_CONTROL_MAP.md) lists the new homes of the existing controls.
 

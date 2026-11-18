@@ -1,7 +1,7 @@
 # Milestone 3F-D — Portable Inspector and final integration QA
 
 Branch: `feature/building-inspector-3f`. Build: `0.1-dev.3fd`.
-Status: implementation committed; GitHub Actions browser matrix is still running.
+Status: **fully CI-verified release candidate**, PR [#2](https://github.com/xbwtyz/Mappo/pull/2) open for review. No merge or Pages publication.
 
 ## Changes
 
@@ -15,7 +15,10 @@ Status: implementation committed; GitHub Actions browser matrix is still running
 
 - Added compiled application integration tests for child selection round-trip, missing/hidden references, older optional workspace state and exact accepted geometry.
 - Added saved UI schema validation tests and expanded native browser checkpoint checks for portable property Inspector restoration.
-- Final CI results and browser viewport matrix are recorded after the validation run completes.
+- [CI run 44265027575](https://github.com/xbwtyz/Mappo/actions/runs/44265027575) passed **205/205 Node tests** (0 failed), including portable reference and legacy compatibility tests.
+- **8/8 standalone smoke** and **8/8 expanded property/building interaction checks** passed in Chromium and Firefox at 1440×900, 5120×1440, 768×1024 and 390×844.
+- GitHub Actions verified committed `index.html` equals `dist/mappo-0.1-dev.3fd.html`, and the deterministic build left both files unchanged. Existing build assertions cover inline CSS/JavaScript and no external runtime references.
+- The runner archived browser screenshots and the compiled standalone HTML as GitHub Actions artifacts. These are automated checks, not physical-device or screen-reader acceptance.
 
 ## Remaining manual acceptance
 

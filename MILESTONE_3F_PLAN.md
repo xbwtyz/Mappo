@@ -1,6 +1,8 @@
 # Mappo Milestone 3F — Property and Building Inspector
 
-Status: **3F-A through 3F-C verified; 3F-D implementation committed, final browser CI pending**.
+Status: **3F-A through 3F-D implemented and CI-verified; pull request #2 open for review, manual acceptance outstanding**.
+3F-D verification: **205/205 Node tests, 16/16 browser-viewport checks** and exact standalone parity in [CI 44265027575](https://github.com/xbwtyz/Mappo/actions/runs/44265027575).
+3F-C stabilization verification: **203/203 Node tests, 16/16 browser checks** in [CI 44263780267](https://github.com/xbwtyz/Mappo/actions/runs/44263780267).
 3F-B verification: 193/193 Node tests, 16/16 browser cases, exact standalone parity. See [information Inspector QA](MILESTONE_3FB_QA.md).
 3F-Aa verification: 185/185 Node tests, 16/16 browser cases, exact standalone parity. See [property-first QA](MILESTONE_3FAA_QA.md).
 3F-A verification: 177/177 Node tests, 16/16 browser cases, exact standalone parity. See [checkpoint QA](MILESTONE_3FA_QA.md).
@@ -79,10 +81,10 @@ Reuse the Phase 7 selection inspector (`src/ui/workspace.js` and `src/ui/workspa
 - [x] Persist valid property or building selection in optional `workspace.ui.selection` without making old saved files require new fields. Safely clear selection when its target is missing.
 - [x] Keep city project schema **9** and workspace schema **1** unless a contract-breaking issue is demonstrated and explicitly reviewed.
 - [x] Validate incoming metadata at the persistence boundary; preserve unknown compatible fields and exact accepted geometry during load/recovery. Confirm historical schema migrations still load.
-- [ ] Test full save -> load -> inspect -> edit -> undo workflows, browser recovery, local district/defense changes, and full rebuild warning/reset semantics.
-- [ ] Run the existing full regression suite and the actual standalone HTML smoke tests in **Firefox and Chromium** at 1440×900, 5120×1440, 768×1024, and 390×844. Report automated-versus-manual limitations.
-- [ ] Check exact root/dist HTML parity, offline inline JS/CSS, no added runtime network requirements, version metadata, README and architecture/documentation updates.
-- [ ] Open a review pull request against `main`; **wait for explicit merge approval**. Do not publish Pages without separate approval.
+- [x] Test full save -> load -> inspect -> edit -> undo workflows, browser recovery, local district/defense changes, and full rebuild warning/reset semantics.
+- [x] Run the existing full regression suite and the actual standalone HTML smoke tests in **Firefox and Chromium** at 1440×900, 5120×1440, 768×1024, and 390×844. Report automated-versus-manual limitations.
+- [x] Check exact root/dist HTML parity, offline inline JS/CSS, no added runtime network requirements, version metadata, README and architecture/documentation updates.
+- [x] Open a review pull request against `main`; **wait for explicit merge approval**. Do not publish Pages without separate approval.
 
 **Acceptance:** new and old project files load safely; edits survive download and browser recovery without regenerating geometry; other editors are unaffected; the release candidate passes CI and browser QA.
 
