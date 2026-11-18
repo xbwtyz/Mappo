@@ -5,6 +5,7 @@ import { BuildingWorkspace } from './ui/building-workspace.js';
 import { PropertyWorkspace } from './ui/property-workspace.js';
 import { IdentityWorkspace } from './ui/identity-workspace.js';
 import { BuildingEditSession } from './editor/building.js';
+import { buildingFrame } from './core/building-transform.js';
 import {
   WorkspaceShell
 } from './ui/workspace.js';
@@ -191,15 +192,46 @@ function requestDraw() {
   });
 }
 
+// Preview controls show transient geometry; never write into project or its save envelope.
+function syncBuildingTransformUI() {
+  const session = buildingEditSession;
+  const shown = Boolean(session?.isActive && project && session.source(project.city));
+  $('buildingTransformPanel').hidden = !shown;
+  if (!shown) return;
+  const frame = buildingFrame(session.source(project.city));
+  const t = session.transform;
+  $('buildingPreviewTarget').textContent = session.buildingId;
+  for (const [id,value] of Object.entries({
+    buildingOffsetX: t.dx, buildingOffsetY: t.dy,
+    buildingAngle: t.angle*180/Math.PI, buildingWidth: frame.width*t.scaleX,
+    buildingDepth: frame.height*t.scaleY
+  })) $(id).value = Number(value.toFixed(2)).toString();
+  for (const tool of ['Move','Rotate','Resize'])
+    $('buildingTool'+tool).setAttribute('aria-pressed',String(session.tool===tool.toLowerCase()));
+  $('buildingPreviewStatus').textContent = session.isPending
+    ? 'UNSAVED PREVIEW · No city changes. Leaving or switching buildings discards this draft.'
+    : 'Preview only. Nothing is applied or saved. Select Move, Rotate or Resize.';
+}
+function confirmBuildingPreviewDiscard() {
+  if (!buildingEditSession?.isPending) return true;
+  return typeof window.confirm !== 'function' || window.confirm('Discard the unsaved building preview? The city remains unchanged.');
+}
+function exitBuildingEditing() {
+  if (!buildingEditSession?.isActive) return true;
+  if (!confirmBuildingPreviewDiscard()) return false;
+  buildingEditSession.stop();
+  return true;
+}
 function updateMapIndicators() {
   clearMapHover();
+  syncBuildingTransformUI();
   const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
     waterActive = waterPanel && waterPanel.editor.mode !== 'pan',
     buildingActive = buildingEditSession?.isActive ?? false;
   canvas.classList.toggle('building-edit-mode', buildingActive);
   canvas.classList.toggle('drawing', Boolean(terrainActive || waterActive || editor.mode !== 'pan'));
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!terrainActive && !waterActive && editor.mode === mode));
-  $('toolHint').textContent = buildingActive ? 'BUILDING EDIT MODE · Click another roof on this property · Drag to pan · Escape to exit · No geometry changes in 3G-A' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+  $('toolHint').textContent = buildingActive ? 'BUILDING PREVIEW · Move, Rotate or Resize · Space/middle drag pans · Escape discards · Not saved' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
   $('draftBadge').textContent = buildingActive ? '● BUILDING EDIT MODE' : editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
 }
 
@@ -356,7 +388,7 @@ $('editButton').addEventListener('click', () => {
   editor.notify('Drag outline points. Double-click an edge to add a point.');
 });
 $('panButton').addEventListener('click', () => {
-  buildingEditSession?.stop();
+  if (!exitBuildingEditing()) return;
   terrainPanel?.editor.setMode('pan');
   waterPanel?.editor.setMode('pan');
   editor.setMode('pan');
@@ -427,6 +459,7 @@ window.addEventListener('keydown', e => {
     else if (workspaceShell?.state.section === 'city') editor.removePoint();
   }
   if (e.key === 'Escape') {
+    if (!exitBuildingEditing()) return;
     stopWorkspaceTools();
     e.preventDefault();
   }
@@ -671,7 +704,8 @@ buildingWorkspace = new BuildingWorkspace({
   getProperties: () => propertyWorkspace,
   getEditSession: () => buildingEditSession,
   enterEditing: enterBuildingEditing,
-  exitEditing: () => buildingEditSession.stop(),
+  exitEditing: exitBuildingEditing,
+  confirmPreviewDiscard: confirmBuildingPreviewDiscard,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -684,7 +718,7 @@ propertyWorkspace = new PropertyWorkspace({
   getCity: () => project?.city,
   getLayers: () => layers,
   buildings: buildingWorkspace,
-  exitEditing: () => buildingEditSession.stop(),
+  exitEditing: exitBuildingEditing,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -703,6 +737,28 @@ identityWorkspace = new IdentityWorkspace({
 identityWorkspace.bind();
 workspaceShell.bind();
 landscapeWorkspace.bind();
+for (const tool of ['Move','Rotate','Resize'])
+  $('buildingTool'+tool).addEventListener('click',()=>buildingEditSession.setTool(tool.toLowerCase()));
+const buildingPreviewInputs = {
+  buildingOffsetX: (v,frame) => ({dx:v}),
+  buildingOffsetY: (v,frame) => ({dy:v}),
+  buildingAngle: (v,frame) => ({angle:v*Math.PI/180}),
+  buildingWidth: (v,frame) => ({scaleX:v/frame.width}),
+  buildingDepth: (v,frame) => ({scaleY:v/frame.height})
+};
+for (const [id,convert] of Object.entries(buildingPreviewInputs))
+  $(id).addEventListener('change',()=>{
+    if (!buildingEditSession?.isActive || !project) return;
+    const n=Number($(id).value), frame=buildingFrame(buildingEditSession.source(project.city));
+    if ($(id).value==='' || !Number.isFinite(n) || !buildingEditSession.setTransform(convert(n,frame))) {
+      $('buildingPreviewStatus').textContent='Invalid preview value. Width and depth must stay within 20–400% of the original.';
+      $(id).value='';
+    }
+  });
+$('buildingPreviewReset').addEventListener('click',()=>{
+  if (confirmBuildingPreviewDiscard()) buildingEditSession.reset();
+});
+$('buildingPreviewCancel').addEventListener('click',exitBuildingEditing);
 
 const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
 // An editor cannot receive map input unless its section is visible.
@@ -755,6 +811,10 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
   const propertyHit = hit ? null : propertyWorkspace.hit(point, camera.zoom);
   propertyWorkspace.setHover(propertyHit);
   canvas.classList.toggle('feature-hover', Boolean(hit || propertyHit));
+}, {
+  begin: (point,zoom) => Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom)),
+  move: point => buildingEditSession?.moveGesture(point),
+  end: cancelled => buildingEditSession?.endGesture(cancelled)
 });
 function clearMapHover() {
   landscapeWorkspace?.setHover(null);

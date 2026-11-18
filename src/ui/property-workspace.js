@@ -40,7 +40,7 @@ export class PropertyWorkspace {
   }
   select(ref) {
     if (!this.record(ref)) return false;
-    this.exitEditing();
+    if (this.exitEditing() === false) return false;
     this.onSelect();
     this.setHover(null);
     this.buildings.setHover(null);
