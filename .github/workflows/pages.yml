@@ -1,0 +1,53 @@
+name: Publish Mappo standalone builds to Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - dist/**
+      - .github/workflows/pages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Publish standalone HTML distribution
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out published sources
+        uses: actions/checkout@v4
+      - name: Verify latest compiled distribution matches root
+        run: |
+          test -f index.html
+          test -f dist/mappo-0.1-dev.ui5d.html
+          cmp index.html dist/mappo-0.1-dev.ui5d.html
+          test "$(find dist -maxdepth 1 -name '*.html' -type f | wc -l)" -ge 26
+      - name: Configure or enable GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Stage existing compiled builds without renaming
+        run: |
+          mkdir -p _site
+          cp index.html _site/index.html
+          cp -R dist _site/dist
+          touch _site/.nojekyll
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
