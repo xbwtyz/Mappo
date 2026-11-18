@@ -53,7 +53,7 @@ export class BuildingWorkspace {
             run:()=>this.deleteBuilding(property?.id,id)
           }]
         });
-        information.sections.push({title:'Map navigation',actions:[{label:'Zoom to this building',run:()=>this.focusSelection({kind:'building',id:building.id})}]});
+        information.sections.push({title:'Map navigation',rows:[],actions:[{label:'Zoom to this building',run:()=>this.focusSelection({kind:'building',id:building.id})}]});
         return {
           type: 'Building',
           title: information.title,
