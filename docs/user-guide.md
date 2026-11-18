@@ -1,6 +1,6 @@
 # Mappo User Guide
 
-**Version:** `0.1-dev.3ga` · [Stable published app](https://xbwtyz.github.io/Mappo/) · [Standalone HTML](../dist/mappo-0.1-dev.3ga.html) · [Docs index](README.md)
+**Version:** `0.1-dev.3gb` · [Stable published app](https://xbwtyz.github.io/Mappo/) · [Standalone HTML](../dist/mappo-0.1-dev.3gb.html) · [Docs index](README.md)
 
 Mappo opens directly from its HTML file with no server. Portable project downloads are the recommended backup.
 
@@ -32,13 +32,13 @@ Expand **Edit property identity** or **Edit building identity**. Enter a name, c
 
 Properties and buildings have independent identities, including separate compound wings. Applied names/uses survive save/load, but identity drafts and the 20-step **Undo identity** history are **session-only**. Full city regeneration may replace building IDs and discard identities; Mappo warns before this happens. Local district/defense updates retain them.
 
-### Building Edit Mode (3G-A preview)
+### Building Edit Mode (3G-B preview)
 
-In the Property Inspector, choose a linked building. In its Building Inspector, choose **Edit building footprint**. A turquoise footprint outline and non-draggable guide points show the active structure; the parent property remains highlighted. Click another roof **on the same property** to focus that building. Clicking land outside the current property does not steal edit focus. Ordinary dragging, Space + drag, middle-button drag and scrolling still pan/zoom as usual.
+In the Property Inspector, choose a linked building, then click **Edit building footprint**. A turquoise preview outline appears, plus a floating **Building Preview** control panel. Choose **Move** and drag inside the active roof; **Rotate** and drag the circular angle handle; or **Resize** and drag a corner/edge square. You can also enter precise **X/Y offsets**, **Angle (degrees)**, **Width** and **Depth** in survey units. The preview transforms courtyard holes, entrances and access paths together but never changes the accepted city. Switch to another roof on the same property to start a fresh preview; clicking elsewhere does not steal focus. Space + drag or middle-button drag still pans, and scrolling zooms.
 
-Choose **Exit building editing**, press Escape, click **Back to property**, or switch to another workspace tool to leave edit mode. Hiding the Buildings layer, rebuilding the city or loading another project also exits safely. Edit mode is *temporary*: your saved project retains a valid selected building, not an active editing mode.
+Choose **Reset preview** to return the ghost to its original footprint, or **Cancel preview** to discard it and leave editing. **Exit building editing**, Escape, Back to property, switching workspaces/tools, hiding Buildings, regeneration and project load also leave editing. The panel warns that an unfinished preview is unsaved; explicit exit/reset or switching building asks for confirmation. Automatic project transitions discard the preview only, not accepted city data. A saved project retains the normal Inspector selection but **never** a preview.
 
-**3G-A has no geometry operations.** Corner markers are visual guides only. Moving, rotating, resizing and overlap checks are planned for later 3G checkpoints.
+**Important: 3G-B transforms are only visual drafts.** A moved/rotated/resized preview may cross property boundaries, overlap neighboring buildings, or look disconnected from its frontage. You cannot apply it to the city or preserve it in a portable project. Validated application begins in 3G-C; Undo and persistence are planned for 3G-D.
 
 ## 4. Landscape tools
 
@@ -67,6 +67,6 @@ Portable files retain accepted geometry, applied identities, editor state, camer
 
 ## 7. Known limits
 
-Freeform building move/rotate/resize, placing/replacing buildings, PNG export and 3D visualization are not implemented yet. See [Roadmap](ROADMAP.md).
+Applying building transformations (including property containment, overlap checks, entrance/access consistency and persistence), placing/replacing buildings, PNG export and 3D visualization are not implemented yet. See [Roadmap](ROADMAP.md).
 
 The [archived complete 3F-D README](history/README-pre-cleanup-3fd.md) includes more extensive feature notes and historical milestone descriptions.
