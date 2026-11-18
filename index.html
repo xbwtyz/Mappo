@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.4c</title>
+  <title>Mappo — City editor · 0.1-dev.4d</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -428,12 +428,19 @@
 .precision-key-hint-4c{font:10px ui-sans-serif,system-ui,sans-serif;color:#a5c5be;margin:4px 0 7px}
 @media(max-width:670px){.precision-nudge-4c{gap:3px}.precision-nudge-buttons-4c button{min-width:29px;min-height:30px}.precision-key-hint-4c{font-size:9px}}
 
+/* Dev 4d: targeted validation is visible beside the map, never a blocking modal. */
+.map-edit-diagnostic-4d{position:absolute;right:14px;bottom:70px;z-index:10;max-width:min(335px,43%);padding:9px 12px;
+  background:rgba(46,30,27,.96);color:#ffe1d7;border:1px solid #c67c67;border-radius:7px;
+  box-shadow:0 3px 16px #0006;font:11px/1.45 ui-sans-serif,system-ui,sans-serif;pointer-events:none;overflow-wrap:anywhere}
+.map-edit-diagnostic-4d[hidden]{display:none}
+@media(max-width:670px){.map-edit-diagnostic-4d{right:8px;bottom:57px;max-width:min(180px,46%);max-height:114px;overflow:auto;padding:6px;font-size:10px}}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.4c</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.4d</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -552,6 +559,7 @@
       <div id="mapViewport" class="map-viewport">
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
+        <div id="mapEditDiagnostic4D" class="map-edit-diagnostic-4d" role="status" aria-live="polite" hidden></div>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
           <div class="building-transform-heading"><strong>PROPERTY PREVIEW</strong><span id="propertyEditTarget3I">—</span></div>
           <p class="hint">Drag a property corner or select it to edit precise coordinates. Move internal plot dividers without changing plot ownership. Everything remains a preview.</p>
@@ -2110,7 +2118,83 @@ function workspaceTransition(state, action) {
 }
 
 
+// src/core/inspector-feedback-4d.js
+
+// Read-only facts, recomputed from accepted city data on every Inspector refresh.
+// "Unbuilt" is an occupancy estimate, NOT a guarantee of buildable frontage.
+const nonnegative = n => typeof n === 'number' && Number.isFinite(n) && n >= 0;
+const lineLength = points => Array.isArray(points) && points.length === 2
+  && points.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y))
+    ? Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y) : null;
+function propertyOverview4D(city, property) {
+  if (!property) return null;
+  const area = nonnegative(property.area) ? property.area
+    : Array.isArray(property.boundary) && property.boundary.length >= 3
+      ? Math.abs(polygonSignedArea(property.boundary)) : null;
+  const length = lineLength(property.frontage) ??
+    lineLength(Array.isArray(property.boundary) ? property.boundary.slice(0,2) : null);
+  const buildings = (city?.buildings ?? []).filter(b => b.propertyId === property.id
+    && Array.isArray(property.buildingIds) && property.buildingIds.includes(b.id));
+  const complete = buildings.length === (property.buildingIds?.length ?? -1)
+    && buildings.every(b => nonnegative(b.area));
+  const occupied = complete ? buildings.reduce((sum,b)=>sum+b.area,0) : null;
+  return {
+    area, frontageLength:length,
+    plots: Array.isArray(property.plotIds) ? property.plotIds.length : null,
+    buildings: Array.isArray(property.buildingIds) ? property.buildingIds.length : null,
+    estimatedUnbuiltArea:area !== null && occupied !== null ? Math.max(0,area-occupied) : null
+  };
+}
+
+// Keep original validator issue codes and targetId intact; only explain them.
+const REMEDIES = Object.freeze({
+  shape:'Use a simple, non-crossing footprint; adjust corner positions or dimensions.',
+  transform:'Enter finite position, rotation and scale values within the allowed limits.',
+  courtyard:'Move the courtyard inward and keep its edges separate from the outer walls.',
+  property:'Move or shrink the building so its entire footprint stays inside the property.',
+  block:'Move the parcel corners back inside their parent street block.',
+  setback:'Move the boundary farther from the named road to restore its required setback.',
+  neighbor:'Move this parcel boundary away from the neighboring property.',
+  collision:'Move, rotate or shrink the draft away from the neighboring building.',
+  building:'Move the parcel boundary outward or reposition the named building before applying.',
+  plot:'Widen or straighten the indicated plot subdivision and keep its corners ordered.',
+  plots:'Reposition the footprint so it occupies valid plots on its owning property.',
+  subdivision:'Keep each divider between its neighbors and away from the frontage ends.',
+  tiling:'Adjust dividers so their plots exactly cover the edited parcel.',
+  frontage:'Restore a valid street edge for the parcel before applying this edit.',
+  access:'Move the building toward its frontage road or clear its proposed entrance route.',
+  selection:'Select an existing property or building and restart the preview.',
+  missing:'Select an existing building and its owning property before editing.',
+  target:'Re-select the building on its owning property.',
+  id:'Choose an unused building identifier.',
+  operation:'Choose a supported building action.',
+  project:'Check the project geometry and undo the last invalid draft adjustment.',
+  schema:'Review the affected geometry; Apply remains disabled until validation succeeds.',
+  roundtrip:'Keep the accepted city unchanged and recheck the project save constraints.',
+  unchanged:'Change a draft dimension or coordinate before applying.'
+});
+const KINDS = Object.freeze({
+  setback:'Road',access:'Road',frontage:'Road',
+  collision:'Building',building:'Building',target:'Building',
+  neighbor:'Neighbor property',property:'Property',selection:'Property',
+  block:'Block',plot:'Plot',plots:'Property',subdivision:'Plot'
+});
+function formatEditIssue4D(issue, context = {}) {
+  if(!issue || typeof issue !== 'object') return 'Check the draft geometry before applying.';
+  const code=typeof issue.code === 'string' ? issue.code : '';
+  const targetId=typeof issue.targetId === 'string' && issue.targetId
+    ? issue.targetId : code==='access' ? context.frontageRoadId
+      : code==='plots' ? context.propertyId : null;
+  const type=KINDS[code];
+  const label=type && typeof targetId === 'string' && targetId ? type+' '+targetId+': ' : '';
+  const reason=String(issue.message ?? 'The draft did not pass validation.').trim();
+  const remedy=REMEDIES[code] ?? 'Review this draft and try a smaller geometry adjustment.';
+  return label+reason+' '+remedy;
+}
+
+
 // src/core/selection-information.js
+
 // Read-only adapters over accepted records. No caches, generated facts or model
 // writes: every refresh resolves current links, including local district edits.
 const INSPECTION_LABELS = Object.freeze({
@@ -2174,13 +2258,20 @@ function inspectionLocation(city, record) {
 
 function propertyInformation(city, property) {
   if (!property) return null;
+  const overview=propertyOverview4D(city,property);
+  const length=overview?.frontageLength;
+  const frontageText=length===null || !Number.isFinite(length)
+    ? 'Not recorded' : length.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1})+' survey units';
   return {
     title: inspectionTitle(property, 'usage'),
     sections: [{ title: 'Property summary', rows: [
       ['Generated usage', inspectionValue(property.usage)],
-      ['Site area', inspectionArea(property.area)],
+      ['Site area', inspectionArea(overview.area)],
+      ['Street frontage length', frontageText],
       ['Plots', inspectionCount(property.plotIds)],
       ['Buildings', inspectionCount(property.buildingIds)],
+      ['Estimated unbuilt area', inspectionArea(overview.estimatedUnbuiltArea)],
+      ['Unbuilt area note', 'Site area minus occupied building footprints; not guaranteed buildable space.'],
       ['Custom name', property.customName || 'Not set'],
       ['Descriptive use', property.customUse || 'Not set']
     ] }, inspectionLocation(city, property), {
@@ -7847,7 +7938,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.4c';
+const APP_VERSION = '0.1-dev.4d';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -11786,12 +11877,12 @@ function prepareBuildingCandidate(project, buildingId, transform) {
   const city=project.city,original=city.buildings.find(b=>b.id===buildingId);
   const issues=[];
   const plotIds=deriveOccupiedPlots(city,base.property,base.preview);
-  if(!plotIds.length)issues.push({code:'plots',message:'Building no longer occupies a valid plot on its property.'});
+  if(!plotIds.length)issues.push({code:'plots',targetId:base.property?.id,message:'Building no longer occupies a valid plot on its property.'});
   const candidateBuilding={...base.preview,plotIds};
   // Check clearance against transformed building, not the accepted original.
   const accessCity={...city,buildings:city.buildings.map(b=>b.id===buildingId?candidateBuilding:b)};
   const route=reattachFrontage(accessCity,candidateBuilding);
-  if(!route)issues.push({code:'access',message:'No unobstructed entrance can connect to the existing frontage road.'});
+  if(!route)issues.push({code:'access',targetId:original.frontageRoadId,message:'No unobstructed entrance can connect to the existing frontage road.'});
   else Object.assign(candidateBuilding,{entrance:route.entrance,accessPath:route.accessPath,frontageRoadId:original.frontageRoadId});
   if(issues.length)return {ok:false,status:'invalid',issues,preview:base.preview,property:base.property,candidate:null};
   // The candidate is a full independent project. Any error below discards it.
@@ -12011,16 +12102,16 @@ class BuildingPlacementSession3H {
 // Validation and transaction are performed against fresh independent project
 // objects; no draft or temporary generated building is ever accepted blindly.
 function prepareBuildingStructure3H(project,workspace,request,{quick=false}={}) {
-  const issue=(code,message)=>({ok:false,status:'invalid',issues:[{code,message}],candidate:null});
+  const issue=(code,message,targetId=null)=>({ok:false,status:'invalid',issues:[{code,message,targetId}],candidate:null});
   const {operation,propertyId,buildingId,spec}=request??{};
   const property=project?.city?.properties.find(p=>p.id===propertyId);
-  if(!property)return issue('property','Select a valid property first.');
+  if(!property)return issue('property','Select a valid property first.',propertyId);
   if(!['add','replace','delete'].includes(operation))return issue('operation','Unsupported building action.');
   const existing=project.city.buildings.find(b=>b.id===buildingId);
   if(operation==='add' && (existing || typeof buildingId!=='string' || !buildingId.startsWith('BLD-MAN-')))
     return issue('id','New building identifier must be unique.');
   if(operation!=='add' && (!existing || existing.propertyId!==propertyId))
-    return issue('target','The target building is not on this property.');
+    return issue('target','The target building is not on this property.',buildingId);
   let geometry=null;
   if(operation!=='delete') {
     try{geometry=makeBuildingShape3H(property,spec);}
@@ -12777,6 +12868,7 @@ function formatPrecision4C(value) {
 
 
 
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -12979,7 +13071,10 @@ function syncBuildingTransformUI() {
   issues.hidden = !result.issues.length;
   issues.replaceChildren(...result.issues.map(issue=>{
     const li=document.createElement('li');
-    li.textContent=issue.message;
+    li.textContent=formatEditIssue4D(issue,{
+      buildingId:session.buildingId,propertyId:session.propertyId,
+      frontageRoadId:session.source(project.city)?.frontageRoadId
+    });
     return li;
   }));
   $('buildingPreviewStatus').textContent = !session.isPending
@@ -12988,7 +13083,10 @@ function syncBuildingTransformUI() {
       ? 'CHECKING · Fast geometry check complete; road access is verified when the drag ends.'
       : result.ok
         ? 'VALID PLACEMENT · Ready to Apply to City. Project compatibility will be rechecked.'
-        : 'INVALID PLACEMENT · Apply is disabled. Adjust the preview to resolve the issues below.';
+        : 'INVALID PLACEMENT · Apply disabled. '+formatEditIssue4D(result.issues?.[0],{
+          buildingId:session.buildingId,propertyId:session.propertyId,
+          frontageRoadId:session.source(project.city)?.frontageRoadId
+        });
 }
 function confirmBuildingPreviewDiscard() {
   if (!buildingEditSession?.isPending) return true;
@@ -13010,13 +13108,20 @@ function applyBuildingTransform() {
       session.validation=received;
       $('buildingPreviewApply').disabled=true;
       $('buildingTransformPanel').setAttribute('data-validation','invalid');
-      $('buildingPreviewStatus').textContent='CANNOT APPLY · '+(issues[0]?.message??'Preview was rejected.');
+      $('buildingPreviewStatus').textContent='CANNOT APPLY · '+formatEditIssue4D(issues[0],{
+        buildingId:session.buildingId,propertyId:session.propertyId,
+        frontageRoadId:session.source(project.city)?.frontageRoadId
+      });
       const list=$('buildingPreviewIssues');
       list.hidden=!issues.length;
       list.replaceChildren(...issues.map(issue=>{
         const li=document.createElement('li');
-        li.textContent=issue.message;return li;
+        li.textContent=formatEditIssue4D(issue,{
+          buildingId:session.buildingId,propertyId:session.propertyId,
+          frontageRoadId:session.source(project.city)?.frontageRoadId
+        });return li;
       }));
+      syncMapEditDiagnostic4D();
       requestDraw();
       return false;
     }
@@ -13142,12 +13247,18 @@ function syncBuildingStructureUI3H() {
   issues.hidden=!result.issues?.length;
   issues.replaceChildren(...(result.issues??[]).map(issue=>{
     const el=document.createElement('li');
-    el.textContent=issue.message;return el;
+    el.textContent=formatEditIssue4D(issue,{
+      buildingId:session.buildingId,propertyId:session.propertyId,
+      frontageRoadId:session.property(project.city)?.frontageRoadId
+    });return el;
   }));
   $('structureStatus').textContent=result.status==='checking'
     ? 'CHECKING · Complete placement validation runs when movement ends.'
     : result.ok ? 'VALID · This building can be applied to the selected property.'
-    : 'INVALID · Apply is disabled. '+(result.issues?.[0]?.message??'Adjust your placement.');
+    : 'INVALID · Apply disabled. '+formatEditIssue4D(result.issues?.[0],{
+      buildingId:session.buildingId,propertyId:session.propertyId,
+      frontageRoadId:session.property(project.city)?.frontageRoadId
+    });
 }
 function applyStructurePlacement3H() {
   const session=buildingPlacementSession;
@@ -13287,21 +13398,39 @@ function syncPropertyEditUI3I() {
   $('propertyEditStatus3I').textContent = result.status==='checking'
     ? 'CHECKING · Release the handle to validate the new property and plots.'
     : !result.ok
-      ? 'INVALID · '+(result.issues?.[0]?.message??'Property geometry cannot be applied.')
+      ? 'INVALID · '+formatEditIssue4D(result.issues?.[0],{propertyId:session.propertyId})
       : session.isPending
         ? 'VALID · Property and plot edits can be applied together.'
         : 'NO PENDING CHANGES · Property and plots match the accepted city.';
   const issues=$('propertyEditIssues3I');
   issues.hidden=!result.issues?.length;
   issues.replaceChildren(...(result.issues??[]).map(issue=>{
-    const item=document.createElement('li');item.textContent=issue.message;return item;
+    const item=document.createElement('li');
+    item.textContent=formatEditIssue4D(issue,{propertyId:session.propertyId});
+    return item;
   }));
+}
+function syncMapEditDiagnostic4D() {
+  // Active city edit previews only; dragging, idle and valid drafts hide stale errors.
+  const session=propertyEditSession?.isActive?propertyEditSession
+    :buildingEditSession?.isActive?buildingEditSession
+    :buildingPlacementSession?.isActive?buildingPlacementSession:null;
+  const result=session?.validation;
+  const issue=result?.status==='invalid'?result.issues?.[0]:null;
+  const box=$('mapEditDiagnostic4D');
+  box.hidden=!issue;
+  if(!issue){box.textContent='';return;}
+  const context={propertyId:session.propertyId,buildingId:session.buildingId,
+    frontageRoadId:session.source?.(project?.city)?.frontageRoadId
+      ?? session.property?.(project?.city)?.frontageRoadId};
+  box.textContent='EDIT BLOCKED · '+formatEditIssue4D(issue,context);
 }
 function updateMapIndicators() {
   clearMapHover();
   syncBuildingTransformUI();
   syncBuildingStructureUI3H();
   syncPropertyEditUI3I();
+  syncMapEditDiagnostic4D();
   syncPropertyDeletionControls4A();
   const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
     waterActive = waterPanel && waterPanel.editor.mode !== 'pan',
