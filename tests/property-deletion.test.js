@@ -55,7 +55,8 @@ test('Dev4a bounded Undo/Redo restores exact IDs, coordinates and children in or
   assert.equal(history.can('undo',deleted.candidate),true);
   const undo=history.prepare(deleted.candidate,defaultWorkspace(deleted.candidate),'undo');
   assert.equal(undo.ok,true,undo.reason);
-  assert.deepEqual(undo.candidate.city,project.city);
+  assert.equal(JSON.stringify(undo.candidate.city),JSON.stringify(project.city),
+    'Undo must restore the exact portable city representation (JSON canonicalizes -0 to 0).');
   history.accept(undo.entry,'undo');
   assert.equal(history.can('redo',undo.candidate),true);
   const redo=history.prepare(undo.candidate,defaultWorkspace(undo.candidate),'redo');
