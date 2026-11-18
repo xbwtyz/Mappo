@@ -82,6 +82,19 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         assert.ok(informationText.includes(text), `Property information contains ${text}`);
       if (siteContext.district) assert.ok(informationText.includes(siteContext.district));
       await page.screenshot({ path: new URL(`${label}-selected.png`, output).pathname });
+      // 3H: property-first Add starts a ghost, not a committed building.
+      await page.getByRole('button', { name: 'Add building to this property' }).click();
+      assert.equal(await page.locator('#buildingStructurePanel').isVisible(),true);
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingPlacementSession.isActive),true);
+      await page.locator('#structurePreset').selectOption('T');
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingPlacementSession.spec.preset),'T');
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      await page.screenshot({ path: new URL(`${label}-3h-ghost.png`, output).pathname });
+      page.once('dialog',dialog=>dialog.accept());
+      await page.locator('#structureCancel').click();
+      assert.equal(await page.evaluate(() => __buildingQA.state().buildingPlacementSession.isActive),false);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+
 
       // A courtyard belongs to the site, including its open center.
       const hasCourtyard = await page.evaluate(() => {
