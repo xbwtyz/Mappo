@@ -1,3 +1,4 @@
+import { APP_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -117,7 +118,7 @@ test('layout has repeatable graph IDs and geometry and varies with different see
       seed: 'changed-layout',
       size
     }).city.nodes);
-    assert.equal(left.generatorVersion, '0.1-dev.ui6d');
+    assert.equal(left.generatorVersion, APP_VERSION);
     assert.ok(left.city.blocks[0].vertices.map(id => left.city.nodes.find(node => node.id === id)).every(Boolean));
   }
 });

@@ -1,3 +1,4 @@
+import { APP_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -101,7 +102,7 @@ test('morphology is validated and persisted in reproducible projects', () => {
     });
     assert.equal(project.options.morphology, morphology);
     assert.equal(project.city.survey.morphology, morphology);
-    assert.equal(project.generatorVersion, '0.1-dev.ui6d');
+    assert.equal(project.generatorVersion, APP_VERSION);
     assert.deepEqual(project, createProject({
       seed: 'growth-123',
       size: 'medium',
