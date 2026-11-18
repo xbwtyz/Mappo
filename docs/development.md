@@ -1,6 +1,6 @@
 # Mappo Developer Guide
 
-**Current baseline:** `0.1-dev.3gc` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
+**Current baseline:** `0.1-dev.3gd` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
 
 ## Source organization
 
@@ -15,6 +15,7 @@ src/editor/building.js  Transient 3G-B building edit session / gestures (not ser
 src/core/building-transform.js  Pure transform geometry and preview handles
 src/core/building-validation.js  Exact polygon/containment/collision checks
 src/editor/building-application.js  Reconciliation, complete project checks and atomic candidate preparation
+src/editor/building-history.js  Bounded session history, geometry-only Undo/Redo and atomic validation
 src/renderer/      Canvas layers and camera
 src/renderer/building-editing.js  Transformed footprint overlay and handles
 src/ui/            Controls, Inspector, selection and project-file workflow
@@ -28,7 +29,7 @@ index.html        Generated GitHub Pages entrypoint
 dist/             Versioned standalone HTML snapshots
 ```
 
-Properties are primary selected sites; individual buildings are child records with independent identity. 3G-C extends the transient preview with exact polygon and ownership validation, plot/entrance/access-path reconciliation, and a guarded atomic replacement of the accepted project only after schema-9 saved-project validation and portable round trip. Failed candidates never mutate existing data; after Apply, files.changed() marks the new city for recovery. Geometry Undo is reserved for 3G-D. Keep accepted geometry distinct from drafts. Validate restored selections against record existence, parent relationships and layer visibility. Do not reattach identities to potentially reused IDs after regeneration.
+Properties are primary selected sites; individual buildings are child records with independent identity. 3G-C extends the transient preview with exact polygon and ownership validation, plot/entrance/access-path reconciliation, and a guarded atomic replacement of the accepted project only after schema-9 saved-project validation and portable round trip. Failed candidates never mutate existing data; after Apply, files.changed() marks the new city for recovery. 3G-D adds a separate, 20-step session-only per-building geometry history. The redo/undo preflight preserves unrelated building identity fields, validates the full candidate and performs a portable document round trip before committing. Rebuild, project load and recovery reset the history; accepted building geometry remains part of schema 9. Keep accepted geometry distinct from drafts. Validate restored selections against record existence, parent relationships and layer visibility. Do not reattach identities to potentially reused IDs after regeneration.
 
 ## Build and automated checks
 
@@ -40,11 +41,11 @@ npm test
 npm run check
 ```
 
-The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current output: `dist/mappo-0.1-dev.3gc.html`. External runtime imports are rejected.
+The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current output: `dist/mappo-0.1-dev.3gd.html`. External runtime imports are rejected.
 
 ```bash
-cmp index.html dist/mappo-0.1-dev.3gc.html
-git diff --exit-code -- index.html dist/mappo-0.1-dev.3gc.html
+cmp index.html dist/mappo-0.1-dev.3gd.html
+git diff --exit-code -- index.html dist/mappo-0.1-dev.3gd.html
 ```
 
 Use a Windows binary comparison tool if `cmp` is unavailable. Update paths when the release version changes.

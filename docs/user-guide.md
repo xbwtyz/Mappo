@@ -1,6 +1,6 @@
 # Mappo User Guide
 
-**Version:** `0.1-dev.3gc` · [Stable published app](https://xbwtyz.github.io/Mappo/) · [Standalone HTML](../dist/mappo-0.1-dev.3gc.html) · [Docs index](README.md)
+**Version:** `0.1-dev.3gd` · [Stable published app](https://xbwtyz.github.io/Mappo/) · [Standalone HTML](../dist/mappo-0.1-dev.3gd.html) · [Docs index](README.md)
 
 Mappo opens directly from its HTML file with no server. Portable project downloads are the recommended backup.
 
@@ -32,7 +32,7 @@ Expand **Edit property identity** or **Edit building identity**. Enter a name, c
 
 Properties and buildings have independent identities, including separate compound wings. Applied names/uses survive save/load, but identity drafts and the 20-step **Undo identity** history are **session-only**. Full city regeneration may replace building IDs and discard identities; Mappo warns before this happens. Local district/defense updates retain them.
 
-### Building Edit Mode (3G-C preview)
+### Building Edit Mode (3G-D preview)
 
 In the Property Inspector, choose a linked building, then click **Edit building footprint**. A turquoise preview outline appears, plus a floating **Building Preview** control panel. Choose **Move** and drag inside the active roof; **Rotate** and drag the circular angle handle; or **Resize** and drag a corner/edge square. You can also enter precise **X/Y offsets**, **Angle (degrees)**, **Width** and **Depth** in survey units. The preview transforms courtyard holes, entrances and access paths together but never changes the accepted city. Switch to another roof on the same property to start a fresh preview; clicking elsewhere does not steal focus. Space + drag or middle-button drag still pans, and scrolling zooms.
 
@@ -40,7 +40,7 @@ Choose **Reset preview** to return the ghost to its original footprint, or **Can
 
 **3G-C validates edits before accepting them.** The preview outline turns green for a valid edit and red for a problem; the validation panel describes collisions, property boundary errors, courtyard problems and blocked street access. **Apply to City** is enabled only when the changed footprint passes validation. Applying rechecks the entire schema-9 project and its portable save/load round trip before making one atomic city update. Changed plot references, area, entrance and frontage access path are reconciled. An invalid preview stays editable; Reset or Cancel never changes the accepted city.
 
-Applied edits are part of the accepted project and can be preserved with **Project → Download project** and compatible browser recovery. The transformation preview itself is *never* saved. **Dedicated geometry Undo/Redo is not available yet** (planned for 3G-D); save a backup before experimenting with permanent changes.
+Applied edits are part of the accepted project and can be preserved with **Project → Download project** and compatible browser recovery. The transformation preview itself is *never* saved. **3G-D provides Undo building and Redo building** within Building Edit Mode after a validated Apply. One accepted Apply creates one history step for that building, up to 20 accepted steps across the session. History is scoped to the selected building; a different property's history cannot silently replace its footprint. You must Apply or reset an unfinished draft before using history. Keyboard shortcuts: Ctrl/Cmd+Z for scoped building Undo, Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z for building Redo (never while typing into form fields). Undo/Redo validates the full schema-9 project and its portable round trip before accepting any change. The accepted geometry persists in downloads/recovery, **but the session-only Undo/Redo history resets on project load, recovery, and regeneration**.
 
 ## 4. Landscape tools
 
@@ -69,6 +69,6 @@ Portable files retain accepted geometry, applied identities, editor state, camer
 
 ## 7. Known limits
 
-Dedicated building geometry Undo/Redo, placing/replacing buildings, PNG export and 3D visualization are not implemented yet. See [Roadmap](ROADMAP.md).
+Building geometry Undo/Redo is session-only and unavailable after reopening a project. Placing/replacing buildings, PNG export and 3D visualization are not implemented yet. See [Roadmap](ROADMAP.md).
 
 The [archived complete 3F-D README](history/README-pre-cleanup-3fd.md) includes more extensive feature notes and historical milestone descriptions.

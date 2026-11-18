@@ -81,6 +81,7 @@ import {
   makeStartingOutline
 } from './editor/outline.js';
 import { inspectBuildingPreview, prepareBuildingApply } from './editor/building-application.js';
+import { BuildingGeometryHistory } from './editor/building-history.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
@@ -110,6 +111,7 @@ let workspaceShell;
 let landscapeWorkspace;
 let buildingWorkspace;
 let buildingEditSession;
+const buildingHistory = new BuildingGeometryHistory(20);
 let propertyWorkspace;
 let identityWorkspace;
 const workspaceMenus = new WorkspaceMenus({
@@ -154,6 +156,13 @@ function updatePendingFeedback() {
   updateUndoFeedback();
 }
 function currentUndoContext() {
+  if (buildingEditSession?.isActive && workspaceShell?.state.selection?.kind === 'building') {
+    const id = buildingEditSession.buildingId;
+    const available = !buildingEditSession.isPending && !buildingEditSession.drag && buildingHistory.can('undo',project,id);
+    return {kind:'building',controlId:'buildingHistoryUndo',label:'Undo building',available,
+      description: buildingEditSession.isPending ? 'Reset or Apply the preview before undoing accepted geometry.'
+        : available ? 'Undo the last accepted edit to this building.' : 'No accepted building edit to undo.'};
+  }
   return describeUndoContext({
     section: workspaceShell?.state.section ?? 'city',
     selection: workspaceShell?.state.selection ?? null,
@@ -193,11 +202,27 @@ function requestDraw() {
   });
 }
 
+// Accepted geometry history is scoped to the selected building and stays out of saves.
+function syncBuildingHistoryUI() {
+  const session = buildingEditSession;
+  const id = session?.isActive ? session.buildingId : null;
+  const ready = Boolean(id && !session.isPending && !session.drag);
+  const undo = ready && buildingHistory.can('undo',project,id);
+  const redo = ready && buildingHistory.can('redo',project,id);
+  $('buildingHistoryUndo').disabled = !undo;
+  $('buildingHistoryRedo').disabled = !redo;
+  $('buildingHistoryStatus').textContent = !id ? '' : session.isPending
+    ? 'Apply or reset your draft before using accepted-edit history.'
+    : 'Session history · '+buildingHistory.count('undo',id)+' undo / '+buildingHistory.count('redo',id)+' redo available. Saved geometry survives reopening; history does not.';
+  updateUndoFeedback();
+}
+
 // Preview controls show transient geometry; never write into project or its save envelope.
 function syncBuildingTransformUI() {
   const session = buildingEditSession;
   const shown = Boolean(session?.isActive && project && session.source(project.city));
   $('buildingTransformPanel').hidden = !shown;
+  syncBuildingHistoryUI();
   if (!shown) return;
   const frame = buildingFrame(session.source(project.city));
   const t = session.transform;
@@ -264,6 +289,7 @@ function applyBuildingTransform() {
     // Commit one already-validated project object, preserving IDs and the
     // existing schema. Record and UI updates cannot affect pre-commit checks.
     if(project!==previous || session.buildingId!==buildingId) return false;
+    if (!buildingHistory.record(previous,received.candidate,buildingId)) return false;
     project=received.candidate;
     session.reset();
     updateDetails();
@@ -279,6 +305,29 @@ function applyBuildingTransform() {
     requestDraw();
     return false;
   }
+}
+
+function moveBuildingHistory(direction) {
+  const session=buildingEditSession;
+  if (!project || !session?.isActive || session.isPending || session.drag
+      || workspaceShell?.state.selection?.kind !== 'building'
+      || workspaceShell.state.selection.id !== session.buildingId) return false;
+  const id=session.buildingId;
+  const receipt=buildingHistory.prepare(project,captureWorkspace().workspace,id,direction);
+  if (!receipt.ok) {
+    $('buildingHistoryStatus').textContent=receipt.reason;
+    syncBuildingHistoryUI();
+    return false;
+  }
+  buildingHistory.accept(receipt.entry,direction);
+  project=receipt.candidate;
+  session.reset();
+  updateDetails();
+  workspaceShell.refresh();
+  requestDraw();
+  workspaceChanged();
+  $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' accepted footprint edit for '+id+'. Download a project copy to keep it.';
+  return true;
 }
 
 function exitBuildingEditing() {
@@ -386,6 +435,7 @@ function generate({ discardIdentities = false } = {}) {
     buildingWorkspace?.refresh({ replaced: true });
     clearMapHover();
     project = next;
+    buildingHistory.clear(); // Rebuilding invalidates every accepted-building history entry.
     if (waterPanel) {
       waterPanel.editor.loadCity(next.city);
       waterPanel.editor.setMode('pan');
@@ -510,7 +560,11 @@ $('seedInput').addEventListener('keydown', e => {
 });
 window.addEventListener('keydown', e => {
   if (!isMapShortcutEvent(e, document.activeElement)) return;
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
+    if (buildingEditSession?.isActive && moveBuildingHistory('redo')) e.preventDefault();
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'z') {
     if (undoCurrentScope()) e.preventDefault();
     return;
   }
@@ -832,6 +886,8 @@ $('buildingPreviewReset').addEventListener('click',()=>{
 });
 $('buildingPreviewCancel').addEventListener('click',exitBuildingEditing);
 $('buildingPreviewApply').addEventListener('click',applyBuildingTransform);
+$('buildingHistoryUndo').addEventListener('click',()=>moveBuildingHistory('undo'));
+$('buildingHistoryRedo').addEventListener('click',()=>moveBuildingHistory('redo'));
 
 const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
 // An editor cannot receive map input unless its section is visible.
@@ -1004,6 +1060,7 @@ function applyProjectDocument(document) {
   buildingWorkspace.refresh({ replaced: true });
   clearMapHover();
   project = next;
+  buildingHistory.clear(); // History does not travel with portable or recovery files.
   editor.boundary = draft.boundary;
   editor.center = draft.center;
   editor.closed = draft.closed;

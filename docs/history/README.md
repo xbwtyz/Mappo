@@ -4,7 +4,8 @@
 
 This archive preserves original milestone plans, implementation notes and dated QA results. Statements about work being incomplete or unmerged reflect the time of writing, not the current release.
 
-- [3G-C preview checkpoint](3g/MILESTONE_3GC_QA.md) — validated Apply to City and schema-9 safeguards; awaiting merge.
+- [3G-D preview checkpoint](3g/MILESTONE_3GD_QA.md) — session-only accepted building history, Undo/Redo and save/load testing; awaiting merge.
+- [3G-C merged checkpoint](3g/MILESTONE_3GC_QA.md) — validated Apply to City and schema-9 safeguards.
 - [3G-B merged checkpoint](3g/MILESTONE_3GB_QA.md) — non-destructive move, rotate and resize previews.
 - [3G-A merged checkpoint](3g/MILESTONE_3GA_QA.md) — original visual-only Building Edit Mode.
 - [Milestone 3F archive](3f/README.md) — selection, property/building inspection, identities, portable selection.

@@ -361,3 +361,8 @@
 .building-transform-panel[data-validation="invalid"]{border-color:#c67c67}
 .building-transform-panel[data-validation="valid"]{border-color:#4eafa3}
 .building-transform-panel[data-validation="checking"]{border-color:#c2a66c}
+
+/* 3G-D: accepted-edit history is separate from drafts and never portable. */
+.building-history-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.building-history-actions button:disabled{opacity:.4;cursor:not-allowed}
+.building-history-status{color:#a1c8bb;font-size:10px;line-height:1.45}
