@@ -114,6 +114,17 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
 
       // Native buttons support keyboard selection of a child and parent return.
       const buildingId = await page.evaluate(() => __buildingQA.buildingId);
+      // 3H-D: the actual browser Delete and structural Undo restore all links.
+      await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).click();
+      page.once('dialog',dialog=>dialog.accept());
+      await page.getByRole('button', { name: 'Delete building…' }).click();
+      assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.some(b=>b.id===id),buildingId),false);
+      assert.equal(await page.locator('#structureUndo').isDisabled(),false);
+      await page.locator('#workspaceCloseInspector').click();
+      await page.locator('#structureUndo').click();
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
+      assert.equal(await page.locator('#structureRedo').isDisabled(),false);
+      await page.screenshot({ path: new URL(`${label}-3h-structure-undo.png`,output).pathname });
       await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).press('Enter');
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Building');
       assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes(buildingId));
