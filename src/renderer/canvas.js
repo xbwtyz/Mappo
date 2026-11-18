@@ -28,6 +28,7 @@ import { drawBuildingSelection } from './building-selection.js';
 import { drawBuildingEditOverlay } from './building-editing.js';
 import { drawBuildingStructurePreview3H } from './building-structure-preview.js';
 import { drawPropertySelection } from './property-selection.js';
+import { drawPropertyEditPreview3I } from './property-edit-preview.js';
 import {
   STREET_WIDTHS,
   STREET_EDGE_WIDTH
@@ -231,7 +232,7 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null, landscapeSelection = null, landscapeHover = null, buildingHover = null, propertyHover = null, buildingEditSession = null, buildingPlacementSession = null) {
+export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null, landscapeSelection = null, landscapeHover = null, buildingHover = null, propertyHover = null, buildingEditSession = null, buildingPlacementSession = null, propertyEditSession = null) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -273,6 +274,7 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
   drawLandscapeSelection(ctx, camera, landscapeRecords(waterEditor?.features ?? city.waterFeatures, terrainEditor?.features ?? city.terrainFeatures), landscapeSelection, landscapeHover);
   drawBuildingEditOverlay(ctx, camera, city, layers, buildingEditSession);
   drawBuildingStructurePreview3H(ctx, camera, city, layers, buildingPlacementSession);
+  drawPropertyEditPreview3I(ctx, camera, city, propertyEditSession);
 
   ctx.textAlign = 'left';
   ctx.fillStyle = 'rgba(52, 73, 75, 0.67)';

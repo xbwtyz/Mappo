@@ -1,6 +1,6 @@
 # Mappo User Guide
 
-**Version:** `0.1-dev.3he` · [Stable published app](https://xbwtyz.github.io/Mappo/) · [Standalone HTML](../dist/mappo-0.1-dev.3he.html) · [Docs index](README.md)
+**Feature preview version:** `0.1-dev.3ie` (3I draft PR, not yet on stable Pages) · [Stable published app](https://xbwtyz.github.io/Mappo/) · [3I standalone HTML](../dist/mappo-0.1-dev.3ie.html) · [Docs index](README.md)
 
 Mappo opens directly from its HTML file with no server. Portable project downloads are the recommended backup.
 
@@ -42,11 +42,21 @@ Choose **Reset preview** to return the ghost to its original footprint, or **Can
 
 Applied edits are part of the accepted project and can be preserved with **Project → Download project** and compatible browser recovery. The transformation preview itself is *never* saved. **3G-D provides Undo building and Redo building** within Building Edit Mode after a validated Apply. One accepted Apply creates one history step for that building, up to 20 accepted steps across the session. History is scoped to the selected building; a different property's history cannot silently replace its footprint. You must Apply or reset an unfinished draft before using history. Keyboard shortcuts: Ctrl/Cmd+Z for scoped building Undo, Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z for building Redo (never while typing into form fields). Undo/Redo validates the full schema-9 project and its portable round trip before accepting any change. The accepted geometry persists in downloads/recovery, **but the session-only Undo/Redo history resets on project load, recovery, and regeneration**.
 
-### Manual building placement and structural edits (3H preview)
+### Manual building placement and structural edits (3H, stable)
 
 From a selected **property**, use **Add building to this property** in the Inspector. The floating placement panel shows a *ghost* footprint. Choose **Rectangle**, **L-shape**, **Courtyard**, or **T-shape**; choose the building use, then drag the ghost, click inside the owning property, or enter numeric frontage/inward position, width, depth, and angle. Invalid placements are red and **Apply to City** is disabled until the preview passes property boundary, collisions, occupied plots, and frontage-road checks. Many generated properties are already largely occupied, so removing/replacing a building or reducing dimensions may be necessary before a new one fits.
 
 From an individual building Inspector, use **Replace building (preview)** to keep its ID and custom identity while replacing its footprint/use after validation. **Delete building…** requires confirmation and removes only the building; the property and plots remain. After any accepted structural change, use **Undo structure** or **Redo structure** when that property is selected. These operations are scoped to the property and are checked against the complete saved-project validator. Session histories may become unavailable if another edit changes related geometry; Undo geometry first or keep a project backup. All committed buildings survive project save/load; placement drafts and structural Undo/Redo history do not. Regeneration and project load clear structural history. This feature does not support moving buildings between properties or editing property boundaries.
+
+### Property and plot editing (3I preview)
+
+Select a property and choose **Edit property geometry**. Mappo displays the parcel boundary, its four draggable corners and its existing plot subdivisions. Tap a corner or use the numeric **Corner X/Y** fields to adjust its position; choose a plot divider and change its percentage along the frontage to distribute space between plots. **Reset preview** restores the last accepted land geometry; **Cancel preview** discards it.
+
+The preview reports exactly why a change is invalid, including nonconvex shapes, illegal subdivision, street setbacks, overlaps with another property, and buildings that would end up outside the parcel. **Apply to City** is enabled only when a changed parcel and every dependent plot and building reference pass complete schema-9 validation and a save/load round trip. Mappo changes the property and its plots atomically; it never silently moves or deletes existing buildings or roads.
+
+After Apply, use **Undo property** or **Redo property** in Property Edit Mode. Accepted edits survive project download and recovery, but the 20-step session-only geometry history does not. Finish or reset any unfinished preview before using history. Ctrl/Cmd+Z undoes an accepted property edit and Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z redoes one when map shortcuts are active.
+
+3I does not split or merge plots/properties, change the number of plot IDs, alter roads, or edit arbitrary concave property shapes.
 
 ## 4. Landscape tools
 
@@ -75,6 +85,6 @@ Portable files retain accepted geometry, applied identities, editor state, camer
 
 ## 7. Known limits
 
-Building geometry and structural Undo/Redo are session-only and unavailable after reopening a project. Building placement is confined to existing properties; cross-property transfers, editing property/plot boundaries, PNG export and 3D visualization are not implemented yet. See [Roadmap](ROADMAP.md).
+Building, structural and property Undo/Redo histories are session-only and unavailable after reopening a project. Property editing supports existing convex quadrilaterals and fixed plot membership; cross-property transfers, plot splitting/merging, roads, PNG export and 3D visualization remain future work. See [Roadmap](ROADMAP.md).
 
 The [archived complete 3F-D README](history/README-pre-cleanup-3fd.md) includes more extensive feature notes and historical milestone descriptions.

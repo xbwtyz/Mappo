@@ -84,6 +84,9 @@ import { inspectBuildingPreview, prepareBuildingApply } from './editor/building-
 import { BuildingGeometryHistory } from './editor/building-history.js';
 import { BuildingPlacementSession3H, buildingLocalPoint3H, prepareBuildingStructure3H } from './editor/building-structures.js';
 import { BuildingStructureHistory3H } from './editor/building-structure-history.js';
+import { PropertyEditSession3I } from './editor/property-edit.js';
+import { inspectPropertyEdit3I, preparePropertyApply3I } from './editor/property-application.js';
+import { PropertyGeometryHistory3I } from './editor/property-history.js';
 import { pointInPolygon } from './core/geometry.js';
 
 const $ = id => document.getElementById(id),
@@ -116,7 +119,9 @@ let buildingWorkspace;
 let buildingEditSession;
 const buildingHistory = new BuildingGeometryHistory(20);
 const buildingStructureHistory = new BuildingStructureHistory3H(20);
+const propertyHistory = new PropertyGeometryHistory3I(20);
 let buildingPlacementSession;
+let propertyEditSession;
 let propertyWorkspace;
 let identityWorkspace;
 const workspaceMenus = new WorkspaceMenus({
@@ -161,6 +166,14 @@ function updatePendingFeedback() {
   updateUndoFeedback();
 }
 function currentUndoContext() {
+  if(propertyEditSession?.isActive){
+    const id=propertyEditSession.propertyId;
+    const available=!propertyEditSession.isPending&&!propertyEditSession.drag&&propertyHistory.can('undo',project,id);
+    return {kind:'property',controlId:'propertyHistoryUndo3I',label:'Undo property',available,
+      description:propertyEditSession.isPending
+        ? 'Apply or reset your parcel draft before Undo.'
+        : available?'Undo the last accepted property and plot edit.':'No accepted property edit to undo.'};
+  }
   const structuralProperty=structureHistoryProperty3H();
   if (!buildingEditSession?.isActive && !buildingPlacementSession?.isActive
       && structuralProperty && buildingStructureHistory.can('undo',project,structuralProperty)) {
@@ -209,7 +222,7 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover, buildingWorkspace?.hover, propertyWorkspace?.hover, buildingEditSession, buildingPlacementSession);
+    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover, buildingWorkspace?.hover, propertyWorkspace?.hover, buildingEditSession, buildingPlacementSession, propertyEditSession);
   });
 }
 
@@ -301,6 +314,7 @@ function applyBuildingTransform() {
     // existing schema. Record and UI updates cannot affect pre-commit checks.
     if(project!==previous || session.buildingId!==buildingId) return false;
     if (!buildingHistory.record(previous,received.candidate,buildingId)) return false;
+    propertyHistory.clear();
     project=received.candidate;
     session.reset();
     updateDetails();
@@ -331,6 +345,7 @@ function moveBuildingHistory(direction) {
     return false;
   }
   buildingHistory.accept(receipt.entry,direction);
+  propertyHistory.clear();
   project=receipt.candidate;
   session.reset();
   updateDetails();
@@ -365,7 +380,7 @@ function exitStructurePlacement3H() {
 }
 function startStructurePlacement3H(propertyId,buildingId=null) {
   if(!project || layers.buildings===false || !propertyId)return false;
-  if(!exitStructurePlacement3H() || !exitBuildingEditing())return false;
+  if(!exitPropertyEditing3I() || !exitStructurePlacement3H() || !exitBuildingEditing())return false;
   if(workspaceShell.state.section!=='city')workspaceShell.navigate('city');
   stopWorkspaceTools('city');
   if(editor.mode!=='pan')editor.setMode('pan');
@@ -382,7 +397,7 @@ function syncBuildingStructureUI3H() {
   $('buildingStructurePanel').hidden=!shown;
   const propertyId=structureHistoryProperty3H();
   const historyShown=Boolean(project && propertyId && workspaceShell?.state.section==='city'
-    && !buildingEditSession?.isActive);
+    && !buildingEditSession?.isActive && !propertyEditSession?.isActive);
   $('buildingStructureHistoryPanel').hidden=!historyShown;
   const idle=Boolean(session?.isActive);
   const canHistory=historyShown && !idle;
@@ -432,6 +447,7 @@ function applyStructurePlacement3H() {
   if(project!==previous || session.active?.buildingId!==request.buildingId)return false;
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,request.operation))return false;
+    propertyHistory.clear();
     project=result.candidate;
     buildingHistory.clear();
     session.stop();
@@ -454,6 +470,7 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
   if(!result.ok){$('statusMessage').textContent='Deletion rejected: '+result.issues[0]?.message;return false;}
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'delete'))return false;
+    propertyHistory.clear();
     project=result.candidate;
     buildingHistory.clear();
     updateDetails();
@@ -472,6 +489,7 @@ function moveStructureHistory3H(direction) {
   const result=buildingStructureHistory.prepare(project,captureWorkspace().workspace,propertyId,direction);
   if(!result.ok){$('statusMessage').textContent='Cannot '+direction+' structure: '+result.issues[0]?.message;return false;}
   buildingStructureHistory.accept(result.entry,direction);
+  propertyHistory.clear();
   project=result.candidate;
   buildingHistory.clear();
   updateDetails();
@@ -491,19 +509,81 @@ function exitBuildingEditing() {
     && workspaceShell.state.inspectorCollapsed) workspaceShell.dispatch({ type: 'inspector', collapsed: false });
   return true;
 }
+function exitPropertyEditing3I() {
+  if (!propertyEditSession?.isActive) return true;
+  if (propertyEditSession.isPending && typeof window.confirm === 'function'
+      && !window.confirm('Discard your unsaved property boundary and plot preview?'))return false;
+  propertyEditSession.stop();
+  if (Number.isFinite(window.innerWidth) && window.innerWidth <= 900
+      && workspaceShell?.state.inspectorCollapsed)
+    workspaceShell.dispatch({type:'inspector',collapsed:false});
+  return true;
+}
+function syncPropertyEditUI3I() {
+  const session = propertyEditSession;
+  const active = Boolean(project && session?.isActive && session.source(project.city));
+  $('propertyEditPanel3I').hidden = !active;
+  if (!active) return;
+  $('propertyEditTarget3I').textContent = session.propertyId;
+  $('propertyEditCorner3I').textContent = session.selectedCorner === null
+    ? 'Click or drag a highlighted corner to select it.'
+    : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
+  const corner = session.selectedCorner === null ? null : session.boundary[session.selectedCorner];
+  for(const [id,value] of [['propertyCornerX3I',corner?.x],['propertyCornerY3I',corner?.y]]){
+    $(id).disabled = !corner;
+    $(id).value = corner ? String(Number(value.toFixed(2))) : '';
+  }
+  const dividerIndex=$('propertyDividerIndex3I'), dividerInput=$('propertyDividerPercent3I');
+  const dividers=session.dividers;
+  const previous=dividerIndex.options?.length??-1;
+  if(previous!==dividers.length){
+    const options=dividers.map((_,i)=>{
+      const option=document.createElement('option');
+      option.value=String(i);option.textContent='Divider '+(i+1);return option;
+    });
+    dividerIndex.replaceChildren(...options);
+  }
+  dividerIndex.disabled=dividers.length===0;
+  dividerIndex.value=String(session.selectedDivider);
+  dividerInput.disabled=dividers.length===0;
+  dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
+  const canHistory=!session.isPending&&!session.drag;
+  $('propertyHistoryUndo3I').disabled=!(canHistory&&propertyHistory.can('undo',project,session.propertyId));
+  $('propertyHistoryRedo3I').disabled=!(canHistory&&propertyHistory.can('redo',project,session.propertyId));
+  $('propertyHistoryStatus3I').textContent='Property history · '+propertyHistory.count('undo',session.propertyId)
+    +' undo / '+propertyHistory.count('redo',session.propertyId)+' redo (session only).';
+  const result=session.drag ? {ok:false,status:'checking',issues:[]} : inspectPropertyEdit3I(project,session);
+  session.validation=result;
+  $('propertyEditPanel3I').setAttribute('data-validation',result.status);
+  $('propertyEditApply3I').disabled=!(session.isPending&&result.ok&&!session.drag);
+  $('propertyEditStatus3I').textContent = result.status==='checking'
+    ? 'CHECKING · Release the handle to validate the new property and plots.'
+    : !result.ok
+      ? 'INVALID · '+(result.issues?.[0]?.message??'Property geometry cannot be applied.')
+      : session.isPending
+        ? 'VALID · Property and plot edits can be applied together.'
+        : 'NO PENDING CHANGES · Property and plots match the accepted city.';
+  const issues=$('propertyEditIssues3I');
+  issues.hidden=!result.issues?.length;
+  issues.replaceChildren(...(result.issues??[]).map(issue=>{
+    const item=document.createElement('li');item.textContent=issue.message;return item;
+  }));
+}
 function updateMapIndicators() {
   clearMapHover();
   syncBuildingTransformUI();
   syncBuildingStructureUI3H();
+  syncPropertyEditUI3I();
   const terrainActive = terrainPanel && terrainPanel.editor.mode !== 'pan',
     waterActive = waterPanel && waterPanel.editor.mode !== 'pan',
     buildingActive = buildingEditSession?.isActive ?? false,
-    structureActive = buildingPlacementSession?.isActive ?? false;
+    structureActive = buildingPlacementSession?.isActive ?? false,
+    propertyActive = propertyEditSession?.isActive ?? false;
   canvas.classList.toggle('building-edit-mode', buildingActive);
   canvas.classList.toggle('drawing', Boolean(terrainActive || waterActive || editor.mode !== 'pan'));
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(!terrainActive && !waterActive && editor.mode === mode));
-  $('toolHint').textContent = structureActive ? 'BUILDING PLACEMENT · Click property ground or drag the ghost · Use numeric controls for exact size and rotation' : buildingActive ? 'BUILDING EDIT · Move, Rotate, Resize · Space/middle drag pans · No geometry changes until validated Apply' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
-  $('draftBadge').textContent = structureActive ? '● BUILDING PLACEMENT PREVIEW' : buildingActive ? '● BUILDING EDIT MODE' : editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
+  $('toolHint').textContent = propertyActive ? 'PROPERTY PREVIEW · Drag corners or edit coordinates and plot dividers · Apply unlocks after validation' : structureActive ? 'BUILDING PLACEMENT · Click property ground or drag the ghost · Use numeric controls for exact size and rotation' : buildingActive ? 'BUILDING EDIT · Move, Rotate, Resize · Space/middle drag pans · No geometry changes until validated Apply' : terrainActive ? (terrainPanel.editor.mode === 'move' ? 'Drag the mountain center marker' : terrainPanel.editor.mode === 'ridge' ? 'Drag peaks · Change selected peak height' : terrainPanel.editor.mode === 'shape' ? 'Drag foothills · Double-click to add · Delete to remove' : 'Click or drag a pass along the ridge') : waterActive ? (waterPanel.editor.mode === 'river' ? 'Drag water points · Double-click to add · Delete to remove' : waterPanel.editor.mode === 'lake-move' ? 'Drag the lake center marker' : waterPanel.editor.mode === 'bridge' ? 'Drag bridge markers · Delete to remove' : 'Click near the river to add a bridge') : TOOL_HINTS[editor.mode];
+  $('draftBadge').textContent = propertyActive ? '● PROPERTY PREVIEW ONLY' : structureActive ? '● BUILDING PLACEMENT PREVIEW' : buildingActive ? '● BUILDING EDIT MODE' : editor.dirty ? '● OUTLINE PREVIEW' : terrainPanel?.editor.dirty ? '● TERRAIN PREVIEW' : waterPanel?.editor.dirty ? '● WATER PREVIEW' : '● CITY PLAN';
 }
 
 function updateViewport() {
@@ -513,7 +593,7 @@ function updateViewport() {
 }
 
 function editorChanged() {
-  if (editor.mode !== 'pan') {buildingEditSession?.stop();buildingPlacementSession?.stop();}
+  if (editor.mode !== 'pan') {buildingEditSession?.stop();buildingPlacementSession?.stop();propertyEditSession?.stop();}
   clearMapHover();
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(editor.mode === mode));
   if (editor.mode !== 'pan' && workspaceShell?.state.section !== 'city') workspaceShell?.navigate('city');
@@ -586,7 +666,9 @@ function generate({ discardIdentities = false } = {}) {
     });
     buildingEditSession?.stop();
     buildingPlacementSession?.stop();
+    propertyEditSession?.stop();
     buildingStructureHistory.clear();
+    propertyHistory.clear();
     identityWorkspace?.reset();
     propertyWorkspace?.refresh({ replaced: true });
     buildingWorkspace?.refresh({ replaced: true });
@@ -662,7 +744,7 @@ $('editButton').addEventListener('click', () => {
   editor.notify('Drag outline points. Double-click an edge to add a point.');
 });
 $('panButton').addEventListener('click', () => {
-  if (!exitBuildingEditing() || !exitStructurePlacement3H()) return;
+  if (!exitPropertyEditing3I() || !exitBuildingEditing() || !exitStructurePlacement3H()) return;
   terrainPanel?.editor.setMode('pan');
   waterPanel?.editor.setMode('pan');
   editor.setMode('pan');
@@ -718,7 +800,8 @@ $('seedInput').addEventListener('keydown', e => {
 window.addEventListener('keydown', e => {
   if (!isMapShortcutEvent(e, document.activeElement)) return;
   if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
-    if (buildingEditSession?.isActive && moveBuildingHistory('redo')) e.preventDefault();
+    if (propertyEditSession?.isActive && movePropertyHistory3I('redo')) e.preventDefault();
+    else if (buildingEditSession?.isActive && moveBuildingHistory('redo')) e.preventDefault();
     else if (!buildingPlacementSession?.isActive && moveStructureHistory3H('redo')) e.preventDefault();
     return;
   }
@@ -738,7 +821,7 @@ window.addEventListener('keydown', e => {
     else if (workspaceShell?.state.section === 'city') editor.removePoint();
   }
   if (e.key === 'Escape') {
-    if (!exitBuildingEditing() || !exitStructurePlacement3H()) return;
+    if (!exitPropertyEditing3I() || !exitBuildingEditing() || !exitStructurePlacement3H()) return;
     stopWorkspaceTools();
     e.preventDefault();
   }
@@ -905,7 +988,7 @@ function syncWorkspaceDistrictSelection() {
 }
 
 function stopWorkspaceTools(targetSection = null) {
-  if (targetSection !== 'city') {buildingEditSession?.stop();buildingPlacementSession?.stop();}
+  if (targetSection !== 'city') {buildingEditSession?.stop();buildingPlacementSession?.stop();propertyEditSession?.stop();}
   clearMapHover();
   // Cancel only a tool whose controls are leaving the visible section.
   // Completed drafts and their histories stay with the original editors.
@@ -931,6 +1014,7 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
   },
   onInspect: () => {
     syncBuildingStructureUI3H();
+    syncPropertyEditUI3I();
     clearMapHover();
     landscapeWorkspace?.render();
     districtWorkspace?.render();
@@ -939,6 +1023,7 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
   clearSelection: () => {
     buildingEditSession?.stop();
     buildingPlacementSession?.stop();
+    propertyEditSession?.stop();
     stopWorkspaceTools();
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -960,6 +1045,7 @@ landscapeWorkspace = new LandscapeWorkspace({
   onSelect: () => {
     buildingEditSession?.stop();
     buildingPlacementSession?.stop();
+    propertyEditSession?.stop();
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
     districtPanel.refresh();
@@ -967,14 +1053,27 @@ landscapeWorkspace = new LandscapeWorkspace({
   changed: () => files?.changed(),
   draw: requestDraw
 });
+propertyEditSession = new PropertyEditSession3I(() => {updateMapIndicators();requestDraw();});
 buildingPlacementSession = new BuildingPlacementSession3H(() => {updateMapIndicators();requestDraw();});
 buildingEditSession = new BuildingEditSession(() => {
   updateMapIndicators();
   workspaceShell?.refresh();
   requestDraw();
 });
+function enterPropertyEditing3I(propertyId) {
+  if(!project || workspaceShell?.state.selection?.kind!=='property'
+      || workspaceShell.state.selection.id!==propertyId)return false;
+  if(!exitBuildingEditing() || !exitStructurePlacement3H())return false;
+  if(workspaceShell.state.section!=='city')workspaceShell.navigate('city');
+  stopWorkspaceTools('city');
+  if(editor.mode!=='pan')editor.setMode('pan');
+  const started=propertyEditSession.start(project.city,propertyId);
+  if(started && Number.isFinite(window.innerWidth) && window.innerWidth<=900)
+    workspaceShell.dispatch({type:'inspector',collapsed:true});
+  return started;
+}
 function enterBuildingEditing(id) {
-  if (!project || !exitStructurePlacement3H()) return false;
+  if (!project || !exitPropertyEditing3I() || !exitStructurePlacement3H()) return false;
   if (workspaceShell.state.section !== 'city') workspaceShell.navigate('city');
   stopWorkspaceTools('city');
   if (editor.mode !== 'pan') editor.setMode('pan');
@@ -1009,8 +1108,9 @@ propertyWorkspace = new PropertyWorkspace({
   getCity: () => project?.city,
   getLayers: () => layers,
   buildings: buildingWorkspace,
-  exitEditing: () => exitBuildingEditing() && exitStructurePlacement3H(),
+  exitEditing: () => exitBuildingEditing() && exitStructurePlacement3H() && exitPropertyEditing3I(),
   startBuilding: propertyId => startStructurePlacement3H(propertyId),
+  startPropertyEdit: enterPropertyEditing3I,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -1067,6 +1167,80 @@ $('structureApply').addEventListener('click',applyStructurePlacement3H);
 $('structureCancel').addEventListener('click',exitStructurePlacement3H);
 $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
+function keepPropertyEditorVisible3I() {
+  // Refreshing the selected property can reopen the narrow-screen Inspector.
+  // Keep the floating edit tools accessible through Apply and Undo/Redo.
+  if (propertyEditSession?.isActive && Number.isFinite(window.innerWidth)
+      && window.innerWidth <= 900 && workspaceShell?.state.inspectorCollapsed === false)
+    workspaceShell.dispatch({type:'inspector',collapsed:true});
+}
+function applyPropertyEdit3I() {
+  const session=propertyEditSession;
+  if(!project||!session?.isActive||!session.isPending||session.drag
+    ||workspaceShell?.state.selection?.kind!=='property'
+    ||workspaceShell.state.selection.id!==session.propertyId)return false;
+  const before=project,propertyId=session.propertyId;
+  const received=preparePropertyApply3I(before,captureWorkspace().workspace,session);
+  if(!received.ok) {
+    session.validation=received;
+    $('statusMessage').textContent='Property Apply blocked: '+(received.issues[0]?.message??'Invalid geometry.');
+    syncPropertyEditUI3I();requestDraw();return false;
+  }
+  if(project!==before||session.propertyId!==propertyId)return false;
+  if(!propertyHistory.record(before,received.candidate,propertyId))return false;
+  project=received.candidate;
+  buildingHistory.clear();
+  buildingStructureHistory.clear();
+  session.start(project.city,propertyId);
+  updateDetails();
+  workspaceShell.select({kind:'property',id:propertyId});
+  workspaceShell.refresh();keepPropertyEditorVisible3I();requestDraw();workspaceChanged();
+  $('statusMessage').textContent='Applied validated property and plot edits to '+propertyId+'. Download a project to preserve your change.';
+  return true;
+}
+$('propertyEditReset3I').addEventListener('click',()=>propertyEditSession?.reset());
+$('propertyEditCancel3I').addEventListener('click',exitPropertyEditing3I);
+$('propertyEditApply3I').addEventListener('click',applyPropertyEdit3I);
+function movePropertyHistory3I(direction){
+  const session=propertyEditSession;
+  if(!project||!session?.isActive||session.isPending||session.drag)return false;
+  const id=session.propertyId;
+  const receipt=propertyHistory.prepare(project,captureWorkspace().workspace,id,direction);
+  if(!receipt.ok){
+    $('statusMessage').textContent=receipt.reason;return false;
+  }
+  project=receipt.candidate;
+  propertyHistory.accept(receipt.entry,direction);
+  session.start(project.city,id);
+  updateDetails();workspaceShell.refresh();keepPropertyEditorVisible3I();requestDraw();workspaceChanged();
+  $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' property and plot edit for '+id+'.';
+  return true;
+}
+$('propertyHistoryUndo3I').addEventListener('click',()=>movePropertyHistory3I('undo'));
+$('propertyHistoryRedo3I').addEventListener('click',()=>movePropertyHistory3I('redo'));
+for(const [id,axis] of [['propertyCornerX3I','x'],['propertyCornerY3I','y']])
+  $(id).addEventListener('change',()=>{
+    const session=propertyEditSession;
+    if(!session?.isActive||session.selectedCorner===null)return;
+    const value=Number($(id).value);
+    if($(id).value===''||!Number.isFinite(value)){syncPropertyEditUI3I();return;}
+    session.setCorner(session.selectedCorner,{...session.boundary[session.selectedCorner],[axis]:value});
+  });
+$('propertyDividerIndex3I').addEventListener('change',()=>{
+  if(!propertyEditSession?.isActive)return;
+  const index=Number($('propertyDividerIndex3I').value);
+  if(Number.isInteger(index)&&index>=0&&index<propertyEditSession.dividers.length){
+    propertyEditSession.selectedDivider=index;
+    updateMapIndicators();
+  }
+});
+$('propertyDividerPercent3I').addEventListener('change',()=>{
+  const session=propertyEditSession;
+  if(!session?.isActive)return;
+  const value=Number($('propertyDividerPercent3I').value);
+  if($('propertyDividerPercent3I').value===''||!Number.isFinite(value)
+      ||!session.setDivider(session.selectedDivider,value/100))syncPropertyEditUI3I();
+});
 
 const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
 // An editor cannot receive map input unless its section is visible.
@@ -1090,6 +1264,11 @@ const mapEditor = {
 };
 
 bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => {
+  if (propertyEditSession?.isActive) {
+    const corner=propertyEditSession.hitCorner(project?.city,point,camera.zoom);
+    if(corner!==null)propertyEditSession.selectCorner(corner);
+    return; // Never switch selection or commit geometry while previewing land.
+  }
   if (buildingPlacementSession?.isActive) {
     const property=buildingPlacementSession.property(project?.city);
     if(property && pointInPolygon(point,property.boundary)) {
@@ -1113,6 +1292,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     if (!districtPanel.editor.selectedDistrictId) workspaceShell.clear();
   }
 }, point => {
+  if (propertyEditSession?.isActive) {clearMapHover();return;}
   if (buildingPlacementSession?.isActive) {clearMapHover();return;}
   if (buildingEditSession?.isActive) {
     landscapeWorkspace.setHover(null);
@@ -1130,6 +1310,13 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
   canvas.classList.toggle('feature-hover', Boolean(hit || propertyHit));
 }, {
   begin: (point,zoom) => {
+    if(propertyEditSession?.isActive){
+      const index=propertyEditSession.hitCorner(project?.city,point,zoom);
+      if(index===null)return false;
+      propertyEditSession.drag={index,original:{...propertyEditSession.boundary[index]}};
+      propertyEditSession.selectCorner(index);
+      return true;
+    }
     if(buildingPlacementSession?.isActive){
       const polygon=buildingPlacementSession.previewFor(project?.city)?.footprint;
       if(polygon?.length && pointInPolygon(point,polygon)){
@@ -1142,7 +1329,9 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     return Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom));
   },
   move: point => {
-    if(buildingPlacementSession?.drag){
+    if(propertyEditSession?.drag){
+      propertyEditSession.setCorner(propertyEditSession.drag.index,point);
+    }else if(buildingPlacementSession?.drag){
       const property=buildingPlacementSession.property(project.city);
       const now=buildingLocalPoint3H(property,point),drag=buildingPlacementSession.drag;
       if(now && drag.start)buildingPlacementSession.update({
@@ -1151,7 +1340,12 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     }else buildingEditSession?.moveGesture(point);
   },
   end: cancelled => {
-    if(buildingPlacementSession?.drag){
+    if(propertyEditSession?.drag){
+      const drag=propertyEditSession.drag;
+      propertyEditSession.drag=null;
+      if(cancelled)propertyEditSession.setCorner(drag.index,drag.original);
+      syncPropertyEditUI3I();
+    }else if(buildingPlacementSession?.drag){
       const drag=buildingPlacementSession.drag;
       buildingPlacementSession.drag=null;
       if(cancelled)buildingPlacementSession.update(drag.spec);
@@ -1264,6 +1458,7 @@ function captureWorkspace() {
 }
 
 function applyProjectDocument(document) {
+  propertyEditSession?.stop();
   landscapeWorkspace.restoring = true;
   const next = copyJson(document.project),
     workspace = copyJson(document.workspace),
@@ -1271,6 +1466,7 @@ function applyProjectDocument(document) {
   buildingEditSession?.stop();
   buildingPlacementSession?.stop();
   buildingStructureHistory.clear();
+  propertyHistory.clear();
   identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
