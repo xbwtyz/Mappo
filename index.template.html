@@ -138,11 +138,12 @@
             <label>Divider % <input id="propertyDividerPercent3I" type="number" min="0.01" max="99.99" step="0.5" disabled></label>
           </div>
           <div class="building-transform-actions">
-            <button type="button" id="propertyEditApply3I" disabled title="Available after geometry validation in 3I-C">Apply to City — validation pending</button>
+            <button type="button" id="propertyEditApply3I" disabled title="Available after geometry validation in 3I-C">Apply to City</button>
             <button type="button" id="propertyEditReset3I">Reset preview</button>
             <button type="button" id="propertyEditCancel3I">Cancel preview</button>
           </div>
-          <p id="propertyEditStatus3I" role="status" aria-live="polite">PREVIEW ONLY · This checkpoint never modifies saved property or plot data.</p>
+          <p id="propertyEditStatus3I" role="status" aria-live="polite">Move a corner or divider to preview a validated property change.</p>
+          <ul id="propertyEditIssues3I" class="building-preview-issues" aria-label="Property validation problems" hidden></ul>
         </section>
         <section id="buildingTransformPanel" class="building-transform-panel" aria-label="Building transform preview tools" hidden>
           <div class="building-transform-heading"><strong>BUILDING PREVIEW</strong><span id="buildingPreviewTarget">—</span></div>
