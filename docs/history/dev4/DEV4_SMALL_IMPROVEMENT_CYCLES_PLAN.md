@@ -1,6 +1,6 @@
 # Mappo 0.1 Dev 4 — Small Improvement Cycle Plan
 
-**Status:** PROPOSED — awaiting owner approval to begin implementation.  
+**Status:** Owner approved on 2026-11-18. Dev 4b implementation authorized after completing the Dev 4a QA fix; each merge still requires separate approval.  
 **Planning branch:** `planning/dev4-small-improvement-cycles` (documentation only).  
 **Scope:** Group the 14 previously proposed minor improvements into **five separately releasable development cycles**, Dev 4b–4f, without introducing a new major subsystem.
 
