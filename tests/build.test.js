@@ -606,6 +606,13 @@ test('standalone app downloads, previews and restores complete projects and reco
     }
   });
   first.el('seedInput').value = 'unfinished-next-seed';
+  first.el('startingShapeSettings').open = true;
+  first.el('workspaceToolScroll').scrollTop = 91;
+  first.el('workspaceInspectorScroll').scrollTop = 25;
+  s.landscapeWorkspace.filter = 'water';
+  s.landscapeWorkspace.controlCache.set('landscape-add:lake', {
+    lakeSeedInput: 'pending lake draft', lakeRadiusInput: '35'
+  });
   const expectedProject = copy(s.project),
     expectedDraft = copy(s.editor.snapshot());
   assert.ok(await first.el('saveProjectButton').handlers.click());
@@ -616,6 +623,12 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.deepEqual(payload.project, expectedProject);
   assert.equal(payload.workspace.view.camera.zoom, 2.4);
   assert.equal(payload.workspace.view.layers.plots, true);
+  assert.equal(payload.workspace.ui.section, 'city');
+  assert.equal(payload.workspace.ui.sectionScroll.city, 91);
+  assert.equal(payload.workspace.ui.inspectorScroll, 25);
+  assert.equal(payload.workspace.ui.disclosures.startingShapeSettings, true);
+  assert.equal(payload.workspace.ui.landscape.filter, 'water');
+  assert.equal(payload.workspace.ui.landscape.formCache.find(x => x.key === 'landscape-add:lake').controls.lakeSeedInput, 'pending lake draft');
   // Staging a file never changes the city. Only Open project commits the import.
   s.project.city.name = 'Replace this temporary city';
   s.editor.boundary = [];
@@ -635,6 +648,11 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(first.state().camera.x, 77);
   assert.equal(first.state().layers.plots, true);
   assert.equal(first.el('districtNameInput').value, 'Unapplied district name');
+  assert.equal(first.state().workspaceShell.state.section, 'city');
+  assert.equal(first.el('workspaceToolScroll').scrollTop, 91);
+  assert.equal(first.el('startingShapeSettings').open, true);
+  assert.equal(first.state().landscapeWorkspace.filter, 'water');
+  assert.equal(first.state().landscapeWorkspace.controlCache.get('landscape-add:lake').lakeSeedInput, 'pending lake draft');
   assert.ok(first.state().districtPanel.editor.history.length > 0);
   await first.state().files.flush();
   const beforeReload = [...memory.values()][0];
@@ -647,6 +665,12 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.deepEqual(copy(reloaded.state().project), expectedProject);
   assert.deepEqual(copy(reloaded.state().editor.snapshot()), expectedDraft);
   assert.equal(reloaded.el('districtNameInput').value, 'Unapplied district name');
+  assert.equal(reloaded.state().workspaceShell.state.section, 'city');
+  assert.equal(reloaded.el('workspaceToolScroll').scrollTop, 91);
+  assert.equal(reloaded.el('workspaceInspectorScroll').scrollTop, 25);
+  assert.equal(reloaded.el('startingShapeSettings').open, true);
+  assert.equal(reloaded.state().landscapeWorkspace.filter, 'water');
+  assert.equal(reloaded.state().landscapeWorkspace.controlCache.get('landscape-add:lake').lakeSeedInput, 'pending lake draft');
   reloaded.el('undoDistrictButton').handlers.click();
   assert.notEqual(reloaded.state().project.city.districts[0].name, 'Portable District');
   const loadedBefore = copy(reloaded.state().project);

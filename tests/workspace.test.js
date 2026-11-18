@@ -346,3 +346,39 @@ test('per-section tool scroll positions and current selection survive navigation
   shell.navigate('landscape');
   assert.equal(pane.scrollTop, 0, 'previous project scroll does not leak into newly opened projects');
 });
+
+test('portable workspace shell restores section, panel visibility, inspector pin and scroll without mutating a selection',()=>{
+  const {shell,el} = shellHarness({
+    water:{resolve:id=>id==='lake'?{title:'Northmere',section:'landscape',type:'Lake',sections:[]}:null}
+  });
+  shell.navigate('landscape');
+  shell.select({kind:'water',id:'lake'});
+  shell.dispatch({type:'pin'});
+  el('workspaceToolScroll').scrollTop=240;
+  el('workspaceInspectorScroll').scrollTop=33;
+  shell.navigate('city');
+  el('workspaceToolScroll').scrollTop=90;
+  shell.dispatch({type:'tools',collapsed:true});
+  const stored=shell.snapshot();
+  assert.equal(stored.section,'city');
+  assert.equal(stored.toolsCollapsed,true);
+  assert.equal(stored.inspectorPinned,true);
+  assert.equal(stored.sectionScroll.city,90);
+  assert.equal(stored.sectionScroll.landscape,240);
+  assert.equal(stored.inspectorScroll,33);
+  const reference={kind:'water',id:'lake'};
+  shell.reset({section:'city',selection:reference,ui:stored});
+  assert.equal(shell.state.toolsCollapsed,true);
+  assert.equal(shell.state.section,'city');
+  assert.equal(shell.state.inspectorPinned,true);
+  assert.deepEqual(shell.state.selection,reference);
+  assert.equal(el('workspaceToolScroll').scrollTop,90);
+  assert.equal(el('workspaceInspectorScroll').scrollTop,33);
+  el('workspaceOpenTools').handlers.click();
+  shell.navigate('landscape');
+  assert.equal(el('workspaceToolScroll').scrollTop,240);
+  shell.reset();
+  assert.equal(shell.state.section,'city');
+  assert.equal(shell.state.inspectorPinned,false);
+  assert.equal(el('workspaceToolScroll').scrollTop,0);
+});

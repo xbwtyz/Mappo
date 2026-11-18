@@ -822,3 +822,41 @@ test('optional landscape selection remains bounded, preserves compatible data an
   delete document.workspace.view.landscapeSelection;
   assert.equal(decodeProjectDocument(encodeProjectDocument(document)).workspace.view.landscapeSelection, undefined);
 });
+
+test('additive workspace ui survives native round-trip without regenerating schema-9 city geometry',()=>{
+  const source=documentFixture();
+  const city=copyJson(source.project.city);
+  source.workspace.ui={
+    section:'defenses',toolsCollapsed:true,inspectorCollapsed:true,inspectorPinned:true,
+    selection:null,sectionScroll:{city:21,defenses:74},inspectorScroll:36,
+    disclosures:{cityGenerationSettings:true,workspaceCityReport:true},
+    landscape:{filter:'water',formCache:[{key:'landscape-add:lake',controls:{lakeSeedInput:'custom pending lake'}}]},
+    districts:{formCache:[{id:'D1',name:'Unapplied name',color:'#123abc'}]},
+    futureFeature:{keep:'opaque'}
+  };
+  const decoded=decodeProjectDocument(encodeProjectDocument(source));
+  assert.deepEqual(decoded.project.city,city,'accepted city is stored and restored exactly');
+  assert.equal(decoded.project.schemaVersion,9);
+  assert.equal(decoded.workspace.schemaVersion,1);
+  assert.equal(decoded.workspace.ui.landscape.formCache[0].controls.lakeSeedInput,'custom pending lake');
+  assert.equal(decoded.workspace.ui.section,'defenses');
+  assert.equal(decoded.workspace.ui.futureFeature.keep,'opaque');
+  const modified=copyJson(decoded.workspace);
+  modified.ui={section:'city',landscape:{filter:'all'},disclosures:{workspaceCityReport:false}};
+  const resaved=createProjectDocument(decoded.project,modified,decoded,now);
+  assert.equal(resaved.workspace.ui.section,'city');
+  assert.equal(resaved.workspace.ui.landscape.filter,'all');
+  assert.deepEqual(resaved.workspace.ui.landscape.formCache,source.workspace.ui.landscape.formCache);
+  assert.equal(resaved.workspace.ui.futureFeature.keep,'opaque');
+  assert.equal(resaved.workspace.ui.disclosures.cityGenerationSettings,true);
+  assert.equal(resaved.workspace.ui.disclosures.workspaceCityReport,false);
+  assert.deepEqual(resaved.project.city,city);
+  assert.equal(decodeProjectDocument(encodeProjectDocument(documentFixture())).workspace.ui,undefined,
+    'older schema-9 documents without UI use legacy fallback');
+});
+
+test('invalid optional presentation state is rejected by the complete native project decoder',()=>{
+  const source=documentFixture();
+  source.workspace.ui={section:'city',landscape:{formCache:[{key:'water:a',controls:{evil:'payload'}}]}};
+  assert.throws(()=>decodeProjectDocument(JSON.stringify(source)),/Invalid saved landscape input/);
+});
