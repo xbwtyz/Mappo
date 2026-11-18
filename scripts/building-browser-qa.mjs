@@ -134,7 +134,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         return {properties:c.properties.length,plots:c.plots.length,buildings:c.buildings.length};
       });
       page.once('dialog',async dialog=>{
-        assert.match(dialog.message(),/plot\\(s\\).*building\\(s\\)/);
+        assert.ok(dialog.message().includes('plot(s)') && dialog.message().includes('building(s)'));
         await dialog.accept();
       });
       await page.getByRole('button',{name:'Delete property…'}).click();
