@@ -341,6 +341,144 @@ function moveBuildingHistory(direction) {
   return true;
 }
 
+// 3H manages building records only within a selected parent property.
+function structureHistoryProperty3H() {
+  if(buildingPlacementSession?.isActive)return buildingPlacementSession.propertyId;
+  const selected=workspaceShell?.state.selection;
+  if(selected?.kind==='property')return selected.id;
+  if(selected?.kind==='building')return project?.city?.buildings.find(b=>b.id===selected.id)?.propertyId??null;
+  return null;
+}
+function confirmStructureDiscard3H() {
+  if(!buildingPlacementSession?.isActive)return true;
+  return typeof window.confirm!=='function'||window.confirm('Discard the unsaved building placement preview? Your accepted city will not change.');
+}
+function exitStructurePlacement3H() {
+  if(!buildingPlacementSession?.isActive)return true;
+  if(!confirmStructureDiscard3H())return false;
+  buildingPlacementSession.stop();
+  return true;
+}
+function startStructurePlacement3H(propertyId,buildingId=null) {
+  if(!project || layers.buildings===false || !propertyId)return false;
+  if(!exitStructurePlacement3H() || !exitBuildingEditing())return false;
+  if(workspaceShell.state.section!=='city')workspaceShell.navigate('city');
+  stopWorkspaceTools('city');
+  if(editor.mode!=='pan')editor.setMode('pan');
+  try{
+    const started=buildingPlacementSession.start(project.city,propertyId,buildingId);
+    if(started && Number.isFinite(window.innerWidth) && window.innerWidth<=900)
+      workspaceShell.dispatch({type:'inspector',collapsed:true});
+    return started;
+  }catch(error){$('statusMessage').textContent='Cannot start building placement: '+error.message;return false;}
+}
+function syncBuildingStructureUI3H() {
+  const session=buildingPlacementSession;
+  const shown=Boolean(project && session?.isActive && session.property(project.city));
+  $('buildingStructurePanel').hidden=!shown;
+  const propertyId=structureHistoryProperty3H();
+  const historyShown=Boolean(project && propertyId && workspaceShell?.state.section==='city'
+    && !buildingEditSession?.isActive);
+  $('buildingStructureHistoryPanel').hidden=!historyShown;
+  const idle=Boolean(session?.isActive);
+  const canHistory=historyShown && !idle;
+  $('structureUndo').disabled=!(canHistory&&buildingStructureHistory.can('undo',project,propertyId));
+  $('structureRedo').disabled=!(canHistory&&buildingStructureHistory.can('redo',project,propertyId));
+  $('structureHistoryStatus').textContent=historyShown
+    ? 'Property structure history · '+buildingStructureHistory.count('undo',propertyId)+' undo / '
+      +buildingStructureHistory.count('redo',propertyId)+' redo (session only).'
+    : '';
+  if(!shown)return;
+  const spec=session.spec;
+  $('structureModeTitle').textContent=session.operation==='replace'?'REPLACE BUILDING':'PLACE NEW BUILDING';
+  $('structurePropertyLabel').textContent=session.propertyId;
+  for(const [id,value] of Object.entries({
+    structureU:spec.u,structureV:spec.v,structureWidth:spec.width,
+    structureDepth:spec.depth,structureAngle:spec.angle,
+    structurePreset:spec.preset,structureType:spec.type
+  })) $(id).value=typeof value==='number'?String(Number(value.toFixed(2))):value;
+  const result=session.drag ? {ok:false,status:'checking',issues:[]}
+    : prepareBuildingStructure3H(project,captureWorkspace().workspace,session.active);
+  session.validation=result;
+  $('structureApply').disabled=!(result.ok && result.status==='valid' && !session.drag);
+  $('buildingStructurePanel').setAttribute('data-validation',result.status);
+  const issues=$('structureIssues');
+  issues.hidden=!result.issues?.length;
+  issues.replaceChildren(...(result.issues??[]).map(issue=>{
+    const el=document.createElement('li');
+    el.textContent=issue.message;return el;
+  }));
+  $('structureStatus').textContent=result.status==='checking'
+    ? 'CHECKING · Complete placement validation runs when movement ends.'
+    : result.ok ? 'VALID · This building can be applied to the selected property.'
+    : 'INVALID · Apply is disabled. '+(result.issues?.[0]?.message??'Adjust your placement.');
+}
+function applyStructurePlacement3H() {
+  const session=buildingPlacementSession;
+  if(!project || !session?.isActive || session.drag)return false;
+  const selection=workspaceShell?.state.selection;
+  if(!selection || (selection.kind==='property' && selection.id!==session.propertyId)
+    || (selection.kind==='building' && selection.id!==session.buildingId)
+    || !['property','building'].includes(selection.kind))return false;
+  const previous=project,request={...session.active,spec:{...session.spec}};
+  const result=prepareBuildingStructure3H(previous,captureWorkspace().workspace,request);
+  if(!result.ok){
+    session.validation=result;syncBuildingStructureUI3H();return false;
+  }
+  if(project!==previous || session.active?.buildingId!==request.buildingId)return false;
+  try{
+    if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,request.operation))return false;
+    project=result.candidate;
+    buildingHistory.clear();
+    session.stop();
+    updateDetails();
+    workspaceShell.select({kind:'property',id:request.propertyId});
+    workspaceShell.refresh();
+    requestDraw();
+    workspaceChanged();
+    $('statusMessage').textContent='Applied '+request.operation+' for '+request.buildingId+'. Download a project to keep it.';
+    return true;
+  }catch(error){$('statusMessage').textContent='Building Apply rejected: '+error.message;return false;}
+}
+function deleteStructureBuilding3H(propertyId,buildingId) {
+  if(!project||!propertyId||!buildingId)return false;
+  if(typeof window.confirm==='function' && !window.confirm('Delete '+buildingId+' from this property? You can Undo this deletion during the session.'))return false;
+  if(!exitStructurePlacement3H() || !exitBuildingEditing())return false;
+  const previous=project;
+  const result=prepareBuildingStructure3H(previous,captureWorkspace().workspace,
+    {operation:'delete',propertyId,buildingId});
+  if(!result.ok){$('statusMessage').textContent='Deletion rejected: '+result.issues[0]?.message;return false;}
+  try{
+    if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'delete'))return false;
+    project=result.candidate;
+    buildingHistory.clear();
+    updateDetails();
+    workspaceShell.select({kind:'property',id:propertyId});
+    workspaceShell.refresh();
+    requestDraw();
+    workspaceChanged();
+    $('statusMessage').textContent='Deleted '+buildingId+'; Undo structure can restore it this session.';
+    return true;
+  }catch(error){$('statusMessage').textContent='Deletion failed: '+error.message;return false;}
+}
+function moveStructureHistory3H(direction) {
+  if(!project || buildingPlacementSession?.isActive || buildingEditSession?.isActive)return false;
+  const propertyId=structureHistoryProperty3H();
+  if(!propertyId || !buildingStructureHistory.can(direction,project,propertyId))return false;
+  const result=buildingStructureHistory.prepare(project,captureWorkspace().workspace,propertyId,direction);
+  if(!result.ok){$('statusMessage').textContent='Cannot '+direction+' structure: '+result.issues[0]?.message;return false;}
+  buildingStructureHistory.accept(result.entry,direction);
+  project=result.candidate;
+  buildingHistory.clear();
+  updateDetails();
+  workspaceShell.select({kind:'property',id:propertyId});
+  workspaceShell.refresh();
+  requestDraw();
+  workspaceChanged();
+  $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' structural edit for '+propertyId+'.';
+  return true;
+}
+
 function exitBuildingEditing() {
   if (!buildingEditSession?.isActive) return true;
   if (!confirmBuildingPreviewDiscard()) return false;
