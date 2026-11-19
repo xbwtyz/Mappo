@@ -13361,7 +13361,7 @@ function applyStructurePlacement3H() {
 function clearPropertyBuildings4E(propertyId) {
   const selected=workspaceShell?.state.selection;
   const site=project?.city?.properties.find(p=>p.id===propertyId);
-  if(!site||selected?.kind!=='property'||selected.id!==propertyId)return false;
+  if(!site||layers.buildings===false||selected?.kind!=='property'||selected.id!==propertyId)return false;
   const count=site.buildingIds?.length??0;
   if(count===0){
     $('statusMessage').textContent='This property has no buildings to clear.';

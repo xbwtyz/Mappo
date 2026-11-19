@@ -118,8 +118,12 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         await page.locator('#workspaceCloseInspector').click();
       await page.locator('#structureUndo').click();
       assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),geometry);
+      if(viewport.width<=900 && await page.locator('#workspaceCloseInspector').isVisible())
+        await page.locator('#workspaceCloseInspector').click();
       await page.locator('#structureRedo').click();
       assert.equal(await page.evaluate(id=>__buildingQA.state().project.city.buildings.some(b=>b.propertyId===id),id),false);
+      if(viewport.width<=900 && await page.locator('#workspaceCloseInspector').isVisible())
+        await page.locator('#workspaceCloseInspector').click();
       await page.locator('#structureUndo').click();
       assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),geometry);
       if(viewport.width<=900 && await page.locator('#workspaceOpenInspector').isVisible())
