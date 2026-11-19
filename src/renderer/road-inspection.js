@@ -108,6 +108,27 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
       }
     }
   }
+  // Road-first C1 shows the user's intended position even when the current
+  // parcels, face graph or buildings cannot yet adapt. Draft never reaches Apply.
+  const intended=session.roadIntentNodes;
+  if(intended && session.pending && session.previewVisible!==false){
+    const incident=[...new Set([...intended.keys()].flatMap(id=>
+      graph.incidentRoads.get(id)??[]))];
+    const position=id=>intended.get(id)??graph.nodesById.get(id);
+    ctx.setLineDash([8,5]);
+    ctx.strokeStyle='#168f80';ctx.lineWidth=3.5;
+    for(const id of incident){
+      const road=graph.roadsById.get(id);
+      if(path([position(road.a),position(road.b)]))ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    for(const point of intended.values()){
+      const p=camera.worldToScreen(point);
+      ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);
+      ctx.fillStyle='#168f80';ctx.fill();
+      ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;ctx.stroke();
+    }
+  }
   for (const [id, node] of graph.nodesById) {
     const p = camera.worldToScreen(node),
       protectedNode = graph.incidentRoads.get(id).some((r) => graph.roadClasses.get(r).protected);
@@ -126,7 +147,7 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
     ctx.lineWidth = 2;
     ctx.stroke();
   }
-  if (session.pending) {
+  if (session.pending && d?.kind==='junction') {
     const color = rpColors[session.report?.status] ?? rpColors.checking;
     ctx.setLineDash([7, 5]);
     for (const id of d.roadIds) segment(graph.roadsById.get(id), color, 3, true);

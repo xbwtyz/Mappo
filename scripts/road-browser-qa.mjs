@@ -250,6 +250,228 @@ for (const [name, type] of [
       assert.equal(await page.locator('#roadProposedX').isDisabled(), true);
       assert.ok((await page.locator('#roadRecordDetails').innerText()).includes('Protected:'));
       await page.locator('#roadSelectionKind').selectOption('road');
+      // Road-first C1 must keep an intentionally large street move as an
+      // inspectable draft even if existing parcels cannot accept it yet.
+      const ordinaryId = await page.evaluate(() => {
+        const session=__buildingQA.state().roadWorkspace.session,graph=session.graph;
+        const length=road=>{
+          const a=graph.nodesById.get(road.a),b=graph.nodesById.get(road.b);
+          return Math.hypot(a.x-b.x,a.y-b.y);
+        };
+        return [...graph.roadsById.values()].filter(road=>
+          [road.a,road.b].every(id=>
+            graph.incidentRoads.get(id).every(edge=>!graph.roadClasses.get(edge).protected)))
+          .sort((a,b)=>length(b)-length(a))[0]?.id;
+      });
+      assert.ok(ordinaryId,'A generated city needs at least one ordinary movable segment.');
+      await page.locator('#roadSelectionId').selectOption(ordinaryId);
+      assert.equal(await page.locator('#roadIntentPanelC1').isVisible(),true);
+      await page.locator('#roadIntentDxC1').fill('15');
+      await page.waitForFunction(() =>
+        __buildingQA.state().roadWorkspace.session.roadIntentAnalysis?.draftable===true);
+      const roadIntent=await page.evaluate(() => {
+        const {project,roadWorkspace,files}=__buildingQA.state(),session=roadWorkspace.session,
+          analysis=session.roadIntentAnalysis;
+        const accepted=new Map(project.city.nodes.map(n=>[n.id,n]));
+        return {
+          pending:session.pending,applyReady:analysis.applyReady,
+          draftable:analysis.draftable,changedRoads:analysis.changedRoadIds.length,
+          displaced:analysis.proposedNodes.every(n=>Math.abs(n.x-accepted.get(n.id).x-15)<1e-8 &&
+            n.y===accepted.get(n.id).y),
+          acceptedUnchanged:JSON.stringify(__buildingQA.capture())===__buildingQA.before,
+          recoveryUnchanged:files.revision===__buildingQA.revision
+        };
+      });
+      assert.equal(roadIntent.pending,true);
+      assert.equal(roadIntent.applyReady,false);
+      assert.equal(roadIntent.draftable,true);
+      assert.ok(roadIntent.changedRoads>0);
+      assert.equal(roadIntent.displaced,true);
+      assert.equal(roadIntent.acceptedUnchanged,true);
+      assert.equal(roadIntent.recoveryUnchanged,true);
+      assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+      assert.ok((await page.locator('#roadIntentStatusC1').innerText()).includes('draft'));
+      // Invalid/blank coordinates are not road drafts. No stale proposal is
+      // allowed to remain visible while the user edits a numeric input.
+      await page.locator('#roadIntentDxC1').fill('');
+      const invalid=await page.evaluate(()=>{
+        const s=__buildingQA.state().roadWorkspace.session;
+        return {pending:s.pending,proposal:s.roadIntentAnalysis,ghost:s.roadIntentNodes,
+          error:s.roadIntentInputError};
+      });
+      assert.equal(invalid.pending,false);
+      assert.equal(invalid.proposal,null);
+      assert.equal(invalid.ghost,null);
+      assert.match(invalid.error,/finite/);
+      assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+      await page.locator('#roadIntentDxC1').fill('15');
+      await page.waitForFunction(() =>
+        __buildingQA.state().roadWorkspace.session.roadIntentAnalysis?.draftable===true);
+      await page.locator('#roadPreviewReset').click();
+
+      // Actual mouse-drag on the map: this must not merely test a text field.
+      // Keep the road midpoint clear of the Road Inspection panel at all sizes.
+      const placeRoad=()=>page.evaluate(()=>{
+        const s=__buildingQA.state(),session=s.roadWorkspace.session;
+        const road=session.details.record,graph=session.graph;
+        const a=graph.nodesById.get(road.a),b=graph.nodesById.get(road.b);
+        const mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+        const canvas=document.getElementById('mapCanvas');
+        const rect=canvas.getBoundingClientRect();
+        // Responsive road controls move to the map's bottom on phones.
+        // Pick a truly unobstructed *canvas* location rather than assuming
+        // the upper-right 80% position is always safe to click.
+        const candidates=[[.55,.35],[.45,.36],[.60,.40],[.40,.42],
+          [.70,.37],[.35,.37],[.55,.46],[.73,.45],[.30,.54]];
+        const target=candidates.find(([fx,fy])=>
+          document.elementFromPoint(rect.left+rect.width*fx,
+            rect.top+rect.height*fy)===canvas);
+        if(!target)throw new Error('No unobstructed canvas region for road gesture QA');
+        s.camera.zoom=5;
+        const targetX=rect.width*target[0],targetY=rect.height*target[1];
+        s.camera.x=mid.x-(targetX-s.camera.width/2)/s.camera.zoom;
+        s.camera.y=mid.y-(targetY-s.camera.height/2)/s.camera.zoom;
+        __buildingQA.draw();
+        const pos=s.camera.worldToScreen(mid);
+        return {x:rect.left+pos.x,y:rect.top+pos.y};
+      });
+      const center=await placeRoad();
+      const targetHit=await page.evaluate(pos=>{
+        const element=document.elementFromPoint(pos.x,pos.y),s=__buildingQA.state(),
+          canvas=document.getElementById('mapCanvas'),rect=canvas.getBoundingClientRect(),
+          world=s.camera.screenToWorld({x:pos.x-rect.left,y:pos.y-rect.top});
+        return {target:element?.id??element?.tagName,
+          hit:s.roadWorkspace.session.hit(world,s.camera.zoom,'mouse')};
+      },center);
+      assert.equal(targetHit.target,'mapCanvas',
+        'The gesture target must be unobstructed canvas, not mobile map controls');
+      assert.equal(targetHit.hit?.kind,'road',
+        'Map hit testing must identify the selected road at the gesture start');
+      await page.mouse.move(center.x,center.y);
+      await page.mouse.down();
+      assert.equal(await page.evaluate(() =>
+        __buildingQA.state().roadWorkspace.session.drag?.kind),'road',
+        'Mouse press on the selected road midpoint must begin a road drag.');
+      await page.mouse.move(center.x+35,center.y-20,{steps:5});
+      await page.mouse.up();
+      await page.waitForFunction(() =>
+        __buildingQA.state().roadWorkspace.session.roadIntentAnalysis?.draftable===true);
+      const mouseDraft=await page.evaluate(()=>{
+        const s=__buildingQA.state();
+        return {dx:s.roadWorkspace.session.roadIntentOffset.x,
+          dy:s.roadWorkspace.session.roadIntentOffset.y,
+          pending:s.roadWorkspace.session.pending,revision:s.files.revision};
+      });
+      assert.ok(Math.abs(mouseDraft.dx-7)<.25,'Mouse drag should translate road X by 7 world units');
+      assert.ok(Math.abs(mouseDraft.dy+4)<.25,'Mouse drag should translate road Y by -4 world units');
+      assert.equal(mouseDraft.pending,true);
+      assert.equal(mouseDraft.revision,await page.evaluate(()=>__buildingQA.revision));
+
+      // Continue dragging from the *proposed*, not the old, road position.
+      const ghost=await page.evaluate(()=>{
+        const s=__buildingQA.state(),session=s.roadWorkspace.session,
+          graph=session.graph,road=session.details.record,nodes=session.roadIntentNodes;
+        const a=nodes.get(road.a),b=nodes.get(road.b),
+          point=s.camera.worldToScreen({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+        const rect=document.getElementById('mapCanvas').getBoundingClientRect();
+        return {x:rect.x+point.x,y:rect.y+point.y};
+      });
+      await page.mouse.move(ghost.x,ghost.y);
+      await page.mouse.down();
+      assert.equal(await page.evaluate(()=>
+        __buildingQA.state().roadWorkspace.session.drag?.kind),'road');
+      await page.mouse.move(ghost.x+15,ghost.y+5,{steps:3});
+      await page.mouse.up();
+      await page.waitForFunction(()=>
+        __buildingQA.state().roadWorkspace.session.roadIntentAnalysis?.draftable===true);
+      assert.ok((await page.evaluate(()=>
+        __buildingQA.state().roadWorkspace.session.roadIntentOffset.x))>mouseDraft.dx+2);
+      await page.screenshot({path:new URL(`${label}-road-first.png`,output).pathname});
+      await page.locator('#roadPreviewReset').click();
+
+      // Space + left-drag must pan rather than altering the selected street.
+      const panFrom=await placeRoad();
+      const cameraBefore=await page.evaluate(()=>__buildingQA.state().camera.x);
+      await page.locator('#mapCanvas').focus();
+      await page.keyboard.down('Space');
+      await page.mouse.move(panFrom.x,panFrom.y);
+      await page.mouse.down();
+      await page.mouse.move(panFrom.x+24,panFrom.y+12,{steps:3});
+      await page.mouse.up();
+      await page.keyboard.up('Space');
+      assert.equal(await page.evaluate(()=>
+        __buildingQA.state().roadWorkspace.session.pending),false);
+      assert.notEqual(await page.evaluate(()=>__buildingQA.state().camera.x),cameraBefore);
+
+      // Touch must use the same real canvas pointer controller. Chromium
+      // receives native dispatched touch events; Firefox receives equivalent
+      // synthetic PointerEvents with capture bypass for synthetic pointer #77.
+      const touchFrom=await placeRoad();
+      if(name==='chromium'){
+        const cdp=await page.context().newCDPSession(page);
+        for(const [type,x,y] of [
+          ['touchStart',touchFrom.x,touchFrom.y],
+          ['touchMove',touchFrom.x+30,touchFrom.y+16],
+          ['touchEnd',touchFrom.x+30,touchFrom.y+16],
+        ])await cdp.send('Input.dispatchTouchEvent',{
+          type,touchPoints:type==='touchEnd'?[]:[{x,y,id:77}]
+        });
+        await cdp.detach();
+      }else{
+        await page.locator('#mapCanvas').evaluate(canvas=>{
+          canvas.qaCapture=canvas.setPointerCapture;
+          canvas.setPointerCapture=function(id){if(id!==77)this.qaCapture(id);};
+        });
+        for(const [event,x,y] of [
+          ['pointerdown',touchFrom.x,touchFrom.y],
+          ['pointermove',touchFrom.x+30,touchFrom.y+16],
+          ['pointerup',touchFrom.x+30,touchFrom.y+16]
+        ])await page.locator('#mapCanvas').dispatchEvent(event,{
+          pointerId:77,pointerType:'touch',isPrimary:true,button:0,
+          clientX:x,clientY:y,bubbles:true,
+        });
+        await page.locator('#mapCanvas').evaluate(canvas=>{
+          canvas.setPointerCapture=canvas.qaCapture;delete canvas.qaCapture;
+        });
+      }
+      await page.waitForFunction(()=>
+        __buildingQA.state().roadWorkspace.session.roadIntentAnalysis?.draftable===true);
+      const touchDraft=await page.evaluate(()=>{
+        const s=__buildingQA.state();
+        return {offset:s.roadWorkspace.session.roadIntentOffset,
+          pending:s.roadWorkspace.session.pending};
+      });
+      assert.equal(touchDraft.pending,true);
+      assert.ok(Math.abs(touchDraft.offset.x)>1);
+      assert.ok(Math.abs(touchDraft.offset.y)>1);
+      assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+      await page.locator('#roadPreviewReset').click();
+
+      // Cancellation of a captured touch pointer rolls back the unaccepted
+      // gesture. The project and saved revision remain untouched.
+      const cancelFrom=await placeRoad();
+      await page.locator('#mapCanvas').evaluate(canvas=>{
+        canvas.qaCapture=canvas.setPointerCapture;
+        canvas.setPointerCapture=function(id){if(id!==88)this.qaCapture(id);};
+      });
+      for(const [event,x,y] of [
+        ['pointerdown',cancelFrom.x,cancelFrom.y],
+        ['pointermove',cancelFrom.x+30,cancelFrom.y+12],
+        ['pointercancel',cancelFrom.x+30,cancelFrom.y+12]
+      ])await page.locator('#mapCanvas').dispatchEvent(event,{
+        pointerId:88,pointerType:'touch',isPrimary:true,button:0,
+        clientX:x,clientY:y,bubbles:true,
+      });
+      await page.locator('#mapCanvas').evaluate(canvas=>{
+        canvas.setPointerCapture=canvas.qaCapture;delete canvas.qaCapture;
+      });
+      assert.equal(await page.evaluate(()=>
+        __buildingQA.state().roadWorkspace.session.pending),false);
+      assert.equal(await page.evaluate(()=>
+        JSON.stringify(__buildingQA.capture())===__buildingQA.before),true);
+      assert.equal(await page.evaluate(()=>
+        __buildingQA.state().files.revision===__buildingQA.revision),true);
+
       assert.ok((await page.locator('#roadAcceptedPoint').innerText()).includes('Endpoints'));
       assert.ok((await page.locator('#roadEndpointList button').count()) === 2);
       await page.locator('#roadEndpointList button').first().click();

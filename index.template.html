@@ -154,6 +154,15 @@
             <button id="roadLocate" class="minor-button">Locate on map</button>
             <div id="roadEndpointList" class="road-endpoint-list" aria-label="Connected junctions"></div>
             <p id="roadPreviewEligibility" class="hint"></p>
+            <section id="roadIntentPanelC1" aria-label="Road-first placement draft" hidden>
+              <h3>ROAD-FIRST STREET DRAFT · C1</h3>
+              <p class="hint">Drag an eligible street to where you want it. Neighboring streets follow both endpoints. Property conflicts do not cancel the draft; C2–C5 will add intelligent neighborhood reflow. Protected connections remain separate.</p>
+              <div class="road-preview-selectors">
+                <label>Street offset X<input id="roadIntentDxC1" type="number" step="any" value="0"></label>
+                <label>Street offset Y<input id="roadIntentDyC1" type="number" step="any" value="0"></label>
+              </div>
+              <p id="roadIntentStatusC1" class="hint" role="status" aria-live="polite">Select an ordinary street to draft its new placement.</p>
+            </section>
             <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
             <label class="road-step-label">Nudge units<input id="roadNudgeStep" type="number" min="0.001" step="0.5" value="0.5"></label>
             <div class="road-nudge-buttons" role="group" aria-label="Nudge proposed junction"><button id="roadNudgeLeft" aria-label="Nudge left">←</button><button id="roadNudgeUp" aria-label="Nudge up">↑</button><button id="roadNudgeDown" aria-label="Nudge down">↓</button><button id="roadNudgeRight" aria-label="Nudge right">→</button></div>

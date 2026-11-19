@@ -330,6 +330,11 @@ export class RoadInspectionWorkspace {
         id: this.$('roadSelectionId').value,
       }),
     );
+    for(const id of ['roadIntentDxC1','roadIntentDyC1'])
+      this.$(id).addEventListener('input',()=>{
+        const read=id=>this.$(id).value.trim()===''?NaN:Number(this.$(id).value);
+        this.session.updateRoadIntent({x:read('roadIntentDxC1'),y:read('roadIntentDyC1')});
+      });
     for (const id of ['roadProposedX', 'roadProposedY'])
       this.$(id).addEventListener('input', () => {
         const number = (id) => (this.$(id).value.trim() === '' ? NaN : Number(this.$(id).value));
@@ -411,11 +416,26 @@ export class RoadInspectionWorkspace {
         : d
           ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
           : '';
+    this.$('roadIntentPanelC1').hidden=kind!=='road';
+    for(const [id,field] of [['roadIntentDxC1','x'],['roadIntentDyC1','y']]){
+      this.$(id).disabled=!s.roadIntentEligible;
+      if(document.activeElement!==this.$(id))
+        this.$(id).value=String(s.roadIntentOffset?.[field]??0);
+    }
+    this.$('roadIntentStatusC1').textContent=!s.roadIntentEligible ?
+      'Protected connection: choose a road with two ordinary unprotected endpoints.' :
+      s.roadIntentInputError || s.error ||
+      (s.pending ? s.checking?'Street positioned in draft; checking the road network...':
+        'User placement preserved as a draft. '+
+        (s.roadIntentAnalysis?.issues?.[0]?.message??'Neighborhood adaptation is pending C2.')+
+        ' Apply remains unavailable until full neighborhood reconciliation.' :
+        'Drag a road on the map or enter a displacement to preview your chosen street position.');
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
       : d?.protected
         ? 'Protected geometry is inspection only. Choose an ordinary junction to try a position.'
-        : 'Choose an ordinary junction to try a position. Roads are inspection only.';
+        : kind==='road' ? 'Drag an eligible ordinary road, enter X/Y displacement, or nudge using arrows. Position is draft-only until later neighborhood adaptation.' :
+          'Choose an ordinary junction to try a position.';
     for (const [id, key] of [
       ['roadProposedX', 'x'],
       ['roadProposedY', 'y'],
@@ -424,9 +444,11 @@ export class RoadInspectionWorkspace {
       if (document.activeElement !== this.$(id))
         this.$(id).value = s.point && Number.isFinite(s.point[key]) ? String(s.point[key]) : '';
     }
-    for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !d?.movable;
-    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error;
-    const status = s.error
+    for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || s.roadIntentEligible);
+    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error && !s.roadIntentInputError;
+    const status = s.roadIntentInputError ? 'Invalid road offset' :
+      s.details?.kind==='road' && s.pending ?
+      (s.checking?'Checking road draft':'Street placement drafted') : s.error
       ? 'Report unavailable'
       : s.checking
         ? 'Checking'
@@ -439,20 +461,23 @@ export class RoadInspectionWorkspace {
         ? ` · ${s.report.counts.affectedObjects} affected · ${s.report.counts.issues} issues · ${s.report.counts.preservedObjects} preserved`
         : '');
     if (this.$('roadReportStatus').textContent !== live) this.$('roadReportStatus').textContent = live;
-    panel.setAttribute('data-report-status', s.report?.status ?? (s.checking ? 'checking' : 'idle'));
+    panel.setAttribute('data-report-status',
+      s.roadIntentInputError ? 'invalid' : s.report?.status ?? (s.checking ? 'checking' : 'idle'));
     this.$('roadReportError').textContent = s.error;
     this.$('roadReconciliationB3').hidden = false;
     const computed = s.reconciliation ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology) : null;
     s.previewGeometry = computed;
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
-    const ready=Boolean(s.current() && s.pending && !s.checking && !s.drag && !s.error &&
+    const ready=Boolean(s.details?.kind==='junction' && s.current() && s.pending && !s.checking && !s.drag && !s.error &&
       !s.reconciliationError && s.reconciliation?.candidateProject &&
       s.reconciliation?.status==='candidate-only' && !s.reconciliation.unresolved?.length &&
       s.previewGeometry?.verified && s.settledRevision===s.revision &&
       s.acceptedFingerprint===JSON.stringify(s.project) &&
       this.getRevision()===this.baseRevision);
     this.$('roadApplyB4').disabled=!ready;
-    this.$('roadApplyStatusB4').textContent=this.applyError || (ready ?
+    this.$('roadApplyStatusB4').textContent=kind==='road' ?
+      'Road-first draft only. C2–C5 will adapt generated neighborhoods and provide a fully validated Apply.' :
+      this.applyError || (ready ?
       'Eligible preview. Apply will recompute, validate and confirm portable save compatibility before acceptance.' :
       'Apply is unavailable until a fully reconciled, current road candidate passes validation.');
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
