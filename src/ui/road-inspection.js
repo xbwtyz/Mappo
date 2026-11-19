@@ -178,6 +178,8 @@ export class RoadInspectionWorkspace {
     draw,
     reconcile = null,
     reconcileRoad = null,
+    canUndoRoad = () => false,
+    canRedoRoad = () => false,
     afterExit = () => {},
   }) {
     Object.assign(this, {
@@ -189,6 +191,8 @@ export class RoadInspectionWorkspace {
       canEnter,
       beforeEnter,
       draw,
+      canUndoRoad,
+      canRedoRoad,
       afterExit,
     });
     this.session = new RoadPreviewSession({
@@ -409,6 +413,16 @@ export class RoadInspectionWorkspace {
     }
     for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !d?.movable;
     this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error;
+    const ready=Boolean(s.pending&&!s.checking&&!s.drag&&!s.error&&!s.reconciliationError&&
+      s.reconciliation?.candidateProject&&s.reconciliation?.validation?.project==='valid'&&
+      !s.reconciliation?.unresolved?.length&&s.reconciliation?.status==='candidate-only');
+    this.$('roadApplyB4').disabled=!ready;
+    this.$('roadHistoryUndoB4').disabled=s.pending||!this.canUndoRoad();
+    this.$('roadHistoryRedoB4').disabled=s.pending||!this.canRedoRoad();
+    if(!s.pending&&!s.checking)this.$('roadApplyStatusB4').textContent='Accepted city unchanged. Use Undo/Redo for completed road edits.';
+    else if(ready)this.$('roadApplyStatusB4').textContent='Candidate verified in preview. Apply rechecks every dependency and the portable save before committing.';
+    else if(s.checking)this.$('roadApplyStatusB4').textContent='Checking candidate…';
+    else this.$('roadApplyStatusB4').textContent='Apply disabled until every dependency can be safely reconciled.';
     const status = s.error
       ? 'Report unavailable'
       : s.checking

@@ -114,6 +114,7 @@ import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
 // B2 conservative parcel adaptation remains preview-only until B4 Apply.
 import { prepareParcelReconciliationB2 } from './core/parcel-reconciliation.js';
+import { prepareRoadApplyB4, RoadProjectHistoryB4 } from './editor/road-application.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
@@ -147,6 +148,7 @@ const buildingHistory = new BuildingGeometryHistory(20);
 const buildingStructureHistory = new BuildingStructureHistory3H(20);
 const propertyHistory = new PropertyGeometryHistory3I(20);
 const propertyDeletionHistory4A = new PropertyDeletionHistory4A(20);
+const roadHistoryB4 = new RoadProjectHistoryB4(20);
 let buildingPlacementSession;
 let propertyEditSession;
 let propertyWorkspace;
@@ -194,8 +196,12 @@ function updatePendingFeedback() {
   updateUndoFeedback();
 }
 function currentUndoContext() {
-  if(roadWorkspace?.active)return {kind:'road-preview',controlId:'roadPreviewReset',label:'Reset roads',
-    available:roadWorkspace.session.pending,description:'Reset temporary junction coordinates; accepted roads have no edits to undo.'};
+  if(roadWorkspace?.active){
+    const pending=roadWorkspace.session.pending;
+    if(!pending&&roadHistoryB4.can('undo',project))
+      return {kind:'road',controlId:'roadHistoryUndoB4',label:'Undo road',available:true,description:'Undo the last accepted road and neighborhood edit.'};
+    return {kind:'road-preview',controlId:'roadPreviewReset',label:'Reset roads',available:pending,description:'Reset temporary junction coordinates before Undo.'};
+  }
   if(propertyEditSession?.isActive){
     const id=propertyEditSession.propertyId;
     const available=!propertyEditSession.isPending&&!propertyEditSession.drag&&propertyHistory.can('undo',project,id);
@@ -387,6 +393,7 @@ function applyBuildingTransform() {
     if (!buildingHistory.record(previous,received.candidate,buildingId)) return false;
     propertyHistory.clear();
     propertyDeletionHistory4A.clear();
+    roadHistoryB4.clear();
     project=received.candidate;
     session.reset();
     updateDetails();
@@ -819,6 +826,7 @@ function updateDetails() {
 
 function generate({ discardIdentities = false } = {}) {
   roadWorkspace?.exit();
+  roadHistoryB4.clear();
   if (!discardIdentities && identityWorkspace)
     return identityWorkspace.requestRebuild(() => generate({ discardIdentities: true }));
   try {
@@ -1383,6 +1391,7 @@ identityWorkspace.bind();
 roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
   reconcile:prepareParcelReconciliationB2,reconcileRoad:prepareRoadReconciliationB1,
+  canUndoRoad:()=>roadHistoryB4.can('undo',project),canRedoRoad:()=>roadHistoryB4.can('redo',project),
   canEnter:()=>!project?.city?'Generate a city before inspecting roads.':
     workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive
       ||propertyEditSession?.isActive||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
@@ -1391,6 +1400,56 @@ roadWorkspace = new RoadInspectionWorkspace({
   draw:()=>{$('zoomValue').textContent=`${Math.round(camera.zoom*100)}%`;updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();requestDraw();},
   afterExit:()=>{updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();}
 });
+
+function acceptRoadTransactionB4(direction,receipt,previous){
+  if(!receipt?.ok||project!==previous)return false;
+  // Prepare all validation before the first accepted-state mutation.
+  if(direction==='apply'){
+    if(!roadHistoryB4.record(previous,receipt.candidate))return false;
+  }else roadHistoryB4.accept(receipt.entry,direction);
+  roadWorkspace.exit(); // Restore normal selection, panels and camera before committing.
+  project=receipt.candidate;
+  buildingHistory.clear();
+  buildingStructureHistory.clear();
+  propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
+  updateDetails();
+  workspaceShell.refresh();
+  requestDraw();
+  workspaceChanged(); // One accepted file revision, no draft persistence.
+  $('statusMessage').textContent=direction==='apply'?
+    'Applied validated road and neighborhood changes.':
+    (direction==='undo'?'Undid':'Redid')+' accepted road and neighborhood changes.';
+  return true;
+}
+function applyRoadEditB4(){
+  const s=roadWorkspace?.session;
+  if(!project||!s?.current()||!s.pending||s.checking||s.drag||
+    s.error||s.reconciliationError||s.selection?.kind!=='junction')return false;
+  const before=project,point={...s.point},id=s.selection.id;
+  const result=prepareRoadApplyB4(before,captureWorkspace().workspace,id,point);
+  if(!result.ok){
+    $('roadApplyStatusB4').textContent='Apply blocked: '+result.reason;
+    $('roadApplyB4').disabled=true;
+    return false;
+  }
+  if(project!==before||!s.current()||id!==s.selection.id||
+    point.x!==s.point.x||point.y!==s.point.y)return false;
+  return acceptRoadTransactionB4('apply',result,before);
+}
+function moveRoadHistoryB4(direction){
+  if(!project||!roadWorkspace?.active||roadWorkspace.session.pending||
+    roadWorkspace.session.checking)return false;
+  const before=project;
+  const result=roadHistoryB4.prepare(before,captureWorkspace().workspace,direction);
+  if(!result.ok){$('roadApplyStatusB4').textContent=result.reason;return false;}
+  if(project!==before)return false;
+  return acceptRoadTransactionB4(direction,result,before);
+}
+$('roadApplyB4').addEventListener('click',applyRoadEditB4);
+$('roadHistoryUndoB4').addEventListener('click',()=>moveRoadHistoryB4('undo'));
+$('roadHistoryRedoB4').addEventListener('click',()=>moveRoadHistoryB4('redo'));
+
 workspaceShell.bind();
 landscapeWorkspace.bind();
 for (const tool of ['Move','Rotate','Resize'])
@@ -1808,6 +1867,7 @@ function captureWorkspace() {
 
 function applyProjectDocument(document) {
   roadWorkspace?.exit({restore:false});
+  roadHistoryB4.clear();
   propertyEditSession?.stop();
   landscapeWorkspace.restoring = true;
   const next = copyJson(document.project),

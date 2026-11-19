@@ -461,3 +461,9 @@
 .road-reconciliation-b3 .road-report-list li{list-style:decimal;padding:7px 0}
 .road-reconciliation-b3 .road-report-list button{font-size:11px;min-height:34px}
 @media(max-width:900px){.road-reconciliation-b3 .road-report-list button{min-height:44px}}
+
+/* B4 Apply and history controls are explicit, distinct from preview Reset. */
+.road-preview-panel .road-preview-actions{display:flex;flex-wrap:wrap}
+.road-preview-panel #roadApplyB4:not(:disabled){color:#fff;background:#19695a;border-color:#19695a;font-weight:700}
+.road-history-actions-b4{display:flex;gap:8px;margin-top:6px}
+.road-history-actions-b4 button{flex:1}

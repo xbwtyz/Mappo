@@ -58,7 +58,9 @@ for (const [name, type] of [
       await page.locator('#roadModeButton').click();
       assert.equal(await page.locator('#roadPreviewPanel').isVisible(), true);
       assert.equal(await page.evaluate(() => document.activeElement.id), 'roadPreviewHeading');
-      assert.equal(await page.locator('#roadPreviewPanel button').filter({ hasText: /apply/i }).count(), 0);
+      assert.equal(await page.locator('#roadApplyB4').isDisabled(), true);
+      assert.equal(await page.locator('#roadHistoryUndoB4').isDisabled(), true);
+      assert.equal(await page.locator('#roadHistoryRedoB4').isDisabled(), true);
       assert.equal(await page.locator('#roadReportStatus').getAttribute('role'), 'status');
       assert.equal(await page.locator('#roadReconciliationB3').isVisible(), true);
       assert.equal(await page.locator('#roadReconciliationStatusB3').getAttribute('role'), 'status');
