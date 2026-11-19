@@ -1,0 +1,50 @@
+name: Publish stable Mappo 0.1.0 GitHub Release
+
+# A release is created only when the existing main-branch CI has succeeded.
+# It tags exactly the commit that was tested. No untrusted CI artifacts.
+on:
+  workflow_run:
+    workflows: ['Mappo CI']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mappo-stable-v0.1.0
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.repository == 'xbwtyz/Mappo' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    name: Tag and publish v0.1.0 only after verification
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the exact CI-tested commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || 'main' }}
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Confirm stable version and reproducible build
+        run: |
+          test "$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")" = '0.1.0'
+          test "$(node -p "require('./package.json').version")" = '0.1.0'
+          npm run check
+          cmp index.html dist/mappo-0.1.0.html
+          git diff --exit-code -- index.html dist/mappo-0.1.0.html
+          test -f docs/releases/v0.1.0.md
+      - name: Tag and publish GitHub Release with offline HTML
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.1.0 >/dev/null 2>&1; then
+            echo 'Stable release v0.1.0 already exists; not re-tagging.'
+          else
+            gh release create v0.1.0               dist/mappo-0.1.0.html#'Mappo 0.1.0 offline standalone HTML'               --repo "$GITHUB_REPOSITORY"               --target "$(git rev-parse HEAD)"               --title 'Mappo 0.1.0 — First Stable Release'               --notes-file docs/releases/v0.1.0.md               --latest
+          fi

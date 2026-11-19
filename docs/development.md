@@ -1,6 +1,6 @@
 # Mappo Developer Guide
 
-**Current development preview:** `0.1-dev.3ie` (stable main remains `0.1-dev.3he`) · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
+**Stable release:** `0.1.0` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
 
 ## Source organization
 
@@ -49,11 +49,11 @@ npm test
 npm run check
 ```
 
-The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current output: `dist/mappo-0.1-dev.3ie.html`. External runtime imports are rejected.
+The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current stable output: `dist/mappo-0.1.0.html`. External runtime imports are rejected.
 
 ```bash
-cmp index.html dist/mappo-0.1-dev.3ie.html
-git diff --exit-code -- index.html dist/mappo-0.1-dev.3ie.html
+cmp index.html dist/mappo-0.1.0.html
+git diff --exit-code -- index.html dist/mappo-0.1.0.html
 ```
 
 Use a Windows binary comparison tool if `cmp` is unavailable. Update paths when the release version changes.
@@ -65,7 +65,7 @@ node scripts/browser-qa.mjs
 node scripts/building-browser-qa.mjs
 ```
 
-The last completed 3F-D development run passed **205/205 Node tests** and **16/16 graphical browser checks** (Chromium/Firefox, desktop/ultrawide/tablet/phone): [CI run](https://github.com/xbwtyz/Mappo/actions/runs/44265027575) · [QA record](history/3f/MILESTONE_3FD_QA.md). This does not replace hands-on testing.
+Dev 4f passed the complete Node, compilation and Chromium/Firefox browser matrices: [CI run #341](https://github.com/xbwtyz/Mappo/actions/runs/44428124074). The 0.1.0 release candidate must pass equivalent CI on its own commit; this does not replace hands-on testing.
 
 **Never discard `tests/fixtures/`:** older frozen JSON projects are important compatibility tests. Changes to city/workspace schemas need explicit migration/validation and must follow [the persistence contract](reference/PROJECT_FORMAT.md).
 

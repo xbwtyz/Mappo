@@ -4,6 +4,7 @@
 
 | Destination | What you'll find |
 | --- | --- |
+| [0.1.0 Release Notes](releases/v0.1.0.md) | Stable launch, distribution, shipped features, compatibility and limitations |
 | [User Guide](user-guide.md) | City generation, tools, Inspector, navigation and saved projects |
 | [Developer Guide](development.md) | Modules, testing, build pipeline and release process |
 | [Unified CI Guide](CI.md) | Branch and PR tests, browser matrices, artifacts and local commands |

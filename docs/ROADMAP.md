@@ -1,48 +1,42 @@
 # Mappo Development Roadmap
 
-> **This is a status and planning document, not authorization to implement.** Every new feature milestone requires discussion and approval.
+> **Status and planning only.** New feature implementations and merges require separate owner approval.
 
-[Home](../README.md) · [Docs](README.md) · [3F historical plan](history/3f/MILESTONE_3F_PLAN.md)
+[Home](../README.md) · [0.1.0 release notes](releases/v0.1.0.md) · [0.2 planning branch](https://github.com/xbwtyz/Mappo/tree/planning/mappo-0.2a-road-network-foundations/docs/plans/0.2)
 
-## Completed and merged
+## Mappo 0.1.0 — Stable release
 
-| Milestone | State | Result |
-| --- | --- | --- |
-| Foundation through 3E | Complete | City shapes, streets, plots and buildings, water/terrain, districts/defenses, editor tools |
-| UI overhaul Phases 1–7 | Complete; merged | Modular workspace, Inspector, responsive controls, browser QA |
-| 3F-A / 3F-Aa | Complete; merged | Property-first selection and child building inspection |
-| 3F-B | Complete; merged | Read-only generated site/building facts |
-| 3F-C | Complete; merged | Custom identity for properties and buildings |
-| 3F-D | Complete; merged | Portable validated Inspector selection and integration QA |
-| 3G-A | Complete; merged | Visual-only Building Edit Mode and same-property targeting |
-| 3G-B | Complete; merged | Non-destructive move, rotate and resize previews |
-| 3G-C | Complete; merged | Geometry validation, frontage reconciliation and atomic Apply |
-| 3G-D | Complete; merged | Session-only building footprint Undo/Redo and portable persistence |
-| 3H | Complete; merged | Property-first manual building placement, replacement, deletion and structural Undo/Redo |
+**0.1.0** was prepared from the merged Dev 4f baseline. The complete 0.1 feature-development series is on `main`.
 
-| 3I | Complete; merged | Editable property bounds, safe plot subdivision and validated Undo/Redo |
+| Area | Merged work |
+| --- | --- |
+| Initial city generation through 3E | Morphologies, city outlines, roads, plots, buildings, water/terrain, districts and fortifications |
+| UI overhaul 1–7 | Modular responsive workspace and Inspector, browser QA |
+| 3F | Property-first inspection, linked buildings, independent custom identities |
+| 3G | Building footprint preview/validation, atomic Apply and scoped Undo/Redo |
+| 3H | Manual building placement, replacement, deletion, history |
+| 3I | Property boundary and plot-divider editing, safe Apply and history |
+| Dev 4a | Property deletion and restoration |
+| Dev 4b | Map interaction, selection focus, mobile polish |
+| Dev 4c | Precision nudges, keyboard shortcuts, live measurements |
+| Dev 4d | Inspector area/frontage facts and targeted validation diagnostics |
+| Dev 4e | Clear all buildings from a property and contextual structural history |
+| Dev 4f | Layer presets, PNG export and customizable download filenames |
 
-**Stable main baseline:** `0.1-dev.3ie` from [merged PR #11](https://github.com/xbwtyz/Mappo/pull/11).
+Historical implementation artifacts and QA notes are retained in [`docs/history/`](history/) and `dist/`. Legacy saved-project fixtures remain protected; project schema remains 9.
 
-## Active development — Dev 4 small improvements
+## Mappo 0.2 — Proposed next milestone
 
-**Dev 4a — Property deletion:** Implemented on `feature/dev4-property-deletion` as `0.1-dev.4a`; pending CI and separate owner merge approval. Delete a selected property and its owned plots/buildings atomically, with session-only Undo/Redo and open-ground reconciliation. [Approved design and QA](history/dev4/DEV4A_PROPERTY_DELETION.md).
+**Direction chosen:** Complete the 2D city designer before a 3D renderer.
 
-The Dev 4 cycle intentionally prioritizes small, independently approved changes rather than large new subsystems. The next minor improvement is not selected.
+**Road-editing policy:** Staged editing. Start with strict preservation of existing city records; introduce explicit impact previews before any future, separately designed local reconciliation.
 
-## Completed details — Milestone 3G Building footprint editing
+The proposal is saved on a **separate documentation-only planning branch**, not merged into 0.1:
 
-- **3G-A:** Complete and merged — temporary building selection/edit context. [3G-A QA](history/3g/MILESTONE_3GA_QA.md).
-- **3G-B:** Complete and merged — preview-only move, rotate, resize and precise controls. [3G-B QA](history/3g/MILESTONE_3GB_QA.md).
-- **3G-C:** Complete and merged — polygon validity, containment/collision checks, plot references, frontage reconstruction, live feedback and atomic Apply after schema-9 save/load verification. [3G-C QA](history/3g/MILESTONE_3GC_QA.md).
-- **3G-D:** Complete and merged — bounded session-only scoped Undo/Redo of accepted building geometry and safe persistence. [3G-D QA](history/3g/MILESTONE_3GD_QA.md).
+- [0.2 master roadmap](https://github.com/xbwtyz/Mappo/blob/planning/mappo-0.2a-road-network-foundations/docs/plans/0.2/README.md)
+- [0.2A technical plan, A1–A4](https://github.com/xbwtyz/Mappo/blob/planning/mappo-0.2a-road-network-foundations/docs/plans/0.2/MILESTONE_0_2A_PLAN.md)
+- [Road preservation and QA contract](https://github.com/xbwtyz/Mappo/blob/planning/mappo-0.2a-road-network-foundations/docs/plans/0.2/ROAD_EDIT_CONTRACT.md)
 
-**3G-D, 3H and 3I are merged.** Protect property-first selection, record identities, schema-9 compatibility and historical distributions.
+0.2A: road graph, stable block identity matching, impact analysis and non-destructive preview. 0.2B: supported road edits. 0.2C: property creation/split/merge. 0.2D: advanced buildings. 0.2E: civic landmarks (conditional). 0.2F: final migration and release hardening.
 
-## Later ideas, not committed schedules
-
-- **3H:** Complete and merged — property-first placement, four building presets, validated add/replace/delete, session-only structural Undo/Redo, and cross-browser QA. [3H QA](history/3h/MILESTONE_3H_QA.md).
-- **3I:** Complete and merged — parcel editing with validated Apply and session-only Undo/Redo. [3I QA](history/3i/MILESTONE_3I_QA.md).
-- **3D direction:** Explore 3D views of reusable logical city geometry without coupling saved data to the 2D Canvas renderer.
-
-Feature names and order may change after design review.
+**No 0.2 implementation is authorized by this roadmap alone.**
