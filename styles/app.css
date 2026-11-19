@@ -461,3 +461,13 @@
 .road-reconciliation-b3 .road-report-list li{list-style:decimal;padding:7px 0}
 .road-reconciliation-b3 .road-report-list button{font-size:11px;min-height:34px}
 @media(max-width:900px){.road-reconciliation-b3 .road-report-list button{min-height:44px}}
+
+/* B4: road Apply is explicit, gated, and separate from read-only preview. */
+.road-history-actions-b4{display:flex;gap:6px;margin:7px 0 0}
+.road-history-actions-b4 button{flex:1;min-height:34px}
+.road-history-actions-b4 button:disabled{opacity:.48}
+.road-preview-panel .road-preview-actions{flex-wrap:wrap}
+.road-preview-panel #roadApplyB4{flex-basis:100%;min-height:42px;background:#226c61;color:#fff;border:1px solid #14564e;border-radius:5px;font-weight:700}
+.road-preview-panel #roadApplyB4:disabled{background:#9caea7;color:#3b5450;opacity:.85}
+.road-apply-status-b4{font-size:11px;line-height:1.45;color:#536b69;margin:6px 0 0}
+@media(max-width:900px){.road-history-actions-b4 button{min-height:44px}}

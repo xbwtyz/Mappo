@@ -48,6 +48,8 @@ export class RoadPreviewSession {
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.reconciliationError = '';
+    this.settledRevision = null;
+    this.acceptedFingerprint = null;
     this.focusKey = null;
     this.checking = false;
     this.error = '';
@@ -74,6 +76,8 @@ export class RoadPreviewSession {
     this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.reconciliationError = '';
+    this.settledRevision = null;
+    this.acceptedFingerprint = null;
     this.focusKey = null;
     this.checking = false;
     this.error = '';
@@ -86,6 +90,8 @@ export class RoadPreviewSession {
     this.report = this.proposal = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.reconciliationError = '';
+    this.settledRevision = null;
+    this.acceptedFingerprint = null;
     this.focusKey = null;
     this.error = '';
     this.checking = this.pending;
@@ -101,6 +107,8 @@ export class RoadPreviewSession {
         if(this.reconcile){
           try {
             this.reconciliation = this.reconcile(this.project, this.selection.id, this.point);
+            this.settledRevision = revision;
+            this.acceptedFingerprint = JSON.stringify(this.project);
             if(!this.reconciliation.candidateProject && this.reconcileRoad && this.proposal.graphValid)
               this.topology = this.reconcileRoad(this.project, this.selection.id, this.point);
           } catch(error) {

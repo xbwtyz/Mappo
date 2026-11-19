@@ -178,6 +178,8 @@ export class RoadInspectionWorkspace {
     draw,
     reconcile = null,
     reconcileRoad = null,
+    getRevision = () => 0,
+    applyEdit = () => ({ok:false,message:'Road Apply not configured.'}),
     afterExit = () => {},
   }) {
     Object.assign(this, {
@@ -189,6 +191,8 @@ export class RoadInspectionWorkspace {
       canEnter,
       beforeEnter,
       draw,
+      getRevision,
+      applyEdit,
       afterExit,
     });
     this.session = new RoadPreviewSession({
@@ -227,6 +231,8 @@ export class RoadInspectionWorkspace {
     this.$('roadPreviewMinimize').setAttribute('aria-expanded', 'true');
     this.beforeEnter();
     const captured = this.capture();
+    this.baseRevision = this.getRevision();
+    this.applyError = '';
     this.baseline = { project: captured.project, workspace: JSON.parse(JSON.stringify(captured.workspace)) };
     this.session.start();
     const ui = this.baseline.workspace.ui;
@@ -270,6 +276,7 @@ export class RoadInspectionWorkspace {
     this.selectionKey = null;
     this.lastReport = undefined;
     this.lastReconciliation = undefined;
+    this.applyError = '';
     this.render();
     this.afterExit();
     this.draw();
@@ -278,6 +285,7 @@ export class RoadInspectionWorkspace {
   reset() {
     if (!this.active) return;
     if (this.baseline) Object.assign(this.camera, this.baseline.workspace.view.camera);
+    this.applyError = '';
     this.session.reset();
   }
   bind() {
@@ -295,6 +303,15 @@ export class RoadInspectionWorkspace {
       this.draw();
     });
     this.$('roadPreviewReset').addEventListener('click', () => this.reset());
+    this.$('roadApplyB4').addEventListener('click', () => {
+      if(this.$('roadApplyB4').disabled || !this.session.current())return;
+      const result=this.applyEdit(this.session,this.baseRevision);
+      if(!result?.ok){
+        this.applyError=result?.message??'Road Apply failed without changing the accepted city.';
+        this.applyErrorRevision=this.session.revision;
+        this.render();
+      }
+    });
     this.$('roadPreviewMinimize').addEventListener('click', () => {
       const body = this.$('roadPreviewBody');
       body.hidden = !body.hidden;
@@ -427,6 +444,17 @@ export class RoadInspectionWorkspace {
     this.$('roadReconciliationB3').hidden = false;
     const computed = s.reconciliation ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology) : null;
     s.previewGeometry = computed;
+    if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
+    const ready=Boolean(s.current() && s.pending && !s.checking && !s.drag && !s.error &&
+      !s.reconciliationError && s.reconciliation?.candidateProject &&
+      s.reconciliation?.status==='candidate-only' && !s.reconciliation.unresolved?.length &&
+      s.previewGeometry?.verified && s.settledRevision===s.revision &&
+      s.acceptedFingerprint===JSON.stringify(s.project) &&
+      this.getRevision()===this.baseRevision);
+    this.$('roadApplyB4').disabled=!ready;
+    this.$('roadApplyStatusB4').textContent=this.applyError || (ready ?
+      'Eligible preview. Apply will recompute, validate and confirm portable save compatibility before acceptance.' :
+      'Apply is unavailable until a fully reconciled, current road candidate passes validation.');
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
         this.lastReconciliationError !== s.reconciliationError || this.lastChecking !== s.checking) {
       this.lastReconciliation = s.reconciliation;
