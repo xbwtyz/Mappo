@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.2-dev.a2</title>
+  <title>Mappo — City editor · 0.2-dev.a3</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -452,7 +452,7 @@
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.a2</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.a3</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -8172,7 +8172,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.2-dev.a2';
+const APP_VERSION = '0.2-dev.a3';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -13909,6 +13909,1380 @@ function matchExistingFaces(oldCity, extraction) {
 }
 
 
+// src/core/road-impact-model.js
+const ROAD_IMPACT_WORK_LIMIT = 6000000;
+const ROAD_IMPACT_COLLECTIONS = Object.freeze([
+  ['nodes', 'junction'],
+  ['roads', 'road'],
+  ['blocks', 'block'],
+  ['properties', 'property'],
+  ['plots', 'plot'],
+  ['buildings', 'building'],
+  ['districts', 'district'],
+  ['walls', 'defense'],
+  ['gates', 'defense'],
+  ['towers', 'defense'],
+  ['waterFeatures', 'water'],
+  ['bridges', 'water'],
+  ['waterFaces', 'water'],
+  ['terrainFeatures', 'terrain'],
+  ['terrainPasses', 'terrain'],
+  ['terrainFaces', 'terrain'],
+  ['openSpaces', 'open-space'],
+]);
+const riCompare = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+const riIndex = (records) => new Map((records ?? []).map((record) => [record.id, record]));
+function riRoadEqual(a, b) {
+  if (!a || !b) return a === b;
+  const first = [a.a, a.b].sort(riCompare),
+    second = [b.a, b.b].sort(riCompare);
+  return riEqual({ ...a, a: first[0], b: first[1] }, { ...b, a: second[0], b: second[1] });
+}
+function riEqual(a, b) {
+  if (a === b) return true;
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object' || Array.isArray(a) !== Array.isArray(b))
+    return false;
+  const ak = Object.keys(a).sort(riCompare),
+    bk = Object.keys(b).sort(riCompare);
+  return ak.length === bk.length && ak.every((k, i) => k === bk[i] && riEqual(a[k], b[k]));
+}
+function riFreeze(value) {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.values(value).forEach(riFreeze);
+    Object.freeze(value);
+  }
+  return value;
+}
+function riBudget() {
+  let remaining = ROAD_IMPACT_WORK_LIMIT;
+  return (n = 1) => {
+    if ((remaining -= n) < 0)
+      throw new Error('Dependency analysis exceeded its work budget; safety could not be proven.');
+  };
+}
+function riRecords(city) {
+  const records = ROAD_IMPACT_COLLECTIONS.flatMap(([key, kind]) =>
+    (city[key] ?? []).map((record) => ({ kind, id: record.id, record })),
+  );
+  if (city.plaza) records.push({ kind: 'plaza', id: city.plaza.id, record: city.plaza });
+  return records.sort((a, b) => riCompare(a.kind, b.kind) || riCompare(a.id, b.id));
+}
+function riIssueKey(issue) {
+  return JSON.stringify([issue.kind, issue.id, issue.code, issue.relatedIds]);
+}
+function riReporter() {
+  const items = new Map();
+  const emit = (kind, id, code, message, relatedIds = [], metrics = null, severity = 'needs-review') => {
+    const issue = {
+      kind,
+      id: String(id ?? 'unknown'),
+      code,
+      message,
+      severity,
+      relatedIds: [...new Set(relatedIds.filter((id) => typeof id === 'string'))].sort(riCompare),
+      metrics,
+    };
+    const key = riIssueKey(issue),
+      old = items.get(key);
+    if (!old || (old.severity === 'info' && severity !== 'info') || severity === 'invalid')
+      items.set(key, issue);
+  };
+  return { emit, items: () => [...items.values()].sort((a, b) => riCompare(riIssueKey(a), riIssueKey(b))) };
+}
+
+// Only fields with a defined meaning in the current project model can support
+// a Safe claim. Nonempty opaque data is preserved but requires impact review.
+const riKnownFields = {
+  nodes: 'id x y',
+  roads: 'id a b kind boundary plaza bank bridgeId waterBoundary foothill passId terrainBoundary',
+  blocks: 'id vertices area ring sector usage districtId',
+  plaza: 'id name center vertices area',
+  properties:
+    'id blockId plotIds boundary frontageRoadId frontage area buildingIds usage frame local districtId customName customUse',
+  plots: 'id blockId propertyId frontageRoadId boundary',
+  buildings:
+    'id blockId propertyId plotIds frontageRoadId type shape footprint holes area entrance orientation roofTone accessPath districtId customName customUse',
+  openSpaces: 'id blockId kind area',
+  districts: 'id dataVersion kind name color blockIds extensions',
+  walls: 'id dataVersion kind width edgeWidth path waterOpenings terrainOpenings extensions',
+  gates: 'id dataVersion kind wallId arc opening postRadius center connection extensions',
+  towers: 'id dataVersion kind role wallId arc center radius extensions',
+  waterFeatures:
+    'id dataVersion kind path widths width waterSide seaDepth direction generation extensions polygon corridor center radius',
+  bridges: 'id dataVersion kind waterId t width extensions',
+  waterFaces: 'id waterId waterIds vertices area',
+  terrainFeatures: 'id dataVersion kind name center path ridge generation extensions polygon corridor',
+  terrainPasses: 'id dataVersion kind terrainId t width extensions',
+  terrainFaces: 'id terrainIds vertices area',
+};
+const riEmptyExtension = (value) =>
+  value == null || (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0);
+function riUnknownRecord(record, fields, kind, id, emit, spend, path = '') {
+  const allowed = new Set(fields.split(' '));
+  for (const key of Object.keys(record ?? {})) {
+    spend();
+    if (key === 'extensions' ? !riEmptyExtension(record[key]) : !allowed.has(key))
+      emit(
+        kind,
+        id,
+        'unrecognized-dependency',
+        `The impact of ${path}${key} is not defined by the current road-edit contract.`,
+        [],
+        { field: path + key },
+      );
+  }
+}
+function riNestedGeometry(record, kind, id, emit, spend) {
+  const point = (value, path, fields = 'id x y') => {
+    if (value && typeof value === 'object') riUnknownRecord(value, fields, kind, id, emit, spend, path + '.');
+  };
+  for (const key of ['center', 'entrance']) point(record?.[key], key);
+  for (const key of [
+    'boundary',
+    'footprint',
+    'path',
+    'corridor',
+    'polygon',
+    'frontage',
+    'accessPath',
+    'ridge',
+  ])
+    for (const value of Array.isArray(record?.[key]) ? record[key] : [])
+      point(value, key, key === 'ridge' ? 'x y height' : 'id x y');
+  for (const hole of record?.holes ?? []) for (const value of hole) point(value, 'holes');
+  for (const key of ['origin', 'tangent', 'inward']) point(record?.frame?.[key], 'frame.' + key);
+  for (const value of record?.connection?.points ?? []) point(value, 'connection.points');
+  for (const key of ['waterOpenings', 'terrainOpenings'])
+    for (const value of Array.isArray(record?.[key]) ? record[key] : [])
+      riUnknownRecord(
+        value,
+        'start end waterId waterIds terrainIds extensions',
+        kind,
+        id,
+        emit,
+        spend,
+        key + '.',
+      );
+}
+function inspectOpaqueRoadDependencies(project, graph, emit, spend) {
+  const city = project.city;
+  riUnknownRecord(
+    project,
+    'schemaVersion generatorVersion seed options city',
+    'city',
+    city.id,
+    emit,
+    spend,
+    'project.',
+  );
+  riUnknownRecord(
+    project.options,
+    'size morphology boundary center',
+    'city',
+    city.id,
+    emit,
+    spend,
+    'options.',
+  );
+  riUnknownRecord(
+    city,
+    'id name survey waterState waterFeatures bridges waterFaces terrainFeatures terrainPasses terrainFaces nodes roads blocks plaza plots properties buildings openSpaces districts districtState walls gates towers fortificationState',
+    'city',
+    city.id,
+    emit,
+    spend,
+    'city.',
+  );
+  for (const [key, kind] of ROAD_IMPACT_COLLECTIONS)
+    for (const record of city[key] ?? []) {
+      riUnknownRecord(record, riKnownFields[key], kind, record.id, emit, spend, key + '.');
+      riNestedGeometry(record, kind, record.id, emit, spend);
+    }
+  riUnknownRecord(city.plaza, riKnownFields.plaza, 'plaza', city.plaza.id, emit, spend, 'plaza.');
+  riNestedGeometry(city.plaza, 'plaza', city.plaza.id, emit, spend);
+  riNestedGeometry(project.options, 'city', city.id, emit, spend);
+  riNestedGeometry(city.survey, 'city', city.id, emit, spend);
+  riUnknownRecord(
+    city.survey.shapeOptions,
+    'profile stretch asymmetry bend',
+    'city',
+    city.id,
+    emit,
+    spend,
+    'shapeOptions.',
+  );
+  for (const anchor of city.survey.anchors ?? [])
+    riUnknownRecord(anchor, 'id kind x y', 'city', city.id, emit, spend, 'anchors.');
+  for (const record of graph.roadsById.values())
+    riUnknownRecord(record, riKnownFields.roads, 'road', record.id, emit, spend, 'candidate.road.');
+  for (const record of graph.nodesById.values())
+    riUnknownRecord(record, riKnownFields.nodes, 'junction', record.id, emit, spend, 'candidate.junction.');
+  for (const p of city.properties ?? []) {
+    riUnknownRecord(p.frame, 'origin tangent inward', 'property', p.id, emit, spend, 'frame.');
+    riUnknownRecord(p.local, 'x y width depth', 'property', p.id, emit, spend, 'local.');
+  }
+  for (const [key, fields] of [
+    [
+      'survey',
+      'boundary anchors nominalRadius morphology plannedAngle linearBendPhase axisAngle shapeOptions',
+    ],
+    ['waterState', 'version status seed algorithm'],
+    ['districtState', 'version status algorithm seed requestedCount count'],
+    [
+      'fortificationState',
+      'version status enabled algorithm seed requestedGateCount gateCount towerSpacing clearance',
+    ],
+  ])
+    riUnknownRecord(city[key], fields, 'city', city.id, emit, spend, key + '.');
+  for (const [key, kind] of [
+    ['waterFeatures', 'water'],
+    ['terrainFeatures', 'terrain'],
+  ])
+    for (const record of city[key] ?? [])
+      riUnknownRecord(
+        record.generation,
+        'seed algorithm placement size direction width radius waterSide seaDepth',
+        kind,
+        record.id,
+        emit,
+        spend,
+        'generation.',
+      );
+  for (const gate of city.gates ?? [])
+    riUnknownRecord(
+      gate.connection,
+      'cityNodeId width points',
+      'defense',
+      gate.id,
+      emit,
+      spend,
+      'connection.',
+    );
+}
+
+
+// src/core/road-impact-dependencies.js
+
+
+
+
+
+
+
+
+const riEdgeKey = (a, b) => JSON.stringify([a, b].sort(riCompare));
+const riSorted = (list) => [...(list ?? [])].sort((a, b) => riCompare(a.id, b.id));
+const riPoints = (points) =>
+  Array.isArray(points) &&
+  points.length >= 3 &&
+  points.every((p) => p && Number.isFinite(p.x) && Number.isFinite(p.y));
+function riContained(inner, outer, spend) {
+  if (!riPoints(inner) || !riPoints(outer)) return false;
+  spend(inner.length * (outer.length * 3 + 2));
+  return shapeContained(inner, outer);
+}
+function riDistance(polygon, a, b, spend) {
+  spend(polygon.length * 3);
+  return Math.min(...polygon.map((p, i) => segmentDistance(p, polygon[(i + 1) % polygon.length], a, b)));
+}
+function riSegmentNearPolygon(polygon, a, b, margin) {
+  const box = boundsOf(polygon);
+  return (
+    Math.max(a.x, b.x) + margin >= box.minX &&
+    Math.min(a.x, b.x) - margin <= box.maxX &&
+    Math.max(a.y, b.y) + margin >= box.minY &&
+    Math.min(a.y, b.y) - margin <= box.maxY
+  );
+}
+
+function inspectRoadDependencies(city, snapshot, context, emit, spend) {
+  const oldNodes = riIndex(city.nodes),
+    nodes = riIndex(snapshot.nodes),
+    roads = riIndex(snapshot.roads),
+    oldRoads = riIndex(city.roads),
+    blocks = riIndex(snapshot.blocks);
+  const properties = riIndex(city.properties),
+    plots = riIndex(city.plots),
+    buildings = riIndex(city.buildings),
+    districts = riIndex(city.districts);
+  const edges = new Map(snapshot.roads.map((r) => [riEdgeKey(r.a, r.b), r]));
+  const changedNodes = new Set(context.junctionIds);
+  const changed = new Set(context.roadIds),
+    changedBlocks = new Set(context.changedBlockIds),
+    blockRoads = new Map(),
+    occupiedAreas = new Map();
+  const contained = (inner, outer) => riContained(inner, outer, spend);
+  const roadMetrics = (id) => {
+    const old = oldRoads.get(id),
+      now = roads.get(id),
+      a = oldNodes.get(old?.a),
+      b = oldNodes.get(old?.b),
+      p = nodes.get(now?.a),
+      q = nodes.get(now?.b);
+    return {
+      oldLength: a && b ? Math.hypot(b.x - a.x, b.y - a.y) : null,
+      newLength: p && q ? Math.hypot(q.x - p.x, q.y - p.y) : null,
+      oldClass: old?.kind ?? null,
+      newClass: now?.kind ?? null,
+    };
+  };
+  for (const block of snapshot.blocks)
+    blockRoads.set(
+      block.id,
+      new Set(
+        block.vertices.map(
+          (a, i) => edges.get(riEdgeKey(a, block.vertices[(i + 1) % block.vertices.length]))?.id,
+        ),
+      ),
+    );
+  function frontage(record, kind, polygon) {
+    const road = roads.get(record.frontageRoadId),
+      related = [record.frontageRoadId];
+    if (!road) {
+      emit(
+        kind,
+        record.id,
+        'frontage-missing',
+        'The accepted frontage road is missing from the candidate network.',
+        related,
+      );
+      return;
+    }
+    if (!blockRoads.get(record.blockId)?.has(road.id))
+      emit(
+        kind,
+        record.id,
+        'frontage-block',
+        'The frontage road no longer bounds the accepted parent block.',
+        related.concat(record.blockId),
+      );
+    if (road.waterBoundary || road.terrainBoundary)
+      emit(
+        kind,
+        record.id,
+        'frontage-unusable',
+        'A virtual water/terrain boundary cannot provide street access.',
+        related,
+      );
+    if (changed.has(road.id))
+      emit(
+        kind,
+        record.id,
+        'frontage-geometry',
+        'The accepted frontage references a changed road; its alignment and access must be reviewed.',
+        related,
+        roadMetrics(road.id),
+      );
+    if (!riPoints(polygon)) return;
+    const a = nodes.get(road.a),
+      b = nodes.get(road.b),
+      old = oldRoads.get(road.id),
+      oa = oldNodes.get(old?.a),
+      ob = oldNodes.get(old?.b);
+    if (!a || !b) return;
+    if (changed.has(road.id)) {
+      const newDistance = riDistance(polygon, a, b, spend),
+        oldDistance = oa && ob ? riDistance(polygon, oa, ob, spend) : null;
+      // Supplemental measured frontage data, retained separately from ownership.
+      emit(
+        kind,
+        record.id,
+        'frontage-distance',
+        'Frontage distance was measured against the accepted and proposed street.',
+        related,
+        { oldDistance, newDistance },
+        'info',
+      );
+    }
+  }
+  function blockContainment(record, kind, polygon) {
+    const block = blocks.get(record.blockId);
+    if (!block) {
+      emit(
+        kind,
+        record.id,
+        'block-topology',
+        'The accepted block has no proven single candidate counterpart.',
+        [record.blockId],
+      );
+      return;
+    }
+    if (changedBlocks.has(block.id) || !context.acceptedValid) {
+      const boundary = block.vertices.map((id) => nodes.get(id));
+      if (!contained(polygon, boundary))
+        emit(
+          kind,
+          record.id,
+          'block-containment',
+          'Accepted geometry would extend outside its candidate block.',
+          [block.id],
+        );
+    }
+    if (record.districtId != null && !districts.has(record.districtId))
+      emit(kind, record.id, 'district-reference', 'The accepted district reference does not resolve.', [
+        record.districtId,
+      ]);
+    if (record.districtId != null && record.districtId !== block.districtId)
+      emit(
+        kind,
+        record.id,
+        'district-ownership',
+        'The accepted district differs from the parent block membership.',
+        [record.districtId, block.id],
+      );
+  }
+  for (const property of riSorted(city.properties)) {
+    spend();
+    const polygon = property.boundary;
+    blockContainment(property, 'property', polygon);
+    frontage(property, 'property', polygon);
+    occupiedAreas.set(
+      property.blockId,
+      (occupiedAreas.get(property.blockId) ?? 0) + (Number.isFinite(property.area) ? property.area : 0),
+    );
+    for (const id of property.plotIds ?? []) {
+      spend();
+      const plot = plots.get(id);
+      if (!plot || plot.propertyId !== property.id || plot.blockId !== property.blockId)
+        emit(
+          'property',
+          property.id,
+          'plot-ownership',
+          'An accepted plot is missing or has inconsistent ownership.',
+          [id],
+        );
+    }
+    for (const id of property.buildingIds ?? []) {
+      spend();
+      const building = buildings.get(id);
+      if (!building || building.propertyId !== property.id || building.blockId !== property.blockId)
+        emit(
+          'property',
+          property.id,
+          'building-ownership',
+          'An accepted building is missing or has inconsistent ownership.',
+          [id],
+        );
+    }
+    const block = blocks.get(property.blockId);
+    const boundaryRoadIds = blockRoads.get(property.blockId) ?? new Set();
+    const relevant = new Set([...boundaryRoadIds, ...context.roadIds]);
+    if (riPoints(polygon))
+      for (const id of [...relevant].sort(riCompare)) {
+        spend();
+        const road = roads.get(id),
+          a = nodes.get(road?.a),
+          b = nodes.get(road?.b);
+        if (!road || !a || !b) continue;
+        if (context.acceptedValid && !changed.has(id) && !changedBlocks.has(property.blockId)) continue;
+        const margin = (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
+        if (!riSegmentNearPolygon(polygon, a, b, margin)) continue;
+        const distance = riDistance(polygon, a, b, spend);
+        if (distance < margin - 1e-5) {
+          const old = oldRoads.get(id),
+            oa = oldNodes.get(old?.a),
+            ob = oldNodes.get(old?.b);
+          emit(
+            'property',
+            property.id,
+            'road-setback',
+            'The proposed street conflicts with the accepted property setback.',
+            [id, block?.id ?? property.blockId],
+            {
+              oldDistance: oa && ob ? riDistance(polygon, oa, ob, spend) : null,
+              newDistance: distance,
+              requiredDistance: margin,
+              oldRequiredDistance: old
+                ? (STREET_WIDTHS[old.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK
+                : null,
+            },
+          );
+        }
+      }
+    const origin = property.frame?.origin;
+    if (origin?.id && changedNodes.has(origin.id)) {
+      const node = nodes.get(origin.id);
+      if (!node || Math.hypot(node.x - origin.x, node.y - origin.y) > 1e-6)
+        emit(
+          'property',
+          property.id,
+          'frame-reference',
+          'The saved frontage frame is anchored to a moved junction.',
+          [origin.id, property.frontageRoadId],
+        );
+    }
+  }
+  for (const plot of riSorted(city.plots)) {
+    spend();
+    const property = properties.get(plot.propertyId);
+    if (!property || !property.plotIds?.includes(plot.id) || plot.blockId !== property.blockId)
+      emit(
+        'plot',
+        plot.id,
+        'property-reference',
+        'The accepted parent property/plot ownership does not resolve.',
+        [plot.propertyId, plot.blockId],
+      );
+    else if (!context.acceptedValid || changedBlocks.has(plot.blockId))
+      if (!contained(plot.boundary, property.boundary))
+        emit('plot', plot.id, 'property-containment', 'The plot is not contained by its accepted property.', [
+          property.id,
+        ]);
+    blockContainment(plot, 'plot', plot.boundary);
+    frontage(plot, 'plot', plot.boundary);
+  }
+  for (const building of riSorted(city.buildings)) {
+    spend();
+    const property = properties.get(building.propertyId);
+    if (!property || !property.buildingIds?.includes(building.id) || building.blockId !== property.blockId)
+      emit(
+        'building',
+        building.id,
+        'property-reference',
+        'The accepted parent property/building ownership does not resolve.',
+        [building.propertyId, building.blockId],
+      );
+    else if (!context.acceptedValid || changedBlocks.has(building.blockId))
+      if (!contained(building.footprint, property.boundary))
+        emit(
+          'building',
+          building.id,
+          'property-containment',
+          'The building is not contained by its accepted property.',
+          [property.id],
+        );
+    for (const id of building.plotIds ?? []) {
+      spend();
+      const plot = plots.get(id);
+      if (!plot || plot.propertyId !== building.propertyId || plot.blockId !== building.blockId)
+        emit(
+          'building',
+          building.id,
+          'plot-reference',
+          'An occupied plot is missing or belongs to another property/block.',
+          [id, building.propertyId],
+        );
+    }
+    blockContainment(building, 'building', building.footprint);
+    frontage(building, 'building', building.footprint);
+    const path = building.accessPath,
+      road = roads.get(building.frontageRoadId),
+      a = nodes.get(road?.a),
+      b = nodes.get(road?.b);
+    if (Array.isArray(path) && path.length >= 2 && a && b) {
+      spend();
+      const end = path.at(-1),
+        start = path[0];
+      if (!end || !Number.isFinite(end.x) || !Number.isFinite(end.y) || distanceToSegment(end, a, b) > 1e-5)
+        emit(
+          'building',
+          building.id,
+          'access-connection',
+          'The unchanged access path no longer ends on its frontage road.',
+          [building.frontageRoadId],
+        );
+      if (
+        building.entrance &&
+        (!start || Math.hypot(start.x - building.entrance.x, start.y - building.entrance.y) > 1e-5)
+      )
+        emit(
+          'building',
+          building.id,
+          'access-entrance',
+          'The accepted access path is detached from its entrance.',
+          [building.propertyId],
+        );
+    } else
+      emit(
+        'building',
+        building.id,
+        'access-unproven',
+        'The accepted entrance/frontage access cannot be verified without a supported path.',
+        [building.frontageRoadId],
+      );
+    if (riPoints(building.footprint))
+      for (const id of context.roadIds) {
+        spend();
+        const r = roads.get(id),
+          p = nodes.get(r?.a),
+          q = nodes.get(r?.b);
+        if (!p || !q) continue;
+        const required = (STREET_WIDTHS[r.kind] + STREET_EDGE_WIDTH) / 2;
+        if (!riSegmentNearPolygon(building.footprint, p, q, required)) continue;
+        const distance = riDistance(building.footprint, p, q, spend);
+        if (distance < required - 1e-5)
+          emit(
+            'building',
+            building.id,
+            'road-clearance',
+            'The proposed road corridor conflicts with the accepted building.',
+            [id],
+            { newDistance: distance, requiredDistance: required },
+          );
+      }
+  }
+  const openMetrics = [];
+  for (const open of riSorted(city.openSpaces)) {
+    spend();
+    const block = blocks.get(open.blockId);
+    if (!block) {
+      emit(
+        'open-space',
+        open.id,
+        'block-reference',
+        'The open-space summary has no proven parent block counterpart.',
+        [open.blockId],
+      );
+      continue;
+    }
+    const area = Math.max(0, block.area - (occupiedAreas.get(block.id) ?? 0));
+    if (changedBlocks.has(block.id) && Math.abs(area - open.area) > 1e-8) {
+      openMetrics.push({ id: open.id, blockId: block.id, oldArea: open.area, newArea: area });
+      emit(
+        'open-space',
+        open.id,
+        'derived-area',
+        'Only the derived block open-area summary would change; no land geometry is moved.',
+        [block.id],
+        { oldArea: open.area, newArea: area },
+        'info',
+      );
+    }
+  }
+  return { openSpaceAreas: openMetrics };
+}
+
+function inspectRoadContextReferences(city, snapshot, context, emit, spend) {
+  const blocks = riIndex(snapshot.blocks),
+    districts = riIndex(city.districts),
+    nodes = riIndex(snapshot.nodes),
+    walls = riIndex(city.walls);
+  const topology = buildDistrictTopology(snapshot);
+  for (const district of city.districts)
+    if (district.blockIds?.every((id) => blocks.has(id)) && !districtIsConnected(district.blockIds, topology))
+      emit(
+        'district',
+        district.id,
+        'district-connectivity',
+        'The candidate would disconnect this accepted district.',
+        district.blockIds,
+      );
+  for (const district of riSorted(city.districts))
+    for (const id of district.blockIds ?? []) {
+      spend();
+      const block = blocks.get(id);
+      if (!block || block.districtId !== district.id)
+        emit(
+          'district',
+          district.id,
+          'block-membership',
+          'Accepted district membership has no matching candidate block/owner.',
+          [id],
+        );
+    }
+  for (const block of snapshot.blocks)
+    if (block.districtId != null) {
+      spend();
+      const district = districts.get(block.districtId);
+      if (!district || !district.blockIds?.includes(block.id))
+        emit(
+          'block',
+          block.id,
+          'district-reference',
+          'The block has no reciprocal accepted district membership.',
+          [block.districtId],
+        );
+    }
+  for (const gate of riSorted(city.gates)) {
+    spend();
+    if (!walls.has(gate.wallId))
+      emit('defense', gate.id, 'wall-reference', 'The accepted gate wall does not resolve.', [gate.wallId]);
+    const node = nodes.get(gate.connection?.cityNodeId),
+      point = gate.connection?.points?.[0];
+    if (!node || !point || Math.hypot(node.x - point.x, node.y - point.y) > 1e-6)
+      emit(
+        'defense',
+        gate.id,
+        'gate-connection',
+        'The accepted gate approach is no longer attached to its city junction.',
+        [gate.wallId, gate.connection?.cityNodeId],
+      );
+  }
+  for (const tower of riSorted(city.towers)) {
+    spend();
+    if (!walls.has(tower.wallId))
+      emit('defense', tower.id, 'wall-reference', 'The accepted tower wall does not resolve.', [
+        tower.wallId,
+      ]);
+  }
+  for (const bridge of riSorted(city.bridges)) {
+    spend();
+    if (!(city.waterFeatures ?? []).some((f) => f.id === bridge.waterId))
+      emit('water', bridge.id, 'water-reference', 'The bridge owning water feature does not resolve.', [
+        bridge.waterId,
+      ]);
+  }
+  for (const pass of riSorted(city.terrainPasses)) {
+    spend();
+    if (!(city.terrainFeatures ?? []).some((f) => f.id === pass.terrainId))
+      emit('terrain', pass.id, 'terrain-reference', 'The pass owning mountain range does not resolve.', [
+        pass.terrainId,
+      ]);
+  }
+  const roadMap = riIndex(snapshot.roads),
+    changedRoads = context.roadIds.map((id) => roadMap.get(id)).filter(Boolean);
+  const measures = new Map();
+  for (const wall of city.walls ?? []) {
+    const solids = solidWallSegments(wall, city.gates ?? []);
+    measures.set(wall.id, measureWall(wall.path));
+    for (const road of changedRoads)
+      for (const section of solids) {
+        spend();
+        const a = nodes.get(road.a),
+          b = nodes.get(road.b),
+          required =
+            (wall.width +
+              (wall.edgeWidth ?? WALL_EDGE_WIDTH) +
+              STREET_WIDTHS[road.kind] +
+              STREET_EDGE_WIDTH) /
+              2 +
+            0.5;
+        const distance = segmentDistance(section.a, section.b, a, b);
+        if (distance < required) {
+          emit(
+            'defense',
+            wall.id,
+            'wall-clearance',
+            'The candidate street corridor conflicts with this wall.',
+            [road.id],
+            { newDistance: distance, requiredDistance: required },
+          );
+          break;
+        }
+      }
+  }
+  for (const tower of city.towers ?? [])
+    for (const road of changedRoads) {
+      spend();
+      const a = nodes.get(road.a),
+        b = nodes.get(road.b),
+        required = tower.radius + (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + 0.5,
+        distance = distanceToSegment(tower.center, a, b);
+      if (distance < required)
+        emit(
+          'defense',
+          tower.id,
+          'tower-clearance',
+          'The candidate street corridor conflicts with this tower.',
+          [road.id, tower.wallId],
+          { newDistance: distance, requiredDistance: required },
+        );
+    }
+  for (const gate of city.gates ?? [])
+    if (measures.has(gate.wallId))
+      for (const post of gatePosts(gate, measures.get(gate.wallId)))
+        for (const road of changedRoads) {
+          spend();
+          const a = nodes.get(road.a),
+            b = nodes.get(road.b),
+            required = gate.postRadius + (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2,
+            distance = distanceToSegment(post, a, b);
+          if (distance < required)
+            emit(
+              'defense',
+              gate.id,
+              'gate-clearance',
+              'The candidate street corridor conflicts with this gatepost.',
+              [road.id, gate.wallId],
+              { newDistance: distance, requiredDistance: required },
+            );
+        }
+}
+
+
+// src/core/road-impact.js
+
+
+
+
+
+const riAllArrays = [
+  'nodes',
+  'roads',
+  'blocks',
+  'properties',
+  'plots',
+  'buildings',
+  'openSpaces',
+  'districts',
+  'walls',
+  'gates',
+  'towers',
+];
+const riUnique = (ids) => [...new Set(ids.filter((id) => typeof id === 'string'))].sort(riCompare);
+
+function riDiff(accepted, candidate) {
+  const nodeIds = [],
+    roadIds = [];
+  for (const id of new Set([...accepted.nodesById.keys(), ...candidate.nodesById.keys()]))
+    if (!riEqual(accepted.nodesById.get(id), candidate.nodesById.get(id))) nodeIds.push(id);
+  const movedNodes = new Set(nodeIds);
+  for (const id of new Set([...accepted.roadsById.keys(), ...candidate.roadsById.keys()])) {
+    const a = accepted.roadsById.get(id),
+      b = candidate.roadsById.get(id);
+    if (
+      !riRoadEqual(a, b) ||
+      (a && [a.a, a.b].some((n) => movedNodes.has(n))) ||
+      (b && [b.a, b.b].some((n) => movedNodes.has(n)))
+    )
+      roadIds.push(id);
+  }
+  return { nodeIds: nodeIds.sort(riCompare), roadIds: roadIds.sort(riCompare) };
+}
+function riProtectedContext(city, ids, emit, severity = 'invalid') {
+  const roads = riIndex(city.roads),
+    bridges = riIndex(city.bridges),
+    passes = riIndex(city.terrainPasses);
+  for (const id of ids) {
+    const road = roads.get(id);
+    if (!road) continue;
+    if (road.plaza)
+      emit(
+        'plaza',
+        city.plaza.id,
+        'protected-edge',
+        'A protected plaza connection cannot be rewritten.',
+        [id],
+        null,
+        severity,
+      );
+    if (road.bridgeId) {
+      const bridge = bridges.get(road.bridgeId);
+      emit(
+        'water',
+        road.bridgeId,
+        'protected-edge',
+        'The protected bridge connection cannot be rewritten.',
+        [id, bridge?.waterId],
+        null,
+        severity,
+      );
+      if (bridge)
+        emit(
+          'water',
+          bridge.waterId,
+          'bridge-connection',
+          'A protected bridge on this water feature would be affected.',
+          [id, bridge.id],
+          null,
+          severity,
+        );
+    }
+    if (road.passId) {
+      const pass = passes.get(road.passId);
+      emit(
+        'terrain',
+        road.passId,
+        'protected-edge',
+        'The protected mountain-pass connection cannot be rewritten.',
+        [id, pass?.terrainId],
+        null,
+        severity,
+      );
+      if (pass)
+        emit(
+          'terrain',
+          pass.terrainId,
+          'pass-connection',
+          'A protected pass on this mountain range would be affected.',
+          [id, pass.id],
+          null,
+          severity,
+        );
+    }
+    for (const [key, kind, flag] of [
+      ['waterFaces', 'water', road.bank || road.waterBoundary],
+      ['terrainFaces', 'terrain', road.foothill || road.terrainBoundary],
+    ])
+      if (flag) {
+        for (const face of city[key] ?? [])
+          if (
+            face.vertices.some(
+              (a, i) =>
+                (a === road.a && face.vertices[(i + 1) % face.vertices.length] === road.b) ||
+                (a === road.b && face.vertices[(i + 1) % face.vertices.length] === road.a),
+            )
+          ) {
+            emit(
+              kind,
+              face.id,
+              'protected-edge',
+              'This protected feature face is incident to the proposed road change.',
+              [id],
+              null,
+              severity,
+            );
+            for (const owner of face.waterIds ?? (face.waterId ? [face.waterId] : (face.terrainIds ?? [])))
+              emit(
+                kind,
+                owner,
+                'protected-edge',
+                'The saved feature boundary must remain unchanged.',
+                [id, face.id],
+                null,
+                severity,
+              );
+          }
+      }
+    if (road.boundary)
+      for (const gate of city.gates ?? [])
+        if ([road.a, road.b].includes(gate.connection?.cityNodeId))
+          emit(
+            'defense',
+            gate.id,
+            'gate-connection',
+            'A perimeter road change would affect this accepted gate approach.',
+            [id, gate.wallId, gate.connection.cityNodeId],
+            null,
+            severity,
+          );
+  }
+}
+function riGraphIssues(city, issues, fallbackId, emit) {
+  for (const issue of issues ?? []) {
+    const roads = issue.roadIds ?? [],
+      nodes = issue.nodeIds ?? [];
+    if (!roads.length && !nodes.length) emit('city', city.id, issue.code, issue.message, [], null, 'invalid');
+    for (const id of roads)
+      emit(
+        'road',
+        id,
+        issue.code,
+        issue.message,
+        [...nodes, ...roads.filter((other) => other !== id)],
+        null,
+        'invalid',
+      );
+    for (const id of nodes) emit('junction', id, issue.code, issue.message, roads, null, 'invalid');
+    if (issue.code === 'candidate-coordinate' && fallbackId)
+      emit('junction', fallbackId, issue.code, issue.message, [], null, 'invalid');
+  }
+}
+function riTopologyDependencies(city, faceIds, emit) {
+  const ids = new Set(faceIds);
+  for (const property of city.properties)
+    if (ids.has(property.blockId))
+      emit(
+        'property',
+        property.id,
+        'block-topology',
+        'The parent block identity requires explicit reconciliation.',
+        [property.blockId],
+      );
+  for (const plot of city.plots)
+    if (ids.has(plot.blockId))
+      emit('plot', plot.id, 'block-topology', 'The parent block identity requires explicit reconciliation.', [
+        plot.blockId,
+        plot.propertyId,
+      ]);
+  for (const building of city.buildings)
+    if (ids.has(building.blockId))
+      emit(
+        'building',
+        building.id,
+        'block-topology',
+        'The parent block identity requires explicit reconciliation.',
+        [building.blockId, building.propertyId],
+      );
+  for (const district of city.districts)
+    if (district.blockIds?.some((id) => ids.has(id)))
+      emit(
+        'district',
+        district.id,
+        'block-topology',
+        'Accepted district blocks include an unresolved identity.',
+        district.blockIds.filter((id) => ids.has(id)),
+      );
+}
+
+function analyzeRoadImpact(project, proposal) {
+  const { emit, items } = riReporter(),
+    spend = riBudget(),
+    city = project?.city;
+  const report = {
+    status: 'invalid',
+    operation: typeof proposal?.operation === 'string' ? proposal.operation : 'inspect-network',
+    roadIds: [],
+    junctionIds: [],
+    affected: [],
+    issues: [],
+    preservedIds: [],
+    preservedObjects: [],
+    requiresReconciliation: false,
+    canApplyIn02A: false,
+    complete: false,
+    metrics: { junctions: [], roads: [], faces: [], openSpaceAreas: [], topology: null },
+    validation: { accepted: 'unchecked', candidate: 'not-run' },
+  };
+  let baseValid = false,
+    complete = false,
+    identity = null;
+  const finish = () => {
+    report.affected = items();
+    report.issues = report.affected.filter((i) => i.severity !== 'info');
+    report.status = report.issues.some((i) => i.severity === 'invalid')
+      ? 'invalid'
+      : report.issues.length
+        ? 'needs-review'
+        : complete
+          ? 'safe'
+          : 'needs-review';
+    report.complete = complete;
+    report.requiresReconciliation = report.issues.some((i) => i.severity === 'needs-review');
+    const affected = new Set(report.affected.map((i) => `${i.kind}\0${i.id}`));
+    if (complete && city) {
+      report.preservedObjects = riRecords(city)
+        .filter((r) => !affected.has(`${r.kind}\0${r.id}`))
+        .map(({ kind, id }) => ({ kind, id }));
+      report.preservedIds = riUnique(report.preservedObjects.map((r) => r.id));
+    }
+    report.counts = {
+      affectedObjects: new Set(report.affected.map((i) => `${i.kind}\0${i.id}`)).size,
+      issues: report.issues.length,
+      preservedObjects: report.preservedObjects.length,
+    };
+    return riFreeze(report);
+  };
+  if (!city || riAllArrays.some((key) => !Array.isArray(city[key])) || !city.plaza) {
+    emit(
+      'city',
+      city?.id,
+      'accepted-project',
+      'Provide a supported accepted project with complete city collections.',
+      [],
+      null,
+      'invalid',
+    );
+    return finish();
+  }
+  try {
+    try {
+      validateJsonTree(project);
+    } catch (error) {
+      report.validation.accepted = 'invalid';
+      emit('city', city.id, 'accepted-project', error.message, [], null, 'invalid');
+      return finish();
+    }
+    try {
+      validateStoredProject(project);
+      baseValid = true;
+      report.validation.accepted = 'valid';
+    } catch (error) {
+      report.validation.accepted = 'invalid';
+      emit('city', city.id, 'accepted-project', error.message, [], null, 'invalid');
+    }
+    const accepted = buildRoadGraph(city);
+    if (!accepted.valid) {
+      riGraphIssues(city, accepted.issues, null, emit);
+      return finish();
+    }
+    if (!proposal?.graph) {
+      report.roadIds = riUnique([
+        ...(proposal?.issues ?? []).flatMap((i) => i.roadIds ?? []),
+        ...(accepted.incidentRoads.get(proposal?.junctionId) ?? []),
+      ]);
+      report.junctionIds = riUnique([
+        proposal?.junctionId,
+        ...(proposal?.issues ?? []).flatMap((i) => i.nodeIds ?? []),
+      ]);
+      riGraphIssues(city, proposal?.issues ?? [], proposal?.junctionId, emit);
+      if (!proposal?.issues?.length)
+        emit(
+          'city',
+          city.id,
+          'candidate-input',
+          'A temporary A1 road proposal is required.',
+          [],
+          null,
+          'invalid',
+        );
+      riProtectedContext(
+        city,
+        report.roadIds.filter((id) => accepted.roadClasses.get(id)?.protected),
+        emit,
+      );
+      return finish();
+    }
+    // Re-index: the caller's claimed graphValid flag and changed ID list are not
+    // proof. Actual detached records determine geometry, identities and scope.
+    let graph;
+    try {
+      if (
+        typeof proposal.graph.nodesById?.values !== 'function' ||
+        typeof proposal.graph.roadsById?.values !== 'function'
+      )
+        throw new Error('The temporary candidate graph is missing supported node/road indexes.');
+      graph = buildRoadGraph({
+        nodes: [...proposal.graph.nodesById.values()],
+        roads: [...proposal.graph.roadsById.values()],
+      });
+    } catch (error) {
+      emit('city', city.id, 'candidate-input', error.message, [], null, 'invalid');
+      return finish();
+    }
+    const diff = riDiff(accepted, graph);
+    const movedNodeIds = new Set(diff.nodeIds);
+    report.roadIds = diff.roadIds;
+    report.junctionIds = riUnique([...diff.nodeIds, proposal.junctionId]);
+    for (const id of diff.nodeIds) {
+      const a = accepted.nodesById.get(id),
+        b = graph.nodesById.get(id);
+      report.metrics.junctions.push({
+        id,
+        oldPoint: a ? { x: a.x, y: a.y } : null,
+        newPoint: b && Number.isFinite(b.x) && Number.isFinite(b.y) ? { x: b.x, y: b.y } : null,
+      });
+      emit(
+        'junction',
+        id,
+        'junction-change',
+        'This junction differs from the accepted network.',
+        [],
+        null,
+        'info',
+      );
+    }
+    for (const id of diff.roadIds) {
+      const a = accepted.roadsById.get(id),
+        b = graph.roadsById.get(id),
+        p = accepted.nodesById.get(a?.a),
+        q = accepted.nodesById.get(a?.b),
+        r = graph.nodesById.get(b?.a),
+        s = graph.nodesById.get(b?.b);
+      const metrics = {
+        id,
+        oldLength: p && q ? Math.hypot(q.x - p.x, q.y - p.y) : null,
+        newLength: r && s && Number.isFinite(r.x + r.y + s.x + s.y) ? Math.hypot(s.x - r.x, s.y - r.y) : null,
+        oldClass: a?.kind ?? null,
+        newClass: b?.kind ?? null,
+      };
+      report.metrics.roads.push(metrics);
+      emit(
+        'road',
+        id,
+        'road-change',
+        'This road differs from the accepted network.',
+        [a?.a, a?.b, b?.a, b?.b],
+        metrics,
+        'info',
+      );
+    }
+    if (!graph.valid) {
+      riGraphIssues(city, graph.issues, proposal.junctionId, emit);
+      riProtectedContext(
+        city,
+        riUnique(graph.issues.flatMap((i) => i.roadIds ?? [])).filter(
+          (id) => accepted.roadClasses.get(id)?.protected,
+        ),
+        emit,
+      );
+      return finish();
+    }
+    const extraction = extractRoadFaces(graph, city);
+    if (!extraction.valid) {
+      for (const issue of extraction.issues) {
+        for (const id of issue.roadIds.length ? issue.roadIds : [city.id])
+          emit(
+            issue.roadIds.length ? 'road' : 'city',
+            id,
+            issue.code,
+            issue.message,
+            issue.faceIds.concat(issue.objectIds),
+            null,
+            'invalid',
+          );
+      }
+      riProtectedContext(
+        city,
+        diff.roadIds.filter((id) => accepted.roadClasses.get(id)?.protected),
+        emit,
+      );
+      return finish();
+    }
+    identity = matchExistingFaces(city, extraction);
+    const kinds = new Map(riRecords(city).map((r) => [r.id, r.kind]));
+    const faceKinds = new Map([
+      ...city.blocks.map((f) => [f.id, 'block']),
+      [city.plaza.id, 'plaza'],
+      ...(city.waterFaces ?? []).map((f) => [f.id, 'water']),
+      ...(city.terrainFaces ?? []).map((f) => [f.id, 'terrain']),
+    ]);
+    const deferredContext = [];
+    for (const issue of identity.issues) {
+      if (['district-reference', 'defense-reference'].includes(issue.code)) {
+        deferredContext.push(issue);
+        continue;
+      }
+      const severity = [
+        'face-split',
+        'face-merged',
+        'face-ambiguous',
+        'district-reference',
+        'defense-reference',
+      ].includes(issue.code)
+        ? 'needs-review'
+        : 'invalid';
+      const targets = [
+        ...issue.faceIds.map((id) => ({ kind: faceKinds.get(id) ?? 'block', id })),
+        ...issue.roadIds.map((id) => ({ kind: 'road', id })),
+        ...issue.objectIds.map((id) => ({ kind: kinds.get(id) ?? 'city', id })),
+      ];
+      for (const target of targets.length ? targets : [{ kind: 'city', id: city.id }])
+        emit(target.kind, target.id, issue.code, issue.message, issue.roadIds, null, severity);
+    }
+    report.metrics.topology = {
+      split: identity.split,
+      merged: identity.merged,
+      ambiguous: identity.ambiguous,
+      added: identity.added,
+      removed: identity.removed,
+    };
+    const mapped = [...identity.preserved, ...identity.changed],
+      changedBlockIds = identity.changed.filter((f) => f.kind === 'block').map((f) => f.id);
+    report.metrics.faces = mapped
+      .map((f) => ({
+        id: f.id,
+        kind: f.kind,
+        oldArea: f.oldArea,
+        newArea: f.newArea,
+        overlapArea: f.overlapArea,
+        geometryChanged: identity.changed.includes(f),
+      }))
+      .sort((a, b) => riCompare(a.id, b.id));
+    for (const f of identity.changed)
+      emit(
+        f.kind,
+        f.id,
+        'face-geometry',
+        'The candidate retains this face identity with changed boundary geometry.',
+        [],
+        { oldArea: f.oldArea, newArea: f.newArea, overlapArea: f.overlapArea },
+        'info',
+      );
+    const unresolved = riUnique([
+      ...identity.removed.map((f) => f.id),
+      ...identity.split.flatMap((f) => f.oldIds),
+      ...identity.merged.flatMap((f) => f.oldIds),
+      ...identity.ambiguous.flatMap((f) => f.oldIds),
+    ]);
+    for (const row of identity.added)
+      emit(
+        'candidate-face',
+        row.candidateKey,
+        'face-added',
+        'A new face has no accepted identity; automatic assignment is prohibited.',
+      );
+    for (const row of identity.removed)
+      emit(
+        row.kind,
+        row.id,
+        'face-removed',
+        'The accepted face has no candidate counterpart; automatic deletion is prohibited.',
+      );
+    riTopologyDependencies(city, unresolved, emit);
+    const records = new Map(mapped.map((f) => [f.id, f.record]));
+    const snapshot = {
+      ...city,
+      nodes: [...graph.nodesById.values()],
+      roads: [...graph.roadsById.values()],
+      blocks: mapped.filter((f) => f.kind === 'block').map((f) => f.record),
+      plaza: records.get(city.plaza.id) ?? city.plaza,
+      waterFaces: (city.waterFaces ?? []).map((f) => records.get(f.id) ?? f),
+      terrainFaces: (city.terrainFaces ?? []).map((f) => records.get(f.id) ?? f),
+    };
+    const context = {
+      roadIds: diff.roadIds,
+      junctionIds: diff.nodeIds,
+      changedBlockIds,
+      acceptedValid: baseValid,
+    };
+    report.metrics.openSpaceAreas = inspectRoadDependencies(
+      city,
+      snapshot,
+      context,
+      emit,
+      spend,
+    ).openSpaceAreas;
+    inspectRoadContextReferences(city, snapshot, context, emit, spend);
+    for (const issue of deferredContext) {
+      const kind = issue.code === 'district-reference' ? 'district' : 'defense';
+      if (!items().some((i) => i.kind === kind && i.severity !== 'info'))
+        emit('city', city.id, issue.code, issue.message, issue.objectIds);
+    }
+    if (diff.roadIds.length || diff.nodeIds.length)
+      inspectOpaqueRoadDependencies(project, graph, emit, spend);
+    riProtectedContext(
+      city,
+      diff.roadIds.filter(
+        (id) =>
+          (accepted.roadClasses.get(id)?.protected &&
+            !riRoadEqual(accepted.roadsById.get(id), graph.roadsById.get(id))) ||
+          (accepted.roadClasses.get(id)?.protected &&
+            [accepted.roadsById.get(id).a, accepted.roadsById.get(id).b].some((n) => movedNodeIds.has(n))),
+      ),
+      emit,
+    );
+    // Only derived area summaries are computed in the validation-only snapshot.
+    // No property, plot, building, frontage or ownership record is rewritten.
+    const areaUpdates = new Map(report.metrics.openSpaceAreas.map((m) => [m.id, m.newArea]));
+    snapshot.openSpaces = city.openSpaces.map((o) =>
+      areaUpdates.has(o.id) ? { ...o, area: areaUpdates.get(o.id) } : o,
+    );
+    const blocking = items().some((i) => i.severity !== 'info');
+    if (!blocking && baseValid && identity.valid && !identity.requiresReview) {
+      try {
+        validateStoredProject({ ...project, city: snapshot });
+        report.validation.candidate = 'valid';
+      } catch (error) {
+        report.validation.candidate = 'failed';
+        emit(
+          'city',
+          city.id,
+          'candidate-validation',
+          'Full candidate validation could not prove preservation: ' + error.message,
+          diff.roadIds,
+        );
+      }
+    }
+    complete = true;
+  } catch (error) {
+    emit('city', city.id, 'impact-incomplete', error.message, report.roadIds);
+    complete = false;
+  }
+  return finish();
+}
+
+function inspectJunctionImpact(project, junctionId, point) {
+  try {
+    return analyzeRoadImpact(project, proposeJunctionMove(project?.city, junctionId, point));
+  } catch (error) {
+    return analyzeRoadImpact(project, {
+      operation: 'move-junction',
+      junctionId,
+      graph: null,
+      issues: [
+        {
+          code: 'candidate-input',
+          message: error.message,
+          nodeIds: typeof junctionId === 'string' ? [junctionId] : [],
+          roadIds: [],
+        },
+      ],
+    });
+  }
+}
+
+
 // src/app.js
 // A1 foundation APIs are bundled for the later road inspector; no editor hooks yet.
 
@@ -13960,6 +15334,8 @@ function matchExistingFaces(oldCity, extraction) {
 
 
 // A2 face identity APIs remain transient until the later inspector checkpoint.
+
+// A3 owns read-only impact classification for the future road preview.
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),

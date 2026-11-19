@@ -3,7 +3,7 @@
 Implementation branch: `feature/mappo-0.2a-a2-face-identity`.
 Baseline: merged A1 PR #22, `2290af7407d3f4efbaa36fa227e2286576748994`.
 Checkpoint distribution: `dist/mappo-0.2-dev.a2.html`; root `index.html` is identical.
-Owner authorized A1 merge and A2 implementation on 2026-11-18. A2 requires separate merge approval.
+Merged with separate owner approval as PR #23 on 2026-11-18, commit `8cce456cc132447e70fe88abf1710a198d250307`.
 
 [Execution plan](MILESTONE_0_2A_PLAN.md) · [Preservation contract](ROAD_EDIT_CONTRACT.md) · [A1 record](A1_ROAD_GRAPH.md)
 

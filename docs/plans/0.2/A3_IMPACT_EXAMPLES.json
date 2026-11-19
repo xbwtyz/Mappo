@@ -1,0 +1,1840 @@
+{
+  "appVersion": "0.2-dev.a3",
+  "note": "Report excerpts omit unchanged face metrics and full preserved-ID/object lists; affected/issue rows are complete. No accepted city was edited.",
+  "source": "node scripts/road-impact-examples.mjs",
+  "examples": [
+    {
+      "name": "unchanged",
+      "status": "safe",
+      "operation": "move-junction",
+      "roadIds": [],
+      "junctionIds": [
+        "N-0131"
+      ],
+      "affected": [],
+      "issues": [],
+      "requiresReconciliation": false,
+      "canApplyIn02A": false,
+      "complete": true,
+      "validation": {
+        "accepted": "valid",
+        "candidate": "valid"
+      },
+      "counts": {
+        "affectedObjects": 0,
+        "issues": 0,
+        "preservedObjects": 2348
+      },
+      "preservedIdSample": [
+        "BLD-00001",
+        "BLD-00002",
+        "BLD-00003",
+        "BLD-00004",
+        "BLD-00005",
+        "BLD-00006",
+        "BLD-00007",
+        "BLD-00008",
+        "BLD-00009",
+        "BLD-00010",
+        "BLD-00011",
+        "BLD-00012"
+      ],
+      "metrics": {
+        "junctions": [],
+        "roads": [],
+        "faces": [],
+        "openSpaceAreas": [],
+        "topology": {
+          "split": [],
+          "merged": [],
+          "ambiguous": [],
+          "added": [],
+          "removed": []
+        }
+      }
+    },
+    {
+      "name": "undeveloped-junction-move",
+      "status": "safe",
+      "operation": "move-junction",
+      "roadIds": [
+        "RD-0131",
+        "RD-0132",
+        "RD-0135"
+      ],
+      "junctionIds": [
+        "N-0131"
+      ],
+      "affected": [
+        {
+          "kind": "block",
+          "id": "BLK-0036",
+          "code": "face-geometry",
+          "message": "The candidate retains this face identity with changed boundary geometry.",
+          "severity": "info",
+          "relatedIds": [],
+          "metrics": {
+            "oldArea": 3506.8972837481924,
+            "newArea": 3507.0776951631706,
+            "overlapArea": 3506.800882214535
+          }
+        },
+        {
+          "kind": "block",
+          "id": "BLK-0037",
+          "code": "face-geometry",
+          "message": "The candidate retains this face identity with changed boundary geometry.",
+          "severity": "info",
+          "relatedIds": [],
+          "metrics": {
+            "oldArea": 73.42189931637768,
+            "newArea": 73.54732209685972,
+            "overlapArea": 73.42189931637768
+          }
+        },
+        {
+          "kind": "block",
+          "id": "BLK-0038",
+          "code": "face-geometry",
+          "message": "The candidate retains this face identity with changed boundary geometry.",
+          "severity": "info",
+          "relatedIds": [],
+          "metrics": {
+            "oldArea": 3760.2520845032323,
+            "newArea": 3759.946250307772,
+            "overlapArea": 3759.9462503077775
+          }
+        },
+        {
+          "kind": "junction",
+          "id": "N-0131",
+          "code": "junction-change",
+          "message": "This junction differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [],
+          "metrics": null
+        },
+        {
+          "kind": "open-space",
+          "id": "OPEN-BLK-0036",
+          "code": "derived-area",
+          "message": "Only the derived block open-area summary would change; no land geometry is moved.",
+          "severity": "info",
+          "relatedIds": [
+            "BLK-0036"
+          ],
+          "metrics": {
+            "oldArea": 3506.9,
+            "newArea": 3507.08
+          }
+        },
+        {
+          "kind": "open-space",
+          "id": "OPEN-BLK-0037",
+          "code": "derived-area",
+          "message": "Only the derived block open-area summary would change; no land geometry is moved.",
+          "severity": "info",
+          "relatedIds": [
+            "BLK-0037"
+          ],
+          "metrics": {
+            "oldArea": 73.42,
+            "newArea": 73.55
+          }
+        },
+        {
+          "kind": "open-space",
+          "id": "OPEN-BLK-0038",
+          "code": "derived-area",
+          "message": "Only the derived block open-area summary would change; no land geometry is moved.",
+          "severity": "info",
+          "relatedIds": [
+            "BLK-0038"
+          ],
+          "metrics": {
+            "oldArea": 3760.25,
+            "newArea": 3759.95
+          }
+        },
+        {
+          "kind": "road",
+          "id": "RD-0131",
+          "code": "road-change",
+          "message": "This road differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [
+            "N-0086",
+            "N-0131"
+          ],
+          "metrics": {
+            "id": "RD-0131",
+            "oldLength": 7.10336352373368,
+            "newLength": 7.1149192621527595,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "road",
+          "id": "RD-0132",
+          "code": "road-change",
+          "message": "This road differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [
+            "N-0085",
+            "N-0131"
+          ],
+          "metrics": {
+            "id": "RD-0132",
+            "oldLength": 21.424222258467136,
+            "newLength": 21.435130180578078,
+            "oldClass": "secondary",
+            "newClass": "secondary"
+          }
+        },
+        {
+          "kind": "road",
+          "id": "RD-0135",
+          "code": "road-change",
+          "message": "This road differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [
+            "N-0131",
+            "N-0133"
+          ],
+          "metrics": {
+            "id": "RD-0135",
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        }
+      ],
+      "issues": [],
+      "requiresReconciliation": false,
+      "canApplyIn02A": false,
+      "complete": true,
+      "validation": {
+        "accepted": "valid",
+        "candidate": "valid"
+      },
+      "counts": {
+        "affectedObjects": 10,
+        "issues": 0,
+        "preservedObjects": 918
+      },
+      "preservedIdSample": [
+        "BLK-0001",
+        "BLK-0002",
+        "BLK-0003",
+        "BLK-0004",
+        "BLK-0005",
+        "BLK-0006",
+        "BLK-0007",
+        "BLK-0008",
+        "BLK-0009",
+        "BLK-0010",
+        "BLK-0011",
+        "BLK-0012"
+      ],
+      "metrics": {
+        "junctions": [
+          {
+            "id": "N-0131",
+            "oldPoint": {
+              "x": -129.3611425196013,
+              "y": -337.398552690687
+            },
+            "newPoint": {
+              "x": -129.3511425196013,
+              "y": -337.388552690687
+            }
+          }
+        ],
+        "roads": [
+          {
+            "id": "RD-0131",
+            "oldLength": 7.10336352373368,
+            "newLength": 7.1149192621527595,
+            "oldClass": "lane",
+            "newClass": "lane"
+          },
+          {
+            "id": "RD-0132",
+            "oldLength": 21.424222258467136,
+            "newLength": 21.435130180578078,
+            "oldClass": "secondary",
+            "newClass": "secondary"
+          },
+          {
+            "id": "RD-0135",
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        ],
+        "faces": [
+          {
+            "id": "BLK-0036",
+            "kind": "block",
+            "oldArea": 3506.8972837481924,
+            "newArea": 3507.0776951631706,
+            "overlapArea": 3506.800882214535,
+            "geometryChanged": true
+          },
+          {
+            "id": "BLK-0037",
+            "kind": "block",
+            "oldArea": 73.42189931637768,
+            "newArea": 73.54732209685972,
+            "overlapArea": 73.42189931637768,
+            "geometryChanged": true
+          },
+          {
+            "id": "BLK-0038",
+            "kind": "block",
+            "oldArea": 3760.2520845032323,
+            "newArea": 3759.946250307772,
+            "overlapArea": 3759.9462503077775,
+            "geometryChanged": true
+          }
+        ],
+        "openSpaceAreas": [
+          {
+            "id": "OPEN-BLK-0036",
+            "blockId": "BLK-0036",
+            "oldArea": 3506.9,
+            "newArea": 3507.08
+          },
+          {
+            "id": "OPEN-BLK-0037",
+            "blockId": "BLK-0037",
+            "oldArea": 73.42,
+            "newArea": 73.55
+          },
+          {
+            "id": "OPEN-BLK-0038",
+            "blockId": "BLK-0038",
+            "oldArea": 3760.25,
+            "newArea": 3759.95
+          }
+        ],
+        "topology": {
+          "split": [],
+          "merged": [],
+          "ambiguous": [],
+          "added": [],
+          "removed": []
+        }
+      }
+    },
+    {
+      "name": "frontage-review",
+      "status": "needs-review",
+      "operation": "move-junction",
+      "roadIds": [
+        "RD-0131",
+        "RD-0132",
+        "RD-0135"
+      ],
+      "junctionIds": [
+        "N-0131"
+      ],
+      "affected": [
+        {
+          "kind": "block",
+          "id": "BLK-0036",
+          "code": "face-geometry",
+          "message": "The candidate retains this face identity with changed boundary geometry.",
+          "severity": "info",
+          "relatedIds": [],
+          "metrics": {
+            "oldArea": 3506.8972837481924,
+            "newArea": 3507.0776951631706,
+            "overlapArea": 3506.800882214535
+          }
+        },
+        {
+          "kind": "block",
+          "id": "BLK-0037",
+          "code": "face-geometry",
+          "message": "The candidate retains this face identity with changed boundary geometry.",
+          "severity": "info",
+          "relatedIds": [],
+          "metrics": {
+            "oldArea": 73.42189931637768,
+            "newArea": 73.54732209685972,
+            "overlapArea": 73.42189931637768
+          }
+        },
+        {
+          "kind": "block",
+          "id": "BLK-0038",
+          "code": "face-geometry",
+          "message": "The candidate retains this face identity with changed boundary geometry.",
+          "severity": "info",
+          "relatedIds": [],
+          "metrics": {
+            "oldArea": 3760.2520845032323,
+            "newArea": 3759.946250307772,
+            "overlapArea": 3759.9462503077775
+          }
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00056",
+          "code": "access-connection",
+          "message": "The unchanged access path no longer ends on its frontage road.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00056",
+          "code": "frontage-distance",
+          "message": "Frontage distance was measured against the accepted and proposed street.",
+          "severity": "info",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldDistance": 6.107390439906158,
+            "newDistance": 6.113536779661797
+          }
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00056",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00059",
+          "code": "access-connection",
+          "message": "The unchanged access path no longer ends on its frontage road.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00059",
+          "code": "frontage-distance",
+          "message": "Frontage distance was measured against the accepted and proposed street.",
+          "severity": "info",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldDistance": 6.772466983832416,
+            "newDistance": 6.769497959267012
+          }
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00059",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00060",
+          "code": "access-connection",
+          "message": "The unchanged access path no longer ends on its frontage road.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00060",
+          "code": "frontage-distance",
+          "message": "Frontage distance was measured against the accepted and proposed street.",
+          "severity": "info",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldDistance": 6.20207241771276,
+            "newDistance": 6.197028779008532
+          }
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00060",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "junction",
+          "id": "N-0131",
+          "code": "junction-change",
+          "message": "This junction differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [],
+          "metrics": null
+        },
+        {
+          "kind": "open-space",
+          "id": "OPEN-BLK-0036",
+          "code": "derived-area",
+          "message": "Only the derived block open-area summary would change; no land geometry is moved.",
+          "severity": "info",
+          "relatedIds": [
+            "BLK-0036"
+          ],
+          "metrics": {
+            "oldArea": 2394.5322445439074,
+            "newArea": 2394.712244543907
+          }
+        },
+        {
+          "kind": "open-space",
+          "id": "OPEN-BLK-0037",
+          "code": "derived-area",
+          "message": "Only the derived block open-area summary would change; no land geometry is moved.",
+          "severity": "info",
+          "relatedIds": [
+            "BLK-0037"
+          ],
+          "metrics": {
+            "oldArea": 73.42,
+            "newArea": 73.55
+          }
+        },
+        {
+          "kind": "open-space",
+          "id": "OPEN-BLK-0038",
+          "code": "derived-area",
+          "message": "Only the derived block open-area summary would change; no land geometry is moved.",
+          "severity": "info",
+          "relatedIds": [
+            "BLK-0038"
+          ],
+          "metrics": {
+            "oldArea": 2431.5150839261423,
+            "newArea": 2431.215083926142
+          }
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00067",
+          "code": "property-containment",
+          "message": "The plot is not contained by its accepted property.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "PROP-00048"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00068",
+          "code": "property-containment",
+          "message": "The plot is not contained by its accepted property.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "PROP-00048"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00071",
+          "code": "frontage-distance",
+          "message": "Frontage distance was measured against the accepted and proposed street.",
+          "severity": "info",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldDistance": 4.999999999999998,
+            "newDistance": 5.00579710818318
+          }
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00071",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00072",
+          "code": "property-containment",
+          "message": "The plot is not contained by its accepted property.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "PROP-00052"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00073",
+          "code": "property-containment",
+          "message": "The plot is not contained by its accepted property.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "PROP-00052"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00075",
+          "code": "frontage-distance",
+          "message": "Frontage distance was measured against the accepted and proposed street.",
+          "severity": "info",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldDistance": 4.999999999999996,
+            "newDistance": 4.996872847775648
+          }
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00075",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00076",
+          "code": "frontage-distance",
+          "message": "Frontage distance was measured against the accepted and proposed street.",
+          "severity": "info",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldDistance": 4.999999999999998,
+            "newDistance": 4.9947466931976345
+          }
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00076",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00051",
+          "code": "frame-reference",
+          "message": "The saved frontage frame is anchored to a moved junction.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "N-0131",
+            "RD-0135"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00051",
+          "code": "frontage-distance",
+          "message": "Frontage distance was measured against the accepted and proposed street.",
+          "severity": "info",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldDistance": 4.999999999999998,
+            "newDistance": 5.00579710818318
+          }
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00051",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00054",
+          "code": "frontage-distance",
+          "message": "Frontage distance was measured against the accepted and proposed street.",
+          "severity": "info",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldDistance": 4.999999999999996,
+            "newDistance": 4.996872847775648
+          }
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00054",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00055",
+          "code": "frontage-distance",
+          "message": "Frontage distance was measured against the accepted and proposed street.",
+          "severity": "info",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldDistance": 4.999999999999998,
+            "newDistance": 4.9947466931976345
+          }
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00055",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "road",
+          "id": "RD-0131",
+          "code": "road-change",
+          "message": "This road differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [
+            "N-0086",
+            "N-0131"
+          ],
+          "metrics": {
+            "id": "RD-0131",
+            "oldLength": 7.10336352373368,
+            "newLength": 7.1149192621527595,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "road",
+          "id": "RD-0132",
+          "code": "road-change",
+          "message": "This road differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [
+            "N-0085",
+            "N-0131"
+          ],
+          "metrics": {
+            "id": "RD-0132",
+            "oldLength": 21.424222258467136,
+            "newLength": 21.435130180578078,
+            "oldClass": "secondary",
+            "newClass": "secondary"
+          }
+        },
+        {
+          "kind": "road",
+          "id": "RD-0135",
+          "code": "road-change",
+          "message": "This road differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [
+            "N-0131",
+            "N-0133"
+          ],
+          "metrics": {
+            "id": "RD-0135",
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        }
+      ],
+      "issues": [
+        {
+          "kind": "building",
+          "id": "BLD-00056",
+          "code": "access-connection",
+          "message": "The unchanged access path no longer ends on its frontage road.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00056",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00059",
+          "code": "access-connection",
+          "message": "The unchanged access path no longer ends on its frontage road.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00059",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00060",
+          "code": "access-connection",
+          "message": "The unchanged access path no longer ends on its frontage road.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "building",
+          "id": "BLD-00060",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00067",
+          "code": "property-containment",
+          "message": "The plot is not contained by its accepted property.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "PROP-00048"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00068",
+          "code": "property-containment",
+          "message": "The plot is not contained by its accepted property.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "PROP-00048"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00071",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00072",
+          "code": "property-containment",
+          "message": "The plot is not contained by its accepted property.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "PROP-00052"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00073",
+          "code": "property-containment",
+          "message": "The plot is not contained by its accepted property.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "PROP-00052"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00075",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "plot",
+          "id": "PLOT-00076",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00051",
+          "code": "frame-reference",
+          "message": "The saved frontage frame is anchored to a moved junction.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "N-0131",
+            "RD-0135"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00051",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00054",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "property",
+          "id": "PROP-00055",
+          "code": "frontage-geometry",
+          "message": "The accepted frontage references a changed road; its alignment and access must be reviewed.",
+          "severity": "needs-review",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": {
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        }
+      ],
+      "requiresReconciliation": true,
+      "canApplyIn02A": false,
+      "complete": true,
+      "validation": {
+        "accepted": "valid",
+        "candidate": "not-run"
+      },
+      "counts": {
+        "affectedObjects": 23,
+        "issues": 17,
+        "preservedObjects": 2325
+      },
+      "preservedIdSample": [
+        "BLD-00001",
+        "BLD-00002",
+        "BLD-00003",
+        "BLD-00004",
+        "BLD-00005",
+        "BLD-00006",
+        "BLD-00007",
+        "BLD-00008",
+        "BLD-00009",
+        "BLD-00010",
+        "BLD-00011",
+        "BLD-00012"
+      ],
+      "metrics": {
+        "junctions": [
+          {
+            "id": "N-0131",
+            "oldPoint": {
+              "x": -129.3611425196013,
+              "y": -337.398552690687
+            },
+            "newPoint": {
+              "x": -129.3511425196013,
+              "y": -337.388552690687
+            }
+          }
+        ],
+        "roads": [
+          {
+            "id": "RD-0131",
+            "oldLength": 7.10336352373368,
+            "newLength": 7.1149192621527595,
+            "oldClass": "lane",
+            "newClass": "lane"
+          },
+          {
+            "id": "RD-0132",
+            "oldLength": 21.424222258467136,
+            "newLength": 21.435130180578078,
+            "oldClass": "secondary",
+            "newClass": "secondary"
+          },
+          {
+            "id": "RD-0135",
+            "oldLength": 59.779370072499326,
+            "newLength": 59.7686841232225,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        ],
+        "faces": [
+          {
+            "id": "BLK-0036",
+            "kind": "block",
+            "oldArea": 3506.8972837481924,
+            "newArea": 3507.0776951631706,
+            "overlapArea": 3506.800882214535,
+            "geometryChanged": true
+          },
+          {
+            "id": "BLK-0037",
+            "kind": "block",
+            "oldArea": 73.42189931637768,
+            "newArea": 73.54732209685972,
+            "overlapArea": 73.42189931637768,
+            "geometryChanged": true
+          },
+          {
+            "id": "BLK-0038",
+            "kind": "block",
+            "oldArea": 3760.2520845032323,
+            "newArea": 3759.946250307772,
+            "overlapArea": 3759.9462503077775,
+            "geometryChanged": true
+          }
+        ],
+        "openSpaceAreas": [
+          {
+            "id": "OPEN-BLK-0036",
+            "blockId": "BLK-0036",
+            "oldArea": 2394.5322445439074,
+            "newArea": 2394.712244543907
+          },
+          {
+            "id": "OPEN-BLK-0037",
+            "blockId": "BLK-0037",
+            "oldArea": 73.42,
+            "newArea": 73.55
+          },
+          {
+            "id": "OPEN-BLK-0038",
+            "blockId": "BLK-0038",
+            "oldArea": 2431.5150839261423,
+            "newArea": 2431.215083926142
+          }
+        ],
+        "topology": {
+          "split": [],
+          "merged": [],
+          "ambiguous": [],
+          "added": [],
+          "removed": []
+        }
+      }
+    },
+    {
+      "name": "crossing-network",
+      "status": "invalid",
+      "operation": "move-junction",
+      "roadIds": [
+        "RD-0131",
+        "RD-0132",
+        "RD-0135"
+      ],
+      "junctionIds": [
+        "N-0131"
+      ],
+      "affected": [
+        {
+          "kind": "junction",
+          "id": "N-0131",
+          "code": "junction-change",
+          "message": "This junction differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0131",
+          "code": "road-change",
+          "message": "This road differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [
+            "N-0086",
+            "N-0131"
+          ],
+          "metrics": {
+            "id": "RD-0131",
+            "oldLength": 7.10336352373368,
+            "newLength": 147.28029515102708,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "road",
+          "id": "RD-0131",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0136"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0131",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0148"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0132",
+          "code": "road-change",
+          "message": "This road differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [
+            "N-0085",
+            "N-0131"
+          ],
+          "metrics": {
+            "id": "RD-0132",
+            "oldLength": 21.424222258467136,
+            "newLength": 158.5309499141678,
+            "oldClass": "secondary",
+            "newClass": "secondary"
+          }
+        },
+        {
+          "kind": "road",
+          "id": "RD-0132",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0136"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0132",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0148"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0135",
+          "code": "road-change",
+          "message": "This road differs from the accepted network.",
+          "severity": "info",
+          "relatedIds": [
+            "N-0131",
+            "N-0133"
+          ],
+          "metrics": {
+            "id": "RD-0135",
+            "oldLength": 59.779370072499326,
+            "newLength": 103.90730798869939,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        },
+        {
+          "kind": "road",
+          "id": "RD-0135",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0149"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0136",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0131"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0136",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0132"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0148",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0131"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0148",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0132"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0149",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": null
+        }
+      ],
+      "issues": [
+        {
+          "kind": "road",
+          "id": "RD-0131",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0136"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0131",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0148"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0132",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0136"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0132",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0148"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0135",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0149"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0136",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0131"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0136",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0132"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0148",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0131"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0148",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0132"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0149",
+          "code": "unnormalized-crossing",
+          "message": "Roads cross or touch without a shared junction.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0135"
+          ],
+          "metrics": null
+        }
+      ],
+      "requiresReconciliation": false,
+      "canApplyIn02A": false,
+      "complete": false,
+      "validation": {
+        "accepted": "valid",
+        "candidate": "not-run"
+      },
+      "counts": {
+        "affectedObjects": 7,
+        "issues": 10,
+        "preservedObjects": 0
+      },
+      "preservedIdSample": [],
+      "metrics": {
+        "junctions": [
+          {
+            "id": "N-0131",
+            "oldPoint": {
+              "x": -129.3611425196013,
+              "y": -337.398552690687
+            },
+            "newPoint": {
+              "x": -29.361142519601287,
+              "y": -237.39855269068698
+            }
+          }
+        ],
+        "roads": [
+          {
+            "id": "RD-0131",
+            "oldLength": 7.10336352373368,
+            "newLength": 147.28029515102708,
+            "oldClass": "lane",
+            "newClass": "lane"
+          },
+          {
+            "id": "RD-0132",
+            "oldLength": 21.424222258467136,
+            "newLength": 158.5309499141678,
+            "oldClass": "secondary",
+            "newClass": "secondary"
+          },
+          {
+            "id": "RD-0135",
+            "oldLength": 59.779370072499326,
+            "newLength": 103.90730798869939,
+            "oldClass": "lane",
+            "newClass": "lane"
+          }
+        ],
+        "faces": [],
+        "openSpaceAreas": [],
+        "topology": null
+      }
+    },
+    {
+      "name": "protected-bridge",
+      "status": "invalid",
+      "operation": "move-junction",
+      "roadIds": [
+        "RD-0433",
+        "RD-0434",
+        "RD-0498",
+        "RD-0499"
+      ],
+      "junctionIds": [
+        "N-0309"
+      ],
+      "affected": [
+        {
+          "kind": "junction",
+          "id": "N-0309",
+          "code": "protected-junction",
+          "message": "This junction touches a protected edge. Ordinary road movement cannot rewrite that connection.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0433",
+            "RD-0434",
+            "RD-0499"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0433",
+          "code": "protected-junction",
+          "message": "This junction touches a protected edge. Ordinary road movement cannot rewrite that connection.",
+          "severity": "invalid",
+          "relatedIds": [
+            "N-0309",
+            "RD-0434",
+            "RD-0499"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0434",
+          "code": "protected-junction",
+          "message": "This junction touches a protected edge. Ordinary road movement cannot rewrite that connection.",
+          "severity": "invalid",
+          "relatedIds": [
+            "N-0309",
+            "RD-0433",
+            "RD-0499"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0499",
+          "code": "protected-junction",
+          "message": "This junction touches a protected edge. Ordinary road movement cannot rewrite that connection.",
+          "severity": "invalid",
+          "relatedIds": [
+            "N-0309",
+            "RD-0433",
+            "RD-0434"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "BRIDGE-001",
+          "code": "protected-edge",
+          "message": "The protected bridge connection cannot be rewritten.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0499",
+            "WATER-RIVER-001"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "WATER-RIVER-001",
+          "code": "bridge-connection",
+          "message": "A protected bridge on this water feature would be affected.",
+          "severity": "invalid",
+          "relatedIds": [
+            "BRIDGE-001",
+            "RD-0499"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "WATER-RIVER-001",
+          "code": "protected-edge",
+          "message": "The saved feature boundary must remain unchanged.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0433",
+            "WET-002"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "WATER-RIVER-001",
+          "code": "protected-edge",
+          "message": "The saved feature boundary must remain unchanged.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0434",
+            "WET-003"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "WET-002",
+          "code": "protected-edge",
+          "message": "This protected feature face is incident to the proposed road change.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0433"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "WET-003",
+          "code": "protected-edge",
+          "message": "This protected feature face is incident to the proposed road change.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0434"
+          ],
+          "metrics": null
+        }
+      ],
+      "issues": [
+        {
+          "kind": "junction",
+          "id": "N-0309",
+          "code": "protected-junction",
+          "message": "This junction touches a protected edge. Ordinary road movement cannot rewrite that connection.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0433",
+            "RD-0434",
+            "RD-0499"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0433",
+          "code": "protected-junction",
+          "message": "This junction touches a protected edge. Ordinary road movement cannot rewrite that connection.",
+          "severity": "invalid",
+          "relatedIds": [
+            "N-0309",
+            "RD-0434",
+            "RD-0499"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0434",
+          "code": "protected-junction",
+          "message": "This junction touches a protected edge. Ordinary road movement cannot rewrite that connection.",
+          "severity": "invalid",
+          "relatedIds": [
+            "N-0309",
+            "RD-0433",
+            "RD-0499"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "road",
+          "id": "RD-0499",
+          "code": "protected-junction",
+          "message": "This junction touches a protected edge. Ordinary road movement cannot rewrite that connection.",
+          "severity": "invalid",
+          "relatedIds": [
+            "N-0309",
+            "RD-0433",
+            "RD-0434"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "BRIDGE-001",
+          "code": "protected-edge",
+          "message": "The protected bridge connection cannot be rewritten.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0499",
+            "WATER-RIVER-001"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "WATER-RIVER-001",
+          "code": "bridge-connection",
+          "message": "A protected bridge on this water feature would be affected.",
+          "severity": "invalid",
+          "relatedIds": [
+            "BRIDGE-001",
+            "RD-0499"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "WATER-RIVER-001",
+          "code": "protected-edge",
+          "message": "The saved feature boundary must remain unchanged.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0433",
+            "WET-002"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "WATER-RIVER-001",
+          "code": "protected-edge",
+          "message": "The saved feature boundary must remain unchanged.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0434",
+            "WET-003"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "WET-002",
+          "code": "protected-edge",
+          "message": "This protected feature face is incident to the proposed road change.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0433"
+          ],
+          "metrics": null
+        },
+        {
+          "kind": "water",
+          "id": "WET-003",
+          "code": "protected-edge",
+          "message": "This protected feature face is incident to the proposed road change.",
+          "severity": "invalid",
+          "relatedIds": [
+            "RD-0434"
+          ],
+          "metrics": null
+        }
+      ],
+      "requiresReconciliation": false,
+      "canApplyIn02A": false,
+      "complete": false,
+      "validation": {
+        "accepted": "valid",
+        "candidate": "not-run"
+      },
+      "counts": {
+        "affectedObjects": 8,
+        "issues": 10,
+        "preservedObjects": 0
+      },
+      "preservedIdSample": [],
+      "metrics": {
+        "junctions": [],
+        "roads": [],
+        "faces": [],
+        "openSpaceAreas": [],
+        "topology": null
+      }
+    }
+  ]
+}
