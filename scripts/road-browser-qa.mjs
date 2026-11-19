@@ -308,6 +308,7 @@ for (const [name, type] of [
       assert.equal(invalid.proposal,null);
       assert.equal(invalid.ghost,null);
       assert.match(invalid.error,/finite/);
+      assert.match(await page.locator('#roadApplyStatusB4').innerText(), /finite/);
       assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
       await page.locator('#roadIntentDxC1').fill('15');
       await page.waitForFunction(() =>
@@ -634,7 +635,7 @@ for (const [name, type] of [
       assert.equal(committed?.y,target.y);
       assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')),true);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)),bendBaseline);
-      if (viewport.name === 'desktop') {
+      if (['desktop','phone'].includes(viewport.name)) {
         const custom=structuredClone(project);
         custom.city.buildings.find(building=>building.id==='BLD-00061').customName='Market Hall';
         await page.evaluate(doc=>__buildingQA.apply(doc),{project:custom,workspace:defaultWorkspace(custom)});
@@ -644,6 +645,10 @@ for (const [name, type] of [
         await page.locator('#roadSelectionId').selectOption('RD-0113');
         await page.locator('#roadIntentDyC1').fill('18');
         const needsChoice=page.locator('#roadReconciliationListB3 li').filter({hasText:'Market Hall'});
+        await page.locator('#roadPreviewMinimize').click();
+        await page.getByRole('button',{name:'Resolve conflict'}).click();
+        assert.match(await page.locator('#roadApplyStatusB4').innerText(),/Market Hall/);
+        assert.equal(await page.evaluate(()=>document.activeElement.textContent),'Keep footprint here');
         await needsChoice.getByRole('button',{name:'Keep footprint here'}).click();
         await page.waitForFunction(()=>__buildingQA.state().roadWorkspace.session.reconciliation?.unresolved[0]?.code==='building-placement-blocked');
         assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);

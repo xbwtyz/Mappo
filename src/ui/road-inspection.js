@@ -168,6 +168,11 @@ export function summarizeRoadImpact(report) {
   return sorted.map(({ objects, ...group }) => ({ ...group, count: objects.size }));
 }
 
+function hasRoadBuildingChoice(row) {
+  return row?.kind === 'building' &&
+    ['building-decision-required','building-placement-blocked'].includes(row.code);
+}
+
 export class RoadInspectionWorkspace {
   constructor({
     getElement,
@@ -305,6 +310,16 @@ export class RoadInspectionWorkspace {
       this.draw();
     });
     this.$('roadPreviewReset').addEventListener('click', () => this.reset());
+    this.$('roadResolveConflictC6').addEventListener('click', () => {
+      const issue = this.session.reconciliation?.unresolved.find(hasRoadBuildingChoice);
+      if (!issue) return;
+      if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
+      const target = this.$('roadConflictC6-' + issue.id);
+      if (!target) return;
+      this.locateReconciliationB3(issue);
+      target.scrollIntoView({block:'center'});
+      target.querySelector('button')?.focus({preventScroll:true});
+    });
     this.$('roadApplyB4').addEventListener('click', () => {
       if(this.$('roadApplyB4').disabled || !this.session.current())return;
       const result=this.applyEdit(this.session,this.baseRevision);
@@ -551,9 +566,20 @@ export class RoadInspectionWorkspace {
       s.acceptedFingerprint===JSON.stringify(s.project) &&
       this.getRevision()===this.baseRevision);
     this.$('roadApplyB4').disabled=!ready;
-    this.$('roadApplyStatusB4').textContent=this.applyError || (ready ?
-      'Eligible preview. Apply will recompute, validate and confirm portable save compatibility before acceptance.' :
-      'Apply is unavailable until a fully reconciled, current road candidate passes validation.');
+    const issue = s.reconciliation?.unresolved?.find(hasRoadBuildingChoice) ?? s.reconciliation?.unresolved?.[0];
+    const actionable = !s.checking && !s.drag && hasRoadBuildingChoice(issue);
+    const building = actionable && s.city.buildings.find(record => record.id === issue.id);
+    this.$('roadResolveConflictC6').hidden = !actionable;
+    const message = this.applyError || s.roadIntentInputError || s.error || s.reconciliationError ||
+      (ready ? 'Ready to apply. The road and neighborhood changes will be saved together.' :
+        s.drag ? 'Release the handle to check this edit.' :
+        s.checking ? 'Checking the street and nearby properties…' :
+        actionable ? (building?.customName || 'Building ' + issue.id) + '. ' + issue.message :
+        issue?.message || s.proposal?.issues?.[0]?.message ||
+        (s.pending ? 'This preview is no longer current. Reset it and try the edit again.' :
+          'Move a street or junction to preview an edit.'));
+    const applyStatus = this.$('roadApplyStatusB4');
+    if (applyStatus.textContent !== message) applyStatus.textContent = message;
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
         this.lastReconciliationError !== s.reconciliationError || this.lastChecking !== s.checking) {
       this.lastReconciliation = s.reconciliation;
@@ -595,7 +621,8 @@ export class RoadInspectionWorkspace {
       const priority = { junction:0, road:1, block:2, property:3, building:4, plot:5, 'open-space':6 };
       rows.sort((a,b) => (priority[a.kind] ?? 7) - (priority[b.kind] ?? 7));
     }
-    const unresolved=preview?.unresolved??[];
+    const unresolved=[...(preview?.unresolved??[])]
+      .sort((a,b)=>Number(hasRoadBuildingChoice(b))-Number(hasRoadBuildingChoice(a)));
     const ledger=s.reconciliation?.ledger??[];
     const disposition=new Map(ledger.map(row=>[row.kind+' '+(row.oldId??row.newId),row]));
     const visibleRows=new Set(rows.map(row=>row.kind+' '+row.id));
@@ -637,8 +664,7 @@ export class RoadInspectionWorkspace {
       focus.setAttribute('aria-label','Locate '+row.kind+' '+row.id+' in the reconciliation preview');
       focus.addEventListener('click',()=>this.locateReconciliationB3(row));
       item.replaceChildren(description,focus);
-      if (row.entryType==='unresolved' && row.kind==='building' &&
-          ['building-decision-required','building-placement-blocked'].includes(row.code))
+      if (row.entryType==='unresolved' && hasRoadBuildingChoice(row))
         item.append(this.buildingConflictControls(row.id));
       return item;
     }));
@@ -652,6 +678,7 @@ export class RoadInspectionWorkspace {
     const frame=buildingFrame(building);
     const controls=document.createElement('div');
     controls.className='road-building-choices';
+    controls.id='roadConflictC6-' + id;
     const button=(label,action)=>{
       const node=document.createElement('button');
       node.type='button';
