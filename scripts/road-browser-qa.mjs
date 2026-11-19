@@ -442,14 +442,19 @@ for (const [name, type] of [
       await page.waitForFunction(()=>
         __buildingQA.state().roadWorkspace.session.roadIntentAnalysis?.draftable===true);
       const touchDraft=await page.evaluate(()=>{
-        const s=__buildingQA.state();
-        return {offset:s.roadWorkspace.session.roadIntentOffset,
-          pending:s.roadWorkspace.session.pending};
+        const {roadWorkspace,files}=__buildingQA.state(), session=roadWorkspace.session;
+        return {offset:session.roadIntentOffset, pending:session.pending,
+          reconciled:session.reconciliation?.validation?.project === 'valid' &&
+            Boolean(session.reconciliation.candidateProject),
+          acceptedUnchanged:JSON.stringify(__buildingQA.capture())===__buildingQA.before,
+          recoveryUnchanged:files.revision===__buildingQA.revision};
       });
       assert.equal(touchDraft.pending,true);
       assert.ok(Math.abs(touchDraft.offset.x)>1);
       assert.ok(Math.abs(touchDraft.offset.y)>1);
-      assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+      assert.equal(touchDraft.acceptedUnchanged,true);
+      assert.equal(touchDraft.recoveryUnchanged,true);
+      assert.equal(await page.locator('#roadApplyB4').isDisabled(),!touchDraft.reconciled);
       await page.locator('#roadPreviewReset').click();
 
       // Cancellation of a captured touch pointer rolls back the unaccepted
