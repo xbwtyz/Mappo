@@ -1,7 +1,7 @@
 # Mappo 0.2B — Controlled Road Editing and Local Reconciliation
-**Approved conservative design · 2026-11-18 · B4 implementation authorized only**
+**Approved conservative design · 2026-11-18 · B5 stabilization in progress**
 
-Status: **B1, B2 and B3 merged; B4 implementation authorized; B5 remains unapproved.** This document expands the original 0.2B roadmap proposal to allow *conservative, explicit local reconciliation* for supported ordinary road movements. A5 [PR #26](https://github.com/xbwtyz/Mappo/pull/26) was merged. B1 [PR #27](https://github.com/xbwtyz/Mappo/pull/27) passed CI and merged. B2 [PR #28](https://github.com/xbwtyz/Mappo/pull/28) passed CI and merged. B3 [PR #29](https://github.com/xbwtyz/Mappo/pull/29) passed CI and merged. B4 is in its own implementation cycle and is not approved for merge.
+Status: **B1–B4 merged; B5 implementation underway on its own branch; no B5 merge authorized.** This document expands the original 0.2B roadmap proposal to allow *conservative, explicit local reconciliation* for supported ordinary road movements. A5 [PR #26](https://github.com/xbwtyz/Mappo/pull/26) was merged. B1 [PR #27](https://github.com/xbwtyz/Mappo/pull/27) passed CI and merged. B2 [PR #28](https://github.com/xbwtyz/Mappo/pull/28) passed CI and merged. B3 [PR #29](https://github.com/xbwtyz/Mappo/pull/29) passed CI and merged. B4 [PR #30](https://github.com/xbwtyz/Mappo/pull/30) passed CI and merged; duplicate PR #31 was closed without merge.
 
 Related: [0.2 roadmap](README.md) · [0.2A plan](MILESTONE_0_2A_PLAN.md) · [preservation contract](ROAD_EDIT_CONTRACT.md).
 
@@ -197,4 +197,4 @@ Build, QA and merge are separate gates. PR review and release tags are not impli
 - [ ] Node, compiled parity, browser/viewport and preservation/failure-path CI green.
 - [ ] Each B-cycle PR independently reviewed and explicitly approved for merge.
 
-**B1–B3 are merged. B4 implementation is authorized, but its merge and all B5 implementation still require independent owner approval.**
+**B1–B4 are merged. B5 implementation is authorized; B5 merge requires independent owner approval and green CI.**
