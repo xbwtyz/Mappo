@@ -139,8 +139,8 @@ export function prepareRoadApplyC2(project, workspace, session, expectedRevision
     return reject('stale-preview', 'The street proposal is not a complete, current preview.');
   try {
     const fresh = session.roadConnectionEdit
-      ? prepareRoadTopologyReflowC3(project, session.selection.id, null, session.roadConnectionEdit)
-      : prepareNeighborhoodReflowC3(project, session.selection.id, session.roadIntentOffset);
+      ? prepareRoadTopologyReflowC3(project, session.selection.id, null, session.roadConnectionEdit, session.buildingDecisions)
+      : prepareNeighborhoodReflowC3(project, session.selection.id, session.roadIntentOffset, undefined, session.buildingDecisions);
     if (!fresh.candidateProject)
       return reject('candidate-invalid', fresh.unresolved[0]?.message ?? 'Fresh reflow did not pass validation.');
     if (!b4Same(fresh.candidateProject, inspected.candidateProject) || !b4Same(fresh.ledger, inspected.ledger))

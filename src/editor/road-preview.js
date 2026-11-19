@@ -52,6 +52,7 @@ export class RoadPreviewSession {
     this.active = false;
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
+    this.buildingDecisions = new Map();
     this.roadConnectionEdit = null;
     this.bendEditor = null;
     this.roadIntentOffset = null;
@@ -96,6 +97,7 @@ export class RoadPreviewSession {
   updateRoadIntent(offset,{defer=true,dragging=false}={}){
     if(!this.roadIntentEligible)return false;
     this.invalidate();
+    this.buildingDecisions = new Map();
     this.roadConnectionEdit = null;
     this.bendEditor = null;
     // Never present NaN, Infinity or a blank field as a real road draft.
@@ -170,6 +172,7 @@ export class RoadPreviewSession {
   }
   updateBends(points, dragging = false) {
     this.invalidate();
+    this.buildingDecisions.clear();
     const state = this.bendEditor;
     state.points = points;
     this.roadIntentInputError = this.error = '';
@@ -193,6 +196,26 @@ export class RoadPreviewSession {
     this.evaluateRoadDraft(true);
     return true;
   }
+  decideBuilding(id,choice) {
+    if (!this.current() || this.drag || this.checking || !this.pending ||
+        !this.reconciliation?.unresolved.some(row=>row.kind==='building' && row.id===id &&
+          ['building-decision-required','building-placement-blocked'].includes(row.code))) return false;
+    this.invalidate();
+    this.buildingDecisions.set(id,{...choice});
+    this.checking = true;
+    this.changed();
+    this.evaluateRoadDraft(true);
+    return true;
+  }
+  clearBuildingDecisions() {
+    if (!this.buildingDecisions.size || !this.pending || this.drag) return false;
+    this.invalidate();
+    this.buildingDecisions.clear();
+    this.checking = true;
+    this.changed();
+    this.evaluateRoadDraft(true);
+    return true;
+  }
   evaluateRoadDraft(defer) {
     const revision = this.revision;
     const run = () => {
@@ -200,11 +223,11 @@ export class RoadPreviewSession {
       this.timer = undefined;
       try {
         if (this.roadConnectionEdit) {
-          this.reconciliation = prepareRoadTopologyReflowC3(this.project, this.selection.id, null, this.roadConnectionEdit);
+          this.reconciliation = prepareRoadTopologyReflowC3(this.project, this.selection.id, null, this.roadConnectionEdit,this.buildingDecisions);
         } else {
           this.roadIntentAnalysis = prepareRoadIntentC1(this.project, this.selection.id, this.roadIntentOffset);
           this.reconciliation = prepareNeighborhoodReflowC3(
-            this.project, this.selection.id, this.roadIntentOffset, this.roadIntentAnalysis);
+            this.project, this.selection.id, this.roadIntentOffset, this.roadIntentAnalysis,this.buildingDecisions);
         }
         this.settledRevision = revision;
         this.acceptedFingerprint = JSON.stringify(this.project);
@@ -226,6 +249,7 @@ export class RoadPreviewSession {
     this.invalidate();
     const d = this.details;
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
+    this.buildingDecisions = new Map();
     this.roadConnectionEdit = null;
     this.bendEditor = null;
     this.roadIntentOffset = d?.kind === 'road' ? {x:0,y:0} : null;

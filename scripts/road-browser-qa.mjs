@@ -634,6 +634,28 @@ for (const [name, type] of [
       assert.equal(committed?.y,target.y);
       assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')),true);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)),bendBaseline);
+      if (viewport.name === 'desktop') {
+        const custom=structuredClone(project);
+        custom.city.buildings.find(building=>building.id==='BLD-00061').customName='Market Hall';
+        await page.evaluate(doc=>__buildingQA.apply(doc),{project:custom,workspace:defaultWorkspace(custom)});
+        await page.locator('#roadModeButton').click();
+        const original=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
+        await page.locator('#roadSelectionKind').selectOption('road');
+        await page.locator('#roadSelectionId').selectOption('RD-0113');
+        await page.locator('#roadIntentDyC1').fill('18');
+        const needsChoice=page.locator('#roadReconciliationListB3 li').filter({hasText:'Market Hall'});
+        await needsChoice.getByRole('button',{name:'Keep footprint here'}).click();
+        await page.waitForFunction(()=>__buildingQA.state().roadWorkspace.session.reconciliation?.unresolved[0]?.code==='building-placement-blocked');
+        assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+        await needsChoice.getByRole('button',{name:'Find a new placement'}).click();
+        await page.waitForFunction(()=>!document.querySelector('#roadApplyB4').disabled);
+        assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),original);
+        await page.locator('#roadApplyB4').click();
+        const placed=await page.evaluate(()=>__buildingQA.state().project.city.buildings.find(building=>building.id==='BLD-00061'));
+        assert.equal(placed.customName,'Market Hall');
+        assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
+        assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),original);
+      }
       assert.equal(errors.length, 0, errors.join('; '));
       console.log(
         `PASS road ${label}: inspection, mouse/touch/keyboard preview, A3 report, reset/cancel, save/recovery isolation`,

@@ -1,3 +1,4 @@
+import { buildingFrame } from '../core/building-transform.js';
 import { ROAD_BEND_LIMIT } from '../core/road-shape.js';
 import { RoadPreviewSession } from '../editor/road-preview.js';
 import { roadInspectionDetails, roadReconciliationPreviewB3 } from '../core/road-inspection.js';
@@ -368,6 +369,7 @@ export class RoadInspectionWorkspace {
       });
     for (const direction of ['Left', 'Right', 'Up', 'Down'])
       this.$('roadNudge' + direction).addEventListener('click', () => this.nudge(direction));
+    this.$('roadClearBuildingChoicesC5').addEventListener('click',()=>this.session.clearBuildingDecisions());
     this.$('roadReconciliationMoreB3').addEventListener('click', () => {
       this.reconciliationLimit += 50;
       this.renderReconciliationB3();
@@ -537,6 +539,8 @@ export class RoadInspectionWorkspace {
       s.roadIntentInputError ? 'invalid' : s.report?.status ?? (s.checking ? 'checking' : 'idle'));
     this.$('roadReportError').textContent = s.error;
     this.$('roadReconciliationB3').hidden = false;
+    this.$('roadClearBuildingChoicesC5').hidden = !s.buildingDecisions.size;
+    this.$('roadClearBuildingChoicesC5').disabled = Boolean(s.drag) || s.checking;
     const computed = s.reconciliation ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology) : null;
     s.previewGeometry = computed;
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
@@ -594,7 +598,9 @@ export class RoadInspectionWorkspace {
     const unresolved=preview?.unresolved??[];
     const ledger=s.reconciliation?.ledger??[];
     const disposition=new Map(ledger.map(row=>[row.kind+' '+(row.oldId??row.newId),row]));
-    const access=ledger.filter(row=>row.disposition==='access-reconnected')
+    const visibleRows=new Set(rows.map(row=>row.kind+' '+row.id));
+    const access=ledger.filter(row=>row.disposition==='access-reconnected' &&
+      !visibleRows.has(row.kind+' '+row.oldId))
       .map(row=>({kind:row.kind,id:row.oldId,state:'access-reconnected',entryType:'change'}));
     const all=[...rows.map(row=>({...row,entryType:'change'})),...access,
       ...unresolved.map(row=>({...row,entryType:'unresolved'}))];
@@ -605,7 +611,7 @@ export class RoadInspectionWorkspace {
         const measure=(name,oldValue,newValue)=>oldValue!=null&&newValue!=null?
           ' · '+name+': '+oldValue.toFixed(2)+' → '+newValue.toFixed(2):'';
         const entry=disposition.get(row.kind+' '+row.id);
-        const descriptions={relocated:'Relocated building',regenerated:'Generated replacement',
+        const descriptions={'authorized-relocation':'Approved building relocation',relocated:'Relocated building',regenerated:'Generated replacement',
           'created-junction':'New junction','removed-road':'Removed street',split:'Split at junction',
           created:'New record',retained:'Retained geometry',replaced:row.kind==='building'?'Replaced building':'Previous record'};
         description.textContent=row.kind+' '+row.id+' · '+
@@ -620,7 +626,8 @@ export class RoadInspectionWorkspace {
         const values=metrics&&typeof metrics==='object'?Object.entries(metrics)
           .filter(([key,value])=>Number.isFinite(value))
           .map(([key,value])=>key+': '+value.toFixed(2)).join(' · '):'';
-        description.textContent='Unresolved '+row.kind+' '+row.id+
+        const name=row.kind==='building' ? s.city.buildings.find(building=>building.id===row.id)?.customName : '';
+        description.textContent='Unresolved '+row.kind+' '+row.id+(name?' · '+name:'')+
           ' · '+row.code+': '+row.message+(values?' · '+values:'');
       }
       item.replaceChildren(description);
@@ -630,12 +637,53 @@ export class RoadInspectionWorkspace {
       focus.setAttribute('aria-label','Locate '+row.kind+' '+row.id+' in the reconciliation preview');
       focus.addEventListener('click',()=>this.locateReconciliationB3(row));
       item.replaceChildren(description,focus);
+      if (row.entryType==='unresolved' && row.kind==='building' &&
+          ['building-decision-required','building-placement-blocked'].includes(row.code))
+        item.append(this.buildingConflictControls(row.id));
       return item;
     }));
     more.hidden=all.length<=this.reconciliationLimit;
     this.$('roadReconciliationLegendB3').textContent=preview?.mode==='topology-only'?
       'Gray = accepted outlines · amber dashed = proposed roads/blocks only. Parcel adjustments remain unresolved.':
       'Gray = accepted · amber dashed = proposed blocks/roads · violet dashed = properties · teal dashed = plots · pink dashed = buildings.';
+  }
+  buildingConflictControls(id) {
+    const s=this.session, building=s.city.buildings.find(record=>record.id===id);
+    const frame=buildingFrame(building);
+    const controls=document.createElement('div');
+    controls.className='road-building-choices';
+    const button=(label,action)=>{
+      const node=document.createElement('button');
+      node.type='button';
+      node.className='minor-button';
+      node.textContent=label;
+      node.addEventListener('click',action);
+      return node;
+    };
+    const fields=document.createElement('div');
+    fields.className='road-preview-selectors';
+    const last=s.buildingDecisions.get(id);
+    const input=(title,value)=>{
+      const label=document.createElement('label'), field=document.createElement('input');
+      label.textContent=title;
+      field.type='number';
+      field.step='any';
+      field.value=String(value);
+      label.append(field);
+      fields.append(label);
+      return field;
+    };
+    const x=input('Center X',last?.x ?? frame.x), y=input('Center Y',last?.y ?? frame.y);
+    const angle=input('Rotate by degrees',last?.angle != null ? last.angle*180/Math.PI : 0);
+    const number=field=>field.value.trim()==='' ? NaN : Number(field.value);
+    controls.append(
+      button('Keep footprint here',()=>s.decideBuilding(id,{kind:'fixed'})),
+      button('Find a new placement',()=>s.decideBuilding(id,{kind:'auto'})),
+      fields,
+      button('Preview this placement',()=>s.decideBuilding(id,{kind:'position',
+        x:number(x),y:number(y),angle:number(angle)*Math.PI/180})),
+    );
+    return controls;
   }
   locateReconciliationB3(row) {
     const s=this.session;

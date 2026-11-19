@@ -1,6 +1,6 @@
 {
   "name": "mappo",
-  "version": "0.2.0-dev.c4-shaping",
+  "version": "0.2.0-dev.c5-buildings",
   "private": true,
   "type": "module",
   "description": "Offline-first procedural medieval city mapper",

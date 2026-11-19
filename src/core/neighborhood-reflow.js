@@ -15,7 +15,7 @@ import { validateStoredProject } from '../data/project-validation.js';
 const C2_PARCEL_LIMIT = 256;
 const rebuildableLandIssues = new Set([
   'road-clearance', 'road-setback', 'block-containment', 'parcel-reflow-blocked',
-  'access-reflow-blocked', 'candidate-validation',
+  'access-reflow-blocked', 'access-decision-required', 'candidate-validation',
 ]);
 const c2LandIssues = new Set(['frontage-geometry', 'block-containment', 'road-setback', 'frame-reference']);
 const c2Issue = (kind, id, code, message) => ({ kind, id, code, message, severity: 'needs-review' });
@@ -68,10 +68,13 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
   return prepareNeighborhoodReflow(project, roadId, draft, false);
 }
 
-export function prepareNeighborhoodReflowC3(project, roadId, offset, draft = prepareRoadIntentC1(project, roadId, offset)) {
+export function prepareNeighborhoodReflowC3(project, roadId, offset,
+  draft = prepareRoadIntentC1(project, roadId, offset), decisions = new Map()) {
   if (draft.draftable && !draft.issues.some(row => row.code === 'boundary-escape') &&
       draft.issues.some(row => row.code === 'unnormalized-crossing'))
-    return prepareRoadTopologyReflowC3(project, roadId, draft);
+    return prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions);
+  if (decisions.size && draft.facesResolved && !draft.issues.some(row=>row.code==='boundary-escape'))
+    return prepareRoadTopologyReflowC3(project,roadId,draft,null,decisions);
   const preserved = prepareNeighborhoodReflow(project, roadId, draft, false);
   if (preserved.candidateProject || !preserved.unresolved.some(row => rebuildableLandIssues.has(row.code)))
     return preserved;
@@ -82,7 +85,7 @@ export function prepareNeighborhoodReflowC3(project, roadId, offset, draft = pre
   // authored work, retains compatible geometry, and validates the whole result.
   if (!adapted.unresolved.length || adapted.unresolved.some(row => !rebuildableLandIssues.has(row.code)))
     return adapted;
-  const rebuilt = prepareRoadTopologyReflowC3(project, roadId, draft);
+  const rebuilt = prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions);
   return rebuilt.candidateProject || rebuilt.unresolved.some(row =>
     ['parcel-decision-required', 'building-decision-required'].includes(row.code)) ? rebuilt : adapted;
 }
