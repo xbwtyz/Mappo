@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1-dev.4e</title>
+  <title>Mappo — City editor · 0.1-dev.4f</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -435,16 +435,35 @@
 .map-edit-diagnostic-4d[hidden]{display:none}
 @media(max-width:670px){.map-edit-diagnostic-4d{right:8px;bottom:57px;max-width:min(180px,46%);max-height:114px;overflow:auto;padding:6px;font-size:10px}}
 
+/* Dev 4f: compact layer presets and safe export options in existing menus. */
+.layer-preset-4f{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0 10px}
+.layer-preset-4f label,.export-options-4f label{font:650 11px ui-sans-serif,system-ui,sans-serif;color:#e0e6db}
+.layer-preset-4f select{max-width:175px;min-width:104px;flex:1;border:1px solid #66827d;border-radius:5px;padding:7px 8px;background:#1d3438;color:#f7f1e5}
+.export-options-4f{display:grid;gap:7px;margin:11px 0 8px;min-width:0}
+.export-options-4f small{color:#b7c8c3;font-weight:400}
+.export-options-4f input{min-width:0;width:100%;border:1px solid #66827d;border-radius:5px;padding:9px 10px;background:#16282d;color:#f8f1e5}
+.export-options-4f #downloadMapPNG4F{min-height:34px}
+.export-options-4f #mapExportStatus4F:empty{display:none}
+.export-options-4f .hint{margin:0}
+@media(max-width:670px){.layer-preset-4f select{max-width:148px}.export-options-4f{gap:6px}}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.4e</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1-dev.4f</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
           <div class="tool-grid"><button id="saveProjectButton" class="tool-button">Download project</button><button id="loadProjectButton" class="tool-button">Load project</button></div>
+          <div class="export-options-4f">
+            <label for="exportFilename4F">Download filename <small>(optional)</small></label>
+            <input type="text" id="exportFilename4F" maxlength="80" spellcheck="false" autocomplete="off" placeholder="Auto: city name and date" aria-describedby="exportFilenameHint4F">
+            <p id="exportFilenameHint4F" class="hint">Applies to JSON and PNG downloads only. Leave blank for the automatic city name and date.</p>
+            <button type="button" id="downloadMapPNG4F" class="minor-button">Download visible map (PNG)</button>
+            <p id="mapExportStatus4F" class="file-status" role="status" aria-live="polite"></p>
+          </div>
           <input id="projectFileInput" class="sr-only" type="file" accept=".json,.mappo.json,application/json" aria-label="Choose Mappo project file">
           <p id="fileStatus" class="file-status" role="status" aria-live="polite">Preparing browser recovery…</p>
           <div class="recovery-tools"><button id="restoreRecoveryButton" class="minor-button" disabled>Restore latest recovery</button><button id="restoreBackupButton" class="minor-button" disabled>Restore previous recovery</button></div>
@@ -551,10 +570,13 @@
       <div class="map-topline"><div class="workspace-panel-restores"><button id="workspaceOpenTools" class="workspace-map-button" aria-label="Show tools" hidden>Tools</button><button id="workspaceOpenInspector" class="workspace-map-button" aria-label="Show inspector">Inspector</button><button id="propertyDeletionUndo4A" class="workspace-map-button" title="Undo last property deletion" hidden>Undo Delete</button><button id="propertyDeletionRedo4A" class="workspace-map-button" title="Redo last property deletion" hidden>Redo Delete</button></div><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><div class="workspace-menu-anchor layers-menu-anchor"><button id="layersMenuButton" class="workspace-map-button" aria-expanded="false" aria-controls="layersMenu">Layers <span aria-hidden="true">⌄</span></button>
           <section id="layersMenu" class="workspace-menu layer-panel" aria-labelledby="layersMenuButton" hidden>
             <div class="workspace-menu-heading"><h2>Layers</h2><button id="layersMenuClose" class="workspace-icon-button" aria-label="Close Layers menu">×</button></div>
+            <div class="layer-preset-4f"><label for="layerPreset4F">View preset</label><select id="layerPreset4F" aria-label="Layer visibility preset">
+              <option value="presentation">Presentation</option><option value="planning">Planning</option><option value="minimal">Minimal</option><option value="all">All layers</option><option value="custom" disabled>Custom</option>
+            </select></div>
             <fieldset><legend>Buildings &amp; land</legend><label><input type="checkbox" id="buildingsLayer" checked> Building footprints</label><label><input type="checkbox" id="propertiesLayer"> Property boundaries</label><label><input type="checkbox" id="plotsLayer"> Plot divisions</label></fieldset>
             <fieldset><legend>Districts</legend><label><input type="checkbox" id="districtColorsLayer" checked> District colors</label><label><input type="checkbox" id="districtBordersLayer" checked> District borders</label><label><input type="checkbox" id="districtLabelsLayer" checked> District labels</label></fieldset>
             <fieldset><legend>Defenses</legend><label><input type="checkbox" id="fortificationsLayer" checked> Fortifications</label></fieldset>
-            <p class="hint">Visibility only. City geometry stays fixed.</p>
+            <p class="hint">Preset changes are view-only. Customize any checkbox manually; current layer visibility saves with the project.</p>
           </section></div><span id="draftBadge" class="map-draft">● CITY PLAN</span></div>
       <div id="mapViewport" class="map-viewport">
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
@@ -7942,7 +7964,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1-dev.4e';
+const APP_VERSION = '0.1-dev.4f';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -8675,6 +8697,27 @@ function projectFilename(document) {
 }
 
 
+// src/core/export-filenames-4f.js
+// A filename is a download preference, not a city name or saved schema field.
+// Never allow path separators, device names or a hidden/ambiguous extension.
+function safeExportBase4F(raw) {
+  if(typeof raw!=='string')return '';
+  const cleaned=raw.trim().replace(/(?:\.mappo\.json|\.png|\.json)$/i,'')
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-zA-Z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,64).replace(/-+$/g,'');
+  if(!cleaned)return '';
+  return /^(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i.test(cleaned)
+    ? 'mappo-'+cleaned : cleaned;
+}
+function exportFilename4F(preferred,defaultProjectFilename,kind='project') {
+  if(!['project','png'].includes(kind))throw new Error('Unknown export kind.');
+  const suffix=kind==='png'?'.png':'.mappo.json';
+  const fallback=typeof defaultProjectFilename==='string'
+    ? defaultProjectFilename.replace(/\.mappo\.json$/i,'') : 'mappo-city';
+  return (safeExportBase4F(preferred)||safeExportBase4F(fallback)||'mappo-city')+suffix;
+}
+
+
 // src/data/recovery-store.js
 
 const STORAGE_KEY = 'mappo:recovery:v1';
@@ -8858,6 +8901,7 @@ function downloadProjectText(text, filename, environment = globalThis) {
 
 
 
+
 class ProjectFiles {
   constructor({
     getElement,
@@ -9010,7 +9054,8 @@ class ProjectFiles {
       const revision = this.revision,
         document = this.captureDocument(),
         text = encodeProjectDocument(document);
-      await this.download(text, projectFilename(document));
+      const name=exportFilename4F(this.$('exportFilename4F')?.value,projectFilename(document),'project');
+      await this.download(text, name);
       this.base = document;
       this.downloadRevision = revision;
       this.status('Project download requested. Keep the .mappo.json file to reopen this exact city in another build.');
@@ -9142,6 +9187,62 @@ class ProjectFiles {
     });
     this.$('keepCurrentButton').addEventListener('click', () => this.keepCurrent());
   }
+}
+
+
+// src/core/layer-presets-4f.js
+// Dev 4f. View-only presets; the existing seven layer flags are saved normally.
+const LAYER_KEYS_4F = Object.freeze([
+  'buildings','properties','plots','districtColors','districtBorders',
+  'districtLabels','fortifications'
+]);
+const LAYER_PRESETS_4F = Object.freeze({
+  presentation: Object.freeze({
+    buildings:true,properties:false,plots:false,
+    districtColors:true,districtBorders:true,districtLabels:true,fortifications:true
+  }),
+  planning: Object.freeze({
+    buildings:true,properties:true,plots:true,
+    districtColors:false,districtBorders:false,districtLabels:false,fortifications:false
+  }),
+  minimal: Object.freeze({
+    buildings:true,properties:false,plots:false,
+    districtColors:false,districtBorders:false,districtLabels:false,fortifications:false
+  }),
+  all: Object.freeze(Object.fromEntries(LAYER_KEYS_4F.map(key=>[key,true])))
+});
+function layerPreset4F(name) {
+  const preset=Object.hasOwn(LAYER_PRESETS_4F,name)?LAYER_PRESETS_4F[name]:null;
+  return preset?{...preset}:null;
+}
+function identifyLayerPreset4F(layers) {
+  for(const [name,preset] of Object.entries(LAYER_PRESETS_4F))
+    if(LAYER_KEYS_4F.every(key=>Boolean(layers?.[key])===preset[key]))return name;
+  return 'custom';
+}
+
+
+// src/data/png-export-4f.js
+// Export the already-rendered, on-screen map. This intentionally includes
+// currently visible layers, selection and any draft overlays; no model writes.
+async function downloadMapPNG4F(canvas,filename,environment=globalThis) {
+  if(!canvas || typeof canvas.toBlob!=='function' || !Number.isFinite(canvas.width)
+      || !Number.isFinite(canvas.height) || canvas.width<1 || canvas.height<1)
+    throw new Error('The map is not ready for PNG export.');
+  const blob=await new Promise((resolve,reject)=>{
+    try {canvas.toBlob(resolve,'image/png');}catch(error){reject(error);}
+  });
+  if(!blob || !blob.size)throw new Error('The browser could not encode the visible map as PNG.');
+  const url=environment.URL.createObjectURL(blob);
+  try {
+    const link=environment.document.createElement('a');
+    link.href=url;link.download=filename;
+    environment.document.body.appendChild(link);
+    try{link.click();}finally{link.remove();}
+  }finally {
+    environment.setTimeout(()=>environment.URL.revokeObjectURL(url),30000);
+  }
+  return {width:canvas.width,height:canvas.height,bytes:blob.size};
 }
 
 
@@ -12927,6 +13028,9 @@ function formatPrecision4C(value) {
 
 
 
+
+
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -13699,7 +13803,33 @@ function updatePattern() {
   editor.notify('Street settings changed. Rebuild city to apply them to this outline.');
   workspaceChanged();
 }
-for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
+// Dev 4f: preset selection affects only the already-persisted layer flags.
+function syncLayerPreset4F() {
+  $('layerPreset4F').value=identifyLayerPreset4F(layers);
+}
+function applyLayerPreset4F(name) {
+  const preset=layerPreset4F(name);
+  if(!preset)return false;
+  for(const key of LAYER_KEYS_4F){
+    layers[key]=preset[key];
+    $(key+'Layer').checked=preset[key];
+  }
+  if(!layers.buildings){
+    buildingEditSession?.stop();
+    buildingPlacementSession?.stop();
+  }
+  clearMapHover();
+  propertyWorkspace?.refresh();
+  buildingWorkspace?.refresh();
+  syncLayerPreset4F();
+  requestDraw();
+  workspaceChanged();
+  return true;
+}
+$('layerPreset4F').addEventListener('change',e=>{
+  if(!applyLayerPreset4F(e.target.value))syncLayerPreset4F();
+});
+for (const key of LAYER_KEYS_4F) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
     if (key === 'buildings' && layers.buildings === false) buildingEditSession?.stop();
@@ -13708,6 +13838,7 @@ for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'distri
       propertyWorkspace?.refresh();
       buildingWorkspace?.refresh();
     }
+    syncLayerPreset4F();
     requestDraw();
     workspaceChanged();
   });
@@ -14571,10 +14702,11 @@ function applyProjectDocument(document) {
       morphologyInput: workspace.controls.morphology,
       presetInput: workspace.controls.preset
     })) $(id).value = value;
-  for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
+  for (const key of LAYER_KEYS_4F) {
     layers[key] = workspace.view.layers[key] ?? false;
     $(key + 'Layer').checked = layers[key];
   }
+  syncLayerPreset4F();
   camera.x = workspace.view.camera.x;
   camera.y = workspace.view.camera.y;
   camera.zoom = workspace.view.camera.zoom;
@@ -14715,6 +14847,19 @@ function applyProjectDocument(document) {
   $('statusMessage').textContent = `Loaded ${next.city.buildings.length} buildings · ${next.city.properties.length} properties`;
   updatePendingFeedback();
 }
+// The map PNG reflects the current on-screen view, including visible previews.
+$('downloadMapPNG4F').addEventListener('click', async()=>{
+  const message=$('mapExportStatus4F');
+  try{
+    if(!project)throw new Error('Generate or load a city first.');
+    const defaultName=projectFilename({project,savedAt:new Date().toISOString()});
+    const name=exportFilename4F($('exportFilename4F').value,defaultName,'png');
+    const snapshot=await downloadMapPNG4F(canvas,name);
+    message.textContent='PNG download requested: '+name+' ('+snapshot.width+' × '+snapshot.height+
+      ' pixels). The image uses current visible layers and any editing previews.';
+  }catch(error){message.textContent='PNG export failed: '+error.message;}
+});
+syncLayerPreset4F();
 files = new ProjectFiles({
   getElement: $,
   capture: captureWorkspace,
