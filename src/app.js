@@ -110,6 +110,8 @@ import { analyzeRoadImpact, inspectJunctionImpact } from './core/road-impact.js'
 
 import { RoadInspectionWorkspace } from './ui/road-inspection.js';
 import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
+// B1 candidate API is compiled for later editor integration; no Apply or UI hooks.
+import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
