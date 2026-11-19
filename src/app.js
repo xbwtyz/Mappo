@@ -115,6 +115,7 @@ import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
 // B2 conservative parcel adaptation remains preview-only until B4 Apply.
 import { prepareParcelReconciliationB2 } from './core/parcel-reconciliation.js';
 import { prepareRoadApplyB4 } from './editor/road-application.js';
+import { prepareSegmentTranslationC1, verifySegmentDeltaC1 } from './core/road-segment-translation.js';
 import { RoadGeometryHistoryB4 } from './editor/road-history.js';
 
 const $ = id => document.getElementById(id),
@@ -1404,6 +1405,7 @@ roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
   reconcile:prepareParcelReconciliationB2,reconcileRoad:prepareRoadReconciliationB1,
   getRevision:()=>files?.revision??0,applyEdit:applyRoadEditB4,
+  prepareSegment:prepareSegmentTranslationC1,applySegment:applyRoadSegmentC1,
   canEnter:()=>!project?.city?'Generate a city before inspecting roads.':
     workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive
       ||propertyEditSession?.isActive||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
@@ -1443,6 +1445,51 @@ function applyRoadEditB4(session,baselineRevision){
   workspaceChanged(); // exactly one file revision / normal recovery notification
   $('statusMessage').textContent='Applied road '+junctionId+' and all validated neighborhood changes. Undo road is available.';
   $('roadHistoryStatusB4').textContent='Road '+junctionId+' applied. Undo restores the complete previous city.';
+  return {ok:true};
+}
+function applyRoadSegmentC1(preview,baselineRevision){
+  const previous=project, revision=files?.revision??0, session=roadWorkspace.session;
+  if(!preview || !previous || !session?.current() || !roadWorkspace.active ||
+    preview.project!==previous || preview.revision!==revision ||
+    revision!==baselineRevision || !Number.isSafeInteger(revision) ||
+    session.selection?.kind!=='road' || session.selection.id!==preview.roadId ||
+    session.drag || session.checking || preview.fingerprint!==JSON.stringify(previous))
+    return {ok:false,message:'The segment preview became stale. Reopen and recheck it.'};
+  if(!preview.result?.candidateProject || preview.result.status!=='candidate-only')
+    return {ok:false,message:'The segment preview has unresolved dependencies.'};
+  const fresh=prepareSegmentTranslationC1(previous,preview.roadId,preview.offset,
+    captureWorkspace().workspace);
+  if(!fresh.candidateProject || fresh.status!=='candidate-only')
+    return {ok:false,message:fresh.issues?.[0]?.message??'The segment is no longer eligible.'};
+  // Both candidates are produced by the same deterministic engine and must
+  // remain exactly equivalent, including nested project geometry and metadata.
+  if(JSON.stringify(fresh.candidateProject)!==JSON.stringify(preview.result.candidateProject))
+    return {ok:false,message:'Segment reconciliation differs from the inspected preview.'};
+  try{verifySegmentDeltaC1(previous,fresh.candidateProject,preview.roadId,preview.offset);}
+  catch(error){return {ok:false,message:'Preservation gate blocked segment Apply: '+error.message};}
+  if(project!==previous || revision!==(files?.revision??0) ||
+    preview.fingerprint!==JSON.stringify(previous))
+    return {ok:false,message:'The accepted city changed before segment Apply.'};
+  const roadId=preview.roadId;
+  roadWorkspace.exit({restore:true});
+  if(project!==previous || revision!==(files?.revision??0))
+    return {ok:false,message:'Accepted city changed during segment Apply.'};
+  if(!roadHistory.record(previous,fresh.candidateProject,'segment:'+roadId))
+    return {ok:false,message:'No segment movement was recorded.'};
+  project=fresh.candidateProject;
+  buildingHistory.clear();
+  buildingStructureHistory.clear();
+  propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
+  clearMapHover();
+  propertyWorkspace.refresh({replaced:true});
+  buildingWorkspace.refresh({replaced:true});
+  updateDetails();
+  workspaceShell.refresh();
+  requestDraw();
+  workspaceChanged();
+  $('statusMessage').textContent='Applied road segment '+roadId+' with both junctions preserved and one Undo transaction.';
+  $('roadHistoryStatusB4').textContent='Segment '+roadId+' applied. Undo restores the complete earlier city.';
   return {ok:true};
 }
 function moveRoadHistoryB4(direction){

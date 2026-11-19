@@ -108,6 +108,27 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
       }
     }
   }
+  // C1: overlay the detached simultaneous segment translation rather than
+  // presenting two sequential single-junction previews.
+  if (session.segmentCandidate?.city && session.previewVisible!==false) {
+    const proposed=new Map(session.segmentCandidate.city.nodes.map(n=>[n.id,n]));
+    const accepted=new Map(city.nodes.map(n=>[n.id,n]));
+    const moved=new Set([...proposed.keys()].filter(id=>{
+      const a=accepted.get(id),b=proposed.get(id);
+      return a && b && (a.x!==b.x || a.y!==b.y);
+    }));
+    ctx.strokeStyle='#16a085';ctx.lineWidth=3;
+    ctx.setLineDash([7,4]);
+    for(const road of city.roads)if(moved.has(road.a)||moved.has(road.b)){
+      if(path([proposed.get(road.a),proposed.get(road.b)]))ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    for(const id of moved){
+      const point=camera.worldToScreen(proposed.get(id));
+      ctx.beginPath();ctx.arc(point.x,point.y,6,0,Math.PI*2);
+      ctx.fillStyle='#16a085';ctx.fill();
+    }
+  }
   for (const [id, node] of graph.nodesById) {
     const p = camera.worldToScreen(node),
       protectedNode = graph.incidentRoads.get(id).some((r) => graph.roadClasses.get(r).protected);
