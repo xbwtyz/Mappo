@@ -252,8 +252,8 @@ for (const [name, type] of [
       assert.equal(await page.locator('#roadProposedX').isDisabled(), true);
       assert.ok((await page.locator('#roadRecordDetails').innerText()).includes('Protected:'));
       await page.locator('#roadSelectionKind').selectOption('road');
-      // Road-first C1 must keep an intentionally large street move as an
-      // inspectable draft even if existing parcels cannot accept it yet.
+      // A large street move stays detached from the saved city until Apply.
+      // Neighborhood reflow may now make this draft eligible.
       const ordinaryId = await page.evaluate(() => {
         const session=__buildingQA.state().roadWorkspace.session,graph=session.graph;
         const length=road=>{
@@ -277,6 +277,8 @@ for (const [name, type] of [
         const accepted=new Map(project.city.nodes.map(n=>[n.id,n]));
         return {
           pending:session.pending,applyReady:analysis.applyReady,
+          reconciled:session.reconciliation?.validation?.project === 'valid' &&
+            Boolean(session.reconciliation.candidateProject),
           draftable:analysis.draftable,changedRoads:analysis.changedRoadIds.length,
           displaced:analysis.proposedNodes.every(n=>Math.abs(n.x-accepted.get(n.id).x-15)<1e-8 &&
             n.y===accepted.get(n.id).y),
@@ -291,8 +293,9 @@ for (const [name, type] of [
       assert.equal(roadIntent.displaced,true);
       assert.equal(roadIntent.acceptedUnchanged,true);
       assert.equal(roadIntent.recoveryUnchanged,true);
-      assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
-      assert.ok((await page.locator('#roadIntentStatusC1').innerText()).includes('draft'));
+      assert.equal(await page.locator('#roadApplyB4').isDisabled(), !roadIntent.reconciled);
+      assert.match(await page.locator('#roadIntentStatusC1').innerText(),
+        roadIntent.reconciled ? /ready to review/ : /held in draft/);
       // Invalid/blank coordinates are not road drafts. No stale proposal is
       // allowed to remain visible while the user edits a numeric input.
       await page.locator('#roadIntentDxC1').fill('');
