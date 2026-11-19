@@ -1,4 +1,4 @@
-import { prepareNeighborhoodReflowC2 } from '../core/neighborhood-reflow.js';
+import { prepareNeighborhoodReflowC3 } from '../core/neighborhood-reflow.js';
 import { buildRoadGraph, proposeJunctionMove } from '../core/road-graph.js';
 import { analyzeRoadImpact } from '../core/road-impact.js';
 import { hitRoadInspection, roadInspectionDetails } from '../core/road-inspection.js';
@@ -114,7 +114,7 @@ export class RoadPreviewSession {
       this.timer=undefined;
       try {
         this.roadIntentAnalysis = prepareRoadIntentC1(this.project, this.selection.id, this.roadIntentOffset);
-        this.reconciliation = prepareNeighborhoodReflowC2(
+        this.reconciliation = prepareNeighborhoodReflowC3(
           this.project, this.selection.id, this.roadIntentOffset, this.roadIntentAnalysis);
         this.settledRevision = revision;
         this.acceptedFingerprint = JSON.stringify(this.project);

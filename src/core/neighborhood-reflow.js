@@ -1,3 +1,4 @@
+import { reflowGeneratedRoadBuildings } from './road-building-reflow.js';
 import { prepareRoadIntentC1 } from './road-intent-c1.js';
 import { buildRoadGraph } from './road-graph.js';
 import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
@@ -15,7 +16,7 @@ const c2LandIssues = new Set(['frontage-geometry', 'block-containment', 'road-se
 const c2Issue = (kind, id, code, message) => ({ kind, id, code, message, severity: 'needs-review' });
 const c2Margin = road => (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
 
-function c2Parcel(city, property, road, edges, buildings) {
+function c2Parcel(city, property, road, edges, fixed) {
   const edge = edges.find(e => e.road.id === road.id);
   if (!edge || property.boundary.length !== 4)
     throw new Error('This parcel needs a four-corner envelope with frontage on its own block.');
@@ -26,7 +27,6 @@ function c2Parcel(city, property, road, edges, buildings) {
   const frame = { origin: a, tangent, inward };
   const u = p => (p.x - a.x) * tangent.x + (p.y - a.y) * tangent.y;
   const v = p => (p.x - a.x) * inward.x + (p.y - a.y) * inward.y;
-  const fixed = property.buildingIds.flatMap(id => buildings.get(id).footprint);
   const front = c2Margin(road) + .05;
   if (fixed.some(p => v(p) < front))
     throw new Error('The street setback reaches a fixed building. Adjust the street or resolve the building placement.');
@@ -60,10 +60,23 @@ function c2Parcel(city, property, road, edges, buildings) {
 }
 
 export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoadIntentC1(project, roadId, offset)) {
+  return prepareNeighborhoodReflow(project, roadId, draft, false);
+}
+
+export function prepareNeighborhoodReflowC3(project, roadId, offset, draft = prepareRoadIntentC1(project, roadId, offset)) {
+  const preserved = prepareNeighborhoodReflow(project, roadId, draft, false);
+  if (preserved.candidateProject || !preserved.unresolved.some(row => [
+    'road-clearance', 'block-containment', 'parcel-reflow-blocked', 'access-reflow-blocked', 'candidate-validation',
+  ].includes(row.code))) return preserved;
+  return prepareNeighborhoodReflow(project, roadId, draft, true);
+}
+
+function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
   const changed = [], ledger = [];
+  const phase = adaptBuildings ? 'C3' : 'C2';
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
   const blocked = unresolved => ({
-    phase: 'C2', status: 'needs-review', candidateProject: null, changed: [], ledger, unresolved, validation,
+    phase, status: 'needs-review', candidateProject: null, changed: [], ledger, unresolved, validation,
   });
   const fail = (code, message) => blocked([c2Issue('road', roadId, code, message)]);
   if (!draft.draftable || draft.status === 'unchanged' || !draft.topologyResolved ||
@@ -101,11 +114,13 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
     }).map(node => node.id);
     if (!junctionIds.length) return fail('unchanged-street', 'The offset does not move either street endpoint.');
     const plots = riIndex(city.plots), buildings = riIndex(city.buildings);
-    const buildingsByBlock = new Map();
-    for (const building of city.buildings) {
-      if (!changedBlocks.has(building.blockId)) continue;
-      if (!buildingsByBlock.has(building.blockId)) buildingsByBlock.set(building.blockId, []);
-      buildingsByBlock.get(building.blockId).push(building);
+    const reservedIds = new Set(buildings.keys());
+    const replacements = new Map();
+    const displacedParcels = new Set();
+    if (adaptBuildings) for (const row of impact.issues) {
+      const building = buildings.get(row.id);
+      if (row.kind === 'building' && building && ['road-clearance', 'block-containment'].includes(row.code))
+        displacedParcels.add(building.propertyId);
     }
     const affected = city.properties.filter(p => changedBlocks.has(p.blockId));
     if (affected.length > C2_PARCEL_LIMIT)
@@ -115,7 +130,9 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
     const unresolved = impact.issues.filter(row => !(
       ((row.kind === 'property' || row.kind === 'plot') && c2LandIssues.has(row.code)) ||
       (row.kind === 'plot' && row.code === 'property-containment') ||
-      (row.kind === 'building' && ['frontage-geometry', 'access-connection'].includes(row.code))
+      (row.kind === 'building' && (['frontage-geometry', 'access-connection'].includes(row.code) ||
+        (adaptBuildings && displacedParcels.has(buildings.get(row.id)?.propertyId) &&
+          ['road-clearance', 'block-containment'].includes(row.code))))
     ));
     if (unresolved.length) return blocked(unresolved);
 
@@ -140,7 +157,7 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
       const ownPlots = property.plotIds.map(id => plots.get(id));
       const provenance = classifyRoadProvenance(property, ownPlots);
       const changedFrontage = roadIds.has(property.frontageRoadId);
-      if (!changedFrontage && !parcelIssues.has(property.id)) {
+      if (!changedFrontage && !parcelIssues.has(property.id) && !displacedParcels.has(property.id)) {
         record('property', property.id, 'preserved', [], provenance);
         for (const plot of ownPlots) record('plot', plot.id, 'preserved', [], provenance);
         continue;
@@ -152,7 +169,39 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
       }
       const road = graph.roadsById.get(property.frontageRoadId);
       try {
-        const next = c2Parcel(city, property, road, blockEdges.get(property.blockId), buildings);
+        const ownBuildings = property.buildingIds.map(id => buildings.get(id));
+        const mayAdapt = adaptBuildings && ownBuildings.length &&
+          ownBuildings.every(building => classifyRoadProvenance(building) === 'generated');
+        const edges = blockEdges.get(property.blockId);
+        let next;
+        let adapt = displacedParcels.has(property.id);
+        if (!adapt) {
+          try {
+            next = c2Parcel(city, property, road, edges, ownBuildings.flatMap(building => building.footprint));
+          } catch (error) {
+            if (!mayAdapt) throw error;
+            adapt = true;
+          }
+        }
+        if (adapt) {
+          if (!mayAdapt) throw new Error('A custom or unknown building needs a decision before it can move.');
+          next = c2Parcel(city, property, road, edges, []);
+          const proposedPlots = ownPlots.map((plot, i) => ({ ...plot, boundary: next.plots[i].boundary }));
+          const result = reflowGeneratedRoadBuildings(project.seed, property, next.property, proposedPlots,
+            ownBuildings, reservedIds);
+          next.property.buildingIds = result.buildings.map(building => building.id);
+          replacements.set(property.id, result.buildings);
+          for (const building of ownBuildings) {
+            const relocated = result.disposition === 'relocated';
+            ledger.push({ kind: 'building', oldId: building.id,
+              newId: relocated ? building.id : null, disposition: relocated ? 'relocated' : 'replaced', provenance });
+            changed.push({ kind: 'building', id: building.id, fields: ['footprint', 'accessPath'] });
+          }
+          if (result.disposition === 'regenerated') for (const building of result.buildings) {
+            ledger.push({ kind: 'building', oldId: null, newId: building.id, disposition: 'regenerated', provenance });
+            changed.push({ kind: 'building', id: building.id, fields: ['footprint', 'accessPath'] });
+          }
+        }
         Object.assign(property, next.property);
         for (const update of next.plots) {
           const plot = plots.get(update.id);
@@ -166,8 +215,31 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
         unresolved.push(c2Issue('property', property.id, 'parcel-reflow-blocked', error.message));
       }
     }
+    const inserted = new Set();
+    city.buildings = city.buildings.flatMap(building => {
+      if (!replacements.has(building.propertyId)) return [building];
+      if (inserted.has(building.propertyId)) return [];
+      inserted.add(building.propertyId);
+      return replacements.get(building.propertyId);
+    });
+
+    const buildingsByBlock = new Map();
     for (const building of city.buildings) {
       if (!changedBlocks.has(building.blockId)) continue;
+      if (!buildingsByBlock.has(building.blockId)) buildingsByBlock.set(building.blockId, []);
+      buildingsByBlock.get(building.blockId).push(building);
+    }
+    for (const building of city.buildings) {
+      if (!changedBlocks.has(building.blockId)) continue;
+      const intersectsBuilding = (start, end) => buildingsByBlock.get(building.blockId).some(other =>
+        other.footprint.some((point, index) => segmentCuts(start, end, point,
+          other.footprint[(index + 1) % other.footprint.length]).some(t => t > 1e-6)));
+      if (replacements.has(building.propertyId)) {
+        if (intersectsBuilding(...building.accessPath))
+          unresolved.push(c2Issue('building', building.id, 'access-reflow-blocked',
+            'The adapted entrance path intersects another footprint.'));
+        continue;
+      }
       const provenance = classifyRoadProvenance(building);
       if (!roadIds.has(building.frontageRoadId)) {
         record('building', building.id, 'preserved', [], provenance);
@@ -195,10 +267,7 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
       }
       const end = { x: a.x + t * dx, y: a.y + t * dy };
       const start = building.accessPath[0];
-      const crossing = buildingsByBlock.get(building.blockId).some(other =>
-        other.footprint.some((point, index) => segmentCuts(start, end, point,
-          other.footprint[(index + 1) % other.footprint.length]).some(t => t > 1e-6)));
-      if (crossing) {
+      if (intersectsBuilding(start, end)) {
         unresolved.push(c2Issue('building', building.id, 'access-reflow-blocked',
           'The proposed entrance path intersects a fixed building.'));
         continue;
@@ -208,7 +277,6 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
       record('building', building.id, 'access-reconnected', ['accessPath'], provenance);
     }
     if (unresolved.length) return blocked(unresolved);
-
     const occupied = new Map();
     for (const property of affected)
       occupied.set(property.blockId, (occupied.get(property.blockId) ?? 0) + property.area);
@@ -234,7 +302,7 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
     validateStoredProject(candidateProject);
     validation.parcels = 'pass';
     validation.project = 'valid';
-    return { phase: 'C2', status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation };
+    return { phase, status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation };
   } catch (error) {
     return fail('candidate-validation', 'The reflow cannot be accepted: ' + error.message);
   }

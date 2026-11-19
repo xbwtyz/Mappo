@@ -511,12 +511,13 @@ export class RoadInspectionWorkspace {
       preview.counts.roads+' roads · '+preview.counts.blocks+' blocks · '+
       preview.counts.properties+' properties · '+preview.counts.plots+' plots · '+
       preview.counts.openSpaces+' open-space summaries · '+
+      preview.counts.buildings+' building changes · '+
       preview.buildingsPreserved+' building footprints held fixed · '+preview.unresolved.length+' unresolved':
       'No reconciled candidate yet.';
     const rows=preview?.rows??[];
     const unresolved=preview?.unresolved??[];
     const ledger=s.reconciliation?.ledger??[];
-    const provenance=new Map(ledger.map(row=>[row.kind+' '+row.oldId,row.provenance]));
+    const disposition=new Map(ledger.map(row=>[row.kind+' '+(row.oldId??row.newId),row]));
     const access=ledger.filter(row=>row.disposition==='access-reconnected')
       .map(row=>({kind:row.kind,id:row.oldId,state:'access-reconnected',entryType:'change'}));
     const all=[...rows.map(row=>({...row,entryType:'change'})),...access,
@@ -527,9 +528,12 @@ export class RoadInspectionWorkspace {
       if(row.entryType==='change'){
         const measure=(name,oldValue,newValue)=>oldValue!=null&&newValue!=null?
           ' · '+name+': '+oldValue.toFixed(2)+' → '+newValue.toFixed(2):'';
+        const entry=disposition.get(row.kind+' '+row.id);
+        const buildingChange={relocated:'Relocated building',replaced:'Replaced building',regenerated:'Generated replacement'};
         description.textContent=row.kind+' '+row.id+' · '+
-          (row.state==='topology-only'?'Proposed topology only':row.state==='access-reconnected'?'Reconnected access':'Adapted geometry')+
-          (provenance.get(row.kind+' '+row.id)==='generated'?' · Generated record':'')+
+          (row.state==='topology-only'?'Proposed topology only':row.state==='access-reconnected'?'Reconnected access':
+            buildingChange[entry?.disposition]??'Adapted geometry')+
+          (entry?.provenance==='generated'?' · Generated record':'')+
           measure('area',row.oldArea,row.newArea)+
           measure('length',row.oldLength,row.newLength)+
           measure('frontage',row.oldFrontage,row.newFrontage);
@@ -553,7 +557,7 @@ export class RoadInspectionWorkspace {
     more.hidden=all.length<=this.reconciliationLimit;
     this.$('roadReconciliationLegendB3').textContent=preview?.mode==='topology-only'?
       'Gray = accepted outlines · amber dashed = proposed roads/blocks only. Parcel adjustments remain unresolved.':
-      'Gray = accepted · amber dashed = proposed blocks/roads · violet dashed = properties · teal dashed = plots. Buildings remain fixed.';
+      'Gray = accepted · amber dashed = proposed blocks/roads · violet dashed = properties · teal dashed = plots · pink dashed = buildings.';
   }
   locateReconciliationB3(row) {
     const s=this.session;

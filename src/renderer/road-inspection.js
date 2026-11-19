@@ -95,7 +95,7 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
   // B3 overlays only geometry computed from detached B1/B2 candidates.
   if(session.previewVisible!==false){
     for(const row of session.previewGeometry?.rows??[]){
-      const color=row.kind==='property'?'#8053a5':row.kind==='plot'?'#168578':'#cf8731';
+      const color=row.kind==='property'?'#8053a5':row.kind==='plot'?'#168578':row.kind==='building'?'#b45468':'#cf8731';
       const focused=session.focusKey===JSON.stringify([row.kind,row.id]);
       const closed=!['road','junction'].includes(row.kind);
       if(path(row.originalPoints,closed)){

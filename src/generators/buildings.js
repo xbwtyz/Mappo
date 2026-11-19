@@ -176,7 +176,7 @@ export function generateBuildings(seed, layout) {
   };
 }
 
-function populateProperty(property, propertyPlots, rng, buildings) {
+export function populateProperty(property, propertyPlots, rng, buildings) {
   const {
     frame,
     local

@@ -73,7 +73,7 @@ export function roadReportHighlights(report) {
 
 function roadPreviewPoints(city, kind, id) {
   const map = {junction:'nodes',road:'roads',block:'blocks',property:'properties',
-    plot:'plots','open-space':'openSpaces'};
+    plot:'plots',building:'buildings','open-space':'openSpaces'};
   const record = (city?.[map[kind]] ?? []).find(r=>r.id===id);
   if(!record)return null;
   const nodes = new Map((city.nodes??[]).map(n=>[n.id,n]));
@@ -86,7 +86,7 @@ function roadPreviewPoints(city, kind, id) {
 }
 function roadPreviewRecord(city,kind,id) {
   const map={junction:'nodes',road:'roads',block:'blocks',property:'properties',
-    plot:'plots','open-space':'openSpaces'};
+    plot:'plots',building:'buildings','open-space':'openSpaces'};
   return (city?.[map[kind]]??[]).find(r=>r.id===id)??null;
 }
 const roadPreviewArea = (record,points,kind) => {
@@ -121,7 +121,7 @@ export function roadReconciliationPreviewB3(project,reconciliation,topology=null
     const after=roadPreviewRecord(candidate,item.kind,item.id);
     const originalPoints=roadPreviewPoints(original,item.kind,item.id);
     const proposedPoints=roadPreviewPoints(candidate,item.kind,item.id);
-    if(!before||!after)continue;
+    if ((!before || !after) && (item.kind !== 'building' || (!before && !after))) continue;
     const oldArea=roadPreviewArea(before,originalPoints,item.kind);
     const newArea=roadPreviewArea(after,proposedPoints,item.kind);
     const oldLength=roadPreviewLength(originalPoints);
@@ -135,9 +135,9 @@ export function roadReconciliationPreviewB3(project,reconciliation,topology=null
       originalPoints,proposedPoints,oldArea,newArea,oldLength,newLength,oldFrontage,newFrontage});
   }
   entries.sort((a,b)=>a.kind.localeCompare(b.kind)||a.id.localeCompare(b.id));
-  const counts={roads:0,blocks:0,properties:0,plots:0,openSpaces:0};
+  const counts={roads:0,blocks:0,properties:0,plots:0,buildings:0,openSpaces:0};
   for(const row of entries){
-    const field={road:'roads',block:'blocks',property:'properties',plot:'plots',
+    const field={road:'roads',block:'blocks',property:'properties',plot:'plots',building:'buildings',
       'open-space':'openSpaces'}[row.kind];
     if(field)counts[field]++;
   }
@@ -146,7 +146,7 @@ export function roadReconciliationPreviewB3(project,reconciliation,topology=null
     unresolved:(reconciliation?.unresolved??[]).map(row=>({
       kind:row.kind,id:row.id,code:row.code,message:row.message,severity:row.severity
     })),
-    buildingsPreserved:original?.buildings?.length??0,
+    buildingsPreserved:(original?.buildings?.length??0) - entries.filter(row=>row.kind==='building' && row.originalPoints).length,
     verified:!!full && reconciliation?.validation?.project==='valid',
   };
 }
