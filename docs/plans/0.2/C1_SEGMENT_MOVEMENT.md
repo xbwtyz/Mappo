@@ -23,3 +23,8 @@ Node positive/negative/stale, UI Apply/Cancel/Undo/Redo, at least one validated 
 - Every property whose `frontageRoadId` touches either translated junction still receives conservative frontage/plot adaptation.
 - Add a 1-unit visible-movement acceptance survey across multiple generated settlement morphologies; require more than one developed-city positive. Record top rejection reasons for investigation.
 - Do not claim full real-world usability from `0.001`-unit positive tests. Those tests remain valuable only for basic engine precision/determinism.
+
+## Usability correction — move discovery
+- **Find a valid move** in Road Inspection performs a bounded, cancellable search among up to 48 ordinary unprotected segments. It tests full 1-unit and 0.5-unit offsets through the same complete candidate validation used by manual Apply.
+- A successful search selects/centers the road, fills the offset inputs and overlays the validated candidate. It **does not Apply anything**. The user must explicitly approve the normal atomic Apply.
+- Search progress and failures are announced in the status field. Cancelling, resetting, changing selection, or leaving the editor discards the search and its transient result without touching project, file revision or history.

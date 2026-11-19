@@ -117,3 +117,28 @@ test('C1 user-scale movement survey: ordinary developed cities must allow visibl
   assert.ok(winners.length>=2,
     'At least two distinct developed city morphologies must accept a full 1-unit road move; '+JSON.stringify(summary));
 });
+
+test('C1 find-valid-move command discovers a real developed-city movement without modifying accepted state',async()=>{
+  const project=fixture(true,'c1-developed','planned');
+  const app=await buildingAppHarness();
+  app.apply({project,workspace:defaultWorkspace(project)});
+  const road=app.state().roadWorkspace;
+  road.start();
+  const graph=road.session.graph;
+  const first=[...graph.roadsById.keys()].find(id=>
+    [...graph.incidentRoads.get(graph.roadsById.get(id).a),
+      ...graph.incidentRoads.get(graph.roadsById.get(id).b)]
+      .every(r=>!graph.roadClasses.get(r).protected));
+  assert.ok(first);
+  road.session.select({kind:'road',id:first});
+  const original=JSON.stringify(app.state().project),revision=app.state().files.revision;
+  const found=await road.findSegmentMovementC1();
+  assert.equal(found,true,'A developed city should provide a verified one-unit or half-unit move');
+  assert.ok(road.segmentPreview?.result?.candidateProject);
+  assert.equal(app.el('roadSegmentApplyC1').disabled,false);
+  assert.ok(Math.hypot(road.segmentPreview.offset.x,road.segmentPreview.offset.y)>=.5);
+  assert.equal(app.state().files.revision,revision);
+  assert.equal(JSON.stringify(app.state().project),original);
+  road.exit();
+  assert.equal(JSON.stringify(app.state().project),original);
+});

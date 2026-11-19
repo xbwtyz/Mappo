@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { buildRoadGraph } from '../src/core/road-graph.js';
-import { prepareSegmentTranslationC1 } from '../src/core/road-segment-translation.js';
+import { prepareSegmentTranslationC1, verifySegmentDeltaC1 } from '../src/core/road-segment-translation.js';
 import { defaultWorkspace, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../src/data/project-format.js';
 
 const clone = x => JSON.parse(JSON.stringify(x));
@@ -61,7 +61,7 @@ test('C1-A translates both segment endpoints as one detached, portable candidate
   assert.equal(JSON.stringify(project),before);
   assert.equal(Object.isFrozen(candidate),true);
 });
-test('C1-A deterministically returns the same detached candidate and rejects developed dependencies',()=>{
+test('C1-A preserves developed building and identity records while reconciling only safe frontage geometry',()=>{
   const project=vacant('b4-vacant'),positive=findCandidate(project);
   assert.ok(positive);
   const first=positive.candidate;
@@ -73,7 +73,12 @@ test('C1-A deterministically returns the same detached candidate and rejects dev
   assert.equal(blocked.applyReady,false);
   if(blocked.candidateProject){
     assert.deepEqual(blocked.candidateProject.city.buildings,developed.city.buildings);
-    assert.deepEqual(blocked.candidateProject.city.properties,developed.city.properties);
+    assert.deepEqual(blocked.candidateProject.city.properties.map(p=>
+      [p.id,p.name,p.customUse,p.blockId,p.frontageRoadId,p.buildingIds,p.plotIds]),
+      developed.city.properties.map(p=>
+      [p.id,p.name,p.customUse,p.blockId,p.frontageRoadId,p.buildingIds,p.plotIds]));
+    assert.equal(verifySegmentDeltaC1(developed,blocked.candidateProject,
+      positive.road.id,{x:.001,y:.001}),true);
   }else assert.ok(blocked.issues.length);
   assert.equal(JSON.stringify(developed),original);
 });

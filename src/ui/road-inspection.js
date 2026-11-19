@@ -210,6 +210,9 @@ export class RoadInspectionWorkspace {
     });
     this.limit = 50;
     this.reconciliationLimit = 50;
+    this.segmentSearchToken = 0;
+    this.segmentSearchBusy = false;
+    this.segmentSearchStatus = '';
     this.bind();
   }
   get active() {
@@ -262,6 +265,7 @@ export class RoadInspectionWorkspace {
   exit({ restore = true, focus = false } = {}) {
     if (!this.transient) return;
     const baseline = this.baseline;
+    this.cancelSegmentSearch();
     this.session.stop();
     this.segmentPreview = null;
     this.$('workspaceSection-city').inert = false;
@@ -291,6 +295,7 @@ export class RoadInspectionWorkspace {
   reset() {
     if (!this.active) return;
     if (this.baseline) Object.assign(this.camera, this.baseline.workspace.view.camera);
+    this.cancelSegmentSearch();
     this.applyError = '';
     this.segmentPreview = null;
     this.session.segmentCandidate = null;
@@ -327,6 +332,7 @@ export class RoadInspectionWorkspace {
       this.$('roadPreviewMinimize').textContent = body.hidden ? 'Expand' : 'Minimize';
     });
     const clearSegment = () => {
+      this.cancelSegmentSearch();
       this.segmentPreview = null;
       this.session.segmentCandidate = null;
     };
@@ -334,6 +340,7 @@ export class RoadInspectionWorkspace {
       this.$(id).addEventListener('input', () => {
         clearSegment(); this.render(); this.draw();
       });
+    this.$('roadSegmentFindC1').addEventListener('click', () => this.findSegmentMovementC1());
     this.$('roadSegmentPreviewC1').addEventListener('click', () => {
       if(!this.session.current() || this.session.selection?.kind !== 'road')return;
       const parse = id => this.$(id).value.trim()==='' ? NaN : Number(this.$(id).value);
@@ -390,6 +397,109 @@ export class RoadInspectionWorkspace {
     this.$('roadShowMore').addEventListener('click', () => {
       this.limit += 50;
       this.renderReport();
+    });
+  }
+  // A bounded, cancellable eligibility search. Every suggestion is produced
+  // by the exact same full-project candidate validator as the manual preview.
+  // No partial candidate is ever written to the project or history.
+  cancelSegmentSearch() {
+    this.segmentSearchToken++;
+    if(this.segmentSearchTimer!==undefined)clearTimeout(this.segmentSearchTimer);
+    this.segmentSearchTimer=undefined;
+    this.segmentSearchBusy=false;
+    this.segmentSearchStatus='';
+    if(this.segmentSearchResolve){
+      const done=this.segmentSearchResolve;
+      this.segmentSearchResolve=null;
+      done(false);
+    }
+  }
+  findSegmentMovementC1() {
+    if(this.segmentSearchBusy){
+      this.cancelSegmentSearch();
+      this.segmentSearchStatus='Movement search cancelled.';
+      this.render();
+      return Promise.resolve(false);
+    }
+    this.cancelSegmentSearch();
+    const session=this.session;
+    if(!session.current() || session.selection?.kind!=='road'){
+      this.segmentSearchStatus='Select a road to search for valid segment movements.';
+      this.render();return Promise.resolve(false);
+    }
+    const selectedId=session.selection.id;
+    const project=this.getProject(),baselineRevision=this.getRevision();
+    const fingerprint=JSON.stringify(project);
+    const choices=[...session.graph.roadsById.values()].filter(road=>
+      [road.a,road.b].every(id=>session.graph.incidentRoads.get(id)?.every(r=>
+        !session.graph.roadClasses.get(r)?.protected)));
+    const ordered=[
+      ...choices.filter(road=>road.id===selectedId),
+      ...choices.filter(road=>road.id!==selectedId),
+    ].slice(0,48);
+    const offsets=[
+      {x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},
+      {x:.5,y:0},{x:-.5,y:0},{x:0,y:.5},{x:0,y:-.5},
+    ];
+    if(!ordered.length){
+      this.segmentSearchStatus='No ordinary segment has two unprotected endpoints in this city.';
+      this.render();return Promise.resolve(false);
+    }
+    const token=++this.segmentSearchToken;
+    this.segmentSearchBusy=true;
+    this.segmentPreview=null;
+    session.segmentCandidate=null;
+    this.segmentSearchStatus='Checking validated movements without changing the city...';
+    this.render();this.draw();
+    let index=0;
+    return new Promise(resolve=>{
+      this.segmentSearchResolve=resolve;
+      const scan=()=>{
+        this.segmentSearchTimer=undefined;
+        if(token!==this.segmentSearchToken)return;
+        if(!session.current() || session.selection?.kind!=='road' ||
+          session.selection.id!==selectedId || this.getRevision()!==baselineRevision ||
+          JSON.stringify(this.getProject())!==fingerprint){
+          this.cancelSegmentSearch();
+          this.segmentSearchStatus='Search stopped because the selection or accepted city changed.';
+          this.render();return;
+        }
+        if(index>=ordered.length*offsets.length){
+          this.segmentSearchBusy=false;
+          this.segmentSearchResolve=null;
+          this.segmentSearchStatus='No proven 0.5–1-unit move found in the first '+
+            ordered.length+' eligible streets. The accepted city is unchanged.';
+          this.render();resolve(false);return;
+        }
+        const road=ordered[Math.floor(index/offsets.length)];
+        const offset=offsets[index%offsets.length];
+        const result=this.prepareSegment(project,road.id,offset,this.baseline?.workspace);
+        if(result?.candidateProject && result.status==='candidate-only'){
+          this.segmentSearchBusy=false;
+          this.segmentSearchResolve=null;
+          this.segmentSearchStatus='Validated move on '+road.id+
+            ': X '+offset.x+', Y '+offset.y+'. Review the teal preview, then Apply if desired.';
+          session.select({kind:'road',id:road.id});
+          this.$('roadSegmentDxC1').value=String(offset.x);
+          this.$('roadSegmentDyC1').value=String(offset.y);
+          this.segmentPreview={result,roadId:road.id,offset,project,
+            revision:baselineRevision,fingerprint};
+          session.segmentCandidate=result.candidateProject;
+          const a=session.graph.nodesById.get(road.a),b=session.graph.nodesById.get(road.b);
+          this.camera.x=(a.x+b.x)/2;
+          this.camera.y=(a.y+b.y)/2+
+            (this.camera.width<900?(this.camera.height*.22)/this.camera.zoom:0);
+          this.render();this.draw();resolve(true);return;
+        }
+        index++;
+        if(index%8===0){
+          this.segmentSearchStatus='Checked '+index+' of '+
+            ordered.length*offsets.length+' candidate directions...';
+          this.render();
+        }
+        this.segmentSearchTimer=setTimeout(scan,0);
+      };
+      this.segmentSearchTimer=setTimeout(scan,0);
     });
   }
   nudge(direction, multiplier = 1) {
@@ -461,6 +571,9 @@ export class RoadInspectionWorkspace {
         !s.graph.roadClasses.get(roadId).protected));
     this.$('roadSegmentPanelC1').hidden=!roadMode;
     this.$('roadSegmentPreviewC1').disabled=!endpointSafe;
+    this.$('roadSegmentFindC1').disabled=!roadMode || !s.current();
+    this.$('roadSegmentFindC1').textContent=this.segmentSearchBusy ?
+      'Stop movement search' : 'Find a valid move';
     const eligibleSegment=Boolean(endpointSafe && this.segmentPreview &&
       this.segmentPreview.roadId===d.id &&
       this.segmentPreview.project===this.getProject() &&
@@ -472,11 +585,11 @@ export class RoadInspectionWorkspace {
       !s.drag && !s.checking);
     this.$('roadSegmentApplyC1').disabled=!eligibleSegment;
     this.$('roadSegmentStatusC1').textContent=
-      !endpointSafe ? 'Select a road whose two endpoints do not touch protected infrastructure.' :
+      this.segmentSearchStatus || (!endpointSafe ? 'Select a road whose two endpoints do not touch protected infrastructure.' :
       this.segmentPreview?.result?.candidateProject ?
       'Eligible candidate. Apply will independently reconstruct and validate the complete project.' :
       this.segmentPreview?.result?.issues?.[0]?.message ??
-      'Enter a small X/Y offset, preview both junctions together, and inspect the map.';
+      'Enter a small X/Y offset, preview both junctions together, and inspect the map.');
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
       : d?.protected
