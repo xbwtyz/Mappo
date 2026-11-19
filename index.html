@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.1.0</title>
+  <title>Mappo — City editor · 0.2-dev.a1</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -452,7 +452,7 @@
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.1.0</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.a1</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -1005,6 +1005,214 @@ function checkNarrowSections(boundary) {
         if (gap < 18 && Math.min(path, total - path) > 90 && pointInPolygon(lerpPoint(a, b, .5), boundary)) throw new Error('A section is too narrow for streets. Widen the neck to at least 18 units.');
       }
     }
+}
+
+
+// src/core/road-graph.js
+
+// Transient graph API. No accepted city records, persistence or editor history
+// are shared with these snapshots. Graph validity alone is NOT city safety:
+// faces and dependencies are the separately gated A2/A3 checkpoints.
+const ROAD_GRAPH_LIMITS = Object.freeze({ nodes: 20000, roads: 40000, work: 6000000 });
+
+function roadGraphCompare(a, b) {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+function roadGraphFreeze(value) {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    for (const item of Object.values(value)) roadGraphFreeze(item);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+function roadGraphCopy(value) {
+  if (Array.isArray(value)) return value.map(roadGraphCopy);
+  if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort(roadGraphCompare).map(key => [key, roadGraphCopy(value[key])]));
+  return value;
+}
+
+// Object.freeze(new Map()) still allows .set(). Expose only read operations;
+// forEach must also pass the facade rather than leak its backing Map.
+function roadGraphReadonlyIndex(map) {
+  const index = Object.freeze({
+    size: map.size,
+    get: key => map.get(key),
+    has: key => map.has(key),
+    keys: () => map.keys(),
+    values: () => map.values(),
+    entries: () => map.entries(),
+    [Symbol.iterator]: () => map.entries(),
+    forEach: fn => map.forEach((value, key) => fn(value, key, index))
+  });
+  return index;
+}
+
+function roadGraphPoint(point) {
+  return point && Number.isFinite(point.x) && Number.isFinite(point.y) && Math.abs(point.x) <= 100000 && Math.abs(point.y) <= 100000;
+}
+
+function classifyRoad(road) {
+  const reasons = [];
+  for (const flag of ['boundary', 'plaza', 'bank', 'waterBoundary', 'foothill', 'terrainBoundary'])
+    if (road[flag]) reasons.push(flag);
+  if (road.bridgeId) reasons.push('bridge');
+  if (road.passId) reasons.push('mountain-pass');
+  return roadGraphFreeze({ protected: reasons.length > 0, reasons, kind: road.kind });
+}
+
+function roadGraphIssue(code, message, nodeIds = [], roadIds = []) {
+  return { code, message, nodeIds: [...nodeIds].sort(roadGraphCompare), roadIds: [...roadIds].sort(roadGraphCompare) };
+}
+
+function roadGraphSortIssues(issues) {
+  return issues.sort((a, b) => roadGraphCompare(a.code, b.code) || roadGraphCompare(JSON.stringify(a.nodeIds), JSON.stringify(b.nodeIds)) || roadGraphCompare(JSON.stringify(a.roadIds), JSON.stringify(b.roadIds)));
+}
+
+function buildRoadGraph(city) {
+  const issues = [], nodes = new Map(), roads = new Map(), adjacency = new Map(), incident = new Map(), classes = new Map();
+  const add = (...args) => issues.push(roadGraphIssue(...args));
+  const recordsValid = city && Array.isArray(city.nodes) && Array.isArray(city.roads);
+  const withinLimits = recordsValid && city.nodes.length <= ROAD_GRAPH_LIMITS.nodes && city.roads.length <= ROAD_GRAPH_LIMITS.roads;
+  if (!recordsValid) add('graph-records', 'A road graph requires node and road arrays.');
+  else if (!withinLimits) add('graph-limit', 'The road graph exceeds supported node or road limits.');
+  // Only index unambiguous records. Never let array order decide which copy of
+  // a duplicate ID wins. Accepted records are plain validated project data.
+  function indexRecords(records, index, kind) {
+    const grouped = new Map();
+    for (const record of records) {
+      if (!record || typeof record.id !== 'string' || !record.id.length || record.id.length > 200) {
+        add(`${kind}-id`, `Every ${kind} needs a nonempty ID of at most 200 characters.`);
+        continue;
+      }
+      if (!grouped.has(record.id)) grouped.set(record.id, []);
+      grouped.get(record.id).push(record);
+    }
+    for (const id of [...grouped.keys()].sort(roadGraphCompare)) {
+      const group = grouped.get(id);
+      if (group.length !== 1) {
+        add(`duplicate-${kind}-id`, `ID ${id} is used by multiple ${kind} records.`, kind === 'node' ? [id] : [], kind === 'road' ? [id] : []);
+      } else index.set(id, roadGraphFreeze(roadGraphCopy(group[0])));
+    }
+  }
+  if (withinLimits) {
+    indexRecords(city.nodes, nodes, 'node');
+    indexRecords(city.roads, roads, 'road');
+  }
+  if (withinLimits && !nodes.size) add('empty-graph', 'The road network has no junctions.');
+  for (const [id, node] of nodes) {
+    adjacency.set(id, new Set());
+    incident.set(id, []);
+    if (!roadGraphPoint(node)) add('node-coordinate', `Junction ${id} has invalid or out-of-range coordinates.`, [id]);
+  }
+  const edges = new Map(), segments = [];
+  for (const [id, road] of roads) {
+    classes.set(id, classifyRoad(road));
+    if (!['primary', 'secondary', 'lane'].includes(road.kind)) add('road-kind', `Road ${id} has an unsupported class.`, [], [id]);
+    const endpointIds = [road.a, road.b].filter(id => typeof id === 'string');
+    if (!nodes.has(road.a) || !nodes.has(road.b)) {
+      add('missing-endpoint', `Road ${id} references a missing or ambiguous junction.`, endpointIds, [id]);
+      continue;
+    }
+    incident.get(road.a).push(id);
+    if (road.a !== road.b) incident.get(road.b).push(id);
+    if (road.a === road.b) {
+      add('self-loop', `Road ${id} connects a junction to itself.`, [road.a], [id]);
+      continue;
+    }
+    adjacency.get(road.a).add(road.b);
+    adjacency.get(road.b).add(road.a);
+    const key = JSON.stringify([road.a, road.b].sort(roadGraphCompare));
+    if (!edges.has(key)) edges.set(key, []);
+    edges.get(key).push(id);
+    const a = nodes.get(road.a), b = nodes.get(road.b);
+    if (!roadGraphPoint(a) || !roadGraphPoint(b)) continue;
+    if (Math.hypot(a.x - b.x, a.y - b.y) < 1e-6) {
+      add('degenerate-road', `Road ${id} has no usable length.`, endpointIds, [id]);
+      continue;
+    }
+    segments.push({ road, a, b, minX: Math.min(a.x, b.x), maxX: Math.max(a.x, b.x), minY: Math.min(a.y, b.y), maxY: Math.max(a.y, b.y) });
+  }
+  for (const ids of edges.values()) if (ids.length > 1) add('duplicate-edge', 'Multiple roads connect the same junction pair.', [], ids);
+  // Sweep bounding boxes to avoid a full all-pairs scan on ordinary maps.
+  // A hard work cap bounds pathological collections of overlapping segments.
+  segments.sort((a, b) => a.minX - b.minX || roadGraphCompare(a.road.id, b.road.id));
+  let work = 0, limited = false;
+  outer: for (let i = 0; i < segments.length; i++) {
+    const a = segments[i];
+    for (let j = i + 1; j < segments.length && segments[j].minX <= a.maxX + 1e-6; j++) {
+      if (++work > ROAD_GRAPH_LIMITS.work) { limited = true; break outer; }
+      const b = segments[j];
+      if (b.maxY < a.minY - 1e-6 || b.minY > a.maxY + 1e-6) continue;
+      const shared = [a.road.a, a.road.b].filter(id => id === b.road.a || id === b.road.b);
+      if (shared.length === 2) continue; // Already a duplicate-edge diagnostic.
+      const ab = segmentCuts(a.a, a.b, b.a, b.b), ba = segmentCuts(b.a, b.b, a.a, a.b);
+      if (!ab.length && !ba.length) continue;
+      // A single shared endpoint is allowed, but a collinear interior contact
+      // means two roads overlap even when they share that endpoint.
+      const interior = [...ab, ...ba].some(t => t > 1e-9 && t < 1 - 1e-9);
+      if (!shared.length || interior) add(shared.length ? 'overlapping-roads' : 'unnormalized-crossing',
+        shared.length ? 'Roads overlap beyond their shared junction.' : 'Roads cross or touch without a shared junction.', [], [a.road.id, b.road.id]);
+    }
+  }
+  if (limited) add('graph-work-limit', 'Graph analysis exceeded its work budget; the network has not been fully validated.');
+  const components = [], reached = new Set();
+  for (const id of nodes.keys()) {
+    if (reached.has(id)) continue;
+    const queue = [id];
+    reached.add(id);
+    for (let i = 0; i < queue.length; i++) {
+      for (const neighbor of adjacency.get(queue[i])) if (!reached.has(neighbor)) { reached.add(neighbor); queue.push(neighbor); }
+    }
+    components.push(queue.sort(roadGraphCompare));
+  }
+  for (const [id, neighbors] of adjacency) {
+    if (!neighbors.size) add('orphan-junction', `Junction ${id} is not connected to a road.`, [id]);
+    else if (neighbors.size === 1) add('dangling-junction', `Junction ${id} ends without a closed city face.`, [id], incident.get(id));
+    adjacency.set(id, Object.freeze([...neighbors].sort(roadGraphCompare)));
+    incident.set(id, Object.freeze(incident.get(id).sort(roadGraphCompare)));
+  }
+  if (components.length > 1) add('disconnected-graph', 'The road network contains disconnected components.', components.map(c => c[0]));
+  return Object.freeze({
+    nodesById: roadGraphReadonlyIndex(nodes), roadsById: roadGraphReadonlyIndex(roads),
+    adjacency: roadGraphReadonlyIndex(adjacency), incidentRoads: roadGraphReadonlyIndex(incident),
+    roadClasses: roadGraphReadonlyIndex(classes), components: roadGraphFreeze(components),
+    issues: roadGraphFreeze(roadGraphSortIssues(issues)), valid: issues.length === 0,
+    work
+  });
+}
+
+function analyzeRoadGraph(city) {
+  const graph = buildRoadGraph(city);
+  return roadGraphFreeze({
+    valid: graph.valid, issues: graph.issues,
+    nodeCount: graph.nodesById.size, roadCount: graph.roadsById.size,
+    components: graph.components,
+    protectedRoadIds: [...graph.roadClasses].filter(([, value]) => value.protected).map(([id]) => id)
+  });
+}
+
+function proposeJunctionMove(city, junctionId, point) {
+  const accepted = buildRoadGraph(city), node = accepted.nodesById.get(junctionId);
+  const issues = [...accepted.issues];
+  const incidentIds = accepted.incidentRoads.get(junctionId) ?? [];
+  if (!node) issues.push(roadGraphIssue('junction-not-found', 'Choose an existing, unambiguous junction.', typeof junctionId === 'string' ? [junctionId] : []));
+  if (!roadGraphPoint(point)) issues.push(roadGraphIssue('candidate-coordinate', 'Proposed X/Y must be finite and within supported coordinate bounds.'));
+  const protectedIds = incidentIds.filter(id => accepted.roadClasses.get(id).protected);
+  const changed = node && roadGraphPoint(point) && (node.x !== point.x || node.y !== point.y);
+  if (changed && protectedIds.length) issues.push(roadGraphIssue('protected-junction', 'This junction touches a protected edge. Ordinary road movement cannot rewrite that connection.', [junctionId], protectedIds));
+  if (roadGraphPoint(point) && Array.isArray(city?.survey?.boundary) && !insideOrOn(point, city.survey.boundary))
+    issues.push(roadGraphIssue('boundary-escape', 'Place the proposed junction inside the accepted city boundary.', node ? [junctionId] : []));
+  // Early rejection never offers even a partial candidate from an invalid base.
+  if (issues.length) return roadGraphFreeze({ operation: 'move-junction', junctionId, graph: null, graphValid: false, issues: roadGraphSortIssues(issues), changedRoadIds: [], canApplyIn02A: false });
+  const graph = buildRoadGraph({
+    nodes: [...accepted.nodesById.values()].map(n => n.id === junctionId ? { ...n, x: point.x, y: point.y } : n),
+    roads: [...accepted.roadsById.values()]
+  });
+  return Object.freeze({ operation: 'move-junction', junctionId,
+    point: Object.freeze({ x: point.x, y: point.y }), graph, graphValid: graph.valid,
+    issues: graph.issues, changedRoadIds: Object.freeze(changed ? [...incidentIds] : []), canApplyIn02A: false });
 }
 
 
@@ -7964,7 +8172,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.1.0';
+const APP_VERSION = '0.2-dev.a1';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -9437,7 +9645,84 @@ function generateSurvey(seed, size, morphology = 'radial', shapeOverrides = {}) 
 }
 
 
+// src/core/road-topology.js
+
+// Shared with the generator. Preserve its insertion order and microunit
+// snapping exactly: generation order remains part of the 0.1 identity contract.
+// This builder owns its output nodes; never pass accepted city.nodes here.
+function createRoadNodeNormalizer(nodes, mergeNearby = false) {
+  const byCoordinate = new Map();
+  return function normalizeNode(p) {
+    // Microunit snapping coalesces independently computed multi-way junctions.
+    const key = `${Math.round(p.x*1e6)},${Math.round(p.y*1e6)}`;
+    if (byCoordinate.has(key)) return byCoordinate.get(key);
+    if (mergeNearby) {
+      const ix = Math.round(p.x * 1e6),
+        iy = Math.round(p.y * 1e6);
+      for (let dx = -1; dx <= 1; dx++)
+        for (let dy = -1; dy <= 1; dy++) {
+          const q = byCoordinate.get(`${ix+dx},${iy+dy}`);
+          if (q && Math.hypot(q.x - p.x, q.y - p.y) < 1e-6) return q;
+        }
+    }
+    const n = {
+      id: `N-${String(nodes.length+1).padStart(4,'0')}`,
+      x: p.x,
+      y: p.y
+    };
+    nodes.push(n);
+    byCoordinate.set(key, n);
+    return n;
+  };
+}
+
+// Low-level bounded-face traversal for a valid planar graph. Input order is
+// intentional for generation parity. Editing callers supply canonical ID order
+// after graph validation; this function does not repair or persist a graph.
+function traceRoadFaces(nodes, roads) {
+  const byId = new Map(nodes.map(n => [n.id, n])),
+    adjacency = new Map(nodes.map(n => [n.id, []]));
+  for (const r of roads) {
+    adjacency.get(r.a).push(r.b);
+    adjacency.get(r.b).push(r.a);
+  }
+  for (const [id, neighbors] of adjacency) {
+    const a = byId.get(id);
+    neighbors.sort((b, c) => Math.atan2(byId.get(b).y - a.y, byId.get(b).x - a.x) - Math.atan2(byId.get(c).y - a.y, byId.get(c).x - a.x));
+  }
+  const visited = new Set(),
+    faces = [];
+  for (const road of roads)
+    for (const pair of [
+        [road.a, road.b],
+        [road.b, road.a]
+      ]) {
+      if (visited.has(pair.join(':'))) continue;
+      let [a, b] = pair;
+      const vertices = [];
+      for (let steps = 0; steps <= roads.length * 2; steps++) {
+        const key = `${a}:${b}`;
+        if (visited.has(key)) break;
+        visited.add(key);
+        vertices.push(a);
+        const neighbors = adjacency.get(b),
+          next = neighbors[(neighbors.indexOf(a) + neighbors.length - 1) % neighbors.length];
+        a = b;
+        b = next;
+      }
+      const polygon = vertices.map(id => byId.get(id)),
+        area = polygonSignedArea(polygon);
+      if (area > 1e-6) faces.push({
+        vertices,
+        area
+      });
+    }
+  return faces;
+}
+
+
 // src/generators/layout.js
+
 
 
 
@@ -9588,31 +9873,9 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
     }
   const nodes = [],
     roads = [],
-    byCoordinate = new Map(),
     edges = new Map();
 
-  function node(p) {
-    // Microunit snapping coalesces independently computed multi-way junctions.
-    const key = `${Math.round(p.x*1e6)},${Math.round(p.y*1e6)}`;
-    if (byCoordinate.has(key)) return byCoordinate.get(key);
-    if (hasObstacles) {
-      const ix = Math.round(p.x * 1e6),
-        iy = Math.round(p.y * 1e6);
-      for (let dx = -1; dx <= 1; dx++)
-        for (let dy = -1; dy <= 1; dy++) {
-          const q = byCoordinate.get(`${ix+dx},${iy+dy}`);
-          if (q && Math.hypot(q.x - p.x, q.y - p.y) < 1e-6) return q;
-        }
-    }
-    const n = {
-      id: `N-${String(nodes.length+1).padStart(4,'0')}`,
-      x: p.x,
-      y: p.y
-    };
-    nodes.push(n);
-    byCoordinate.set(key, n);
-    return n;
-  }
+  const node = createRoadNodeNormalizer(nodes, hasObstacles);
   const rank = {
     lane: 0,
     secondary: 1,
@@ -9659,47 +9922,7 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
     }
   }
 
-  function extractFaces() {
-    const byId = new Map(nodes.map(n => [n.id, n])),
-      adjacency = new Map(nodes.map(n => [n.id, []]));
-    for (const r of roads) {
-      adjacency.get(r.a).push(r.b);
-      adjacency.get(r.b).push(r.a);
-    }
-    for (const [id, neighbors] of adjacency) {
-      const a = byId.get(id);
-      neighbors.sort((b, c) => Math.atan2(byId.get(b).y - a.y, byId.get(b).x - a.x) - Math.atan2(byId.get(c).y - a.y, byId.get(c).x - a.x));
-    }
-    const visited = new Set(),
-      faces = [];
-    for (const road of roads)
-      for (const pair of [
-          [road.a, road.b],
-          [road.b, road.a]
-        ]) {
-        if (visited.has(pair.join(':'))) continue;
-        let [a, b] = pair;
-        const vertices = [];
-        for (let steps = 0; steps <= roads.length * 2; steps++) {
-          const key = `${a}:${b}`;
-          if (visited.has(key)) break;
-          visited.add(key);
-          vertices.push(a);
-          const neighbors = adjacency.get(b),
-            next = neighbors[(neighbors.indexOf(a) + neighbors.length - 1) % neighbors.length];
-          a = b;
-          b = next;
-        }
-        const polygon = vertices.map(id => byId.get(id)),
-          area = polygonSignedArea(polygon);
-        if (area > 1e-6) faces.push({
-          vertices,
-          area
-        });
-      }
-    return faces;
-  }
-  let faces = extractFaces();
+  let faces = traceRoadFaces(nodes, roads);
   const minimumArea = Math.max(1.01, spacing * spacing * .012);
   // Tangencies at the boundary can leave tiny slivers. Merge them into a
   // neighbor by removing a shared street, never a city boundary or plaza edge.
@@ -9738,7 +9961,7 @@ function generateLayout(seed, size, survey, morphology = 'radial', water = {
         }
       }
     }
-    faces = extractFaces();
+    faces = traceRoadFaces(nodes, roads);
   }
   // Remove junctions no longer used after merging small faces.
   const usedNodes = new Set(roads.flatMap(r => [r.a, r.b]));
@@ -12984,6 +13207,8 @@ function formatPrecision4C(value) {
 
 
 // src/app.js
+// A1 foundation APIs are bundled for the later road inspector; no editor hooks yet.
+
 
 
 
