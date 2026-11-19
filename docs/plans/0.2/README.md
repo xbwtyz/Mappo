@@ -75,5 +75,5 @@ A 0.2 release is ready when a user can safely move/add/remove supported roads, c
 
 - **Direction chosen:** 2D city designer.
 - **Edit policy chosen:** strict preservation before controlled local reconciliation.
-- **0.2A:** A1–A4 authorized in order; A1 merged as PR #22. A2 merged as PR #23. A3 is implemented on a new branch from merged main, pending separate review/merge approval. See [A1 record](A1_ROAD_GRAPH.md), [A2 record](A2_FACE_IDENTITY.md) and [A3 record](A3_IMPACT_REPORT.md).
+- **0.2A:** A1–A4 authorized in order; A1 merged as PR #22. A2 merged as PR #23. A3 merged as PR #24. A4 is implemented on `feature/mappo-0.2a-a4-road-preview` from merged main, pending separate review/merge approval. See [A1 record](A1_ROAD_GRAPH.md), [A2 record](A2_FACE_IDENTITY.md), [A3 record](A3_IMPACT_REPORT.md) and [A4 record](A4_ROAD_PREVIEW.md).
 - **Not yet approved:** checkpoint merges, implementation of later phases, schema migration, release date.

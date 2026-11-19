@@ -4,10 +4,11 @@
 > Original design branch: `planning/mappo-0.2a-road-network-foundations`.
 > A1 merged: [PR #22](https://github.com/xbwtyz/Mappo/pull/22), `2290af7407d3f4efbaa36fa227e2286576748994`.
 > A2 merged: [PR #23](https://github.com/xbwtyz/Mappo/pull/23), `8cce456cc132447e70fe88abf1710a198d250307`.
-> A3 implementation branch: `feature/mappo-0.2a-a3-impact-report`, from that merged baseline.
+> A3 merged: [PR #24](https://github.com/xbwtyz/Mappo/pull/24), `1b66ca5e772a04e687331079e37318308d2067d6`.
+> A4 implementation branch: `feature/mappo-0.2a-a4-road-preview`, from merged A3; separate merge approval pending.
 > Implementation baseline: stable 0.1.0 `main` at `785e9cb2a44c40819e91a636523ac397b6660f9e`, including merged Dev 4f and release PR #21.
 > Execute A1 → A2 → A3 → A4 as separate checkpoints. Each PR still needs separate owner approval before merging.
-> [A1 record](A1_ROAD_GRAPH.md) · [A2 record](A2_FACE_IDENTITY.md) · [A3 implementation and verification record](A3_IMPACT_REPORT.md).
+> [A1 record](A1_ROAD_GRAPH.md) · [A2 record](A2_FACE_IDENTITY.md) · [A3 record](A3_IMPACT_REPORT.md) · [A4 controls and verification](A4_ROAD_PREVIEW.md).
 
 [0.2 roadmap](README.md) · [Preservation and QA contract](ROAD_EDIT_CONTRACT.md)
 
@@ -143,10 +144,10 @@ Each approved checkpoint should produce modular source + regression tests + vers
 - [x] Existing generation geometry/parity retained across supported morphology seeds (A1, rechecked in A2).
 - [x] Reusable road/junction topology API, independent of generation (merged A1).
 - [x] Block identity matching is stable or explicitly marked ambiguous (merged A2).
-- [x] Deterministic, ID-specific impact reports distinguish Safe / Needs review / Invalid (A3 implemented; merge pending separate approval).
-- [ ] Working non-destructive junction preview with no Apply.
-- [ ] No accepted-project mutations, deleted identities or save-format regression.
-- [ ] Node + compiled HTML parity + Firefox/Chromium viewport QA green.
+- [x] Deterministic, ID-specific impact reports distinguish Safe / Needs review / Invalid (merged A3).
+- [x] Working non-destructive junction preview with no Apply (A4 implemented).
+- [x] No accepted-project mutations, deleted identities or save-format regression (A4 portable/recovery QA).
+- [x] Node + compiled HTML parity + Firefox/Chromium viewport QA green (CI also required for merge).
 - [ ] Each implementation PR reviewed and separately approved before merge.
 
 **Implementation approval does not authorize merging a checkpoint PR.**

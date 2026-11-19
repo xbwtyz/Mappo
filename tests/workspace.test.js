@@ -479,3 +479,17 @@ test('portable workspace shell restores section, panel visibility, inspector pin
   assert.equal(shell.state.inspectorPinned,false);
   assert.equal(el('workspaceToolScroll').scrollTop,0);
 });
+
+test('transient layout restoration ignores delayed matching scroll events but records later user scrolling',()=>{
+  const {shell,el,counts}=shellHarness();
+  el('workspaceToolScroll').scrollTop=100;el('workspaceInspectorScroll').scrollTop=45;
+  shell.reset({transient:true,ui:{section:'city',sectionScroll:{city:100},inspectorScroll:45}});
+  const before=counts().changes;
+  el('workspaceToolScroll').handlers.scroll();el('workspaceInspectorScroll').handlers.scroll();
+  assert.equal(counts().changes,before);
+  el('workspaceToolScroll').scrollTop=130;el('workspaceToolScroll').handlers.scroll();
+  assert.equal(counts().changes,before+1);
+  shell.reset({transient:true,ui:{section:'city',sectionScroll:{city:100},inspectorScroll:45}});
+  el('workspaceInspectorScroll').scrollTop=50;el('workspaceInspectorScroll').handlers.scroll();
+  assert.equal(counts().changes,before+2,'Changed scroll positions must never be swallowed');
+});
