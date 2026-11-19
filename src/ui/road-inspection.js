@@ -1,5 +1,5 @@
 import { RoadPreviewSession } from '../editor/road-preview.js';
-import { roadInspectionDetails } from '../core/road-inspection.js';
+import { roadInspectionDetails, roadReconciliationPreviewB3 } from '../core/road-inspection.js';
 
 
 const roadImpactGuidance = {
@@ -176,6 +176,8 @@ export class RoadInspectionWorkspace {
     canEnter,
     beforeEnter = () => {},
     draw,
+    reconcile = null,
+    reconcileRoad = null,
     afterExit = () => {},
   }) {
     Object.assign(this, {
@@ -191,12 +193,15 @@ export class RoadInspectionWorkspace {
     });
     this.session = new RoadPreviewSession({
       getProject,
+      reconcile,
+      reconcileRoad,
       changed: () => {
         this.render();
         this.draw();
       },
     });
     this.limit = 50;
+    this.reconciliationLimit = 50;
     this.bind();
   }
   get active() {
@@ -216,6 +221,8 @@ export class RoadInspectionWorkspace {
       return;
     }
     this.$('roadPreviewBody').hidden = false;
+    this.$('roadOverlayB3').checked = true;
+    this.session.previewVisible = true;
     this.$('roadPreviewMinimize').textContent = 'Minimize';
     this.$('roadPreviewMinimize').setAttribute('aria-expanded', 'true');
     this.beforeEnter();
@@ -262,6 +269,7 @@ export class RoadInspectionWorkspace {
     this.optionsKind = null;
     this.selectionKey = null;
     this.lastReport = undefined;
+    this.lastReconciliation = undefined;
     this.render();
     this.afterExit();
     this.draw();
@@ -312,6 +320,14 @@ export class RoadInspectionWorkspace {
       });
     for (const direction of ['Left', 'Right', 'Up', 'Down'])
       this.$('roadNudge' + direction).addEventListener('click', () => this.nudge(direction));
+    this.$('roadReconciliationMoreB3').addEventListener('click', () => {
+      this.reconciliationLimit += 50;
+      this.renderReconciliationB3();
+    });
+    this.$('roadOverlayB3').addEventListener('change', () => {
+      this.session.previewVisible = this.$('roadOverlayB3').checked;
+      this.draw();
+    });
     this.$('roadShowMore').addEventListener('click', () => {
       this.limit += 50;
       this.renderReport();
@@ -408,6 +424,18 @@ export class RoadInspectionWorkspace {
     if (this.$('roadReportStatus').textContent !== live) this.$('roadReportStatus').textContent = live;
     panel.setAttribute('data-report-status', s.report?.status ?? (s.checking ? 'checking' : 'idle'));
     this.$('roadReportError').textContent = s.error;
+    this.$('roadReconciliationB3').hidden = false;
+    const computed = s.reconciliation ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology) : null;
+    s.previewGeometry = computed;
+    if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
+        this.lastReconciliationError !== s.reconciliationError || this.lastChecking !== s.checking) {
+      this.lastReconciliation = s.reconciliation;
+      this.lastTopology = s.topology;
+      this.lastReconciliationError = s.reconciliationError;
+      this.lastChecking = s.checking;
+      this.reconciliationLimit = 50;
+      this.renderReconciliationB3();
+    }
     if (this.lastReport !== s.report) {
       this.lastReport = s.report;
       this.limit = 50;
@@ -415,6 +443,74 @@ export class RoadInspectionWorkspace {
     }
   }
 
+  renderReconciliationB3() {
+    const s=this.session, preview=s.previewGeometry;
+    const status=this.$('roadReconciliationStatusB3');
+    const list=this.$('roadReconciliationListB3');
+    const more=this.$('roadReconciliationMoreB3');
+    if(s.checking)status.textContent='Checking proposed geometry and land dependencies…';
+    else if(s.reconciliationError)status.textContent=s.reconciliationError;
+    else if(!s.pending)status.textContent='Accepted city unchanged. Move an ordinary junction to preview adaptation.';
+    else if(!preview)status.textContent='Proposed road only; reconciliation has not completed.';
+    else if(preview.mode==='reconciled')status.textContent='Locally reconciled candidate · not applied. Full validation passed; B4 is required for Apply.';
+    else if(preview.mode==='topology-only')status.textContent='Roads and blocks only · property reconciliation unresolved. No parcel changes are claimed.';
+    else status.textContent='Road proposal has unresolved constraints. No safely adapted parcel geometry is available.';
+    const counts=this.$('roadReconciliationCountsB3');
+    counts.textContent=preview?
+      preview.counts.roads+' roads · '+preview.counts.blocks+' blocks · '+
+      preview.counts.properties+' properties · '+preview.counts.plots+' plots · '+
+      preview.counts.openSpaces+' open-space summaries · '+
+      preview.buildingsPreserved+' buildings held fixed · '+preview.unresolved.length+' unresolved':
+      'No reconciled candidate yet.';
+    const rows=preview?.rows??[];
+    const unresolved=preview?.unresolved??[];
+    const all=[...rows.map(row=>({...row,entryType:'change'})),
+      ...unresolved.map(row=>({...row,entryType:'unresolved'}))];
+    list.replaceChildren(...all.slice(0,this.reconciliationLimit).map(row=>{
+      const item=document.createElement('li');
+      const description=document.createElement('p');
+      if(row.entryType==='change'){
+        const measure=(name,oldValue,newValue)=>oldValue!=null&&newValue!=null?
+          ' · '+name+': '+oldValue.toFixed(2)+' → '+newValue.toFixed(2):'';
+        description.textContent=row.kind+' '+row.id+' · '+
+          (row.state==='topology-only'?'Proposed topology only':'Adapted geometry')+
+          measure('area',row.oldArea,row.newArea)+
+          measure('length',row.oldLength,row.newLength)+
+          measure('frontage',row.oldFrontage,row.newFrontage);
+      }else {
+        const metrics=s.report?.affected?.find(r=>r.kind===row.kind&&r.id===row.id&&r.code===row.code)?.metrics;
+        const values=metrics&&typeof metrics==='object'?Object.entries(metrics)
+          .filter(([key,value])=>Number.isFinite(value))
+          .map(([key,value])=>key+': '+value.toFixed(2)).join(' · '):'';
+        description.textContent='Unresolved '+row.kind+' '+row.id+
+          ' · '+row.code+': '+row.message+(values?' · '+values:'');
+      }
+      item.replaceChildren(description);
+      const focus=document.createElement('button');
+      focus.type='button';focus.className='minor-button';
+      focus.textContent='Locate '+row.kind+' '+row.id;
+      focus.setAttribute('aria-label','Locate '+row.kind+' '+row.id+' in the reconciliation preview');
+      focus.addEventListener('click',()=>this.locateReconciliationB3(row));
+      item.replaceChildren(description,focus);
+      return item;
+    }));
+    more.hidden=all.length<=this.reconciliationLimit;
+    this.$('roadReconciliationLegendB3').textContent=preview?.mode==='topology-only'?
+      'Gray = accepted outlines · amber dashed = proposed roads/blocks only. Parcel adjustments remain unresolved.':
+      'Gray = accepted · amber dashed = proposed blocks/roads · violet dashed = properties · teal dashed = plots. Buildings remain fixed.';
+  }
+  locateReconciliationB3(row) {
+    const s=this.session;
+    const geometry=s.previewGeometry?.rows.find(r=>r.kind===row.kind&&r.id===row.id);
+    const points=geometry?.proposedPoints??geometry?.originalPoints??[];
+    const valid=points.filter(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y));
+    if(valid.length){
+      this.camera.x=valid.reduce((n,p)=>n+p.x,0)/valid.length;
+      this.camera.y=valid.reduce((n,p)=>n+p.y,0)/valid.length;
+    }else this.locateImpact(row);
+    s.focusKey=JSON.stringify([row.kind,row.id]);
+    this.draw();
+  }
   locateImpact(row) {
     const city = this.getProject()?.city;
     if (!city || !row) return;

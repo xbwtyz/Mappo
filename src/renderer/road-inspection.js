@@ -92,6 +92,22 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
   // Preserved block shading is intentionally subtle; affected geometry wins.
   highlights.preserved.filter((r) => r.kind === 'block').forEach((r) => highlight(r, true));
   highlights.affected.forEach((r) => highlight(r, false));
+  // B3 overlays only geometry computed from detached B1/B2 candidates.
+  if(session.previewVisible!==false){
+    for(const row of session.previewGeometry?.rows??[]){
+      const color=row.kind==='property'?'#8053a5':row.kind==='plot'?'#168578':'#cf8731';
+      const focused=session.focusKey===JSON.stringify([row.kind,row.id]);
+      const closed=!['road','junction'].includes(row.kind);
+      if(path(row.originalPoints,closed)){
+        ctx.strokeStyle='#5d717b';ctx.lineWidth=focused?3:1.4;
+        ctx.setLineDash([]);ctx.stroke();
+      }
+      if(path(row.proposedPoints,closed)){
+        ctx.strokeStyle=color;ctx.lineWidth=focused?5:2.8;
+        ctx.setLineDash([7,4]);ctx.stroke();ctx.setLineDash([]);
+      }
+    }
+  }
   for (const [id, node] of graph.nodesById) {
     const p = camera.worldToScreen(node),
       protectedNode = graph.incidentRoads.get(id).some((r) => graph.roadClasses.get(r).protected);

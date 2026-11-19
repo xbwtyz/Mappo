@@ -11,10 +11,14 @@ export class RoadPreviewSession {
     schedule = (fn, ms) => setTimeout(fn, ms),
     unschedule = (id) => clearTimeout(id),
     analyze = analyzeRoadImpact,
+    reconcile = null,
+    reconcileRoad = null,
   }) {
-    Object.assign(this, { getProject, changed, schedule, unschedule, analyze });
+    Object.assign(this, { getProject, changed, schedule, unschedule, analyze, reconcile, reconcileRoad });
     this.active = false;
     this.revision = 0;
+    this.previewVisible = true;
+    this.focusKey = null;
   }
   start() {
     this.stop();
@@ -42,6 +46,9 @@ export class RoadPreviewSession {
     this.invalidate();
     this.active = false;
     this.selection = this.point = this.proposal = this.report = this.drag = null;
+    this.reconciliation = this.topology = this.previewGeometry = null;
+    this.reconciliationError = '';
+    this.focusKey = null;
     this.checking = false;
     this.error = '';
     this.project = this.city = this.graph = null;
@@ -65,6 +72,9 @@ export class RoadPreviewSession {
     const d = this.details;
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
     this.proposal = this.report = this.drag = null;
+    this.reconciliation = this.topology = this.previewGeometry = null;
+    this.reconciliationError = '';
+    this.focusKey = null;
     this.checking = false;
     this.error = '';
     this.changed();
@@ -74,6 +84,9 @@ export class RoadPreviewSession {
     this.invalidate();
     this.point = { x: point.x, y: point.y };
     this.report = this.proposal = null;
+    this.reconciliation = this.topology = this.previewGeometry = null;
+    this.reconciliationError = '';
+    this.focusKey = null;
     this.error = '';
     this.checking = this.pending;
     this.changed();
@@ -85,6 +98,15 @@ export class RoadPreviewSession {
       try {
         this.proposal = proposeJunctionMove(this.city, this.selection.id, this.point);
         this.report = this.analyze(this.project, this.proposal);
+        if(this.reconcile){
+          try {
+            this.reconciliation = this.reconcile(this.project, this.selection.id, this.point);
+            if(!this.reconciliation.candidateProject && this.reconcileRoad && this.proposal.graphValid)
+              this.topology = this.reconcileRoad(this.project, this.selection.id, this.point);
+          } catch(error) {
+            this.reconciliationError = 'Adaptation preview unavailable: '+error.message;
+          }
+        }
       } catch (error) {
         this.error = 'Report unavailable: ' + error.message;
       }
