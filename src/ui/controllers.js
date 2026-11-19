@@ -57,7 +57,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     travel = 0;
     tapEligible = event.button === 0 && !space && editor.mode === 'pan';
     tapPoint = world(event);
-    transforming = event.button === 0 && !space && editor.mode === 'pan' && Boolean(transform.begin?.(tapPoint, camera.zoom));
+    transforming = event.button === 0 && !space && editor.mode === 'pan' && Boolean(transform.begin?.(tapPoint, camera.zoom, event));
     if (transforming) { panning = false; tapEligible = false; }
     canvas.setPointerCapture(event.pointerId);
     if (panning) canvas.classList.add('is-dragging');

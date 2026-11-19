@@ -52,6 +52,8 @@
             <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
             <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div></div>
           </div>
+          <button id="roadModeButton" class="tool-button full-width" aria-pressed="false" aria-controls="roadPreviewPanel">Inspect roads / junctions</button>
+          <p id="roadModeNotice" class="hint" role="status"></p>
           <details id="cityGenerationSettings" class="workspace-settings"><summary>Generation settings</summary>
             <div class="control-group"><label for="seedInput">Street seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"></div>
             <button id="newSeedButton" class="minor-button full-width">New street seed</button>
@@ -138,6 +140,25 @@
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div id="mapEditDiagnostic4D" class="map-edit-diagnostic-4d" role="status" aria-live="polite" hidden></div>
+        <section id="roadPreviewPanel" class="road-preview-panel" aria-labelledby="roadPreviewHeading" hidden>
+          <div class="road-preview-header"><div class="road-preview-heading"><strong id="roadPreviewHeading" tabindex="-1">ROAD INSPECTION</strong><button id="roadPreviewMinimize" class="minor-button" aria-expanded="true" aria-controls="roadPreviewBody">Minimize</button></div>
+          <p id="roadReportStatus" class="road-report-status" role="status" aria-live="polite" aria-atomic="true"></p></div>
+          <div id="roadPreviewBody">
+            <div class="road-preview-selectors"><label>Record type<select id="roadSelectionKind"><option value="junction">Junctions</option><option value="road">Roads</option></select></label><label>Record ID<select id="roadSelectionId"></select></label></div>
+            <p id="roadRecordDetails"></p><p id="roadAcceptedPoint" class="hint"></p>
+            <button id="roadLocate" class="minor-button">Locate on map</button>
+            <div id="roadEndpointList" class="road-endpoint-list" aria-label="Connected junctions"></div>
+            <p id="roadPreviewEligibility" class="hint"></p>
+            <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
+            <label class="road-step-label">Nudge units<input id="roadNudgeStep" type="number" min="0.001" step="0.5" value="0.5"></label>
+            <div class="road-nudge-buttons" role="group" aria-label="Nudge proposed junction"><button id="roadNudgeLeft" aria-label="Nudge left">←</button><button id="roadNudgeUp" aria-label="Nudge up">↑</button><button id="roadNudgeDown" aria-label="Nudge down">↓</button><button id="roadNudgeRight" aria-label="Nudge right">→</button></div>
+            <p class="hint road-preview-legend">Normal = accepted · Dashed = proposed · Teal = preserved blocks · Amber/red = reported issues</p>
+            <p id="roadReportError" class="validation-error"></p><p id="roadReportSummary" class="hint"></p><p id="roadReportMetrics" class="hint"></p>
+            <ol id="roadReportList" class="road-report-list" aria-label="Affected objects and impact descriptions"></ol><button id="roadShowMore" class="minor-button" hidden>Show 50 more entries</button>
+            <p class="hint">Preview only. Accepting road changes is planned for 0.2B.</p>
+          </div>
+          <div class="road-preview-actions"><button id="roadPreviewReset" class="minor-button" disabled>Reset preview</button><button id="roadPreviewCancel" class="minor-button">Cancel inspection</button></div>
+        </section>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
           <div class="building-transform-heading"><strong>PROPERTY PREVIEW</strong><span id="propertyEditTarget3I">—</span></div>
           <p class="hint">Drag a property corner or select it to edit precise coordinates. Move internal plot dividers without changing plot ownership. Everything remains a preview.</p>

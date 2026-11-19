@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.2-dev.a3</title>
+  <title>Mappo — City editor · 0.2-dev.a4</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -447,12 +447,22 @@
 .export-options-4f .hint{margin:0}
 @media(max-width:670px){.layer-preset-4f select{max-width:148px}.export-options-4f{gap:6px}}
 
+/* A4 temporary road inspection. The map and normal workspace remain navigable. */
+.road-preview-panel{position:absolute;z-index:12;left:12px;top:58px;width:330px;max-width:calc(100% - 100px);max-height:calc(100% - 130px);overflow:auto;box-sizing:border-box;padding:12px;background:#f9f6ed;border:1px solid #b9c4bb;border-radius:10px;box-shadow:0 8px 28px #263b3c26;color:#2e4647;font-size:12px;overscroll-behavior:contain}
+.road-preview-panel[hidden]{display:none}.road-preview-heading,.road-preview-actions{display:flex;align-items:center;justify-content:space-between;gap:8px}.road-preview-heading strong{letter-spacing:.08em;font-size:11px}.road-preview-heading button{font-size:11px}.road-preview-actions{position:sticky;bottom:-12px;background:#f9f6ed;padding:10px 0 2px;border-top:1px solid #d5dbd0}.road-preview-actions button{flex:1}.road-report-status{padding:9px;border-left:4px solid #62817b;background:#e7eee7;font-weight:700;line-height:1.5}.road-preview-panel[data-report-status="invalid"] .road-report-status{border-color:#c12d38;background:#f9e4e5;color:#8b202a}.road-preview-panel[data-report-status="needs-review"] .road-report-status{border-color:#a06109;background:#f6ead4;color:#78500d}.road-preview-panel[data-report-status="safe"] .road-report-status{border-color:#147d70;color:#126053}.road-preview-selectors{display:grid;grid-template-columns:1fr 1fr;gap:8px}.road-preview-panel label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:600}.road-preview-panel input,.road-preview-panel select{width:100%;min-width:0;box-sizing:border-box;background:#fffdf6;color:#2e4647;border:1px solid #b9c4bb;border-radius:5px;padding:7px;font:inherit;min-height:36px}.road-preview-panel p{line-height:1.5;overflow-wrap:anywhere}.road-preview-panel .hint{font-size:11px;margin:8px 0}.road-endpoint-list{display:flex;flex-wrap:wrap;gap:4px}.road-endpoint-list button{font-size:10px;padding:5px 7px}.road-step-label{margin:8px 0;max-width:140px}.road-nudge-buttons{display:flex;gap:6px}.road-nudge-buttons button{min-width:44px;min-height:44px;border:1px solid #b9c4bb;border-radius:5px;background:#fffdf6;color:#315c69;font-size:18px}.road-report-list{padding-left:20px;margin:8px 0}.road-report-list li{border-top:1px solid #d5dbd0;padding:8px 0;overflow-wrap:anywhere}.road-report-list p{margin:4px 0}.road-report-list strong{font-size:11px}.road-report-list small{color:#546d6c}.road-preview-panel :focus-visible{outline:3px solid #315c69;outline-offset:2px}
+@media(max-width:900px){.road-preview-panel{top:auto;bottom:52px;left:8px;width:360px;max-width:calc(100% - 16px);max-height:46%}.road-preview-panel button,.road-preview-panel input,.road-preview-panel select{min-height:44px}.road-preview-heading strong{font-size:10px}.road-preview-panel .road-endpoint-list button{min-height:44px}.road-preview-panel .road-report-status{margin:6px 0}.road-preview-panel{padding:10px}.road-preview-actions{bottom:-10px}}
+
+.road-preview-panel .hint{color:#536b69}.road-preview-panel .minor-button{color:#315c69;background:#fffdf6;border-color:#a8bab4}.road-preview-panel .minor-button:hover{background:#e5eee8}.road-preview-panel button:disabled{opacity:.5;cursor:not-allowed}.road-preview-panel .validation-error{color:#9a2731}.road-inspection-active>.building-transform-panel,.road-inspection-active>.building-structure-history,.road-inspection-active>#mapEditDiagnostic4D{display:none!important}
+
+.road-preview-header{position:sticky;top:-12px;z-index:1;background:#f9f6ed;padding-top:4px}.road-preview-actions{z-index:2}.road-inspection-active .workspace-map-controls>button{white-space:normal;line-height:1.15}
+@media(max-width:900px){.road-preview-header{top:-10px}}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.a3</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.a4</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -496,6 +506,8 @@
             <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
             <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div></div>
           </div>
+          <button id="roadModeButton" class="tool-button full-width" aria-pressed="false" aria-controls="roadPreviewPanel">Inspect roads / junctions</button>
+          <p id="roadModeNotice" class="hint" role="status"></p>
           <details id="cityGenerationSettings" class="workspace-settings"><summary>Generation settings</summary>
             <div class="control-group"><label for="seedInput">Street seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"></div>
             <button id="newSeedButton" class="minor-button full-width">New street seed</button>
@@ -582,6 +594,25 @@
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div id="mapEditDiagnostic4D" class="map-edit-diagnostic-4d" role="status" aria-live="polite" hidden></div>
+        <section id="roadPreviewPanel" class="road-preview-panel" aria-labelledby="roadPreviewHeading" hidden>
+          <div class="road-preview-header"><div class="road-preview-heading"><strong id="roadPreviewHeading" tabindex="-1">ROAD INSPECTION</strong><button id="roadPreviewMinimize" class="minor-button" aria-expanded="true" aria-controls="roadPreviewBody">Minimize</button></div>
+          <p id="roadReportStatus" class="road-report-status" role="status" aria-live="polite" aria-atomic="true"></p></div>
+          <div id="roadPreviewBody">
+            <div class="road-preview-selectors"><label>Record type<select id="roadSelectionKind"><option value="junction">Junctions</option><option value="road">Roads</option></select></label><label>Record ID<select id="roadSelectionId"></select></label></div>
+            <p id="roadRecordDetails"></p><p id="roadAcceptedPoint" class="hint"></p>
+            <button id="roadLocate" class="minor-button">Locate on map</button>
+            <div id="roadEndpointList" class="road-endpoint-list" aria-label="Connected junctions"></div>
+            <p id="roadPreviewEligibility" class="hint"></p>
+            <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
+            <label class="road-step-label">Nudge units<input id="roadNudgeStep" type="number" min="0.001" step="0.5" value="0.5"></label>
+            <div class="road-nudge-buttons" role="group" aria-label="Nudge proposed junction"><button id="roadNudgeLeft" aria-label="Nudge left">←</button><button id="roadNudgeUp" aria-label="Nudge up">↑</button><button id="roadNudgeDown" aria-label="Nudge down">↓</button><button id="roadNudgeRight" aria-label="Nudge right">→</button></div>
+            <p class="hint road-preview-legend">Normal = accepted · Dashed = proposed · Teal = preserved blocks · Amber/red = reported issues</p>
+            <p id="roadReportError" class="validation-error"></p><p id="roadReportSummary" class="hint"></p><p id="roadReportMetrics" class="hint"></p>
+            <ol id="roadReportList" class="road-report-list" aria-label="Affected objects and impact descriptions"></ol><button id="roadShowMore" class="minor-button" hidden>Show 50 more entries</button>
+            <p class="hint">Preview only. Accepting road changes is planned for 0.2B.</p>
+          </div>
+          <div class="road-preview-actions"><button id="roadPreviewReset" class="minor-button" disabled>Reset preview</button><button id="roadPreviewCancel" class="minor-button">Cancel inspection</button></div>
+        </section>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
           <div class="building-transform-heading"><strong>PROPERTY PREVIEW</strong><span id="propertyEditTarget3I">—</span></div>
           <p class="hint">Drag a property corner or select it to edit precise coordinates. Move internal plot dividers without changing plot ownership. Everything remains a preview.</p>
@@ -3302,7 +3333,8 @@ class WorkspaceShell {
   reset({
     section = 'city',
     selection = null,
-    ui = null
+    ui = null,
+    transient = false
   } = {}) {
     this.sectionScroll.clear();
     for (const [id, value] of Object.entries(ui?.sectionScroll ?? {}))
@@ -3326,6 +3358,8 @@ class WorkspaceShell {
     this.$('workspaceToolScroll').scrollTop = this.sectionScroll.get(destination) ?? 0;
     this.$('workspaceInspectorScroll').scrollTop = ui?.inspectorScroll ?? 0;
     this.onLayout();
+    if(transient)this.restoredScroll = new Map(['workspaceToolScroll','workspaceInspectorScroll']
+      .map(id=>[id,Number(this.$(id).scrollTop??0)]));
   }
   renderInspector() {
     const descriptor = this.descriptor();
@@ -3394,8 +3428,14 @@ class WorkspaceShell {
     this.renderInspector();
   }
   bind() {
-    this.$('workspaceToolScroll').addEventListener('scroll', () => this.changed());
-    this.$('workspaceInspectorScroll').addEventListener('scroll', () => this.changed());
+    for(const id of ['workspaceToolScroll','workspaceInspectorScroll'])this.$(id).addEventListener('scroll',()=>{
+      // Browser scroll events arrive after a transient layout has been restored.
+      // Ignore only the exact restored position, never a subsequent user scroll.
+      const expected=this.restoredScroll?.get(id);
+      this.restoredScroll?.delete(id);
+      if(expected!==undefined && Number(this.$(id).scrollTop??0)===expected)return;
+      this.changed();
+    });
     for (const [index, section] of WORKSPACE_SECTIONS.entries()) {
       const button = this.$(`workspaceTab-${section.id}`);
       button.addEventListener('click', () => this.navigate(section.id));
@@ -8172,7 +8212,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.2-dev.a3';
+const APP_VERSION = '0.2-dev.a4';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -11669,7 +11709,7 @@ function bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, edit
     travel = 0;
     tapEligible = event.button === 0 && !space && editor.mode === 'pan';
     tapPoint = world(event);
-    transforming = event.button === 0 && !space && editor.mode === 'pan' && Boolean(transform.begin?.(tapPoint, camera.zoom));
+    transforming = event.button === 0 && !space && editor.mode === 'pan' && Boolean(transform.begin?.(tapPoint, camera.zoom, event));
     if (transforming) { panning = false; tapEligible = false; }
     canvas.setPointerCapture(event.pointerId);
     if (panning) canvas.classList.add('is-dragging');
@@ -15283,6 +15323,632 @@ function inspectJunctionImpact(project, junctionId, point) {
 }
 
 
+// src/core/road-inspection.js
+
+// Selection and presentation only. A1 owns eligibility; A3 owns impact status.
+function roadInspectionDetails(graph, selection) {
+  if (!selection) return null;
+  const junction = selection.kind === 'junction';
+  const record = (junction ? graph.nodesById : graph.roadsById).get(selection.id);
+  if (!record) return null;
+  const roadIds = junction ? graph.incidentRoads.get(record.id) : [record.id];
+  const classes = roadIds.map((id) => graph.roadClasses.get(id));
+  return {
+    ...selection,
+    record,
+    roadIds,
+    endpoints: junction ? [...graph.adjacency.get(record.id)] : [record.a, record.b],
+    classes: [...new Set(classes.map((c) => c.kind))],
+    reasons: [...new Set(classes.flatMap((c) => c.reasons))],
+    protected: classes.some((c) => c.protected),
+    movable: junction && graph.valid && roadIds.length > 0 && classes.every((c) => !c.protected),
+  };
+}
+
+function hitRoadInspection(graph, point, zoom, pointerType = 'mouse', draft = null) {
+  const radius = (pointerType === 'touch' ? 22 : 10) / zoom;
+  if (
+    draft &&
+    Number.isFinite(draft.point?.x) &&
+    Number.isFinite(draft.point?.y) &&
+    Math.hypot(point.x - draft.point.x, point.y - draft.point.y) <= radius
+  )
+    return { kind: 'junction', id: draft.id };
+  let hit = null,
+    best = radius;
+  for (const [id, node] of graph.nodesById) {
+    const distance = Math.hypot(point.x - node.x, point.y - node.y);
+    if (distance <= best) {
+      hit = { kind: 'junction', id };
+      best = distance;
+    }
+  }
+  if (hit) return hit;
+  best = (pointerType === 'touch' ? 22 : 7) / zoom;
+  for (const [id, road] of graph.roadsById) {
+    const a = graph.nodesById.get(road.a),
+      b = graph.nodesById.get(road.b);
+    if (!a || !b) continue;
+    const distance = distanceToSegment(point, a, b);
+    if (distance <= best) {
+      hit = { kind: 'road', id };
+      best = distance;
+    }
+  }
+  return hit;
+}
+
+// Typed IDs are essential: different accepted collections may reuse an ID.
+function roadReportHighlights(report) {
+  const rank = { info: 0, 'needs-review': 1, invalid: 2 },
+    affected = new Map();
+  for (const row of report?.affected ?? []) {
+    const key = JSON.stringify([row.kind, row.id]),
+      old = affected.get(key);
+    if (!old || rank[row.severity] > rank[old.severity])
+      affected.set(key, { kind: row.kind, id: row.id, severity: row.severity });
+  }
+  return {
+    affected: [...affected.values()],
+    preserved: (report?.preservedObjects ?? []).filter(
+      (row) => !affected.has(JSON.stringify([row.kind, row.id])),
+    ),
+  };
+}
+
+
+// src/editor/road-preview.js
+
+
+
+// No commit, history or serialization interface. Revisions invalidate every
+// deferred callback, including callbacks already queued when cancellation occurs.
+class RoadPreviewSession {
+  constructor({
+    getProject,
+    changed = () => {},
+    schedule = (fn, ms) => setTimeout(fn, ms),
+    unschedule = (id) => clearTimeout(id),
+    analyze = analyzeRoadImpact,
+  }) {
+    Object.assign(this, { getProject, changed, schedule, unschedule, analyze });
+    this.active = false;
+    this.revision = 0;
+  }
+  start() {
+    this.stop();
+    this.project = this.getProject();
+    if (!this.project?.city) return false;
+    this.city = this.project.city;
+    this.graph = buildRoadGraph(this.city);
+    this.active = true;
+    const id =
+      [...this.graph.nodesById.keys()].find(
+        (id) => roadInspectionDetails(this.graph, { kind: 'junction', id }).movable,
+      ) ?? this.graph.nodesById.keys().next().value;
+    this.select(id ? { kind: 'junction', id } : null);
+    return true;
+  }
+  current() {
+    return this.active && this.getProject() === this.project && this.getProject()?.city === this.city;
+  }
+  invalidate() {
+    this.revision++;
+    if (this.timer !== undefined) this.unschedule(this.timer);
+    this.timer = undefined;
+  }
+  stop() {
+    this.invalidate();
+    this.active = false;
+    this.selection = this.point = this.proposal = this.report = this.drag = null;
+    this.checking = false;
+    this.error = '';
+    this.project = this.city = this.graph = null;
+  }
+  get details() {
+    return this.active ? roadInspectionDetails(this.graph, this.selection) : null;
+  }
+  get pending() {
+    const d = this.details;
+    return Boolean(
+      d?.kind === 'junction' && this.point && (this.point.x !== d.record.x || this.point.y !== d.record.y),
+    );
+  }
+  select(selection) {
+    this.invalidate();
+    this.selection = selection ? { ...selection } : null;
+    this.reset();
+  }
+  reset() {
+    this.invalidate();
+    const d = this.details;
+    this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
+    this.proposal = this.report = this.drag = null;
+    this.checking = false;
+    this.error = '';
+    this.changed();
+  }
+  update(point, { defer = true, dragging = false } = {}) {
+    if (!this.current() || !this.details?.movable) return false;
+    this.invalidate();
+    this.point = { x: point.x, y: point.y };
+    this.report = this.proposal = null;
+    this.error = '';
+    this.checking = this.pending;
+    this.changed();
+    if (!this.pending || dragging) return true;
+    const revision = this.revision;
+    const run = () => {
+      if (!this.current() || revision !== this.revision) return;
+      this.timer = undefined;
+      try {
+        this.proposal = proposeJunctionMove(this.city, this.selection.id, this.point);
+        this.report = this.analyze(this.project, this.proposal);
+      } catch (error) {
+        this.error = 'Report unavailable: ' + error.message;
+      }
+      this.checking = false;
+      this.changed();
+    };
+    if (defer) this.timer = this.schedule(run, 180);
+    else run();
+    return true;
+  }
+  nudge(dx, dy) {
+    return this.point && this.update({ x: this.point.x + dx, y: this.point.y + dy });
+  }
+  hit(point, zoom, pointerType) {
+    return this.current()
+      ? hitRoadInspection(
+          this.graph,
+          point,
+          zoom,
+          pointerType,
+          this.selection?.kind === 'junction' ? { id: this.selection.id, point: this.point } : null,
+        )
+      : null;
+  }
+  begin(point, zoom, pointerType) {
+    const hit = this.hit(point, zoom, pointerType);
+    if (!hit) return false;
+    if (hit.kind !== this.selection?.kind || hit.id !== this.selection?.id) this.select(hit);
+    this.drag = {
+      point: this.point ? { ...this.point } : null,
+      start: { ...point },
+      movable: this.details.movable,
+    };
+    this.invalidate();
+    return true;
+  }
+  move(point) {
+    const drag = this.drag;
+    if (!drag?.movable) return;
+    this.update(
+      { x: drag.point.x + point.x - drag.start.x, y: drag.point.y + point.y - drag.start.y },
+      { dragging: true },
+    );
+  }
+  end(cancelled) {
+    const drag = this.drag;
+    this.drag = null;
+    if (!drag?.movable) return;
+    this.update(cancelled ? drag.point : this.point);
+  }
+}
+
+
+// src/ui/road-inspection.js
+
+
+class RoadInspectionWorkspace {
+  constructor({
+    getElement,
+    getProject,
+    camera,
+    shell,
+    capture,
+    canEnter,
+    beforeEnter = () => {},
+    draw,
+    afterExit = () => {},
+  }) {
+    Object.assign(this, {
+      $: getElement,
+      getProject,
+      camera,
+      shell,
+      capture,
+      canEnter,
+      beforeEnter,
+      draw,
+      afterExit,
+    });
+    this.session = new RoadPreviewSession({
+      getProject,
+      changed: () => {
+        this.render();
+        this.draw();
+      },
+    });
+    this.limit = 50;
+    this.bind();
+  }
+  get active() {
+    return this.session.active;
+  }
+  get transient() {
+    return Boolean(this.baseline);
+  }
+  savedWorkspace() {
+    return this.transient && this.getProject() === this.baseline.project ? this.baseline.workspace : null;
+  }
+  start() {
+    if (this.active) return;
+    const reason = this.canEnter();
+    if (reason) {
+      this.$('roadModeNotice').textContent = reason;
+      return;
+    }
+    this.$('roadPreviewBody').hidden = false;
+    this.$('roadPreviewMinimize').textContent = 'Minimize';
+    this.$('roadPreviewMinimize').setAttribute('aria-expanded', 'true');
+    this.beforeEnter();
+    const captured = this.capture();
+    this.baseline = { project: captured.project, workspace: JSON.parse(JSON.stringify(captured.workspace)) };
+    this.session.start();
+    const ui = this.baseline.workspace.ui;
+    this.shell.reset({
+      selection: ui.selection,
+      transient: true,
+      ui: {
+        ...ui,
+        inspectorCollapsed: true,
+        toolsCollapsed: this.camera.width < 900 ? true : ui.toolsCollapsed,
+      },
+    });
+    this.$('workspaceSection-city').inert = true;
+    this.$('mapViewport').classList.add('road-inspection-active');
+    this.$('layersMenuButton').disabled = true;
+    this.$('workspaceOpenInspector').disabled = true;
+    this.$('roadModeNotice').textContent = '';
+    this.render();
+    this.draw();
+    this.$('roadPreviewHeading').focus();
+  }
+  exit({ restore = true, focus = false } = {}) {
+    if (!this.transient) return;
+    const baseline = this.baseline;
+    this.session.stop();
+    this.$('workspaceSection-city').inert = false;
+    this.$('mapViewport').classList.remove('road-inspection-active');
+    this.$('layersMenuButton').disabled = false;
+    this.$('workspaceOpenInspector').disabled = false;
+    if (restore && this.getProject() === baseline.project) {
+      this.shell.reset({
+        selection: baseline.workspace.ui.selection,
+        transient: true,
+        ui: baseline.workspace.ui,
+      });
+      Object.assign(this.camera, baseline.workspace.view.camera);
+    }
+    // Keep serialization/change suppression active throughout layout restoration.
+    this.baseline = null;
+    this.optionsKind = null;
+    this.selectionKey = null;
+    this.lastReport = undefined;
+    this.render();
+    this.afterExit();
+    this.draw();
+    if (focus) this.$('roadModeButton').focus();
+  }
+  reset() {
+    if (!this.active) return;
+    if (this.baseline) Object.assign(this.camera, this.baseline.workspace.view.camera);
+    this.session.reset();
+  }
+  bind() {
+    this.$('roadModeButton').addEventListener('click', () => this.start());
+    this.$('roadPreviewCancel').addEventListener('click', () => this.exit({ focus: true }));
+    this.$('roadLocate').addEventListener('click', () => {
+      const d = this.session.details;
+      if (!d) return;
+      const points =
+        d.kind === 'junction' ? [d.record] : d.endpoints.map((id) => this.session.graph.nodesById.get(id));
+      this.camera.x = points.reduce((sum, p) => sum + p.x / points.length, 0);
+      this.camera.y =
+        points.reduce((sum, p) => sum + p.y / points.length, 0) +
+        (this.camera.width < 900 ? (this.camera.height * 0.22) / this.camera.zoom : 0);
+      this.draw();
+    });
+    this.$('roadPreviewReset').addEventListener('click', () => this.reset());
+    this.$('roadPreviewMinimize').addEventListener('click', () => {
+      const body = this.$('roadPreviewBody');
+      body.hidden = !body.hidden;
+      this.$('roadPreviewMinimize').setAttribute('aria-expanded', String(!body.hidden));
+      this.$('roadPreviewMinimize').textContent = body.hidden ? 'Expand' : 'Minimize';
+    });
+    this.$('roadSelectionKind').addEventListener('change', () => {
+      this.optionsKind = null;
+      const kind = this.$('roadSelectionKind').value;
+      const index = kind === 'junction' ? this.session.graph.nodesById : this.session.graph.roadsById;
+      this.session.select({ kind, id: index.keys().next().value });
+    });
+    this.$('roadSelectionId').addEventListener('change', () =>
+      this.session.select({
+        kind: this.$('roadSelectionKind').value,
+        id: this.$('roadSelectionId').value,
+      }),
+    );
+    for (const id of ['roadProposedX', 'roadProposedY'])
+      this.$(id).addEventListener('input', () => {
+        const number = (id) => (this.$(id).value.trim() === '' ? NaN : Number(this.$(id).value));
+        this.session.update({ x: number('roadProposedX'), y: number('roadProposedY') });
+      });
+    for (const direction of ['Left', 'Right', 'Up', 'Down'])
+      this.$('roadNudge' + direction).addEventListener('click', () => this.nudge(direction));
+    this.$('roadShowMore').addEventListener('click', () => {
+      this.limit += 50;
+      this.renderReport();
+    });
+  }
+  nudge(direction, multiplier = 1) {
+    const step = Number(this.$('roadNudgeStep').value);
+    if (!Number.isFinite(step) || step <= 0) return false;
+    return this.session.nudge(
+      (direction === 'Right' ? step : direction === 'Left' ? -step : 0) * multiplier,
+      (direction === 'Down' ? step : direction === 'Up' ? -step : 0) * multiplier,
+    );
+  }
+  render() {
+    const s = this.session,
+      panel = this.$('roadPreviewPanel');
+    panel.hidden = !s.active;
+    this.$('roadModeButton').setAttribute('aria-pressed', String(s.active));
+    if (!s.active) return;
+    const d = s.details,
+      kind = d?.kind ?? 'junction';
+    this.$('roadSelectionKind').value = kind;
+    if (this.optionsKind !== kind) {
+      const index = kind === 'junction' ? s.graph.nodesById : s.graph.roadsById;
+      this.$('roadSelectionId').replaceChildren(
+        ...[...index.keys()].map((id) => {
+          const option = document.createElement('option');
+          option.value = id;
+          const detail = roadInspectionDetails(s.graph, { kind, id });
+          option.textContent = id + (detail.protected ? ' · protected' : '');
+          return option;
+        }),
+      );
+      this.optionsKind = kind;
+    }
+    this.$('roadSelectionId').value = d?.id ?? '';
+    this.$('roadRecordDetails').textContent = d
+      ? `${d.id} · ${d.classes.join(', ')} · ${d.roadIds.length} road${d.roadIds.length === 1 ? '' : 's'} · ${d.protected ? 'Protected: ' + d.reasons.join(', ') : 'Ordinary / unprotected'}`
+      : 'No road records available.';
+    const key = JSON.stringify(s.selection);
+    if (this.selectionKey !== key) {
+      this.selectionKey = key;
+      this.$('roadEndpointList').replaceChildren(
+        ...(d?.endpoints ?? []).map((id) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'minor-button';
+          button.textContent = (kind === 'road' ? 'Endpoint ' : '') + id;
+          button.setAttribute(
+            'aria-label',
+            'Inspect ' + (kind === 'road' ? 'endpoint ' : 'connected junction ') + id,
+          );
+          button.addEventListener('click', () => {
+            s.select({ kind: 'junction', id });
+            this.$('roadSelectionId').focus();
+          });
+          return button;
+        }),
+      );
+    }
+    this.$('roadAcceptedPoint').textContent =
+      kind === 'junction' && d
+        ? `Accepted X ${d.record.x} · Y ${d.record.y}`
+        : d
+          ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
+          : '';
+    this.$('roadPreviewEligibility').textContent = d?.movable
+      ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
+      : d?.protected
+        ? 'Protected geometry is inspection only. Choose an ordinary junction to try a position.'
+        : 'Choose an ordinary junction to try a position. Roads are inspection only.';
+    for (const [id, key] of [
+      ['roadProposedX', 'x'],
+      ['roadProposedY', 'y'],
+    ]) {
+      this.$(id).disabled = !d?.movable;
+      if (document.activeElement !== this.$(id))
+        this.$(id).value = s.point && Number.isFinite(s.point[key]) ? String(s.point[key]) : '';
+    }
+    for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !d?.movable;
+    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error;
+    const status = s.error
+      ? 'Report unavailable'
+      : s.checking
+        ? 'Checking'
+        : s.report
+          ? { safe: 'Safe', 'needs-review': 'Needs review', invalid: 'Invalid' }[s.report.status]
+          : 'Accepted position · no proposed change';
+    const live =
+      status +
+      (s.report
+        ? ` · ${s.report.counts.affectedObjects} affected · ${s.report.counts.issues} issues · ${s.report.counts.preservedObjects} preserved`
+        : '');
+    if (this.$('roadReportStatus').textContent !== live) this.$('roadReportStatus').textContent = live;
+    panel.setAttribute('data-report-status', s.report?.status ?? (s.checking ? 'checking' : 'idle'));
+    this.$('roadReportError').textContent = s.error;
+    if (this.lastReport !== s.report) {
+      this.lastReport = s.report;
+      this.limit = 50;
+      this.renderReport();
+    }
+  }
+  renderReport() {
+    const report = this.session.report,
+      rows = report?.affected ?? [];
+    this.$('roadReportList').replaceChildren(
+      ...rows.slice(0, this.limit).map((row) => {
+        const item = document.createElement('li');
+        const title = document.createElement('strong');
+        title.textContent = `${row.kind} ${row.id} · ${row.severity} · ${row.code}`;
+        const description = document.createElement('p');
+        description.textContent = row.message;
+        const related = document.createElement('small');
+        related.textContent = row.relatedIds.length ? 'Related: ' + row.relatedIds.join(', ') : '';
+        item.replaceChildren(title, description, related);
+        return item;
+      }),
+    );
+    this.$('roadReportList').hidden = !rows.length;
+    this.$('roadShowMore').hidden = rows.length <= this.limit;
+    this.$('roadReportSummary').textContent = report
+      ? `${report.complete ? 'Complete analysis.' : 'Analysis incomplete; safety is not proven.'} ${report.requiresReconciliation ? 'Dependent objects require reconciliation.' : ''} ${Math.min(rows.length, this.limit)} of ${rows.length} report entries shown.`
+      : 'Change a junction position to inspect its impact. Accepted geometry stays unchanged.';
+    const metrics = report?.metrics;
+    this.$('roadReportMetrics').textContent = metrics
+      ? `${metrics.roads.length} changed road measurements · ${metrics.faces.length} face measurements · ${metrics.topology?.split.length ?? 0} splits · ${metrics.topology?.merged.length ?? 0} merges`
+      : '';
+  }
+}
+
+
+// src/renderer/road-inspection.js
+
+
+
+const rpColors = {
+  safe: '#147d70',
+  'needs-review': '#a06109',
+  invalid: '#c12d38',
+  checking: '#526d9a',
+  info: '#62817b',
+};
+function drawRoadInspectionOverlay(canvas, camera, city, session) {
+  if (!session?.current()) return;
+  const ctx = canvas.getContext('2d'),
+    graph = session.graph;
+  const path = (points, closed = false) => {
+    if (!points?.length || !points.every((p) => p && Number.isFinite(p.x) && Number.isFinite(p.y)))
+      return false;
+    ctx.beginPath();
+    points.forEach((p, i) => {
+      const s = camera.worldToScreen(p);
+      if (i) ctx.lineTo(s.x, s.y);
+      else ctx.moveTo(s.x, s.y);
+    });
+    if (closed) ctx.closePath();
+    return true;
+  };
+  const segment = (road, color, width = 3, candidate = false) => {
+    if (!road) return;
+    const points = [road.a, road.b].map((id) =>
+      candidate && id === session.selection?.id ? session.point : graph.nodesById.get(id),
+    );
+    if (path(points)) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.stroke();
+    }
+  };
+  const highlights = roadReportHighlights(session.report);
+  const records = new Map();
+  for (const [collection, kind] of ROAD_IMPACT_COLLECTIONS)
+    for (const record of city[collection] ?? []) records.set(JSON.stringify([kind, record.id]), record);
+  if (city.plaza) records.set(JSON.stringify(['plaza', city.plaza.id]), city.plaza);
+  const highlight = (row, preserved) => {
+    const record = records.get(JSON.stringify([row.kind, row.id]));
+    if (!record) return;
+    const color = preserved ? '#147d70' : rpColors[row.severity];
+    if (row.kind === 'road') {
+      segment(record, color, 4);
+      return;
+    }
+    if (row.kind === 'junction') {
+      const p = camera.worldToScreen(record);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      return;
+    }
+    let points = record.boundary ?? record.footprint ?? record.polygon ?? record.path ?? record.points;
+    if (row.kind === 'water' && city.waterFeatures.includes(record)) points = waterFeaturePolygon(record);
+    if (record.vertices) points = record.vertices.map((id) => graph.nodesById.get(id));
+    if (row.kind === 'district') {
+      for (const block of city.blocks.filter((b) => b.districtId === row.id))
+        highlight({ kind: 'block', id: block.id, severity: row.severity }, preserved);
+      return;
+    }
+    if (!points && record.a && record.b)
+      points = [
+        typeof record.a === 'string' ? graph.nodesById.get(record.a) : record.a,
+        typeof record.b === 'string' ? graph.nodesById.get(record.b) : record.b,
+      ];
+    if (path(points, true)) {
+      ctx.globalAlpha = preserved ? 0.055 : 0.15;
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = preserved ? 0.7 : 2;
+      ctx.stroke();
+    } else if (Number.isFinite((record.center ?? record).x) && Number.isFinite((record.center ?? record).y)) {
+      const p = camera.worldToScreen(record.center ?? record);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 10, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  };
+  ctx.save();
+  // Preserved block shading is intentionally subtle; affected geometry wins.
+  highlights.preserved.filter((r) => r.kind === 'block').forEach((r) => highlight(r, true));
+  highlights.affected.forEach((r) => highlight(r, false));
+  for (const [id, node] of graph.nodesById) {
+    const p = camera.worldToScreen(node),
+      protectedNode = graph.incidentRoads.get(id).some((r) => graph.roadClasses.get(r).protected);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, protectedNode ? 2.7 : 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = protectedNode ? '#787b76' : '#315c69';
+    ctx.fill();
+  }
+  const d = session.details;
+  if (d?.kind === 'road') segment(d.record, '#315c69', 5);
+  if (d?.kind === 'junction') {
+    const p = camera.worldToScreen(d.record);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 10, 0, Math.PI * 2);
+    ctx.strokeStyle = '#315c69';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+  if (session.pending) {
+    const color = rpColors[session.report?.status] ?? rpColors.checking;
+    ctx.setLineDash([7, 5]);
+    for (const id of d.roadIds) segment(graph.roadsById.get(id), color, 3, true);
+    ctx.setLineDash([]);
+    if (Number.isFinite(session.point.x) && Number.isFinite(session.point.y)) {
+      const p = camera.worldToScreen(session.point);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+
 // src/app.js
 // A1 foundation APIs are bundled for the later road inspector; no editor hooks yet.
 
@@ -15333,9 +15999,10 @@ function inspectJunctionImpact(project, junctionId, point) {
 
 
 
-// A2 face identity APIs remain transient until the later inspector checkpoint.
+// A2 face identity APIs remain read-only behind the A4 preview.
 
-// A3 owns read-only impact classification for the future road preview.
+// A3 owns classification; A4 only presents its reports.
+
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
@@ -15373,6 +16040,7 @@ let buildingPlacementSession;
 let propertyEditSession;
 let propertyWorkspace;
 let identityWorkspace;
+let roadWorkspace;
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -15415,6 +16083,8 @@ function updatePendingFeedback() {
   updateUndoFeedback();
 }
 function currentUndoContext() {
+  if(roadWorkspace?.active)return {kind:'road-preview',controlId:'roadPreviewReset',label:'Reset roads',
+    available:roadWorkspace.session.pending,description:'Reset temporary junction coordinates; accepted roads have no edits to undo.'};
   if(propertyEditSession?.isActive){
     const id=propertyEditSession.propertyId;
     const available=!propertyEditSession.isPending&&!propertyEditSession.drag&&propertyHistory.can('undo',project,id);
@@ -15468,13 +16138,14 @@ function undoCurrentScope() {
   return true;
 }
 function workspaceChanged() {
+  if(roadWorkspace?.transient){syncPropertyDeletionControls4A();updateUndoFeedback();return;}
   syncPropertyDeletionControls4A();
   updatePendingFeedback();
   files?.changed();
 }
 
 function syncPropertyDeletionControls4A() {
-  const busy=Boolean(propertyEditSession?.isActive || buildingPlacementSession?.isActive || buildingEditSession?.isActive);
+  const busy=Boolean(roadWorkspace?.active || propertyEditSession?.isActive || buildingPlacementSession?.isActive || buildingEditSession?.isActive);
   for(const [direction,id] of [['undo','propertyDeletionUndo4A'],['redo','propertyDeletionRedo4A']]) {
     const available=propertyDeletionHistory4A.can(direction,project);
     const button=$(id);
@@ -15488,7 +16159,11 @@ function requestDraw() {
   drawPending = true;
   requestAnimationFrame(() => {
     drawPending = false;
-    if (project) renderMap(canvas, camera, project, editor, layers, districtPanel?.editor.selectedDistrictId, waterPanel?.editor, terrainPanel?.editor, workspaceShell?.state.selection, landscapeWorkspace?.hover, buildingWorkspace?.hover, propertyWorkspace?.hover, buildingEditSession, buildingPlacementSession, propertyEditSession);
+    if (project) {
+      const roadMode=roadWorkspace?.active;
+      renderMap(canvas, camera, project, roadMode?null:editor, layers, districtPanel?.editor.selectedDistrictId, roadMode?null:waterPanel?.editor, roadMode?null:terrainPanel?.editor, roadMode?null:workspaceShell?.state.selection, roadMode?null:landscapeWorkspace?.hover, roadMode?null:buildingWorkspace?.hover, roadMode?null:propertyWorkspace?.hover, buildingEditSession, buildingPlacementSession, propertyEditSession);
+      drawRoadInspectionOverlay(canvas,camera,project.city,roadWorkspace?.session);
+    }
   });
 }
 
@@ -15684,7 +16359,7 @@ function syncBuildingStructureUI3H() {
   $('buildingStructurePanel').hidden=!shown;
   const propertyId=structureHistoryProperty3H();
   const historyShown=Boolean(project && propertyId && workspaceShell?.state.section==='city'
-    && !buildingEditSession?.isActive && !propertyEditSession?.isActive);
+    && !roadWorkspace?.active && !buildingEditSession?.isActive && !propertyEditSession?.isActive);
   $('buildingStructureHistoryPanel').hidden=!historyShown;
   const idle=Boolean(session?.isActive);
   const canHistory=historyShown && !idle;
@@ -15940,6 +16615,11 @@ function syncMapEditDiagnostic4D() {
   box.textContent='EDIT BLOCKED · '+formatEditIssue4D(issue,context);
 }
 function updateMapIndicators() {
+  if(roadWorkspace?.active){
+    $('toolHint').textContent='ROAD INSPECTION · Select a junction or road · Space/middle drag pans · Escape cancels';
+    $('draftBadge').textContent='● ROAD PREVIEW ONLY';
+    return;
+  }
   clearMapHover();
   syncBuildingTransformUI();
   syncBuildingStructureUI3H();
@@ -15965,6 +16645,7 @@ function updateViewport() {
 }
 
 function editorChanged() {
+  if(editor.mode!=='pan')roadWorkspace?.exit();
   if (editor.mode !== 'pan') {buildingEditSession?.stop();buildingPlacementSession?.stop();propertyEditSession?.stop();}
   clearMapHover();
   for (const mode of ['freehand', 'points', 'edit', 'pan', 'center']) $(mode + 'Button').setAttribute('aria-pressed', String(editor.mode === mode));
@@ -16026,6 +16707,7 @@ function updateDetails() {
 }
 
 function generate({ discardIdentities = false } = {}) {
+  roadWorkspace?.exit();
   if (!discardIdentities && identityWorkspace)
     return identityWorkspace.requestRebuild(() => generate({ discardIdentities: true }));
   try {
@@ -16156,6 +16838,7 @@ $('editButton').addEventListener('click', () => {
   editor.notify('Drag outline points. Double-click an edge to add a point.');
 });
 $('panButton').addEventListener('click', () => {
+  if(roadWorkspace?.active){roadWorkspace.exit({focus:true});return;}
   if (!exitPropertyEditing3I() || !exitBuildingEditing() || !exitStructurePlacement3H()) return;
   terrainPanel?.editor.setMode('pan');
   waterPanel?.editor.setMode('pan');
@@ -16210,7 +16893,21 @@ $('seedInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') generate();
 });
 window.addEventListener('keydown', e => {
+  if(roadWorkspace?.active && e.key==='Escape'){
+    roadWorkspace.exit({focus:true});e.preventDefault();return;
+  }
   if (!isMapShortcutEvent(e, document.activeElement)) return;
+  if(roadWorkspace?.active){
+    if((e.ctrlKey||e.metaKey)&&['z','y'].includes(e.key.toLowerCase())){
+      if(e.key.toLowerCase()==='z'&&!e.shiftKey)roadWorkspace.reset();
+      e.preventDefault();return;
+    }
+    if(['Delete','Backspace'].includes(e.key)){e.preventDefault();return;}
+    if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)
+      &&(e.target===canvas||document.activeElement===canvas)){
+      roadWorkspace.nudge(e.key.slice(5),e.shiftKey?10:1);e.preventDefault();return;
+    }
+  }
   if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
     if (propertyEditSession?.isActive && movePropertyHistory3I('redo')) e.preventDefault();
     else if (buildingEditSession?.isActive && moveBuildingHistory('redo')) e.preventDefault();
@@ -16283,8 +16980,11 @@ window.addEventListener('keydown', e => {
 function resize() {
   const rect = viewport.getBoundingClientRect();
   camera.resize(Math.max(1, Math.round(rect.width)), Math.max(1, Math.round(rect.height)));
+  clearMapHover();
   requestDraw();
-  updateViewport();
+  // Viewport dimensions are not persisted. A layout/ResizeObserver callback
+  // must not create a file revision after a transient inspection is cancelled.
+  $('zoomValue').textContent = `${Math.round(camera.zoom*100)}%`;
 }
 districtPanel = new DistrictPanel({
   getElement: $,
@@ -16425,6 +17125,7 @@ function syncWorkspaceDistrictSelection() {
 }
 
 function stopWorkspaceTools(targetSection = null) {
+  roadWorkspace?.exit();
   if (targetSection !== 'city') {buildingEditSession?.stop();buildingPlacementSession?.stop();propertyEditSession?.stop();}
   clearMapHover();
   // Cancel only a tool whose controls are leaving the visible section.
@@ -16568,6 +17269,16 @@ identityWorkspace = new IdentityWorkspace({
   changed: workspaceChanged
 });
 identityWorkspace.bind();
+roadWorkspace = new RoadInspectionWorkspace({
+  getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
+  canEnter:()=>!project?.city?'Generate a city before inspecting roads.':
+    workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive
+      ||propertyEditSession?.isActive||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
+      ?'Finish or cancel the current edit, then choose Pan in City to inspect roads.':'',
+  beforeEnter:()=>{workspaceMenus.close();clearMapHover();},
+  draw:()=>{$('zoomValue').textContent=`${Math.round(camera.zoom*100)}%`;updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();requestDraw();},
+  afterExit:()=>{updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();}
+});
 workspaceShell.bind();
 landscapeWorkspace.bind();
 for (const tool of ['Move','Rotate','Resize'])
@@ -16783,6 +17494,7 @@ const mapEditor = {
 };
 
 bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => {
+  if(roadWorkspace?.active){const hit=roadWorkspace.session.hit(point,camera.zoom);if(hit)roadWorkspace.session.select(hit);return;}
   if (propertyEditSession?.isActive) {
     const corner=propertyEditSession.hitCorner(project?.city,point,camera.zoom);
     if(corner!==null)propertyEditSession.selectCorner(corner);
@@ -16811,6 +17523,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     if (!districtPanel.editor.selectedDistrictId) workspaceShell.clear();
   }
 }, point => {
+  if(roadWorkspace?.active){clearMapHover();return;}
   if (propertyEditSession?.isActive) {clearMapHover();return;}
   if (buildingPlacementSession?.isActive) {clearMapHover();return;}
   if (buildingEditSession?.isActive) {
@@ -16828,7 +17541,8 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
   propertyWorkspace.setHover(propertyHit);
   canvas.classList.toggle('feature-hover', Boolean(hit || propertyHit));
 }, {
-  begin: (point,zoom) => {
+  begin: (point,zoom,event) => {
+    if(roadWorkspace?.active)return roadWorkspace.session.begin(point,zoom,event?.pointerType);
     if(propertyEditSession?.isActive){
       const index=propertyEditSession.hitCorner(project?.city,point,zoom);
       if(index===null)return false;
@@ -16848,6 +17562,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     return Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom));
   },
   move: point => {
+    if(roadWorkspace?.active){roadWorkspace.session.move(point);return;}
     if(propertyEditSession?.drag){
       propertyEditSession.setCorner(propertyEditSession.drag.index,point);
     }else if(buildingPlacementSession?.drag){
@@ -16859,6 +17574,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     }else buildingEditSession?.moveGesture(point);
   },
   end: cancelled => {
+    if(roadWorkspace?.active){roadWorkspace.session.end(cancelled);return;}
     if(propertyEditSession?.drag){
       const drag=propertyEditSession.drag;
       propertyEditSession.drag=null;
@@ -16896,6 +17612,8 @@ generate();
 fitMap();
 
 function captureWorkspace() {
+  const roadBaseline=roadWorkspace?.savedWorkspace();
+  if(roadBaseline)return {project,workspace:copyJson(roadBaseline)};
   return {
     project,
     workspace: {
@@ -16977,6 +17695,7 @@ function captureWorkspace() {
 }
 
 function applyProjectDocument(document) {
+  roadWorkspace?.exit({restore:false});
   propertyEditSession?.stop();
   landscapeWorkspace.restoring = true;
   const next = copyJson(document.project),

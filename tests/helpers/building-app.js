@@ -4,7 +4,7 @@ import vm from 'node:vm';
 // Test-only access to closure state; the distributed app exposes no QA globals.
 export const buildingObservation = `
 globalThis.__buildingQA = {
-  state: () => ({ project, camera, editor, layers, workspaceShell, buildingWorkspace, buildingEditSession, propertyWorkspace, identityWorkspace,
+  state: () => ({ project, camera, editor, layers, workspaceShell, roadWorkspace, buildingWorkspace, buildingEditSession, propertyWorkspace, identityWorkspace,
     landscapeWorkspace, districtPanel, waterPanel, terrainPanel, fortificationPanel, files, buildingHistory, buildingStructureHistory, buildingPlacementSession, propertyEditSession, propertyHistory, propertyDeletionHistory4A }),
   capture: captureWorkspace, apply: applyProjectDocument, draw: requestDraw
 };
@@ -55,7 +55,7 @@ export async function buildingAppHarness() {
     return element;
   }
   const context = {
-    document, console, URL, Uint32Array, TextEncoder, Math, Date,
+    document, console, URL, Uint32Array, TextEncoder, Math, Date, setTimeout, clearTimeout,
     window: {
       location: { href: 'file:///mappo.html?seed=building-selection-qa&size=small' }, devicePixelRatio: 1,
       addEventListener(name, fn) { (globalEvents[name] ??= []).push(fn); }

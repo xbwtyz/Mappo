@@ -106,7 +106,8 @@ export class WorkspaceShell {
   reset({
     section = 'city',
     selection = null,
-    ui = null
+    ui = null,
+    transient = false
   } = {}) {
     this.sectionScroll.clear();
     for (const [id, value] of Object.entries(ui?.sectionScroll ?? {}))
@@ -130,6 +131,8 @@ export class WorkspaceShell {
     this.$('workspaceToolScroll').scrollTop = this.sectionScroll.get(destination) ?? 0;
     this.$('workspaceInspectorScroll').scrollTop = ui?.inspectorScroll ?? 0;
     this.onLayout();
+    if(transient)this.restoredScroll = new Map(['workspaceToolScroll','workspaceInspectorScroll']
+      .map(id=>[id,Number(this.$(id).scrollTop??0)]));
   }
   renderInspector() {
     const descriptor = this.descriptor();
@@ -198,8 +201,14 @@ export class WorkspaceShell {
     this.renderInspector();
   }
   bind() {
-    this.$('workspaceToolScroll').addEventListener('scroll', () => this.changed());
-    this.$('workspaceInspectorScroll').addEventListener('scroll', () => this.changed());
+    for(const id of ['workspaceToolScroll','workspaceInspectorScroll'])this.$(id).addEventListener('scroll',()=>{
+      // Browser scroll events arrive after a transient layout has been restored.
+      // Ignore only the exact restored position, never a subsequent user scroll.
+      const expected=this.restoredScroll?.get(id);
+      this.restoredScroll?.delete(id);
+      if(expected!==undefined && Number(this.$(id).scrollTop??0)===expected)return;
+      this.changed();
+    });
     for (const [index, section] of WORKSPACE_SECTIONS.entries()) {
       const button = this.$(`workspaceTab-${section.id}`);
       button.addEventListener('click', () => this.navigate(section.id));
