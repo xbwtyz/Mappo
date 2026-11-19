@@ -1,5 +1,7 @@
 # Mappo
 
+> Development branch: **0.2-dev.a1**, the first road-graph foundation checkpoint. [Scope and verification](docs/plans/0.2/A1_ROAD_GRAPH.md). The stable 0.1 distribution remains available below.
+
 **Mappo 0.1.0** is an offline-first medieval and fantasy city generator and 2D editor, built from modular JavaScript and shipped as **one standalone HTML file**.
 
 **[Launch Mappo 0.1](https://xbwtyz.github.io/Mappo/)** · **[Download the standalone HTML](dist/mappo-0.1.0.html)** · **[Release notes](docs/releases/v0.1.0.md)** · **[User guide](docs/user-guide.md)** · **[Development roadmap](docs/ROADMAP.md)**

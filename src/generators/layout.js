@@ -1,3 +1,4 @@
+import { createRoadNodeNormalizer, traceRoadFaces } from '../core/road-topology.js';
 import {
   terrainAccessSegments,
   terrainPassGeometry
@@ -173,31 +174,9 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
     }
   const nodes = [],
     roads = [],
-    byCoordinate = new Map(),
     edges = new Map();
 
-  function node(p) {
-    // Microunit snapping coalesces independently computed multi-way junctions.
-    const key = `${Math.round(p.x*1e6)},${Math.round(p.y*1e6)}`;
-    if (byCoordinate.has(key)) return byCoordinate.get(key);
-    if (hasObstacles) {
-      const ix = Math.round(p.x * 1e6),
-        iy = Math.round(p.y * 1e6);
-      for (let dx = -1; dx <= 1; dx++)
-        for (let dy = -1; dy <= 1; dy++) {
-          const q = byCoordinate.get(`${ix+dx},${iy+dy}`);
-          if (q && Math.hypot(q.x - p.x, q.y - p.y) < 1e-6) return q;
-        }
-    }
-    const n = {
-      id: `N-${String(nodes.length+1).padStart(4,'0')}`,
-      x: p.x,
-      y: p.y
-    };
-    nodes.push(n);
-    byCoordinate.set(key, n);
-    return n;
-  }
+  const node = createRoadNodeNormalizer(nodes, hasObstacles);
   const rank = {
     lane: 0,
     secondary: 1,
@@ -244,47 +223,7 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
     }
   }
 
-  function extractFaces() {
-    const byId = new Map(nodes.map(n => [n.id, n])),
-      adjacency = new Map(nodes.map(n => [n.id, []]));
-    for (const r of roads) {
-      adjacency.get(r.a).push(r.b);
-      adjacency.get(r.b).push(r.a);
-    }
-    for (const [id, neighbors] of adjacency) {
-      const a = byId.get(id);
-      neighbors.sort((b, c) => Math.atan2(byId.get(b).y - a.y, byId.get(b).x - a.x) - Math.atan2(byId.get(c).y - a.y, byId.get(c).x - a.x));
-    }
-    const visited = new Set(),
-      faces = [];
-    for (const road of roads)
-      for (const pair of [
-          [road.a, road.b],
-          [road.b, road.a]
-        ]) {
-        if (visited.has(pair.join(':'))) continue;
-        let [a, b] = pair;
-        const vertices = [];
-        for (let steps = 0; steps <= roads.length * 2; steps++) {
-          const key = `${a}:${b}`;
-          if (visited.has(key)) break;
-          visited.add(key);
-          vertices.push(a);
-          const neighbors = adjacency.get(b),
-            next = neighbors[(neighbors.indexOf(a) + neighbors.length - 1) % neighbors.length];
-          a = b;
-          b = next;
-        }
-        const polygon = vertices.map(id => byId.get(id)),
-          area = polygonSignedArea(polygon);
-        if (area > 1e-6) faces.push({
-          vertices,
-          area
-        });
-      }
-    return faces;
-  }
-  let faces = extractFaces();
+  let faces = traceRoadFaces(nodes, roads);
   const minimumArea = Math.max(1.01, spacing * spacing * .012);
   // Tangencies at the boundary can leave tiny slivers. Merge them into a
   // neighbor by removing a shared street, never a city boundary or plaza edge.
@@ -323,7 +262,7 @@ export function generateLayout(seed, size, survey, morphology = 'radial', water 
         }
       }
     }
-    faces = extractFaces();
+    faces = traceRoadFaces(nodes, roads);
   }
   // Remove junctions no longer used after merging small faces.
   const usedNodes = new Set(roads.flatMap(r => [r.a, r.b]));

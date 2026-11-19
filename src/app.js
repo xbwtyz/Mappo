@@ -1,3 +1,5 @@
+// A1 foundation APIs are bundled for the later road inspector; no editor hooks yet.
+import { buildRoadGraph, analyzeRoadGraph, proposeJunctionMove } from './core/road-graph.js';
 import {
   LandscapeWorkspace
 } from './ui/landscape.js';

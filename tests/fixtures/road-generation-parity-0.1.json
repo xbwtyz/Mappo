@@ -1,0 +1,2689 @@
+{
+  "baseline": "785e9cb2a44c40819e91a636523ac397b6660f9e",
+  "fixtures": [
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "small",
+        "morphology": "radial"
+      },
+      "sha256": "228d4e67d4ce0b80b484b0b23df4121918e937e9e95a999532d600184eef7334",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "medium",
+        "morphology": "radial"
+      },
+      "sha256": "a33a58b3bd6b4fdab52b972af2d93f714749dc00882ab52d46bc701cee883b6b",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "large",
+        "morphology": "radial"
+      },
+      "sha256": "90140a7e487efee935c988192e4b09140c3093b8ee1b3e1be3ef159d7f99515c",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "small",
+        "morphology": "organic"
+      },
+      "sha256": "2e9c2cd5d3ea590bcba09b760ce29873bc1c5ae72ad6fa0b7a58a5e5be394004",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "medium",
+        "morphology": "organic"
+      },
+      "sha256": "6b8ad71a7ec47cca201b62883b070b37532d9a575a51e663b39f6eea6e307f2d",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "large",
+        "morphology": "organic"
+      },
+      "sha256": "b137d83afcd6222f332dfcb2c02f2e192815d39028f4eec5330070bb3a8c1aed",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "small",
+        "morphology": "linear"
+      },
+      "sha256": "a1372d1abd9c51e4cb23c4917637e881bd5680528729e1c26cab07bf602539fa",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "medium",
+        "morphology": "linear"
+      },
+      "sha256": "ee09a6cc223ad5d18d2ddf169de46ec18b991c6eaf3f97da4757702ec28c0e4f",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "large",
+        "morphology": "linear"
+      },
+      "sha256": "730ebde0e8eb0731c5de65d04c223df05e937728a5d9c631e83fdcb62211c795",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "small",
+        "morphology": "planned"
+      },
+      "sha256": "6236d54b952b5860685ad10d0988f47a08cbc2559baedd50461cd3571e992cc0",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "medium",
+        "morphology": "planned"
+      },
+      "sha256": "177e5b3d2391502db7b69cd18b96c45a6996182901557d1ef0b2de537e3e6e1b",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-radial",
+        "size": "large",
+        "morphology": "planned"
+      },
+      "sha256": "600b9503165a16f65fc697834254f5cd9364ed29d10ead28cc214893fe7460e0",
+      "shape": "radial"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "small",
+        "morphology": "radial"
+      },
+      "sha256": "7679847c363653345163804eb60a973ef46406f5923024cbdf3cd500c89a304d",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "medium",
+        "morphology": "radial"
+      },
+      "sha256": "e9d98fff956f87f58f959cab16238d519ef3d524440f389a078bf371f7f57134",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "large",
+        "morphology": "radial"
+      },
+      "sha256": "29a2c144a6f15b5b2ef80ce74e9b0bde16bb4a02789c091ec9f543b5c5e58571",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "small",
+        "morphology": "organic"
+      },
+      "sha256": "4b79f188d57fd91832b200b5854246cfcdd45c519ac2aed95ded6e8bac8b8f13",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "medium",
+        "morphology": "organic"
+      },
+      "sha256": "bf259f3f41896ecd34421d5458395c7822794180beee1f4e6167697f7e59484c",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "large",
+        "morphology": "organic"
+      },
+      "sha256": "67785f2028e276e9dbcb6daac148fea3f3b3382c952b20391cd84984bf4ad757",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "small",
+        "morphology": "linear"
+      },
+      "sha256": "0a3ee60a9c7f2e96b71387cca08a11854e5969436bfee82fed6e8931d2520122",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "medium",
+        "morphology": "linear"
+      },
+      "sha256": "b5cb37e94b4c4c80b8f345167fad369873c677e57dccd9330a3e0c1f9c7212c3",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "large",
+        "morphology": "linear"
+      },
+      "sha256": "c4e5912f66fc27529e02abe921be4fafac3b45a1bca8ff8b641c15837182b62d",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "small",
+        "morphology": "planned"
+      },
+      "sha256": "0367e577b6f1814cb3976ccb7499bdd4f34f39aeafb7dc6443e36cf226ba0351",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "medium",
+        "morphology": "planned"
+      },
+      "sha256": "1a7761e9465d16a02ccd3ebaad717efd3e582370ae195dbf8676ca63bbf01702",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-organic",
+        "size": "large",
+        "morphology": "planned"
+      },
+      "sha256": "fbe98205d6272b0d7989706ada8e985d55808930048620b255e96d7881681612",
+      "shape": "organic"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "small",
+        "morphology": "radial"
+      },
+      "sha256": "ef13649cd119f0d813f976de1fc0525b02aec766cc5ace704540b899f904e2f7",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "medium",
+        "morphology": "radial"
+      },
+      "sha256": "1aaf36fce7114579caf7e13b742205463776449386b6fb6f8827adde12d55394",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "large",
+        "morphology": "radial"
+      },
+      "sha256": "ed4dee69593ed717a0c742847b60d044d6251f7cc7f8e9c61f875276e9f1bb56",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "small",
+        "morphology": "organic"
+      },
+      "sha256": "33327fc42bc06841dea8960b5c23e3510d8a76994c026dbc5252c791efab4e9c",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "medium",
+        "morphology": "organic"
+      },
+      "sha256": "e7ad2bcbbf18144c375d3e8d2d70bf0ca3b076d5aeb085f3b612c41a5d0dda2f",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "large",
+        "morphology": "organic"
+      },
+      "sha256": "7061a793cb828c9e18d0b89b020d71c528ffce2a9d66f9c73ffd4a068e46a8b6",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "small",
+        "morphology": "linear"
+      },
+      "sha256": "6e50f617eebd0241908790c108fe7f1a892d3585fc951fb9077e8551469fc4cb",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "medium",
+        "morphology": "linear"
+      },
+      "sha256": "ecce1041b18d5f0e88080397213757886a6eed078d8a3a6fa6ae25f21cde35a5",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "large",
+        "morphology": "linear"
+      },
+      "sha256": "e55ba480655cdaf699d7a78b27023ce6f4ad6c72f8282c4eafa3cc49c3451c42",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "small",
+        "morphology": "planned"
+      },
+      "sha256": "36ea6fbf69784ab8b33c689e3a86eadffa6b4db17a0a5d4c3795c7c88e7837b2",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "medium",
+        "morphology": "planned"
+      },
+      "sha256": "fb4293c899a6553071762b51c189668c9b5290f38ce55710928e576ebb990879",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-linear",
+        "size": "large",
+        "morphology": "planned"
+      },
+      "sha256": "e4d938429f43c52123b748950a9ccfcd7b78bdb4d61b13e848339c5f60e34fb3",
+      "shape": "linear"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "small",
+        "morphology": "radial"
+      },
+      "sha256": "d1530d4a9d7877002d7f523a1d20d7b7caa2ab16658a2bec449ada924aaee066",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "medium",
+        "morphology": "radial"
+      },
+      "sha256": "312837bcf6edac4b24767eaabf4dade3f5ff2a733db817b690dc9425f537b9db",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "large",
+        "morphology": "radial"
+      },
+      "sha256": "223501a35e7f3e20b549541ed2878b821c0af479d5dd95cf097b2ae214cbc6a3",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "small",
+        "morphology": "organic"
+      },
+      "sha256": "0bc12b6f8375510eec6eb0f81006a62c88fb9b448a56e078f1664e32dd0f8460",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "medium",
+        "morphology": "organic"
+      },
+      "sha256": "448012388a4ea8dee48bcde33360d330d58eb1460910fe5048f2c1020f106c5a",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "large",
+        "morphology": "organic"
+      },
+      "sha256": "4417ca15c3cdee1ae02e6cbb8317df0925ddc4b2b1353879ceb788c038fdfb69",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "small",
+        "morphology": "linear"
+      },
+      "sha256": "6fc0674a95e64f196427cb23fc584d7e9dfd6c284099e70468e246c298d0c665",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "medium",
+        "morphology": "linear"
+      },
+      "sha256": "3b1f0a27184de2a322d2354546de9fd84bfd1944247e5c4a0a213c23b6295fc1",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "large",
+        "morphology": "linear"
+      },
+      "sha256": "b052c1b1c20b50fd62942b20368b6d1493aa0944521a4688d527414313e0c9bc",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "small",
+        "morphology": "planned"
+      },
+      "sha256": "36aebe4d4357153508ee5b5b50c6240025ee1478b509ec32c135846429159d6d",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "medium",
+        "morphology": "planned"
+      },
+      "sha256": "3c691882a0515b8e9f6bb274fffbaf2bea6f3878ccfacb62f4b87cad76f6b814",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-planned",
+        "size": "large",
+        "morphology": "planned"
+      },
+      "sha256": "706e418360163f0b2d752f6ec757dfc016ab6834ecebf7016575f442c4a5bc95",
+      "shape": "planned"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "small",
+        "morphology": "radial"
+      },
+      "sha256": "92d6dea0a70f621e1b201f4cb88ae01799a57e637c7b73130eb42fffec82554b",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "medium",
+        "morphology": "radial"
+      },
+      "sha256": "10ba701283d796260849ec19fc7275de6b070588d76da4f16d6bcf7575e8a100",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "large",
+        "morphology": "radial"
+      },
+      "sha256": "7e9ccc0c3db555945de84115b0ec0196148699b6f1954c48130d075f6b0becc2",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "small",
+        "morphology": "organic"
+      },
+      "sha256": "e3412d3db10664d4a004931b50f8cf59d7da2165560e9766825b6f3e6db9cd3c",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "medium",
+        "morphology": "organic"
+      },
+      "sha256": "c3e22b3e5e1a939902665aeb5aea4935c92f662819bcaba86a811a4da713f5fa",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "large",
+        "morphology": "organic"
+      },
+      "sha256": "eeac78be4aec51b8b201e950aea9dd4aeceae34f724954475d5b4ce0fa1c5bb6",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "small",
+        "morphology": "linear"
+      },
+      "sha256": "8d65f46419f3d2ca17ef8a6e19d420df566df6acdc186739d7613e1b9577733d",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "medium",
+        "morphology": "linear"
+      },
+      "sha256": "ef78167ea3d602bb8fce0399064393af92c461c11803cdd7d55ad038c46f3e32",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "large",
+        "morphology": "linear"
+      },
+      "sha256": "8566bd7faa0ec97aa6ef8bb358b6bfd830a0b2c5717603f414d716902a6fe438",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "small",
+        "morphology": "planned"
+      },
+      "sha256": "2962758fa7992a990bbaf4fe9f203abeca12988da032ca46b89b7da5baa38f7c",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "medium",
+        "morphology": "planned"
+      },
+      "sha256": "52ecac43b616cfdc4acf6c9f465f8523bf4baad2d7fdf03ed69cacca5bece0ae",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-wedge",
+        "size": "large",
+        "morphology": "planned"
+      },
+      "sha256": "35eb4220120d8e39e3b7758a53934cb8e1980d73f84971c51f553692efa2e090",
+      "shape": "wedge"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "small",
+        "morphology": "radial"
+      },
+      "sha256": "80b1ebaf1169e66e9c2f2ae617a5904c3229775686366ad400ec972b2f26166c",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "medium",
+        "morphology": "radial"
+      },
+      "sha256": "78219efbacb37fa3eb2d757f5f3d985e00fa336db5fc32b822a5ecab625c7cf3",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "large",
+        "morphology": "radial"
+      },
+      "sha256": "a6f2f5894e68f06af9d3bbc956c4fd0512267f988668568b5afd29178835efe5",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "small",
+        "morphology": "organic"
+      },
+      "sha256": "acc193033a67ae4706b1ad0433e1a5a8fa3d8406f28c7d59c97b394a4725bc1a",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "medium",
+        "morphology": "organic"
+      },
+      "sha256": "91510ef6182f4a78d8c0ac993442c65e2a04c9b9ffe34ab65a6e5628f25f0ae0",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "large",
+        "morphology": "organic"
+      },
+      "sha256": "229fe435015ad8f59d96b7deed468916cf9809952cd7ab829a97bc19349fc12e",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "small",
+        "morphology": "linear"
+      },
+      "sha256": "a1b48a7ec43f5df28453b72f4571334eb4f9829bfaa1a0ed3faa6e42d2befc1d",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "medium",
+        "morphology": "linear"
+      },
+      "sha256": "5e9ac17fe61ddef2caf6f3cb7bf39bdeba480d09e6d5e07769915e6befcec834",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "large",
+        "morphology": "linear"
+      },
+      "sha256": "32bd290fcfa664e01aa62e0ff3becc9e4c5cb892c9f77775a5d8956bb396617a",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "small",
+        "morphology": "planned"
+      },
+      "sha256": "2884d00e222ce94fcaf42748e153720ab92162e847a7f13e974f494839b8ae64",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "medium",
+        "morphology": "planned"
+      },
+      "sha256": "1e4d6cd9337752feaf184d3a9a426f5a5a5fec1cae452789a74688ca7971fef9",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-crescent",
+        "size": "large",
+        "morphology": "planned"
+      },
+      "sha256": "f26882f8f9ca299da1f242178a61aad9131faaba462030a0de467615d83c7b27",
+      "shape": "crescent"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "small",
+        "morphology": "radial"
+      },
+      "sha256": "856d935d98299e5a95d13def8bf71c9f88355e96004d315c5be715b65b15ac53",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "medium",
+        "morphology": "radial"
+      },
+      "sha256": "768bfe428b3c6637011be84ef5ad49e1fa02f05c94cc320a72daad7775dea117",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "large",
+        "morphology": "radial"
+      },
+      "sha256": "32e9eca055af65bcfbaccefee72e7ad41b9df4f0e14f330406f59b2847762cdd",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "small",
+        "morphology": "organic"
+      },
+      "sha256": "36748231e43573a88f89a0310ac53571c63114f8c8eacecbab7a65d7c01c8aaf",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "medium",
+        "morphology": "organic"
+      },
+      "sha256": "aeed883a67e1f9b3d8130882fe3e28fe2d025ab5b9ac767c6e2625cd4cc39786",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "large",
+        "morphology": "organic"
+      },
+      "sha256": "f2bed1eb7109cc55081bb75f8e5667d09347ab2bcd4681f1953f8b1cf5d5f181",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "small",
+        "morphology": "linear"
+      },
+      "sha256": "eb2b4434a1ca6b8fcda9e440cd207062a6e0e3982e57f5b2b9523b885d451c32",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "medium",
+        "morphology": "linear"
+      },
+      "sha256": "ce29d1d873e95e422332f0a3bb9660db3e62658e3ea4c17eae27fd59762c3aa6",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "large",
+        "morphology": "linear"
+      },
+      "sha256": "e82d765565a5a5ebd69ae69d502ae42bc0f57702045e9f814b26be6a79c1d436",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "small",
+        "morphology": "planned"
+      },
+      "sha256": "ab6bead1603cadcef2e5677059db236d23aa9a859f3a654f491e466325c00b1b",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "medium",
+        "morphology": "planned"
+      },
+      "sha256": "ff7332664d55e121e1e8104e9b41d6bd9eadfc15c9508b1207d5629d11d0aca3",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-twin",
+        "size": "large",
+        "morphology": "planned"
+      },
+      "sha256": "374ecb5a3962166ac75520c42a8e37595f8644f657be32105d9201f84a3c7669",
+      "shape": "twin"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "small",
+        "morphology": "radial"
+      },
+      "sha256": "513b1861a537cb3966bf7dbf9cda401b0cdf9167e648fd9f9a3f0cc1a1d7ae87",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "medium",
+        "morphology": "radial"
+      },
+      "sha256": "2744704269e1fd55b15f6669d4a6d2b537b2060b12a236226d1f953a70e1954c",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "large",
+        "morphology": "radial"
+      },
+      "sha256": "ad78d40b13b8fb17227ba8fe78d0f1fad88f21353603d2ae59bedc9784164062",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "small",
+        "morphology": "organic"
+      },
+      "sha256": "a595acb9991e2f9fec992434f50de8154cf2b08bd635c8fa0a2155b4d9250930",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "medium",
+        "morphology": "organic"
+      },
+      "sha256": "0d8aec9e197be4edfca75a53baf5ce83b66baf96bc24483d83030e81b021670b",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "large",
+        "morphology": "organic"
+      },
+      "sha256": "fe6b1852f56eb9c965bf87ce238201125851806580aa372e451bdd6d2bbce935",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "small",
+        "morphology": "linear"
+      },
+      "sha256": "412de6746475a3f5a853d09551370ed2c1cd1e77a264e0a74548eb0bb8b1694f",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "medium",
+        "morphology": "linear"
+      },
+      "sha256": "799f9efa93758891efb11369162440ebc72703d4e22d564ad68216860a30ab85",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "large",
+        "morphology": "linear"
+      },
+      "sha256": "41ce867bf8ea4d66fe59636f40af016a679d1f12c826746e8300bbb0c8c7fbaf",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "small",
+        "morphology": "planned"
+      },
+      "sha256": "d8cde321fd7eba12c2ae1693d83fc27fc0af0e14169796e6eddb28465c85a3cb",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "medium",
+        "morphology": "planned"
+      },
+      "sha256": "d814227dd2667296cc94b4c56cd75446528543a3c5f194a2ad3bee2e58c4b96b",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "seed": "a1-parity-branching",
+        "size": "large",
+        "morphology": "planned"
+      },
+      "sha256": "b18b038a9ff1369aa29d653fcee39f62e8f23eec7b199b3331b2540d3ce2e1c4",
+      "shape": "branching"
+    },
+    {
+      "options": {
+        "size": "medium",
+        "morphology": "organic",
+        "boundary": [
+          {
+            "x": 523.1432481335532,
+            "y": 9.502317131866086
+          },
+          {
+            "x": 536.243168005613,
+            "y": 52.45863172636386
+          },
+          {
+            "x": 524.0982369226073,
+            "y": 93.68611465884959
+          },
+          {
+            "x": 486.3895356740639,
+            "y": 127.73091121455698
+          },
+          {
+            "x": 431.04845386236326,
+            "y": 151.4200945676027
+          },
+          {
+            "x": 370.7251695318796,
+            "y": 165.75079378995812
+          },
+          {
+            "x": 317.3284185453094,
+            "y": 175.50743355673978
+          },
+          {
+            "x": 277.3882856175906,
+            "y": 186.78493434137093
+          },
+          {
+            "x": 250.38844682568603,
+            "y": 203.81137254876032
+          },
+          {
+            "x": 230.5247103732227,
+            "y": 226.8603404346235
+          },
+          {
+            "x": 210.55109689593723,
+            "y": 252.39368557774378
+          },
+          {
+            "x": 185.4593735845859,
+            "y": 275.2690136501297
+          },
+          {
+            "x": 154.14011404935184,
+            "y": 291.65715602731404
+          },
+          {
+            "x": 118.55750961478121,
+            "y": 300.94247963506155
+          },
+          {
+            "x": 81.45828718078407,
+            "y": 305.53573047231464
+          },
+          {
+            "x": 44.344359230411484,
+            "y": 308.8154170564157
+          },
+          {
+            "x": 7.003722587387639,
+            "y": 312.5558694854157
+          },
+          {
+            "x": -31.334993848213692,
+            "y": 315.51017994619616
+          },
+          {
+            "x": -70.3523140952068,
+            "y": 314.10242829183636
+          },
+          {
+            "x": -107.99144726862863,
+            "y": 304.8677793625499
+          },
+          {
+            "x": -141.6124874320792,
+            "y": 287.1505926373351
+          },
+          {
+            "x": -170.410850199053,
+            "y": 264.31994313120174
+          },
+          {
+            "x": -197.4693293449502,
+            "y": 242.5673945332616
+          },
+          {
+            "x": -229.71751760795894,
+            "y": 227.76539398146053
+          },
+          {
+            "x": -275.14064423374094,
+            "y": 222.0654784213885
+          },
+          {
+            "x": -338.250109628989,
+            "y": 222.1869250439055
+          },
+          {
+            "x": -416.11737538930186,
+            "y": 220.49816866383395
+          },
+          {
+            "x": -497.3527148339064,
+            "y": 208.48110885641398
+          },
+          {
+            "x": -565.1129703105623,
+            "y": 180.83956939967308
+          },
+          {
+            "x": -603.1766850244231,
+            "y": 138.12217674429917
+          },
+          {
+            "x": -602.4288761115591,
+            "y": 86.50496685597267
+          },
+          {
+            "x": -564.7074132878703,
+            "y": 34.88985932043968
+          },
+          {
+            "x": -502.14498930418614,
+            "y": -9.12090703945718
+          },
+          {
+            "x": -432.30473548634876,
+            "y": -42.2907297761677
+          },
+          {
+            "x": -371.4212131976872,
+            "y": -66.39406110329264
+          },
+          {
+            "x": -328.86929898734036,
+            "y": -86.36447157920522
+          },
+          {
+            "x": -305.19700412226155,
+            "y": -107.21059039153394
+          },
+          {
+            "x": -294.14590504306403,
+            "y": -131.51229335876246
+          },
+          {
+            "x": -287.10427283249277,
+            "y": -158.79111716182467
+          },
+          {
+            "x": -277.44107805500676,
+            "y": -186.82048318199517
+          },
+          {
+            "x": -262.61176991511314,
+            "y": -213.7609220888691
+          },
+          {
+            "x": -243.4478043005037,
+            "y": -239.57801171188046
+          },
+          {
+            "x": -221.7022844269324,
+            "y": -265.7609363829366
+          },
+          {
+            "x": -197.76863821290183,
+            "y": -293.53910195844327
+          },
+          {
+            "x": -170.0965887322499,
+            "y": -321.8492968268579
+          },
+          {
+            "x": -136.5320666327951,
+            "y": -346.5685034687172
+          },
+          {
+            "x": -96.46181831334349,
+            "y": -361.81134100751837
+          },
+          {
+            "x": -52.09770531156299,
+            "y": -362.80994635365005
+          },
+          {
+            "x": -7.816333991191286,
+            "y": -348.82036464502494
+          },
+          {
+            "x": 32.20844627266089,
+            "y": -324.3049201956055
+          },
+          {
+            "x": 66.63127199770472,
+            "y": -297.4890677558939
+          },
+          {
+            "x": 98.05979908206368,
+            "y": -276.83000781091613
+          },
+          {
+            "x": 131.7461245448102,
+            "y": -267.1443629493411
+          },
+          {
+            "x": 172.40546947637347,
+            "y": -267.41374645026247
+          },
+          {
+            "x": 220.97118425607394,
+            "y": -271.43660541983735
+          },
+          {
+            "x": 273.3034228570608,
+            "y": -270.98090921283483
+          },
+          {
+            "x": 321.8437543404735,
+            "y": -259.75946768459505
+          },
+          {
+            "x": 359.5004531393152,
+            "y": -236.14567434295242
+          },
+          {
+            "x": 383.650045332904,
+            "y": -203.29391995361772
+          },
+          {
+            "x": 397.9039267066981,
+            "y": -166.7940063136826
+          },
+          {
+            "x": 410.41892369775843,
+            "y": -131.33653859367595
+          },
+          {
+            "x": 429.43822374954317,
+            "y": -98.33759114726166
+          },
+          {
+            "x": 458.36894258015207,
+            "y": -65.81887382563089
+          },
+          {
+            "x": 493.0971108127013,
+            "y": -30.465491372609662
+          }
+        ],
+        "center": {
+          "x": 12.110035611796434,
+          "y": 3.4829218482668693
+        },
+        "seed": "mountains",
+        "water": {
+          "features": [
+            {
+              "id": "WATER-COAST-001",
+              "dataVersion": 1,
+              "kind": "coast",
+              "path": [
+                {
+                  "x": 305.2542708600407,
+                  "y": -600.2219905585962
+                },
+                {
+                  "x": 288.2810287479945,
+                  "y": -456.07896371987886
+                },
+                {
+                  "x": 281.24512047275704,
+                  "y": -311.9359368811616
+                },
+                {
+                  "x": 288.2680856783493,
+                  "y": -167.7929100424443
+                },
+                {
+                  "x": 305.23596659540965,
+                  "y": -23.649883203726972
+                },
+                {
+                  "x": 322.20920870745584,
+                  "y": 120.49314363499036
+                },
+                {
+                  "x": 329.24511698269333,
+                  "y": 264.6361704737076
+                },
+                {
+                  "x": 322.2221517771011,
+                  "y": 408.7791973124249
+                },
+                {
+                  "x": 305.2542708600407,
+                  "y": 552.9222241511422
+                }
+              ],
+              "waterSide": "right",
+              "seaDepth": 3391.600631499231,
+              "direction": "east",
+              "generation": {
+                "seed": "mountains",
+                "algorithm": "shore-v1"
+              },
+              "extensions": {},
+              "polygon": [
+                {
+                  "x": 3696.854902359272,
+                  "y": -600.2219905585962
+                },
+                {
+                  "x": 3696.854902359272,
+                  "y": 552.9222241511422
+                },
+                {
+                  "x": 305.2542708600407,
+                  "y": 552.9222241511422
+                },
+                {
+                  "x": 322.2221517771011,
+                  "y": 408.7791973124249
+                },
+                {
+                  "x": 329.24511698269333,
+                  "y": 264.6361704737076
+                },
+                {
+                  "x": 322.20920870745584,
+                  "y": 120.49314363499036
+                },
+                {
+                  "x": 305.23596659540965,
+                  "y": -23.649883203726972
+                },
+                {
+                  "x": 288.2680856783493,
+                  "y": -167.7929100424443
+                },
+                {
+                  "x": 281.24512047275704,
+                  "y": -311.9359368811616
+                },
+                {
+                  "x": 288.2810287479945,
+                  "y": -456.07896371987886
+                },
+                {
+                  "x": 305.2542708600407,
+                  "y": -600.2219905585962
+                }
+              ],
+              "corridor": [
+                {
+                  "x": 3696.854902359272,
+                  "y": -600.2219905585962
+                },
+                {
+                  "x": 3696.854902359272,
+                  "y": 552.9222241511422
+                },
+                {
+                  "x": 296.2542708600407,
+                  "y": 552.9222241511422
+                },
+                {
+                  "x": 313.2221517771011,
+                  "y": 408.7791973124249
+                },
+                {
+                  "x": 320.24511698269333,
+                  "y": 264.6361704737076
+                },
+                {
+                  "x": 313.20920870745584,
+                  "y": 120.49314363499036
+                },
+                {
+                  "x": 296.23596659540965,
+                  "y": -23.649883203726972
+                },
+                {
+                  "x": 279.2680856783493,
+                  "y": -167.7929100424443
+                },
+                {
+                  "x": 272.24512047275704,
+                  "y": -311.9359368811616
+                },
+                {
+                  "x": 279.2810287479945,
+                  "y": -456.07896371987886
+                },
+                {
+                  "x": 296.2542708600407,
+                  "y": -600.2219905585962
+                }
+              ]
+            },
+            {
+              "id": "WATER-RIVER-001",
+              "dataVersion": 1,
+              "kind": "river",
+              "width": 24,
+              "path": [
+                {
+                  "x": -1001.9736335849358,
+                  "y": 128.02611079721825
+                },
+                {
+                  "x": -759.8469148160531,
+                  "y": 137.3052321648894
+                },
+                {
+                  "x": -517.7201960471705,
+                  "y": 141.62885819206036
+                },
+                {
+                  "x": -275.59347727828776,
+                  "y": 133.38409417561076
+                },
+                {
+                  "x": -33.466758509405054,
+                  "y": 118.98100263677607
+                },
+                {
+                  "x": 208.65996025947777,
+                  "y": 108.79366442430197
+                },
+                {
+                  "x": 450.78667902836025,
+                  "y": 105.87974520308168
+                },
+                {
+                  "x": 692.913397797243,
+                  "y": 112.67642605460988
+                },
+                {
+                  "x": 935.0401165661257,
+                  "y": 126.64771609491198
+                }
+              ],
+              "generation": {
+                "seed": "mountains",
+                "algorithm": "ribbon-v1"
+              },
+              "extensions": {},
+              "polygon": [
+                {
+                  "x": -1001.9821728801464,
+                  "y": 116.02611383553375
+                },
+                {
+                  "x": -759.8554541112637,
+                  "y": 125.30523520320489
+                },
+                {
+                  "x": -517.7287353423811,
+                  "y": 129.62886123037586
+                },
+                {
+                  "x": -275.6020165734984,
+                  "y": 121.38409721392625
+                },
+                {
+                  "x": -33.47529780461573,
+                  "y": 106.98100567509157
+                },
+                {
+                  "x": 208.6514209642671,
+                  "y": 96.79366746261746
+                },
+                {
+                  "x": 450.7781397331496,
+                  "y": 93.87974824139718
+                },
+                {
+                  "x": 692.9048585020323,
+                  "y": 100.67642909292537
+                },
+                {
+                  "x": 935.031577270915,
+                  "y": 114.64771913322748
+                },
+                {
+                  "x": 935.0486558613363,
+                  "y": 138.6477130565965
+                },
+                {
+                  "x": 692.9219370924536,
+                  "y": 124.67642301629438
+                },
+                {
+                  "x": 450.7952183235709,
+                  "y": 117.87974216476618
+                },
+                {
+                  "x": 208.66849955468845,
+                  "y": 120.79366138598647
+                },
+                {
+                  "x": -33.45821921419438,
+                  "y": 130.98099959846058
+                },
+                {
+                  "x": -275.5849379830771,
+                  "y": 145.38409113729526
+                },
+                {
+                  "x": -517.7116567519598,
+                  "y": 153.62885515374487
+                },
+                {
+                  "x": -759.8383755208424,
+                  "y": 149.3052291265739
+                },
+                {
+                  "x": -1001.9650942897251,
+                  "y": 140.02610775890275
+                }
+              ],
+              "corridor": [
+                {
+                  "x": -1001.9885773515545,
+                  "y": 107.02611611427037
+                },
+                {
+                  "x": -759.8618585826717,
+                  "y": 116.3052374819415
+                },
+                {
+                  "x": -517.7351398137891,
+                  "y": 120.62886350911248
+                },
+                {
+                  "x": -275.60842104490644,
+                  "y": 112.38409949266287
+                },
+                {
+                  "x": -33.48170227602373,
+                  "y": 97.98100795382818
+                },
+                {
+                  "x": 208.6450164928591,
+                  "y": 87.79366974135408
+                },
+                {
+                  "x": 450.7717352617416,
+                  "y": 84.8797505201338
+                },
+                {
+                  "x": 692.8984540306243,
+                  "y": 91.67643137166199
+                },
+                {
+                  "x": 935.025172799507,
+                  "y": 105.6477214119641
+                },
+                {
+                  "x": 935.0550603327443,
+                  "y": 147.64771077785986
+                },
+                {
+                  "x": 692.9283415638616,
+                  "y": 133.67642073755775
+                },
+                {
+                  "x": 450.8016227949789,
+                  "y": 126.87973988602957
+                },
+                {
+                  "x": 208.67490402609644,
+                  "y": 129.79365910724985
+                },
+                {
+                  "x": -33.451814742786375,
+                  "y": 139.98099731972394
+                },
+                {
+                  "x": -275.5785335116691,
+                  "y": 154.38408885855864
+                },
+                {
+                  "x": -517.7052522805518,
+                  "y": 162.62885287500825
+                },
+                {
+                  "x": -759.8319710494344,
+                  "y": 158.30522684783728
+                },
+                {
+                  "x": -1001.9586898183171,
+                  "y": 149.02610548016614
+                }
+              ]
+            },
+            {
+              "id": "LAKE-001",
+              "dataVersion": 1,
+              "kind": "lake",
+              "name": "Lake 1",
+              "center": {
+                "x": -136.62335623384456,
+                "y": -116.2264722403595
+              },
+              "path": [
+                {
+                  "x": -118.09510020503677,
+                  "y": -116.2264722403595
+                },
+                {
+                  "x": -123.20471278973926,
+                  "y": -108.71760023073955
+                },
+                {
+                  "x": -128.3193038200375,
+                  "y": -102.28600195448028
+                },
+                {
+                  "x": -136.62335623384456,
+                  "y": -96.24008148691047
+                },
+                {
+                  "x": -147.09232383422497,
+                  "y": -98.65163955815255
+                },
+                {
+                  "x": -151.67202448246925,
+                  "y": -107.80546274973223
+                },
+                {
+                  "x": -152.70397240885566,
+                  "y": -116.2264722403595
+                },
+                {
+                  "x": -152.39473782713745,
+                  "y": -125.05190130047326
+                },
+                {
+                  "x": -146.15122857454995,
+                  "y": -132.22143646197384
+                },
+                {
+                  "x": -136.62335623384456,
+                  "y": -133.57974889282087
+                },
+                {
+                  "x": -127.37820856036248,
+                  "y": -131.74681098683132
+                },
+                {
+                  "x": -119.22194983603231,
+                  "y": -125.96403878148061
+                }
+              ],
+              "generation": {
+                "seed": "mountains",
+                "algorithm": "lake-v1",
+                "radius": 18
+              },
+              "extensions": {},
+              "polygon": [
+                {
+                  "x": -118.09510020503677,
+                  "y": -116.2264722403595
+                },
+                {
+                  "x": -123.20471278973926,
+                  "y": -108.71760023073955
+                },
+                {
+                  "x": -128.3193038200375,
+                  "y": -102.28600195448028
+                },
+                {
+                  "x": -136.62335623384456,
+                  "y": -96.24008148691047
+                },
+                {
+                  "x": -147.09232383422497,
+                  "y": -98.65163955815255
+                },
+                {
+                  "x": -151.67202448246925,
+                  "y": -107.80546274973223
+                },
+                {
+                  "x": -152.70397240885566,
+                  "y": -116.2264722403595
+                },
+                {
+                  "x": -152.39473782713745,
+                  "y": -125.05190130047326
+                },
+                {
+                  "x": -146.15122857454995,
+                  "y": -132.22143646197384
+                },
+                {
+                  "x": -136.62335623384456,
+                  "y": -133.57974889282087
+                },
+                {
+                  "x": -127.37820856036248,
+                  "y": -131.74681098683132
+                },
+                {
+                  "x": -119.22194983603231,
+                  "y": -125.96403878148061
+                }
+              ],
+              "corridor": [
+                {
+                  "x": -108.769638314975,
+                  "y": -113.93304019839057
+                },
+                {
+                  "x": -115.95226539181715,
+                  "y": -103.37775317441775
+                },
+                {
+                  "x": -122.0349969560572,
+                  "y": -95.72871816619093
+                },
+                {
+                  "x": -134.64406487044067,
+                  "y": -86.54845075195875
+                },
+                {
+                  "x": -153.24417534925828,
+                  "y": -90.83304196127315
+                },
+                {
+                  "x": -160.4161827575039,
+                  "y": -105.16832122651256
+                },
+                {
+                  "x": -161.72323737877633,
+                  "y": -115.83428516622975
+                },
+                {
+                  "x": -161.2774790908231,
+                  "y": -128.55604521787137
+                },
+                {
+                  "x": -150.73818475136557,
+                  "y": -140.6585084780691
+                },
+                {
+                  "x": -136.37636994101658,
+                  "y": -142.7059573616019
+                },
+                {
+                  "x": -123.7415846269214,
+                  "y": -140.20099175649082
+                },
+                {
+                  "x": -110.74291899185803,
+                  "y": -130.98496209366706
+                }
+              ]
+            }
+          ],
+          "bridges": [
+            {
+              "id": "BRIDGE-001",
+              "dataVersion": 1,
+              "kind": "bridge",
+              "waterId": "WATER-RIVER-001",
+              "t": 0.356,
+              "width": 9,
+              "extensions": {}
+            },
+            {
+              "id": "BRIDGE-002",
+              "dataVersion": 1,
+              "kind": "bridge",
+              "waterId": "WATER-RIVER-001",
+              "t": 0.548,
+              "width": 9,
+              "extensions": {}
+            }
+          ],
+          "state": {
+            "version": 1,
+            "status": "mixed",
+            "seed": "mountains",
+            "algorithm": "union-v1"
+          },
+          "activeWaterId": "LAKE-001"
+        },
+        "fortifications": {
+          "enabled": true
+        }
+      },
+      "sha256": "945a5c9acaece4a5ced214293afd7aee5938f6bcf23dc0631999265703084cf1"
+    },
+    {
+      "options": {
+        "size": "medium",
+        "morphology": "organic",
+        "boundary": [
+          {
+            "x": 523.1432481335532,
+            "y": 9.502317131866086
+          },
+          {
+            "x": 536.243168005613,
+            "y": 52.45863172636386
+          },
+          {
+            "x": 524.0982369226073,
+            "y": 93.68611465884959
+          },
+          {
+            "x": 486.3895356740639,
+            "y": 127.73091121455698
+          },
+          {
+            "x": 431.04845386236326,
+            "y": 151.4200945676027
+          },
+          {
+            "x": 370.7251695318796,
+            "y": 165.75079378995812
+          },
+          {
+            "x": 317.3284185453094,
+            "y": 175.50743355673978
+          },
+          {
+            "x": 277.3882856175906,
+            "y": 186.78493434137093
+          },
+          {
+            "x": 250.38844682568603,
+            "y": 203.81137254876032
+          },
+          {
+            "x": 230.5247103732227,
+            "y": 226.8603404346235
+          },
+          {
+            "x": 210.55109689593723,
+            "y": 252.39368557774378
+          },
+          {
+            "x": 185.4593735845859,
+            "y": 275.2690136501297
+          },
+          {
+            "x": 154.14011404935184,
+            "y": 291.65715602731404
+          },
+          {
+            "x": 118.55750961478121,
+            "y": 300.94247963506155
+          },
+          {
+            "x": 81.45828718078407,
+            "y": 305.53573047231464
+          },
+          {
+            "x": 44.344359230411484,
+            "y": 308.8154170564157
+          },
+          {
+            "x": 7.003722587387639,
+            "y": 312.5558694854157
+          },
+          {
+            "x": -31.334993848213692,
+            "y": 315.51017994619616
+          },
+          {
+            "x": -70.3523140952068,
+            "y": 314.10242829183636
+          },
+          {
+            "x": -107.99144726862863,
+            "y": 304.8677793625499
+          },
+          {
+            "x": -141.6124874320792,
+            "y": 287.1505926373351
+          },
+          {
+            "x": -170.410850199053,
+            "y": 264.31994313120174
+          },
+          {
+            "x": -197.4693293449502,
+            "y": 242.5673945332616
+          },
+          {
+            "x": -229.71751760795894,
+            "y": 227.76539398146053
+          },
+          {
+            "x": -275.14064423374094,
+            "y": 222.0654784213885
+          },
+          {
+            "x": -338.250109628989,
+            "y": 222.1869250439055
+          },
+          {
+            "x": -416.11737538930186,
+            "y": 220.49816866383395
+          },
+          {
+            "x": -497.3527148339064,
+            "y": 208.48110885641398
+          },
+          {
+            "x": -565.1129703105623,
+            "y": 180.83956939967308
+          },
+          {
+            "x": -603.1766850244231,
+            "y": 138.12217674429917
+          },
+          {
+            "x": -602.4288761115591,
+            "y": 86.50496685597267
+          },
+          {
+            "x": -564.7074132878703,
+            "y": 34.88985932043968
+          },
+          {
+            "x": -502.14498930418614,
+            "y": -9.12090703945718
+          },
+          {
+            "x": -432.30473548634876,
+            "y": -42.2907297761677
+          },
+          {
+            "x": -371.4212131976872,
+            "y": -66.39406110329264
+          },
+          {
+            "x": -328.86929898734036,
+            "y": -86.36447157920522
+          },
+          {
+            "x": -305.19700412226155,
+            "y": -107.21059039153394
+          },
+          {
+            "x": -294.14590504306403,
+            "y": -131.51229335876246
+          },
+          {
+            "x": -287.10427283249277,
+            "y": -158.79111716182467
+          },
+          {
+            "x": -277.44107805500676,
+            "y": -186.82048318199517
+          },
+          {
+            "x": -262.61176991511314,
+            "y": -213.7609220888691
+          },
+          {
+            "x": -243.4478043005037,
+            "y": -239.57801171188046
+          },
+          {
+            "x": -221.7022844269324,
+            "y": -265.7609363829366
+          },
+          {
+            "x": -197.76863821290183,
+            "y": -293.53910195844327
+          },
+          {
+            "x": -170.0965887322499,
+            "y": -321.8492968268579
+          },
+          {
+            "x": -136.5320666327951,
+            "y": -346.5685034687172
+          },
+          {
+            "x": -96.46181831334349,
+            "y": -361.81134100751837
+          },
+          {
+            "x": -52.09770531156299,
+            "y": -362.80994635365005
+          },
+          {
+            "x": -7.816333991191286,
+            "y": -348.82036464502494
+          },
+          {
+            "x": 32.20844627266089,
+            "y": -324.3049201956055
+          },
+          {
+            "x": 66.63127199770472,
+            "y": -297.4890677558939
+          },
+          {
+            "x": 98.05979908206368,
+            "y": -276.83000781091613
+          },
+          {
+            "x": 131.7461245448102,
+            "y": -267.1443629493411
+          },
+          {
+            "x": 172.40546947637347,
+            "y": -267.41374645026247
+          },
+          {
+            "x": 220.97118425607394,
+            "y": -271.43660541983735
+          },
+          {
+            "x": 273.3034228570608,
+            "y": -270.98090921283483
+          },
+          {
+            "x": 321.8437543404735,
+            "y": -259.75946768459505
+          },
+          {
+            "x": 359.5004531393152,
+            "y": -236.14567434295242
+          },
+          {
+            "x": 383.650045332904,
+            "y": -203.29391995361772
+          },
+          {
+            "x": 397.9039267066981,
+            "y": -166.7940063136826
+          },
+          {
+            "x": 410.41892369775843,
+            "y": -131.33653859367595
+          },
+          {
+            "x": 429.43822374954317,
+            "y": -98.33759114726166
+          },
+          {
+            "x": 458.36894258015207,
+            "y": -65.81887382563089
+          },
+          {
+            "x": 493.0971108127013,
+            "y": -30.465491372609662
+          }
+        ],
+        "center": {
+          "x": 12.110035611796434,
+          "y": 3.4829218482668693
+        },
+        "seed": "mountains",
+        "water": {
+          "features": [
+            {
+              "id": "WATER-COAST-001",
+              "dataVersion": 1,
+              "kind": "coast",
+              "path": [
+                {
+                  "x": 305.2542708600407,
+                  "y": -600.2219905585962
+                },
+                {
+                  "x": 288.2810287479945,
+                  "y": -456.07896371987886
+                },
+                {
+                  "x": 281.24512047275704,
+                  "y": -311.9359368811616
+                },
+                {
+                  "x": 288.2680856783493,
+                  "y": -167.7929100424443
+                },
+                {
+                  "x": 305.23596659540965,
+                  "y": -23.649883203726972
+                },
+                {
+                  "x": 322.20920870745584,
+                  "y": 120.49314363499036
+                },
+                {
+                  "x": 329.24511698269333,
+                  "y": 264.6361704737076
+                },
+                {
+                  "x": 322.2221517771011,
+                  "y": 408.7791973124249
+                },
+                {
+                  "x": 305.2542708600407,
+                  "y": 552.9222241511422
+                }
+              ],
+              "waterSide": "right",
+              "seaDepth": 3391.600631499231,
+              "direction": "east",
+              "generation": {
+                "seed": "mountains",
+                "algorithm": "shore-v1"
+              },
+              "extensions": {},
+              "polygon": [
+                {
+                  "x": 3696.854902359272,
+                  "y": -600.2219905585962
+                },
+                {
+                  "x": 3696.854902359272,
+                  "y": 552.9222241511422
+                },
+                {
+                  "x": 305.2542708600407,
+                  "y": 552.9222241511422
+                },
+                {
+                  "x": 322.2221517771011,
+                  "y": 408.7791973124249
+                },
+                {
+                  "x": 329.24511698269333,
+                  "y": 264.6361704737076
+                },
+                {
+                  "x": 322.20920870745584,
+                  "y": 120.49314363499036
+                },
+                {
+                  "x": 305.23596659540965,
+                  "y": -23.649883203726972
+                },
+                {
+                  "x": 288.2680856783493,
+                  "y": -167.7929100424443
+                },
+                {
+                  "x": 281.24512047275704,
+                  "y": -311.9359368811616
+                },
+                {
+                  "x": 288.2810287479945,
+                  "y": -456.07896371987886
+                },
+                {
+                  "x": 305.2542708600407,
+                  "y": -600.2219905585962
+                }
+              ],
+              "corridor": [
+                {
+                  "x": 3696.854902359272,
+                  "y": -600.2219905585962
+                },
+                {
+                  "x": 3696.854902359272,
+                  "y": 552.9222241511422
+                },
+                {
+                  "x": 296.2542708600407,
+                  "y": 552.9222241511422
+                },
+                {
+                  "x": 313.2221517771011,
+                  "y": 408.7791973124249
+                },
+                {
+                  "x": 320.24511698269333,
+                  "y": 264.6361704737076
+                },
+                {
+                  "x": 313.20920870745584,
+                  "y": 120.49314363499036
+                },
+                {
+                  "x": 296.23596659540965,
+                  "y": -23.649883203726972
+                },
+                {
+                  "x": 279.2680856783493,
+                  "y": -167.7929100424443
+                },
+                {
+                  "x": 272.24512047275704,
+                  "y": -311.9359368811616
+                },
+                {
+                  "x": 279.2810287479945,
+                  "y": -456.07896371987886
+                },
+                {
+                  "x": 296.2542708600407,
+                  "y": -600.2219905585962
+                }
+              ]
+            },
+            {
+              "id": "WATER-RIVER-001",
+              "dataVersion": 1,
+              "kind": "river",
+              "width": 24,
+              "path": [
+                {
+                  "x": -1001.9736335849358,
+                  "y": 128.02611079721825
+                },
+                {
+                  "x": -759.8469148160531,
+                  "y": 137.3052321648894
+                },
+                {
+                  "x": -517.7201960471705,
+                  "y": 141.62885819206036
+                },
+                {
+                  "x": -275.59347727828776,
+                  "y": 133.38409417561076
+                },
+                {
+                  "x": -33.466758509405054,
+                  "y": 118.98100263677607
+                },
+                {
+                  "x": 208.65996025947777,
+                  "y": 108.79366442430197
+                },
+                {
+                  "x": 450.78667902836025,
+                  "y": 105.87974520308168
+                },
+                {
+                  "x": 692.913397797243,
+                  "y": 112.67642605460988
+                },
+                {
+                  "x": 935.0401165661257,
+                  "y": 126.64771609491198
+                }
+              ],
+              "generation": {
+                "seed": "mountains",
+                "algorithm": "ribbon-v1"
+              },
+              "extensions": {},
+              "polygon": [
+                {
+                  "x": -1001.9821728801464,
+                  "y": 116.02611383553375
+                },
+                {
+                  "x": -759.8554541112637,
+                  "y": 125.30523520320489
+                },
+                {
+                  "x": -517.7287353423811,
+                  "y": 129.62886123037586
+                },
+                {
+                  "x": -275.6020165734984,
+                  "y": 121.38409721392625
+                },
+                {
+                  "x": -33.47529780461573,
+                  "y": 106.98100567509157
+                },
+                {
+                  "x": 208.6514209642671,
+                  "y": 96.79366746261746
+                },
+                {
+                  "x": 450.7781397331496,
+                  "y": 93.87974824139718
+                },
+                {
+                  "x": 692.9048585020323,
+                  "y": 100.67642909292537
+                },
+                {
+                  "x": 935.031577270915,
+                  "y": 114.64771913322748
+                },
+                {
+                  "x": 935.0486558613363,
+                  "y": 138.6477130565965
+                },
+                {
+                  "x": 692.9219370924536,
+                  "y": 124.67642301629438
+                },
+                {
+                  "x": 450.7952183235709,
+                  "y": 117.87974216476618
+                },
+                {
+                  "x": 208.66849955468845,
+                  "y": 120.79366138598647
+                },
+                {
+                  "x": -33.45821921419438,
+                  "y": 130.98099959846058
+                },
+                {
+                  "x": -275.5849379830771,
+                  "y": 145.38409113729526
+                },
+                {
+                  "x": -517.7116567519598,
+                  "y": 153.62885515374487
+                },
+                {
+                  "x": -759.8383755208424,
+                  "y": 149.3052291265739
+                },
+                {
+                  "x": -1001.9650942897251,
+                  "y": 140.02610775890275
+                }
+              ],
+              "corridor": [
+                {
+                  "x": -1001.9885773515545,
+                  "y": 107.02611611427037
+                },
+                {
+                  "x": -759.8618585826717,
+                  "y": 116.3052374819415
+                },
+                {
+                  "x": -517.7351398137891,
+                  "y": 120.62886350911248
+                },
+                {
+                  "x": -275.60842104490644,
+                  "y": 112.38409949266287
+                },
+                {
+                  "x": -33.48170227602373,
+                  "y": 97.98100795382818
+                },
+                {
+                  "x": 208.6450164928591,
+                  "y": 87.79366974135408
+                },
+                {
+                  "x": 450.7717352617416,
+                  "y": 84.8797505201338
+                },
+                {
+                  "x": 692.8984540306243,
+                  "y": 91.67643137166199
+                },
+                {
+                  "x": 935.025172799507,
+                  "y": 105.6477214119641
+                },
+                {
+                  "x": 935.0550603327443,
+                  "y": 147.64771077785986
+                },
+                {
+                  "x": 692.9283415638616,
+                  "y": 133.67642073755775
+                },
+                {
+                  "x": 450.8016227949789,
+                  "y": 126.87973988602957
+                },
+                {
+                  "x": 208.67490402609644,
+                  "y": 129.79365910724985
+                },
+                {
+                  "x": -33.451814742786375,
+                  "y": 139.98099731972394
+                },
+                {
+                  "x": -275.5785335116691,
+                  "y": 154.38408885855864
+                },
+                {
+                  "x": -517.7052522805518,
+                  "y": 162.62885287500825
+                },
+                {
+                  "x": -759.8319710494344,
+                  "y": 158.30522684783728
+                },
+                {
+                  "x": -1001.9586898183171,
+                  "y": 149.02610548016614
+                }
+              ]
+            },
+            {
+              "id": "LAKE-001",
+              "dataVersion": 1,
+              "kind": "lake",
+              "name": "Lake 1",
+              "center": {
+                "x": -136.62335623384456,
+                "y": -116.2264722403595
+              },
+              "path": [
+                {
+                  "x": -118.09510020503677,
+                  "y": -116.2264722403595
+                },
+                {
+                  "x": -123.20471278973926,
+                  "y": -108.71760023073955
+                },
+                {
+                  "x": -128.3193038200375,
+                  "y": -102.28600195448028
+                },
+                {
+                  "x": -136.62335623384456,
+                  "y": -96.24008148691047
+                },
+                {
+                  "x": -147.09232383422497,
+                  "y": -98.65163955815255
+                },
+                {
+                  "x": -151.67202448246925,
+                  "y": -107.80546274973223
+                },
+                {
+                  "x": -152.70397240885566,
+                  "y": -116.2264722403595
+                },
+                {
+                  "x": -152.39473782713745,
+                  "y": -125.05190130047326
+                },
+                {
+                  "x": -146.15122857454995,
+                  "y": -132.22143646197384
+                },
+                {
+                  "x": -136.62335623384456,
+                  "y": -133.57974889282087
+                },
+                {
+                  "x": -127.37820856036248,
+                  "y": -131.74681098683132
+                },
+                {
+                  "x": -119.22194983603231,
+                  "y": -125.96403878148061
+                }
+              ],
+              "generation": {
+                "seed": "mountains",
+                "algorithm": "lake-v1",
+                "radius": 18
+              },
+              "extensions": {},
+              "polygon": [
+                {
+                  "x": -118.09510020503677,
+                  "y": -116.2264722403595
+                },
+                {
+                  "x": -123.20471278973926,
+                  "y": -108.71760023073955
+                },
+                {
+                  "x": -128.3193038200375,
+                  "y": -102.28600195448028
+                },
+                {
+                  "x": -136.62335623384456,
+                  "y": -96.24008148691047
+                },
+                {
+                  "x": -147.09232383422497,
+                  "y": -98.65163955815255
+                },
+                {
+                  "x": -151.67202448246925,
+                  "y": -107.80546274973223
+                },
+                {
+                  "x": -152.70397240885566,
+                  "y": -116.2264722403595
+                },
+                {
+                  "x": -152.39473782713745,
+                  "y": -125.05190130047326
+                },
+                {
+                  "x": -146.15122857454995,
+                  "y": -132.22143646197384
+                },
+                {
+                  "x": -136.62335623384456,
+                  "y": -133.57974889282087
+                },
+                {
+                  "x": -127.37820856036248,
+                  "y": -131.74681098683132
+                },
+                {
+                  "x": -119.22194983603231,
+                  "y": -125.96403878148061
+                }
+              ],
+              "corridor": [
+                {
+                  "x": -108.769638314975,
+                  "y": -113.93304019839057
+                },
+                {
+                  "x": -115.95226539181715,
+                  "y": -103.37775317441775
+                },
+                {
+                  "x": -122.0349969560572,
+                  "y": -95.72871816619093
+                },
+                {
+                  "x": -134.64406487044067,
+                  "y": -86.54845075195875
+                },
+                {
+                  "x": -153.24417534925828,
+                  "y": -90.83304196127315
+                },
+                {
+                  "x": -160.4161827575039,
+                  "y": -105.16832122651256
+                },
+                {
+                  "x": -161.72323737877633,
+                  "y": -115.83428516622975
+                },
+                {
+                  "x": -161.2774790908231,
+                  "y": -128.55604521787137
+                },
+                {
+                  "x": -150.73818475136557,
+                  "y": -140.6585084780691
+                },
+                {
+                  "x": -136.37636994101658,
+                  "y": -142.7059573616019
+                },
+                {
+                  "x": -123.7415846269214,
+                  "y": -140.20099175649082
+                },
+                {
+                  "x": -110.74291899185803,
+                  "y": -130.98496209366706
+                }
+              ]
+            }
+          ],
+          "bridges": [
+            {
+              "id": "BRIDGE-001",
+              "dataVersion": 1,
+              "kind": "bridge",
+              "waterId": "WATER-RIVER-001",
+              "t": 0.356,
+              "width": 9,
+              "extensions": {}
+            },
+            {
+              "id": "BRIDGE-002",
+              "dataVersion": 1,
+              "kind": "bridge",
+              "waterId": "WATER-RIVER-001",
+              "t": 0.548,
+              "width": 9,
+              "extensions": {}
+            }
+          ],
+          "state": {
+            "version": 1,
+            "status": "mixed",
+            "seed": "mountains",
+            "algorithm": "union-v1"
+          },
+          "activeWaterId": "LAKE-001"
+        },
+        "terrain": {
+          "features": [
+            {
+              "id": "MTN-001",
+              "dataVersion": 1,
+              "kind": "mountain",
+              "name": "Range 1",
+              "center": {
+                "x": -89.34476573861946,
+                "y": -291.20424218109883
+              },
+              "path": [
+                {
+                  "x": -38.626633311202305,
+                  "y": -257.26412598383513
+                },
+                {
+                  "x": -50.967521273129336,
+                  "y": -252.76040561403286
+                },
+                {
+                  "x": -75.63129084605313,
+                  "y": -262.273944936702
+                },
+                {
+                  "x": -99.79334234057588,
+                  "y": -275.5904980001416
+                },
+                {
+                  "x": -124.83935017102667,
+                  "y": -293.02837230916293
+                },
+                {
+                  "x": -139.5195033214107,
+                  "y": -312.01859230925095
+                },
+                {
+                  "x": -135.03200210882835,
+                  "y": -321.777728169682
+                },
+                {
+                  "x": -123.33398485345242,
+                  "y": -325.25243930655506
+                },
+                {
+                  "x": -104.56831373362941,
+                  "y": -323.3202282502985
+                },
+                {
+                  "x": -77.54727262131834,
+                  "y": -308.83372862001266
+                },
+                {
+                  "x": -57.371004260976854,
+                  "y": -289.5610534369125
+                },
+                {
+                  "x": -44.9069700218301,
+                  "y": -272.7697892365998
+                }
+              ],
+              "ridge": [
+                {
+                  "x": -114.41016162600224,
+                  "y": -307.97777874941903,
+                  "height": 630
+                },
+                {
+                  "x": -89.34476573861946,
+                  "y": -291.20424218109883,
+                  "height": 900
+                },
+                {
+                  "x": -64.27936985123668,
+                  "y": -274.43070561277864,
+                  "height": 630
+                }
+              ],
+              "generation": {
+                "seed": "mixed-mountains",
+                "algorithm": "mountain-v1",
+                "placement": "inside",
+                "size": 40
+              },
+              "extensions": {},
+              "polygon": [
+                {
+                  "x": -38.626633311202305,
+                  "y": -257.26412598383513
+                },
+                {
+                  "x": -50.967521273129336,
+                  "y": -252.76040561403286
+                },
+                {
+                  "x": -75.63129084605313,
+                  "y": -262.273944936702
+                },
+                {
+                  "x": -99.79334234057588,
+                  "y": -275.5904980001416
+                },
+                {
+                  "x": -124.83935017102667,
+                  "y": -293.02837230916293
+                },
+                {
+                  "x": -139.5195033214107,
+                  "y": -312.01859230925095
+                },
+                {
+                  "x": -135.03200210882835,
+                  "y": -321.777728169682
+                },
+                {
+                  "x": -123.33398485345242,
+                  "y": -325.25243930655506
+                },
+                {
+                  "x": -104.56831373362941,
+                  "y": -323.3202282502985
+                },
+                {
+                  "x": -77.54727262131834,
+                  "y": -308.83372862001266
+                },
+                {
+                  "x": -57.371004260976854,
+                  "y": -289.5610534369125
+                },
+                {
+                  "x": -44.9069700218301,
+                  "y": -272.7697892365998
+                }
+              ],
+              "corridor": [
+                {
+                  "x": -26.78613739535209,
+                  "y": -252.00463403418
+                },
+                {
+                  "x": -51.055090876287075,
+                  "y": -243.14784994513593
+                },
+                {
+                  "x": -79.44031307393439,
+                  "y": -254.09686269687992
+                },
+                {
+                  "x": -104.54961549893292,
+                  "y": -267.93547893376046
+                },
+                {
+                  "x": -131.11520810536018,
+                  "y": -286.4313393499794
+                },
+                {
+                  "x": -149.9735597329473,
+                  "y": -310.82646946737395
+                },
+                {
+                  "x": -141.50483717371264,
+                  "y": -329.2437155258566
+                },
+                {
+                  "x": -124.1866317617107,
+                  "y": -334.3878147267775
+                },
+                {
+                  "x": -101.88049253592196,
+                  "y": -332.09105866837365
+                },
+                {
+                  "x": -72.21590705625117,
+                  "y": -316.1873040795824
+                },
+                {
+                  "x": -50.600746306660575,
+                  "y": -295.5401772314786
+                },
+                {
+                  "x": -36.996160712777694,
+                  "y": -277.2123881176472
+                }
+              ]
+            }
+          ],
+          "passes": [
+            {
+              "id": "PASS-001",
+              "dataVersion": 1,
+              "kind": "pass",
+              "terrainId": "MTN-001",
+              "t": 0.5,
+              "width": 12,
+              "extensions": {}
+            }
+          ],
+          "activeTerrainId": "MTN-001"
+        },
+        "fortifications": {
+          "enabled": true
+        }
+      },
+      "sha256": "bc41b31167682accf934eaf8dcf4e76ba1e19f075d34cd4e98f042923a532ea3"
+    }
+  ]
+}
