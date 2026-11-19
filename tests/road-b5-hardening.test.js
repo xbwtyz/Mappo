@@ -12,9 +12,11 @@ const copy = value => JSON.parse(JSON.stringify(value));
 const compatible = (a,b) => JSON.stringify(a) === JSON.stringify(b);
 function eligible(project, max=55) {
   const graph=buildRoadGraph(project.city);
-  for(const id of [...graph.nodesById.keys()].slice(0,max)){
+  let considered=0;
+  for(const id of graph.nodesById.keys()){
     const incident=graph.incidentRoads.get(id)??[];
     if(!incident.length||incident.some(r=>graph.roadClasses.get(r)?.protected))continue;
+    if(considered++>=max)break;
     const node=graph.nodesById.get(id), point={x:node.x+.001,y:node.y+.001};
     const reconciliation=prepareParcelReconciliationB2(project,id,point);
     if(reconciliation.candidateProject && reconciliation.validation?.project==='valid' &&
