@@ -1,56 +1,55 @@
 # Mappo
 
-**Mappo** is an offline-first procedural medieval city mapper built from modular JavaScript and distributed as a **single standalone HTML file**.
+**Mappo 0.1.0** is an offline-first medieval and fantasy city generator and 2D editor, built from modular JavaScript and shipped as **one standalone HTML file**.
 
-[**Launch stable Mappo (main)**](https://xbwtyz.github.io/Mappo/) · [**Download 3I preview HTML**](dist/mappo-0.1-dev.3ie.html) · [**User Guide**](docs/user-guide.md) · [**Roadmap**](docs/ROADMAP.md)
+**[Launch Mappo 0.1](https://xbwtyz.github.io/Mappo/)** · **[Download the standalone HTML](dist/mappo-0.1.0.html)** · **[Release notes](docs/releases/v0.1.0.md)** · **[User guide](docs/user-guide.md)** · **[Development roadmap](docs/ROADMAP.md)**
 
-**3I preview:** `0.1-dev.3ie` on `feature/property-plot-editing-3i` (draft PR, unmerged). **Stable main:** 3H (`0.1-dev.3he`), merged in PR #10. Project schema 9 remains unchanged.
+**Stable release:** `0.1.0` · Project data schema **9** · Offline browser runtime · No installation required.
 
-## What it can do
+## Features in 0.1
 
-- Draw and reshape a custom city boundary, or choose one of eight starting outlines.
-- Generate connected streets, a civic square, plots, varied properties and individual building footprints in **Organic**, **Planned**, **Radial** or **Linear** patterns.
-- Add and edit rivers, coastlines, lakes, mountain ranges and bridges; manage districts and perimeter defenses.
-- Select properties first, inspect their individual buildings, and apply independent custom names and descriptive uses.
-- Enter **Building Edit Mode** from the Inspector to move, rotate or resize building footprints. In 3G-C, a live geometry check enables **Apply to City** only for safe edits, and preserves project schema 9 and save/load compatibility.
-- Undo or redo accepted footprint edits for the selected building (up to 20 accepted edits in session); changes, not history, persist in portable saves.
-- Add buildings to a property, preview rectangle/L/courtyard/T shapes, replace an existing building while preserving its identity, or delete one with confirmation. Atomic transactions validate geometry, road access, and property links.
-- Undo/redo accepted structural add/replace/delete actions within a property; history stays in the session.
-- Edit an existing property's four-corner boundary and internal plot dividers in preview, with validation for neighboring parcels, roads, buildings and complete plot coverage. Apply safely with property-scoped Undo/Redo; plot and building identities remain stable.
-- Download and load portable `.mappo.json` projects, with browser-local recovery snapshots.
+- Create a city with one of eight starting boundary shapes or a user-drawn outline. Generate radial, organic, linear, or planned street patterns with repeatable seeds.
+- Shape rivers, coastlines, lakes, mountains, and related terrain/water features. Work with districts, perimeter defenses and a civic square.
+- Select **properties first**, inspect individual buildings, and give properties and buildings independent names and descriptions.
+- Edit existing four-corner property boundaries and plot dividers with safe previews, geometry checks and atomic Apply. Delete properties with confirmation and session-only restoration.
+- Move, rotate, and resize building footprints. Add, replace, or delete individual buildings; **clear every building on a property in one reversible operation**.
+- Use precise editing nudges, scoped keyboard shortcuts, live dimensions, contextual validation feedback and session-scoped Undo/Redo.
+- Choose **Presentation**, **Planning**, **Minimal**, or **All layers** presets, or customize visibility manually.
+- Download the **currently visible map as PNG**, with optional filenames shared with `.mappo.json` project downloads.
+- Save/load portable validated project files. Browser-local recovery snapshots provide additional safety; downloaded files are the recommended backup.
 
-## Start here
+## Launch and create a city
 
-1. Open the [hosted stable app](https://xbwtyz.github.io/Mappo/), or save [the 3I standalone preview](dist/mappo-0.1-dev.3ie.html) from this branch and open it in a modern browser.
-2. In **City**, draw or choose an outline, then place a main square.
-3. Select a street pattern and seed, then click **Generate city**.
-4. Use **Landscape**, **Districts**, **Defenses**, **Layers**, and the **Inspector** to explore and edit.
-5. Use **Project → Download project** to back up your city.
+1. Open the [web app](https://xbwtyz.github.io/Mappo/) or save [`mappo-0.1.0.html`](dist/mappo-0.1.0.html) and open the HTML in a modern browser. The standalone works without a server or online services.
+2. In **City**, choose or draw a boundary, set the main square, select a morphology and a seed, then generate.
+3. Use **Landscape**, **Districts**, **Defenses**, **Layers**, the map and the **Inspector** to refine your city.
+4. Under **Project**, download the `.mappo.json` backup and optionally a PNG of your visible map.
 
-See the [User Guide](docs/user-guide.md) for controls, save/recovery details and known limits.
+See the [User Guide](docs/user-guide.md) for detailed editing and save/recovery behavior.
 
 ## Screenshots
 
 | Property-first selection | Individual building details | Identity customization |
 | --- | --- | --- |
-| ![Property Inspector and selected site](docs/images/mappo-3faa-property.jpg) | ![Building Inspector and its own generated facts](docs/images/mappo-3fb-building.jpg) | ![Property identity editor](docs/images/mappo-3fc-property.jpg) |
+| ![Property Inspector and selected site](docs/images/mappo-3faa-property.jpg) | ![Building Inspector and generated facts](docs/images/mappo-3fb-building.jpg) | ![Property identity editor](docs/images/mappo-3fc-property.jpg) |
 
-[View the full captioned gallery](docs/gallery.md).
+[Full gallery](docs/gallery.md)
 
-## Develop
+## Development
 
-The build embeds local JavaScript modules and CSS into a self-contained HTML artifact. **Node.js 20.11+** is required for development, but neither installation nor a server is required to run the resulting HTML. Standard build/Node tests need no `npm install`.
+The source lives in `src/`; `scripts/build.mjs` embeds modules and CSS into two **identical** files: `index.html` (Pages entrypoint) and `dist/mappo-<version>.html` (versioned standalone download).
 
 ```bash
-npm run build   # write index.html and dist/mappo-0.1-dev.3ie.html
-npm test        # run Node regression tests
-npm run check   # build, then test
+npm run check
+npm run test:browser  # requires test-only Playwright browsers
 ```
 
-The generated root `index.html` and matching versioned `dist/` HTML are byte-for-byte identical. Previous standalone versions remain in [`dist/`](dist/).
+Node 20.11+ is needed for development, **not to run** the distributed HTML. CI runs Node regression tests plus Chromium and Firefox QA before a production release. Historical `dist/` snapshots remain available.
 
-## Documentation
+## What 0.1 does not do
 
-[Documentation index](docs/README.md) · [Developer Guide](docs/development.md) · [Technical references](docs/reference/README.md) · [Development history](docs/history/README.md) · [Roadmap](docs/ROADMAP.md)
+The 0.1 editor does not yet support manual road-network restructuring, property split/merge, unrestricted concave parcel editing or 3D rendering. PNG export captures the **currently visible canvas**, not an automatic full-city tiled image. Accepted project edits survive saving; Undo histories and uncommitted previews generally do not.
 
-**Current limits:** 3I only reshapes existing convex four-corner properties and relocates dividers without changing plot count or ownership. Buildings are never automatically moved. Session-only history is cleared on load/rebuild. Property splitting/merging, road edits, PNG export and 3D are future work. [3I QA and safeguards](docs/history/3i/MILESTONE_3I_QA.md).
+**Next:** [0.2 City Designer planning branch](https://github.com/xbwtyz/Mappo/tree/planning/mappo-0.2a-road-network-foundations/docs/plans/0.2) proposes road editing and further 2D design tools. Planning is separate from the stable 0.1 release.
+
+[Development guide](docs/development.md) · [Project format](docs/reference/PROJECT_FORMAT.md) · [Release notes](docs/releases/v0.1.0.md) · [Docs index](docs/README.md)
