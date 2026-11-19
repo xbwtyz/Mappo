@@ -4,13 +4,14 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 import { createProject } from '../src/core/city-model.js';
-import { makeStartingOutline } from '../src/editor/outline.js';
 import { buildRoadGraph, analyzeRoadGraph, proposeJunctionMove, classifyRoad, ROAD_GRAPH_LIMITS } from '../src/core/road-graph.js';
 import { createRoadNodeNormalizer, traceRoadFaces } from '../src/core/road-topology.js';
 import { createProjectDocument, defaultWorkspace, encodeProjectDocument, decodeProjectDocument } from '../src/data/project-format.js';
 
 const parity = JSON.parse(await readFile(new URL('./fixtures/road-generation-parity-0.1.json', import.meta.url), 'utf8'));
-const fromFixture = fixture => createProject(fixture.shape ? {...fixture.options, boundary: makeStartingOutline(fixture.shape,fixture.options.seed,fixture.options.size)} : fixture.options);
+// Golden inputs must be literal geometry. Regenerating outlines here invokes
+// runtime Math.pow differences before the road extraction is even exercised.
+const fromFixture = fixture => createProject(fixture.shape ? {...fixture.options, boundary: parity.boundaries[`${fixture.shape}/${fixture.options.size}`]} : fixture.options);
 const copy = value => JSON.parse(JSON.stringify(value));
 function freeze(value) {
   if (value && typeof value === 'object') { Object.values(value).forEach(freeze); Object.freeze(value); }

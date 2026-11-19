@@ -28,11 +28,11 @@ Graph diagnostics cover invalid records/IDs/coordinates, duplicate IDs/edges, mi
 
 ## Preservation and regression evidence
 
-The committed golden fixture was captured from the stable baseline **before** extraction. SHA-256 covers the entire `city` JSON, including original array order, IDs, names, district metadata, properties, plots, buildings, defenses and special geometry. Generator/app version metadata outside `city` is deliberately excluded so development versioning does not invalidate geometry parity.
+The committed golden fixture was captured from the stable baseline **before** extraction. Its 24 shared starting outlines are stored as literal coordinates, so every runtime receives exactly the same input geometry. The fixture must not regenerate these outlines: Node 22 and Node 24 exhibit pre-existing last-bit `Math.pow` differences for the planned shape. SHA-256 covers the entire `city` JSON, including original array order, IDs, names, district metadata, properties, plots, buildings, defenses and special geometry. Generator/app version metadata outside `city` is deliberately excluded so development versioning does not invalidate geometry parity.
 
 - 96 cases: eight starting outlines × four street morphologies × three sizes.
 - Two additional cases: combined coast/river/lake/bridge/defense geometry, plus mountains on the same wet city.
-- All 98 exact city hashes remain unchanged after extraction; every generated graph also passes A1 validation and face-count parity.
+- All 98 exact city hashes remain unchanged after extraction; every generated graph also passes A1 validation and face-count parity. The same unchanged golden hashes pass on Node 22.23.4 and Node 24.22.3 with the frozen input outlines.
 - Frozen-input tests prove analysis/candidate creation cannot write accepted records. Result-write attempts and later source mutations verify full detachment.
 - Tests cover reordered records/keys, invalid geometry, protected metadata, no-op/ordinary/rejected moves, bounded pathological work, compiled/module equivalence and unchanged schema-9 portable document bytes.
 - Source and standalone HTML share the same graph implementation. Root and versioned HTML are byte-for-byte equal; previous distributions remain intact.
@@ -47,6 +47,7 @@ A local Node 24 sample of ten analyses per city measured median 2.82–8.72 ms f
 
 - `npm run check`: 270 tests pass, including 12 new A1 tests.
 - `npm run test:browser`: both suites pass (16 browser/viewport runs: Chromium + Firefox × desktop, ultrawide, tablet and phone × navigation/file and property/building suites).
+- Focused A1 suite: 12/12 tests pass on both Node 22.23.4 (CI runtime) and Node 24.22.3. An untouched 0.1 worktree also confirmed exact before/after city equality for all 98 cases separately on each runtime.
 - `git diff --check`: clean.
 - Reproducible build SHA-256: `1cc16246074eb40a…`; standalone size: 695,834 bytes.
 
