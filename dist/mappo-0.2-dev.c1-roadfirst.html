@@ -15539,7 +15539,7 @@ const c1IntentFinite = p => p && Number.isFinite(p.x) && Number.isFinite(p.y)
   && Math.abs(p.x) <= 100000 && Math.abs(p.y) <= 100000;
 const c1IntentFreeze = value => {
   if(value && typeof value==='object' && !Object.isFrozen(value)){
-    Object.values(value).forEach(c1IntentFreeze);Object.c1IntentFreeze(value);
+    Object.values(value).forEach(c1IntentFreeze);Object.freeze(value);
   }
   return value;
 };
@@ -15552,7 +15552,7 @@ function prepareRoadIntentC1(project,roadId,offset){
   if(!project?.city || !Array.isArray(project.city.nodes) || !Array.isArray(project.city.roads))
     return c1IntentRefused('missing-city','An accepted city is required to preview a road.');
   if(typeof roadId!=='string' || !c1IntentFinite(offset))
-    return c1IntentRefused('invalid-offset','The road and its X/Y offset must be c1IntentFinite.');
+    return c1IntentRefused('invalid-offset','Enter finite road X/Y offsets within the supported coordinate range.');
   const accepted=buildRoadGraph(project.city);
   if(!accepted.valid)return c1IntentRefused('invalid-base-road-graph',
     'The accepted road graph must be valid before a road-first edit.');
@@ -15619,6 +15619,7 @@ function prepareRoadIntentC1(project,roadId,offset){
 
 
 
+
 // No commit, history or serialization interface. Revisions invalidate every
 // deferred callback, including callbacks already queued when cancellation occurs.
 class RoadPreviewSession {
@@ -15666,6 +15667,7 @@ class RoadPreviewSession {
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.roadIntentOffset = null;
     this.roadIntentAnalysis = null;
+    this.roadIntentInputError = '';
     this.reconciliationError = '';
     this.settledRevision = null;
     this.acceptedFingerprint = null;
@@ -15688,7 +15690,7 @@ class RoadPreviewSession {
   }
   get roadIntentEligible(){
     const d=this.details;
-    return Boolean(this.current() && d?.kind==='road' &&
+    return Boolean(this.current() && this.graph?.valid && d?.kind==='road' &&
       d.endpoints.every(id=>this.graph.incidentRoads.get(id).every(roadId=>
         !this.graph.roadClasses.get(roadId)?.protected)));
   }
@@ -15705,14 +15707,21 @@ class RoadPreviewSession {
   updateRoadIntent(offset,{defer=true,dragging=false}={}){
     if(!this.roadIntentEligible)return false;
     this.invalidate();
-    this.roadIntentOffset={x:offset.x,y:offset.y};
+    // Never present NaN, Infinity or a blank field as a real road draft.
+    // Drop the previous preview, rather than keeping an outdated ghost while
+    // displaying a new invalid displacement in the input.
+    const finite=offset && Number.isFinite(offset.x) && Number.isFinite(offset.y) &&
+      Math.abs(offset.x)<=100000 && Math.abs(offset.y)<=100000;
+    this.roadIntentOffset=finite ? {x:offset.x,y:offset.y} : null;
+    this.roadIntentInputError=finite?'':'Enter finite X/Y street offsets within ±100000.';
     this.roadIntentAnalysis=null;
     this.report=this.proposal=null;
     this.reconciliation=this.topology=this.previewGeometry=null;
     this.settledRevision=null;this.acceptedFingerprint=null;
     this.reconciliationError='';this.error='';
-    this.checking=this.pending && !dragging;
+    this.checking=Boolean(finite && this.pending && !dragging);
     this.changed();
+    if(!finite)return false;
     if(!this.pending || dragging)return true;
     const revision=this.revision;
     const run=()=>{
@@ -15738,6 +15747,7 @@ class RoadPreviewSession {
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
     this.roadIntentOffset = d?.kind === 'road' ? {x:0,y:0} : null;
     this.roadIntentAnalysis = null;
+    this.roadIntentInputError = '';
     this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.reconciliationError = '';
@@ -15797,6 +15807,18 @@ class RoadPreviewSession {
     return this.point && this.update({ x: this.point.x + dx, y: this.point.y + dy });
   }
   hit(point, zoom, pointerType) {
+    // A displaced road should remain draggable at its *proposed* position.
+    // The legacy hit test uses accepted nodes only; relying on it would make
+    // subsequent drags unexpectedly select a different object or pan.
+    if(this.current() && this.pending && this.details?.kind==='road' &&
+      this.roadIntentNodes && Number.isFinite(zoom) && zoom>0){
+      const road=this.details.record,nodes=this.roadIntentNodes;
+      const a=nodes.get(road.a),b=nodes.get(road.b);
+      const threshold=(pointerType==='touch'?22:7)/zoom;
+      if(Number.isFinite(point?.x) && Number.isFinite(point?.y) &&
+        distanceToSegment(point,a,b)<=threshold)
+        return {kind:'road',id:road.id};
+    }
     return this.current()
       ? hitRoadInspection(
           this.graph,
@@ -16270,11 +16292,12 @@ class RoadInspectionWorkspace {
     }
     this.$('roadIntentStatusC1').textContent=!s.roadIntentEligible ?
       'Protected connection: choose a road with two ordinary unprotected endpoints.' :
-      s.pending ? s.checking?'Street positioned in draft; checking the road network...':
+      s.roadIntentInputError || s.error ||
+      (s.pending ? s.checking?'Street positioned in draft; checking the road network...':
         'User placement preserved as a draft. '+
         (s.roadIntentAnalysis?.issues?.[0]?.message??'Neighborhood adaptation is pending C2.')+
         ' Apply remains unavailable until full neighborhood reconciliation.' :
-        'Drag a road on the map or enter a displacement to preview your chosen street position.';
+        'Drag a road on the map or enter a displacement to preview your chosen street position.');
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
       : d?.protected
@@ -16290,8 +16313,9 @@ class RoadInspectionWorkspace {
         this.$(id).value = s.point && Number.isFinite(s.point[key]) ? String(s.point[key]) : '';
     }
     for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || s.roadIntentEligible);
-    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error;
-    const status = s.details?.kind==='road' && s.pending ?
+    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error && !s.roadIntentInputError;
+    const status = s.roadIntentInputError ? 'Invalid road offset' :
+      s.details?.kind==='road' && s.pending ?
       (s.checking?'Checking road draft':'Street placement drafted') : s.error
       ? 'Report unavailable'
       : s.checking
@@ -16305,7 +16329,8 @@ class RoadInspectionWorkspace {
         ? ` · ${s.report.counts.affectedObjects} affected · ${s.report.counts.issues} issues · ${s.report.counts.preservedObjects} preserved`
         : '');
     if (this.$('roadReportStatus').textContent !== live) this.$('roadReportStatus').textContent = live;
-    panel.setAttribute('data-report-status', s.report?.status ?? (s.checking ? 'checking' : 'idle'));
+    panel.setAttribute('data-report-status',
+      s.roadIntentInputError ? 'invalid' : s.report?.status ?? (s.checking ? 'checking' : 'idle'));
     this.$('roadReportError').textContent = s.error;
     this.$('roadReconciliationB3').hidden = false;
     const computed = s.reconciliation ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology) : null;

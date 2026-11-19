@@ -11,3 +11,9 @@ No accepted city writes, saving, recovery, history or global regeneration while 
 **Positive QA:** 15-world-unit moves can be previewed in ordinary developed streets of all four morphologies, not just 0.001-unit accepted offsets. Test road-drag/cancel, stale session, touch, graph-conflict visibility, and old B4 regressions. Full Node and browser suites plus versioned offline HTML parity required before this checkpoint is considered review-ready.
 
 **C2 handoff:** Create typed identity and ownership reconciliation and local generated-property/plot reflow to turn supported large drafts into fully verified accepted edits.
+
+## Review fix: validated draft inputs and repeat gestures
+
+The initial preview helper accidentally called a nonexistent `Object.c1IntentFreeze` and crashed all six new tests. Corrected to `Object.freeze`. Invalid/blank/nonfinite numeric offsets now clear the stale ghost, show an actionable error and never represent an Apply-ready draft; Reset clears the error. Hit-testing recognizes a previously displaced selected road at its *new* draft location so subsequent drags can refine placement. Tests assert draft cancellation, stale replacement, repeat movement, protected-feature rejection, and full-recovery isolation.
+
+Real-browser pointer mouse/touch/cancel checks are required in addition to numeric input checks; full CI must be green before declaring this checkpoint ready.

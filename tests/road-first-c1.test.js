@@ -75,3 +75,70 @@ test('C1 refuses protected roads and unbounded coordinates, and does not infer A
   assert.equal(prepareRoadIntentC1(p,ordinary.id,{x:1000000,y:0}).draftable,false);
   assert.equal(prepareRoadIntentC1(p,ordinary.id,{x:0,y:0}).applyReady,false);
 });
+
+test('C1 invalid numeric offsets discard stale ghost without writing or pretending to draft',()=>{
+  const original=project('roadfirst-invalid','planned'),road=eligible(original.city);
+  const fingerprint=JSON.stringify(original);
+  const session=new RoadPreviewSession({getProject:()=>original,changed:()=>{}});
+  session.start();session.select({kind:'road',id:road.id});
+  assert.equal(session.updateRoadIntent({x:12,y:0},{defer:false}),true);
+  assert.equal(session.roadIntentAnalysis?.draftable,true);
+  assert.equal(session.pending,true);
+  for(const invalid of [{x:NaN,y:1},{x:Infinity,y:0},{x:1000001,y:0},{x:undefined,y:2}]){
+    assert.equal(session.updateRoadIntent(invalid,{defer:false}),false);
+    assert.equal(session.pending,false);
+    assert.equal(session.roadIntentAnalysis,null);
+    assert.equal(session.roadIntentNodes,null);
+    assert.match(session.roadIntentInputError,/finite/);
+  }
+  assert.equal(session.updateRoadIntent({x:15,y:-4},{defer:false}),true);
+  assert.equal(session.roadIntentInputError,'');
+  assert.equal(session.roadIntentAnalysis?.applyReady,false);
+  assert.equal(JSON.stringify(original),fingerprint);
+  session.reset();assert.equal(session.pending,false);
+  assert.equal(session.roadIntentInputError,'');
+  session.stop();
+});
+
+test('C1 dragging a previously translated road again and cancelling preserves prior draft',()=>{
+  const original=project('roadfirst-redrag','linear'),road=eligible(original.city);
+  const snapshot=JSON.stringify(original);
+  const session=new RoadPreviewSession({getProject:()=>original,changed:()=>{}});
+  session.start();session.select({kind:'road',id:road.id});
+  assert.equal(session.updateRoadIntent({x:15,y:3},{defer:false}),true);
+  const graph=session.graph,a=graph.nodesById.get(road.a),b=graph.nodesById.get(road.b);
+  const ghostMid={x:(a.x+b.x)/2+15,y:(a.y+b.y)/2+3};
+  assert.deepEqual(session.hit(ghostMid,5,'mouse'),{kind:'road',id:road.id});
+  assert.equal(session.begin(ghostMid,5,'mouse'),true);
+  session.move({x:ghostMid.x+4,y:ghostMid.y-2});
+  assert.equal(session.roadIntentOffset.x,19);
+  session.end(true);
+  assert.equal(session.roadIntentOffset.x,15);
+  assert.equal(session.roadIntentOffset.y,3);
+  assert.equal(session.roadIntentAnalysis,null);
+  assert.equal(session.updateRoadIntent({x:15,y:3},{defer:false}),true);
+  assert.equal(JSON.stringify(original),snapshot);
+  session.stop();
+});
+
+test('C1 stale projects, selection changes, and scheduled reports cannot revive a discarded draft',()=>{
+  let accepted=project('roadfirst-stale','organic'),calls=[];
+  const session=new RoadPreviewSession({getProject:()=>accepted,
+    schedule:fn=>{calls.push(fn);return calls.length;},unschedule:()=>{},
+    changed:()=>{}});
+  session.start();const road=eligible(accepted.city);
+  session.select({kind:'road',id:road.id});
+  session.updateRoadIntent({x:11,y:6});
+  assert.equal(calls.length,1);
+  session.select({kind:'junction',id:road.a});
+  calls[0]();
+  assert.equal(session.roadIntentAnalysis,null);
+  session.select({kind:'road',id:road.id});
+  session.updateRoadIntent({x:15,y:0});
+  accepted=project('roadfirst-replaced','planned');
+  calls.at(-1)();
+  assert.equal(session.current(),false);
+  assert.equal(session.roadIntentNodes,null);
+  assert.equal(session.updateRoadIntent({x:16,y:0}),false);
+  session.stop();
+});

@@ -10,7 +10,7 @@ const c1IntentFinite = p => p && Number.isFinite(p.x) && Number.isFinite(p.y)
   && Math.abs(p.x) <= 100000 && Math.abs(p.y) <= 100000;
 const c1IntentFreeze = value => {
   if(value && typeof value==='object' && !Object.isFrozen(value)){
-    Object.values(value).forEach(c1IntentFreeze);Object.c1IntentFreeze(value);
+    Object.values(value).forEach(c1IntentFreeze);Object.freeze(value);
   }
   return value;
 };
@@ -23,7 +23,7 @@ export function prepareRoadIntentC1(project,roadId,offset){
   if(!project?.city || !Array.isArray(project.city.nodes) || !Array.isArray(project.city.roads))
     return c1IntentRefused('missing-city','An accepted city is required to preview a road.');
   if(typeof roadId!=='string' || !c1IntentFinite(offset))
-    return c1IntentRefused('invalid-offset','The road and its X/Y offset must be c1IntentFinite.');
+    return c1IntentRefused('invalid-offset','Enter finite road X/Y offsets within the supported coordinate range.');
   const accepted=buildRoadGraph(project.city);
   if(!accepted.valid)return c1IntentRefused('invalid-base-road-graph',
     'The accepted road graph must be valid before a road-first edit.');

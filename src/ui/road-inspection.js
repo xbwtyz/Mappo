@@ -424,11 +424,12 @@ export class RoadInspectionWorkspace {
     }
     this.$('roadIntentStatusC1').textContent=!s.roadIntentEligible ?
       'Protected connection: choose a road with two ordinary unprotected endpoints.' :
-      s.pending ? s.checking?'Street positioned in draft; checking the road network...':
+      s.roadIntentInputError || s.error ||
+      (s.pending ? s.checking?'Street positioned in draft; checking the road network...':
         'User placement preserved as a draft. '+
         (s.roadIntentAnalysis?.issues?.[0]?.message??'Neighborhood adaptation is pending C2.')+
         ' Apply remains unavailable until full neighborhood reconciliation.' :
-        'Drag a road on the map or enter a displacement to preview your chosen street position.';
+        'Drag a road on the map or enter a displacement to preview your chosen street position.');
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
       : d?.protected
@@ -444,8 +445,9 @@ export class RoadInspectionWorkspace {
         this.$(id).value = s.point && Number.isFinite(s.point[key]) ? String(s.point[key]) : '';
     }
     for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || s.roadIntentEligible);
-    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error;
-    const status = s.details?.kind==='road' && s.pending ?
+    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error && !s.roadIntentInputError;
+    const status = s.roadIntentInputError ? 'Invalid road offset' :
+      s.details?.kind==='road' && s.pending ?
       (s.checking?'Checking road draft':'Street placement drafted') : s.error
       ? 'Report unavailable'
       : s.checking
@@ -459,7 +461,8 @@ export class RoadInspectionWorkspace {
         ? ` · ${s.report.counts.affectedObjects} affected · ${s.report.counts.issues} issues · ${s.report.counts.preservedObjects} preserved`
         : '');
     if (this.$('roadReportStatus').textContent !== live) this.$('roadReportStatus').textContent = live;
-    panel.setAttribute('data-report-status', s.report?.status ?? (s.checking ? 'checking' : 'idle'));
+    panel.setAttribute('data-report-status',
+      s.roadIntentInputError ? 'invalid' : s.report?.status ?? (s.checking ? 'checking' : 'idle'));
     this.$('roadReportError').textContent = s.error;
     this.$('roadReconciliationB3').hidden = false;
     const computed = s.reconciliation ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology) : null;
