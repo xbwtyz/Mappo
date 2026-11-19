@@ -5,44 +5,44 @@ import { insideOrOn } from './boundary.js';
 // C1 road-first intent is a *draft*, not an accepted city transaction.
 // Existing parcels never veto the placement of an ordinary road in preview.
 // Reconciliation and Apply of complex edits require the later C2–C5 engine.
-const copy = value => JSON.parse(JSON.stringify(value));
-const finite = p => p && Number.isFinite(p.x) && Number.isFinite(p.y)
+const c1IntentCopy = value => JSON.parse(JSON.stringify(value));
+const c1IntentFinite = p => p && Number.isFinite(p.x) && Number.isFinite(p.y)
   && Math.abs(p.x) <= 100000 && Math.abs(p.y) <= 100000;
-const freeze = value => {
+const c1IntentFreeze = value => {
   if(value && typeof value==='object' && !Object.isFrozen(value)){
-    Object.values(value).forEach(freeze);Object.freeze(value);
+    Object.values(value).forEach(c1IntentFreeze);Object.c1IntentFreeze(value);
   }
   return value;
 };
-function refused(code,message){
-  return freeze({phase:'C1',operation:'draft-road-translation',draftable:false,
+function c1IntentRefused(code,message){
+  return c1IntentFreeze({phase:'C1',operation:'draft-road-translation',draftable:false,
     applyReady:false,status:'blocked',issues:[{code,message}],project:null,
     proposedCity:null,proposedNodes:[],changedRoadIds:[]});
 }
 export function prepareRoadIntentC1(project,roadId,offset){
   if(!project?.city || !Array.isArray(project.city.nodes) || !Array.isArray(project.city.roads))
-    return refused('missing-city','An accepted city is required to preview a road.');
-  if(typeof roadId!=='string' || !finite(offset))
-    return refused('invalid-offset','The road and its X/Y offset must be finite.');
+    return c1IntentRefused('missing-city','An accepted city is required to preview a road.');
+  if(typeof roadId!=='string' || !c1IntentFinite(offset))
+    return c1IntentRefused('invalid-offset','The road and its X/Y offset must be c1IntentFinite.');
   const accepted=buildRoadGraph(project.city);
-  if(!accepted.valid)return refused('invalid-base-road-graph',
+  if(!accepted.valid)return c1IntentRefused('invalid-base-road-graph',
     'The accepted road graph must be valid before a road-first edit.');
   const road=accepted.roadsById.get(roadId);
-  if(!road)return refused('road-not-found','Choose an existing ordinary road segment.');
+  if(!road)return c1IntentRefused('road-not-found','Choose an existing ordinary road segment.');
   const endpoints=new Set([road.a,road.b]);
   const changedRoadIds=[...new Set([...endpoints].flatMap(id=>
     accepted.incidentRoads.get(id)??[]))].sort();
   if(changedRoadIds.some(id=>accepted.roadClasses.get(id)?.protected))
-    return refused('protected-connection',
+    return c1IntentRefused('protected-connection',
       'This road shares a junction with protected infrastructure. Edit that feature separately.');
   const proposedNodes=[...endpoints].map(id=>{
     const node=accepted.nodesById.get(id);
     return {id,x:node.x+offset.x,y:node.y+offset.y};
   });
-  if(proposedNodes.some(p=>!finite(p)))
-    return refused('coordinate-limit','The requested road coordinates exceed supported world bounds.');
+  if(proposedNodes.some(p=>!c1IntentFinite(p)))
+    return c1IntentRefused('coordinate-limit','The requested road coordinates exceed supported world bounds.');
   const next=new Map(proposedNodes.map(p=>[p.id,p]));
-  const proposedCity=copy(project.city);
+  const proposedCity=c1IntentCopy(project.city);
   proposedCity.nodes=proposedCity.nodes.map(node=>next.has(node.id)
     ? {...node,x:next.get(node.id).x,y:next.get(node.id).y}:node);
   const issues=[];
@@ -74,11 +74,11 @@ export function prepareRoadIntentC1(project,roadId,offset){
     message:'Generated properties, plots and buildings have not been adapted to this intended street position.'});
   // This result intentionally includes an unresolved full city only for
   // visualization. It is not project-schema valid or save/Apply eligible.
-  return freeze({
+  return c1IntentFreeze({
     phase:'C1',operation:'draft-road-translation',draftable:true,applyReady:false,
     status:changed ? issues.some(i=>i.code==='protected-connection')?'blocked':
       topologyResolved?'neighborhood-needed':'topology-needed':'unchanged',
-    roadId,offset:copy(offset),proposedNodes,changedRoadIds,
+    roadId,offset:c1IntentCopy(offset),proposedNodes,changedRoadIds,
     proposedCity,topologyResolved,facesResolved,
     neighborhoodResolved:false,issues,project:null,
   });
