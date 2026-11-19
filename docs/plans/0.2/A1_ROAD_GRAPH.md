@@ -3,7 +3,7 @@
 Implementation branch: `feature/mappo-0.2a-a1-road-graph`.
 Baseline: `785e9cb2a44c40819e91a636523ac397b6660f9e` (stable 0.1.0, including Dev 4f).
 Checkpoint distribution: `dist/mappo-0.2-dev.a1.html`; `index.html` is identical.
-Owner authorized starting 0.2A on 2026-11-18. Merge still requires separate owner approval.
+Merged with separate owner approval as PR #22 on 2026-11-18, commit `2290af7407d3f4efbaa36fa227e2286576748994`.
 
 [Execution plan](MILESTONE_0_2A_PLAN.md) · [Preservation contract](ROAD_EDIT_CONTRACT.md)
 

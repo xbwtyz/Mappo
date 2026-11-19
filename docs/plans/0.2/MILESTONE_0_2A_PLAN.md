@@ -2,14 +2,15 @@
 
 > **Status: 0.2A implementation authorized by the owner on 2026-11-18.**
 > Original design branch: `planning/mappo-0.2a-road-network-foundations`.
-> A1 implementation branch: `feature/mappo-0.2a-a1-road-graph`.
+> A1 merged: [PR #22](https://github.com/xbwtyz/Mappo/pull/22), `2290af7407d3f4efbaa36fa227e2286576748994`.
+> A2 implementation branch: `feature/mappo-0.2a-a2-face-identity`, from that merged baseline.
 > Implementation baseline: stable 0.1.0 `main` at `785e9cb2a44c40819e91a636523ac397b6660f9e`, including merged Dev 4f and release PR #21.
 > Execute A1 → A2 → A3 → A4 as separate checkpoints. Each PR still needs separate owner approval before merging.
-> [A1 implementation and verification record](A1_ROAD_GRAPH.md).
+> [A1 record](A1_ROAD_GRAPH.md) · [A2 implementation and verification record](A2_FACE_IDENTITY.md).
 
 [0.2 roadmap](README.md) · [Preservation and QA contract](ROAD_EDIT_CONTRACT.md)
 
-## Problem statement from current code
+## Initial problem statement before A1
 
 - `src/generators/layout.js` creates road nodes/segments, normalizes intersections, extracts planar faces and assigns block IDs while generating. Face extraction is private to generation.
 - `src/core/validate-layout.js` checks connectivity, face orientation and full coverage; `src/data/project-validation.js` links faces to roads, properties, plots and buildings.
@@ -138,9 +139,9 @@ Each approved checkpoint should produce modular source + regression tests + vers
 
 ## 0.2A exit criteria
 
-- [ ] Existing generation geometry/parity retained across supported morphology seeds.
-- [ ] Reusable road/junction topology API, independent of generation.
-- [ ] Block identity matching is stable or explicitly marked ambiguous.
+- [x] Existing generation geometry/parity retained across supported morphology seeds (A1, rechecked in A2).
+- [x] Reusable road/junction topology API, independent of generation (merged A1).
+- [x] Block identity matching is stable or explicitly marked ambiguous (A2 implemented; merge pending separate approval).
 - [ ] Deterministic, ID-specific impact reports distinguish Safe / Needs review / Invalid.
 - [ ] Working non-destructive junction preview with no Apply.
 - [ ] No accepted-project mutations, deleted identities or save-format regression.
