@@ -1,0 +1,146 @@
+import { buildRoadGraph } from './road-graph.js';
+import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
+import { insideOrOn } from './boundary.js';
+import { validateStoredProject } from '../data/project-validation.js';
+import { copyJson, createProjectDocument, decodeProjectDocument, encodeProjectDocument, defaultWorkspace } from '../data/project-format.js';
+
+// C1-A: Pure detached two-endpoint translation candidate. There are no Apply,
+// persistence, event or history hooks here. C1's later UI/Apply checkpoint must
+// independently re-evaluate the candidate and audit its allowed complete delta.
+const C1_TRANSLATION_LIMIT = 6;
+const c1Order = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+const c1Same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+function c1Freeze(value) {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    for (const child of Object.values(value)) c1Freeze(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+function c1Rejected(code, message, ids = [], stage = 'input', status = 'blocked') {
+  return c1Freeze({
+    phase: 'C1-A', operation: 'translate-road-segment', status,
+    applyReady: false, candidateProject: null, changed: [],
+    issues: [{code, message, severity: status === 'needs-review' ? 'needs-review' : 'invalid',
+      relatedIds: [...new Set(ids)].sort(c1Order)}],
+    validation: {graph: stage === 'graph' ? 'failed' : 'not-run',
+      faces: stage === 'faces' ? 'failed' : 'not-run',
+      identity: stage === 'identity' ? 'failed' : 'not-run',
+      project: 'not-run', roundTrip: 'not-run'},
+  });
+}
+const c1Point = p => p && Number.isFinite(p.x) && Number.isFinite(p.y)
+  && Math.abs(p.x) <= 100000 && Math.abs(p.y) <= 100000;
+
+export function prepareSegmentTranslationC1(project, roadId, offset, workspace = null) {
+  if (!project?.city || !Array.isArray(project.city.nodes) || !Array.isArray(project.city.roads))
+    return c1Rejected('unsupported-project', 'An accepted city project is required.');
+  if (typeof roadId !== 'string' || !roadId.length || !c1Point(offset))
+    return c1Rejected('invalid-intent', 'Choose a road and enter finite X/Y displacement.');
+  const distance = Math.hypot(offset.x, offset.y);
+  if (!distance)
+    return c1Rejected('no-change', 'A segment translation must move both endpoints.');
+  if (distance > C1_TRANSLATION_LIMIT)
+    return c1Rejected('translation-limit', 'Move exceeds the conservative C1 displacement limit.', [roadId]);
+
+  try {
+    const old = project.city;
+    const accepted = buildRoadGraph(old);
+    if (!accepted.valid)
+      return c1Rejected('invalid-accepted-network', 'The existing road network is invalid.', [], 'graph');
+    const road = accepted.roadsById.get(roadId);
+    if (!road)
+      return c1Rejected('road-not-found', 'The selected road ID does not exist.', [roadId]);
+    const ends = [road.a, road.b];
+    if (ends[0] === ends[1])
+      return c1Rejected('duplicate-endpoint', 'The road must have two distinct junctions.', ends);
+    const incident = [...new Set(ends.flatMap(id => accepted.incidentRoads.get(id) ?? []))].sort(c1Order);
+    if (incident.some(id => accepted.roadClasses.get(id)?.protected))
+      return c1Rejected('protected-endpoint', 'Both endpoints must be free of protected roads.', [roadId, ...incident]);
+    const next = new Map(ends.map(id => {
+      const node = accepted.nodesById.get(id);
+      return [id, {x: node.x + offset.x, y: node.y + offset.y}];
+    }));
+    if ([...next.values()].some(p => !c1Point(p) ||
+       (Array.isArray(old.survey?.boundary) && !insideOrOn(p, old.survey.boundary))))
+      return c1Rejected('boundary-escape', 'Both translated junctions must remain inside the city boundary.', ends);
+
+    const candidate = copyJson(project);
+    candidate.city.nodes = candidate.city.nodes.map(node => next.has(node.id)
+      ? {...node, ...next.get(node.id)} : node);
+    const graph = buildRoadGraph(candidate.city);
+    if (!graph.valid)
+      return c1Rejected(graph.issues[0]?.code ?? 'invalid-road-graph',
+        graph.issues[0]?.message ?? 'Translated roads break the accepted topology.',
+        [roadId, ...ends], 'graph');
+    const faces = extractRoadFaces(graph, candidate.city);
+    if (!faces.valid)
+      return c1Rejected(faces.issues[0]?.code ?? 'invalid-faces',
+        'The translated segment fails face coverage validation.', [roadId, ...ends], 'faces');
+    const identity = matchExistingFaces(old, faces);
+    if (!identity.valid || identity.requiresReview || identity.issues.length ||
+        identity.added.length || identity.removed.length ||
+        identity.split.length || identity.merged.length || identity.ambiguous.length ||
+        identity.preserved.length + identity.changed.length !== faces.faces.length)
+      return c1Rejected(identity.issues[0]?.code ?? 'ambiguous-face-identity',
+        'At least one road face cannot retain its accepted identity.', [roadId, ...ends],
+        'identity', 'needs-review');
+
+    const blocks = new Map(identity.changed.filter(row => row.kind === 'block')
+      .map(row => [row.id, row.record]));
+    // C1-A deliberately supports only neighborhoods that need no parcel
+    // transformation. C1-B/C2 must resolve developed frontages explicitly.
+    const dependent = old.properties.filter(p => blocks.has(p.blockId) ||
+       incident.includes(p.frontageRoadId));
+    const plotDependents = old.plots.filter(p => dependent.some(land => land.id === p.propertyId) ||
+       blocks.has(p.blockId));
+    const affectedBuildings = old.buildings.filter(b => dependent.some(p =>
+       p.id === b.propertyId) || blocks.has(b.blockId));
+    if (dependent.length || plotDependents.length || affectedBuildings.length)
+      return c1Rejected('dependent-reconciliation-required',
+        'The translated segment affects developed parcels or buildings; C1-A cannot safely reconcile them.',
+        [...dependent.map(p => p.id), ...plotDependents.map(p => p.id),
+          ...affectedBuildings.map(b => b.id)], 'identity', 'needs-review');
+
+    candidate.city.blocks = candidate.city.blocks.map(block => blocks.has(block.id)
+      ? copyJson(blocks.get(block.id)) : block);
+    const changedOpen = [];
+    for (const open of candidate.city.openSpaces ?? []) {
+      const block = blocks.get(open.blockId);
+      if (!block) continue;
+      if (old.properties.some(p => p.blockId === open.blockId))
+        return c1Rejected('open-space-ownership', 'An occupied block needs parcel reconciliation.',
+          [open.blockId], 'identity', 'needs-review');
+      if (open.area !== block.area) {
+        open.area = block.area;
+        changedOpen.push(open.id);
+      }
+    }
+    validateStoredProject(candidate);
+    const portable = decodeProjectDocument(encodeProjectDocument(
+      createProjectDocument(candidate, workspace ?? defaultWorkspace(project))));
+    if (!c1Same(portable.project, candidate))
+      throw new Error('Portable project round-trip changed the segment candidate.');
+    if (workspace && !c1Same(portable.workspace, workspace))
+      throw new Error('Portable workspace round-trip changed fields.');
+
+    const changed = [
+      ...ends.map(id => ({kind:'junction', id, fields:['x','y'].filter(axis => offset[axis] !== 0)})),
+      ...incident.map(id => ({kind:'road', id, fields:['effective-geometry']})),
+      ...[...blocks.keys()].sort(c1Order).map(id =>
+        ({kind:'block', id, fields:['area','boundary-geometry']})),
+      ...changedOpen.map(id => ({kind:'open-space',id,fields:['area']})),
+    ];
+    return c1Freeze({
+      phase:'C1-A', operation:'translate-road-segment', status:'candidate-only',
+      applyReady:false, roadId, endpoints: [...ends], offset:copyJson(offset),
+      candidateProject:portable.project,
+      changed, issues:[],validation:{graph:'pass',faces:'pass',identity:'pass',
+        project:'valid',roundTrip:'pass'},
+    });
+  } catch (error) {
+    return c1Rejected('segment-validation', 'C1 segment preview unavailable: ' + error.message,
+      [roadId], 'project');
+  }
+}
