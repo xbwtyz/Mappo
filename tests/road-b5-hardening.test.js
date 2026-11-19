@@ -35,7 +35,7 @@ function session(project,proposal){
   return s;
 }
 test('B5 accepts a portable ordinary road edit and restores exact accepted geometry through Undo/Redo',()=>{
-  const project=createProject({seed:'b5-verified-vacant',size:'small',morphology:'organic'});
+  const project=createProject({seed:'b4-vacant',size:'small',morphology:'organic'});
   project.city.properties=[];project.city.plots=[];project.city.buildings=[];
   project.city.openSpaces=project.city.blocks.map(b=>({id:'OPEN-'+b.id,blockId:b.id,kind:'undeveloped',area:b.area}));
   const move=eligible(project);
