@@ -25,18 +25,12 @@
 
 Historical implementation artifacts and QA notes are retained in [`docs/history/`](history/) and `dist/`. Legacy saved-project fixtures remain protected; project schema remains 9.
 
-## Mappo 0.2 — Proposed next milestone
+## Mappo 0.2 — Approved 2D designer direction
 
-**Direction chosen:** Complete the 2D city designer before a 3D renderer.
+**2026-11-18 roadmap update:** Flexible Road Editing becomes 0.2C. Manual property creation/splitting/merging follows in 0.2D, advanced buildings in 0.2E, conditional civic places in 0.2F, and 0.2 release QA/migration in 0.2G.
 
-**Road-editing policy:** Staged editing. Start with strict preservation of existing city records; introduce explicit impact previews before any future, separately designed local reconciliation.
+See the [updated master 0.2 roadmap](plans/0.2/README.md) and [0.2C six-cycle technical plan](plans/0.2/MILESTONE_0_2C_DESIGN.md).
 
-The proposal is saved on a **separate documentation-only planning branch**, not merged into 0.1:
+**Current implementation:** 0.2A and B1–B4 merged. B5 [PR #32](https://github.com/xbwtyz/Mappo/pull/32) passed CI and is awaiting separate merge authorization. The 0.2C direction and plan are approved, **not 0.2C implementation, schema migration, release, or merge**.
 
-- [0.2 master roadmap](https://github.com/xbwtyz/Mappo/blob/planning/mappo-0.2a-road-network-foundations/docs/plans/0.2/README.md)
-- [0.2A technical plan, A1–A4](https://github.com/xbwtyz/Mappo/blob/planning/mappo-0.2a-road-network-foundations/docs/plans/0.2/MILESTONE_0_2A_PLAN.md)
-- [Road preservation and QA contract](https://github.com/xbwtyz/Mappo/blob/planning/mappo-0.2a-road-network-foundations/docs/plans/0.2/ROAD_EDIT_CONTRACT.md)
-
-0.2A: road graph, stable block identity matching, impact analysis and non-destructive preview. 0.2B: supported road edits. 0.2C: property creation/split/merge. 0.2D: advanced buildings. 0.2E: civic landmarks (conditional). 0.2F: final migration and release hardening.
-
-**No 0.2 implementation is authorized by this roadmap alone.**
+The same staged preservation contract remains authoritative: detached previews, clear impacts, protected identities/metadata, local reconciliation only when proved safe, atomic Apply and reversible history. The editor must continue to support schema-9 saves, property-first selection and reproducible offline standalone HTML. Future 3D work is deferred.
