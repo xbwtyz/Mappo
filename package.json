@@ -1,6 +1,6 @@
 {
   "name": "mappo",
-  "version": "0.2.0-dev.b2",
+  "version": "0.2.0-dev.b3",
   "private": true,
   "type": "module",
   "description": "Offline-first procedural medieval city mapper",

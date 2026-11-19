@@ -152,10 +152,20 @@
             <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
             <label class="road-step-label">Nudge units<input id="roadNudgeStep" type="number" min="0.001" step="0.5" value="0.5"></label>
             <div class="road-nudge-buttons" role="group" aria-label="Nudge proposed junction"><button id="roadNudgeLeft" aria-label="Nudge left">←</button><button id="roadNudgeUp" aria-label="Nudge up">↑</button><button id="roadNudgeDown" aria-label="Nudge down">↓</button><button id="roadNudgeRight" aria-label="Nudge right">→</button></div>
-            <p class="hint road-preview-legend">Normal = accepted · Dashed = proposed · Teal = preserved blocks · Amber/red = reported issues</p>
+            <p class="hint road-preview-legend">Accepted roads are solid; proposed roads are dashed. The adapted neighborhood is preview-only.</p>
+            <section id="roadReconciliationB3" class="road-reconciliation-b3" aria-label="Road and property reconciliation" hidden>
+              <h3>NEIGHBORHOOD ADAPTATION · B3</h3>
+              <p id="roadReconciliationStatusB3" role="status" aria-live="polite">Accepted city unchanged.</p>
+              <label class="road-overlay-option-b3"><input id="roadOverlayB3" type="checkbox" checked> Show proposed geometry overlay</label>
+              <p id="roadReconciliationCountsB3" class="hint"></p>
+              <p id="roadReconciliationLegendB3" class="hint"></p>
+              <ol id="roadReconciliationListB3" class="road-report-list" aria-label="Proposed and unresolved geometry changes"></ol>
+              <button type="button" id="roadReconciliationMoreB3" class="minor-button" hidden>Show 50 more changes</button>
+              <p class="hint">Inspection only. Neither accepted city, save files, recovery nor Undo history changes here. Apply comes in B4.</p>
+            </section>
             <p id="roadReportError" class="validation-error"></p><p id="roadReportSummary" class="hint"></p><p id="roadReportMetrics" class="hint"></p>
             <ol id="roadReportList" class="road-report-list" aria-label="Affected objects and impact descriptions"></ol><button id="roadShowMore" class="minor-button" hidden>Show 50 more entries</button>
-            <p class="hint">Preview only. Accepting road changes is planned for 0.2B.</p>
+            <p class="hint">Preview only. Road Apply and Undo will be introduced in B4.</p>
           </div>
           <div class="road-preview-actions"><button id="roadPreviewReset" class="minor-button" disabled>Reset preview</button><button id="roadPreviewCancel" class="minor-button">Cancel inspection</button></div>
         </section>

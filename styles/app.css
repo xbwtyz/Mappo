@@ -450,3 +450,14 @@
 
 .road-preview-header{position:sticky;top:-12px;z-index:1;background:#f9f6ed;padding-top:4px}.road-preview-actions{z-index:2}.road-inspection-active .workspace-map-controls>button{white-space:normal;line-height:1.15}
 @media(max-width:900px){.road-preview-header{top:-10px}}
+
+/* 0.2B / B3: explicit non-destructive candidate geometry and reconciliation status. */
+.road-reconciliation-b3{border:1px solid #b8c9c6;border-radius:8px;padding:10px;margin:12px 0;background:#eef4f0}
+.road-reconciliation-b3 h3{font-size:11px;letter-spacing:.08em;margin:0 0 8px;color:#315c69}
+.road-reconciliation-b3>p{font-size:11px;line-height:1.5}
+.road-reconciliation-b3 .road-overlay-option-b3{display:flex;flex-direction:row;align-items:center;gap:8px;margin:8px 0}
+.road-reconciliation-b3 .road-overlay-option-b3 input{min-height:20px;width:20px;margin:0;accent-color:#315c69}
+.road-reconciliation-b3 .road-report-list{max-height:220px;overflow-y:auto;scrollbar-width:thin}
+.road-reconciliation-b3 .road-report-list li{list-style:decimal;padding:7px 0}
+.road-reconciliation-b3 .road-report-list button{font-size:11px;min-height:34px}
+@media(max-width:900px){.road-reconciliation-b3 .road-report-list button{min-height:44px}}

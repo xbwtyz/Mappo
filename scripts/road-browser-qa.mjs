@@ -60,6 +60,12 @@ for (const [name, type] of [
       assert.equal(await page.evaluate(() => document.activeElement.id), 'roadPreviewHeading');
       assert.equal(await page.locator('#roadPreviewPanel button').filter({ hasText: /apply/i }).count(), 0);
       assert.equal(await page.locator('#roadReportStatus').getAttribute('role'), 'status');
+      assert.equal(await page.locator('#roadReconciliationB3').isVisible(), true);
+      assert.equal(await page.locator('#roadReconciliationStatusB3').getAttribute('role'), 'status');
+      assert.equal(await page.locator('#roadOverlayB3').isChecked(), true);
+      await page.locator('#roadOverlayB3').uncheck();
+      assert.equal(await page.evaluate(() => __buildingQA.state().roadWorkspace.session.previewVisible), false);
+      await page.locator('#roadOverlayB3').check();
       const id = await page.evaluate(() => __buildingQA.state().roadWorkspace.session.selection.id);
       // Move the inspected junction to an unobstructed map location. Camera
       // adjustments are transient; the serialized view must remain the baseline.

@@ -70,3 +70,83 @@ export function roadReportHighlights(report) {
     ),
   };
 }
+
+function roadPreviewPoints(city, kind, id) {
+  const map = {junction:'nodes',road:'roads',block:'blocks',property:'properties',
+    plot:'plots','open-space':'openSpaces'};
+  const record = (city?.[map[kind]] ?? []).find(r=>r.id===id);
+  if(!record)return null;
+  const nodes = new Map((city.nodes??[]).map(n=>[n.id,n]));
+  const points = kind==='junction' ? [record] : kind==='road' ?
+    [nodes.get(record.a),nodes.get(record.b)] : kind==='block' ?
+    record.vertices.map(n=>nodes.get(n)) : record.boundary ?? record.footprint ?? null;
+  return Array.isArray(points) && points.length &&
+    points.every(p=>p && Number.isFinite(p.x)&&Number.isFinite(p.y))
+      ? points.map(p=>({x:p.x,y:p.y})) : null;
+}
+function roadPreviewRecord(city,kind,id) {
+  const map={junction:'nodes',road:'roads',block:'blocks',property:'properties',
+    plot:'plots','open-space':'openSpaces'};
+  return (city?.[map[kind]]??[]).find(r=>r.id===id)??null;
+}
+const roadPreviewArea = (record,points,kind) => {
+  if(Number.isFinite(record?.area))return record.area;
+  if(kind==='plot' && points?.length>=3){
+    let sum=0;
+    for(let i=0;i<points.length;i++){
+      const a=points[i],b=points[(i+1)%points.length];
+      sum+=a.x*b.y-b.x*a.y;
+    }
+    return Math.abs(sum/2);
+  }
+  return null;
+};
+const roadPreviewFrontage = record => Array.isArray(record?.frontage) && record.frontage.length===2 &&
+  record.frontage.every(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)) ?
+  Math.hypot(record.frontage[1].x-record.frontage[0].x,record.frontage[1].y-record.frontage[0].y) : null;
+const roadPreviewLength = points => points?.length===2 ?
+  Math.hypot(points[1].x-points[0].x,points[1].y-points[0].y) : null;
+
+// Read-only typed geometry inventory shared by B3 UI and renderer. Rejected B2
+// candidates may show only independently proven B1 topology, not parcel repairs.
+export function roadReconciliationPreviewB3(project,reconciliation,topology=null) {
+  const original=project?.city;
+  const full=reconciliation?.candidateProject?.city ?? null;
+  const candidate=full ?? topology?.candidateProject?.city ?? null;
+  const mode=full?'reconciled':candidate?'topology-only':'unavailable';
+  const changes=full ? (reconciliation?.changed??[]) : candidate ? (topology?.changed??[]) : [];
+  const entries=[];
+  for(const item of changes){
+    const before=roadPreviewRecord(original,item.kind,item.id);
+    const after=roadPreviewRecord(candidate,item.kind,item.id);
+    const originalPoints=roadPreviewPoints(original,item.kind,item.id);
+    const proposedPoints=roadPreviewPoints(candidate,item.kind,item.id);
+    if(!before||!after)continue;
+    const oldArea=roadPreviewArea(before,originalPoints,item.kind);
+    const newArea=roadPreviewArea(after,proposedPoints,item.kind);
+    const oldLength=roadPreviewLength(originalPoints);
+    const newLength=roadPreviewLength(proposedPoints);
+    const oldFrontage=roadPreviewFrontage(before);
+    const newFrontage=roadPreviewFrontage(after);
+    if(JSON.stringify(originalPoints)===JSON.stringify(proposedPoints) &&
+       oldArea===newArea && oldLength===newLength && oldFrontage===newFrontage)continue;
+    entries.push({kind:item.kind,id:item.id,fields:[...(item.fields??[])],
+      state:mode==='reconciled'?'reconciled':'topology-only',
+      originalPoints,proposedPoints,oldArea,newArea,oldLength,newLength,oldFrontage,newFrontage});
+  }
+  entries.sort((a,b)=>a.kind.localeCompare(b.kind)||a.id.localeCompare(b.id));
+  const counts={roads:0,blocks:0,properties:0,plots:0,openSpaces:0};
+  for(const row of entries){
+    const field={road:'roads',block:'blocks',property:'properties',plot:'plots',
+      'open-space':'openSpaces'}[row.kind];
+    if(field)counts[field]++;
+  }
+  return {
+    mode,rows:entries,counts,
+    unresolved:(reconciliation?.unresolved??[]).map(row=>({
+      kind:row.kind,id:row.id,code:row.code,message:row.message,severity:row.severity
+    })),
+    buildingsPreserved:original?.buildings?.length??0,
+    verified:!!full && reconciliation?.validation?.project==='valid',
+  };
+}

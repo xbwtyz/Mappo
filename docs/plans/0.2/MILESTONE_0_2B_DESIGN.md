@@ -1,7 +1,7 @@
 # Mappo 0.2B — Controlled Road Editing and Local Reconciliation
 **Approved conservative design · 2026-11-18 · B1 implementation authorized only**
 
-Status: **B1 merged; B2 implementation authorized; B3–B5 remain unapproved.** This document expands the original 0.2B roadmap proposal to allow *conservative, explicit local reconciliation* for supported ordinary road movements. A5 [PR #26](https://github.com/xbwtyz/Mappo/pull/26) was merged. B1 [PR #27](https://github.com/xbwtyz/Mappo/pull/27) passed CI and merged. B2 is in its own implementation cycle and is not approved for merge.
+Status: **B1 and B2 merged; B3 implementation authorized; B4–B5 remain unapproved.** This document expands the original 0.2B roadmap proposal to allow *conservative, explicit local reconciliation* for supported ordinary road movements. A5 [PR #26](https://github.com/xbwtyz/Mappo/pull/26) was merged. B1 [PR #27](https://github.com/xbwtyz/Mappo/pull/27) passed CI and merged. B2 [PR #28](https://github.com/xbwtyz/Mappo/pull/28) passed CI and merged. B3 is in its own implementation cycle and is not approved for merge.
 
 Related: [0.2 roadmap](README.md) · [0.2A plan](MILESTONE_0_2A_PLAN.md) · [preservation contract](ROAD_EDIT_CONTRACT.md).
 
@@ -197,4 +197,4 @@ Build, QA and merge are separate gates. PR review and release tags are not impli
 - [ ] Node, compiled parity, browser/viewport and preservation/failure-path CI green.
 - [ ] Each B-cycle PR independently reviewed and explicitly approved for merge.
 
-**B1 is merged; B2 implementation is authorized, but B2 merge and B3–B5 implementation still require independent owner approval.**
+**B1 and B2 are merged; B3 implementation is authorized, but B3 merge and B4–B5 implementation still require independent owner approval.**

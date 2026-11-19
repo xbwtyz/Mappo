@@ -1382,6 +1382,7 @@ identityWorkspace = new IdentityWorkspace({
 identityWorkspace.bind();
 roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
+  reconcile:prepareParcelReconciliationB2,reconcileRoad:prepareRoadReconciliationB1,
   canEnter:()=>!project?.city?'Generate a city before inspecting roads.':
     workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive
       ||propertyEditSession?.isActive||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
