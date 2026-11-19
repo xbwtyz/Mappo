@@ -1,3 +1,4 @@
+import { prepareRoadTopologyReflowC3 } from '../core/road-topology-reflow.js';
 import { prepareNeighborhoodReflowC3 } from '../core/neighborhood-reflow.js';
 import { buildRoadGraph, proposeJunctionMove } from '../core/road-graph.js';
 import { analyzeRoadImpact } from '../core/road-impact.js';
@@ -50,6 +51,7 @@ export class RoadPreviewSession {
     this.active = false;
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
+    this.roadConnectionEdit = null;
     this.roadIntentOffset = null;
     this.roadIntentAnalysis = null;
     this.roadIntentInputError = '';
@@ -67,8 +69,8 @@ export class RoadPreviewSession {
   get pending() {
     const d = this.details;
     if(d?.kind==='road')
-      return Boolean(this.roadIntentOffset &&
-        (this.roadIntentOffset.x!==0 || this.roadIntentOffset.y!==0));
+      return Boolean(this.roadConnectionEdit || (this.roadIntentOffset &&
+        (this.roadIntentOffset.x!==0 || this.roadIntentOffset.y!==0)));
     return Boolean(
       d?.kind === 'junction' && this.point && (this.point.x !== d.record.x || this.point.y !== d.record.y),
     );
@@ -80,7 +82,7 @@ export class RoadPreviewSession {
         !this.graph.roadClasses.get(roadId)?.protected)));
   }
   get roadIntentNodes(){
-    if(!this.roadIntentEligible || !this.roadIntentOffset)return null;
+    if(!this.roadIntentEligible || !this.roadIntentOffset || this.roadConnectionEdit)return null;
     const d=this.details,coords=new Map();
     for(const id of d.endpoints){
       const accepted=this.graph.nodesById.get(id);
@@ -92,6 +94,7 @@ export class RoadPreviewSession {
   updateRoadIntent(offset,{defer=true,dragging=false}={}){
     if(!this.roadIntentEligible)return false;
     this.invalidate();
+    this.roadConnectionEdit = null;
     // Never present NaN, Infinity or a blank field as a real road draft.
     // Drop the previous preview, rather than keeping an outdated ghost while
     // displaying a new invalid displacement in the input.
@@ -108,24 +111,41 @@ export class RoadPreviewSession {
     this.changed();
     if(!finite)return false;
     if(!this.pending || dragging)return true;
-    const revision=this.revision;
-    const run=()=>{
-      if(!this.current() || revision!==this.revision)return;
-      this.timer=undefined;
+    this.evaluateRoadDraft(defer);
+    return true;
+  }
+  previewRoadConnection(edit) {
+    if (!this.roadIntentEligible || this.drag) return false;
+    this.reset();
+    this.roadConnectionEdit = { ...edit };
+    this.checking = true;
+    this.changed();
+    this.evaluateRoadDraft(true);
+    return true;
+  }
+  evaluateRoadDraft(defer) {
+    const revision = this.revision;
+    const run = () => {
+      if (!this.current() || revision !== this.revision) return;
+      this.timer = undefined;
       try {
-        this.roadIntentAnalysis = prepareRoadIntentC1(this.project, this.selection.id, this.roadIntentOffset);
-        this.reconciliation = prepareNeighborhoodReflowC3(
-          this.project, this.selection.id, this.roadIntentOffset, this.roadIntentAnalysis);
+        if (this.roadConnectionEdit) {
+          this.reconciliation = prepareRoadTopologyReflowC3(this.project, this.selection.id, null, this.roadConnectionEdit);
+        } else {
+          this.roadIntentAnalysis = prepareRoadIntentC1(this.project, this.selection.id, this.roadIntentOffset);
+          this.reconciliation = prepareNeighborhoodReflowC3(
+            this.project, this.selection.id, this.roadIntentOffset, this.roadIntentAnalysis);
+        }
         this.settledRevision = revision;
         this.acceptedFingerprint = JSON.stringify(this.project);
       } catch (error) {
         this.error = 'Road adaptation preview unavailable: ' + error.message;
       }
-      this.checking=false;this.changed();
+      this.checking = false;
+      this.changed();
     };
-    if(defer)this.timer=this.schedule(run,180);
+    if (defer) this.timer = this.schedule(run, 180);
     else run();
-    return true;
   }
   select(selection) {
     this.invalidate();
@@ -136,6 +156,7 @@ export class RoadPreviewSession {
     this.invalidate();
     const d = this.details;
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
+    this.roadConnectionEdit = null;
     this.roadIntentOffset = d?.kind === 'road' ? {x:0,y:0} : null;
     this.roadIntentAnalysis = null;
     this.roadIntentInputError = '';
@@ -227,7 +248,7 @@ export class RoadPreviewSession {
     if (hit.kind !== this.selection?.kind || hit.id !== this.selection?.id) this.select(hit);
     this.drag = {
       point: this.point ? { ...this.point } : null,
-      offset: this.roadIntentOffset ? {...this.roadIntentOffset} : null,
+      offset: {...(this.roadIntentOffset ?? {x:0,y:0})},
       kind: this.details.kind,
       start: { ...point },
       movable: this.details.movable || this.roadIntentEligible,

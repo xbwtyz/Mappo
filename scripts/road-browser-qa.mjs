@@ -564,6 +564,28 @@ for (const [name, type] of [
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project) === __buildingQA.c2Before), true);
       assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('redo')), true);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)), applied);
+      if (viewport.name === 'desktop') {
+        const radial = createProject({seed:'c2-radial',size:'small',morphology:'radial'});
+        for (const [id, delta] of [['RD-0103', 1], ['RD-0099', -1]]) {
+          await page.evaluate(doc => __buildingQA.apply(doc), {project:radial, workspace:defaultWorkspace(radial)});
+          await page.locator('#roadModeButton').click();
+          await page.locator('#roadSelectionKind').selectOption('road');
+          await page.locator('#roadSelectionId').selectOption(id);
+          if (delta === 1) {
+            await page.locator('#roadIntentDyC1').fill('15');
+          } else {
+            await page.locator('#roadIntentPanelC1 summary').click();
+            await page.locator('#roadRemoveC3').click();
+          }
+          await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);
+          assert.match(await page.locator('#roadReconciliationListB3').innerText(),
+            delta === 1 ? /New junction/ : /Removed street/);
+          await page.locator('#roadApplyB4').click();
+          assert.equal(await page.evaluate(() => __buildingQA.state().project.city.blocks.length), radial.city.blocks.length + delta);
+          assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')), true);
+          assert.equal(await page.evaluate(() => __buildingQA.state().project.city.blocks.length), radial.city.blocks.length);
+        }
+      }
       assert.equal(errors.length, 0, errors.join('; '));
       console.log(
         `PASS road ${label}: inspection, mouse/touch/keyboard preview, A3 report, reset/cancel, save/recovery isolation`,

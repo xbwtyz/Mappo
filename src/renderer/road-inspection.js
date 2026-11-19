@@ -102,7 +102,13 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
         ctx.strokeStyle='#5d717b';ctx.lineWidth=focused?3:1.4;
         ctx.setLineDash([]);ctx.stroke();
       }
-      if(path(row.proposedPoints,closed)){
+      if (row.kind === 'junction' && row.proposedPoints?.length === 1) {
+        const p = camera.worldToScreen(row.proposedPoints[0]);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, focused ? 9 : 6, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+      } else if(path(row.proposedPoints,closed)){
         ctx.strokeStyle=color;ctx.lineWidth=focused?5:2.8;
         ctx.setLineDash([7,4]);ctx.stroke();ctx.setLineDash([]);
       }
@@ -139,6 +145,18 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
   }
   const d = session.details;
   if (d?.kind === 'road') segment(d.record, '#315c69', 5);
+  if (d?.kind === 'road' && session.roadConnectionEdit && session.previewVisible !== false) {
+    const { kind, endpoint, target } = session.roadConnectionEdit;
+    const start = kind === 'add' ? d.record[endpoint] : d.record[endpoint === 'a' ? 'b' : 'a'];
+    const ids = kind === 'remove' ? d.endpoints : [start,target];
+    if (path(ids.map(id => graph.nodesById.get(id)))) {
+      ctx.setLineDash([8,5]);
+      ctx.strokeStyle = kind === 'remove' ? rpColors.invalid : '#168f80';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
   if (d?.kind === 'junction') {
     const p = camera.worldToScreen(d.record);
     ctx.beginPath();

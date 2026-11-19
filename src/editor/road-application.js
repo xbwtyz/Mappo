@@ -1,3 +1,4 @@
+import { prepareRoadTopologyReflowC3 } from '../core/road-topology-reflow.js';
 import { prepareNeighborhoodReflowC3 } from '../core/neighborhood-reflow.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
@@ -137,7 +138,9 @@ export function prepareRoadApplyC2(project, workspace, session, expectedRevision
       !['C2', 'C3'].includes(inspected?.phase) || !inspected.candidateProject)
     return reject('stale-preview', 'The street proposal is not a complete, current preview.');
   try {
-    const fresh = prepareNeighborhoodReflowC3(project, session.selection.id, session.roadIntentOffset);
+    const fresh = session.roadConnectionEdit
+      ? prepareRoadTopologyReflowC3(project, session.selection.id, null, session.roadConnectionEdit)
+      : prepareNeighborhoodReflowC3(project, session.selection.id, session.roadIntentOffset);
     if (!fresh.candidateProject)
       return reject('candidate-invalid', fresh.unresolved[0]?.message ?? 'Fresh reflow did not pass validation.');
     if (!b4Same(fresh.candidateProject, inspected.candidateProject) || !b4Same(fresh.ledger, inspected.ledger))

@@ -1,3 +1,4 @@
+import { prepareRoadTopologyReflowC3 } from './road-topology-reflow.js';
 import { reflowGeneratedRoadBuildings } from './road-building-reflow.js';
 import { prepareRoadIntentC1 } from './road-intent-c1.js';
 import { buildRoadGraph } from './road-graph.js';
@@ -64,6 +65,9 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
 }
 
 export function prepareNeighborhoodReflowC3(project, roadId, offset, draft = prepareRoadIntentC1(project, roadId, offset)) {
+  if (draft.draftable && !draft.issues.some(row => row.code === 'boundary-escape') &&
+      draft.issues.some(row => row.code === 'unnormalized-crossing'))
+    return prepareRoadTopologyReflowC3(project, roadId, draft);
   const preserved = prepareNeighborhoodReflow(project, roadId, draft, false);
   if (preserved.candidateProject || !preserved.unresolved.some(row => [
     'road-clearance', 'block-containment', 'parcel-reflow-blocked', 'access-reflow-blocked', 'candidate-validation',
