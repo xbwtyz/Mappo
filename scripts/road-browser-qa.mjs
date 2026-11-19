@@ -316,15 +316,37 @@ for (const [name, type] of [
         const road=session.details.record,graph=session.graph;
         const a=graph.nodesById.get(road.a),b=graph.nodesById.get(road.b);
         const mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+        const canvas=document.getElementById('mapCanvas');
+        const rect=canvas.getBoundingClientRect();
+        // Responsive road controls move to the map's bottom on phones.
+        // Pick a truly unobstructed *canvas* location rather than assuming
+        // the upper-right 80% position is always safe to click.
+        const candidates=[[.55,.35],[.45,.36],[.60,.40],[.40,.42],
+          [.70,.37],[.35,.37],[.55,.46],[.73,.45],[.30,.54]];
+        const target=candidates.find(([fx,fy])=>
+          document.elementFromPoint(rect.left+rect.width*fx,
+            rect.top+rect.height*fy)===canvas);
+        if(!target)throw new Error('No unobstructed canvas region for road gesture QA');
         s.camera.zoom=5;
-        s.camera.x=mid.x-(s.camera.width*.30)/s.camera.zoom;
-        s.camera.y=mid.y+(s.camera.height*.20)/s.camera.zoom;
+        const targetX=rect.width*target[0],targetY=rect.height*target[1];
+        s.camera.x=mid.x-(targetX-s.camera.width/2)/s.camera.zoom;
+        s.camera.y=mid.y-(targetY-s.camera.height/2)/s.camera.zoom;
         __buildingQA.draw();
         const pos=s.camera.worldToScreen(mid);
-        const rect=document.getElementById('mapCanvas').getBoundingClientRect();
-        return {x:rect.x+pos.x,y:rect.y+pos.y};
+        return {x:rect.left+pos.x,y:rect.top+pos.y};
       });
       const center=await placeRoad();
+      const targetHit=await page.evaluate(pos=>{
+        const element=document.elementFromPoint(pos.x,pos.y),s=__buildingQA.state(),
+          canvas=document.getElementById('mapCanvas'),rect=canvas.getBoundingClientRect(),
+          world=s.camera.screenToWorld({x:pos.x-rect.left,y:pos.y-rect.top});
+        return {target:element?.id??element?.tagName,
+          hit:s.roadWorkspace.session.hit(world,s.camera.zoom,'mouse')};
+      },center);
+      assert.equal(targetHit.target,'mapCanvas',
+        'The gesture target must be unobstructed canvas, not mobile map controls');
+      assert.equal(targetHit.hit?.kind,'road',
+        'Map hit testing must identify the selected road at the gesture start');
       await page.mouse.move(center.x,center.y);
       await page.mouse.down();
       assert.equal(await page.evaluate(() =>
