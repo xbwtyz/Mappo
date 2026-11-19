@@ -161,6 +161,21 @@
                 <label>Street offset X<input id="roadIntentDxC1" type="number" step="any" value="0"></label>
                 <label>Street offset Y<input id="roadIntentDyC1" type="number" step="any" value="0"></label>
               </div>
+              <button id="roadStartBendsC4" type="button" class="minor-button">Edit bends</button>
+              <section id="roadBendEditorC4" aria-label="Street bends" hidden>
+                <p class="hint">Add a bend, then drag its handle or enter exact coordinates. Street endpoints stay fixed.</p>
+                <div class="road-bend-actions">
+                  <button id="roadInsertBendC4" type="button" class="minor-button">Add bend</button>
+                  <button id="roadRemoveBendC4" type="button" class="minor-button">Remove bend</button>
+                  <button id="roadCloseBendsC4" type="button" class="minor-button">Cancel bend edits</button>
+                </div>
+                <div class="road-preview-selectors">
+                  <label>Bend<select id="roadSelectBendC4"></select></label>
+                  <label>Bend X<input id="roadBendXC4" type="number" step="any"></label>
+                  <label>Bend Y<input id="roadBendYC4" type="number" step="any"></label>
+                </div>
+                <label class="road-bend-snap"><input id="roadSnapBendsC4" type="checkbox"> Snap drags to 1-unit grid</label>
+              </section>
               <details>
                 <summary>Change street connections</summary>
                 <div class="road-preview-selectors">

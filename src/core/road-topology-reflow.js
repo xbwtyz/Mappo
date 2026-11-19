@@ -1,3 +1,5 @@
+import { buildRoadGraph } from './road-graph.js';
+import { draftRoadShape } from './road-shape.js';
 import { distanceToSegment, insideOrOn } from './boundary.js';
 import { propertyFits } from './placement.js';
 import { shapesOverlapInterior } from './building-validation.js';
@@ -126,7 +128,8 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null)
   try {
     validateStoredProject(project);
     const old = project.city;
-    if (edit) draft = draftRoadConnectionC3(old, roadId, edit);
+    if (edit?.kind === 'shape') draft = draftRoadShape(old, buildRoadGraph(old), roadId, edit.points);
+    else if (edit) draft = draftRoadConnectionC3(old, roadId, edit);
     const { city, graph, splitRoadIds } = normalizeRoadCrossingsC3(structuredClone(draft.proposedCity));
     validation.graph = 'pass';
     const { emit, items } = riReporter(), spend = riBudget();

@@ -28,6 +28,9 @@ The empty objects illustrate envelope locations; they are not a valid complete c
 
 `project` stores the complete model: accepted outline, settings, survey metadata, street nodes, roads, block polygons, civic square, base plots, properties, buildings, courtyard holes, access metadata, open space, districts, walls, gates, towers, water features, bridges and reserved water faces. IDs and references are saved directly. Loading never calls the procedural generator or infers buildings from a seed.
 
+C4 stores accepted street bends as ordinary nodes and roads in project schema 9. Newly inserted bend nodes use the reserved `N-BEND-` ID prefix. The editor treats them as movable handles while exactly two ordinary segments of the same class meet there. Other junctions end the editable path. Coordinates, road references and building changes remain authoritative in the saved city. Pending bend positions and snapping are session state.
+
+
 Names, notes and unknown JSON fields on records are retained. `project.generatorVersion` describes the original generator; loading and exporting does not rewrite it to the current app version.
 
 Schemas 2–9 share these geometry contracts: polygon coordinates are ordinary finite JSON numbers. Polygons use a counterclockwise outer boundary. Building holes are separate counterclockwise polygons inside the footprint. Base plots are convex; properties and building footprints may be concave. A property’s plots partition its area. Buildings reference only the plots their actual footprint occupies. Attached rows may share walls, with no positive-area footprint overlap.
