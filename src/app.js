@@ -114,7 +114,7 @@ import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
 // B2 conservative parcel adaptation remains preview-only until B4 Apply.
 import { prepareParcelReconciliationB2 } from './core/parcel-reconciliation.js';
-import { prepareRoadApplyB4 } from './editor/road-application.js';
+import { prepareRoadApplyB4, prepareRoadApplyC2 } from './editor/road-application.js';
 import { RoadGeometryHistoryB4 } from './editor/road-history.js';
 
 const $ = id => document.getElementById(id),
@@ -1417,7 +1417,8 @@ function applyRoadEditB4(session,baselineRevision){
   const previous=project,revision=files?.revision??0;
   if(!previous||!session?.current())
     return {ok:false,message:'The road preview is stale. Reopen it before Apply.'};
-  const receipt=prepareRoadApplyB4(previous,captureWorkspace().workspace,session,baselineRevision,revision);
+  const prepare = session.selection?.kind === 'road' ? prepareRoadApplyC2 : prepareRoadApplyB4;
+  const receipt=prepare(previous,captureWorkspace().workspace,session,baselineRevision,revision);
   if(!receipt.ok)return {ok:false,message:receipt.issues?.[0]?.message??'Road Apply blocked.'};
   if(project!==previous||revision!==(files?.revision??0)||session.revision!==session.settledRevision)
     return {ok:false,message:'Accepted project or preview changed during Apply.'};

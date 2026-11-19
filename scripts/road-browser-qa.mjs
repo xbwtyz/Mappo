@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile, mkdir } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
+import { createProject } from '../src/core/city-model.js';
+import { defaultWorkspace } from '../src/data/project-format.js';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 
 const html = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'));
@@ -540,6 +542,27 @@ for (const [name, type] of [
       await page.waitForFunction(() => __buildingQA.state().roadWorkspace.session.report?.status === 'safe');
       assert.ok((await page.locator('#roadReportStatus').innerText()).startsWith('Safe'));
       await page.locator('#roadPreviewCancel').click();
+      const project = createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+      await page.evaluate(doc => {
+        __buildingQA.apply(doc);
+        const s = __buildingQA.state();
+        __buildingQA.c2Before = JSON.stringify(s.project);
+      }, {project, workspace:defaultWorkspace(project)});
+      await page.locator('#roadModeButton').click();
+      await page.evaluate(() => { __buildingQA.c2Revision = __buildingQA.state().files.revision; });
+      await page.locator('#roadSelectionKind').selectOption('road');
+      await page.locator('#roadSelectionId').selectOption('RD-0116');
+      await page.locator('#roadIntentDxC1').fill('5');
+      await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);
+      assert.equal(await page.evaluate(() => __buildingQA.state().files.revision === __buildingQA.c2Revision), true);
+      await page.locator('#roadApplyB4').click();
+      const applied = await page.evaluate(() => JSON.stringify(__buildingQA.state().project));
+      assert.equal(await page.evaluate(() => __buildingQA.state().files.revision === __buildingQA.c2Revision + 1), true);
+      assert.notEqual(applied, await page.evaluate(() => __buildingQA.c2Before));
+      assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')), true);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project) === __buildingQA.c2Before), true);
+      assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('redo')), true);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)), applied);
       assert.equal(errors.length, 0, errors.join('; '));
       console.log(
         `PASS road ${label}: inspection, mouse/touch/keyboard preview, A3 report, reset/cancel, save/recovery isolation`,

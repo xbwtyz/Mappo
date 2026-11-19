@@ -426,15 +426,15 @@ export class RoadInspectionWorkspace {
       'Protected connection: choose a road with two ordinary unprotected endpoints.' :
       s.roadIntentInputError || s.error ||
       (s.pending ? s.checking?'Street positioned in draft; checking the road network...':
-        'User placement preserved as a draft. '+
-        (s.roadIntentAnalysis?.issues?.[0]?.message??'Neighborhood adaptation is pending C2.')+
-        ' Apply remains unavailable until full neighborhood reconciliation.' :
+        s.reconciliation?.candidateProject ? 'Street and local neighborhood ready to review.' :
+        'Street placement held in draft. '+(s.reconciliation?.unresolved?.[0]?.message ??
+          'The neighborhood could not be reconciled.') :
         'Drag a road on the map or enter a displacement to preview your chosen street position.');
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
       : d?.protected
         ? 'Protected geometry is inspection only. Choose an ordinary junction to try a position.'
-        : kind==='road' ? 'Drag an eligible ordinary road, enter X/Y displacement, or nudge using arrows. Position is draft-only until later neighborhood adaptation.' :
+        : kind==='road' ? 'Drag an eligible ordinary road, enter X/Y displacement, or nudge using arrows. Review local adaptation before applying.' :
           'Choose an ordinary junction to try a position.';
     for (const [id, key] of [
       ['roadProposedX', 'x'],
@@ -468,16 +468,14 @@ export class RoadInspectionWorkspace {
     const computed = s.reconciliation ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology) : null;
     s.previewGeometry = computed;
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
-    const ready=Boolean(s.details?.kind==='junction' && s.current() && s.pending && !s.checking && !s.drag && !s.error &&
+    const ready=Boolean((kind==='junction' || kind==='road') && s.current() && s.pending && !s.checking && !s.drag && !s.error &&
       !s.reconciliationError && s.reconciliation?.candidateProject &&
       s.reconciliation?.status==='candidate-only' && !s.reconciliation.unresolved?.length &&
       s.previewGeometry?.verified && s.settledRevision===s.revision &&
       s.acceptedFingerprint===JSON.stringify(s.project) &&
       this.getRevision()===this.baseRevision);
     this.$('roadApplyB4').disabled=!ready;
-    this.$('roadApplyStatusB4').textContent=kind==='road' ?
-      'Road-first draft only. C2–C5 will adapt generated neighborhoods and provide a fully validated Apply.' :
-      this.applyError || (ready ?
+    this.$('roadApplyStatusB4').textContent=this.applyError || (ready ?
       'Eligible preview. Apply will recompute, validate and confirm portable save compatibility before acceptance.' :
       'Apply is unavailable until a fully reconciled, current road candidate passes validation.');
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
@@ -503,9 +501,9 @@ export class RoadInspectionWorkspace {
     const more=this.$('roadReconciliationMoreB3');
     if(s.checking)status.textContent='Checking proposed geometry and land dependencies…';
     else if(s.reconciliationError)status.textContent=s.reconciliationError;
-    else if(!s.pending)status.textContent='Accepted city unchanged. Move an ordinary junction to preview adaptation.';
+    else if(!s.pending)status.textContent='Accepted city unchanged. Move an ordinary street or junction to preview adaptation.';
     else if(!preview)status.textContent='Proposed road only; reconciliation has not completed.';
-    else if(preview.mode==='reconciled')status.textContent='Locally reconciled candidate · not applied. Full validation passed; B4 is required for Apply.';
+    else if(preview.mode==='reconciled')status.textContent='Local adaptation passed validation. Review the changes, then choose Apply.';
     else if(preview.mode==='topology-only')status.textContent='Roads and blocks only · property reconciliation unresolved. No parcel changes are claimed.';
     else status.textContent='Road proposal has unresolved constraints. No safely adapted parcel geometry is available.';
     const counts=this.$('roadReconciliationCountsB3');
@@ -513,11 +511,15 @@ export class RoadInspectionWorkspace {
       preview.counts.roads+' roads · '+preview.counts.blocks+' blocks · '+
       preview.counts.properties+' properties · '+preview.counts.plots+' plots · '+
       preview.counts.openSpaces+' open-space summaries · '+
-      preview.buildingsPreserved+' buildings held fixed · '+preview.unresolved.length+' unresolved':
+      preview.buildingsPreserved+' building footprints held fixed · '+preview.unresolved.length+' unresolved':
       'No reconciled candidate yet.';
     const rows=preview?.rows??[];
     const unresolved=preview?.unresolved??[];
-    const all=[...rows.map(row=>({...row,entryType:'change'})),
+    const ledger=s.reconciliation?.ledger??[];
+    const provenance=new Map(ledger.map(row=>[row.kind+' '+row.oldId,row.provenance]));
+    const access=ledger.filter(row=>row.disposition==='access-reconnected')
+      .map(row=>({kind:row.kind,id:row.oldId,state:'access-reconnected',entryType:'change'}));
+    const all=[...rows.map(row=>({...row,entryType:'change'})),...access,
       ...unresolved.map(row=>({...row,entryType:'unresolved'}))];
     list.replaceChildren(...all.slice(0,this.reconciliationLimit).map(row=>{
       const item=document.createElement('li');
@@ -526,7 +528,8 @@ export class RoadInspectionWorkspace {
         const measure=(name,oldValue,newValue)=>oldValue!=null&&newValue!=null?
           ' · '+name+': '+oldValue.toFixed(2)+' → '+newValue.toFixed(2):'';
         description.textContent=row.kind+' '+row.id+' · '+
-          (row.state==='topology-only'?'Proposed topology only':'Adapted geometry')+
+          (row.state==='topology-only'?'Proposed topology only':row.state==='access-reconnected'?'Reconnected access':'Adapted geometry')+
+          (provenance.get(row.kind+' '+row.id)==='generated'?' · Generated record':'')+
           measure('area',row.oldArea,row.newArea)+
           measure('length',row.oldLength,row.newLength)+
           measure('frontage',row.oldFrontage,row.newFrontage);

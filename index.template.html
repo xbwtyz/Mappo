@@ -155,8 +155,8 @@
             <div id="roadEndpointList" class="road-endpoint-list" aria-label="Connected junctions"></div>
             <p id="roadPreviewEligibility" class="hint"></p>
             <section id="roadIntentPanelC1" aria-label="Road-first placement draft" hidden>
-              <h3>ROAD-FIRST STREET DRAFT · C1</h3>
-              <p class="hint">Drag an eligible street to where you want it. Neighboring streets follow both endpoints. Property conflicts do not cancel the draft; C2–C5 will add intelligent neighborhood reflow. Protected connections remain separate.</p>
+              <h3>STREET PLACEMENT</h3>
+              <p class="hint">Drag an ordinary street or enter its offset. The preview shows nearby parcel changes or explains what blocks Apply.</p>
               <div class="road-preview-selectors">
                 <label>Street offset X<input id="roadIntentDxC1" type="number" step="any" value="0"></label>
                 <label>Street offset Y<input id="roadIntentDyC1" type="number" step="any" value="0"></label>
@@ -166,20 +166,18 @@
             <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
             <label class="road-step-label">Nudge units<input id="roadNudgeStep" type="number" min="0.001" step="0.5" value="0.5"></label>
             <div class="road-nudge-buttons" role="group" aria-label="Nudge proposed junction"><button id="roadNudgeLeft" aria-label="Nudge left">←</button><button id="roadNudgeUp" aria-label="Nudge up">↑</button><button id="roadNudgeDown" aria-label="Nudge down">↓</button><button id="roadNudgeRight" aria-label="Nudge right">→</button></div>
-            <p class="hint road-preview-legend">Accepted roads are solid; proposed roads are dashed. The adapted neighborhood is preview-only.</p>
+            <p class="hint road-preview-legend">Accepted roads are solid. Proposed roads are dashed.</p>
             <section id="roadReconciliationB3" class="road-reconciliation-b3" aria-label="Road and property reconciliation" hidden>
-              <h3>NEIGHBORHOOD ADAPTATION · B3</h3>
+              <h3>NEIGHBORHOOD ADAPTATION</h3>
               <p id="roadReconciliationStatusB3" role="status" aria-live="polite">Accepted city unchanged.</p>
               <label class="road-overlay-option-b3"><input id="roadOverlayB3" type="checkbox" checked> Show proposed geometry overlay</label>
               <p id="roadReconciliationCountsB3" class="hint"></p>
               <p id="roadReconciliationLegendB3" class="hint"></p>
               <ol id="roadReconciliationListB3" class="road-report-list" aria-label="Proposed and unresolved geometry changes"></ol>
               <button type="button" id="roadReconciliationMoreB3" class="minor-button" hidden>Show 50 more changes</button>
-              <p class="hint">Inspection only. Neither accepted city, save files, recovery nor Undo history changes here. Apply comes in B4.</p>
             </section>
             <p id="roadReportError" class="validation-error"></p><p id="roadReportSummary" class="hint"></p><p id="roadReportMetrics" class="hint"></p>
             <ol id="roadReportList" class="road-report-list" aria-label="Affected objects and impact descriptions"></ol><button id="roadShowMore" class="minor-button" hidden>Show 50 more entries</button>
-            <p class="hint">Preview only. Road Apply and Undo will be introduced in B4.</p>
           </div>
           <div class="road-preview-actions">
             <button id="roadApplyB4" type="button" class="tool-button" disabled>Apply road edit</button>

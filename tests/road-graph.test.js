@@ -31,7 +31,10 @@ test('98 frozen 0.1 golden cities retain exact geometry, IDs and metadata after 
   assert.equal(parity.baseline, '785e9cb2a44c40819e91a636523ac397b6660f9e');
   for (const fixture of parity.fixtures) {
     const city = fromFixture(fixture).city;
-    assert.equal(createHash('sha256').update(JSON.stringify(city)).digest('hex'), fixture.sha256, JSON.stringify(fixture.options));
+    // The 0.1 baseline predates C2 provenance. Hash all other fields exactly.
+    const withoutProvenance = (key, value) => key === 'roadProvenance' ? undefined : value;
+    assert.equal(createHash('sha256').update(JSON.stringify(city, withoutProvenance)).digest('hex'),
+      fixture.sha256, JSON.stringify(fixture.options));
     const report = analyzeRoadGraph(freeze(city));
     assert.equal(report.valid, true, JSON.stringify(report.issues));
     const faces = traceRoadFaces(city.nodes, city.roads);

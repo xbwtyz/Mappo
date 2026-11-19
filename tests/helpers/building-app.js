@@ -55,7 +55,7 @@ export async function buildingAppHarness() {
     return element;
   }
   const context = {
-    document, console, URL, Uint32Array, TextEncoder, Math, Date, setTimeout, clearTimeout,
+    document, console, URL, Uint32Array, TextEncoder, structuredClone, Math, Date, setTimeout, clearTimeout,
     window: {
       location: { href: 'file:///mappo.html?seed=building-selection-qa&size=small' }, devicePixelRatio: 1,
       addEventListener(name, fn) { (globalEvents[name] ??= []).push(fn); }
