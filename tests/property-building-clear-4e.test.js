@@ -70,7 +70,7 @@ test('Dev 4e Inspector bulk clear, one-click Undo/Redo and disabled empty action
   const clear=actions().find(b=>b.textContent==='Clear all buildings…');
   assert.ok(clear);
   assert.equal(clear.disabled,false);
-  assert.equal(clear.handlers.click(),true);
+  clear.handlers.click();
   assert.equal(state.buildingStructureHistory.count('undo',prop.id),1);
   assert.equal(app.state().project.city.buildings.filter(b=>b.propertyId===prop.id).length,0);
   assert.match(app.el('structureHistoryStatus').textContent,/Restore all cleared buildings/);

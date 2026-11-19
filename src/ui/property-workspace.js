@@ -30,7 +30,7 @@ export class PropertyWorkspace {
     }));
     buildingSection.actions.push({label:'Add building to this property',disabled:this.getLayers().buildings===false,run:()=>this.startBuilding(property.id)});
     buildingSection.actions.push({
-      label:'Clear all buildings…',disabled:structures.length===0,
+      label:'Clear all buildings…',disabled:structures.length===0 || this.getLayers().buildings===false,
       run:()=>this.clearBuildings(property.id)
     });
     information.sections.push({title:'Property geometry (3I)',rows:[['Edit status','Draft geometry is validated before atomic Apply; accepted land is unchanged until then.']],actions:[{label:'Edit property geometry',run:()=>this.startPropertyEdit(property.id)}]});
