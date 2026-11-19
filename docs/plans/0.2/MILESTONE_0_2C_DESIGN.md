@@ -105,6 +105,12 @@ flowchart TD
 
 **Gate:** Multiple real end-user tasks with intentional road movements in **all four morphologies**, including changes larger than precision nudges and block topology edits. Full Node suite, legacy schema-9 fixtures, deterministic project reload, finite work/performance, reproducible offline versioned HTML and root parity; Chromium/Firefox desktop 1440×900, ultrawide 5120×1440, tablet 768×1024, phone 390×844; keyboard/pointer/touch checks and physical-device accessibility checklist. C6 is complete only when users can deliberately lay out streets and see intelligent city adaptation, not merely when diagnostic errors are correct.
 
+### C7 — Unified junction adaptation
+
+Approved follow-up to C6. Moving an ordinary junction uses the same road-first reflow, crossing normalization, building choices and atomic Apply as moving a street. The draft keeps the user's target junction position visible when a protected edge or unresolved conflict blocks Apply.
+
+Verify substantial junction movement in all four morphologies, shared intersections, protected features, custom-building approval, Undo/Redo and schema-9 reload. Check responsiveness on a larger city. The C6 physical touch and screen-reader checks still apply before closing 0.2C. The fuller replacement report and everyday preview redesign belong in 0.2D.
+
 ## 5. Acceptance/merge workflow and relationship to existing C1 PR #34
 
 - **PR #34 is a reusable experimental branch, not a completed C1 against this new product contract.** Its accepted-junction history, geometry, preview/report and schema safeguards may be ported after focused review. Do not merge PR #34 unchanged into `main`, despite passing its earlier technical CI.

@@ -166,7 +166,7 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
     ctx.stroke();
   }
   if (session.pending && d?.kind==='junction') {
-    const color = rpColors[session.report?.status] ?? rpColors.checking;
+    const color = session.previewGeometry?.verified ? rpColors.safe : rpColors[session.report?.status] ?? rpColors.checking;
     ctx.setLineDash([7, 5]);
     for (const id of d.roadIds) segment(graph.roadsById.get(id), color, 3, true);
     ctx.setLineDash([]);

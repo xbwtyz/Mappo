@@ -1,5 +1,5 @@
 import { prepareRoadTopologyReflowC3 } from '../core/road-topology-reflow.js';
-import { prepareNeighborhoodReflowC3 } from '../core/neighborhood-reflow.js';
+import { prepareJunctionReflowC7, prepareNeighborhoodReflowC3 } from '../core/neighborhood-reflow.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { buildRoadGraph } from '../core/road-graph.js';
@@ -132,13 +132,15 @@ export function prepareRoadApplyC2(project, workspace, session, expectedRevision
       !Number.isSafeInteger(expectedRevision) || expectedRevision !== currentRevision)
     return reject('stale-project', 'The accepted project changed. Reopen the road preview.');
   const inspected = session.reconciliation;
-  if (session.selection?.kind !== 'road' || !session.pending || session.drag || session.checking ||
+  if (!['road','junction'].includes(session.selection?.kind) || !session.pending || session.drag || session.checking ||
       session.error || session.roadIntentInputError || session.settledRevision !== session.revision ||
       session.acceptedFingerprint !== JSON.stringify(project) || !session.previewGeometry?.verified ||
       !['C2', 'C3'].includes(inspected?.phase) || !inspected.candidateProject)
     return reject('stale-preview', 'The street proposal is not a complete, current preview.');
   try {
-    const fresh = session.roadConnectionEdit
+    const fresh = session.selection.kind==='junction'
+      ? prepareJunctionReflowC7(project,session.selection.id,session.point,session.buildingDecisions)
+      : session.roadConnectionEdit
       ? prepareRoadTopologyReflowC3(project, session.selection.id, null, session.roadConnectionEdit, session.buildingDecisions)
       : prepareNeighborhoodReflowC3(project, session.selection.id, session.roadIntentOffset, undefined, session.buildingDecisions);
     if (!fresh.candidateProject)
