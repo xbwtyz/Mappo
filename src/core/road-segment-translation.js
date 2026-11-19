@@ -192,3 +192,56 @@ export function prepareSegmentTranslationC1(project, roadId, offset, workspace =
       [roadId], 'project');
   }
 }
+
+const C1_FIELDS = Object.freeze({
+  nodes:['x','y'], blocks:['area'],
+  properties:['boundary','frontage','frame','local','area'],
+  plots:['boundary'], openSpaces:['area']
+});
+function c1Canonical(value) {
+  if (Array.isArray(value)) return value.map(c1Canonical);
+  if (value && typeof value==='object') return Object.fromEntries(
+    Object.keys(value).sort(c1Order).map(key=>[key,c1Canonical(value[key])]));
+  return value;
+}
+const c1Equal=(a,b)=>JSON.stringify(c1Canonical(a))===JSON.stringify(c1Canonical(b));
+
+// Audit exact accepted-state changes separately from topology checks. All
+// fields outside the narrow geometry whitelist, including building/road IDs,
+// metadata and unknown extensions, must survive without any alteration.
+export function verifySegmentDeltaC1(before, after, roadId, offset) {
+  if(!before?.city||!after?.city)throw new Error('Complete accepted/candidate projects required.');
+  const road=before.city.roads.find(r=>r.id===roadId);
+  if(!road||road.a===road.b||!c1Point(offset)||!Math.hypot(offset.x,offset.y))
+    throw new Error('Missing or invalid segment translation intent.');
+  const endpoints=new Set([road.a,road.b]);
+  const expected=copyJson(before);
+  for(const [kind,fields] of Object.entries(C1_FIELDS)){
+    const original=before.city[kind]??[],proposed=after.city[kind]??[];
+    if(original.length!==proposed.length)
+      throw new Error('Membership changed for '+kind+'.');
+    for(let i=0;i<original.length;i++){
+      const a=original[i],b=proposed[i],out=expected.city[kind][i];
+      if(a.id!==b.id)throw new Error('Record identity changed in '+kind+'.');
+      for(const field of fields){
+        if(!c1Equal(a[field],b[field])){
+          if(kind==='nodes'&&!endpoints.has(a.id))
+            throw new Error('An unrelated junction moved.');
+          if(b[field]===undefined)
+            throw new Error('A geometry field was removed.');
+          out[field]=copyJson(b[field]);
+        }
+      }
+    }
+  }
+  for(const id of endpoints){
+    const source=before.city.nodes.find(n=>n.id===id);
+    const target=after.city.nodes.find(n=>n.id===id);
+    if(!source||!target || Math.abs(target.x-source.x-offset.x)>1e-7 ||
+      Math.abs(target.y-source.y-offset.y)>1e-7)
+      throw new Error('Segment endpoints do not share the approved translation.');
+  }
+  if(!c1Equal(expected,after))
+    throw new Error('Unsupported project fields changed during the road translation.');
+  return true;
+}
