@@ -65,3 +65,64 @@ test('C6 can open older schema-9 development without inferring that it is safe t
   assert.equal(JSON.stringify(app.state().project),before);
   assert.equal(files.revision,revision);
 });
+
+test('C7 substantial junction drags use local road reflow across all four layouts',async()=>{
+  const app=await buildingAppHarness();
+  for (const [morphology,id,dx,dy] of [
+    ['planned','N-0105',12,0],['radial','N-0101',0,15],
+    ['organic','N-0139',0,15],['linear','N-0118',0,8],
+  ]) {
+    const project=createProject({seed:'c2-'+morphology,size:'small',morphology});
+    app.apply({project,workspace:defaultWorkspace(project)});
+    const {roadWorkspace,files}=app.state(), before=JSON.stringify(app.state().project), revision=files.revision;
+    roadWorkspace.start();
+    const s=roadWorkspace.session;
+    s.schedule=run=>{run();};
+    s.select({kind:'junction',id});
+    const {x,y}=s.point;
+    assert.equal(s.begin({x,y},5,'touch'),true,morphology);
+    s.move({x:x+dx,y:y+dy});
+    assert.equal(app.el('roadApplyB4').disabled,true);
+    s.end(false);
+    assert.equal(app.el('roadApplyB4').disabled,false,morphology+' '+s.reconciliation?.unresolved[0]?.message);
+    assert.ok(s.reconciliation.ledger.some(row=>row.kind==='property'||row.kind==='building'),morphology);
+    if (['radial','organic'].includes(morphology)) {
+      assert.ok(s.reconciliation.ledger.some(row=>row.disposition==='created-junction'));
+      assert.match(app.el('roadReportStatus').textContent,/preview ready/);
+    }
+    assert.equal(JSON.stringify(app.state().project),before);
+    app.el('roadApplyB4').handlers.click();
+    assert.equal(files.revision,revision+1);
+    assert.deepEqual(app.state().project.city.nodes.find(row=>row.id===id),{id,x:x+dx,y:y+dy});
+    const after=JSON.stringify(app.state().project);
+    assert.equal(app.moveRoadHistory('undo'),true);
+    assert.equal(JSON.stringify(app.state().project),before);
+    assert.equal(app.moveRoadHistory('redo'),true);
+    assert.equal(JSON.stringify(app.state().project),after);
+    const doc=app.capture();
+    app.apply(decodeProjectDocument(encodeProjectDocument(createProjectDocument(doc.project,doc.workspace))));
+    assert.equal(JSON.stringify(app.state().project),after);
+  }
+});
+
+test('C7 junction conflicts use the same explicit building choice and Apply gate',async()=>{
+  const app=await buildingAppHarness(),project=createProject({seed:'c2-radial',size:'small',morphology:'radial'});
+  project.city.buildings.find(row=>row.id==='BLD-00048').customName='Market Hall';
+  app.apply({project,workspace:defaultWorkspace(project)});
+  const road=app.state().roadWorkspace, before=JSON.stringify(app.state().project);
+  road.start();
+  const s=road.session;
+  s.schedule=run=>{run();};
+  s.select({kind:'junction',id:'N-0101'});
+  const {x,y}=s.point;
+  s.update({x,y:y+15},{defer:false});
+  assert.equal(app.el('roadApplyB4').disabled,true);
+  assert.equal(app.el('roadResolveConflictC6').hidden,false);
+  assert.match(app.el('roadApplyStatusB4').textContent,/Market Hall/);
+  assert.equal(s.decideBuilding('BLD-00048',{kind:'auto'}),true);
+  assert.equal(s.reconciliation.ledger.find(row=>row.oldId==='BLD-00048').disposition,'authorized-relocation');
+  assert.equal(app.el('roadApplyB4').disabled,false);
+  assert.equal(JSON.stringify(app.state().project),before);
+  app.el('roadApplyB4').handlers.click();
+  assert.equal(app.state().project.city.buildings.find(row=>row.id==='BLD-00048').customName,'Market Hall');
+});

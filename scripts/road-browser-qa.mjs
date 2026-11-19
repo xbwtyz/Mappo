@@ -109,17 +109,18 @@ for (const [name, type] of [
         // unaltered report. Core classification is tested separately in Node.
         return {
           status: session.report.status,
+          ready: session.reconciliation?.validation?.project === 'valid' && Boolean(session.reconciliation.candidateProject),
           counts: session.report.counts,
           rows: session.report.affected.slice(0, 50),
         };
       });
       const statusText = await page.locator('#roadReportStatus').innerText();
-      assert.ok(
-        statusText.startsWith(
-          { safe: 'Safe', 'needs-review': 'Needs review', invalid: 'Invalid' }[expected.status],
-        ),
-      );
-      assert.ok(statusText.includes(`${expected.counts.affectedObjects} affected`));
+      if (expected.ready && expected.status!=='safe') {
+        assert.match(statusText,/Junction preview ready/);
+      } else {
+        assert.ok(statusText.startsWith({safe:'Safe','needs-review':'Needs review',invalid:'Invalid'}[expected.status]));
+        assert.ok(statusText.includes(`${expected.counts.affectedObjects} affected`));
+      }
       // A5 groups repeated issues into collapsed details. Check every preserved
       // ID and message, including rows not initially expanded in the UI.
       while (await page.locator('#roadShowMore').isVisible())
@@ -144,7 +145,10 @@ for (const [name, type] of [
       );
       assert.equal(
         await page.locator('#roadPreviewPanel').getAttribute('data-report-status'),
-        await page.evaluate(() => __buildingQA.state().roadWorkspace.session.report.status),
+        await page.evaluate(() => {
+          const session=__buildingQA.state().roadWorkspace.session;
+          return session.reconciliation?.candidateProject ? 'safe' : session.report.status;
+        }),
       );
       // All preview data, pan/zoom, file downloads and recovery captures exclude
       // road mode. Flush a pre-existing recovery write while preview is active.
@@ -660,6 +664,20 @@ for (const [name, type] of [
         assert.equal(placed.customName,'Market Hall');
         assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),original);
+      }
+      if (viewport.name === 'desktop') {
+        const radial=createProject({seed:'c2-radial',size:'small',morphology:'radial'});
+        await page.evaluate(doc=>__buildingQA.apply(doc),{project:radial,workspace:defaultWorkspace(radial)});
+        await page.locator('#roadModeButton').click();
+        await page.locator('#roadSelectionKind').selectOption('junction');
+        await page.locator('#roadSelectionId').selectOption('N-0101');
+        const junction=radial.city.nodes.find(node=>node.id==='N-0101');
+        await page.locator('#roadProposedY').fill(String(junction.y+15));
+        await page.waitForFunction(()=>!document.querySelector('#roadApplyB4').disabled);
+        assert.match(await page.locator('#roadReportStatus').innerText(),/preview ready/);
+        await page.locator('#roadApplyB4').click();
+        assert.equal(await page.evaluate(()=>__buildingQA.state().project.city.nodes.find(node=>node.id==='N-0101').y),junction.y+15);
+        assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
       }
       assert.equal(errors.length, 0, errors.join('; '));
       console.log(

@@ -535,7 +535,9 @@ export class RoadInspectionWorkspace {
     }
     for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || (bends ? bend : s.roadIntentEligible));
     this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error && !s.roadIntentInputError;
-    const status = s.roadIntentInputError ? 'Invalid road offset' :
+    const reconciledJunction = kind==='junction' && s.reconciliation?.candidateProject &&
+      s.reconciliation.validation?.project==='valid' && s.report?.status!=='safe';
+    const status = reconciledJunction ? 'Junction preview ready' : s.roadIntentInputError ? 'Invalid road offset' :
       s.details?.kind==='road' && s.pending ?
       (s.checking?'Checking road draft':'Street placement drafted') : s.error
       ? 'Report unavailable'
@@ -546,12 +548,12 @@ export class RoadInspectionWorkspace {
           : 'Accepted position · no proposed change';
     const live =
       status +
-      (s.report
+      (s.report && !reconciledJunction
         ? ` · ${s.report.counts.affectedObjects} affected · ${s.report.counts.issues} issues · ${s.report.counts.preservedObjects} preserved`
         : '');
     if (this.$('roadReportStatus').textContent !== live) this.$('roadReportStatus').textContent = live;
     panel.setAttribute('data-report-status',
-      s.roadIntentInputError ? 'invalid' : s.report?.status ?? (s.checking ? 'checking' : 'idle'));
+      reconciledJunction ? 'safe' : s.roadIntentInputError ? 'invalid' : s.report?.status ?? (s.checking ? 'checking' : 'idle'));
     this.$('roadReportError').textContent = s.error;
     this.$('roadReconciliationB3').hidden = false;
     this.$('roadClearBuildingChoicesC5').hidden = !s.buildingDecisions.size;

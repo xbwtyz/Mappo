@@ -204,7 +204,8 @@ export class RoadPreviewSession {
     this.buildingDecisions.set(id,{...choice});
     this.checking = true;
     this.changed();
-    this.evaluateRoadDraft(true);
+    if (this.selection.kind==='junction') this.evaluateJunctionDraft(true);
+    else this.evaluateRoadDraft(true);
     return true;
   }
   clearBuildingDecisions() {
@@ -213,7 +214,8 @@ export class RoadPreviewSession {
     this.buildingDecisions.clear();
     this.checking = true;
     this.changed();
-    this.evaluateRoadDraft(true);
+    if (this.selection.kind==='junction') this.evaluateJunctionDraft(true);
+    else this.evaluateRoadDraft(true);
     return true;
   }
   evaluateRoadDraft(defer) {
@@ -268,6 +270,7 @@ export class RoadPreviewSession {
   update(point, { defer = true, dragging = false } = {}) {
     if (!this.current() || !this.details?.movable) return false;
     this.invalidate();
+    this.buildingDecisions.clear();
     this.point = { x: point.x, y: point.y };
     this.report = this.proposal = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
@@ -278,7 +281,11 @@ export class RoadPreviewSession {
     this.error = '';
     this.checking = this.pending;
     this.changed();
-    if (!this.pending || dragging) return true;
+    if (this.checking && !dragging) this.evaluateJunctionDraft(defer);
+    return true;
+  }
+
+  evaluateJunctionDraft(defer) {
     const revision = this.revision;
     const run = () => {
       if (!this.current() || revision !== this.revision) return;
@@ -288,7 +295,7 @@ export class RoadPreviewSession {
         this.report = this.analyze(this.project, this.proposal);
         if(this.reconcile){
           try {
-            this.reconciliation = this.reconcile(this.project, this.selection.id, this.point);
+            this.reconciliation = this.reconcile(this.project, this.selection.id, this.point,this.buildingDecisions);
             this.settledRevision = revision;
             this.acceptedFingerprint = JSON.stringify(this.project);
             if(!this.reconciliation.candidateProject && this.reconcileRoad && this.proposal.graphValid)

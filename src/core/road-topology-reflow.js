@@ -160,7 +160,7 @@ function c4MatchBentFaces(old, extraction, draft) {
 
 export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null, decisions = new Map()) {
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
-  const fail = (code, message, kind = 'road', id = roadId) => ({
+  const fail = (code, message, kind = draft?.junctionId ? 'junction' : 'road', id = roadId) => ({
     phase: 'C3', status: 'needs-review', candidateProject: null, changed: [], ledger: [],
     unresolved: [{ code, message, kind, id, severity: 'needs-review' }], validation,
   });

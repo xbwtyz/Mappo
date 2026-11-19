@@ -1,6 +1,6 @@
 import { prepareRoadTopologyReflowC3 } from './road-topology-reflow.js';
 import { reflowGeneratedRoadBuildings } from './road-building-reflow.js';
-import { prepareRoadIntentC1 } from './road-intent-c1.js';
+import { prepareJunctionIntentC7, prepareRoadIntentC1 } from './road-intent-c1.js';
 import { buildRoadGraph } from './road-graph.js';
 import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
 import { analyzeRoadImpact } from './road-impact.js';
@@ -70,6 +70,14 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
 
 export function prepareNeighborhoodReflowC3(project, roadId, offset,
   draft = prepareRoadIntentC1(project, roadId, offset), decisions = new Map()) {
+  return reconcileRoadIntent(project,roadId,draft,decisions);
+}
+
+export function prepareJunctionReflowC7(project,junctionId,point,decisions = new Map()) {
+  return { ...reconcileRoadIntent(project,junctionId,prepareJunctionIntentC7(project,junctionId,point),decisions), applyReady:false };
+}
+
+function reconcileRoadIntent(project,roadId,draft,decisions) {
   if (draft.draftable && !draft.issues.some(row => row.code === 'boundary-escape') &&
       draft.issues.some(row => row.code === 'unnormalized-crossing'))
     return prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions);
@@ -97,11 +105,12 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
   const blocked = unresolved => ({
     phase, status: 'needs-review', candidateProject: null, changed: [], ledger, unresolved, validation,
   });
-  const fail = (code, message) => blocked([c2Issue('road', roadId, code, message)]);
+  const kind = draft.junctionId ? 'junction' : 'road';
+  const fail = (code, message) => blocked([c2Issue(kind, roadId, code, message)]);
   if (!draft.draftable || draft.status === 'unchanged' || !draft.topologyResolved ||
       draft.issues.some(issue => issue.code === 'boundary-escape')) {
     const issues = draft.issues.filter(issue => issue.code !== 'neighborhood-reflow-pending');
-    return issues.length ? blocked(issues.map(issue => c2Issue('road', roadId, issue.code, issue.message))) :
+    return issues.length ? blocked(issues.map(issue => c2Issue(kind, roadId, issue.code, issue.message))) :
       fail('unresolved-topology', 'A changed street with matching block identities is required.');
   }
   try {
@@ -111,7 +120,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
     const faces = extractRoadFaces(graph, accepted);
     const identity = matchExistingFaces(accepted, faces);
     if (!graph.valid || !faces.valid)
-      return blocked([...graph.issues, ...faces.issues].map(issue => c2Issue('road', roadId, issue.code, issue.message)));
+      return blocked([...graph.issues, ...faces.issues].map(issue => c2Issue(kind, roadId, issue.code, issue.message)));
     if (!identity.valid || identity.requiresReview || identity.issues.length ||
         identity.added.length || identity.removed.length || identity.split.length || identity.merged.length ||
         identity.ambiguous.length) {
@@ -120,7 +129,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
         fail('unresolved-topology', 'This move changes block identities. Face restructuring comes in C3.');
     }
     validation.graph = validation.faces = 'pass';
-    const impact = analyzeRoadImpact(project, { operation: 'translate-road', graph });
+    const impact = analyzeRoadImpact(project, { operation: draft.junctionId ? 'move-junction' : 'translate-road', graph });
     if (!impact.complete || impact.status === 'invalid')
       return impact.issues.length ? blocked(impact.issues) :
         fail('impact-incomplete', 'The full street and neighborhood impact could not be verified.');

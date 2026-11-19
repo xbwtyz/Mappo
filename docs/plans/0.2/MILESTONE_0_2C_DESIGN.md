@@ -7,7 +7,7 @@
 
 ## 1. Product contract: the user draws the roads, Mappo arranges the city
 
-The road network is the primary layout authority. The user directly moves, reconnects, adds, deletes and reshapes eligible ordinary streets, then Mappo proposes an intelligent **local** regeneration of affected blocks, properties, plots, open space and compatible buildings. The user can subsequently manually edit properties and boundaries in 0.2D. An old generated parcel is an input to adaptation, *not a road-placement prohibition*.
+The road network is the primary layout authority. The user directly moves, reconnects, adds, deletes and reshapes eligible ordinary streets, then Mappo proposes an intelligent **local** regeneration of affected blocks, properties, plots, open space and compatible buildings. The user can subsequently manually edit properties and boundaries after the 0.2D road usability milestone. An old generated parcel is an input to adaptation, *not a road-placement prohibition*.
 
 Primary story: "Drag a street to where I want it; preview the revised streets, blocks, properties and buildings; accept the whole adaptation in one reversible operation; fine-tune parcels afterward."
 
@@ -63,7 +63,7 @@ flowchart TD
 
 **Atomicity:** Preview/Reset/Cancel/search must not write accepted state, saved files, recovery or history. Apply checks latest city identity, revision, operation, resolutions, fingerprint, candidate equality and schema format; one accepted replacement, one recovery revision, coupled Undo/Redo.
 
-## 4. Revised six-cycle development plan
+## 4. Road-first development cycles
 
 ### C1 — Direct freeform road-intent editing (preview foundation)
 
@@ -105,6 +105,12 @@ flowchart TD
 
 **Gate:** Multiple real end-user tasks with intentional road movements in **all four morphologies**, including changes larger than precision nudges and block topology edits. Full Node suite, legacy schema-9 fixtures, deterministic project reload, finite work/performance, reproducible offline versioned HTML and root parity; Chromium/Firefox desktop 1440×900, ultrawide 5120×1440, tablet 768×1024, phone 390×844; keyboard/pointer/touch checks and physical-device accessibility checklist. C6 is complete only when users can deliberately lay out streets and see intelligent city adaptation, not merely when diagnostic errors are correct.
 
+### C7 — Unified junction adaptation
+
+Approved follow-up to C6. Moving an ordinary junction uses the same road-first reflow, crossing normalization, building choices and atomic Apply as moving a street. The draft keeps the user's target junction position visible when a protected edge or unresolved conflict blocks Apply.
+
+Verify substantial junction movement in all four morphologies, shared intersections, protected features, custom-building approval, Undo/Redo and schema-9 reload. Check responsiveness on a larger city. The C6 physical touch and screen-reader checks still apply before closing 0.2C. The fuller replacement report and everyday preview redesign belong in 0.2D.
+
 ## 5. Acceptance/merge workflow and relationship to existing C1 PR #34
 
 - **PR #34 is a reusable experimental branch, not a completed C1 against this new product contract.** Its accepted-junction history, geometry, preview/report and schema safeguards may be ported after focused review. Do not merge PR #34 unchanged into `main`, despite passing its earlier technical CI.
@@ -116,9 +122,9 @@ flowchart TD
 
 ## 6. Subsequent 0.2 roadmap
 
-0.2D = **manual properties** (create, split, merge, edit boundaries and plot divisions after automatic road-first reflow); 0.2E = advanced 2D buildings; 0.2F = optional civic/landmarks; 0.2G = final 2D integrations, migrations, performance, regression and 0.2 release. 3D remains deferred. Schema 9 stays unchanged until an explicitly approved schema migration becomes essential to provenance or geometry representation.
+[C7 finalization](C7_JUNCTION_FINALIZATION_PLAN.md) contains the remaining 0.2C acceptance work. [0.2D](MILESTONE_0_2D_ROAD_UX_PLAN.md) focuses on the experience of moving roads. Manual parcel creation, splitting, merging, boundary edits, and plot divisions follow. The later building, civic, and release phases remain on the roadmap with labels subject to sequencing review. Schema 9 remains the baseline. 3D remains deferred.
 
 ## 7. Decision record
 
-**Owner approved now:** Road-first product philosophy, intelligent local adaptation, user-fine-tuned properties afterward, and restructuring C1–C6 around that outcome.  
+**Owner approved now:** Road-first product philosophy, intelligent local adaptation, user-fine-tuned properties afterward, and restructuring C1–C6 around that outcome and adding C7 to unify junction editing.
 **Separate decisions still required:** Any destructive custom-work transformation, schema migration, implementation PR merge, and release. This document does not assert complete implementation.

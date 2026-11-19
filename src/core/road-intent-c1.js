@@ -36,15 +36,23 @@ export function prepareRoadIntentC1(project,roadId,offset){
   const road=accepted.roadsById.get(roadId);
   if(!road)return c1IntentRefused('road-not-found','Choose an existing ordinary road segment.');
   const endpoints=new Set([road.a,road.b]);
-  const changedRoadIds=[...new Set([...endpoints].flatMap(id=>
-    accepted.incidentRoads.get(id)??[]))].sort();
-  if(changedRoadIds.some(id=>accepted.roadClasses.get(id)?.protected))
-    return c1IntentRefused('protected-connection',
-      'This road shares a junction with protected infrastructure. Edit that feature separately.');
   const proposedNodes=[...endpoints].map(id=>{
     const node=accepted.nodesById.get(id);
     return {id,x:node.x+offset.x,y:node.y+offset.y};
   });
+  return finishRoadIntent(project,accepted,proposedNodes,'draft-road-translation',{roadId,offset:c1IntentCopy(offset)});
+}
+export function prepareJunctionIntentC7(project,junctionId,point) {
+  const accepted=buildRoadGraph(project?.city);
+  if (!accepted.valid) return c1IntentRefused('invalid-base-road-graph','A valid city is required to move a junction.');
+  if (!accepted.nodesById.has(junctionId)) return c1IntentRefused('junction-not-found','Choose an existing ordinary junction.');
+  return finishRoadIntent(project,accepted,[{id:junctionId,x:point?.x,y:point?.y}],
+    'draft-junction-move',{junctionId});
+}
+function finishRoadIntent(project,accepted,proposedNodes,operation,selection) {
+  const changedRoadIds=[...new Set(proposedNodes.flatMap(({id})=>accepted.incidentRoads.get(id)??[]))].sort();
+  if(changedRoadIds.some(id=>accepted.roadClasses.get(id)?.protected))
+    return c1IntentRefused('protected-connection','This junction touches protected infrastructure. Edit that feature separately.');
   if(proposedNodes.some(p=>!c1IntentFinite(p)))
     return c1IntentRefused('coordinate-limit','The requested road coordinates exceed supported world bounds.');
   const next=new Map(proposedNodes.map(p=>[p.id,p]));
@@ -52,7 +60,10 @@ export function prepareRoadIntentC1(project,roadId,offset){
   proposedCity.nodes=proposedCity.nodes.map(node=>next.has(node.id)
     ? {...node,x:next.get(node.id).x,y:next.get(node.id).y}:node);
   const issues=[];
-  const changed=!!Math.hypot(offset.x,offset.y);
+  const changed=proposedNodes.some(({id,x,y})=>{
+    const old=accepted.nodesById.get(id);
+    return x!==old.x || y!==old.y;
+  });
   let topologyResolved=false;
   let facesResolved=false;
   if(changed){
@@ -81,10 +92,10 @@ export function prepareRoadIntentC1(project,roadId,offset){
   // This result intentionally includes an unresolved full city only for
   // visualization. It is not project-schema valid or save/Apply eligible.
   return c1IntentFreeze({
-    phase:'C1',operation:'draft-road-translation',draftable:true,applyReady:false,
+    phase:'C1',operation,draftable:true,applyReady:false,
     status:changed ? issues.some(i=>i.code==='protected-connection')?'blocked':
       topologyResolved?'neighborhood-needed':'topology-needed':'unchanged',
-    roadId,offset:c1IntentCopy(offset),proposedNodes,changedRoadIds,
+    ...selection,proposedNodes,changedRoadIds,
     proposedCity,topologyResolved,facesResolved,
     neighborhoodResolved:false,issues,project:null,
   });

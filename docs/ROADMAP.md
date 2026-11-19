@@ -27,9 +27,9 @@ Historical implementation artifacts and QA notes are retained in [`docs/history/
 
 ## Mappo 0.2 — Approved 2D designer direction
 
-**2026-11-19 approved direction:** 0.2C becomes **Road-First Editing with Intelligent City Adaptation**. Users deliberately move/reshape streets, the city locally reflows generated blocks/properties/buildings as provenance and validation allow, and users then fine-tune properties and boundaries in 0.2D. Later phases remain 0.2E advanced buildings, 0.2F optional civic places, and 0.2G release hardening.
+**2026-11-19 approved direction:** 0.2C becomes **Road-First Editing with Intelligent City Adaptation**. Users deliberately move/reshape streets, the city locally reflows generated blocks/properties/buildings as provenance and validation allow, and users then fine-tune properties and boundaries. [0.2D](plans/0.2/MILESTONE_0_2D_ROAD_UX_PLAN.md) improves road editing before manual property tools. Later building, civic, and release phases remain planned.
 
-See the [updated master 0.2 roadmap](plans/0.2/README.md) and [0.2C six-cycle technical plan](plans/0.2/MILESTONE_0_2C_DESIGN.md).
+See the [updated master 0.2 roadmap](plans/0.2/README.md) and [0.2C technical plan](plans/0.2/MILESTONE_0_2C_DESIGN.md).
 
 **Current implementation:** 0.2A and B1–B5 are merged. The previous bounded-segment C1 prototype [PR #34](https://github.com/xbwtyz/Mappo/pull/34) passed its own CI but remains an **unmerged draft**, superseded as the product-level C1 contract. Its source can be reviewed and ported selectively; it is not evidence that the road-first user story is finished.
 
