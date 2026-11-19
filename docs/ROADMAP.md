@@ -4,6 +4,16 @@
 
 [Home](../README.md) · [Docs](README.md) · [3F historical plan](history/3f/MILESTONE_3F_PLAN.md)
 
+## Proposed next major release — Mappo 0.2
+
+**Direction chosen:** complete the 2D city designer before 3D rendering. **Road-editing policy:** staged editing (strict preservation first, then impact previews and explicit controlled local reconciliation).
+
+- [0.2 overall roadmap and phase layout](plans/0.2/README.md)
+- [0.2A road-network foundations: A1–A4 plan](plans/0.2/MILESTONE_0_2A_PLAN.md)
+- [0.2A preservation and QA contract](plans/0.2/ROAD_EDIT_CONTRACT.md)
+
+These documents are **planning only**. No 0.2A code has been authorized; merging any future 0.2 implementation requires separate owner approval.
+
 ## Completed and merged
 
 | Milestone | State | Result |
@@ -22,13 +32,15 @@
 
 | 3I | Complete; merged | Editable property bounds, safe plot subdivision and validated Undo/Redo |
 
-**Stable main baseline:** `0.1-dev.3ie` from [merged PR #11](https://github.com/xbwtyz/Mappo/pull/11).
+**Stable main baseline (at plan creation):** `0.1-dev.4e` from [merged PR #18](https://github.com/xbwtyz/Mappo/pull/18).
 
 ## Active development — Dev 4 small improvements
 
-**Dev 4a — Property deletion:** Implemented on `feature/dev4-property-deletion` as `0.1-dev.4a`; pending CI and separate owner merge approval. Delete a selected property and its owned plots/buildings atomically, with session-only Undo/Redo and open-ground reconciliation. [Approved design and QA](history/dev4/DEV4A_PROPERTY_DELETION.md).
+**Dev 4a–4e:** Completed and merged, including property deletion, map interaction, precision editing, Inspector guidance and bulk building clearing. See [Dev 4 historical QA](history/dev4/DEV4E_BULK_CLEAR_QA.md).
 
-The Dev 4 cycle intentionally prioritizes small, independently approved changes rather than large new subsystems. The next minor improvement is not selected.
+**Dev 4f:** Active draft [PR #19](https://github.com/xbwtyz/Mappo/pull/19) on `feature/dev4f-layer-export-filenames`, adding layer presets, PNG export and download filename preferences. Not merged at the time this plan was created. Plan 0.2A implementation from the latest approved merged `main`, not from the 0.2A documentation branch.
+
+The Dev 4 cycle prioritizes small, independently approved changes before the 0.2 topology work.
 
 ## Completed details — Milestone 3G Building footprint editing
 
