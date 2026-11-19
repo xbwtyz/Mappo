@@ -626,7 +626,6 @@ for (const [name, type] of [
       await xField.fill(String(target.x));
       await xField.press('Tab');
       await yField.fill(String(target.y));
-      await yField.press('Tab');
       await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)),bendBaseline);
       await page.locator('#roadApplyB4').click();

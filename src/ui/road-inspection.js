@@ -345,7 +345,7 @@ export class RoadInspectionWorkspace {
     this.$('roadSnapBendsC4').addEventListener('change', () => {
       this.session.snapBends = this.$('roadSnapBendsC4').checked;
     });
-    for (const id of ['roadBendXC4','roadBendYC4']) this.$(id).addEventListener('change', () => {
+    for (const id of ['roadBendXC4','roadBendYC4']) this.$(id).addEventListener('input', () => {
       const read = key => this.$(key).value.trim() === '' ? NaN : Number(this.$(key).value);
       this.session.moveBend({x:read('roadBendXC4'),y:read('roadBendYC4')});
     });

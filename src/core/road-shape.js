@@ -80,5 +80,10 @@ export function draftRoadShape(city, graph, roadId, points) {
     return [replacement];
   });
   roads.push(...remaining.values());
-  return { proposedCity:{...city,nodes,roads}, proposedNodes:next.slice(1,-1) };
+  return {
+    proposedCity:{...city,nodes,roads},
+    proposedNodes:next.slice(1,-1),
+    bendIdsBefore:[...existing.keys()],
+    bendIdsAfter:next.slice(1,-1).map(point=>point.id),
+  };
 }

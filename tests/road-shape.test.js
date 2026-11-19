@@ -74,7 +74,7 @@ test('C4 normal workspace routes bend controls, snapped drag, cancel and redo th
   const target=bendsFor(session.graph,shapedRoad)[0];
   app.el('roadBendXC4').value=String(target.x);
   app.el('roadBendYC4').value=String(target.y);
-  app.el('roadBendXC4').handlers.change();
+  app.el('roadBendXC4').handlers.input();
   assert.equal(app.el('roadApplyB4').disabled,false,session.reconciliation?.unresolved[0]?.message);
   assert.equal(state.files.revision,revision);
   app.el('roadApplyB4').handlers.click();
@@ -111,4 +111,21 @@ test('C4 keeps a proposed bend into water from changing accepted roads',()=>{
   assert.equal(result.candidateProject,null);
   assert.match(result.unresolved[0].message,/protected infrastructure/);
   assert.deepEqual(p,before);
+});
+
+test('C4 applies a bend along a district border without merging or reassigning blocks',()=>{
+  const p=createProject({seed:'c2-radial',size:'small',morphology:'radial'});
+  const graph=buildRoadGraph(p.city), id='RD-0098', [a,b]=editableRoadPath(graph,id).points;
+  const shared=p.city.blocks.filter(block=>block.vertices.some((node,i)=>
+    [node,block.vertices[(i+1)%block.vertices.length]].includes(a.id) &&
+    [node,block.vertices[(i+1)%block.vertices.length]].includes(b.id)));
+  assert.equal(new Set(shared.map(block=>block.districtId)).size,2);
+  const dx=b.x-a.x, dy=b.y-a.y, length=Math.hypot(dx,dy);
+  const bend={id:null,x:(a.x+b.x)/2-4*dy/length,y:(a.y+b.y)/2+4*dx/length};
+  const result=applyShape(p,id,[bend]);
+  assert.ok(result.candidateProject,result.unresolved[0]?.message);
+  assert.deepEqual(result.candidateProject.city.districts,p.city.districts);
+  const revised=result.candidateProject.city.blocks.filter(block=>shared.some(old=>old.id===block.id));
+  assert.equal(revised.length,2);
+  assert.ok(revised.every(block=>block.vertices.some(node=>node.startsWith('N-BEND-'))));
 });
