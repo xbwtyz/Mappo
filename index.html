@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.2-dev.b5</title>
+  <title>Mappo — City editor · 0.2-dev.c1-roadfirst</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -483,7 +483,7 @@
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.b5</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.c1-roadfirst</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -629,6 +629,15 @@
             <button id="roadLocate" class="minor-button">Locate on map</button>
             <div id="roadEndpointList" class="road-endpoint-list" aria-label="Connected junctions"></div>
             <p id="roadPreviewEligibility" class="hint"></p>
+            <section id="roadIntentPanelC1" aria-label="Road-first placement draft" hidden>
+              <h3>ROAD-FIRST STREET DRAFT · C1</h3>
+              <p class="hint">Drag an eligible street to where you want it. Neighboring streets follow both endpoints. Property conflicts do not cancel the draft; C2–C5 will add intelligent neighborhood reflow. Protected connections remain separate.</p>
+              <div class="road-preview-selectors">
+                <label>Street offset X<input id="roadIntentDxC1" type="number" step="any" value="0"></label>
+                <label>Street offset Y<input id="roadIntentDyC1" type="number" step="any" value="0"></label>
+              </div>
+              <p id="roadIntentStatusC1" class="hint" role="status" aria-live="polite">Select an ordinary street to draft its new placement.</p>
+            </section>
             <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
             <label class="road-step-label">Nudge units<input id="roadNudgeStep" type="number" min="0.001" step="0.5" value="0.5"></label>
             <div class="road-nudge-buttons" role="group" aria-label="Nudge proposed junction"><button id="roadNudgeLeft" aria-label="Nudge left">←</button><button id="roadNudgeUp" aria-label="Nudge up">↑</button><button id="roadNudgeDown" aria-label="Nudge down">↓</button><button id="roadNudgeRight" aria-label="Nudge right">→</button></div>
@@ -8253,7 +8262,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.2-dev.b5';
+const APP_VERSION = '0.2-dev.c1-roadfirst';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -15518,7 +15527,95 @@ function roadReconciliationPreviewB3(project,reconciliation,topology=null) {
 }
 
 
+// src/core/road-intent-c1.js
+
+
+
+// C1 road-first intent is a *draft*, not an accepted city transaction.
+// Existing parcels never veto the placement of an ordinary road in preview.
+// Reconciliation and Apply of complex edits require the later C2–C5 engine.
+const copy = value => JSON.parse(JSON.stringify(value));
+const finite = p => p && Number.isFinite(p.x) && Number.isFinite(p.y)
+  && Math.abs(p.x) <= 100000 && Math.abs(p.y) <= 100000;
+const freeze = value => {
+  if(value && typeof value==='object' && !Object.isFrozen(value)){
+    Object.values(value).forEach(freeze);Object.freeze(value);
+  }
+  return value;
+};
+function refused(code,message){
+  return freeze({phase:'C1',operation:'draft-road-translation',draftable:false,
+    applyReady:false,status:'blocked',issues:[{code,message}],project:null,
+    proposedCity:null,proposedNodes:[],changedRoadIds:[]});
+}
+function prepareRoadIntentC1(project,roadId,offset){
+  if(!project?.city || !Array.isArray(project.city.nodes) || !Array.isArray(project.city.roads))
+    return refused('missing-city','An accepted city is required to preview a road.');
+  if(typeof roadId!=='string' || !finite(offset))
+    return refused('invalid-offset','The road and its X/Y offset must be finite.');
+  const accepted=buildRoadGraph(project.city);
+  if(!accepted.valid)return refused('invalid-base-road-graph',
+    'The accepted road graph must be valid before a road-first edit.');
+  const road=accepted.roadsById.get(roadId);
+  if(!road)return refused('road-not-found','Choose an existing ordinary road segment.');
+  const endpoints=new Set([road.a,road.b]);
+  const changedRoadIds=[...new Set([...endpoints].flatMap(id=>
+    accepted.incidentRoads.get(id)??[]))].sort();
+  if(changedRoadIds.some(id=>accepted.roadClasses.get(id)?.protected))
+    return refused('protected-connection',
+      'This road shares a junction with protected infrastructure. Edit that feature separately.');
+  const proposedNodes=[...endpoints].map(id=>{
+    const node=accepted.nodesById.get(id);
+    return {id,x:node.x+offset.x,y:node.y+offset.y};
+  });
+  if(proposedNodes.some(p=>!finite(p)))
+    return refused('coordinate-limit','The requested road coordinates exceed supported world bounds.');
+  const next=new Map(proposedNodes.map(p=>[p.id,p]));
+  const proposedCity=copy(project.city);
+  proposedCity.nodes=proposedCity.nodes.map(node=>next.has(node.id)
+    ? {...node,x:next.get(node.id).x,y:next.get(node.id).y}:node);
+  const issues=[];
+  const changed=!!Math.hypot(offset.x,offset.y);
+  let topologyResolved=false;
+  let facesResolved=false;
+  if(changed){
+    if(proposedNodes.some(node=>Array.isArray(project.city.survey?.boundary) &&
+      !insideOrOn(node,project.city.survey.boundary)))
+      issues.push({code:'boundary-escape',message:'The intended street extends beyond the protected city outline.'});
+    try{
+      const graph=buildRoadGraph(proposedCity);
+      if(!graph.valid)issues.push(...graph.issues.map(issue=>({code:issue.code,message:issue.message})));
+      else{
+        topologyResolved=true;
+        const faces=extractRoadFaces(graph,project.city);
+        if(!faces.valid)issues.push(...faces.issues.map(issue=>({code:issue.code,message:issue.message})));
+        else{
+          const identity=matchExistingFaces(project.city,faces);
+          facesResolved=identity.valid && !identity.requiresReview;
+          if(!facesResolved)issues.push({code:'face-reflow-needed',
+            message:'These street positions require block identity and ownership reconciliation.'});
+        }
+      }
+    }catch(error){issues.push({code:'topology-analysis-unavailable',
+      message:'Planar topology could not yet be resolved: '+error.message});}
+  }
+  if(changed)issues.push({code:'neighborhood-reflow-pending',
+    message:'Generated properties, plots and buildings have not been adapted to this intended street position.'});
+  // This result intentionally includes an unresolved full city only for
+  // visualization. It is not project-schema valid or save/Apply eligible.
+  return freeze({
+    phase:'C1',operation:'draft-road-translation',draftable:true,applyReady:false,
+    status:changed ? issues.some(i=>i.code==='protected-connection')?'blocked':
+      topologyResolved?'neighborhood-needed':'topology-needed':'unchanged',
+    roadId,offset:copy(offset),proposedNodes,changedRoadIds,
+    proposedCity,topologyResolved,facesResolved,
+    neighborhoodResolved:false,issues,project:null,
+  });
+}
+
+
 // src/editor/road-preview.js
+
 
 
 
@@ -15567,6 +15664,8 @@ class RoadPreviewSession {
     this.active = false;
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
+    this.roadIntentOffset = null;
+    this.roadIntentAnalysis = null;
     this.reconciliationError = '';
     this.settledRevision = null;
     this.acceptedFingerprint = null;
@@ -15580,9 +15679,53 @@ class RoadPreviewSession {
   }
   get pending() {
     const d = this.details;
+    if(d?.kind==='road')
+      return Boolean(this.roadIntentOffset &&
+        (this.roadIntentOffset.x!==0 || this.roadIntentOffset.y!==0));
     return Boolean(
       d?.kind === 'junction' && this.point && (this.point.x !== d.record.x || this.point.y !== d.record.y),
     );
+  }
+  get roadIntentEligible(){
+    const d=this.details;
+    return Boolean(this.current() && d?.kind==='road' &&
+      d.endpoints.every(id=>this.graph.incidentRoads.get(id).every(roadId=>
+        !this.graph.roadClasses.get(roadId)?.protected)));
+  }
+  get roadIntentNodes(){
+    if(!this.roadIntentEligible || !this.roadIntentOffset)return null;
+    const d=this.details,coords=new Map();
+    for(const id of d.endpoints){
+      const accepted=this.graph.nodesById.get(id);
+      coords.set(id,{id,x:accepted.x+this.roadIntentOffset.x,
+        y:accepted.y+this.roadIntentOffset.y});
+    }
+    return coords;
+  }
+  updateRoadIntent(offset,{defer=true,dragging=false}={}){
+    if(!this.roadIntentEligible)return false;
+    this.invalidate();
+    this.roadIntentOffset={x:offset.x,y:offset.y};
+    this.roadIntentAnalysis=null;
+    this.report=this.proposal=null;
+    this.reconciliation=this.topology=this.previewGeometry=null;
+    this.settledRevision=null;this.acceptedFingerprint=null;
+    this.reconciliationError='';this.error='';
+    this.checking=this.pending && !dragging;
+    this.changed();
+    if(!this.pending || dragging)return true;
+    const revision=this.revision;
+    const run=()=>{
+      if(!this.current() || revision!==this.revision)return;
+      this.timer=undefined;
+      try{this.roadIntentAnalysis=prepareRoadIntentC1(
+        this.project,this.selection.id,this.roadIntentOffset);}
+      catch(error){this.error='Road intent diagnostic unavailable: '+error.message;}
+      this.checking=false;this.changed();
+    };
+    if(defer)this.timer=this.schedule(run,180);
+    else run();
+    return true;
   }
   select(selection) {
     this.invalidate();
@@ -15593,6 +15736,8 @@ class RoadPreviewSession {
     this.invalidate();
     const d = this.details;
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
+    this.roadIntentOffset = d?.kind === 'road' ? {x:0,y:0} : null;
+    this.roadIntentAnalysis = null;
     this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.reconciliationError = '';
@@ -15646,6 +15791,9 @@ class RoadPreviewSession {
     return true;
   }
   nudge(dx, dy) {
+    if(this.details?.kind==='road' && this.roadIntentOffset)
+      return this.updateRoadIntent({x:this.roadIntentOffset.x+dx,
+        y:this.roadIntentOffset.y+dy});
     return this.point && this.update({ x: this.point.x + dx, y: this.point.y + dy });
   }
   hit(point, zoom, pointerType) {
@@ -15665,8 +15813,10 @@ class RoadPreviewSession {
     if (hit.kind !== this.selection?.kind || hit.id !== this.selection?.id) this.select(hit);
     this.drag = {
       point: this.point ? { ...this.point } : null,
+      offset: this.roadIntentOffset ? {...this.roadIntentOffset} : null,
+      kind: this.details.kind,
       start: { ...point },
-      movable: this.details.movable,
+      movable: this.details.movable || this.roadIntentEligible,
     };
     this.invalidate();
     return true;
@@ -15674,7 +15824,12 @@ class RoadPreviewSession {
   move(point) {
     const drag = this.drag;
     if (!drag?.movable) return;
-    this.update(
+    if(drag.kind==='road'){
+      this.updateRoadIntent({
+        x:drag.offset.x+point.x-drag.start.x,
+        y:drag.offset.y+point.y-drag.start.y,
+      },{dragging:true});
+    }else this.update(
       { x: drag.point.x + point.x - drag.start.x, y: drag.point.y + point.y - drag.start.y },
       { dragging: true },
     );
@@ -15683,7 +15838,9 @@ class RoadPreviewSession {
     const drag = this.drag;
     this.drag = null;
     if (!drag?.movable) return;
-    this.update(cancelled ? drag.point : this.point);
+    if(drag.kind==='road')
+      this.updateRoadIntent(cancelled?drag.offset:this.roadIntentOffset);
+    else this.update(cancelled ? drag.point : this.point);
   }
 }
 
@@ -16019,6 +16176,11 @@ class RoadInspectionWorkspace {
         id: this.$('roadSelectionId').value,
       }),
     );
+    for(const id of ['roadIntentDxC1','roadIntentDyC1'])
+      this.$(id).addEventListener('input',()=>{
+        const read=id=>this.$(id).value.trim()===''?NaN:Number(this.$(id).value);
+        this.session.updateRoadIntent({x:read('roadIntentDxC1'),y:read('roadIntentDyC1')});
+      });
     for (const id of ['roadProposedX', 'roadProposedY'])
       this.$(id).addEventListener('input', () => {
         const number = (id) => (this.$(id).value.trim() === '' ? NaN : Number(this.$(id).value));
@@ -16100,11 +16262,25 @@ class RoadInspectionWorkspace {
         : d
           ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
           : '';
+    this.$('roadIntentPanelC1').hidden=kind!=='road';
+    for(const [id,field] of [['roadIntentDxC1','x'],['roadIntentDyC1','y']]){
+      this.$(id).disabled=!s.roadIntentEligible;
+      if(document.activeElement!==this.$(id))
+        this.$(id).value=String(s.roadIntentOffset?.[field]??0);
+    }
+    this.$('roadIntentStatusC1').textContent=!s.roadIntentEligible ?
+      'Protected connection: choose a road with two ordinary unprotected endpoints.' :
+      s.pending ? s.checking?'Street positioned in draft; checking the road network...':
+        'User placement preserved as a draft. '+
+        (s.roadIntentAnalysis?.issues?.[0]?.message??'Neighborhood adaptation is pending C2.')+
+        ' Apply remains unavailable until full neighborhood reconciliation.' :
+        'Drag a road on the map or enter a displacement to preview your chosen street position.';
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
       : d?.protected
         ? 'Protected geometry is inspection only. Choose an ordinary junction to try a position.'
-        : 'Choose an ordinary junction to try a position. Roads are inspection only.';
+        : kind==='road' ? 'Drag an eligible ordinary road, enter X/Y displacement, or nudge using arrows. Position is draft-only until later neighborhood adaptation.' :
+          'Choose an ordinary junction to try a position.';
     for (const [id, key] of [
       ['roadProposedX', 'x'],
       ['roadProposedY', 'y'],
@@ -16113,9 +16289,10 @@ class RoadInspectionWorkspace {
       if (document.activeElement !== this.$(id))
         this.$(id).value = s.point && Number.isFinite(s.point[key]) ? String(s.point[key]) : '';
     }
-    for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !d?.movable;
+    for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || s.roadIntentEligible);
     this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error;
-    const status = s.error
+    const status = s.details?.kind==='road' && s.pending ?
+      (s.checking?'Checking road draft':'Street placement drafted') : s.error
       ? 'Report unavailable'
       : s.checking
         ? 'Checking'
@@ -16134,14 +16311,16 @@ class RoadInspectionWorkspace {
     const computed = s.reconciliation ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology) : null;
     s.previewGeometry = computed;
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
-    const ready=Boolean(s.current() && s.pending && !s.checking && !s.drag && !s.error &&
+    const ready=Boolean(s.details?.kind==='junction' && s.current() && s.pending && !s.checking && !s.drag && !s.error &&
       !s.reconciliationError && s.reconciliation?.candidateProject &&
       s.reconciliation?.status==='candidate-only' && !s.reconciliation.unresolved?.length &&
       s.previewGeometry?.verified && s.settledRevision===s.revision &&
       s.acceptedFingerprint===JSON.stringify(s.project) &&
       this.getRevision()===this.baseRevision);
     this.$('roadApplyB4').disabled=!ready;
-    this.$('roadApplyStatusB4').textContent=this.applyError || (ready ?
+    this.$('roadApplyStatusB4').textContent=kind==='road' ?
+      'Road-first draft only. C2–C5 will adapt generated neighborhoods and provide a fully validated Apply.' :
+      this.applyError || (ready ?
       'Eligible preview. Apply will recompute, validate and confirm portable save compatibility before acceptance.' :
       'Apply is unavailable until a fully reconciled, current road candidate passes validation.');
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
@@ -16428,6 +16607,27 @@ function drawRoadInspectionOverlay(canvas, camera, city, session) {
       }
     }
   }
+  // Road-first C1 shows the user's intended position even when the current
+  // parcels, face graph or buildings cannot yet adapt. Draft never reaches Apply.
+  const intended=session.roadIntentNodes;
+  if(intended && session.pending && session.previewVisible!==false){
+    const incident=[...new Set([...intended.keys()].flatMap(id=>
+      graph.incidentRoads.get(id)??[]))];
+    const position=id=>intended.get(id)??graph.nodesById.get(id);
+    ctx.setLineDash([8,5]);
+    ctx.strokeStyle='#168f80';ctx.lineWidth=3.5;
+    for(const id of incident){
+      const road=graph.roadsById.get(id);
+      if(path([position(road.a),position(road.b)]))ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    for(const point of intended.values()){
+      const p=camera.worldToScreen(point);
+      ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);
+      ctx.fillStyle='#168f80';ctx.fill();
+      ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;ctx.stroke();
+    }
+  }
   for (const [id, node] of graph.nodesById) {
     const p = camera.worldToScreen(node),
       protectedNode = graph.incidentRoads.get(id).some((r) => graph.roadClasses.get(r).protected);
@@ -16446,7 +16646,7 @@ function drawRoadInspectionOverlay(canvas, camera, city, session) {
     ctx.lineWidth = 2;
     ctx.stroke();
   }
-  if (session.pending) {
+  if (session.pending && d?.kind==='junction') {
     const color = rpColors[session.report?.status] ?? rpColors.checking;
     ctx.setLineDash([7, 5]);
     for (const id of d.roadIds) segment(graph.roadsById.get(id), color, 3, true);
