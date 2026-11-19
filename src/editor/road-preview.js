@@ -1,3 +1,4 @@
+import { editableRoadPath, ROAD_BEND_LIMIT } from '../core/road-shape.js';
 import { prepareRoadTopologyReflowC3 } from '../core/road-topology-reflow.js';
 import { prepareNeighborhoodReflowC3 } from '../core/neighborhood-reflow.js';
 import { buildRoadGraph, proposeJunctionMove } from '../core/road-graph.js';
@@ -52,6 +53,7 @@ export class RoadPreviewSession {
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.roadConnectionEdit = null;
+    this.bendEditor = null;
     this.roadIntentOffset = null;
     this.roadIntentAnalysis = null;
     this.roadIntentInputError = '';
@@ -95,6 +97,7 @@ export class RoadPreviewSession {
     if(!this.roadIntentEligible)return false;
     this.invalidate();
     this.roadConnectionEdit = null;
+    this.bendEditor = null;
     // Never present NaN, Infinity or a blank field as a real road draft.
     // Drop the previous preview, rather than keeping an outdated ghost while
     // displaying a new invalid displacement in the input.
@@ -112,6 +115,73 @@ export class RoadPreviewSession {
     if(!finite)return false;
     if(!this.pending || dragging)return true;
     this.evaluateRoadDraft(defer);
+    return true;
+  }
+  startBendEditor() {
+    if (!this.roadIntentEligible || this.drag) return false;
+    const path = editableRoadPath(this.graph, this.selection.id);
+    if (!path) return false;
+    this.reset();
+    const original = path.points.slice(1,-1).map(({id,x,y})=>({id,x,y}));
+    this.bendEditor = { path, original, points:original, selected:original.length ? 0 : -1,
+      insertAt:path.segments.indexOf(this.selection.id) };
+    this.changed();
+    return true;
+  }
+  get bendPathPoints() {
+    const state = this.bendEditor;
+    return state ? [state.path.points[0],...state.points,state.path.points.at(-1)] : null;
+  }
+  selectBend(index) {
+    if (!this.bendEditor?.points[index]) return;
+    this.bendEditor.selected = index;
+    this.changed();
+  }
+  insertBend() {
+    const state = this.bendEditor;
+    if (!state || state.points.length >= ROAD_BEND_LIMIT || this.drag) return false;
+    const index = Math.min(state.points.length, state.selected >= 0 ? state.selected+1 : state.insertAt);
+    const [a,b] = this.bendPathPoints.slice(index,index+2);
+    const points = [...state.points];
+    points.splice(index,0,{id:null,x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+    state.selected = index;
+    return this.updateBends(points);
+  }
+  removeBend() {
+    const state = this.bendEditor;
+    if (!state?.points[state.selected] || this.drag) return false;
+    const points = state.points.filter((_,index)=>index!==state.selected);
+    state.selected = Math.min(state.selected,points.length-1);
+    return this.updateBends(points);
+  }
+  moveBend(point, dragging = false) {
+    const state = this.bendEditor;
+    if (!state?.points[state.selected]) return false;
+    if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+      this.invalidate();
+      this.reconciliation = this.previewGeometry = null;
+      this.roadIntentInputError = 'Enter finite bend coordinates.';
+      this.checking = false;
+      this.changed();
+      return false;
+    }
+    const points = state.points.map((old,index)=>index === state.selected ? {...old,x:point.x,y:point.y} : old);
+    return this.updateBends(points,dragging);
+  }
+  updateBends(points, dragging = false) {
+    this.invalidate();
+    const state = this.bendEditor;
+    state.points = points;
+    this.roadIntentInputError = this.error = '';
+    this.roadIntentAnalysis = this.reconciliation = this.previewGeometry = null;
+    this.settledRevision = this.acceptedFingerprint = null;
+    const original = state.original;
+    const changed = points.length !== original.length ||
+      points.some((point,index)=>point.id !== original[index].id || point.x !== original[index].x || point.y !== original[index].y);
+    this.roadConnectionEdit = changed ? {kind:'shape',points} : null;
+    this.checking = changed && !dragging;
+    this.changed();
+    if (this.checking) this.evaluateRoadDraft(true);
     return true;
   }
   previewRoadConnection(edit) {
@@ -157,6 +227,7 @@ export class RoadPreviewSession {
     const d = this.details;
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
     this.roadConnectionEdit = null;
+    this.bendEditor = null;
     this.roadIntentOffset = d?.kind === 'road' ? {x:0,y:0} : null;
     this.roadIntentAnalysis = null;
     this.roadIntentInputError = '';
@@ -213,6 +284,10 @@ export class RoadPreviewSession {
     return true;
   }
   nudge(dx, dy) {
+    if (this.bendEditor) {
+      const point = this.bendEditor.points[this.bendEditor.selected];
+      return point ? this.moveBend({x:point.x+dx,y:point.y+dy}) : false;
+    }
     if(this.details?.kind==='road'){
       const offset=this.roadIntentOffset??{x:0,y:0};
       return this.updateRoadIntent({x:offset.x+dx,y:offset.y+dy});
@@ -243,6 +318,20 @@ export class RoadPreviewSession {
       : null;
   }
   begin(point, zoom, pointerType) {
+    if (this.bendEditor && !this.drag) {
+      const radius = (pointerType === 'touch' ? 20 : 10) / zoom;
+      const nearest = this.bendEditor.points.reduce((best,bend,index)=>{
+        const distance = Math.hypot(bend.x-point.x,bend.y-point.y);
+        return distance <= radius && (!best || distance < best.distance) ? {index,distance} : best;
+      }, null);
+      if (nearest) {
+        const original = this.bendEditor.points;
+        this.drag = {kind:'bend',movable:true,start:{...point},point:original[nearest.index],original};
+        this.invalidate();
+        this.selectBend(nearest.index);
+        return true;
+      }
+    }
     const hit = this.hit(point, zoom, pointerType);
     if (!hit) return false;
     if (hit.kind !== this.selection?.kind || hit.id !== this.selection?.id) this.select(hit);
@@ -259,7 +348,10 @@ export class RoadPreviewSession {
   move(point) {
     const drag = this.drag;
     if (!drag?.movable) return;
-    if(drag.kind==='road'){
+    if (drag.kind === 'bend') {
+      const x = drag.point.x + point.x - drag.start.x, y = drag.point.y + point.y - drag.start.y;
+      this.moveBend(this.snapBends ? {x:Math.round(x),y:Math.round(y)} : {x,y}, true);
+    } else if(drag.kind==='road'){
       this.updateRoadIntent({
         x:drag.offset.x+point.x-drag.start.x,
         y:drag.offset.y+point.y-drag.start.y,
@@ -273,7 +365,9 @@ export class RoadPreviewSession {
     const drag = this.drag;
     this.drag = null;
     if (!drag?.movable) return;
-    if(drag.kind==='road')
+    if (drag.kind === 'bend')
+      this.updateBends(cancelled ? drag.original : this.bendEditor.points);
+    else if(drag.kind==='road')
       this.updateRoadIntent(cancelled?drag.offset:this.roadIntentOffset);
     else this.update(cancelled ? drag.point : this.point);
   }

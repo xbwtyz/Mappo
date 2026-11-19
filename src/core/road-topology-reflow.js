@@ -1,3 +1,5 @@
+import { buildRoadGraph } from './road-graph.js';
+import { draftRoadShape } from './road-shape.js';
 import { distanceToSegment, insideOrOn } from './boundary.js';
 import { propertyFits } from './placement.js';
 import { shapesOverlapInterior } from './building-validation.js';
@@ -117,6 +119,39 @@ function c3Development(seed, city, blocks, old, kept) {
   return generated;
 }
 
+// A bend subdivides a boundary shared by the same two blocks. Match
+// those oriented boundaries without the selected path's bend vertices so
+// geometric overlap does not accidentally combine the two districts.
+function c4MatchBentFaces(old, extraction, draft) {
+  const beforeBends = new Set(draft.bendIdsBefore), afterBends = new Set(draft.bendIdsAfter);
+  const boundaryKey = (vertices, bends) => {
+    const corners = vertices.filter(id=>!bends.has(id));
+    if (corners.length < 2) return null;
+    const first = corners.indexOf(corners.reduce((a,b)=>a<b?a:b));
+    return JSON.stringify([...corners.slice(first),...corners.slice(0,first)]);
+  };
+  const candidates = new Map();
+  for (const face of extraction.faces.filter(face=>face.kind==='block')) {
+    const key = boundaryKey(face.vertices,afterBends);
+    if (!key || candidates.has(key)) return null;
+    candidates.set(key,face);
+  }
+  if (candidates.size !== old.blocks.length) return null;
+  const oldNodes = riIndex(old.nodes), nextNodes = extraction.graph.nodesById;
+  const preserved = [], changed = [];
+  for (const block of old.blocks) {
+    const key = boundaryKey(block.vertices,beforeBends), face = candidates.get(key);
+    if (!face) return null;
+    candidates.delete(key);
+    const same = face.vertices.length === block.vertices.length &&
+      boundaryKey(face.vertices, new Set()) === boundaryKey(block.vertices, new Set()) &&
+      face.vertices.every(id=>riEqual(oldNodes.get(id),nextNodes.get(id)));
+    if (same) preserved.push({id:block.id,kind:'block'});
+    else changed.push({id:block.id,kind:'block',record:{...block,vertices:face.vertices,area:face.area}});
+  }
+  return { valid:true,preserved,changed,added:[],removed:[],split:[],merged:[],ambiguous:[] };
+}
+
 export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null) {
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
   const fail = (code, message, kind = 'road', id = roadId) => ({
@@ -126,7 +161,8 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null)
   try {
     validateStoredProject(project);
     const old = project.city;
-    if (edit) draft = draftRoadConnectionC3(old, roadId, edit);
+    if (edit?.kind === 'shape') draft = draftRoadShape(old, buildRoadGraph(old), roadId, edit.points);
+    else if (edit) draft = draftRoadConnectionC3(old, roadId, edit);
     const { city, graph, splitRoadIds } = normalizeRoadCrossingsC3(structuredClone(draft.proposedCity));
     validation.graph = 'pass';
     const { emit, items } = riReporter(), spend = riBudget();
@@ -136,7 +172,10 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null)
     const extraction = extractRoadFaces(graph, old);
     if (!extraction.valid) return fail(extraction.issues[0].code, extraction.issues[0].message);
     validation.faces = 'pass';
-    const matching = matchExistingFaces(old, extraction);
+    const overlapMatch = matchExistingFaces(old, extraction);
+    const matching = (edit?.kind === 'shape' && !splitRoadIds.length && overlapMatch.valid
+      ? c4MatchBentFaces(old,extraction,draft)
+      : null) ?? overlapMatch;
     if (!matching.valid || matching.added.length || matching.removed.length)
       return fail('unresolved-face-ownership', 'Block ownership cannot be traced across these street changes.');
     const matches = new Map(extraction.faces.map(face => [face.key, face]));

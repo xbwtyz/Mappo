@@ -145,7 +145,7 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
   }
   const d = session.details;
   if (d?.kind === 'road') segment(d.record, '#315c69', 5);
-  if (d?.kind === 'road' && session.roadConnectionEdit && session.previewVisible !== false) {
+  if (d?.kind === 'road' && session.roadConnectionEdit && session.roadConnectionEdit.kind !== 'shape' && session.previewVisible !== false) {
     const { kind, endpoint, target } = session.roadConnectionEdit;
     const start = kind === 'add' ? d.record[endpoint] : d.record[endpoint === 'a' ? 'b' : 'a'];
     const ids = kind === 'remove' ? d.endpoints : [start,target];
@@ -175,6 +175,24 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
       ctx.beginPath();
       ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
       ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+  const bends = session.bendPathPoints;
+  if (bends && path(bends)) {
+    ctx.strokeStyle = '#168f80';
+    ctx.lineWidth = 4;
+    ctx.setLineDash([8,5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    for (const [index,point] of bends.slice(1,-1).entries()) {
+      const p = camera.worldToScreen(point);
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,index === session.bendEditor.selected ? 8 : 6,0,Math.PI*2);
+      ctx.fillStyle = '#168f80';
       ctx.fill();
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = 2;

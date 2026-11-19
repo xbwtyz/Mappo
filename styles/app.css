@@ -471,3 +471,9 @@
 .road-preview-panel #roadApplyB4:disabled{background:#9caea7;color:#3b5450;opacity:.85}
 .road-apply-status-b4{font-size:11px;line-height:1.45;color:#536b69;margin:6px 0 0}
 @media(max-width:900px){.road-history-actions-b4 button{min-height:44px}}
+
+.road-bend-actions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.road-bend-actions button{flex:1 0 auto}
+.road-preview-panel .road-bend-snap{flex-direction:row;align-items:center;gap:8px;margin:6px 0}
+.road-preview-panel .road-bend-snap input{width:18px;min-height:18px;margin:0}
+@media(max-width:900px){.road-preview-panel .road-bend-snap{min-height:44px}}

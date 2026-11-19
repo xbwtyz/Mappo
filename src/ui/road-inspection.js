@@ -1,3 +1,4 @@
+import { ROAD_BEND_LIMIT } from '../core/road-shape.js';
 import { RoadPreviewSession } from '../editor/road-preview.js';
 import { roadInspectionDetails, roadReconciliationPreviewB3 } from '../core/road-inspection.js';
 
@@ -330,6 +331,24 @@ export class RoadInspectionWorkspace {
         id: this.$('roadSelectionId').value,
       }),
     );
+    this.$('roadStartBendsC4').addEventListener('click', () => {
+      if (this.session.startBendEditor()) this.$('roadInsertBendC4').focus();
+    });
+    this.$('roadCloseBendsC4').addEventListener('click', () => {
+      this.session.reset();
+      this.$('roadStartBendsC4').focus();
+    });
+    this.$('roadInsertBendC4').addEventListener('click', () => this.session.insertBend());
+    this.$('roadRemoveBendC4').addEventListener('click', () => this.session.removeBend());
+    this.$('roadSelectBendC4').addEventListener('change', () =>
+      this.session.selectBend(Number(this.$('roadSelectBendC4').value)));
+    this.$('roadSnapBendsC4').addEventListener('change', () => {
+      this.session.snapBends = this.$('roadSnapBendsC4').checked;
+    });
+    for (const id of ['roadBendXC4','roadBendYC4']) this.$(id).addEventListener('input', () => {
+      const read = key => this.$(key).value.trim() === '' ? NaN : Number(this.$(key).value);
+      this.session.moveBend({x:read('roadBendXC4'),y:read('roadBendYC4')});
+    });
     for (const [id, kind] of [['roadReconnectC3','reconnect'], ['roadAddC3','add'], ['roadRemoveC3','remove']]) {
       this.$(id).addEventListener('click', () => this.session.previewRoadConnection({
         kind,
@@ -424,6 +443,32 @@ export class RoadInspectionWorkspace {
           ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
           : '';
     this.$('roadIntentPanelC1').hidden=kind!=='road';
+    const bends = s.bendEditor, bend = bends?.points[bends.selected];
+    this.$('roadStartBendsC4').hidden = Boolean(bends);
+    this.$('roadStartBendsC4').disabled = !s.roadIntentEligible || Boolean(s.drag);
+    this.$('roadBendEditorC4').hidden = !bends;
+    if (bends) {
+      const count = bends.points.length;
+      if (this.bendOptionsCount !== count) {
+        this.bendOptionsCount = count;
+        this.$('roadSelectBendC4').replaceChildren(...bends.points.map((_,index)=>{
+          const option = document.createElement('option');
+          option.value = String(index);
+          option.textContent = 'Bend ' + (index+1);
+          return option;
+        }));
+      }
+      this.$('roadSelectBendC4').value = bend ? String(bends.selected) : '';
+      this.$('roadSelectBendC4').disabled = !bend || Boolean(s.drag);
+      this.$('roadInsertBendC4').disabled = Boolean(s.drag) || count >= ROAD_BEND_LIMIT;
+      this.$('roadRemoveBendC4').disabled = !bend || Boolean(s.drag);
+      for (const [id,key] of [['roadBendXC4','x'],['roadBendYC4','y']]) {
+        this.$(id).disabled = !bend || Boolean(s.drag);
+        if (document.activeElement !== this.$(id)) this.$(id).value = bend ? String(bend[key]) : '';
+      }
+      this.$('roadCloseBendsC4').disabled = Boolean(s.drag);
+      this.$('roadSnapBendsC4').checked = Boolean(s.snapBends);
+    }
     if (kind === 'road' && d && (this.connectionGraph !== s.graph || this.connectionRoad !== d.record.id)) {
       this.connectionGraph = s.graph;
       this.connectionRoad = d.record.id;
@@ -455,6 +500,7 @@ export class RoadInspectionWorkspace {
         s.reconciliation?.candidateProject ? 'Street and local neighborhood ready to review.' :
         'Street placement held in draft. '+(s.reconciliation?.unresolved?.[0]?.message ??
           'The neighborhood could not be reconciled.') :
+        bends ? 'Add or move a bend to preview the street shape.' :
         'Drag a road on the map or enter a displacement to preview your chosen street position.');
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
@@ -470,7 +516,7 @@ export class RoadInspectionWorkspace {
       if (document.activeElement !== this.$(id))
         this.$(id).value = s.point && Number.isFinite(s.point[key]) ? String(s.point[key]) : '';
     }
-    for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || s.roadIntentEligible);
+    for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || (bends ? bend : s.roadIntentEligible));
     this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error && !s.roadIntentInputError;
     const status = s.roadIntentInputError ? 'Invalid road offset' :
       s.details?.kind==='road' && s.pending ?

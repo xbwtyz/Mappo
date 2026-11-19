@@ -594,6 +594,46 @@ for (const [name, type] of [
           assert.equal(await page.evaluate(() => __buildingQA.state().project.city.blocks.length), radial.city.blocks.length);
         }
       }
+      await page.evaluate(doc => __buildingQA.apply(doc), {project, workspace:defaultWorkspace(project)});
+      await page.locator('#roadModeButton').click();
+      const bendBaseline=await page.evaluate(() => JSON.stringify(__buildingQA.state().project));
+      await page.locator('#roadSelectionKind').selectOption('road');
+      await page.locator('#roadSelectionId').selectOption('RD-0113');
+      await page.locator('#roadStartBendsC4').click();
+      await page.locator('#roadInsertBendC4').click();
+      await page.getByLabel('Snap drags to 1-unit grid').check();
+      const handle=await placeRoad();
+      if (name === 'chromium' && viewport.name === 'phone') {
+        const cdp=await page.context().newCDPSession(page);
+        await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[handle]});
+        await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:handle.x+20,y:handle.y+10}]});
+        await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+        await cdp.detach();
+      } else {
+        await page.mouse.move(handle.x,handle.y);
+        await page.mouse.down();
+        await page.mouse.move(handle.x+20,handle.y+10,{steps:3});
+        await page.mouse.up();
+      }
+      const snapped=await page.evaluate(() => {
+        const {bendEditor}=__buildingQA.state().roadWorkspace.session;
+        return {point:bendEditor.points[0], original:bendEditor.path.points};
+      });
+      assert.equal(Number.isInteger(snapped.point.x) && Number.isInteger(snapped.point.y),true);
+      const [start,end]=snapped.original, dx=end.x-start.x, dy=end.y-start.y, length=Math.hypot(dx,dy);
+      const target={x:start.x+.33*dx-4*dy/length,y:start.y+.33*dy+4*dx/length};
+      const xField=page.locator('#roadBendXC4'), yField=page.locator('#roadBendYC4');
+      await xField.fill(String(target.x));
+      await xField.press('Tab');
+      await yField.fill(String(target.y));
+      await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)),bendBaseline);
+      await page.locator('#roadApplyB4').click();
+      const committed=await page.evaluate(() => __buildingQA.state().project.city.nodes.find(node=>node.id.startsWith('N-BEND-')));
+      assert.equal(committed?.x,target.x);
+      assert.equal(committed?.y,target.y);
+      assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')),true);
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)),bendBaseline);
       assert.equal(errors.length, 0, errors.join('; '));
       console.log(
         `PASS road ${label}: inspection, mouse/touch/keyboard preview, A3 report, reset/cancel, save/recovery isolation`,

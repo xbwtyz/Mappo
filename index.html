@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.2-dev.c3-adaptive</title>
+  <title>Mappo — City editor · 0.2-dev.c4-shaping</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -478,12 +478,18 @@
 .road-apply-status-b4{font-size:11px;line-height:1.45;color:#536b69;margin:6px 0 0}
 @media(max-width:900px){.road-history-actions-b4 button{min-height:44px}}
 
+.road-bend-actions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.road-bend-actions button{flex:1 0 auto}
+.road-preview-panel .road-bend-snap{flex-direction:row;align-items:center;gap:8px;margin:6px 0}
+.road-preview-panel .road-bend-snap input{width:18px;min-height:18px;margin:0}
+@media(max-width:900px){.road-preview-panel .road-bend-snap{min-height:44px}}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.c3-adaptive</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.c4-shaping</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -636,6 +642,21 @@
                 <label>Street offset X<input id="roadIntentDxC1" type="number" step="any" value="0"></label>
                 <label>Street offset Y<input id="roadIntentDyC1" type="number" step="any" value="0"></label>
               </div>
+              <button id="roadStartBendsC4" type="button" class="minor-button">Edit bends</button>
+              <section id="roadBendEditorC4" aria-label="Street bends" hidden>
+                <p class="hint">Add a bend, then drag its handle or enter exact coordinates. Street endpoints stay fixed.</p>
+                <div class="road-bend-actions">
+                  <button id="roadInsertBendC4" type="button" class="minor-button">Add bend</button>
+                  <button id="roadRemoveBendC4" type="button" class="minor-button">Remove bend</button>
+                  <button id="roadCloseBendsC4" type="button" class="minor-button">Cancel bend edits</button>
+                </div>
+                <div class="road-preview-selectors">
+                  <label>Bend<select id="roadSelectBendC4"></select></label>
+                  <label>Bend X<input id="roadBendXC4" type="number" step="any"></label>
+                  <label>Bend Y<input id="roadBendYC4" type="number" step="any"></label>
+                </div>
+                <label class="road-bend-snap"><input id="roadSnapBendsC4" type="checkbox"> Snap drags to 1-unit grid</label>
+              </section>
               <details>
                 <summary>Change street connections</summary>
                 <div class="road-preview-selectors">
@@ -8272,7 +8293,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.2-dev.c3-adaptive';
+const APP_VERSION = '0.2-dev.c4-shaping';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -15506,7 +15527,100 @@ function draftRoadConnectionC3(city, roadId, edit) {
 }
 
 
+// src/core/road-shape.js
+
+
+const BEND_PREFIX = 'N-BEND-';
+const ROAD_BEND_LIMIT = 24;
+const roadShapeEdge = (a, b) => [a,b].sort().join(':');
+
+function editableRoadPath(graph, roadId) {
+  const road = graph?.roadsById.get(roadId);
+  if (!graph?.valid || !road || graph.roadClasses.get(road.id).protected) return null;
+  const nodes = [road.a, road.b], segments = [road.id], seen = new Set(nodes);
+  for (const fromStart of [true, false]) {
+    for (;;) {
+      const end = fromStart ? 0 : nodes.length - 1;
+      const id = nodes[end], incident = graph.incidentRoads.get(id);
+      if (!id.startsWith(BEND_PREFIX) || incident.length !== 2) break;
+      const next = graph.roadsById.get(incident.find(edge => !segments.includes(edge)));
+      if (!next || next.kind !== road.kind || graph.roadClasses.get(next.id).protected) break;
+      const other = next.a === id ? next.b : next.a;
+      if (seen.has(other) || nodes.length > ROAD_BEND_LIMIT + 1) return null;
+      seen.add(other);
+      if (fromStart) { nodes.unshift(other); segments.unshift(next.id); }
+      else { nodes.push(other); segments.push(next.id); }
+    }
+  }
+  if ([nodes[0],nodes.at(-1)].some(id => graph.incidentRoads.get(id)
+    .some(edge => graph.roadClasses.get(edge).protected))) return null;
+  if (nodes[0] > nodes.at(-1)) { nodes.reverse(); segments.reverse(); }
+  return { points: nodes.map(id=>graph.nodesById.get(id)), segments, kind: road.kind };
+}
+
+function draftRoadShape(city, graph, roadId, points) {
+  const path = editableRoadPath(graph, roadId);
+  if (!path) throw new Error('Choose a street path with ordinary connections.');
+  if (!Array.isArray(points) || points.length > ROAD_BEND_LIMIT)
+    throw new Error('A street can have up to ' + ROAD_BEND_LIMIT + ' editable bends.');
+  const first = path.points[0], last = path.points.at(-1);
+  const existing = new Map(path.points.slice(1,-1).map(point=>[point.id,point]));
+  const used = new Set(graph.nodesById.keys()), retained = new Set();
+  const next = [first];
+  for (const [index,point] of points.entries()) {
+    if (!Number.isFinite(point?.x) || !Number.isFinite(point?.y) ||
+        !insideOrOn(point,city.survey.boundary))
+      throw new Error('Place every bend at finite coordinates inside the city outline.');
+    if (point.id !== null && (!existing.has(point.id) || retained.has(point.id)))
+      throw new Error('A bend no longer belongs to the selected path.');
+    const id = point.id ?? roadTopologyId('N-BEND',[first.id,last.id,index,point.x,point.y],used);
+    retained.add(id);
+    next.push({...existing.get(id), id, x:point.x, y:point.y});
+  }
+  next.push(last);
+  for (let i=1;i<next.length;i++)
+    if (Math.hypot(next[i].x-next[i-1].x,next[i].y-next[i-1].y) < .05)
+      throw new Error('Two neighboring handles are too close together.');
+
+  const oldSegments = path.segments.map(id=>graph.roadsById.get(id));
+  const oldByEdge = new Map(oldSegments.map(road=>[roadShapeEdge(road.a,road.b),road]));
+  const edges = next.slice(1).map((b,i)=>[next[i].id,b.id]);
+  const keepIds = new Set(edges.map(([a,b])=>oldByEdge.get(roadShapeEdge(a,b))?.id));
+  const spare = oldSegments.filter(road=>!keepIds.has(road.id));
+  const usedEdges = new Set(graph.roadsById.keys());
+  const segments = edges.map(([a,b])=>{
+    const kept = oldByEdge.get(roadShapeEdge(a,b));
+    if (kept) return kept;
+    const source = spare.shift();
+    return { ...source, id:source?.id ?? roadTopologyId('RD-BEND',[a,b],usedEdges), a,b,kind:path.kind };
+  });
+  const oldIds = new Set(path.segments), updated = new Map(next.map(point=>[point.id,point]));
+  const nodes = city.nodes.filter(point=>!existing.has(point.id) || retained.has(point.id))
+    .map(point=>existing.has(point.id) ? updated.get(point.id) : point);
+  nodes.push(...next.slice(1,-1).filter(point=>!existing.has(point.id)));
+  // Keep accepted ordering for records that survive. This also makes a
+  // move + inverse movement stable without reordering unrelated records.
+  const remaining = new Map(segments.map(segment=>[segment.id,segment]));
+  const roads = city.roads.flatMap(road=>{
+    if (!oldIds.has(road.id)) return [road];
+    if (!remaining.has(road.id)) return [];
+    const replacement = remaining.get(road.id);
+    remaining.delete(road.id);
+    return [replacement];
+  });
+  roads.push(...remaining.values());
+  return {
+    proposedCity:{...city,nodes,roads},
+    proposedNodes:next.slice(1,-1),
+    bendIdsBefore:[...existing.keys()],
+    bendIdsAfter:next.slice(1,-1).map(point=>point.id),
+  };
+}
+
+
 // src/core/road-topology-reflow.js
+
+
 
 
 
@@ -15625,6 +15739,39 @@ function c3Development(seed, city, blocks, old, kept) {
   return generated;
 }
 
+// A bend subdivides a boundary shared by the same two blocks. Match
+// those oriented boundaries without the selected path's bend vertices so
+// geometric overlap does not accidentally combine the two districts.
+function c4MatchBentFaces(old, extraction, draft) {
+  const beforeBends = new Set(draft.bendIdsBefore), afterBends = new Set(draft.bendIdsAfter);
+  const boundaryKey = (vertices, bends) => {
+    const corners = vertices.filter(id=>!bends.has(id));
+    if (corners.length < 2) return null;
+    const first = corners.indexOf(corners.reduce((a,b)=>a<b?a:b));
+    return JSON.stringify([...corners.slice(first),...corners.slice(0,first)]);
+  };
+  const candidates = new Map();
+  for (const face of extraction.faces.filter(face=>face.kind==='block')) {
+    const key = boundaryKey(face.vertices,afterBends);
+    if (!key || candidates.has(key)) return null;
+    candidates.set(key,face);
+  }
+  if (candidates.size !== old.blocks.length) return null;
+  const oldNodes = riIndex(old.nodes), nextNodes = extraction.graph.nodesById;
+  const preserved = [], changed = [];
+  for (const block of old.blocks) {
+    const key = boundaryKey(block.vertices,beforeBends), face = candidates.get(key);
+    if (!face) return null;
+    candidates.delete(key);
+    const same = face.vertices.length === block.vertices.length &&
+      boundaryKey(face.vertices, new Set()) === boundaryKey(block.vertices, new Set()) &&
+      face.vertices.every(id=>riEqual(oldNodes.get(id),nextNodes.get(id)));
+    if (same) preserved.push({id:block.id,kind:'block'});
+    else changed.push({id:block.id,kind:'block',record:{...block,vertices:face.vertices,area:face.area}});
+  }
+  return { valid:true,preserved,changed,added:[],removed:[],split:[],merged:[],ambiguous:[] };
+}
+
 function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null) {
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
   const fail = (code, message, kind = 'road', id = roadId) => ({
@@ -15634,7 +15781,8 @@ function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null) {
   try {
     validateStoredProject(project);
     const old = project.city;
-    if (edit) draft = draftRoadConnectionC3(old, roadId, edit);
+    if (edit?.kind === 'shape') draft = draftRoadShape(old, buildRoadGraph(old), roadId, edit.points);
+    else if (edit) draft = draftRoadConnectionC3(old, roadId, edit);
     const { city, graph, splitRoadIds } = normalizeRoadCrossingsC3(structuredClone(draft.proposedCity));
     validation.graph = 'pass';
     const { emit, items } = riReporter(), spend = riBudget();
@@ -15644,7 +15792,10 @@ function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null) {
     const extraction = extractRoadFaces(graph, old);
     if (!extraction.valid) return fail(extraction.issues[0].code, extraction.issues[0].message);
     validation.faces = 'pass';
-    const matching = matchExistingFaces(old, extraction);
+    const overlapMatch = matchExistingFaces(old, extraction);
+    const matching = (edit?.kind === 'shape' && !splitRoadIds.length && overlapMatch.valid
+      ? c4MatchBentFaces(old,extraction,draft)
+      : null) ?? overlapMatch;
     if (!matching.valid || matching.added.length || matching.removed.length)
       return fail('unresolved-face-ownership', 'Block ownership cannot be traced across these street changes.');
     const matches = new Map(extraction.faces.map(face => [face.key, face]));
@@ -16388,6 +16539,7 @@ function roadReconciliationPreviewB3(project,reconciliation,topology=null) {
 
 
 
+
 // No commit, history or serialization interface. Revisions invalidate every
 // deferred callback, including callbacks already queued when cancellation occurs.
 class RoadPreviewSession {
@@ -16434,6 +16586,7 @@ class RoadPreviewSession {
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.roadConnectionEdit = null;
+    this.bendEditor = null;
     this.roadIntentOffset = null;
     this.roadIntentAnalysis = null;
     this.roadIntentInputError = '';
@@ -16477,6 +16630,7 @@ class RoadPreviewSession {
     if(!this.roadIntentEligible)return false;
     this.invalidate();
     this.roadConnectionEdit = null;
+    this.bendEditor = null;
     // Never present NaN, Infinity or a blank field as a real road draft.
     // Drop the previous preview, rather than keeping an outdated ghost while
     // displaying a new invalid displacement in the input.
@@ -16494,6 +16648,73 @@ class RoadPreviewSession {
     if(!finite)return false;
     if(!this.pending || dragging)return true;
     this.evaluateRoadDraft(defer);
+    return true;
+  }
+  startBendEditor() {
+    if (!this.roadIntentEligible || this.drag) return false;
+    const path = editableRoadPath(this.graph, this.selection.id);
+    if (!path) return false;
+    this.reset();
+    const original = path.points.slice(1,-1).map(({id,x,y})=>({id,x,y}));
+    this.bendEditor = { path, original, points:original, selected:original.length ? 0 : -1,
+      insertAt:path.segments.indexOf(this.selection.id) };
+    this.changed();
+    return true;
+  }
+  get bendPathPoints() {
+    const state = this.bendEditor;
+    return state ? [state.path.points[0],...state.points,state.path.points.at(-1)] : null;
+  }
+  selectBend(index) {
+    if (!this.bendEditor?.points[index]) return;
+    this.bendEditor.selected = index;
+    this.changed();
+  }
+  insertBend() {
+    const state = this.bendEditor;
+    if (!state || state.points.length >= ROAD_BEND_LIMIT || this.drag) return false;
+    const index = Math.min(state.points.length, state.selected >= 0 ? state.selected+1 : state.insertAt);
+    const [a,b] = this.bendPathPoints.slice(index,index+2);
+    const points = [...state.points];
+    points.splice(index,0,{id:null,x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+    state.selected = index;
+    return this.updateBends(points);
+  }
+  removeBend() {
+    const state = this.bendEditor;
+    if (!state?.points[state.selected] || this.drag) return false;
+    const points = state.points.filter((_,index)=>index!==state.selected);
+    state.selected = Math.min(state.selected,points.length-1);
+    return this.updateBends(points);
+  }
+  moveBend(point, dragging = false) {
+    const state = this.bendEditor;
+    if (!state?.points[state.selected]) return false;
+    if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+      this.invalidate();
+      this.reconciliation = this.previewGeometry = null;
+      this.roadIntentInputError = 'Enter finite bend coordinates.';
+      this.checking = false;
+      this.changed();
+      return false;
+    }
+    const points = state.points.map((old,index)=>index === state.selected ? {...old,x:point.x,y:point.y} : old);
+    return this.updateBends(points,dragging);
+  }
+  updateBends(points, dragging = false) {
+    this.invalidate();
+    const state = this.bendEditor;
+    state.points = points;
+    this.roadIntentInputError = this.error = '';
+    this.roadIntentAnalysis = this.reconciliation = this.previewGeometry = null;
+    this.settledRevision = this.acceptedFingerprint = null;
+    const original = state.original;
+    const changed = points.length !== original.length ||
+      points.some((point,index)=>point.id !== original[index].id || point.x !== original[index].x || point.y !== original[index].y);
+    this.roadConnectionEdit = changed ? {kind:'shape',points} : null;
+    this.checking = changed && !dragging;
+    this.changed();
+    if (this.checking) this.evaluateRoadDraft(true);
     return true;
   }
   previewRoadConnection(edit) {
@@ -16539,6 +16760,7 @@ class RoadPreviewSession {
     const d = this.details;
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
     this.roadConnectionEdit = null;
+    this.bendEditor = null;
     this.roadIntentOffset = d?.kind === 'road' ? {x:0,y:0} : null;
     this.roadIntentAnalysis = null;
     this.roadIntentInputError = '';
@@ -16595,6 +16817,10 @@ class RoadPreviewSession {
     return true;
   }
   nudge(dx, dy) {
+    if (this.bendEditor) {
+      const point = this.bendEditor.points[this.bendEditor.selected];
+      return point ? this.moveBend({x:point.x+dx,y:point.y+dy}) : false;
+    }
     if(this.details?.kind==='road'){
       const offset=this.roadIntentOffset??{x:0,y:0};
       return this.updateRoadIntent({x:offset.x+dx,y:offset.y+dy});
@@ -16625,6 +16851,20 @@ class RoadPreviewSession {
       : null;
   }
   begin(point, zoom, pointerType) {
+    if (this.bendEditor && !this.drag) {
+      const radius = (pointerType === 'touch' ? 20 : 10) / zoom;
+      const nearest = this.bendEditor.points.reduce((best,bend,index)=>{
+        const distance = Math.hypot(bend.x-point.x,bend.y-point.y);
+        return distance <= radius && (!best || distance < best.distance) ? {index,distance} : best;
+      }, null);
+      if (nearest) {
+        const original = this.bendEditor.points;
+        this.drag = {kind:'bend',movable:true,start:{...point},point:original[nearest.index],original};
+        this.invalidate();
+        this.selectBend(nearest.index);
+        return true;
+      }
+    }
     const hit = this.hit(point, zoom, pointerType);
     if (!hit) return false;
     if (hit.kind !== this.selection?.kind || hit.id !== this.selection?.id) this.select(hit);
@@ -16641,7 +16881,10 @@ class RoadPreviewSession {
   move(point) {
     const drag = this.drag;
     if (!drag?.movable) return;
-    if(drag.kind==='road'){
+    if (drag.kind === 'bend') {
+      const x = drag.point.x + point.x - drag.start.x, y = drag.point.y + point.y - drag.start.y;
+      this.moveBend(this.snapBends ? {x:Math.round(x),y:Math.round(y)} : {x,y}, true);
+    } else if(drag.kind==='road'){
       this.updateRoadIntent({
         x:drag.offset.x+point.x-drag.start.x,
         y:drag.offset.y+point.y-drag.start.y,
@@ -16655,7 +16898,9 @@ class RoadPreviewSession {
     const drag = this.drag;
     this.drag = null;
     if (!drag?.movable) return;
-    if(drag.kind==='road')
+    if (drag.kind === 'bend')
+      this.updateBends(cancelled ? drag.original : this.bendEditor.points);
+    else if(drag.kind==='road')
       this.updateRoadIntent(cancelled?drag.offset:this.roadIntentOffset);
     else this.update(cancelled ? drag.point : this.point);
   }
@@ -16663,6 +16908,7 @@ class RoadPreviewSession {
 
 
 // src/ui/road-inspection.js
+
 
 
 const roadImpactGuidance = {
@@ -16993,6 +17239,24 @@ class RoadInspectionWorkspace {
         id: this.$('roadSelectionId').value,
       }),
     );
+    this.$('roadStartBendsC4').addEventListener('click', () => {
+      if (this.session.startBendEditor()) this.$('roadInsertBendC4').focus();
+    });
+    this.$('roadCloseBendsC4').addEventListener('click', () => {
+      this.session.reset();
+      this.$('roadStartBendsC4').focus();
+    });
+    this.$('roadInsertBendC4').addEventListener('click', () => this.session.insertBend());
+    this.$('roadRemoveBendC4').addEventListener('click', () => this.session.removeBend());
+    this.$('roadSelectBendC4').addEventListener('change', () =>
+      this.session.selectBend(Number(this.$('roadSelectBendC4').value)));
+    this.$('roadSnapBendsC4').addEventListener('change', () => {
+      this.session.snapBends = this.$('roadSnapBendsC4').checked;
+    });
+    for (const id of ['roadBendXC4','roadBendYC4']) this.$(id).addEventListener('input', () => {
+      const read = key => this.$(key).value.trim() === '' ? NaN : Number(this.$(key).value);
+      this.session.moveBend({x:read('roadBendXC4'),y:read('roadBendYC4')});
+    });
     for (const [id, kind] of [['roadReconnectC3','reconnect'], ['roadAddC3','add'], ['roadRemoveC3','remove']]) {
       this.$(id).addEventListener('click', () => this.session.previewRoadConnection({
         kind,
@@ -17087,6 +17351,32 @@ class RoadInspectionWorkspace {
           ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
           : '';
     this.$('roadIntentPanelC1').hidden=kind!=='road';
+    const bends = s.bendEditor, bend = bends?.points[bends.selected];
+    this.$('roadStartBendsC4').hidden = Boolean(bends);
+    this.$('roadStartBendsC4').disabled = !s.roadIntentEligible || Boolean(s.drag);
+    this.$('roadBendEditorC4').hidden = !bends;
+    if (bends) {
+      const count = bends.points.length;
+      if (this.bendOptionsCount !== count) {
+        this.bendOptionsCount = count;
+        this.$('roadSelectBendC4').replaceChildren(...bends.points.map((_,index)=>{
+          const option = document.createElement('option');
+          option.value = String(index);
+          option.textContent = 'Bend ' + (index+1);
+          return option;
+        }));
+      }
+      this.$('roadSelectBendC4').value = bend ? String(bends.selected) : '';
+      this.$('roadSelectBendC4').disabled = !bend || Boolean(s.drag);
+      this.$('roadInsertBendC4').disabled = Boolean(s.drag) || count >= ROAD_BEND_LIMIT;
+      this.$('roadRemoveBendC4').disabled = !bend || Boolean(s.drag);
+      for (const [id,key] of [['roadBendXC4','x'],['roadBendYC4','y']]) {
+        this.$(id).disabled = !bend || Boolean(s.drag);
+        if (document.activeElement !== this.$(id)) this.$(id).value = bend ? String(bend[key]) : '';
+      }
+      this.$('roadCloseBendsC4').disabled = Boolean(s.drag);
+      this.$('roadSnapBendsC4').checked = Boolean(s.snapBends);
+    }
     if (kind === 'road' && d && (this.connectionGraph !== s.graph || this.connectionRoad !== d.record.id)) {
       this.connectionGraph = s.graph;
       this.connectionRoad = d.record.id;
@@ -17118,6 +17408,7 @@ class RoadInspectionWorkspace {
         s.reconciliation?.candidateProject ? 'Street and local neighborhood ready to review.' :
         'Street placement held in draft. '+(s.reconciliation?.unresolved?.[0]?.message ??
           'The neighborhood could not be reconciled.') :
+        bends ? 'Add or move a bend to preview the street shape.' :
         'Drag a road on the map or enter a displacement to preview your chosen street position.');
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
@@ -17133,7 +17424,7 @@ class RoadInspectionWorkspace {
       if (document.activeElement !== this.$(id))
         this.$(id).value = s.point && Number.isFinite(s.point[key]) ? String(s.point[key]) : '';
     }
-    for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || s.roadIntentEligible);
+    for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || (bends ? bend : s.roadIntentEligible));
     this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error && !s.roadIntentInputError;
     const status = s.roadIntentInputError ? 'Invalid road offset' :
       s.details?.kind==='road' && s.pending ?
@@ -17503,7 +17794,7 @@ function drawRoadInspectionOverlay(canvas, camera, city, session) {
   }
   const d = session.details;
   if (d?.kind === 'road') segment(d.record, '#315c69', 5);
-  if (d?.kind === 'road' && session.roadConnectionEdit && session.previewVisible !== false) {
+  if (d?.kind === 'road' && session.roadConnectionEdit && session.roadConnectionEdit.kind !== 'shape' && session.previewVisible !== false) {
     const { kind, endpoint, target } = session.roadConnectionEdit;
     const start = kind === 'add' ? d.record[endpoint] : d.record[endpoint === 'a' ? 'b' : 'a'];
     const ids = kind === 'remove' ? d.endpoints : [start,target];
@@ -17533,6 +17824,24 @@ function drawRoadInspectionOverlay(canvas, camera, city, session) {
       ctx.beginPath();
       ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
       ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+  const bends = session.bendPathPoints;
+  if (bends && path(bends)) {
+    ctx.strokeStyle = '#168f80';
+    ctx.lineWidth = 4;
+    ctx.setLineDash([8,5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    for (const [index,point] of bends.slice(1,-1).entries()) {
+      const p = camera.worldToScreen(point);
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,index === session.bendEditor.selected ? 8 : 6,0,Math.PI*2);
+      ctx.fillStyle = '#168f80';
       ctx.fill();
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = 2;
