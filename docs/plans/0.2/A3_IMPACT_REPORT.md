@@ -45,14 +45,14 @@ Reports contain IDs and selected measurements, not an accepted city, candidate p
 2. The actual candidate graph validates, then A2 proves face coverage, identity and protected-feature invariants.
 3. Accepted frontage, setback, block/property/plot/building ownership and containment relationships remain valid.
 4. Accepted access paths still connect to their frontage roads; district and fortification dependencies resolve.
-5. No active opaque/unknown dependency remains unrecognized on a changed proposal.
+5. No opaque/unknown dependency remains unrecognized on a changed proposal.
 6. A temporary candidate snapshot passes the authoritative full project validator. No property/plot/building/frontage/ownership geometry is rewritten in that snapshot.
 
 **Needs review** means topology can remain well-formed but an accepted relationship would require explicit review or reconciliation: changed frontage alignment/frame, setback/corridor conflict, lost containment, unsupported access, missing/unresolved object ownership, split/merge/ambiguous block correspondence, district/defense dependency or opaque extension data. It also covers an incomplete analysis or an otherwise unrecognized candidate-validation failure. No repair is attempted.
 
 **Invalid** covers invalid accepted input, malformed/disconnected/crossing candidate topology, boundary escape, impossible plaza/landscape topology or a prohibited protected-edge/face rewrite. These reports may stop before dependent analysis; `complete: false` identifies that limitation rather than claiming a complete set of proven unaffected objects.
 
-A no-op may remain Safe with opaque stored metadata because it does not reinterpret or change the network. For an actual network change, nonempty unknown fields/extensions, including supported nested geometry/state bags, require review. Custom names/uses and other defined model metadata are preserved without being treated as unknown dependencies.
+A no-op may remain Safe with opaque stored metadata because it does not reinterpret or change the network. For an actual network change, unknown fields and nonempty extension bags, including supported nested geometry/state bags, require review. Unknown false/null/empty constraint values are not assumed inactive; for example, `allowRoadEditing: false` must not qualify as Safe. Custom names/uses and other defined model metadata are preserved without being treated as unknown dependencies.
 
 ## Checks and metrics
 
@@ -77,7 +77,7 @@ The existing bounded A1/A2 and project/landscape/fortification validators remain
 - `npm run check`: 312/312 tests pass, including 25 A3 tests and the unchanged generation/persistence regression suites.
 - Node 22.23.4: 25/25 focused A3 tests pass, including compiled/module parity and the malformed-input guards.
 - `npm run test:browser`: both suites pass, 16/16 browser/viewport runs across Chromium and Firefox at desktop, ultrawide, tablet and phone sizes.
-- Root and versioned standalone are identical: 768,698 bytes; SHA-256 `ab4d0a0aa8c72580700a6e3177fdd5276b258246212bf69078ae6ff3c66979fd`.
+- Root and versioned standalone are identical: 768,664 bytes; SHA-256 `a08ab1a90aaa9c271354daa22ca4d637f80768c61334600d5e2f5bdd8d833f09`.
 - `git diff --check`: clean. Previous distributions retained; schema remains 9.
 
 Five report excerpts are committed in `A3_IMPACT_EXAMPLES.json`: unchanged, Safe undeveloped movement, frontage review, invalid crossing and protected bridge. Regenerate them with `node scripts/road-impact-examples.mjs`; the helper asserts their expected statuses and only writes documentation.

@@ -281,6 +281,14 @@ test('unrecognized extensions and dependency fields are reviewed instead of assu
   const nested = blankProject();
   nested.city.survey.futureDependencies = ['road'];
   assert.ok(has(move(nested), 'unrecognized-dependency', 'city'));
+  for (const value of [false, null, '', []]) {
+    const constrained = blankProject();
+    constrained.city.blocks[0].allowRoadEditing = value;
+    assert.ok(
+      has(move(constrained), 'unrecognized-dependency', 'block', constrained.city.blocks[0].id),
+      'Unknown negative/empty constraint values must not be assumed inactive.',
+    );
+  }
   const noop = inspectJunctionImpact(project, ordinary, point);
   assert.equal(noop.status, 'safe', 'no geometry change does not reinterpret opaque stored metadata');
 });

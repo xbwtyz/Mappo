@@ -14015,17 +14015,13 @@ const riKnownFields = {
   terrainPasses: 'id dataVersion kind terrainId t width extensions',
   terrainFaces: 'id terrainIds vertices area',
 };
-const riNonempty = (value) =>
-  value !== undefined &&
-  value !== null &&
-  value !== false &&
-  value !== '' &&
-  (!(typeof value === 'object') || Object.keys(value).length > 0);
+const riEmptyExtension = (value) =>
+  value == null || (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0);
 function riUnknownRecord(record, fields, kind, id, emit, spend, path = '') {
   const allowed = new Set(fields.split(' '));
   for (const key of Object.keys(record ?? {})) {
     spend();
-    if ((!allowed.has(key) || key === 'extensions') && riNonempty(record[key]))
+    if (key === 'extensions' ? !riEmptyExtension(record[key]) : !allowed.has(key))
       emit(
         kind,
         id,
