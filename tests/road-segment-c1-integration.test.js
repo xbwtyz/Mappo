@@ -80,3 +80,40 @@ test('C1 developed-city road translation must have a genuinely accepted positive
   assert.equal(verifySegmentDeltaC1(positive.p,positive.result.result.candidateProject,
     positive.result.road.id,positive.result.offset),true);
 });
+
+test('C1 user-scale movement survey: ordinary developed cities must allow visible moves',()=>{
+  const cases=[['b4-vacant','organic'],['c1-developed','planned'],
+    ['c1-radial','radial'],['c1-linear','linear']];
+  const reasons=new Map(),winners=[];
+  for(const [seed,morphology] of cases){
+    const project=fixture(true,seed,morphology);
+    const before=JSON.stringify(project);
+    const graph=buildRoadGraph(project.city);
+    const roads=[...graph.roadsById.values()].filter(r =>
+      [r.a,r.b].every(id=>graph.incidentRoads.get(id).every(edge =>
+        !graph.roadClasses.get(edge).protected)));
+    let passed=0,checked=0;
+    for(const road of roads.slice(0,35)){
+      for(const offset of [{x:1,y:0},{x:0,y:1},{x:-1,y:0},{x:0,y:-1}]){
+        const result=prepareSegmentTranslationC1(project,road.id,offset);
+        checked++;
+        if(result.candidateProject){
+          assert.equal(verifySegmentDeltaC1(project,result.candidateProject,road.id,offset),true);
+          assert.deepEqual(result.candidateProject.city.buildings,project.city.buildings);
+          assert.deepEqual(result.candidateProject.city.roads,project.city.roads);
+          if(++passed===2)break;
+        }else{
+          const reason=result.issues?.[0]?.code??'unclassified';
+          reasons.set(reason,(reasons.get(reason)??0)+1);
+        }
+      }
+      if(passed>=2)break;
+    }
+    if(passed)winners.push({seed,morphology,passed,checked});
+    assert.equal(JSON.stringify(project),before,'The movement survey must not mutate the accepted city');
+  }
+  const summary={successes:winners,blocked:Object.fromEntries([...reasons].sort((a,b)=>b[1]-a[1]).slice(0,10))};
+  console.log('C1 developed-city 1-unit movement survey:',JSON.stringify(summary));
+  assert.ok(winners.length>=2,
+    'At least two distinct developed city morphologies must accept a full 1-unit road move; '+JSON.stringify(summary));
+});

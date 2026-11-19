@@ -103,15 +103,19 @@ export function prepareSegmentTranslationC1(project, roadId, offset, workspace =
     const plots = new Map(candidate.city.plots.map(p => [p.id,p]));
     const touchedProperties = new Set();
     const touchedPlots = new Set();
+    // A modified block does not automatically mean every parcel in it needs
+    // a new boundary. Only the frontages whose actual road geometry moved
+    // require the B2 warp. All other parcels remain untouched, and the full
+    // project validator independently checks their block containment, street
+    // setbacks and relationship safety against the new neighborhood.
+    // This removes the false "unmapped-frontage" rejection for parcels that
+    // can remain safely where they already are.
     const impactedProperties = old.properties.filter(p =>
-      incident.includes(p.frontageRoadId) || blocks.has(p.blockId));
+      incident.includes(p.frontageRoadId));
     if (impactedProperties.length > 256)
-      return c1Rejected('parcel-work-limit','Too many parcels depend on this segment.',[roadId],
+      return c1Rejected('parcel-work-limit','Too many frontage parcels depend on this segment.',[roadId],
         'project','needs-review');
     for (const source of impactedProperties) {
-      if (!incident.includes(source.frontageRoadId))
-        return c1Rejected('unmapped-frontage','A dependent parcel has an unchanged frontage road.',
-          [source.id], 'project','needs-review');
       const property = properties.get(source.id);
       const frontRoad = roads.get(source.frontageRoadId);
       if (!property || !frontRoad)

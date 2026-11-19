@@ -17,3 +17,9 @@ Choose an ordinary road in Road Inspection, enter X/Y translation, click **Previ
 Node positive/negative/stale, UI Apply/Cancel/Undo/Redo, at least one validated *developed-city* segment translation, Chromium/Firefox browser matrix across desktop, ultrawide, tablet and phone, root/standalone exact build parity, one owner-approved merge. Ship versioned `dist/mappo-0.2-dev.c1.html`. Physical-device QA remains manual.
 
 **C2** identity/ownership restructuring follows after C1 signoff, not before.
+
+## Usability correction — developed city movement
+- An unchanged parcel may remain in a newly shaped block **if** the full project validator proves containment and setbacks. C1 no longer insists it must be warped merely because its block area changed.
+- Every property whose `frontageRoadId` touches either translated junction still receives conservative frontage/plot adaptation.
+- Add a 1-unit visible-movement acceptance survey across multiple generated settlement morphologies; require more than one developed-city positive. Record top rejection reasons for investigation.
+- Do not claim full real-world usability from `0.001`-unit positive tests. Those tests remain valuable only for basic engine precision/determinism.
