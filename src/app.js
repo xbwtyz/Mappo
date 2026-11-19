@@ -88,6 +88,8 @@ import { PropertyEditSession3I } from './editor/property-edit.js';
 import { inspectPropertyEdit3I, preparePropertyApply3I } from './editor/property-application.js';
 import { PropertyGeometryHistory3I } from './editor/property-history.js';
 import { preparePropertyDeletion4A, PropertyDeletionHistory4A } from './editor/property-deletion.js';
+import { preparePropertyBuildingClear4E } from './editor/property-building-clear-4e.js';
+import { describeStructureChange4E } from './core/structure-history-feedback-4e.js';
 import { pointInPolygon } from './core/geometry.js';
 import { focusCameraOnSelection4B } from './core/selection-focus-4b.js';
 import { formatEditIssue4D } from './core/inspector-feedback-4d.js';
@@ -186,8 +188,10 @@ function currentUndoContext() {
   const structuralProperty=structureHistoryProperty3H();
   if (!buildingEditSession?.isActive && !buildingPlacementSession?.isActive
       && structuralProperty && buildingStructureHistory.can('undo',project,structuralProperty)) {
-    return {kind:'structure',controlId:'structureUndo',label:'Undo structure',available:true,
-      description:'Undo the last accepted add, replacement or deletion on this property.'};
+    const action=describeStructureChange4E(buildingStructureHistory.entry('undo',structuralProperty),'undo');
+    return {kind:'structure',controlId:'structureUndo',
+      label:action?.label??'Undo structure',available:true,
+      description:action?.description??'Undo the last structural edit on this property.'};
   }
   if (buildingEditSession?.isActive && workspaceShell?.state.selection?.kind === 'building') {
     const id = buildingEditSession.buildingId;
@@ -446,11 +450,19 @@ function syncBuildingStructureUI3H() {
   $('buildingStructureHistoryPanel').hidden=!historyShown;
   const idle=Boolean(session?.isActive);
   const canHistory=historyShown && !idle;
-  $('structureUndo').disabled=!(canHistory&&buildingStructureHistory.can('undo',project,propertyId));
-  $('structureRedo').disabled=!(canHistory&&buildingStructureHistory.can('redo',project,propertyId));
+  for(const [direction,id] of [['undo','structureUndo'],['redo','structureRedo']]) {
+    const available=canHistory&&buildingStructureHistory.can(direction,project,propertyId);
+    const action=describeStructureChange4E(buildingStructureHistory.entry(direction,propertyId),direction);
+    $(id).disabled=!available;
+    $(id).textContent=action?.label??(direction==='undo'?'Undo structure':'Redo structure');
+    $(id).title=action?.description??'No structural edit to '+direction+'.';
+  }
+  const next=describeStructureChange4E(buildingStructureHistory.entry('undo',propertyId),'undo')
+    ??describeStructureChange4E(buildingStructureHistory.entry('redo',propertyId),'redo');
   $('structureHistoryStatus').textContent=historyShown
     ? 'Property structure history · '+buildingStructureHistory.count('undo',propertyId)+' undo / '
       +buildingStructureHistory.count('redo',propertyId)+' redo (session only).'
+      +(next?' Next: '+next.description:'')
     : '';
   if(!shown)return;
   const spec=session.spec;
@@ -517,6 +529,40 @@ function applyStructurePlacement3H() {
     return true;
   }catch(error){$('statusMessage').textContent='Building Apply rejected: '+error.message;return false;}
 }
+// Dev 4e: one confirmation, one validated transaction and one structural Undo.
+function clearPropertyBuildings4E(propertyId) {
+  const selected=workspaceShell?.state.selection;
+  const site=project?.city?.properties.find(p=>p.id===propertyId);
+  if(!site||layers.buildings===false||selected?.kind!=='property'||selected.id!==propertyId)return false;
+  const count=site.buildingIds?.length??0;
+  if(count===0){
+    $('statusMessage').textContent='This property has no buildings to clear.';
+    return false;
+  }
+  const name=site.customName||propertyId;
+  if(typeof window.confirm==='function'&&!window.confirm(
+    'Clear all '+count+' building(s) from property "'+name+'"? The property, plots and roads stay unchanged. '+
+    'You can undo this entire action in one step during this session.'
+  ))return false;
+  if(!exitPropertyEditing3I()||!exitStructurePlacement3H()||!exitBuildingEditing())return false;
+  const previous=project;
+  const result=preparePropertyBuildingClear4E(previous,captureWorkspace().workspace,propertyId);
+  if(!result.ok){$('statusMessage').textContent=result.reason;return false;}
+  if(project!==previous||workspaceShell?.state.selection?.id!==propertyId)return false;
+  try {
+    if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'clear'))return false;
+    project=result.candidate;
+    buildingHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
+    identityWorkspace.reset();
+    updateDetails();
+    workspaceShell.select({kind:'property',id:propertyId});
+    workspaceShell.refresh();
+    requestDraw();workspaceChanged();
+    $('statusMessage').textContent='Cleared '+result.count+' buildings from '+name+
+      '. Undo clear restores every building in one step this session.';
+    return true;
+  }catch(error){$('statusMessage').textContent='Clear buildings failed: '+error.message;return false;}
+}
 function deleteStructureBuilding3H(propertyId,buildingId) {
   if(!project||!propertyId||!buildingId)return false;
   if(typeof window.confirm==='function' && !window.confirm('Delete '+buildingId+' from this property? You can Undo this deletion during the session.'))return false;
@@ -546,6 +592,7 @@ function moveStructureHistory3H(direction) {
   if(!propertyId || !buildingStructureHistory.can(direction,project,propertyId))return false;
   const result=buildingStructureHistory.prepare(project,captureWorkspace().workspace,propertyId,direction);
   if(!result.ok){$('statusMessage').textContent='Cannot '+direction+' structure: '+result.issues[0]?.message;return false;}
+  const action=describeStructureChange4E(result.entry,direction);
   buildingStructureHistory.accept(result.entry,direction);
   propertyHistory.clear();
   propertyDeletionHistory4A.clear();
@@ -556,7 +603,8 @@ function moveStructureHistory3H(direction) {
   workspaceShell.refresh();
   requestDraw();
   workspaceChanged();
-  $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' structural edit for '+propertyId+'.';
+  $('statusMessage').textContent=(direction==='undo'?'Undid: ':'Redid: ')+
+    (action?.description??'Structural edit on '+propertyId+'.');
   return true;
 }
 
@@ -1237,6 +1285,7 @@ propertyWorkspace = new PropertyWorkspace({
   startBuilding: propertyId => startStructurePlacement3H(propertyId),
   startPropertyEdit: enterPropertyEditing3I,
   deleteProperty: deleteProperty4A,
+  clearBuildings: clearPropertyBuildings4E,
   focusSelection: zoomToSelection4B,
   onSelect: () => {
     districtPanel.editor.selectedDistrictId = null;

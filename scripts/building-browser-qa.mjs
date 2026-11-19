@@ -84,6 +84,50 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         siteContext.blockId, siteContext.roadId, ...siteContext.plotIds, ...siteContext.buildingIds])
         assert.ok(informationText.includes(text), `Property information contains ${text}`);
       if (siteContext.district) assert.ok(informationText.includes(siteContext.district));
+      // Dev 4e: one confirmed property-wide clear, one history entry and
+      // exact undo/redo restores accepted city and preserves every plot.
+      assert.ok(siteContext.buildingIds.length > 0);
+      const clearButton=page.getByRole('button',{name:'Clear all buildings…'});
+      assert.equal(await clearButton.isDisabled(),false);
+      page.once('dialog',async dialog=>{
+        assert.match(dialog.message(),/Clear all.*building\(s\).*property/i);
+        await dialog.dismiss();
+      });
+      await clearButton.click();
+      assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),geometry,
+        'Cancelling Clear all must not change accepted geometry');
+      page.once('dialog',async dialog=>{
+        assert.match(dialog.message(),/undo this entire action/i);
+        await dialog.accept();
+      });
+      await clearButton.click();
+      const clearState=await page.evaluate(id=>{
+        const s=__buildingQA.state();
+        return {buildings:s.project.city.buildings.filter(b=>b.propertyId===id).length,
+          propertyBuildings:s.project.city.properties.find(p=>p.id===id).buildingIds.length,
+          undoCount:s.buildingStructureHistory.count('undo',id),
+          plots:s.project.city.properties.find(p=>p.id===id).plotIds.slice()};
+      },id);
+      assert.equal(clearState.buildings,0);
+      assert.equal(clearState.propertyBuildings,0);
+      assert.equal(clearState.undoCount,1);
+      assert.deepEqual(clearState.plots,siteContext.plotIds);
+      assert.equal(await clearButton.isDisabled(),true);
+      assert.match(await page.locator('#structureHistoryStatus').innerText(),/Restore all cleared buildings/);
+      if(viewport.width<=900 && await page.locator('#workspaceCloseInspector').isVisible())
+        await page.locator('#workspaceCloseInspector').click();
+      await page.locator('#structureUndo').click();
+      assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),geometry);
+      if(viewport.width<=900 && await page.locator('#workspaceCloseInspector').isVisible())
+        await page.locator('#workspaceCloseInspector').click();
+      await page.locator('#structureRedo').click();
+      assert.equal(await page.evaluate(id=>__buildingQA.state().project.city.buildings.some(b=>b.propertyId===id),id),false);
+      if(viewport.width<=900 && await page.locator('#workspaceCloseInspector').isVisible())
+        await page.locator('#workspaceCloseInspector').click();
+      await page.locator('#structureUndo').click();
+      assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),geometry);
+      if(viewport.width<=900 && await page.locator('#workspaceOpenInspector').isVisible())
+        await page.locator('#workspaceOpenInspector').click();
       // Dev 4b: focus is based on the actual selected property bounds, not
       // the map cursor or the city's overall extent. It must not edit city data.
       const focusBefore=await page.evaluate(()=>{
