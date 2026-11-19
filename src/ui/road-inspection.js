@@ -1,6 +1,171 @@
 import { RoadPreviewSession } from '../editor/road-preview.js';
 import { roadInspectionDetails } from '../core/road-inspection.js';
 
+
+const roadImpactGuidance = {
+  "unnormalized-crossing": [
+    "Roads cross without a valid junction",
+    "Avoid crossing another road or create a supported intersection in a future editor."
+  ],
+  "overlapping-roads": [
+    "Road segments overlap",
+    "Try a different junction position so separate roads do not occupy the same segment."
+  ],
+  "disconnected-graph": [
+    "Road network becomes disconnected",
+    "Move the junction back toward a connected configuration."
+  ],
+  "degenerate-road": [
+    "A road becomes too short or collapses",
+    "Increase separation between the road endpoints."
+  ],
+  "boundary-escape": [
+    "Road moves outside the city boundary",
+    "Move the junction back inside the accepted boundary."
+  ],
+  "protected-junction": [
+    "Protected junction cannot move",
+    "Choose an ordinary unprotected junction; protected infrastructure is inspection-only."
+  ],
+  "protected-edge": [
+    "Protected infrastructure would change",
+    "This boundary, bridge, bank, plaza, or terrain connection cannot be altered in 0.2A."
+  ],
+  "road-setback": [
+    "Buildings or parcels are too close to the road",
+    "Try a smaller movement. Setback reconciliation is planned for 0.2B."
+  ],
+  "frontage-missing": [
+    "Property loses its road-facing edge",
+    "Preserving or rebuilding property frontage requires controlled reconciliation in 0.2B."
+  ],
+  "frontage-block": [
+    "Property frontage no longer matches its block",
+    "The adjacent block and property frontage would need coordinated updates in 0.2B."
+  ],
+  "frontage-unusable": [
+    "Property frontage cannot be used",
+    "Try a smaller movement or postpone until frontage reconciliation is implemented."
+  ],
+  "frontage-geometry": [
+    "Property frontage shape would change",
+    "Reshaping this property safely is reserved for 0.2B."
+  ],
+  "frontage-distance": [
+    "Property frontage shifts away from the road",
+    "Try less displacement or review the property during later reconciliation."
+  ],
+  "property-containment": [
+    "Property would extend beyond its block",
+    "The property boundary needs reconciliation before this change can be accepted."
+  ],
+  "plot-ownership": [
+    "Plot relationship would need updating",
+    "Plot ownership must be preserved and explicitly reconciled in 0.2B."
+  ],
+  "building-ownership": [
+    "Building relationship would need updating",
+    "Review the affected building and property before future acceptance."
+  ],
+  "road-clearance": [
+    "Road clearance around a building changes",
+    "Try a smaller road move; building clearance will require reconciliation."
+  ],
+  "access-connection": [
+    "Access route would disconnect",
+    "Keep the route connected or resolve access relationships during 0.2B."
+  ],
+  "access-entrance": [
+    "Building entrance access is affected",
+    "A future Apply must preserve a usable entrance connection."
+  ],
+  "access-unproven": [
+    "Building access cannot be verified",
+    "Inspect the connected roads; safe acceptance cannot be established yet."
+  ],
+  "face-split": [
+    "A block would split",
+    "Splitting blocks requires an explicit identity and property-reconciliation decision."
+  ],
+  "face-merged": [
+    "Blocks would merge",
+    "Merging blocks requires explicit identity and ownership reconciliation."
+  ],
+  "face-ambiguous": [
+    "Block identity cannot be determined",
+    "Review which existing block identity should survive; Mappo will not guess."
+  ],
+  "face-geometry": [
+    "Block boundary would change",
+    "This change preserves the reported block identity but may affect dependent records."
+  ],
+  "face-added": [
+    "A new block would appear",
+    "A future edit must explicitly assign ownership and a stable new identity."
+  ],
+  "face-removed": [
+    "An existing block would disappear",
+    "Deletion is not allowed in 0.2A; a future reconciliation must explicitly resolve it."
+  ],
+  "district-reference": [
+    "District references would be affected",
+    "District membership needs review before the road change can be applied."
+  ],
+  "defense-reference": [
+    "Fortification references would be affected",
+    "Review the affected wall, gate, or tower connections before acceptance."
+  ],
+  "gate-connection": [
+    "Gate access connection would change",
+    "Avoid protected gate approaches; special infrastructure edits need dedicated support."
+  ],
+  "candidate-validation": [
+    "Full city validation did not pass",
+    "Address the listed dependencies; graph validity alone does not prove a safe city."
+  ],
+  "impact-incomplete": [
+    "Impact analysis could not finish",
+    "Do not rely on a Safe result. Try a smaller change or inspect the underlying diagnostic."
+  ],
+  "unrecognized-dependency": [
+    "Custom data needs review",
+    "Mappo will preserve unknown fields, but cannot prove how they should adapt."
+  ],
+  "candidate-coordinate": [
+    "Proposed coordinates are not usable",
+    "Enter finite X and Y coordinates inside the permitted area."
+  ],
+  "face-coverage": [
+    "Road faces no longer cover the expected region",
+    "Move the junction to restore continuous, non-overlapping blocks."
+  ]
+};
+
+export function summarizeRoadImpact(report) {
+  const rank = { invalid: 0, 'needs-review': 1, info: 2 };
+  const groups = new Map();
+  for (const row of report?.affected ?? []) {
+    const severity = Object.hasOwn(rank, row.severity) ? row.severity : 'needs-review';
+    const code = typeof row.code === 'string' ? row.code : 'unknown-issue';
+    const key = JSON.stringify([severity, code]);
+    if (!groups.has(key)) {
+      const fallback = code.replace(/[-_]/g, ' ').replace(/^./, (c) => c.toUpperCase());
+      const [title, suggestion] = roadImpactGuidance[code] ?? [
+        fallback,
+        'Inspect the detailed diagnostic. This dependency cannot be safely resolved by the 0.2A preview.'
+      ];
+      groups.set(key, { key, severity, code, title, suggestion, rows: [], objects: new Set() });
+    }
+    const group = groups.get(key);
+    group.rows.push(row);
+    group.objects.add(JSON.stringify([row.kind, row.id]));
+  }
+  const sorted = [...groups.values()].sort((a,b) =>
+    rank[a.severity] - rank[b.severity] || b.objects.size - a.objects.size || a.code.localeCompare(b.code)
+  );
+  return sorted.map(({ objects, ...group }) => ({ ...group, count: objects.size }));
+}
+
 export class RoadInspectionWorkspace {
   constructor({
     getElement,
@@ -249,29 +414,91 @@ export class RoadInspectionWorkspace {
       this.renderReport();
     }
   }
+
+  locateImpact(row) {
+    const city = this.getProject()?.city;
+    if (!city || !row) return;
+    const lookup = {
+      junction: ['nodes'], road: ['roads'], block: ['blocks'], property: ['properties'],
+      plot: ['plots'], building: ['buildings'], district: ['districts'],
+      defense: ['walls','gates','towers'], water: ['waterFeatures','bridges','waterFaces'],
+      terrain: ['terrainFeatures','terrainPasses','terrainFaces'],
+      'open-space': ['openSpaces'], plaza: ['plaza']
+    };
+    let record = null;
+    for (const key of lookup[row.kind] ?? []) {
+      const source = city[key];
+      const found = Array.isArray(source) ? source.find((r) => r.id === row.id) : source?.id === row.id ? source : null;
+      if (found) { record = found; break; }
+    }
+    const nodes = this.session.graph.nodesById;
+    let points = [];
+    if (row.kind === 'road' && record) points = [record.a,record.b].map(id=>nodes.get(id));
+    else if (row.kind === 'district' && record) {
+      points = (city.blocks ?? []).filter(b=>b.districtId === record.id)
+        .flatMap(b=>(b.vertices??[]).map(id=>nodes.get(id)));
+    } else if (record) {
+      const raw = record.boundary ?? record.footprint ?? record.polygon ?? record.path ??
+        record.points ?? record.vertices ?? (record.center ? [record.center] : [record]);
+      points = (Array.isArray(raw) ? raw : []).map(p=>typeof p==='string' ? nodes.get(p) : p);
+    }
+    const valid = points.filter(p=>p && Number.isFinite(p.x) && Number.isFinite(p.y));
+    if (!valid.length) return;
+    this.camera.x = valid.reduce((sum,p)=>sum+p.x,0)/valid.length;
+    this.camera.y = valid.reduce((sum,p)=>sum+p.y,0)/valid.length;
+    this.draw();
+  }
   renderReport() {
-    const report = this.session.report,
-      rows = report?.affected ?? [];
-    this.$('roadReportList').replaceChildren(
-      ...rows.slice(0, this.limit).map((row) => {
-        const item = document.createElement('li');
-        const title = document.createElement('strong');
-        title.textContent = `${row.kind} ${row.id} · ${row.severity} · ${row.code}`;
-        const description = document.createElement('p');
-        description.textContent = row.message;
-        const related = document.createElement('small');
-        related.textContent = row.relatedIds.length ? 'Related: ' + row.relatedIds.join(', ') : '';
-        item.replaceChildren(title, description, related);
-        return item;
-      }),
-    );
-    this.$('roadReportList').hidden = !rows.length;
-    this.$('roadShowMore').hidden = rows.length <= this.limit;
+    const report = this.session.report;
+    const groups = summarizeRoadImpact(report);
+    const list = this.$('roadReportList');
+    const shown = groups.slice(0, this.limit);
+    list.replaceChildren(...shown.map(group => {
+      const item = document.createElement('li');
+      const heading = document.createElement('details');
+      const summary = document.createElement('summary');
+      const label = group.severity === 'invalid' ? 'Blocking' :
+        group.severity === 'needs-review' ? 'Review required' : 'Information';
+      summary.textContent = label + ' · ' + group.title + ' · ' + group.count +
+        (group.count === 1 ? ' affected object' : ' affected objects');
+      heading.replaceChildren(summary);
+      const explanation = document.createElement('p');
+      explanation.textContent = group.suggestion;
+      heading.replaceChildren(summary, explanation);
+      const details = document.createElement('ul');
+      for (const row of group.rows) {
+        const line = document.createElement('li');
+        const text = document.createElement('p');
+        text.textContent = row.kind + ' ' + row.id + ': ' + row.message;
+        const technical = document.createElement('small');
+        technical.textContent = 'Code: ' + group.code +
+          (row.relatedIds?.length ? ' · Related: ' + row.relatedIds.join(', ') : '');
+        line.replaceChildren(text, technical);
+        const locate = document.createElement('button');
+        locate.type = 'button';
+        locate.className = 'minor-button';
+        locate.textContent = 'Locate ' + row.kind + ' ' + row.id;
+        locate.setAttribute('aria-label', 'Locate affected ' + row.kind + ' ' + row.id + ' on map');
+        locate.addEventListener('click', () => this.locateImpact(row));
+        line.replaceChildren(text, technical, locate);
+        details.replaceChildren(...(details.children ?? []), line);
+      }
+      heading.replaceChildren(summary, explanation, details);
+      item.replaceChildren(heading);
+      return item;
+    }));
+    list.hidden = !groups.length;
+    this.$('roadShowMore').hidden = groups.length <= this.limit;
     this.$('roadReportSummary').textContent = report
-      ? `${report.complete ? 'Complete analysis.' : 'Analysis incomplete; safety is not proven.'} ${report.requiresReconciliation ? 'Dependent objects require reconciliation.' : ''} ${Math.min(rows.length, this.limit)} of ${rows.length} report entries shown.`
+      ? (report.complete ? 'Analysis complete. ' : 'Analysis incomplete; safety is not proven. ') +
+        groups.filter(g=>g.severity==='invalid').length + ' blocking cause groups · ' +
+        groups.filter(g=>g.severity==='needs-review').length + ' review groups · ' +
+        (report.counts?.affectedObjects ?? 0) + ' affected objects. ' +
+        (report.requiresReconciliation ? 'Road-dependent city objects require future 0.2B reconciliation. ' : '') +
+        Math.min(this.limit,groups.length) + ' of ' + groups.length + ' groups shown. Expand a group for exact IDs, technical details, and map navigation.'
       : 'Change a junction position to inspect its impact. Accepted geometry stays unchanged.';
-    const metrics = report?.metrics;
-    this.$('roadReportMetrics').textContent = metrics
+    const metrics=report?.metrics;
+    this.$('roadReportMetrics').textContent=metrics
       ? `${metrics.roads.length} changed road measurements · ${metrics.faces.length} face measurements · ${metrics.topology?.split.length ?? 0} splits · ${metrics.topology?.merged.length ?? 0} merges`
       : '';
   }
