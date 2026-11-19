@@ -117,20 +117,10 @@ test('B4 full accepted Apply and Undo/Redo each change recovery revision once',a
  const road=app.state().roadWorkspace;
  road.start();
  const session=road.session;
- Object.assign(session,{
-   selection:{kind:'junction',id:proposal.id},
-   point:proposal.point,
-   pending:true,
-   checking:false,
-   drag:null,
-   error:'',
-   reconciliationError:'',
-   reconciliation:proposal.result,
-   revision:7,
-   settledRevision:7,
-   acceptedFingerprint:JSON.stringify(current),
-   previewGeometry:roadReconciliationPreviewB3(current,proposal.result)
- });
+ session.select({kind:'junction',id:proposal.id});
+ assert.equal(session.update(proposal.point,{defer:false}),true);
+ assert.equal(session.settledRevision,session.revision);
+ assert.equal(session.reconciliation?.status,'candidate-only');
  const before=JSON.stringify(app.state().project);
  const revision=app.state().files.revision;
  const result=app.applyRoad(session,road.baseRevision);

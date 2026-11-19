@@ -110,9 +110,7 @@ export function prepareRoadApplyB4(project,workspace,session,expectedRevision,cu
        matched.merged.length||matched.ambiguous.length)
       throw new Error('Candidate face identities are not unambiguously preserved.');
     const mapped=[...matched.preserved,...matched.changed];
-    if(mapped.length!==project.city.blocks.length+
-       (project.city.plazas?.length??0)+(project.city.waterFaces?.length??0)+
-       (project.city.terrainFaces?.length??0))
+    if(mapped.length!==faces.faces.length)
       throw new Error('Candidate face correspondence is incomplete.');
     validateStoredProject(candidate);
     const roundtrip=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));

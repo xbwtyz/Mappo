@@ -16872,11 +16872,10 @@ function prepareParcelReconciliationB2(project,junctionId,point) {
 
 
 // src/editor/road-application.js
-import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
-import { validateStoredProject } from '../data/project-validation.js';
-import { buildRoadGraph } from '../core/road-graph.js';
-import { extractRoadFaces, matchExistingFaces } from '../core/road-faces.js';
-import { prepareParcelReconciliationB2 } from '../core/parcel-reconciliation.js';
+
+
+
+
 
 // B4 owns acceptance. B1/B2/B3 statuses never grant write permission.
 const b4Same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
@@ -16916,7 +16915,7 @@ function b4FirstDifference(a,b,path='project'){
 // Rebuild the entire expected candidate by transferring *only* approved
 // geometry fields. No ID, custom metadata, building, terrain, protected face,
 // district, road record or unrelated project field can change implicitly.
-export function verifyRoadDeltaB4(before,after,junctionId){
+function verifyRoadDeltaB4(before,after,junctionId){
   const expected=copyJson(before);
   for(const [collection,fields] of Object.entries(editable)){
     const original=before.city[collection]??[], proposed=after.city[collection]??[];
@@ -16944,7 +16943,7 @@ export function verifyRoadDeltaB4(before,after,junctionId){
   return true;
 }
 
-export function prepareRoadApplyB4(project,workspace,session,expectedRevision,currentRevision){
+function prepareRoadApplyB4(project,workspace,session,expectedRevision,currentRevision){
   if(!session?.current?.()||session.project!==project||session.city!==project?.city)
     return reject('stale-project','The accepted project changed. Reopen the road preview.');
   if(!Number.isSafeInteger(expectedRevision)||currentRevision!==expectedRevision)
@@ -16984,9 +16983,7 @@ export function prepareRoadApplyB4(project,workspace,session,expectedRevision,cu
        matched.merged.length||matched.ambiguous.length)
       throw new Error('Candidate face identities are not unambiguously preserved.');
     const mapped=[...matched.preserved,...matched.changed];
-    if(mapped.length!==project.city.blocks.length+
-       (project.city.plazas?.length??0)+(project.city.waterFaces?.length??0)+
-       (project.city.terrainFaces?.length??0))
+    if(mapped.length!==faces.faces.length)
       throw new Error('Candidate face correspondence is incomplete.');
     validateStoredProject(candidate);
     const roundtrip=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
