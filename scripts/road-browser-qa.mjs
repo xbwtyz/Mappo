@@ -271,7 +271,7 @@ for (const [name, type] of [
         return {
           pending:session.pending,applyReady:analysis.applyReady,
           draftable:analysis.draftable,changedRoads:analysis.changedRoadIds.length,
-          displaced:analysis.proposedNodes.every(n=>n.x-accepted.get(n.id).x===15 &&
+          displaced:analysis.proposedNodes.every(n=>Math.abs(n.x-accepted.get(n.id).x-15)<1e-8 &&
             n.y===accepted.get(n.id).y),
           acceptedUnchanged:JSON.stringify(__buildingQA.capture())===__buildingQA.before,
           recoveryUnchanged:files.revision===__buildingQA.revision
