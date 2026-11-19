@@ -154,6 +154,19 @@
             <button id="roadLocate" class="minor-button">Locate on map</button>
             <div id="roadEndpointList" class="road-endpoint-list" aria-label="Connected junctions"></div>
             <p id="roadPreviewEligibility" class="hint"></p>
+            <section id="roadSegmentPanelC1" aria-label="Move a complete road segment" hidden>
+              <h3>MOVE ROAD SEGMENT · C1</h3>
+              <p class="hint">Translate both junctions by the same offset. Existing neighboring roads adapt only when all block and property relationships remain valid.</p>
+              <div class="road-preview-selectors">
+                <label>Move X <input type="number" id="roadSegmentDxC1" step="any" value="0"></label>
+                <label>Move Y <input type="number" id="roadSegmentDyC1" step="any" value="0"></label>
+              </div>
+              <div class="road-preview-selectors">
+                <button type="button" id="roadSegmentFindC1" class="minor-button">Find a valid move</button>                <button type="button" id="roadSegmentPreviewC1" class="minor-button">Preview segment move</button>
+                <button type="button" id="roadSegmentApplyC1" class="tool-button" disabled>Apply segment</button>
+              </div>
+              <p id="roadSegmentStatusC1" class="hint" role="status" aria-live="polite">Preview a bounded segment move before applying.</p>
+            </section>
             <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
             <label class="road-step-label">Nudge units<input id="roadNudgeStep" type="number" min="0.001" step="0.5" value="0.5"></label>
             <div class="road-nudge-buttons" role="group" aria-label="Nudge proposed junction"><button id="roadNudgeLeft" aria-label="Nudge left">←</button><button id="roadNudgeUp" aria-label="Nudge up">↑</button><button id="roadNudgeDown" aria-label="Nudge down">↓</button><button id="roadNudgeRight" aria-label="Nudge right">→</button></div>
@@ -170,7 +183,7 @@
             </section>
             <p id="roadReportError" class="validation-error"></p><p id="roadReportSummary" class="hint"></p><p id="roadReportMetrics" class="hint"></p>
             <ol id="roadReportList" class="road-report-list" aria-label="Affected objects and impact descriptions"></ol><button id="roadShowMore" class="minor-button" hidden>Show 50 more entries</button>
-            <p class="hint">Preview only. Road Apply and Undo will be introduced in B4.</p>
+            <p class="hint">Approved road edits use atomic Apply and complete Undo/Redo. The C1 segment tool must pass a fresh preservation gate.</p>
           </div>
           <div class="road-preview-actions">
             <button id="roadApplyB4" type="button" class="tool-button" disabled>Apply road edit</button>

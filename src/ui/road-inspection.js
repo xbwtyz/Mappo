@@ -180,6 +180,8 @@ export class RoadInspectionWorkspace {
     reconcileRoad = null,
     getRevision = () => 0,
     applyEdit = () => ({ok:false,message:'Road Apply not configured.'}),
+    prepareSegment = () => null,
+    applySegment = () => ({ok:false,message:'Segment Apply not configured.'}),
     afterExit = () => {},
   }) {
     Object.assign(this, {
@@ -193,6 +195,8 @@ export class RoadInspectionWorkspace {
       draw,
       getRevision,
       applyEdit,
+      prepareSegment,
+      applySegment,
       afterExit,
     });
     this.session = new RoadPreviewSession({
@@ -206,6 +210,9 @@ export class RoadInspectionWorkspace {
     });
     this.limit = 50;
     this.reconciliationLimit = 50;
+    this.segmentSearchToken = 0;
+    this.segmentSearchBusy = false;
+    this.segmentSearchStatus = '';
     this.bind();
   }
   get active() {
@@ -233,6 +240,7 @@ export class RoadInspectionWorkspace {
     const captured = this.capture();
     this.baseRevision = this.getRevision();
     this.applyError = '';
+    this.segmentPreview = null;
     this.baseline = { project: captured.project, workspace: JSON.parse(JSON.stringify(captured.workspace)) };
     this.session.start();
     const ui = this.baseline.workspace.ui;
@@ -257,7 +265,9 @@ export class RoadInspectionWorkspace {
   exit({ restore = true, focus = false } = {}) {
     if (!this.transient) return;
     const baseline = this.baseline;
+    this.cancelSegmentSearch();
     this.session.stop();
+    this.segmentPreview = null;
     this.$('workspaceSection-city').inert = false;
     this.$('mapViewport').classList.remove('road-inspection-active');
     this.$('layersMenuButton').disabled = false;
@@ -285,7 +295,10 @@ export class RoadInspectionWorkspace {
   reset() {
     if (!this.active) return;
     if (this.baseline) Object.assign(this.camera, this.baseline.workspace.view.camera);
+    this.cancelSegmentSearch();
     this.applyError = '';
+    this.segmentPreview = null;
+    this.session.segmentCandidate = null;
     this.session.reset();
   }
   bind() {
@@ -318,18 +331,54 @@ export class RoadInspectionWorkspace {
       this.$('roadPreviewMinimize').setAttribute('aria-expanded', String(!body.hidden));
       this.$('roadPreviewMinimize').textContent = body.hidden ? 'Expand' : 'Minimize';
     });
+    const clearSegment = () => {
+      this.cancelSegmentSearch();
+      this.segmentPreview = null;
+      this.session.segmentCandidate = null;
+    };
+    for(const id of ['roadSegmentDxC1','roadSegmentDyC1'])
+      this.$(id).addEventListener('input', () => {
+        clearSegment(); this.render(); this.draw();
+      });
+    this.$('roadSegmentFindC1').addEventListener('click', () => this.findSegmentMovementC1());
+    this.$('roadSegmentPreviewC1').addEventListener('click', () => {
+      if(!this.session.current() || this.session.selection?.kind !== 'road')return;
+      const parse = id => this.$(id).value.trim()==='' ? NaN : Number(this.$(id).value);
+      const offset={x:parse('roadSegmentDxC1'),y:parse('roadSegmentDyC1')};
+      const result=this.prepareSegment(this.getProject(),this.session.selection.id,
+        offset,this.baseline?.workspace);
+      this.segmentPreview={
+        result, roadId:this.session.selection.id, offset,
+        project:this.getProject(), revision:this.getRevision(),
+        fingerprint:JSON.stringify(this.getProject()),
+      };
+      this.session.segmentCandidate=result?.candidateProject ?? null;
+      this.render();this.draw();
+    });
+    this.$('roadSegmentApplyC1').addEventListener('click', () => {
+      if(this.$('roadSegmentApplyC1').disabled || !this.segmentPreview)return;
+      const receipt=this.applySegment(this.segmentPreview,this.baseRevision);
+      if(!receipt?.ok){
+        clearSegment();
+        this.applyError=receipt?.message??'Segment Apply blocked; accepted city unchanged.';
+        this.applyErrorRevision=this.session.revision;
+        this.render();this.draw();
+      }
+    });
     this.$('roadSelectionKind').addEventListener('change', () => {
+      clearSegment();
       this.optionsKind = null;
       const kind = this.$('roadSelectionKind').value;
       const index = kind === 'junction' ? this.session.graph.nodesById : this.session.graph.roadsById;
       this.session.select({ kind, id: index.keys().next().value });
     });
-    this.$('roadSelectionId').addEventListener('change', () =>
+    this.$('roadSelectionId').addEventListener('change', () => {
+      clearSegment();
       this.session.select({
         kind: this.$('roadSelectionKind').value,
         id: this.$('roadSelectionId').value,
-      }),
-    );
+      });
+    });
     for (const id of ['roadProposedX', 'roadProposedY'])
       this.$(id).addEventListener('input', () => {
         const number = (id) => (this.$(id).value.trim() === '' ? NaN : Number(this.$(id).value));
@@ -348,6 +397,109 @@ export class RoadInspectionWorkspace {
     this.$('roadShowMore').addEventListener('click', () => {
       this.limit += 50;
       this.renderReport();
+    });
+  }
+  // A bounded, cancellable eligibility search. Every suggestion is produced
+  // by the exact same full-project candidate validator as the manual preview.
+  // No partial candidate is ever written to the project or history.
+  cancelSegmentSearch() {
+    this.segmentSearchToken++;
+    if(this.segmentSearchTimer!==undefined)clearTimeout(this.segmentSearchTimer);
+    this.segmentSearchTimer=undefined;
+    this.segmentSearchBusy=false;
+    this.segmentSearchStatus='';
+    if(this.segmentSearchResolve){
+      const done=this.segmentSearchResolve;
+      this.segmentSearchResolve=null;
+      done(false);
+    }
+  }
+  findSegmentMovementC1() {
+    if(this.segmentSearchBusy){
+      this.cancelSegmentSearch();
+      this.segmentSearchStatus='Movement search cancelled.';
+      this.render();
+      return Promise.resolve(false);
+    }
+    this.cancelSegmentSearch();
+    const session=this.session;
+    if(!session.current() || session.selection?.kind!=='road'){
+      this.segmentSearchStatus='Select a road to search for valid segment movements.';
+      this.render();return Promise.resolve(false);
+    }
+    const selectedId=session.selection.id;
+    const project=this.getProject(),baselineRevision=this.getRevision();
+    const fingerprint=JSON.stringify(project);
+    const choices=[...session.graph.roadsById.values()].filter(road=>
+      [road.a,road.b].every(id=>session.graph.incidentRoads.get(id)?.every(r=>
+        !session.graph.roadClasses.get(r)?.protected)));
+    const ordered=[
+      ...choices.filter(road=>road.id===selectedId),
+      ...choices.filter(road=>road.id!==selectedId),
+    ].slice(0,48);
+    const offsets=[
+      {x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},
+      {x:.5,y:0},{x:-.5,y:0},{x:0,y:.5},{x:0,y:-.5},
+    ];
+    if(!ordered.length){
+      this.segmentSearchStatus='No ordinary segment has two unprotected endpoints in this city.';
+      this.render();return Promise.resolve(false);
+    }
+    const token=++this.segmentSearchToken;
+    this.segmentSearchBusy=true;
+    this.segmentPreview=null;
+    session.segmentCandidate=null;
+    this.segmentSearchStatus='Checking validated movements without changing the city...';
+    this.render();this.draw();
+    let index=0;
+    return new Promise(resolve=>{
+      this.segmentSearchResolve=resolve;
+      const scan=()=>{
+        this.segmentSearchTimer=undefined;
+        if(token!==this.segmentSearchToken)return;
+        if(!session.current() || session.selection?.kind!=='road' ||
+          session.selection.id!==selectedId || this.getRevision()!==baselineRevision ||
+          JSON.stringify(this.getProject())!==fingerprint){
+          this.cancelSegmentSearch();
+          this.segmentSearchStatus='Search stopped because the selection or accepted city changed.';
+          this.render();return;
+        }
+        if(index>=ordered.length*offsets.length){
+          this.segmentSearchBusy=false;
+          this.segmentSearchResolve=null;
+          this.segmentSearchStatus='No proven 0.5–1-unit move found in the first '+
+            ordered.length+' eligible streets. The accepted city is unchanged.';
+          this.render();resolve(false);return;
+        }
+        const road=ordered[Math.floor(index/offsets.length)];
+        const offset=offsets[index%offsets.length];
+        const result=this.prepareSegment(project,road.id,offset,this.baseline?.workspace);
+        if(result?.candidateProject && result.status==='candidate-only'){
+          this.segmentSearchBusy=false;
+          this.segmentSearchResolve=null;
+          this.segmentSearchStatus='Validated move on '+road.id+
+            ': X '+offset.x+', Y '+offset.y+'. Review the teal preview, then Apply if desired.';
+          session.select({kind:'road',id:road.id});
+          this.$('roadSegmentDxC1').value=String(offset.x);
+          this.$('roadSegmentDyC1').value=String(offset.y);
+          this.segmentPreview={result,roadId:road.id,offset,project,
+            revision:baselineRevision,fingerprint};
+          session.segmentCandidate=result.candidateProject;
+          const a=session.graph.nodesById.get(road.a),b=session.graph.nodesById.get(road.b);
+          this.camera.x=(a.x+b.x)/2;
+          this.camera.y=(a.y+b.y)/2+
+            (this.camera.width<900?(this.camera.height*.22)/this.camera.zoom:0);
+          this.render();this.draw();resolve(true);return;
+        }
+        index++;
+        if(index%8===0){
+          this.segmentSearchStatus='Checked '+index+' of '+
+            ordered.length*offsets.length+' candidate directions...';
+          this.render();
+        }
+        this.segmentSearchTimer=setTimeout(scan,0);
+      };
+      this.segmentSearchTimer=setTimeout(scan,0);
     });
   }
   nudge(direction, multiplier = 1) {
@@ -386,6 +538,8 @@ export class RoadInspectionWorkspace {
       : 'No road records available.';
     const key = JSON.stringify(s.selection);
     if (this.selectionKey !== key) {
+      this.segmentPreview = null;
+      s.segmentCandidate = null;
       this.selectionKey = key;
       this.$('roadEndpointList').replaceChildren(
         ...(d?.endpoints ?? []).map((id) => {
@@ -411,6 +565,31 @@ export class RoadInspectionWorkspace {
         : d
           ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
           : '';
+    const roadMode=d?.kind==='road';
+    const endpointSafe=roadMode && !d.protected && d.endpoints.every(id =>
+      s.graph.incidentRoads.get(id).every(roadId =>
+        !s.graph.roadClasses.get(roadId).protected));
+    this.$('roadSegmentPanelC1').hidden=!roadMode;
+    this.$('roadSegmentPreviewC1').disabled=!endpointSafe;
+    this.$('roadSegmentFindC1').disabled=!roadMode || !s.current();
+    this.$('roadSegmentFindC1').textContent=this.segmentSearchBusy ?
+      'Stop movement search' : 'Find a valid move';
+    const eligibleSegment=Boolean(endpointSafe && this.segmentPreview &&
+      this.segmentPreview.roadId===d.id &&
+      this.segmentPreview.project===this.getProject() &&
+      this.segmentPreview.fingerprint===JSON.stringify(this.getProject()) &&
+      this.segmentPreview.revision===this.getRevision() &&
+      this.baseRevision===this.getRevision() &&
+      this.segmentPreview.result?.candidateProject &&
+      this.segmentPreview.result.status==='candidate-only' &&
+      !s.drag && !s.checking);
+    this.$('roadSegmentApplyC1').disabled=!eligibleSegment;
+    this.$('roadSegmentStatusC1').textContent=
+      this.segmentSearchStatus || (!endpointSafe ? 'Select a road whose two endpoints do not touch protected infrastructure.' :
+      this.segmentPreview?.result?.candidateProject ?
+      'Eligible candidate. Apply will independently reconstruct and validate the complete project.' :
+      this.segmentPreview?.result?.issues?.[0]?.message ??
+      'Enter a small X/Y offset, preview both junctions together, and inspect the map.');
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
       : d?.protected
@@ -425,7 +604,7 @@ export class RoadInspectionWorkspace {
         this.$(id).value = s.point && Number.isFinite(s.point[key]) ? String(s.point[key]) : '';
     }
     for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !d?.movable;
-    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error;
+    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error && !this.segmentPreview;
     const status = s.error
       ? 'Report unavailable'
       : s.checking

@@ -47,6 +47,7 @@ export class RoadPreviewSession {
     this.active = false;
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
+    this.segmentCandidate = null;
     this.reconciliationError = '';
     this.settledRevision = null;
     this.acceptedFingerprint = null;
@@ -75,6 +76,7 @@ export class RoadPreviewSession {
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
     this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
+    this.segmentCandidate = null;
     this.reconciliationError = '';
     this.settledRevision = null;
     this.acceptedFingerprint = null;

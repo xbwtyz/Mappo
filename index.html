@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.2-dev.b5</title>
+  <title>Mappo — City editor · 0.2-dev.c1</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -483,7 +483,7 @@
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.b5</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.c1</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -629,6 +629,19 @@
             <button id="roadLocate" class="minor-button">Locate on map</button>
             <div id="roadEndpointList" class="road-endpoint-list" aria-label="Connected junctions"></div>
             <p id="roadPreviewEligibility" class="hint"></p>
+            <section id="roadSegmentPanelC1" aria-label="Move a complete road segment" hidden>
+              <h3>MOVE ROAD SEGMENT · C1</h3>
+              <p class="hint">Translate both junctions by the same offset. Existing neighboring roads adapt only when all block and property relationships remain valid.</p>
+              <div class="road-preview-selectors">
+                <label>Move X <input type="number" id="roadSegmentDxC1" step="any" value="0"></label>
+                <label>Move Y <input type="number" id="roadSegmentDyC1" step="any" value="0"></label>
+              </div>
+              <div class="road-preview-selectors">
+                <button type="button" id="roadSegmentFindC1" class="minor-button">Find a valid move</button>                <button type="button" id="roadSegmentPreviewC1" class="minor-button">Preview segment move</button>
+                <button type="button" id="roadSegmentApplyC1" class="tool-button" disabled>Apply segment</button>
+              </div>
+              <p id="roadSegmentStatusC1" class="hint" role="status" aria-live="polite">Preview a bounded segment move before applying.</p>
+            </section>
             <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
             <label class="road-step-label">Nudge units<input id="roadNudgeStep" type="number" min="0.001" step="0.5" value="0.5"></label>
             <div class="road-nudge-buttons" role="group" aria-label="Nudge proposed junction"><button id="roadNudgeLeft" aria-label="Nudge left">←</button><button id="roadNudgeUp" aria-label="Nudge up">↑</button><button id="roadNudgeDown" aria-label="Nudge down">↓</button><button id="roadNudgeRight" aria-label="Nudge right">→</button></div>
@@ -645,7 +658,7 @@
             </section>
             <p id="roadReportError" class="validation-error"></p><p id="roadReportSummary" class="hint"></p><p id="roadReportMetrics" class="hint"></p>
             <ol id="roadReportList" class="road-report-list" aria-label="Affected objects and impact descriptions"></ol><button id="roadShowMore" class="minor-button" hidden>Show 50 more entries</button>
-            <p class="hint">Preview only. Road Apply and Undo will be introduced in B4.</p>
+            <p class="hint">Approved road edits use atomic Apply and complete Undo/Redo. The C1 segment tool must pass a fresh preservation gate.</p>
           </div>
           <div class="road-preview-actions">
             <button id="roadApplyB4" type="button" class="tool-button" disabled>Apply road edit</button>
@@ -8253,7 +8266,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.2-dev.b5';
+const APP_VERSION = '0.2-dev.c1';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -15567,6 +15580,7 @@ class RoadPreviewSession {
     this.active = false;
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
+    this.segmentCandidate = null;
     this.reconciliationError = '';
     this.settledRevision = null;
     this.acceptedFingerprint = null;
@@ -15595,6 +15609,7 @@ class RoadPreviewSession {
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
     this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
+    this.segmentCandidate = null;
     this.reconciliationError = '';
     this.settledRevision = null;
     this.acceptedFingerprint = null;
@@ -15869,6 +15884,8 @@ class RoadInspectionWorkspace {
     reconcileRoad = null,
     getRevision = () => 0,
     applyEdit = () => ({ok:false,message:'Road Apply not configured.'}),
+    prepareSegment = () => null,
+    applySegment = () => ({ok:false,message:'Segment Apply not configured.'}),
     afterExit = () => {},
   }) {
     Object.assign(this, {
@@ -15882,6 +15899,8 @@ class RoadInspectionWorkspace {
       draw,
       getRevision,
       applyEdit,
+      prepareSegment,
+      applySegment,
       afterExit,
     });
     this.session = new RoadPreviewSession({
@@ -15895,6 +15914,9 @@ class RoadInspectionWorkspace {
     });
     this.limit = 50;
     this.reconciliationLimit = 50;
+    this.segmentSearchToken = 0;
+    this.segmentSearchBusy = false;
+    this.segmentSearchStatus = '';
     this.bind();
   }
   get active() {
@@ -15922,6 +15944,7 @@ class RoadInspectionWorkspace {
     const captured = this.capture();
     this.baseRevision = this.getRevision();
     this.applyError = '';
+    this.segmentPreview = null;
     this.baseline = { project: captured.project, workspace: JSON.parse(JSON.stringify(captured.workspace)) };
     this.session.start();
     const ui = this.baseline.workspace.ui;
@@ -15946,7 +15969,9 @@ class RoadInspectionWorkspace {
   exit({ restore = true, focus = false } = {}) {
     if (!this.transient) return;
     const baseline = this.baseline;
+    this.cancelSegmentSearch();
     this.session.stop();
+    this.segmentPreview = null;
     this.$('workspaceSection-city').inert = false;
     this.$('mapViewport').classList.remove('road-inspection-active');
     this.$('layersMenuButton').disabled = false;
@@ -15974,7 +15999,10 @@ class RoadInspectionWorkspace {
   reset() {
     if (!this.active) return;
     if (this.baseline) Object.assign(this.camera, this.baseline.workspace.view.camera);
+    this.cancelSegmentSearch();
     this.applyError = '';
+    this.segmentPreview = null;
+    this.session.segmentCandidate = null;
     this.session.reset();
   }
   bind() {
@@ -16007,18 +16035,54 @@ class RoadInspectionWorkspace {
       this.$('roadPreviewMinimize').setAttribute('aria-expanded', String(!body.hidden));
       this.$('roadPreviewMinimize').textContent = body.hidden ? 'Expand' : 'Minimize';
     });
+    const clearSegment = () => {
+      this.cancelSegmentSearch();
+      this.segmentPreview = null;
+      this.session.segmentCandidate = null;
+    };
+    for(const id of ['roadSegmentDxC1','roadSegmentDyC1'])
+      this.$(id).addEventListener('input', () => {
+        clearSegment(); this.render(); this.draw();
+      });
+    this.$('roadSegmentFindC1').addEventListener('click', () => this.findSegmentMovementC1());
+    this.$('roadSegmentPreviewC1').addEventListener('click', () => {
+      if(!this.session.current() || this.session.selection?.kind !== 'road')return;
+      const parse = id => this.$(id).value.trim()==='' ? NaN : Number(this.$(id).value);
+      const offset={x:parse('roadSegmentDxC1'),y:parse('roadSegmentDyC1')};
+      const result=this.prepareSegment(this.getProject(),this.session.selection.id,
+        offset,this.baseline?.workspace);
+      this.segmentPreview={
+        result, roadId:this.session.selection.id, offset,
+        project:this.getProject(), revision:this.getRevision(),
+        fingerprint:JSON.stringify(this.getProject()),
+      };
+      this.session.segmentCandidate=result?.candidateProject ?? null;
+      this.render();this.draw();
+    });
+    this.$('roadSegmentApplyC1').addEventListener('click', () => {
+      if(this.$('roadSegmentApplyC1').disabled || !this.segmentPreview)return;
+      const receipt=this.applySegment(this.segmentPreview,this.baseRevision);
+      if(!receipt?.ok){
+        clearSegment();
+        this.applyError=receipt?.message??'Segment Apply blocked; accepted city unchanged.';
+        this.applyErrorRevision=this.session.revision;
+        this.render();this.draw();
+      }
+    });
     this.$('roadSelectionKind').addEventListener('change', () => {
+      clearSegment();
       this.optionsKind = null;
       const kind = this.$('roadSelectionKind').value;
       const index = kind === 'junction' ? this.session.graph.nodesById : this.session.graph.roadsById;
       this.session.select({ kind, id: index.keys().next().value });
     });
-    this.$('roadSelectionId').addEventListener('change', () =>
+    this.$('roadSelectionId').addEventListener('change', () => {
+      clearSegment();
       this.session.select({
         kind: this.$('roadSelectionKind').value,
         id: this.$('roadSelectionId').value,
-      }),
-    );
+      });
+    });
     for (const id of ['roadProposedX', 'roadProposedY'])
       this.$(id).addEventListener('input', () => {
         const number = (id) => (this.$(id).value.trim() === '' ? NaN : Number(this.$(id).value));
@@ -16037,6 +16101,109 @@ class RoadInspectionWorkspace {
     this.$('roadShowMore').addEventListener('click', () => {
       this.limit += 50;
       this.renderReport();
+    });
+  }
+  // A bounded, cancellable eligibility search. Every suggestion is produced
+  // by the exact same full-project candidate validator as the manual preview.
+  // No partial candidate is ever written to the project or history.
+  cancelSegmentSearch() {
+    this.segmentSearchToken++;
+    if(this.segmentSearchTimer!==undefined)clearTimeout(this.segmentSearchTimer);
+    this.segmentSearchTimer=undefined;
+    this.segmentSearchBusy=false;
+    this.segmentSearchStatus='';
+    if(this.segmentSearchResolve){
+      const done=this.segmentSearchResolve;
+      this.segmentSearchResolve=null;
+      done(false);
+    }
+  }
+  findSegmentMovementC1() {
+    if(this.segmentSearchBusy){
+      this.cancelSegmentSearch();
+      this.segmentSearchStatus='Movement search cancelled.';
+      this.render();
+      return Promise.resolve(false);
+    }
+    this.cancelSegmentSearch();
+    const session=this.session;
+    if(!session.current() || session.selection?.kind!=='road'){
+      this.segmentSearchStatus='Select a road to search for valid segment movements.';
+      this.render();return Promise.resolve(false);
+    }
+    const selectedId=session.selection.id;
+    const project=this.getProject(),baselineRevision=this.getRevision();
+    const fingerprint=JSON.stringify(project);
+    const choices=[...session.graph.roadsById.values()].filter(road=>
+      [road.a,road.b].every(id=>session.graph.incidentRoads.get(id)?.every(r=>
+        !session.graph.roadClasses.get(r)?.protected)));
+    const ordered=[
+      ...choices.filter(road=>road.id===selectedId),
+      ...choices.filter(road=>road.id!==selectedId),
+    ].slice(0,48);
+    const offsets=[
+      {x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},
+      {x:.5,y:0},{x:-.5,y:0},{x:0,y:.5},{x:0,y:-.5},
+    ];
+    if(!ordered.length){
+      this.segmentSearchStatus='No ordinary segment has two unprotected endpoints in this city.';
+      this.render();return Promise.resolve(false);
+    }
+    const token=++this.segmentSearchToken;
+    this.segmentSearchBusy=true;
+    this.segmentPreview=null;
+    session.segmentCandidate=null;
+    this.segmentSearchStatus='Checking validated movements without changing the city...';
+    this.render();this.draw();
+    let index=0;
+    return new Promise(resolve=>{
+      this.segmentSearchResolve=resolve;
+      const scan=()=>{
+        this.segmentSearchTimer=undefined;
+        if(token!==this.segmentSearchToken)return;
+        if(!session.current() || session.selection?.kind!=='road' ||
+          session.selection.id!==selectedId || this.getRevision()!==baselineRevision ||
+          JSON.stringify(this.getProject())!==fingerprint){
+          this.cancelSegmentSearch();
+          this.segmentSearchStatus='Search stopped because the selection or accepted city changed.';
+          this.render();return;
+        }
+        if(index>=ordered.length*offsets.length){
+          this.segmentSearchBusy=false;
+          this.segmentSearchResolve=null;
+          this.segmentSearchStatus='No proven 0.5–1-unit move found in the first '+
+            ordered.length+' eligible streets. The accepted city is unchanged.';
+          this.render();resolve(false);return;
+        }
+        const road=ordered[Math.floor(index/offsets.length)];
+        const offset=offsets[index%offsets.length];
+        const result=this.prepareSegment(project,road.id,offset,this.baseline?.workspace);
+        if(result?.candidateProject && result.status==='candidate-only'){
+          this.segmentSearchBusy=false;
+          this.segmentSearchResolve=null;
+          this.segmentSearchStatus='Validated move on '+road.id+
+            ': X '+offset.x+', Y '+offset.y+'. Review the teal preview, then Apply if desired.';
+          session.select({kind:'road',id:road.id});
+          this.$('roadSegmentDxC1').value=String(offset.x);
+          this.$('roadSegmentDyC1').value=String(offset.y);
+          this.segmentPreview={result,roadId:road.id,offset,project,
+            revision:baselineRevision,fingerprint};
+          session.segmentCandidate=result.candidateProject;
+          const a=session.graph.nodesById.get(road.a),b=session.graph.nodesById.get(road.b);
+          this.camera.x=(a.x+b.x)/2;
+          this.camera.y=(a.y+b.y)/2+
+            (this.camera.width<900?(this.camera.height*.22)/this.camera.zoom:0);
+          this.render();this.draw();resolve(true);return;
+        }
+        index++;
+        if(index%8===0){
+          this.segmentSearchStatus='Checked '+index+' of '+
+            ordered.length*offsets.length+' candidate directions...';
+          this.render();
+        }
+        this.segmentSearchTimer=setTimeout(scan,0);
+      };
+      this.segmentSearchTimer=setTimeout(scan,0);
     });
   }
   nudge(direction, multiplier = 1) {
@@ -16075,6 +16242,8 @@ class RoadInspectionWorkspace {
       : 'No road records available.';
     const key = JSON.stringify(s.selection);
     if (this.selectionKey !== key) {
+      this.segmentPreview = null;
+      s.segmentCandidate = null;
       this.selectionKey = key;
       this.$('roadEndpointList').replaceChildren(
         ...(d?.endpoints ?? []).map((id) => {
@@ -16100,6 +16269,31 @@ class RoadInspectionWorkspace {
         : d
           ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
           : '';
+    const roadMode=d?.kind==='road';
+    const endpointSafe=roadMode && !d.protected && d.endpoints.every(id =>
+      s.graph.incidentRoads.get(id).every(roadId =>
+        !s.graph.roadClasses.get(roadId).protected));
+    this.$('roadSegmentPanelC1').hidden=!roadMode;
+    this.$('roadSegmentPreviewC1').disabled=!endpointSafe;
+    this.$('roadSegmentFindC1').disabled=!roadMode || !s.current();
+    this.$('roadSegmentFindC1').textContent=this.segmentSearchBusy ?
+      'Stop movement search' : 'Find a valid move';
+    const eligibleSegment=Boolean(endpointSafe && this.segmentPreview &&
+      this.segmentPreview.roadId===d.id &&
+      this.segmentPreview.project===this.getProject() &&
+      this.segmentPreview.fingerprint===JSON.stringify(this.getProject()) &&
+      this.segmentPreview.revision===this.getRevision() &&
+      this.baseRevision===this.getRevision() &&
+      this.segmentPreview.result?.candidateProject &&
+      this.segmentPreview.result.status==='candidate-only' &&
+      !s.drag && !s.checking);
+    this.$('roadSegmentApplyC1').disabled=!eligibleSegment;
+    this.$('roadSegmentStatusC1').textContent=
+      this.segmentSearchStatus || (!endpointSafe ? 'Select a road whose two endpoints do not touch protected infrastructure.' :
+      this.segmentPreview?.result?.candidateProject ?
+      'Eligible candidate. Apply will independently reconstruct and validate the complete project.' :
+      this.segmentPreview?.result?.issues?.[0]?.message ??
+      'Enter a small X/Y offset, preview both junctions together, and inspect the map.');
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
       : d?.protected
@@ -16114,7 +16308,7 @@ class RoadInspectionWorkspace {
         this.$(id).value = s.point && Number.isFinite(s.point[key]) ? String(s.point[key]) : '';
     }
     for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !d?.movable;
-    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error;
+    this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error && !this.segmentPreview;
     const status = s.error
       ? 'Report unavailable'
       : s.checking
@@ -16426,6 +16620,27 @@ function drawRoadInspectionOverlay(canvas, camera, city, session) {
         ctx.strokeStyle=color;ctx.lineWidth=focused?5:2.8;
         ctx.setLineDash([7,4]);ctx.stroke();ctx.setLineDash([]);
       }
+    }
+  }
+  // C1: overlay the detached simultaneous segment translation rather than
+  // presenting two sequential single-junction previews.
+  if (session.segmentCandidate?.city && session.previewVisible!==false) {
+    const proposed=new Map(session.segmentCandidate.city.nodes.map(n=>[n.id,n]));
+    const accepted=new Map(city.nodes.map(n=>[n.id,n]));
+    const moved=new Set([...proposed.keys()].filter(id=>{
+      const a=accepted.get(id),b=proposed.get(id);
+      return a && b && (a.x!==b.x || a.y!==b.y);
+    }));
+    ctx.strokeStyle='#16a085';ctx.lineWidth=3;
+    ctx.setLineDash([7,4]);
+    for(const road of city.roads)if(moved.has(road.a)||moved.has(road.b)){
+      if(path([proposed.get(road.a),proposed.get(road.b)]))ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    for(const id of moved){
+      const point=camera.worldToScreen(proposed.get(id));
+      ctx.beginPath();ctx.arc(point.x,point.y,6,0,Math.PI*2);
+      ctx.fillStyle='#16a085';ctx.fill();
     }
   }
   for (const [id, node] of graph.nodesById) {
@@ -16998,6 +17213,259 @@ function prepareRoadApplyB4(project,workspace,session,expectedRevision,currentRe
 }
 
 
+// src/core/road-segment-translation.js
+
+
+
+
+
+
+
+// C1-A: Pure detached two-endpoint translation candidate. There are no Apply,
+// persistence, event or history hooks here. C1's later UI/Apply checkpoint must
+// independently re-evaluate the candidate and audit its allowed complete delta.
+const C1_TRANSLATION_LIMIT = 6;
+const c1Order = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+const c1Same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+function c1Freeze(value) {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    for (const child of Object.values(value)) c1Freeze(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+function c1Rejected(code, message, ids = [], stage = 'input', status = 'blocked') {
+  return c1Freeze({
+    phase: 'C1-A', operation: 'translate-road-segment', status,
+    applyReady: false, candidateProject: null, changed: [],
+    issues: [{code, message, severity: status === 'needs-review' ? 'needs-review' : 'invalid',
+      relatedIds: [...new Set(ids)].sort(c1Order)}],
+    validation: {graph: stage === 'graph' ? 'failed' : 'not-run',
+      faces: stage === 'faces' ? 'failed' : 'not-run',
+      identity: stage === 'identity' ? 'failed' : 'not-run',
+      project: 'not-run', roundTrip: 'not-run'},
+  });
+}
+const c1Point = p => p && Number.isFinite(p.x) && Number.isFinite(p.y)
+  && Math.abs(p.x) <= 100000 && Math.abs(p.y) <= 100000;
+
+function prepareSegmentTranslationC1(project, roadId, offset, workspace = null) {
+  if (!project?.city || !Array.isArray(project.city.nodes) || !Array.isArray(project.city.roads))
+    return c1Rejected('unsupported-project', 'An accepted city project is required.');
+  if (typeof roadId !== 'string' || !roadId.length || !c1Point(offset))
+    return c1Rejected('invalid-intent', 'Choose a road and enter finite X/Y displacement.');
+  const distance = Math.hypot(offset.x, offset.y);
+  if (!distance)
+    return c1Rejected('no-change', 'A segment translation must move both endpoints.');
+  if (distance > C1_TRANSLATION_LIMIT)
+    return c1Rejected('translation-limit', 'Move exceeds the conservative C1 displacement limit.', [roadId]);
+
+  try {
+    const old = project.city;
+    const accepted = buildRoadGraph(old);
+    if (!accepted.valid)
+      return c1Rejected('invalid-accepted-network', 'The existing road network is invalid.', [], 'graph');
+    const road = accepted.roadsById.get(roadId);
+    if (!road)
+      return c1Rejected('road-not-found', 'The selected road ID does not exist.', [roadId]);
+    const ends = [road.a, road.b];
+    if (ends[0] === ends[1])
+      return c1Rejected('duplicate-endpoint', 'The road must have two distinct junctions.', ends);
+    const incident = [...new Set(ends.flatMap(id => accepted.incidentRoads.get(id) ?? []))].sort(c1Order);
+    if (incident.some(id => accepted.roadClasses.get(id)?.protected))
+      return c1Rejected('protected-endpoint', 'Both endpoints must be free of protected roads.', [roadId, ...incident]);
+    const next = new Map(ends.map(id => {
+      const node = accepted.nodesById.get(id);
+      return [id, {x: node.x + offset.x, y: node.y + offset.y}];
+    }));
+    if ([...next.values()].some(p => !c1Point(p) ||
+       (Array.isArray(old.survey?.boundary) && !insideOrOn(p, old.survey.boundary))))
+      return c1Rejected('boundary-escape', 'Both translated junctions must remain inside the city boundary.', ends);
+
+    const candidate = copyJson(project);
+    candidate.city.nodes = candidate.city.nodes.map(node => next.has(node.id)
+      ? {...node, ...next.get(node.id)} : node);
+    const graph = buildRoadGraph(candidate.city);
+    if (!graph.valid)
+      return c1Rejected(graph.issues[0]?.code ?? 'invalid-road-graph',
+        graph.issues[0]?.message ?? 'Translated roads break the accepted topology.',
+        [roadId, ...ends], 'graph');
+    const faces = extractRoadFaces(graph, candidate.city);
+    if (!faces.valid)
+      return c1Rejected(faces.issues[0]?.code ?? 'invalid-faces',
+        'The translated segment fails face coverage validation.', [roadId, ...ends], 'faces');
+    const identity = matchExistingFaces(old, faces);
+    if (!identity.valid || identity.requiresReview || identity.issues.length ||
+        identity.added.length || identity.removed.length ||
+        identity.split.length || identity.merged.length || identity.ambiguous.length ||
+        identity.preserved.length + identity.changed.length !== faces.faces.length)
+      return c1Rejected(identity.issues[0]?.code ?? 'ambiguous-face-identity',
+        'At least one road face cannot retain its accepted identity.', [roadId, ...ends],
+        'identity', 'needs-review');
+
+    const blocks = new Map(identity.changed.filter(row => row.kind === 'block')
+      .map(row => [row.id, row.record]));
+    // Reconcile only supported frontage-attached four-corner parcels. The
+    // same conservative B2 geometry helper supports both endpoints changing
+    // at once; only fully project-valid results can be returned.
+    candidate.city.blocks = candidate.city.blocks.map(block => blocks.has(block.id)
+      ? copyJson(blocks.get(block.id)) : block);
+    const oldNodes = new Map(old.nodes.map(node => [node.id,node]));
+    const newNodes = new Map(candidate.city.nodes.map(node => [node.id,node]));
+    const roads = new Map(old.roads.map(road => [road.id,road]));
+    const properties = new Map(candidate.city.properties.map(p => [p.id,p]));
+    const plots = new Map(candidate.city.plots.map(p => [p.id,p]));
+    const touchedProperties = new Set();
+    const touchedPlots = new Set();
+    // A modified block does not automatically mean every parcel in it needs
+    // a new boundary. Only the frontages whose actual road geometry moved
+    // require the B2 warp. All other parcels remain untouched, and the full
+    // project validator independently checks their block containment, street
+    // setbacks and relationship safety against the new neighborhood.
+    // This removes the false "unmapped-frontage" rejection for parcels that
+    // can remain safely where they already are.
+    const impactedProperties = old.properties.filter(p =>
+      incident.includes(p.frontageRoadId));
+    if (impactedProperties.length > 256)
+      return c1Rejected('parcel-work-limit','Too many frontage parcels depend on this segment.',[roadId],
+        'project','needs-review');
+    for (const source of impactedProperties) {
+      const property = properties.get(source.id);
+      const frontRoad = roads.get(source.frontageRoadId);
+      if (!property || !frontRoad)
+        return c1Rejected('missing-frontage','A dependent parcel has no matching frontage record.',
+          [source.id], 'project','needs-review');
+      try {
+        const fractions = propertyDividerFractions3I(candidate.city,property);
+        const warped = warpPropertyFrontageB2(source,frontRoad,oldNodes,newNodes);
+        const proposed = propertyGeometryPreview3I(candidate.city,property.id,
+          warped.boundary,fractions);
+        if (proposed.area <= 1 || Math.abs(proposed.area-proposed.total) > .02)
+          throw new Error('Frontage and plot area totals disagree.');
+        Object.assign(property,{
+          boundary: copyJson(proposed.boundary),
+          frontage: copyJson(proposed.boundary.slice(0,2)),
+          frame: copyJson(warped.frame),
+          area: proposed.area,
+          local: propertyLocalBounds3I({...property,frame:warped.frame},proposed.boundary),
+        });
+        touchedProperties.add(property.id);
+        for (const update of proposed.plots) {
+          const plot=plots.get(update.id);
+          if (!plot || plot.propertyId!==property.id || plot.blockId!==property.blockId)
+            throw new Error('Plot relationships changed during adaptation.');
+          plot.boundary=copyJson(update.boundary);
+          touchedPlots.add(plot.id);
+        }
+      } catch(error) {
+        return c1Rejected('unsupported-property-geometry',
+          'Segment adaptation cannot preserve property '+source.id+': '+error.message,
+          [source.id,source.frontageRoadId], 'project','needs-review');
+      }
+    }
+    const changedOpen = [];
+    for (const open of candidate.city.openSpaces ?? []) {
+      const block = blocks.get(open.blockId);
+      if (!block) continue;
+      const occupied=candidate.city.properties.filter(p=>p.blockId===block.id)
+        .reduce((n,p)=>n+p.area,0);
+      const newArea=block.area-occupied;
+      if (!Number.isFinite(newArea) || newArea < -.02)
+        return c1Rejected('open-space-ownership',
+          'The segment would leave invalid vacant area in block '+block.id+'.',
+          [open.id,block.id], 'project','needs-review');
+      const area=Math.max(0,newArea);
+      if (Math.abs(open.area-area)>1e-8){
+        open.area=area;
+        changedOpen.push(open.id);
+      }
+    }
+    validateStoredProject(candidate);
+    const portable = decodeProjectDocument(encodeProjectDocument(
+      createProjectDocument(candidate, workspace ?? defaultWorkspace(project))));
+    if (!c1Same(portable.project, candidate))
+      throw new Error('Portable project round-trip changed the segment candidate.');
+    if (workspace && !c1Same(portable.workspace, workspace))
+      throw new Error('Portable workspace round-trip changed fields.');
+
+    const changed = [
+      ...ends.map(id => ({kind:'junction', id, fields:['x','y'].filter(axis => offset[axis] !== 0)})),
+      ...incident.map(id => ({kind:'road', id, fields:['effective-geometry']})),
+      ...[...blocks.keys()].sort(c1Order).map(id =>
+        ({kind:'block', id, fields:['area','boundary-geometry']})),
+      ...[...touchedProperties].sort(c1Order).map(id => ({kind:'property',id,
+        fields:['boundary','frontage','frame','local','area']})),
+      ...[...touchedPlots].sort(c1Order).map(id => ({kind:'plot',id,fields:['boundary']})),
+      ...changedOpen.map(id => ({kind:'open-space',id,fields:['area']})),
+    ];
+    return c1Freeze({
+      phase:'C1-A', operation:'translate-road-segment', status:'candidate-only',
+      applyReady:false, roadId, endpoints: [...ends], offset:copyJson(offset),
+      candidateProject:portable.project,
+      changed, issues:[],validation:{graph:'pass',faces:'pass',identity:'pass',
+        project:'valid',roundTrip:'pass'},
+    });
+  } catch (error) {
+    return c1Rejected('segment-validation', 'C1 segment preview unavailable: ' + error.message,
+      [roadId], 'project');
+  }
+}
+
+const C1_FIELDS = Object.freeze({
+  nodes:['x','y'], blocks:['area'],
+  properties:['boundary','frontage','frame','local','area'],
+  plots:['boundary'], openSpaces:['area']
+});
+function c1Canonical(value) {
+  if (Array.isArray(value)) return value.map(c1Canonical);
+  if (value && typeof value==='object') return Object.fromEntries(
+    Object.keys(value).sort(c1Order).map(key=>[key,c1Canonical(value[key])]));
+  return value;
+}
+const c1Equal=(a,b)=>JSON.stringify(c1Canonical(a))===JSON.stringify(c1Canonical(b));
+
+// Audit exact accepted-state changes separately from topology checks. All
+// fields outside the narrow geometry whitelist, including building/road IDs,
+// metadata and unknown extensions, must survive without any alteration.
+function verifySegmentDeltaC1(before, after, roadId, offset) {
+  if(!before?.city||!after?.city)throw new Error('Complete accepted/candidate projects required.');
+  const road=before.city.roads.find(r=>r.id===roadId);
+  if(!road||road.a===road.b||!c1Point(offset)||!Math.hypot(offset.x,offset.y))
+    throw new Error('Missing or invalid segment translation intent.');
+  const endpoints=new Set([road.a,road.b]);
+  const expected=copyJson(before);
+  for(const [kind,fields] of Object.entries(C1_FIELDS)){
+    const original=before.city[kind]??[],proposed=after.city[kind]??[];
+    if(original.length!==proposed.length)
+      throw new Error('Membership changed for '+kind+'.');
+    for(let i=0;i<original.length;i++){
+      const a=original[i],b=proposed[i],out=expected.city[kind][i];
+      if(a.id!==b.id)throw new Error('Record identity changed in '+kind+'.');
+      for(const field of fields){
+        if(!c1Equal(a[field],b[field])){
+          if(kind==='nodes'&&!endpoints.has(a.id))
+            throw new Error('An unrelated junction moved.');
+          if(b[field]===undefined)
+            throw new Error('A geometry field was removed.');
+          out[field]=copyJson(b[field]);
+        }
+      }
+    }
+  }
+  for(const id of endpoints){
+    const source=before.city.nodes.find(n=>n.id===id);
+    const target=after.city.nodes.find(n=>n.id===id);
+    if(!source||!target || Math.abs(target.x-source.x-offset.x)>1e-7 ||
+      Math.abs(target.y-source.y-offset.y)>1e-7)
+      throw new Error('Segment endpoints do not share the approved translation.');
+  }
+  if(!c1Equal(expected,after))
+    throw new Error('Unsupported project fields changed during the road translation.');
+  return true;
+}
+
+
 // src/editor/road-history.js
 
 
@@ -17104,6 +17572,7 @@ class RoadGeometryHistoryB4 {
 // B1 candidate API is compiled for later editor integration; no Apply or UI hooks.
 
 // B2 conservative parcel adaptation remains preview-only until B4 Apply.
+
 
 
 
@@ -18394,6 +18863,7 @@ roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
   reconcile:prepareParcelReconciliationB2,reconcileRoad:prepareRoadReconciliationB1,
   getRevision:()=>files?.revision??0,applyEdit:applyRoadEditB4,
+  prepareSegment:prepareSegmentTranslationC1,applySegment:applyRoadSegmentC1,
   canEnter:()=>!project?.city?'Generate a city before inspecting roads.':
     workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive
       ||propertyEditSession?.isActive||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
@@ -18433,6 +18903,51 @@ function applyRoadEditB4(session,baselineRevision){
   workspaceChanged(); // exactly one file revision / normal recovery notification
   $('statusMessage').textContent='Applied road '+junctionId+' and all validated neighborhood changes. Undo road is available.';
   $('roadHistoryStatusB4').textContent='Road '+junctionId+' applied. Undo restores the complete previous city.';
+  return {ok:true};
+}
+function applyRoadSegmentC1(preview,baselineRevision){
+  const previous=project, revision=files?.revision??0, session=roadWorkspace.session;
+  if(!preview || !previous || !session?.current() || !roadWorkspace.active ||
+    preview.project!==previous || preview.revision!==revision ||
+    revision!==baselineRevision || !Number.isSafeInteger(revision) ||
+    session.selection?.kind!=='road' || session.selection.id!==preview.roadId ||
+    session.drag || session.checking || preview.fingerprint!==JSON.stringify(previous))
+    return {ok:false,message:'The segment preview became stale. Reopen and recheck it.'};
+  if(!preview.result?.candidateProject || preview.result.status!=='candidate-only')
+    return {ok:false,message:'The segment preview has unresolved dependencies.'};
+  const fresh=prepareSegmentTranslationC1(previous,preview.roadId,preview.offset,
+    captureWorkspace().workspace);
+  if(!fresh.candidateProject || fresh.status!=='candidate-only')
+    return {ok:false,message:fresh.issues?.[0]?.message??'The segment is no longer eligible.'};
+  // Both candidates are produced by the same deterministic engine and must
+  // remain exactly equivalent, including nested project geometry and metadata.
+  if(JSON.stringify(fresh.candidateProject)!==JSON.stringify(preview.result.candidateProject))
+    return {ok:false,message:'Segment reconciliation differs from the inspected preview.'};
+  try{verifySegmentDeltaC1(previous,fresh.candidateProject,preview.roadId,preview.offset);}
+  catch(error){return {ok:false,message:'Preservation gate blocked segment Apply: '+error.message};}
+  if(project!==previous || revision!==(files?.revision??0) ||
+    preview.fingerprint!==JSON.stringify(previous))
+    return {ok:false,message:'The accepted city changed before segment Apply.'};
+  const roadId=preview.roadId;
+  roadWorkspace.exit({restore:true});
+  if(project!==previous || revision!==(files?.revision??0))
+    return {ok:false,message:'Accepted city changed during segment Apply.'};
+  if(!roadHistory.record(previous,fresh.candidateProject,'segment:'+roadId))
+    return {ok:false,message:'No segment movement was recorded.'};
+  project=fresh.candidateProject;
+  buildingHistory.clear();
+  buildingStructureHistory.clear();
+  propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
+  clearMapHover();
+  propertyWorkspace.refresh({replaced:true});
+  buildingWorkspace.refresh({replaced:true});
+  updateDetails();
+  workspaceShell.refresh();
+  requestDraw();
+  workspaceChanged();
+  $('statusMessage').textContent='Applied road segment '+roadId+' with both junctions preserved and one Undo transaction.';
+  $('roadHistoryStatusB4').textContent='Segment '+roadId+' applied. Undo restores the complete earlier city.';
   return {ok:true};
 }
 function moveRoadHistoryB4(direction){
