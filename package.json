@@ -1,6 +1,6 @@
 {
   "name": "mappo",
-  "version": "0.2.0-dev.c5-buildings",
+  "version": "0.2.0-dev.c6-road-editor",
   "private": true,
   "type": "module",
   "description": "Offline-first procedural medieval city mapper",
