@@ -61,9 +61,10 @@ import {
 import {
   ProjectFiles
 } from './ui/project-files.js';
-import {
-  copyJson
-} from './data/project-format.js';
+import { copyJson, projectFilename } from './data/project-format.js';
+import { LAYER_KEYS_4F,layerPreset4F,identifyLayerPreset4F } from './core/layer-presets-4f.js';
+import { exportFilename4F } from './core/export-filenames-4f.js';
+import { downloadMapPNG4F } from './data/png-export-4f.js';
 import {
   createProject
 } from './core/city-model.js';
@@ -871,7 +872,33 @@ function updatePattern() {
   editor.notify('Street settings changed. Rebuild city to apply them to this outline.');
   workspaceChanged();
 }
-for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
+// Dev 4f: preset selection affects only the already-persisted layer flags.
+function syncLayerPreset4F() {
+  $('layerPreset4F').value=identifyLayerPreset4F(layers);
+}
+function applyLayerPreset4F(name) {
+  const preset=layerPreset4F(name);
+  if(!preset)return false;
+  for(const key of LAYER_KEYS_4F){
+    layers[key]=preset[key];
+    $(key+'Layer').checked=preset[key];
+  }
+  if(!layers.buildings){
+    buildingEditSession?.stop();
+    buildingPlacementSession?.stop();
+  }
+  clearMapHover();
+  propertyWorkspace?.refresh();
+  buildingWorkspace?.refresh();
+  syncLayerPreset4F();
+  requestDraw();
+  workspaceChanged();
+  return true;
+}
+$('layerPreset4F').addEventListener('change',e=>{
+  if(!applyLayerPreset4F(e.target.value))syncLayerPreset4F();
+});
+for (const key of LAYER_KEYS_4F) {
   $(key + 'Layer').addEventListener('change', event => {
     layers[key] = event.target.checked;
     if (key === 'buildings' && layers.buildings === false) buildingEditSession?.stop();
@@ -880,6 +907,7 @@ for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'distri
       propertyWorkspace?.refresh();
       buildingWorkspace?.refresh();
     }
+    syncLayerPreset4F();
     requestDraw();
     workspaceChanged();
   });
@@ -1743,10 +1771,11 @@ function applyProjectDocument(document) {
       morphologyInput: workspace.controls.morphology,
       presetInput: workspace.controls.preset
     })) $(id).value = value;
-  for (const key of ['buildings', 'properties', 'plots', 'districtColors', 'districtBorders', 'districtLabels', 'fortifications']) {
+  for (const key of LAYER_KEYS_4F) {
     layers[key] = workspace.view.layers[key] ?? false;
     $(key + 'Layer').checked = layers[key];
   }
+  syncLayerPreset4F();
   camera.x = workspace.view.camera.x;
   camera.y = workspace.view.camera.y;
   camera.zoom = workspace.view.camera.zoom;
@@ -1887,6 +1916,19 @@ function applyProjectDocument(document) {
   $('statusMessage').textContent = `Loaded ${next.city.buildings.length} buildings · ${next.city.properties.length} properties`;
   updatePendingFeedback();
 }
+// The map PNG reflects the current on-screen view, including visible previews.
+$('downloadMapPNG4F').addEventListener('click', async()=>{
+  const message=$('mapExportStatus4F');
+  try{
+    if(!project)throw new Error('Generate or load a city first.');
+    const defaultName=projectFilename({project,savedAt:new Date().toISOString()});
+    const name=exportFilename4F($('exportFilename4F').value,defaultName,'png');
+    const snapshot=await downloadMapPNG4F(canvas,name);
+    message.textContent='PNG download requested: '+name+' ('+snapshot.width+' × '+snapshot.height+
+      ' pixels). The image uses current visible layers and any editing previews.';
+  }catch(error){message.textContent='PNG export failed: '+error.message;}
+});
+syncLayerPreset4F();
 files = new ProjectFiles({
   getElement: $,
   capture: captureWorkspace,

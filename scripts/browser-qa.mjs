@@ -47,6 +47,18 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       }
       await page.locator('#layersMenuButton').click();
       assert.equal(await page.locator('#layersMenu').isVisible(), true, `${label}: layers menu opens`);
+      // Dev 4f: presets change the existing layer checkboxes; manual edits
+      // become Custom, and switching back restores exactly that preset.
+      await page.locator('#layerPreset4F').selectOption('planning');
+      assert.equal(await page.locator('#propertiesLayer').isChecked(), true);
+      assert.equal(await page.locator('#plotsLayer').isChecked(), true);
+      assert.equal(await page.locator('#districtColorsLayer').isChecked(), false);
+      await page.locator('#propertiesLayer').uncheck();
+      assert.equal(await page.locator('#layerPreset4F').inputValue(), 'custom');
+      await page.locator('#layerPreset4F').selectOption('presentation');
+      assert.equal(await page.locator('#propertiesLayer').isChecked(), false);
+      assert.equal(await page.locator('#districtColorsLayer').isChecked(), true);
+      assert.equal(await page.locator('#buildingsLayer').isChecked(), true);
       await page.keyboard.press('Escape');
 
       for (const name of ['landscape','districts','defenses','city']) {
@@ -82,11 +94,22 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       if (viewport.name === 'desktop') {
         // Exercise the real standalone file workflow, not merely controller stubs.
         await page.locator('#projectMenuButton').click();
+        await page.locator('#exportFilename4F').fill('River / Archive: 4F');
         const [download] = await Promise.all([
           page.waitForEvent('download', { timeout: 20000 }),
           page.locator('#saveProjectButton').click()
         ]);
-        assert.match(download.suggestedFilename(), /\.mappo\.json$/, 'Portable save filename');
+        assert.equal(download.suggestedFilename(),'River-Archive-4F.mappo.json','Sanitized custom project filename');
+        const [pngDownload] = await Promise.all([
+          page.waitForEvent('download',{timeout:20000}),
+          page.locator('#downloadMapPNG4F').click()
+        ]);
+        assert.equal(pngDownload.suggestedFilename(),'River-Archive-4F.png');
+        const pngChunks=[];
+        for await(const chunk of await pngDownload.createReadStream())pngChunks.push(chunk);
+        const png=Buffer.concat(pngChunks);
+        assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a','PNG signature');
+        assert.ok(png.readUInt32BE(16)>150 && png.readUInt32BE(20)>150,'Export has map pixels');
         const chunks = [];
         for await (const chunk of await download.createReadStream()) chunks.push(chunk);
         const portable = Buffer.concat(chunks);

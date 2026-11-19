@@ -13,6 +13,13 @@
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
           <div class="tool-grid"><button id="saveProjectButton" class="tool-button">Download project</button><button id="loadProjectButton" class="tool-button">Load project</button></div>
+          <div class="export-options-4f">
+            <label for="exportFilename4F">Download filename <small>(optional)</small></label>
+            <input type="text" id="exportFilename4F" maxlength="80" spellcheck="false" autocomplete="off" placeholder="Auto: city name and date" aria-describedby="exportFilenameHint4F">
+            <p id="exportFilenameHint4F" class="hint">Applies to JSON and PNG downloads only. Leave blank for the automatic city name and date.</p>
+            <button type="button" id="downloadMapPNG4F" class="minor-button">Download visible map (PNG)</button>
+            <p id="mapExportStatus4F" class="file-status" role="status" aria-live="polite"></p>
+          </div>
           <input id="projectFileInput" class="sr-only" type="file" accept=".json,.mappo.json,application/json" aria-label="Choose Mappo project file">
           <p id="fileStatus" class="file-status" role="status" aria-live="polite">Preparing browser recovery…</p>
           <div class="recovery-tools"><button id="restoreRecoveryButton" class="minor-button" disabled>Restore latest recovery</button><button id="restoreBackupButton" class="minor-button" disabled>Restore previous recovery</button></div>
@@ -119,10 +126,13 @@
       <div class="map-topline"><div class="workspace-panel-restores"><button id="workspaceOpenTools" class="workspace-map-button" aria-label="Show tools" hidden>Tools</button><button id="workspaceOpenInspector" class="workspace-map-button" aria-label="Show inspector">Inspector</button><button id="propertyDeletionUndo4A" class="workspace-map-button" title="Undo last property deletion" hidden>Undo Delete</button><button id="propertyDeletionRedo4A" class="workspace-map-button" title="Redo last property deletion" hidden>Redo Delete</button></div><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><div class="workspace-menu-anchor layers-menu-anchor"><button id="layersMenuButton" class="workspace-map-button" aria-expanded="false" aria-controls="layersMenu">Layers <span aria-hidden="true">⌄</span></button>
           <section id="layersMenu" class="workspace-menu layer-panel" aria-labelledby="layersMenuButton" hidden>
             <div class="workspace-menu-heading"><h2>Layers</h2><button id="layersMenuClose" class="workspace-icon-button" aria-label="Close Layers menu">×</button></div>
+            <div class="layer-preset-4f"><label for="layerPreset4F">View preset</label><select id="layerPreset4F" aria-label="Layer visibility preset">
+              <option value="presentation">Presentation</option><option value="planning">Planning</option><option value="minimal">Minimal</option><option value="all">All layers</option><option value="custom" disabled>Custom</option>
+            </select></div>
             <fieldset><legend>Buildings &amp; land</legend><label><input type="checkbox" id="buildingsLayer" checked> Building footprints</label><label><input type="checkbox" id="propertiesLayer"> Property boundaries</label><label><input type="checkbox" id="plotsLayer"> Plot divisions</label></fieldset>
             <fieldset><legend>Districts</legend><label><input type="checkbox" id="districtColorsLayer" checked> District colors</label><label><input type="checkbox" id="districtBordersLayer" checked> District borders</label><label><input type="checkbox" id="districtLabelsLayer" checked> District labels</label></fieldset>
             <fieldset><legend>Defenses</legend><label><input type="checkbox" id="fortificationsLayer" checked> Fortifications</label></fieldset>
-            <p class="hint">Visibility only. City geometry stays fixed.</p>
+            <p class="hint">Preset changes are view-only. Customize any checkbox manually; current layer visibility saves with the project.</p>
           </section></div><span id="draftBadge" class="map-draft">● CITY PLAN</span></div>
       <div id="mapViewport" class="map-viewport">
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
