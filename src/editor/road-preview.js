@@ -185,9 +185,10 @@ export class RoadPreviewSession {
     return true;
   }
   nudge(dx, dy) {
-    if(this.details?.kind==='road' && this.roadIntentOffset)
-      return this.updateRoadIntent({x:this.roadIntentOffset.x+dx,
-        y:this.roadIntentOffset.y+dy});
+    if(this.details?.kind==='road'){
+      const offset=this.roadIntentOffset??{x:0,y:0};
+      return this.updateRoadIntent({x:offset.x+dx,y:offset.y+dy});
+    }
     return this.point && this.update({ x: this.point.x + dx, y: this.point.y + dy });
   }
   hit(point, zoom, pointerType) {

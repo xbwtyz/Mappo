@@ -142,3 +142,31 @@ test('C1 stale projects, selection changes, and scheduled reports cannot revive 
   assert.equal(session.updateRoadIntent({x:16,y:0}),false);
   session.stop();
 });
+
+test('C1 preview cloning preserves negative zero and opaque nested metadata exactly',()=>{
+  const city=project('roadfirst-signed-zero','organic'),road=eligible(city.city);
+  const property=city.city.properties[0];
+  assert.ok(property,'Developed-city fixture must have properties');
+  property.opaqueDraftTest={sign:-0,values:[-0,{sign:-0}],note:'keep exact authored extensions'};
+  const before=JSON.stringify(city);
+  const proposed=prepareRoadIntentC1(city,road.id,{x:15,y:0});
+  assert.equal(proposed.draftable,true);
+  const metadata=proposed.proposedCity.properties.find(p=>p.id===property.id).opaqueDraftTest;
+  assert.ok(Object.is(metadata.sign,-0));
+  assert.ok(Object.is(metadata.values[0],-0));
+  assert.ok(Object.is(metadata.values[1].sign,-0));
+  assert.deepEqual(proposed.proposedCity.properties,city.city.properties);
+  assert.equal(JSON.stringify(city),before);
+});
+test('C1 keyboard nudge recovers cleanly after an invalid numeric road offset',()=>{
+  const city=project('roadfirst-nudge-invalid','planned'),road=eligible(city.city);
+  const session=new RoadPreviewSession({getProject:()=>city,changed:()=>{}});
+  session.start();session.select({kind:'road',id:road.id});
+  assert.equal(session.updateRoadIntent({x:NaN,y:0}),false);
+  assert.ok(session.roadIntentInputError);
+  assert.equal(session.nudge(2,-1),true);
+  assert.deepEqual(session.roadIntentOffset,{x:2,y:-1});
+  assert.equal(session.roadIntentInputError,'');
+  assert.equal(session.pending,true);
+  session.stop();
+});

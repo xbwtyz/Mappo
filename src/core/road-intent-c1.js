@@ -5,7 +5,13 @@ import { insideOrOn } from './boundary.js';
 // C1 road-first intent is a *draft*, not an accepted city transaction.
 // Existing parcels never veto the placement of an ordinary road in preview.
 // Reconciliation and Apply of complex edits require the later C2–C5 engine.
-const c1IntentCopy = value => JSON.parse(JSON.stringify(value));
+// Preserve IEEE -0 and unknown JSON-extension fields byte-semantically during
+// preview cloning; JSON stringify/parse would turn -0 into 0.
+const c1IntentCopy = value =>
+  Array.isArray(value) ? value.map(c1IntentCopy) :
+  value && typeof value==='object'
+    ? Object.fromEntries(Object.entries(value).map(([key,entry])=>[key,c1IntentCopy(entry)]))
+    : value;
 const c1IntentFinite = p => p && Number.isFinite(p.x) && Number.isFinite(p.y)
   && Math.abs(p.x) <= 100000 && Math.abs(p.y) <= 100000;
 const c1IntentFreeze = value => {
