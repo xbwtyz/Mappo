@@ -4,6 +4,7 @@ import {
   decodeProjectDocument,
   projectFilename
 } from '../data/project-format.js';
+import { exportFilename4F } from '../core/export-filenames-4f.js';
 import {
   openBrowserRecovery
 } from '../data/recovery-store.js';
@@ -164,7 +165,8 @@ export class ProjectFiles {
       const revision = this.revision,
         document = this.captureDocument(),
         text = encodeProjectDocument(document);
-      await this.download(text, projectFilename(document));
+      const name=exportFilename4F(this.$('exportFilename4F')?.value,projectFilename(document),'project');
+      await this.download(text, name);
       this.base = document;
       this.downloadRevision = revision;
       this.status('Project download requested. Keep the .mappo.json file to reopen this exact city in another build.');

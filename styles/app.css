@@ -428,3 +428,15 @@
   box-shadow:0 3px 16px #0006;font:11px/1.45 ui-sans-serif,system-ui,sans-serif;pointer-events:none;overflow-wrap:anywhere}
 .map-edit-diagnostic-4d[hidden]{display:none}
 @media(max-width:670px){.map-edit-diagnostic-4d{right:8px;bottom:57px;max-width:min(180px,46%);max-height:114px;overflow:auto;padding:6px;font-size:10px}}
+
+/* Dev 4f: compact layer presets and safe export options in existing menus. */
+.layer-preset-4f{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0 10px}
+.layer-preset-4f label,.export-options-4f label{font:650 11px ui-sans-serif,system-ui,sans-serif;color:#e0e6db}
+.layer-preset-4f select{max-width:175px;min-width:104px;flex:1;border:1px solid #66827d;border-radius:5px;padding:7px 8px;background:#1d3438;color:#f7f1e5}
+.export-options-4f{display:grid;gap:7px;margin:11px 0 8px;min-width:0}
+.export-options-4f small{color:#b7c8c3;font-weight:400}
+.export-options-4f input{min-width:0;width:100%;border:1px solid #66827d;border-radius:5px;padding:9px 10px;background:#16282d;color:#f8f1e5}
+.export-options-4f #downloadMapPNG4F{min-height:34px}
+.export-options-4f #mapExportStatus4F:empty{display:none}
+.export-options-4f .hint{margin:0}
+@media(max-width:670px){.layer-preset-4f select{max-width:148px}.export-options-4f{gap:6px}}
