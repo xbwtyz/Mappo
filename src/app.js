@@ -112,6 +112,8 @@ import { RoadInspectionWorkspace } from './ui/road-inspection.js';
 import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 // B1 candidate API is compiled for later editor integration; no Apply or UI hooks.
 import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
+// B2 conservative parcel adaptation remains preview-only until B4 Apply.
+import { prepareParcelReconciliationB2 } from './core/parcel-reconciliation.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
