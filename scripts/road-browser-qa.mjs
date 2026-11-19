@@ -250,6 +250,45 @@ for (const [name, type] of [
       assert.equal(await page.locator('#roadProposedX').isDisabled(), true);
       assert.ok((await page.locator('#roadRecordDetails').innerText()).includes('Protected:'));
       await page.locator('#roadSelectionKind').selectOption('road');
+      // Road-first C1 must keep an intentionally large street move as an
+      // inspectable draft even if existing parcels cannot accept it yet.
+      const ordinaryId = await page.evaluate(() => {
+        const session=__buildingQA.state().roadWorkspace.session,graph=session.graph;
+        return [...graph.roadsById.values()].find(road=>
+          [road.a,road.b].every(id=>
+            graph.incidentRoads.get(id).every(edge=>!graph.roadClasses.get(edge).protected)))?.id;
+      });
+      assert.ok(ordinaryId,'A generated city needs at least one ordinary movable segment.');
+      await page.locator('#roadSelectionId').selectOption(ordinaryId);
+      assert.equal(await page.locator('#roadIntentPanelC1').isVisible(),true);
+      await page.locator('#roadIntentDxC1').fill('15');
+      await page.waitForFunction(() =>
+        __buildingQA.state().roadWorkspace.session.roadIntentAnalysis?.draftable===true);
+      const roadIntent=await page.evaluate(() => {
+        const {project,roadWorkspace,files}=__buildingQA.state(),session=roadWorkspace.session,
+          analysis=session.roadIntentAnalysis;
+        const accepted=new Map(project.city.nodes.map(n=>[n.id,n]));
+        return {
+          pending:session.pending,applyReady:analysis.applyReady,
+          draftable:analysis.draftable,changedRoads:analysis.changedRoadIds.length,
+          displaced:analysis.proposedNodes.every(n=>n.x-accepted.get(n.id).x===15 &&
+            n.y===accepted.get(n.id).y),
+          acceptedUnchanged:JSON.stringify(__buildingQA.capture())===__buildingQA.before,
+          recoveryUnchanged:files.revision===__buildingQA.revision
+        };
+      });
+      assert.equal(roadIntent.pending,true);
+      assert.equal(roadIntent.applyReady,false);
+      assert.equal(roadIntent.draftable,true);
+      assert.ok(roadIntent.changedRoads>0);
+      assert.equal(roadIntent.displaced,true);
+      assert.equal(roadIntent.acceptedUnchanged,true);
+      assert.equal(roadIntent.recoveryUnchanged,true);
+      assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+      assert.ok((await page.locator('#roadIntentStatusC1').innerText()).includes('draft'));
+      await page.locator('#roadPreviewReset').click();
+      assert.equal(await page.evaluate(() =>
+        __buildingQA.state().roadWorkspace.session.pending),false);
       assert.ok((await page.locator('#roadAcceptedPoint').innerText()).includes('Endpoints'));
       assert.ok((await page.locator('#roadEndpointList button').count()) === 2);
       await page.locator('#roadEndpointList button').first().click();
