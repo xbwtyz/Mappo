@@ -1,6 +1,5 @@
 import { shapeContained } from './building-validation.js';
-import { polygonSignedArea } from './geometry.js';
-import { clipToConvexPolygon } from './placement.js';
+import { roadBuildingOccupiedPlots } from './road-building-decisions.js';
 import { createRng, hashSeed } from './prng.js';
 import { stampRoadGenerated } from './road-provenance.js';
 import { populateProperty } from '../generators/buildings.js';
@@ -29,10 +28,7 @@ export function reflowGeneratedRoadBuildings(seed, before, after, plots, origina
       x: newFrame.origin.x + u * newFrame.tangent.x,
       y: newFrame.origin.y + u * newFrame.tangent.y,
     };
-    const plotIds = plots.filter(plot =>
-      Math.abs(polygonSignedArea(clipToConvexPolygon(footprint, plot.boundary))) -
-      holes.reduce((area, hole) => area + Math.abs(polygonSignedArea(clipToConvexPolygon(hole, plot.boundary))), 0) > 1e-5
-    ).map(plot => plot.id);
+    const plotIds = roadBuildingOccupiedPlots({footprint,holes},plots);
     return { ...building, footprint, holes, entrance, accessPath: [entrance, end],
       plotIds, orientation: building.orientation + rotation };
   });

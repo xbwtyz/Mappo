@@ -1,3 +1,4 @@
+import { placeRoadConflictBuilding } from './road-building-decisions.js';
 import { buildRoadGraph } from './road-graph.js';
 import { draftRoadShape } from './road-shape.js';
 import { distanceToSegment, insideOrOn } from './boundary.js';
@@ -34,10 +35,14 @@ function c3RetainDevelopment(old, city, replacements, graph) {
   for (const property of old.properties) {
     if (!replacements.has(property.blockId)) continue;
     const ownBuildings = property.buildingIds.map(id => buildings.get(id));
+    const sourcePlots = property.plotIds.map(id=>plots.get(id));
+    const generatedParcel = classifyRoadProvenance(property,sourcePlots)==='generated';
     const origin = property.frame?.origin;
     const anchor = graph.nodesById.get(origin?.id);
     if (!anchor || anchor.x !== origin.x || anchor.y !== origin.y) continue;
     for (const block of replacements.get(property.blockId)) {
+      if (block.id !== property.blockId && (!generatedParcel ||
+          ownBuildings.some(building=>classifyRoadProvenance(building)!=='generated'))) continue;
       const edges = candidateEdges.get(block.id);
       const edge = edges.find(({road}) => road.id === property.frontageRoadId);
       if (!edge || ![edge.road.a, edge.road.b].includes(anchor.id)) continue;
@@ -55,14 +60,15 @@ function c3RetainDevelopment(old, city, replacements, graph) {
               building.accessPath.some(point => !insideOrOn(point,polygon));
           })) continue;
       const assign = record => ({ ...record, blockId: block.id });
-      const assigned = { ...assign(property), districtId: block.districtId ?? null };
-      const ownPlots = property.plotIds.map(id => assign(plots.get(id)));
-      stampRoadGenerated(assigned, ownPlots);
+      const assigned = generatedParcel ? {...assign(property),districtId:block.districtId ?? null} : {...property};
+      const ownPlots = generatedParcel ? sourcePlots.map(assign) : sourcePlots.map(plot=>({...plot}));
+      if (generatedParcel) stampRoadGenerated(assigned, ownPlots);
       kept.properties.push(assigned);
       kept.plots.push(...ownPlots);
       for (const building of ownBuildings) {
-        const retained = { ...assign(building), districtId: block.districtId ?? null };
-        stampRoadGenerated(retained);
+        const generated = classifyRoadProvenance(building)==='generated';
+        const retained = generated ? {...assign(building),districtId:block.districtId ?? null} : {...building};
+        if (generated) stampRoadGenerated(retained);
         kept.buildings.push(retained);
       }
       break;
@@ -152,7 +158,7 @@ function c4MatchBentFaces(old, extraction, draft) {
   return { valid:true,preserved,changed,added:[],removed:[],split:[],merged:[],ambiguous:[] };
 }
 
-export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null) {
+export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null, decisions = new Map()) {
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
   const fail = (code, message, kind = 'road', id = roadId) => ({
     phase: 'C3', status: 'needs-review', candidateProject: null, changed: [], ledger: [],
@@ -211,22 +217,48 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null)
     if (!affectedBlocks.length || affectedBlocks.length > TOPOLOGY_BLOCK_LIMIT ||
         affectedBlocks.some(block => !replacements.has(block.id)))
       return fail('unresolved-face-ownership', 'The neighborhood is too large or its replacement blocks cannot be identified.');
-    const oldPlots = riIndex(old.plots);
-    const customized = old.properties.find(property => replacements.has(property.blockId) &&
-      classifyRoadProvenance(property, property.plotIds.map(id => oldPlots.get(id))) !== 'generated');
-    if (customized) return fail('parcel-decision-required', 'A custom or older parcel needs a decision before this block can be rebuilt.',
-      'property', customized.id);
-    const fixed = old.buildings.find(building => replacements.has(building.blockId) &&
-      classifyRoadProvenance(building) !== 'generated');
-    if (fixed) return fail('building-decision-required', 'A custom or older building needs a decision before this block can be rebuilt.',
-      'building', fixed.id);
     const rebuilt = [...new Map([...replacements.values()].flat().map(block => [block.id, block])).values()];
     const uniqueBlocks = (ids) => [...new Set(ids.flatMap(id => replacements.get(id)?.map(block => block.id) ?? [id]))];
     const nextBlocks = riIndex(rebuilt);
     city.blocks = uniqueBlocks(old.blocks.map(block => block.id)).map(id => nextBlocks.get(id) ?? oldBlocks.get(id));
     city.districts = city.districts.map(district => ({ ...district, blockIds: uniqueBlocks(district.blockIds) }));
     const kept = c3RetainDevelopment(old, city, replacements, graph);
+    const keptIds = new Set(Object.values(kept).flat().map(record=>record.id));
+    const oldPlots = riIndex(old.plots);
+    const customized = old.properties.find(property => replacements.has(property.blockId) && !keptIds.has(property.id) &&
+      classifyRoadProvenance(property, property.plotIds.map(id => oldPlots.get(id))) !== 'generated');
+    if (customized) return fail('parcel-decision-required', 'Changing this custom or older parcel requires a separate parcel edit.',
+      'property', customized.id);
+    const conflicts = old.buildings.filter(building => replacements.has(building.blockId) && !keptIds.has(building.id) &&
+      classifyRoadProvenance(building) !== 'generated');
+    const required = conflicts.filter(building=>!decisions.has(building.id));
+    if (required.length) return {
+      ...fail('building-decision-required','Choose how to handle the affected building.','building',required[0].id),
+      unresolved: required.map(building=>({kind:'building', id:building.id, code:'building-decision-required',
+        message:'This building needs your approval before its parcel or placement can change.',severity:'needs-review'})),
+    };
     const regenerated = c3Development(project.seed, city, rebuilt, old, kept);
+    const decided = new Map();
+    for (const building of conflicts) {
+      const choice = decisions.get(building.id);
+      const placed = placeRoadConflictBuilding(building,choice,regenerated,replacements.get(building.blockId),graph,keptIds);
+      if (!placed)
+        return fail('building-placement-blocked', 'That choice does not fit the adapted neighborhood. Choose another placement or revise the road.',
+          'building',building.id);
+      decided.set(building.id,choice.kind);
+    }
+    const refitted = new Map();
+    const complex = old.buildings.filter(building=>replacements.has(building.blockId) && !keptIds.has(building.id) &&
+      classifyRoadProvenance(building)==='generated' && (building.holes?.length || building.plotIds.length>1));
+    for (const building of complex.slice(0,24)) {
+      const blocks = replacements.get(building.blockId);
+      const fixed = placeRoadConflictBuilding(building,{kind:'fixed'},regenerated,blocks,graph,keptIds);
+      const moved = fixed ?? placeRoadConflictBuilding(building,{kind:'auto'},regenerated,blocks,graph,keptIds);
+      if (moved) {
+        stampRoadGenerated(moved);
+        refitted.set(building.id,fixed ? 'access-reconnected' : 'relocated');
+      }
+    }
     for (const key of Object.keys(regenerated))
       city[key] = [...city[key].filter(record => !replacements.has(record.blockId)), ...regenerated[key]];
 
@@ -260,8 +292,9 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null)
           (kind === 'block' && replacements.has(id));
         if (riEqual(a,b) && !movedBoundary) continue;
         const disposition = !a ? (kind === 'junction' ? 'created-junction' : 'created') :
-          !b ? (kind === 'road' ? 'removed-road' : 'replaced') : retainedIds.has(id) ? 'retained' : kind === 'road' && splitRoadIds.includes(id) ? 'split' : 'reshaped';
+          !b ? (kind === 'road' ? 'removed-road' : 'replaced') : kind === 'building' && decided.has(id) ? (decided.get(id)==='fixed'?'access-reconnected':'authorized-relocation') : refitted.get(id) ?? (retainedIds.has(id) ? 'retained' : kind === 'road' && splitRoadIds.includes(id) ? 'split' : 'reshaped');
         ledger.push({ kind, oldId: a?.id ?? null, newId: b?.id ?? null, disposition,
+          ...(refitted.has(id) ? {provenance:'generated'} : {}),
           ...(kind === 'block' && a ? { successorIds: replacements.get(id)?.map(row => row.id) ?? [id] } : {}) });
         changed.push({ kind, id, fields: ['geometry'] });
       }

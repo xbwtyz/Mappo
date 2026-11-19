@@ -27,6 +27,7 @@ export async function buildingAppHarness() {
       setAttribute(name, value) { this.attributes[name] = value; },
       addEventListener(name, fn) { (this.handlers ??= {})[name] = fn; },
       replaceChildren(...children) { this.children = children; },
+      append(...children) { this.children = [...(this.children ?? []), ...children]; },
       scrollIntoView() {}
     })
   };
