@@ -145,7 +145,10 @@ for (const [name, type] of [
       );
       assert.equal(
         await page.locator('#roadPreviewPanel').getAttribute('data-report-status'),
-        await page.evaluate(() => __buildingQA.state().roadWorkspace.session.report.status),
+        await page.evaluate(() => {
+          const session=__buildingQA.state().roadWorkspace.session;
+          return session.reconciliation?.candidateProject ? 'safe' : session.report.status;
+        }),
       );
       // All preview data, pan/zoom, file downloads and recovery captures exclude
       // road mode. Flush a pre-existing recovery write while preview is active.
