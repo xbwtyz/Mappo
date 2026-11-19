@@ -6,7 +6,7 @@ export const buildingObservation = `
 globalThis.__buildingQA = {
   state: () => ({ project, camera, editor, layers, workspaceShell, roadWorkspace, buildingWorkspace, buildingEditSession, propertyWorkspace, identityWorkspace,
     landscapeWorkspace, districtPanel, waterPanel, terrainPanel, fortificationPanel, files, buildingHistory, buildingStructureHistory, buildingPlacementSession, propertyEditSession, propertyHistory, propertyDeletionHistory4A, roadHistory }),
-  capture: captureWorkspace, apply: applyProjectDocument, draw: requestDraw
+  capture: captureWorkspace, apply: applyProjectDocument, applyRoad: applyRoadEditB4, moveRoadHistory: moveRoadHistoryB4, draw: requestDraw
 };
 `;
 

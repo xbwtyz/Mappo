@@ -106,3 +106,44 @@ test('B4 compiled inspection keeps Apply disabled for unresolved or invalid geom
  assert.equal(JSON.stringify(app.capture()),initial);
  assert.equal(state.files.revision,revision);
 });
+
+test('B4 full accepted Apply and Undo/Redo each change recovery revision once',async()=>{
+ const app=await buildingAppHarness();
+ const city=undeveloped('b4-atomic-integration');
+ app.apply({project:city,workspace:defaultWorkspace(city)});
+ const current=app.state().project;
+ const proposal=eligible(current);
+ assert.ok(proposal,'Expected a reconciled road move for integration testing');
+ const road=app.state().roadWorkspace;
+ road.start();
+ const session=road.session;
+ Object.assign(session,{
+   selection:{kind:'junction',id:proposal.id},
+   point:proposal.point,
+   pending:true,
+   checking:false,
+   drag:null,
+   error:'',
+   reconciliationError:'',
+   reconciliation:proposal.result,
+   revision:7,
+   settledRevision:7,
+   acceptedFingerprint:JSON.stringify(current),
+   previewGeometry:roadReconciliationPreviewB3(current,proposal.result)
+ });
+ const before=JSON.stringify(app.state().project);
+ const revision=app.state().files.revision;
+ const result=app.applyRoad(session,road.baseRevision);
+ assert.equal(result.ok,true,result.message);
+ assert.equal(app.state().files.revision,revision+1,'Apply must issue exactly one recovery revision');
+ const applied=JSON.stringify(app.state().project);
+ assert.notEqual(applied,before);
+ assert.equal(app.moveRoadHistory('undo'),true);
+ assert.equal(app.state().files.revision,revision+2,'Undo must issue exactly one recovery revision');
+ assert.equal(JSON.stringify(app.state().project),before,'Undo restores complete coupled project');
+ assert.equal(app.moveRoadHistory('redo'),true);
+ assert.equal(app.state().files.revision,revision+3,'Redo must issue exactly one recovery revision');
+ assert.equal(JSON.stringify(app.state().project),applied,'Redo restores complete coupled project');
+ assert.equal(app.state().roadHistory.past.length,1);
+ assert.equal(app.state().roadHistory.future.length,0);
+});

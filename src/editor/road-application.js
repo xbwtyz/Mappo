@@ -1,7 +1,7 @@
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { buildRoadGraph } from '../core/road-graph.js';
-import { extractRoadFaces } from '../core/road-faces.js';
+import { extractRoadFaces, matchExistingFaces } from '../core/road-faces.js';
 import { prepareParcelReconciliationB2 } from '../core/parcel-reconciliation.js';
 
 // B4 owns acceptance. B1/B2/B3 statuses never grant write permission.
@@ -102,6 +102,18 @@ export function prepareRoadApplyB4(project,workspace,session,expectedRevision,cu
     if(!graph.valid)throw new Error('Candidate road topology failed validation.');
     const faces=extractRoadFaces(graph,candidate.city);
     if(!faces.valid)throw new Error('Candidate face coverage failed validation.');
+    // Reconfirm identities against the ACCEPTED city, never the already-edited candidate.
+    // A graph/face-valid movement can still produce a split, merge, or ambiguous match.
+    const matched=matchExistingFaces(project.city,faces);
+    if(!matched.valid||matched.requiresReview||matched.issues.length||
+       matched.added.length||matched.removed.length||matched.split.length||
+       matched.merged.length||matched.ambiguous.length)
+      throw new Error('Candidate face identities are not unambiguously preserved.');
+    const mapped=[...matched.preserved,...matched.changed];
+    if(mapped.length!==project.city.blocks.length+
+       (project.city.plazas?.length??0)+(project.city.waterFaces?.length??0)+
+       (project.city.terrainFaces?.length??0))
+      throw new Error('Candidate face correspondence is incomplete.');
     validateStoredProject(candidate);
     const roundtrip=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
     if(!b4Same(roundtrip.project,candidate))
@@ -110,6 +122,6 @@ export function prepareRoadApplyB4(project,workspace,session,expectedRevision,cu
       throw new Error('The portable file round-trip changed the current workspace.');
     return {ok:true,applyReady:true,status:'valid',candidate:roundtrip.project,
       changed:copyJson(fresh.changed),issues:[],validation:{graph:'pass',faces:'pass',
-        project:'pass',roundTrip:'pass'}};
+        identity:'pass',project:'pass',roundTrip:'pass'}};
   }catch(error){return reject('apply-validation','Road Apply blocked: '+error.message);}
 }
