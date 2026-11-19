@@ -105,6 +105,9 @@ import {
 // A2 face identity APIs remain transient until the later inspector checkpoint.
 import { extractRoadFaces, matchExistingFaces } from './core/road-faces.js';
 
+// A3 owns read-only impact classification for the future road preview.
+import { analyzeRoadImpact, inspectJunctionImpact } from './core/road-impact.js';
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),

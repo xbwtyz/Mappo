@@ -3,10 +3,11 @@
 > **Status: 0.2A implementation authorized by the owner on 2026-11-18.**
 > Original design branch: `planning/mappo-0.2a-road-network-foundations`.
 > A1 merged: [PR #22](https://github.com/xbwtyz/Mappo/pull/22), `2290af7407d3f4efbaa36fa227e2286576748994`.
-> A2 implementation branch: `feature/mappo-0.2a-a2-face-identity`, from that merged baseline.
+> A2 merged: [PR #23](https://github.com/xbwtyz/Mappo/pull/23), `8cce456cc132447e70fe88abf1710a198d250307`.
+> A3 implementation branch: `feature/mappo-0.2a-a3-impact-report`, from that merged baseline.
 > Implementation baseline: stable 0.1.0 `main` at `785e9cb2a44c40819e91a636523ac397b6660f9e`, including merged Dev 4f and release PR #21.
 > Execute A1 → A2 → A3 → A4 as separate checkpoints. Each PR still needs separate owner approval before merging.
-> [A1 record](A1_ROAD_GRAPH.md) · [A2 implementation and verification record](A2_FACE_IDENTITY.md).
+> [A1 record](A1_ROAD_GRAPH.md) · [A2 record](A2_FACE_IDENTITY.md) · [A3 implementation and verification record](A3_IMPACT_REPORT.md).
 
 [0.2 roadmap](README.md) · [Preservation and QA contract](ROAD_EDIT_CONTRACT.md)
 
@@ -141,8 +142,8 @@ Each approved checkpoint should produce modular source + regression tests + vers
 
 - [x] Existing generation geometry/parity retained across supported morphology seeds (A1, rechecked in A2).
 - [x] Reusable road/junction topology API, independent of generation (merged A1).
-- [x] Block identity matching is stable or explicitly marked ambiguous (A2 implemented; merge pending separate approval).
-- [ ] Deterministic, ID-specific impact reports distinguish Safe / Needs review / Invalid.
+- [x] Block identity matching is stable or explicitly marked ambiguous (merged A2).
+- [x] Deterministic, ID-specific impact reports distinguish Safe / Needs review / Invalid (A3 implemented; merge pending separate approval).
 - [ ] Working non-destructive junction preview with no Apply.
 - [ ] No accepted-project mutations, deleted identities or save-format regression.
 - [ ] Node + compiled HTML parity + Firefox/Chromium viewport QA green.
