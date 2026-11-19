@@ -3,6 +3,8 @@ import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
 import { insideOrOn } from './boundary.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { copyJson, createProjectDocument, decodeProjectDocument, encodeProjectDocument, defaultWorkspace } from '../data/project-format.js';
+import { warpPropertyFrontageB2 } from './parcel-reconciliation.js';
+import { propertyDividerFractions3I, propertyGeometryPreview3I, propertyLocalBounds3I } from './property-geometry.js';
 
 // C1-A: Pure detached two-endpoint translation candidate. There are no Apply,
 // persistence, event or history hooks here. C1's later UI/Apply checkpoint must
@@ -89,31 +91,74 @@ export function prepareSegmentTranslationC1(project, roadId, offset, workspace =
 
     const blocks = new Map(identity.changed.filter(row => row.kind === 'block')
       .map(row => [row.id, row.record]));
-    // C1-A deliberately supports only neighborhoods that need no parcel
-    // transformation. C1-B/C2 must resolve developed frontages explicitly.
-    const dependent = old.properties.filter(p => blocks.has(p.blockId) ||
-       incident.includes(p.frontageRoadId));
-    const plotDependents = old.plots.filter(p => dependent.some(land => land.id === p.propertyId) ||
-       blocks.has(p.blockId));
-    const affectedBuildings = old.buildings.filter(b => dependent.some(p =>
-       p.id === b.propertyId) || blocks.has(b.blockId));
-    if (dependent.length || plotDependents.length || affectedBuildings.length)
-      return c1Rejected('dependent-reconciliation-required',
-        'The translated segment affects developed parcels or buildings; C1-A cannot safely reconcile them.',
-        [...dependent.map(p => p.id), ...plotDependents.map(p => p.id),
-          ...affectedBuildings.map(b => b.id)], 'identity', 'needs-review');
-
+    // Reconcile only supported frontage-attached four-corner parcels. The
+    // same conservative B2 geometry helper supports both endpoints changing
+    // at once; only fully project-valid results can be returned.
     candidate.city.blocks = candidate.city.blocks.map(block => blocks.has(block.id)
       ? copyJson(blocks.get(block.id)) : block);
+    const oldNodes = new Map(old.nodes.map(node => [node.id,node]));
+    const newNodes = new Map(candidate.city.nodes.map(node => [node.id,node]));
+    const roads = new Map(old.roads.map(road => [road.id,road]));
+    const properties = new Map(candidate.city.properties.map(p => [p.id,p]));
+    const plots = new Map(candidate.city.plots.map(p => [p.id,p]));
+    const touchedProperties = new Set();
+    const touchedPlots = new Set();
+    const impactedProperties = old.properties.filter(p =>
+      incident.includes(p.frontageRoadId) || blocks.has(p.blockId));
+    if (impactedProperties.length > 256)
+      return c1Rejected('parcel-work-limit','Too many parcels depend on this segment.',[roadId],
+        'project','needs-review');
+    for (const source of impactedProperties) {
+      if (!incident.includes(source.frontageRoadId))
+        return c1Rejected('unmapped-frontage','A dependent parcel has an unchanged frontage road.',
+          [source.id], 'project','needs-review');
+      const property = properties.get(source.id);
+      const frontRoad = roads.get(source.frontageRoadId);
+      if (!property || !frontRoad)
+        return c1Rejected('missing-frontage','A dependent parcel has no matching frontage record.',
+          [source.id], 'project','needs-review');
+      try {
+        const fractions = propertyDividerFractions3I(candidate.city,property);
+        const warped = warpPropertyFrontageB2(source,frontRoad,oldNodes,newNodes);
+        const proposed = propertyGeometryPreview3I(candidate.city,property.id,
+          warped.boundary,fractions);
+        if (proposed.area <= 1 || Math.abs(proposed.area-proposed.total) > .02)
+          throw new Error('Frontage and plot area totals disagree.');
+        Object.assign(property,{
+          boundary: copyJson(proposed.boundary),
+          frontage: copyJson(proposed.boundary.slice(0,2)),
+          frame: copyJson(warped.frame),
+          area: proposed.area,
+          local: propertyLocalBounds3I({...property,frame:warped.frame},proposed.boundary),
+        });
+        touchedProperties.add(property.id);
+        for (const update of proposed.plots) {
+          const plot=plots.get(update.id);
+          if (!plot || plot.propertyId!==property.id || plot.blockId!==property.blockId)
+            throw new Error('Plot relationships changed during adaptation.');
+          plot.boundary=copyJson(update.boundary);
+          touchedPlots.add(plot.id);
+        }
+      } catch(error) {
+        return c1Rejected('unsupported-property-geometry',
+          'Segment adaptation cannot preserve property '+source.id+': '+error.message,
+          [source.id,source.frontageRoadId], 'project','needs-review');
+      }
+    }
     const changedOpen = [];
     for (const open of candidate.city.openSpaces ?? []) {
       const block = blocks.get(open.blockId);
       if (!block) continue;
-      if (old.properties.some(p => p.blockId === open.blockId))
-        return c1Rejected('open-space-ownership', 'An occupied block needs parcel reconciliation.',
-          [open.blockId], 'identity', 'needs-review');
-      if (open.area !== block.area) {
-        open.area = block.area;
+      const occupied=candidate.city.properties.filter(p=>p.blockId===block.id)
+        .reduce((n,p)=>n+p.area,0);
+      const newArea=block.area-occupied;
+      if (!Number.isFinite(newArea) || newArea < -.02)
+        return c1Rejected('open-space-ownership',
+          'The segment would leave invalid vacant area in block '+block.id+'.',
+          [open.id,block.id], 'project','needs-review');
+      const area=Math.max(0,newArea);
+      if (Math.abs(open.area-area)>1e-8){
+        open.area=area;
         changedOpen.push(open.id);
       }
     }
@@ -130,6 +175,9 @@ export function prepareSegmentTranslationC1(project, roadId, offset, workspace =
       ...incident.map(id => ({kind:'road', id, fields:['effective-geometry']})),
       ...[...blocks.keys()].sort(c1Order).map(id =>
         ({kind:'block', id, fields:['area','boundary-geometry']})),
+      ...[...touchedProperties].sort(c1Order).map(id => ({kind:'property',id,
+        fields:['boundary','frontage','frame','local','area']})),
+      ...[...touchedPlots].sort(c1Order).map(id => ({kind:'plot',id,fields:['boundary']})),
       ...changedOpen.map(id => ({kind:'open-space',id,fields:['area']})),
     ];
     return c1Freeze({
