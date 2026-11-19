@@ -86,10 +86,10 @@ const riKnownFields = {
   blocks: 'id vertices area ring sector usage districtId',
   plaza: 'id name center vertices area',
   properties:
-    'id blockId plotIds boundary frontageRoadId frontage area buildingIds usage frame local districtId customName customUse',
+    'id blockId plotIds boundary frontageRoadId frontage area buildingIds usage frame local districtId customName customUse roadProvenance',
   plots: 'id blockId propertyId frontageRoadId boundary',
   buildings:
-    'id blockId propertyId plotIds frontageRoadId type shape footprint holes area entrance orientation roofTone accessPath districtId customName customUse',
+    'id blockId propertyId plotIds frontageRoadId type shape footprint holes area entrance orientation roofTone accessPath districtId customName customUse roadProvenance',
   openSpaces: 'id blockId kind area',
   districts: 'id dataVersion kind name color blockIds extensions',
   walls: 'id dataVersion kind width edgeWidth path waterOpenings terrainOpenings extensions',

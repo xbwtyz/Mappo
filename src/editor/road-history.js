@@ -1,4 +1,4 @@
-import { copyJson,createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../data/project-format.js';
+import { createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 
 // B4 history snapshots the entire coupled transaction. Session-only, bounded,
@@ -14,7 +14,7 @@ export class RoadGeometryHistoryB4 {
     if(!junctionId||!before?.city||!after?.city)throw new Error('Missing road transaction.');
     if(b4HistorySame(before,after))return false;
     this.future=[];
-    this.past.push({junctionId,from:copyJson(before),to:copyJson(after),serial:++this.serial});
+    this.past.push({junctionId,from:structuredClone(before),to:structuredClone(after),serial:++this.serial});
     if(this.past.length>this.limit)this.past.shift();
     return true;
   }
@@ -28,12 +28,12 @@ export class RoadGeometryHistoryB4 {
     if(!this.can(direction,project))
       return {ok:false,reason:'No compatible road edit to '+direction+'. Other accepted edits may have changed the city.'};
     try{
-      const candidate=copyJson(direction==='undo'?entry.from:entry.to);
+      const candidate=structuredClone(direction==='undo'?entry.from:entry.to);
       validateStoredProject(candidate);
       const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
       if(!b4HistorySame(candidate,portable.project)||!b4HistorySame(workspace,portable.workspace))
         throw new Error('Portable save/load changed the restored project or workspace.');
-      return {ok:true,candidate:portable.project,entry};
+      return {ok:true,candidate,entry};
     }catch(error){return {ok:false,reason:'Road '+direction+' blocked: '+error.message};}
   }
   accept(entry,direction){

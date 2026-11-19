@@ -1,3 +1,4 @@
+import { prepareNeighborhoodReflowC2 } from '../core/neighborhood-reflow.js';
 import { buildRoadGraph, proposeJunctionMove } from '../core/road-graph.js';
 import { analyzeRoadImpact } from '../core/road-impact.js';
 import { hitRoadInspection, roadInspectionDetails } from '../core/road-inspection.js';
@@ -111,9 +112,15 @@ export class RoadPreviewSession {
     const run=()=>{
       if(!this.current() || revision!==this.revision)return;
       this.timer=undefined;
-      try{this.roadIntentAnalysis=prepareRoadIntentC1(
-        this.project,this.selection.id,this.roadIntentOffset);}
-      catch(error){this.error='Road intent diagnostic unavailable: '+error.message;}
+      try {
+        this.roadIntentAnalysis = prepareRoadIntentC1(this.project, this.selection.id, this.roadIntentOffset);
+        this.reconciliation = prepareNeighborhoodReflowC2(
+          this.project, this.selection.id, this.roadIntentOffset, this.roadIntentAnalysis);
+        this.settledRevision = revision;
+        this.acceptedFingerprint = JSON.stringify(this.project);
+      } catch (error) {
+        this.error = 'Road adaptation preview unavailable: ' + error.message;
+      }
       this.checking=false;this.changed();
     };
     if(defer)this.timer=this.schedule(run,180);

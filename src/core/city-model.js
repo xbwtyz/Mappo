@@ -1,3 +1,4 @@
+import { stampRoadGenerated } from './road-provenance.js';
 import {
   terrainPrepare
 } from './terrain-geometry.js';
@@ -139,5 +140,9 @@ export function createProject(options = {}) {
     seed,
     ...options.fortifications
   });
+  const plots = new Map(project.city.plots.map(plot => [plot.id, plot]));
+  for (const property of project.city.properties)
+    stampRoadGenerated(property, property.plotIds.map(id => plots.get(id)));
+  for (const building of project.city.buildings) stampRoadGenerated(building);
   return project;
 }

@@ -1,3 +1,4 @@
+import { prepareNeighborhoodReflowC2 } from '../core/neighborhood-reflow.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { buildRoadGraph } from '../core/road-graph.js';
@@ -122,4 +123,30 @@ export function prepareRoadApplyB4(project,workspace,session,expectedRevision,cu
       changed:copyJson(fresh.changed),issues:[],validation:{graph:'pass',faces:'pass',
         identity:'pass',project:'pass',roundTrip:'pass'}};
   }catch(error){return reject('apply-validation','Road Apply blocked: '+error.message);}
+}
+
+
+export function prepareRoadApplyC2(project, workspace, session, expectedRevision, currentRevision) {
+  if (!session?.current?.() || session.project !== project || session.city !== project?.city ||
+      !Number.isSafeInteger(expectedRevision) || expectedRevision !== currentRevision)
+    return reject('stale-project', 'The accepted project changed. Reopen the road preview.');
+  const inspected = session.reconciliation;
+  if (session.selection?.kind !== 'road' || !session.pending || session.drag || session.checking ||
+      session.error || session.roadIntentInputError || session.settledRevision !== session.revision ||
+      session.acceptedFingerprint !== JSON.stringify(project) || !session.previewGeometry?.verified ||
+      inspected?.phase !== 'C2' || !inspected.candidateProject)
+    return reject('stale-preview', 'The street proposal is not a complete, current preview.');
+  try {
+    const fresh = prepareNeighborhoodReflowC2(project, session.selection.id, session.roadIntentOffset);
+    if (!fresh.candidateProject)
+      return reject('candidate-invalid', fresh.unresolved[0]?.message ?? 'Fresh reflow did not pass validation.');
+    if (!b4Same(fresh.candidateProject, inspected.candidateProject) || !b4Same(fresh.ledger, inspected.ledger))
+      return reject('candidate-changed', 'The reconstruction differs from the inspected proposal.');
+    const roundtrip = decodeProjectDocument(encodeProjectDocument(createProjectDocument(fresh.candidateProject, workspace)));
+    if (!b4Same(roundtrip.project, fresh.candidateProject) || !b4Same(roundtrip.workspace, workspace))
+      throw new Error('Portable save/load changed the candidate or workspace.');
+    return { ok: true, candidate: fresh.candidateProject, changed: fresh.changed, ledger: fresh.ledger };
+  } catch (error) {
+    return reject('apply-validation', 'Road Apply blocked: ' + error.message);
+  }
 }
