@@ -114,6 +114,8 @@ import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
 // B2 conservative parcel adaptation remains preview-only until B4 Apply.
 import { prepareParcelReconciliationB2 } from './core/parcel-reconciliation.js';
+import { prepareRoadApplyB4 } from './editor/road-application.js';
+import { RoadGeometryHistoryB4 } from './editor/road-history.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
@@ -147,6 +149,7 @@ const buildingHistory = new BuildingGeometryHistory(20);
 const buildingStructureHistory = new BuildingStructureHistory3H(20);
 const propertyHistory = new PropertyGeometryHistory3I(20);
 const propertyDeletionHistory4A = new PropertyDeletionHistory4A(20);
+const roadHistory = new RoadGeometryHistoryB4(6);
 let buildingPlacementSession;
 let propertyEditSession;
 let propertyWorkspace;
@@ -223,6 +226,11 @@ function currentUndoContext() {
       && !propertyEditSession?.isActive && !buildingPlacementSession?.isActive && !buildingEditSession?.isActive)
     return {kind:'property-deletion',controlId:'propertyDeletionUndo4A',label:'Undo deletion',available:true,
       description:'Restore the last deleted property, its plots and buildings.'};
+  if(!roadWorkspace?.active && !propertyEditSession?.isActive &&
+     !buildingEditSession?.isActive && !buildingPlacementSession?.isActive &&
+     roadHistory.can('undo',project))
+    return {kind:'road-edit',controlId:'roadHistoryUndoB4',label:'Undo road',
+      available:true,description:'Undo the entire last accepted road and neighborhood edit.'};
   return describeUndoContext({
     section: workspaceShell?.state.section ?? 'city',
     selection: workspaceShell?.state.selection ?? null,
@@ -251,10 +259,21 @@ function undoCurrentScope() {
 function workspaceChanged() {
   if(roadWorkspace?.transient){syncPropertyDeletionControls4A();updateUndoFeedback();return;}
   syncPropertyDeletionControls4A();
+  syncRoadHistoryB4UI();
   updatePendingFeedback();
   files?.changed();
 }
 
+function syncRoadHistoryB4UI(){
+  const active=Boolean(roadWorkspace?.active);
+  for(const [direction,id] of [['undo','roadHistoryUndoB4'],['redo','roadHistoryRedoB4']]){
+    const available=Boolean(project && roadHistory.can(direction,project));
+    const button=$(id);
+    button.disabled=active||!available;
+    button.title=available?'Restore the complete accepted road and parcel transaction.':
+      'No compatible road '+direction+' is available; other accepted changes may have intervened.';
+  }
+}
 function syncPropertyDeletionControls4A() {
   const busy=Boolean(roadWorkspace?.active || propertyEditSession?.isActive || buildingPlacementSession?.isActive || buildingEditSession?.isActive);
   for(const [direction,id] of [['undo','propertyDeletionUndo4A'],['redo','propertyDeletionRedo4A']]) {
@@ -853,6 +872,7 @@ function generate({ discardIdentities = false } = {}) {
     clearMapHover();
     project = next;
     buildingHistory.clear(); // Rebuilding invalidates every accepted-building history entry.
+    roadHistory.clear();
     if (waterPanel) {
       waterPanel.editor.loadCity(next.city);
       waterPanel.editor.setMode('pan');
@@ -1383,6 +1403,7 @@ identityWorkspace.bind();
 roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
   reconcile:prepareParcelReconciliationB2,reconcileRoad:prepareRoadReconciliationB1,
+  getRevision:()=>files?.revision??0,applyEdit:applyRoadEditB4,
   canEnter:()=>!project?.city?'Generate a city before inspecting roads.':
     workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive
       ||propertyEditSession?.isActive||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
@@ -1391,6 +1412,68 @@ roadWorkspace = new RoadInspectionWorkspace({
   draw:()=>{$('zoomValue').textContent=`${Math.round(camera.zoom*100)}%`;updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();requestDraw();},
   afterExit:()=>{updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();}
 });
+
+function applyRoadEditB4(session,baselineRevision){
+  const previous=project,revision=files?.revision??0;
+  if(!previous||!session?.current())
+    return {ok:false,message:'The road preview is stale. Reopen it before Apply.'};
+  const receipt=prepareRoadApplyB4(previous,captureWorkspace().workspace,session,baselineRevision,revision);
+  if(!receipt.ok)return {ok:false,message:receipt.issues?.[0]?.message??'Road Apply blocked.'};
+  if(project!==previous||revision!==(files?.revision??0)||session.revision!==session.settledRevision)
+    return {ok:false,message:'Accepted project or preview changed during Apply.'};
+  const junctionId=session.selection.id;
+  // Exit only transient UI state before accepted data is replaced. No file or
+  // history writes occur until the candidate passes the entire B4 gate.
+  roadWorkspace.exit({restore:true});
+  if(project!==previous||revision!==(files?.revision??0))
+    return {ok:false,message:'The accepted project changed before commit.'};
+  if(!roadHistory.record(previous,receipt.candidate,junctionId))
+    return {ok:false,message:'Nothing was changed.'};
+  project=receipt.candidate; // one atomic accepted-state replacement
+  buildingHistory.clear();
+  buildingStructureHistory.clear();
+  propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
+  clearMapHover();
+  propertyWorkspace.refresh({replaced:true});
+  buildingWorkspace.refresh({replaced:true});
+  updateDetails();
+  workspaceShell.refresh();
+  requestDraw();
+  workspaceChanged(); // exactly one file revision / normal recovery notification
+  $('statusMessage').textContent='Applied road '+junctionId+' and all validated neighborhood changes. Undo road is available.';
+  $('roadHistoryStatusB4').textContent='Road '+junctionId+' applied. Undo restores the complete previous city.';
+  return {ok:true};
+}
+function moveRoadHistoryB4(direction){
+  if(!project || roadWorkspace?.active || propertyEditSession?.isActive ||
+     buildingEditSession?.isActive || buildingPlacementSession?.isActive)return false;
+  const receipt=roadHistory.prepare(project,captureWorkspace().workspace,direction);
+  if(!receipt.ok){
+    $('roadHistoryStatusB4').textContent=receipt.reason;
+    syncRoadHistoryB4UI();
+    return false;
+  }
+  project=receipt.candidate;
+  roadHistory.accept(receipt.entry,direction);
+  buildingHistory.clear();
+  buildingStructureHistory.clear();
+  propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
+  clearMapHover();
+  propertyWorkspace.refresh({replaced:true});
+  buildingWorkspace.refresh({replaced:true});
+  updateDetails();
+  workspaceShell.refresh();
+  requestDraw();
+  workspaceChanged();
+  $('roadHistoryStatusB4').textContent=(direction==='undo'?'Undid':'Redid')+
+    ' the complete road and neighborhood transaction.';
+  return true;
+}
+$('roadHistoryUndoB4').addEventListener('click',()=>moveRoadHistoryB4('undo'));
+$('roadHistoryRedoB4').addEventListener('click',()=>moveRoadHistoryB4('redo'));
+
 workspaceShell.bind();
 landscapeWorkspace.bind();
 for (const tool of ['Move','Rotate','Resize'])
@@ -1818,6 +1901,7 @@ function applyProjectDocument(document) {
   buildingStructureHistory.clear();
   propertyHistory.clear();
   propertyDeletionHistory4A.clear();
+  roadHistory.clear();
   identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.2-dev.b3</title>
+  <title>Mappo — City editor · 0.2-dev.b4</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -468,12 +468,22 @@
 .road-reconciliation-b3 .road-report-list button{font-size:11px;min-height:34px}
 @media(max-width:900px){.road-reconciliation-b3 .road-report-list button{min-height:44px}}
 
+/* B4: road Apply is explicit, gated, and separate from read-only preview. */
+.road-history-actions-b4{display:flex;gap:6px;margin:7px 0 0}
+.road-history-actions-b4 button{flex:1;min-height:34px}
+.road-history-actions-b4 button:disabled{opacity:.48}
+.road-preview-panel .road-preview-actions{flex-wrap:wrap}
+.road-preview-panel #roadApplyB4{flex-basis:100%;min-height:42px;background:#226c61;color:#fff;border:1px solid #14564e;border-radius:5px;font-weight:700}
+.road-preview-panel #roadApplyB4:disabled{background:#9caea7;color:#3b5450;opacity:.85}
+.road-apply-status-b4{font-size:11px;line-height:1.45;color:#536b69;margin:6px 0 0}
+@media(max-width:900px){.road-history-actions-b4 button{min-height:44px}}
+
 </style>
 </head>
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.b3</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.b4</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -517,7 +527,12 @@
             <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
             <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div></div>
           </div>
-          <button id="roadModeButton" class="tool-button full-width" aria-pressed="false" aria-controls="roadPreviewPanel">Inspect roads / junctions</button>
+          <button id="roadModeButton" class="tool-button full-width" aria-pressed="false" aria-controls="roadPreviewPanel">Inspect / edit roads</button>
+          <div class="road-history-actions-b4" role="group" aria-label="Accepted road edit history">
+            <button type="button" id="roadHistoryUndoB4" class="minor-button" disabled>Undo road</button>
+            <button type="button" id="roadHistoryRedoB4" class="minor-button" disabled>Redo road</button>
+          </div>
+          <p id="roadHistoryStatusB4" class="hint" role="status" aria-live="polite">Road history is empty.</p>
           <p id="roadModeNotice" class="hint" role="status"></p>
           <details id="cityGenerationSettings" class="workspace-settings"><summary>Generation settings</summary>
             <div class="control-group"><label for="seedInput">Street seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"></div>
@@ -632,7 +647,12 @@
             <ol id="roadReportList" class="road-report-list" aria-label="Affected objects and impact descriptions"></ol><button id="roadShowMore" class="minor-button" hidden>Show 50 more entries</button>
             <p class="hint">Preview only. Road Apply and Undo will be introduced in B4.</p>
           </div>
-          <div class="road-preview-actions"><button id="roadPreviewReset" class="minor-button" disabled>Reset preview</button><button id="roadPreviewCancel" class="minor-button">Cancel inspection</button></div>
+          <div class="road-preview-actions">
+            <button id="roadApplyB4" type="button" class="tool-button" disabled>Apply road edit</button>
+            <button id="roadPreviewReset" class="minor-button" disabled>Reset preview</button>
+            <button id="roadPreviewCancel" class="minor-button">Cancel inspection</button>
+          </div>
+          <p id="roadApplyStatusB4" class="road-apply-status-b4" role="status" aria-live="polite">Apply requires a fully validated reconciliation.</p>
         </section>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
           <div class="building-transform-heading"><strong>PROPERTY PREVIEW</strong><span id="propertyEditTarget3I">—</span></div>
@@ -8233,7 +8253,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.2-dev.b3';
+const APP_VERSION = '0.2-dev.b4';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -15548,6 +15568,8 @@ class RoadPreviewSession {
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.reconciliationError = '';
+    this.settledRevision = null;
+    this.acceptedFingerprint = null;
     this.focusKey = null;
     this.checking = false;
     this.error = '';
@@ -15574,6 +15596,8 @@ class RoadPreviewSession {
     this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.reconciliationError = '';
+    this.settledRevision = null;
+    this.acceptedFingerprint = null;
     this.focusKey = null;
     this.checking = false;
     this.error = '';
@@ -15586,6 +15610,8 @@ class RoadPreviewSession {
     this.report = this.proposal = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.reconciliationError = '';
+    this.settledRevision = null;
+    this.acceptedFingerprint = null;
     this.focusKey = null;
     this.error = '';
     this.checking = this.pending;
@@ -15601,6 +15627,8 @@ class RoadPreviewSession {
         if(this.reconcile){
           try {
             this.reconciliation = this.reconcile(this.project, this.selection.id, this.point);
+            this.settledRevision = revision;
+            this.acceptedFingerprint = JSON.stringify(this.project);
             if(!this.reconciliation.candidateProject && this.reconcileRoad && this.proposal.graphValid)
               this.topology = this.reconcileRoad(this.project, this.selection.id, this.point);
           } catch(error) {
@@ -15839,6 +15867,8 @@ class RoadInspectionWorkspace {
     draw,
     reconcile = null,
     reconcileRoad = null,
+    getRevision = () => 0,
+    applyEdit = () => ({ok:false,message:'Road Apply not configured.'}),
     afterExit = () => {},
   }) {
     Object.assign(this, {
@@ -15850,6 +15880,8 @@ class RoadInspectionWorkspace {
       canEnter,
       beforeEnter,
       draw,
+      getRevision,
+      applyEdit,
       afterExit,
     });
     this.session = new RoadPreviewSession({
@@ -15888,6 +15920,8 @@ class RoadInspectionWorkspace {
     this.$('roadPreviewMinimize').setAttribute('aria-expanded', 'true');
     this.beforeEnter();
     const captured = this.capture();
+    this.baseRevision = this.getRevision();
+    this.applyError = '';
     this.baseline = { project: captured.project, workspace: JSON.parse(JSON.stringify(captured.workspace)) };
     this.session.start();
     const ui = this.baseline.workspace.ui;
@@ -15931,6 +15965,7 @@ class RoadInspectionWorkspace {
     this.selectionKey = null;
     this.lastReport = undefined;
     this.lastReconciliation = undefined;
+    this.applyError = '';
     this.render();
     this.afterExit();
     this.draw();
@@ -15939,6 +15974,7 @@ class RoadInspectionWorkspace {
   reset() {
     if (!this.active) return;
     if (this.baseline) Object.assign(this.camera, this.baseline.workspace.view.camera);
+    this.applyError = '';
     this.session.reset();
   }
   bind() {
@@ -15956,6 +15992,15 @@ class RoadInspectionWorkspace {
       this.draw();
     });
     this.$('roadPreviewReset').addEventListener('click', () => this.reset());
+    this.$('roadApplyB4').addEventListener('click', () => {
+      if(this.$('roadApplyB4').disabled || !this.session.current())return;
+      const result=this.applyEdit(this.session,this.baseRevision);
+      if(!result?.ok){
+        this.applyError=result?.message??'Road Apply failed without changing the accepted city.';
+        this.applyErrorRevision=this.session.revision;
+        this.render();
+      }
+    });
     this.$('roadPreviewMinimize').addEventListener('click', () => {
       const body = this.$('roadPreviewBody');
       body.hidden = !body.hidden;
@@ -16088,6 +16133,17 @@ class RoadInspectionWorkspace {
     this.$('roadReconciliationB3').hidden = false;
     const computed = s.reconciliation ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology) : null;
     s.previewGeometry = computed;
+    if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
+    const ready=Boolean(s.current() && s.pending && !s.checking && !s.drag && !s.error &&
+      !s.reconciliationError && s.reconciliation?.candidateProject &&
+      s.reconciliation?.status==='candidate-only' && !s.reconciliation.unresolved?.length &&
+      s.previewGeometry?.verified && s.settledRevision===s.revision &&
+      s.acceptedFingerprint===JSON.stringify(s.project) &&
+      this.getRevision()===this.baseRevision);
+    this.$('roadApplyB4').disabled=!ready;
+    this.$('roadApplyStatusB4').textContent=this.applyError || (ready ?
+      'Eligible preview. Apply will recompute, validate and confirm portable save compatibility before acceptance.' :
+      'Apply is unavailable until a fully reconciled, current road candidate passes validation.');
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
         this.lastReconciliationError !== s.reconciliationError || this.lastChecking !== s.checking) {
       this.lastReconciliation = s.reconciliation;
@@ -16815,6 +16871,181 @@ function prepareParcelReconciliationB2(project,junctionId,point) {
 }
 
 
+// src/editor/road-application.js
+
+
+
+
+
+// B4 owns acceptance. B1/B2/B3 statuses never grant write permission.
+const b4Same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
+function reject(code,message){
+  return {ok:false,applyReady:false,status:'blocked',candidate:null,
+    issues:[{code,message,severity:'needs-review'}]};
+}
+const editable = {
+  nodes:['x','y'], blocks:['area'],
+  properties:['boundary','frontage','frame','local','area'],
+  plots:['boundary'], openSpaces:['area'],
+};
+// Compare values structurally: JSON key insertion order is not a geometry
+// change. Array order, object key sets and every field value must match.
+function b4FirstDifference(a,b,path='project'){
+  if(a===b)return null;
+  if(Array.isArray(a)||Array.isArray(b)){
+    if(!Array.isArray(a)||!Array.isArray(b)||a.length!==b.length)return path;
+    for(let i=0;i<a.length;i++){
+      const diff=b4FirstDifference(a[i],b[i],path+'['+i+']');
+      if(diff)return diff;
+    }
+    return null;
+  }
+  if(a&&b&&typeof a==='object'&&typeof b==='object'){
+    const ka=Object.keys(a).sort(),kb=Object.keys(b).sort();
+    if(ka.length!==kb.length||ka.some((v,i)=>v!==kb[i]))return path;
+    for(const key of ka){
+      const diff=b4FirstDifference(a[key],b[key],path+'.'+key);
+      if(diff)return diff;
+    }
+    return null;
+  }
+  return path;
+}
+
+// Rebuild the entire expected candidate by transferring *only* approved
+// geometry fields. No ID, custom metadata, building, terrain, protected face,
+// district, road record or unrelated project field can change implicitly.
+function verifyRoadDeltaB4(before,after,junctionId){
+  const expected=copyJson(before);
+  for(const [collection,fields] of Object.entries(editable)){
+    const original=before.city[collection]??[], proposed=after.city[collection]??[];
+    if(original.length!==proposed.length)
+      throw new Error('Record membership changed in '+collection+'.');
+    for(let i=0;i<original.length;i++){
+      const a=original[i],b=proposed[i],out=expected.city[collection][i];
+      if(a.id!==b.id)throw new Error('Record identity or order changed in '+collection+'.');
+      for(const field of fields){
+        if(!b4Same(a[field],b[field])){
+          if(collection==='nodes'&&a.id!==junctionId)
+            throw new Error('An unrelated junction moved.');
+          if(b[field]===undefined)throw new Error('A required geometry field was removed.');
+          out[field]=copyJson(b[field]);
+        }
+      }
+    }
+  }
+  const mismatch=b4FirstDifference(expected,after);
+  if(mismatch)throw new Error('Candidate changed unsupported fields at '+mismatch+'.');
+  const moved=before.city.nodes.find(n=>n.id===junctionId);
+  const next=after.city.nodes.find(n=>n.id===junctionId);
+  if(!moved||!next||b4Same([moved.x,moved.y],[next.x,next.y]))
+    throw new Error('No accepted junction movement exists in this candidate.');
+  return true;
+}
+
+function prepareRoadApplyB4(project,workspace,session,expectedRevision,currentRevision){
+  if(!session?.current?.()||session.project!==project||session.city!==project?.city)
+    return reject('stale-project','The accepted project changed. Reopen the road preview.');
+  if(!Number.isSafeInteger(expectedRevision)||currentRevision!==expectedRevision)
+    return reject('stale-revision','The project revision changed while the preview was open.');
+  if(session.drag||session.checking||session.error||session.reconciliationError||
+     !session.pending||session.selection?.kind!=='junction'||
+     !Number.isFinite(session.point?.x)||!Number.isFinite(session.point?.y)||
+     session.settledRevision!==session.revision||
+     session.acceptedFingerprint!==JSON.stringify(project))
+    return reject('stale-preview','The road proposal is not a complete, current preview.');
+  const inspected=session.reconciliation;
+  if(!inspected?.candidateProject||inspected.status!=='candidate-only'||
+     inspected.validation?.project!=='valid'||inspected.validation?.parcels!=='pass'||
+     inspected.unresolved?.length||session.previewGeometry?.verified!==true)
+    return reject('reconciliation-required','The complete neighborhood has not been safely reconciled.');
+  try{
+    // Recompute now instead of trusting the cached visual preview.
+    const fresh=prepareParcelReconciliationB2(project,session.selection.id,session.point);
+    if(!fresh.candidateProject||fresh.status!=='candidate-only'||
+       fresh.unresolved?.length||fresh.validation?.project!=='valid'||
+       fresh.validation?.parcels!=='pass')
+      return reject('candidate-invalid',fresh.unresolved?.[0]?.message??
+        'Fresh local reconciliation did not produce an eligible candidate.');
+    if(!b4Same(fresh.candidateProject,inspected.candidateProject))
+      return reject('candidate-changed','The reconstruction differs from the inspected proposal.');
+    const candidate=copyJson(fresh.candidateProject);
+    verifyRoadDeltaB4(project,candidate,session.selection.id);
+    const graph=buildRoadGraph(candidate.city);
+    if(!graph.valid)throw new Error('Candidate road topology failed validation.');
+    const faces=extractRoadFaces(graph,candidate.city);
+    if(!faces.valid)throw new Error('Candidate face coverage failed validation.');
+    // Reconfirm identities against the ACCEPTED city, never the already-edited candidate.
+    // A graph/face-valid movement can still produce a split, merge, or ambiguous match.
+    const matched=matchExistingFaces(project.city,faces);
+    if(!matched.valid||matched.requiresReview||matched.issues.length||
+       matched.added.length||matched.removed.length||matched.split.length||
+       matched.merged.length||matched.ambiguous.length)
+      throw new Error('Candidate face identities are not unambiguously preserved.');
+    const mapped=[...matched.preserved,...matched.changed];
+    if(mapped.length!==faces.faces.length)
+      throw new Error('Candidate face correspondence is incomplete.');
+    validateStoredProject(candidate);
+    const roundtrip=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
+    if(!b4Same(roundtrip.project,candidate))
+      throw new Error('The portable file round-trip changed candidate project fields.');
+    if(!b4Same(roundtrip.workspace,workspace))
+      throw new Error('The portable file round-trip changed the current workspace.');
+    return {ok:true,applyReady:true,status:'valid',candidate:roundtrip.project,
+      changed:copyJson(fresh.changed),issues:[],validation:{graph:'pass',faces:'pass',
+        identity:'pass',project:'pass',roundTrip:'pass'}};
+  }catch(error){return reject('apply-validation','Road Apply blocked: '+error.message);}
+}
+
+
+// src/editor/road-history.js
+
+
+// B4 history snapshots the entire coupled transaction. Session-only, bounded,
+// and never allowed to overwrite subsequent unrelated edits.
+const b4HistorySame=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+class RoadGeometryHistoryB4 {
+  constructor(limit=6){
+    if(!Number.isInteger(limit)||limit<1||limit>20)throw new Error('Invalid road history bound.');
+    this.limit=limit;this.past=[];this.future=[];this.serial=0;
+  }
+  clear(){this.past=[];this.future=[];this.serial=0;}
+  record(before,after,junctionId){
+    if(!junctionId||!before?.city||!after?.city)throw new Error('Missing road transaction.');
+    if(b4HistorySame(before,after))return false;
+    this.future=[];
+    this.past.push({junctionId,from:copyJson(before),to:copyJson(after),serial:++this.serial});
+    if(this.past.length>this.limit)this.past.shift();
+    return true;
+  }
+  entry(direction){return direction==='undo'?this.past.at(-1):direction==='redo'?this.future.at(-1):null;}
+  can(direction,project){
+    const entry=this.entry(direction);
+    return Boolean(entry&&b4HistorySame(project,direction==='undo'?entry.to:entry.from));
+  }
+  prepare(project,workspace,direction){
+    const entry=this.entry(direction);
+    if(!this.can(direction,project))
+      return {ok:false,reason:'No compatible road edit to '+direction+'. Other accepted edits may have changed the city.'};
+    try{
+      const candidate=copyJson(direction==='undo'?entry.from:entry.to);
+      validateStoredProject(candidate);
+      const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
+      if(!b4HistorySame(candidate,portable.project)||!b4HistorySame(workspace,portable.workspace))
+        throw new Error('Portable save/load changed the restored project or workspace.');
+      return {ok:true,candidate:portable.project,entry};
+    }catch(error){return {ok:false,reason:'Road '+direction+' blocked: '+error.message};}
+  }
+  accept(entry,direction){
+    const from=direction==='undo'?this.past:this.future;
+    const to=direction==='undo'?this.future:this.past;
+    if(from.at(-1)!==entry)throw new Error('Road edit history changed.');
+    from.pop();to.push(entry);
+    if(to.length>this.limit)to.shift();
+  }
+}
+
+
 // src/app.js
 // A1 foundation APIs are bundled for the later road inspector; no editor hooks yet.
 
@@ -16874,6 +17105,8 @@ function prepareParcelReconciliationB2(project,junctionId,point) {
 
 // B2 conservative parcel adaptation remains preview-only until B4 Apply.
 
+
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
@@ -16906,6 +17139,7 @@ const buildingHistory = new BuildingGeometryHistory(20);
 const buildingStructureHistory = new BuildingStructureHistory3H(20);
 const propertyHistory = new PropertyGeometryHistory3I(20);
 const propertyDeletionHistory4A = new PropertyDeletionHistory4A(20);
+const roadHistory = new RoadGeometryHistoryB4(6);
 let buildingPlacementSession;
 let propertyEditSession;
 let propertyWorkspace;
@@ -16982,6 +17216,11 @@ function currentUndoContext() {
       && !propertyEditSession?.isActive && !buildingPlacementSession?.isActive && !buildingEditSession?.isActive)
     return {kind:'property-deletion',controlId:'propertyDeletionUndo4A',label:'Undo deletion',available:true,
       description:'Restore the last deleted property, its plots and buildings.'};
+  if(!roadWorkspace?.active && !propertyEditSession?.isActive &&
+     !buildingEditSession?.isActive && !buildingPlacementSession?.isActive &&
+     roadHistory.can('undo',project))
+    return {kind:'road-edit',controlId:'roadHistoryUndoB4',label:'Undo road',
+      available:true,description:'Undo the entire last accepted road and neighborhood edit.'};
   return describeUndoContext({
     section: workspaceShell?.state.section ?? 'city',
     selection: workspaceShell?.state.selection ?? null,
@@ -17010,10 +17249,21 @@ function undoCurrentScope() {
 function workspaceChanged() {
   if(roadWorkspace?.transient){syncPropertyDeletionControls4A();updateUndoFeedback();return;}
   syncPropertyDeletionControls4A();
+  syncRoadHistoryB4UI();
   updatePendingFeedback();
   files?.changed();
 }
 
+function syncRoadHistoryB4UI(){
+  const active=Boolean(roadWorkspace?.active);
+  for(const [direction,id] of [['undo','roadHistoryUndoB4'],['redo','roadHistoryRedoB4']]){
+    const available=Boolean(project && roadHistory.can(direction,project));
+    const button=$(id);
+    button.disabled=active||!available;
+    button.title=available?'Restore the complete accepted road and parcel transaction.':
+      'No compatible road '+direction+' is available; other accepted changes may have intervened.';
+  }
+}
 function syncPropertyDeletionControls4A() {
   const busy=Boolean(roadWorkspace?.active || propertyEditSession?.isActive || buildingPlacementSession?.isActive || buildingEditSession?.isActive);
   for(const [direction,id] of [['undo','propertyDeletionUndo4A'],['redo','propertyDeletionRedo4A']]) {
@@ -17612,6 +17862,7 @@ function generate({ discardIdentities = false } = {}) {
     clearMapHover();
     project = next;
     buildingHistory.clear(); // Rebuilding invalidates every accepted-building history entry.
+    roadHistory.clear();
     if (waterPanel) {
       waterPanel.editor.loadCity(next.city);
       waterPanel.editor.setMode('pan');
@@ -18142,6 +18393,7 @@ identityWorkspace.bind();
 roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
   reconcile:prepareParcelReconciliationB2,reconcileRoad:prepareRoadReconciliationB1,
+  getRevision:()=>files?.revision??0,applyEdit:applyRoadEditB4,
   canEnter:()=>!project?.city?'Generate a city before inspecting roads.':
     workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive
       ||propertyEditSession?.isActive||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
@@ -18150,6 +18402,68 @@ roadWorkspace = new RoadInspectionWorkspace({
   draw:()=>{$('zoomValue').textContent=`${Math.round(camera.zoom*100)}%`;updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();requestDraw();},
   afterExit:()=>{updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();}
 });
+
+function applyRoadEditB4(session,baselineRevision){
+  const previous=project,revision=files?.revision??0;
+  if(!previous||!session?.current())
+    return {ok:false,message:'The road preview is stale. Reopen it before Apply.'};
+  const receipt=prepareRoadApplyB4(previous,captureWorkspace().workspace,session,baselineRevision,revision);
+  if(!receipt.ok)return {ok:false,message:receipt.issues?.[0]?.message??'Road Apply blocked.'};
+  if(project!==previous||revision!==(files?.revision??0)||session.revision!==session.settledRevision)
+    return {ok:false,message:'Accepted project or preview changed during Apply.'};
+  const junctionId=session.selection.id;
+  // Exit only transient UI state before accepted data is replaced. No file or
+  // history writes occur until the candidate passes the entire B4 gate.
+  roadWorkspace.exit({restore:true});
+  if(project!==previous||revision!==(files?.revision??0))
+    return {ok:false,message:'The accepted project changed before commit.'};
+  if(!roadHistory.record(previous,receipt.candidate,junctionId))
+    return {ok:false,message:'Nothing was changed.'};
+  project=receipt.candidate; // one atomic accepted-state replacement
+  buildingHistory.clear();
+  buildingStructureHistory.clear();
+  propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
+  clearMapHover();
+  propertyWorkspace.refresh({replaced:true});
+  buildingWorkspace.refresh({replaced:true});
+  updateDetails();
+  workspaceShell.refresh();
+  requestDraw();
+  workspaceChanged(); // exactly one file revision / normal recovery notification
+  $('statusMessage').textContent='Applied road '+junctionId+' and all validated neighborhood changes. Undo road is available.';
+  $('roadHistoryStatusB4').textContent='Road '+junctionId+' applied. Undo restores the complete previous city.';
+  return {ok:true};
+}
+function moveRoadHistoryB4(direction){
+  if(!project || roadWorkspace?.active || propertyEditSession?.isActive ||
+     buildingEditSession?.isActive || buildingPlacementSession?.isActive)return false;
+  const receipt=roadHistory.prepare(project,captureWorkspace().workspace,direction);
+  if(!receipt.ok){
+    $('roadHistoryStatusB4').textContent=receipt.reason;
+    syncRoadHistoryB4UI();
+    return false;
+  }
+  project=receipt.candidate;
+  roadHistory.accept(receipt.entry,direction);
+  buildingHistory.clear();
+  buildingStructureHistory.clear();
+  propertyHistory.clear();
+  propertyDeletionHistory4A.clear();
+  clearMapHover();
+  propertyWorkspace.refresh({replaced:true});
+  buildingWorkspace.refresh({replaced:true});
+  updateDetails();
+  workspaceShell.refresh();
+  requestDraw();
+  workspaceChanged();
+  $('roadHistoryStatusB4').textContent=(direction==='undo'?'Undid':'Redid')+
+    ' the complete road and neighborhood transaction.';
+  return true;
+}
+$('roadHistoryUndoB4').addEventListener('click',()=>moveRoadHistoryB4('undo'));
+$('roadHistoryRedoB4').addEventListener('click',()=>moveRoadHistoryB4('redo'));
+
 workspaceShell.bind();
 landscapeWorkspace.bind();
 for (const tool of ['Move','Rotate','Resize'])
@@ -18577,6 +18891,7 @@ function applyProjectDocument(document) {
   buildingStructureHistory.clear();
   propertyHistory.clear();
   propertyDeletionHistory4A.clear();
+  roadHistory.clear();
   identityWorkspace.reset();
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
