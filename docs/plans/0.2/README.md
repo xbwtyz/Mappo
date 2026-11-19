@@ -75,5 +75,5 @@ A 0.2 release is ready when a user can safely move/add/remove supported roads, c
 
 - **Direction chosen:** 2D city designer.
 - **Edit policy chosen:** strict preservation before controlled local reconciliation.
-- **0.2A:** A1–A4 authorized in order; A1 is the first implementation checkpoint. See [A1 implementation record](A1_ROAD_GRAPH.md).
+- **0.2A:** A1–A4 authorized in order; A1 merged as PR #22. A2 is implemented on a new branch from merged main, pending separate review/merge approval. See [A1 record](A1_ROAD_GRAPH.md) and [A2 record](A2_FACE_IDENTITY.md).
 - **Not yet approved:** checkpoint merges, implementation of later phases, schema migration, release date.

@@ -102,6 +102,9 @@ import {
   formatPrecision4C
 } from './core/editing-precision-4c.js';
 
+// A2 face identity APIs remain transient until the later inspector checkpoint.
+import { extractRoadFaces, matchExistingFaces } from './core/road-faces.js';
+
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
   viewport = $('mapViewport'),
