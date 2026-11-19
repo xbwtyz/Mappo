@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
-import { prepareNeighborhoodReflowC2 } from '../src/core/neighborhood-reflow.js';
+import { prepareNeighborhoodReflowC2, prepareNeighborhoodReflowC3 } from '../src/core/neighborhood-reflow.js';
 import { classifyRoadProvenance } from '../src/core/road-provenance.js';
 import { roadReconciliationPreviewB3 } from '../src/core/road-inspection.js';
 import { prepareRoadApplyC2 } from '../src/editor/road-application.js';
@@ -109,4 +109,49 @@ test('C2 standalone street Apply and Undo/Redo use the normal UI transaction', a
   assert.equal(app.moveRoadHistory('redo'), true);
   assert.equal(JSON.stringify(app.state().project), applied);
   assert.equal(state.files.revision, revision + 3);
+});
+
+test('C3 automatically adapts generated buildings for a 12-unit street move through a developed block', async () => {
+  const project = createProject({ seed: 'c2-planned', size: 'small', morphology: 'planned' });
+  const roadId = 'RD-0113', offset = { x: 12, y: 0 };
+  const old = prepareNeighborhoodReflowC2(project, roadId, offset);
+  assert.equal(old.candidateProject, null);
+
+  const app = await buildingAppHarness();
+  app.apply({ project, workspace: defaultWorkspace(project) });
+  const state = app.state();
+  const before = JSON.stringify(state.project), revision = state.files.revision;
+  state.roadWorkspace.start();
+  const session = state.roadWorkspace.session;
+  session.select({ kind: 'road', id: roadId });
+  session.updateRoadIntent(offset, { defer: false });
+  assert.equal(app.el('roadApplyB4').disabled, false, session.reconciliation?.unresolved[0]?.message);
+  assert.ok(session.reconciliation.ledger.some(row => row.disposition === 'regenerated'));
+  assert.ok(session.previewGeometry.rows.some(row => row.kind === 'building' && row.proposedPoints));
+  assert.equal(JSON.stringify(app.state().project), before);
+  app.el('roadApplyB4').handlers.click();
+  const applied = JSON.stringify(app.state().project);
+  assert.notEqual(applied, before);
+  assert.equal(state.files.revision, revision + 1);
+  assert.equal(app.moveRoadHistory('undo'), true);
+  assert.equal(JSON.stringify(app.state().project), before);
+  assert.equal(app.moveRoadHistory('redo'), true);
+  assert.equal(JSON.stringify(app.state().project), applied);
+  const saved = app.capture();
+  const portable = decodeProjectDocument(encodeProjectDocument(createProjectDocument(saved.project, saved.workspace)));
+  assert.equal(JSON.stringify(portable.project), applied);
+});
+
+test('C3 refuses to automatically replace a custom building', () => {
+  const project = createProject({ seed: 'c2-planned', size: 'small', morphology: 'planned' });
+  const roadId = 'RD-0113', offset = { x: 12, y: 0 };
+  const preview = prepareNeighborhoodReflowC3(project, roadId, offset);
+  const replacement = preview.ledger.find(row => row.disposition === 'replaced');
+  assert.ok(replacement);
+  project.city.buildings.find(building => building.id === replacement.oldId).customName = 'Market Hall';
+  const before = structuredClone(project);
+  const blocked = prepareNeighborhoodReflowC3(project, roadId, offset);
+  assert.equal(blocked.candidateProject, null);
+  assert.ok(blocked.unresolved.some(row => /custom or (unknown|older)/.test(row.message)));
+  assert.deepEqual(project, before);
 });

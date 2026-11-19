@@ -1,6 +1,6 @@
 {
   "name": "mappo",
-  "version": "0.2.0-dev.c2-reflow",
+  "version": "0.2.0-dev.c3-adaptive",
   "private": true,
   "type": "module",
   "description": "Offline-first procedural medieval city mapper",

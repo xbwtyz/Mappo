@@ -252,8 +252,8 @@ for (const [name, type] of [
       assert.equal(await page.locator('#roadProposedX').isDisabled(), true);
       assert.ok((await page.locator('#roadRecordDetails').innerText()).includes('Protected:'));
       await page.locator('#roadSelectionKind').selectOption('road');
-      // Road-first C1 must keep an intentionally large street move as an
-      // inspectable draft even if existing parcels cannot accept it yet.
+      // A large street move stays detached from the saved city until Apply.
+      // Neighborhood reflow may now make this draft eligible.
       const ordinaryId = await page.evaluate(() => {
         const session=__buildingQA.state().roadWorkspace.session,graph=session.graph;
         const length=road=>{
@@ -277,6 +277,8 @@ for (const [name, type] of [
         const accepted=new Map(project.city.nodes.map(n=>[n.id,n]));
         return {
           pending:session.pending,applyReady:analysis.applyReady,
+          reconciled:session.reconciliation?.validation?.project === 'valid' &&
+            Boolean(session.reconciliation.candidateProject),
           draftable:analysis.draftable,changedRoads:analysis.changedRoadIds.length,
           displaced:analysis.proposedNodes.every(n=>Math.abs(n.x-accepted.get(n.id).x-15)<1e-8 &&
             n.y===accepted.get(n.id).y),
@@ -291,8 +293,9 @@ for (const [name, type] of [
       assert.equal(roadIntent.displaced,true);
       assert.equal(roadIntent.acceptedUnchanged,true);
       assert.equal(roadIntent.recoveryUnchanged,true);
-      assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
-      assert.ok((await page.locator('#roadIntentStatusC1').innerText()).includes('draft'));
+      assert.equal(await page.locator('#roadApplyB4').isDisabled(), !roadIntent.reconciled);
+      assert.match(await page.locator('#roadIntentStatusC1').innerText(),
+        roadIntent.reconciled ? /ready to review/ : /held in draft/);
       // Invalid/blank coordinates are not road drafts. No stale proposal is
       // allowed to remain visible while the user edits a numeric input.
       await page.locator('#roadIntentDxC1').fill('');
@@ -439,14 +442,19 @@ for (const [name, type] of [
       await page.waitForFunction(()=>
         __buildingQA.state().roadWorkspace.session.roadIntentAnalysis?.draftable===true);
       const touchDraft=await page.evaluate(()=>{
-        const s=__buildingQA.state();
-        return {offset:s.roadWorkspace.session.roadIntentOffset,
-          pending:s.roadWorkspace.session.pending};
+        const {roadWorkspace,files}=__buildingQA.state(), session=roadWorkspace.session;
+        return {offset:session.roadIntentOffset, pending:session.pending,
+          reconciled:session.reconciliation?.validation?.project === 'valid' &&
+            Boolean(session.reconciliation.candidateProject),
+          acceptedUnchanged:JSON.stringify(__buildingQA.capture())===__buildingQA.before,
+          recoveryUnchanged:files.revision===__buildingQA.revision};
       });
       assert.equal(touchDraft.pending,true);
       assert.ok(Math.abs(touchDraft.offset.x)>1);
       assert.ok(Math.abs(touchDraft.offset.y)>1);
-      assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+      assert.equal(touchDraft.acceptedUnchanged,true);
+      assert.equal(touchDraft.recoveryUnchanged,true);
+      assert.equal(await page.locator('#roadApplyB4').isDisabled(),!touchDraft.reconciled);
       await page.locator('#roadPreviewReset').click();
 
       // Cancellation of a captured touch pointer rolls back the unaccepted
@@ -551,9 +559,10 @@ for (const [name, type] of [
       await page.locator('#roadModeButton').click();
       await page.evaluate(() => { __buildingQA.c2Revision = __buildingQA.state().files.revision; });
       await page.locator('#roadSelectionKind').selectOption('road');
-      await page.locator('#roadSelectionId').selectOption('RD-0116');
-      await page.locator('#roadIntentDxC1').fill('5');
+      await page.locator('#roadSelectionId').selectOption('RD-0113');
+      await page.locator('#roadIntentDxC1').fill('12');
       await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);
+      assert.match(await page.locator('#roadReconciliationListB3').innerText(), /Generated replacement/);
       assert.equal(await page.evaluate(() => __buildingQA.state().files.revision === __buildingQA.c2Revision), true);
       await page.locator('#roadApplyB4').click();
       const applied = await page.evaluate(() => JSON.stringify(__buildingQA.state().project));
@@ -563,6 +572,28 @@ for (const [name, type] of [
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project) === __buildingQA.c2Before), true);
       assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('redo')), true);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)), applied);
+      if (viewport.name === 'desktop') {
+        const radial = createProject({seed:'c2-radial',size:'small',morphology:'radial'});
+        for (const [id, delta] of [['RD-0103', 1], ['RD-0099', -1]]) {
+          await page.evaluate(doc => __buildingQA.apply(doc), {project:radial, workspace:defaultWorkspace(radial)});
+          await page.locator('#roadModeButton').click();
+          await page.locator('#roadSelectionKind').selectOption('road');
+          await page.locator('#roadSelectionId').selectOption(id);
+          if (delta === 1) {
+            await page.locator('#roadIntentDyC1').fill('15');
+          } else {
+            await page.locator('#roadIntentPanelC1 summary').click();
+            await page.locator('#roadRemoveC3').click();
+          }
+          await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);
+          assert.match(await page.locator('#roadReconciliationListB3').innerText(),
+            delta === 1 ? /New junction/ : /Removed street/);
+          await page.locator('#roadApplyB4').click();
+          assert.equal(await page.evaluate(() => __buildingQA.state().project.city.blocks.length), radial.city.blocks.length + delta);
+          assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')), true);
+          assert.equal(await page.evaluate(() => __buildingQA.state().project.city.blocks.length), radial.city.blocks.length);
+        }
+      }
       assert.equal(errors.length, 0, errors.join('; '));
       console.log(
         `PASS road ${label}: inspection, mouse/touch/keyboard preview, A3 report, reset/cancel, save/recovery isolation`,

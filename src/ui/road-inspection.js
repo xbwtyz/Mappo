@@ -330,6 +330,13 @@ export class RoadInspectionWorkspace {
         id: this.$('roadSelectionId').value,
       }),
     );
+    for (const [id, kind] of [['roadReconnectC3','reconnect'], ['roadAddC3','add'], ['roadRemoveC3','remove']]) {
+      this.$(id).addEventListener('click', () => this.session.previewRoadConnection({
+        kind,
+        endpoint: this.$('roadConnectionEndpointC3').value,
+        target: this.$('roadConnectionTargetC3').value,
+      }));
+    }
     for(const id of ['roadIntentDxC1','roadIntentDyC1'])
       this.$(id).addEventListener('input',()=>{
         const read=id=>this.$(id).value.trim()===''?NaN:Number(this.$(id).value);
@@ -417,6 +424,25 @@ export class RoadInspectionWorkspace {
           ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
           : '';
     this.$('roadIntentPanelC1').hidden=kind!=='road';
+    if (kind === 'road' && d && (this.connectionGraph !== s.graph || this.connectionRoad !== d.record.id)) {
+      this.connectionGraph = s.graph;
+      this.connectionRoad = d.record.id;
+      const option = (value, label = value) => {
+        const item = document.createElement('option');
+        item.value = value;
+        item.textContent = label;
+        return item;
+      };
+      this.$('roadConnectionEndpointC3').replaceChildren(option('a', d.record.a), option('b', d.record.b));
+      this.$('roadConnectionEndpointC3').value = 'b';
+      const targets = [...s.graph.nodesById.values()]
+        .filter(node => !d.endpoints.includes(node.id) && s.graph.incidentRoads.get(node.id)
+          .every(id => !s.graph.roadClasses.get(id).protected))
+        .sort((a,b) => a.id.localeCompare(b.id));
+      this.$('roadConnectionTargetC3').replaceChildren(option('', 'Choose junction'), ...targets.map(node => option(node.id)));
+    }
+    for (const id of ['roadReconnectC3','roadAddC3','roadRemoveC3','roadConnectionEndpointC3','roadConnectionTargetC3'])
+      this.$(id).disabled = !s.roadIntentEligible || Boolean(s.drag);
     for(const [id,field] of [['roadIntentDxC1','x'],['roadIntentDyC1','y']]){
       this.$(id).disabled=!s.roadIntentEligible;
       if(document.activeElement!==this.$(id))
@@ -425,7 +451,7 @@ export class RoadInspectionWorkspace {
     this.$('roadIntentStatusC1').textContent=!s.roadIntentEligible ?
       'Protected connection: choose a road with two ordinary unprotected endpoints.' :
       s.roadIntentInputError || s.error ||
-      (s.pending ? s.checking?'Street positioned in draft; checking the road network...':
+      (s.pending ? s.checking?'Checking the street and neighborhood…':
         s.reconciliation?.candidateProject ? 'Street and local neighborhood ready to review.' :
         'Street placement held in draft. '+(s.reconciliation?.unresolved?.[0]?.message ??
           'The neighborhood could not be reconciled.') :
@@ -511,12 +537,17 @@ export class RoadInspectionWorkspace {
       preview.counts.roads+' roads · '+preview.counts.blocks+' blocks · '+
       preview.counts.properties+' properties · '+preview.counts.plots+' plots · '+
       preview.counts.openSpaces+' open-space summaries · '+
+      preview.counts.buildings+' building changes · '+
       preview.buildingsPreserved+' building footprints held fixed · '+preview.unresolved.length+' unresolved':
       'No reconciled candidate yet.';
-    const rows=preview?.rows??[];
+    const rows=[...(preview?.rows??[])];
+    if (s.roadConnectionEdit || s.reconciliation?.ledger?.some(row => row.disposition === 'created-junction')) {
+      const priority = { junction:0, road:1, block:2, property:3, building:4, plot:5, 'open-space':6 };
+      rows.sort((a,b) => (priority[a.kind] ?? 7) - (priority[b.kind] ?? 7));
+    }
     const unresolved=preview?.unresolved??[];
     const ledger=s.reconciliation?.ledger??[];
-    const provenance=new Map(ledger.map(row=>[row.kind+' '+row.oldId,row.provenance]));
+    const disposition=new Map(ledger.map(row=>[row.kind+' '+(row.oldId??row.newId),row]));
     const access=ledger.filter(row=>row.disposition==='access-reconnected')
       .map(row=>({kind:row.kind,id:row.oldId,state:'access-reconnected',entryType:'change'}));
     const all=[...rows.map(row=>({...row,entryType:'change'})),...access,
@@ -527,9 +558,14 @@ export class RoadInspectionWorkspace {
       if(row.entryType==='change'){
         const measure=(name,oldValue,newValue)=>oldValue!=null&&newValue!=null?
           ' · '+name+': '+oldValue.toFixed(2)+' → '+newValue.toFixed(2):'';
+        const entry=disposition.get(row.kind+' '+row.id);
+        const descriptions={relocated:'Relocated building',regenerated:'Generated replacement',
+          'created-junction':'New junction','removed-road':'Removed street',split:'Split at junction',
+          created:'New record',retained:'Retained geometry',replaced:row.kind==='building'?'Replaced building':'Previous record'};
         description.textContent=row.kind+' '+row.id+' · '+
-          (row.state==='topology-only'?'Proposed topology only':row.state==='access-reconnected'?'Reconnected access':'Adapted geometry')+
-          (provenance.get(row.kind+' '+row.id)==='generated'?' · Generated record':'')+
+          (row.state==='topology-only'?'Proposed topology only':row.state==='access-reconnected'?'Reconnected access':
+            descriptions[entry?.disposition]??'Adapted geometry')+
+          (entry?.provenance==='generated'?' · Generated record':'')+
           measure('area',row.oldArea,row.newArea)+
           measure('length',row.oldLength,row.newLength)+
           measure('frontage',row.oldFrontage,row.newFrontage);
@@ -553,7 +589,7 @@ export class RoadInspectionWorkspace {
     more.hidden=all.length<=this.reconciliationLimit;
     this.$('roadReconciliationLegendB3').textContent=preview?.mode==='topology-only'?
       'Gray = accepted outlines · amber dashed = proposed roads/blocks only. Parcel adjustments remain unresolved.':
-      'Gray = accepted · amber dashed = proposed blocks/roads · violet dashed = properties · teal dashed = plots. Buildings remain fixed.';
+      'Gray = accepted · amber dashed = proposed blocks/roads · violet dashed = properties · teal dashed = plots · pink dashed = buildings.';
   }
   locateReconciliationB3(row) {
     const s=this.session;

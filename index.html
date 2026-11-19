@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.2-dev.c2-reflow</title>
+  <title>Mappo — City editor · 0.2-dev.c3-adaptive</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -483,7 +483,7 @@
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.c2-reflow</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2-dev.c3-adaptive</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -636,6 +636,18 @@
                 <label>Street offset X<input id="roadIntentDxC1" type="number" step="any" value="0"></label>
                 <label>Street offset Y<input id="roadIntentDyC1" type="number" step="any" value="0"></label>
               </div>
+              <details>
+                <summary>Change street connections</summary>
+                <div class="road-preview-selectors">
+                  <label>Endpoint to replace or branch from<select id="roadConnectionEndpointC3"></select></label>
+                  <label>Target junction<select id="roadConnectionTargetC3"></select></label>
+                </div>
+                <div class="road-preview-actions">
+                  <button id="roadReconnectC3" type="button" class="minor-button">Preview reconnect</button>
+                  <button id="roadAddC3" type="button" class="minor-button">Preview added street</button>
+                  <button id="roadRemoveC3" type="button" class="minor-button">Preview removal</button>
+                </div>
+              </details>
               <p id="roadIntentStatusC1" class="hint" role="status" aria-live="polite">Select an ordinary street to draft its new placement.</p>
             </section>
             <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
@@ -8260,7 +8272,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.2-dev.c2-reflow';
+const APP_VERSION = '0.2-dev.c3-adaptive';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -15404,6 +15416,395 @@ function inspectJunctionImpact(project, junctionId, point) {
 }
 
 
+// src/core/road-crossings.js
+
+
+
+const C3_MAX_CROSSINGS = 24;
+
+function roadTopologyId(prefix, key, used) {
+  const base = prefix + '-' + hashSeed(JSON.stringify(key)).toString(36);
+  let id = base, suffix = 1;
+  while (used.has(id)) id = base + '-' + ++suffix;
+  used.add(id);
+  return id;
+}
+
+function normalizeRoadCrossingsC3(city) {
+  const draft = buildRoadGraph(city);
+  if (draft.valid) return { city, graph: draft, splitRoadIds: [], junctionIds: [] };
+  const crossings = draft.issues.filter(issue => issue.code === 'unnormalized-crossing');
+  if (crossings.length !== draft.issues.length || crossings.length > C3_MAX_CROSSINGS)
+    throw new Error(draft.issues[0].message);
+  const cuts = new Map();
+  const usedNodes = new Set(draft.nodesById.keys());
+  const usedRoads = new Set(draft.roadsById.keys());
+  const junctions = [];
+  const endpoint = (road, t) => t <= 1e-8 ? road.a : t >= 1 - 1e-8 ? road.b : null;
+  for (const { roadIds: [first, second] } of crossings) {
+    if ([first, second].some(id => draft.roadClasses.get(id).protected))
+      throw new Error('This crossing touches protected infrastructure.');
+    const r = draft.roadsById.get(first), s = draft.roadsById.get(second);
+    const a = draft.nodesById.get(r.a), b = draft.nodesById.get(r.b);
+    const c = draft.nodesById.get(s.a), d = draft.nodesById.get(s.b);
+    const [t, extra] = segmentCuts(a, b, c, d);
+    const [u, extraReverse] = segmentCuts(c, d, a, b);
+    const cross = (b.x-a.x)*(d.y-c.y) - (b.y-a.y)*(d.x-c.x);
+    if (Math.abs(cross) <= 1e-8 || t === undefined || u === undefined ||
+        extra !== undefined || extraReverse !== undefined)
+      throw new Error('Overlapping streets need a different placement.');
+    const endR = endpoint(r, t), endS = endpoint(s, u);
+    if (endR && endS) throw new Error('Two existing corners coincide. Offset the street to create a distinct junction.');
+    const x = a.x + t*(b.x-a.x), y = a.y + t*(b.y-a.y);
+    const existing = junctions.find(node => Math.hypot(node.x-x, node.y-y) <= 1e-7);
+    if (existing && (endR || endS)) throw new Error('Multiple contacts share an existing junction.');
+    const id = endR ?? endS ?? existing?.id ?? roadTopologyId('N-X', [first, second], usedNodes);
+    if (!endR && !endS && !existing) junctions.push({ id, x, y });
+    for (const [road, at, end] of [[r, t, endR], [s, u, endS]]) {
+      if (end) continue;
+      if (!cuts.has(road.id)) cuts.set(road.id, new Map());
+      cuts.get(road.id).set(id, at);
+    }
+  }
+  const roads = city.roads.flatMap(road => {
+    if (!cuts.has(road.id)) return [road];
+    const ids = [road.a, ...[...cuts.get(road.id)].sort((a,b)=>a[1]-b[1]).map(([id])=>id), road.b];
+    return ids.slice(1).map((b, index) => ({
+      ...road, a: ids[index], b,
+      id: index === 0 ? road.id : roadTopologyId('RD-X', [road.id, ids[index], b], usedRoads),
+    }));
+  });
+  const normalized = { ...city, roads, nodes: [...city.nodes, ...junctions] };
+  const graph = buildRoadGraph(normalized);
+  if (!graph.valid) throw new Error(graph.issues[0].message);
+  return { city: normalized, graph, splitRoadIds: [...cuts.keys()].sort(), junctionIds: junctions.map(node => node.id) };
+}
+
+function draftRoadConnectionC3(city, roadId, edit) {
+  const graph = buildRoadGraph(city);
+  const road = graph.roadsById.get(roadId);
+  const kind = edit?.kind;
+  if (!graph.valid || !road || !['remove', 'reconnect', 'add'].includes(kind))
+    throw new Error('Choose an ordinary street and a supported connection edit.');
+  const editable = id => graph.incidentRoads.get(id)?.every(edge => !graph.roadClasses.get(edge).protected);
+  if (![road.a, road.b].every(editable))
+    throw new Error('This street touches protected infrastructure.');
+  let roads = city.roads.filter(record => record.id !== roadId);
+  if (kind !== 'remove') {
+    const { endpoint, target } = edit;
+    if (!['a', 'b'].includes(endpoint) || !editable(target) || [road.a, road.b].includes(target))
+      throw new Error('Choose a different ordinary junction as the target.');
+    const rerouted = { ...road, [kind === 'add' ? (endpoint === 'a' ? 'b' : 'a') : endpoint]: target };
+    if (kind === 'add') {
+      rerouted.id = roadTopologyId('RD-NEW', [rerouted.a, rerouted.b], new Set(graph.roadsById.keys()));
+      roads = [...city.roads, rerouted];
+    } else {
+      roads = city.roads.map(record => record.id === roadId ? rerouted : record);
+    }
+  }
+  return { proposedCity: { ...city, roads }, proposedNodes: [] };
+}
+
+
+// src/core/road-topology-reflow.js
+
+
+
+
+
+
+
+
+
+
+const TOPOLOGY_BLOCK_LIMIT = 32;
+const ROAD_RECORDS = [
+  ['nodes', 'junction'], ['roads', 'road'], ['blocks', 'block'], ['properties', 'property'],
+  ['plots', 'plot'], ['buildings', 'building'], ['openSpaces', 'open-space'],
+];
+
+function c3RetainDevelopment(old, city, replacements, graph) {
+  const kept = { properties: [], plots: [], buildings: [] };
+  const plots = riIndex(old.plots), buildings = riIndex(old.buildings);
+  const roads = new Map(city.roads.map(road => [[road.a, road.b].sort().join(':'), road]));
+  const candidateEdges = new Map();
+  for (const block of [...replacements.values()].flat()) {
+    if (candidateEdges.has(block.id)) continue;
+    const edges = block.vertices.map((id, i) => {
+      const next = block.vertices[(i + 1) % block.vertices.length];
+      return { a: graph.nodesById.get(id), b: graph.nodesById.get(next),
+        road: roads.get([id,next].sort().join(':')) };
+    });
+    candidateEdges.set(block.id, edges);
+  }
+  for (const property of old.properties) {
+    if (!replacements.has(property.blockId)) continue;
+    const ownBuildings = property.buildingIds.map(id => buildings.get(id));
+    const origin = property.frame?.origin;
+    const anchor = graph.nodesById.get(origin?.id);
+    if (!anchor || anchor.x !== origin.x || anchor.y !== origin.y) continue;
+    for (const block of replacements.get(property.blockId)) {
+      const edges = candidateEdges.get(block.id);
+      const edge = edges.find(({road}) => road.id === property.frontageRoadId);
+      if (!edge || ![edge.road.a, edge.road.b].includes(anchor.id)) continue;
+      const {a,b} = edge, polygon = edges.map(row => row.a);
+      const dx = b.x-a.x, dy = b.y-a.y, length = Math.hypot(dx,dy);
+      const alignment = (dx*property.frame.tangent.x + dy*property.frame.tangent.y)/length;
+      const outsideFrontage = property.frontage.some(point => {
+        const along = ((point.x-a.x)*dx+(point.y-a.y)*dy)/length;
+        return along < -1e-6 || along > length + 1e-6;
+      });
+      if (Math.abs(Math.abs(alignment)-1) > 1e-8 || outsideFrontage || !propertyFits(property.boundary, polygon, edges) ||
+          ownBuildings.some(building => {
+            const end = building.accessPath?.at(-1);
+            return !end || distanceToSegment(end,a,b) > 1e-6 ||
+              building.accessPath.some(point => !insideOrOn(point,polygon));
+          })) continue;
+      const assign = record => ({ ...record, blockId: block.id });
+      const assigned = { ...assign(property), districtId: block.districtId ?? null };
+      const ownPlots = property.plotIds.map(id => assign(plots.get(id)));
+      stampRoadGenerated(assigned, ownPlots);
+      kept.properties.push(assigned);
+      kept.plots.push(...ownPlots);
+      for (const building of ownBuildings) {
+        const retained = { ...assign(building), districtId: block.districtId ?? null };
+        stampRoadGenerated(retained);
+        kept.buildings.push(retained);
+      }
+      break;
+    }
+  }
+  return kept;
+}
+
+function c3Development(seed, city, blocks, old, kept) {
+  const generated = generateBuildings(seed, { ...city, blocks });
+  const keptByBlock = new Map();
+  for (const property of kept.properties) {
+    if (!keptByBlock.has(property.blockId)) keptByBlock.set(property.blockId, []);
+    keptByBlock.get(property.blockId).push(property);
+  }
+  generated.properties = generated.properties.filter(property => !(keptByBlock.get(property.blockId) ?? [])
+    .some(existing => shapesOverlapInterior(property.boundary, existing.boundary)));
+  const propertyIds = new Set(generated.properties.map(property => property.id));
+  generated.plots = generated.plots.filter(plot => propertyIds.has(plot.propertyId));
+  generated.buildings = generated.buildings.filter(building => propertyIds.has(building.propertyId));
+  const reserved = new Set([...old.properties, ...old.plots, ...old.buildings, ...old.openSpaces].map(row => row.id));
+  const ids = new Map();
+  for (const [collection, prefix] of [['properties','PROP'], ['plots','PLOT'], ['buildings','BLD'], ['openSpaces','OPEN']]) {
+    for (const record of generated[collection]) {
+      const id = roadTopologyId(prefix + '-X', [record.blockId, record.id], reserved);
+      ids.set(record.id, id);
+      record.id = id;
+    }
+  }
+  const districts = new Map(blocks.map(block => [block.id, block.districtId]));
+  const plots = riIndex(generated.plots);
+  for (const plot of generated.plots) plot.propertyId = ids.get(plot.propertyId);
+  for (const property of generated.properties) {
+    property.plotIds = property.plotIds.map(id => ids.get(id));
+    property.buildingIds = property.buildingIds.map(id => ids.get(id));
+    property.districtId = districts.get(property.blockId) ?? null;
+    stampRoadGenerated(property, property.plotIds.map(id => plots.get(id)));
+  }
+  for (const building of generated.buildings) {
+    building.propertyId = ids.get(building.propertyId);
+    building.plotIds = building.plotIds.map(id => ids.get(id));
+    building.districtId = districts.get(building.blockId) ?? null;
+    stampRoadGenerated(building);
+  }
+  for (const key of Object.keys(kept)) generated[key].push(...kept[key]);
+  const occupied = new Map();
+  for (const property of generated.properties)
+    occupied.set(property.blockId, (occupied.get(property.blockId) ?? 0) + property.area);
+  const blockAreas = new Map(blocks.map(block => [block.id,block.area]));
+  for (const space of generated.openSpaces) {
+    space.area = Math.max(0, blockAreas.get(space.blockId) - (occupied.get(space.blockId) ?? 0));
+    space.kind = occupied.has(space.blockId) ? 'yards-and-gaps' : 'undeveloped';
+  }
+  return generated;
+}
+
+function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null) {
+  const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
+  const fail = (code, message, kind = 'road', id = roadId) => ({
+    phase: 'C3', status: 'needs-review', candidateProject: null, changed: [], ledger: [],
+    unresolved: [{ code, message, kind, id, severity: 'needs-review' }], validation,
+  });
+  try {
+    validateStoredProject(project);
+    const old = project.city;
+    if (edit) draft = draftRoadConnectionC3(old, roadId, edit);
+    const { city, graph, splitRoadIds } = normalizeRoadCrossingsC3(structuredClone(draft.proposedCity));
+    validation.graph = 'pass';
+    const { emit, items } = riReporter(), spend = riBudget();
+    inspectOpaqueRoadDependencies(project, graph, emit, spend);
+    const opaque = items().find(row => row.severity !== 'info');
+    if (opaque) return fail(opaque.code, opaque.message, opaque.kind, opaque.id);
+    const extraction = extractRoadFaces(graph, old);
+    if (!extraction.valid) return fail(extraction.issues[0].code, extraction.issues[0].message);
+    validation.faces = 'pass';
+    const matching = matchExistingFaces(old, extraction);
+    if (!matching.valid || matching.added.length || matching.removed.length)
+      return fail('unresolved-face-ownership', 'Block ownership cannot be traced across these street changes.');
+    const matches = new Map(extraction.faces.map(face => [face.key, face]));
+    const oldBlocks = riIndex(old.blocks);
+    const preserved = new Set(matching.preserved.filter(row => row.kind === 'block').map(row => row.id));
+    const groups = [...matching.split, ...matching.merged, ...matching.ambiguous];
+    // The matcher classifies a many-to-many overlap as ambiguous. It is eligible
+    // only when every participant is an ordinary block of one accepted district.
+    const replacements = new Map();
+    const used = new Set([old.plaza.id, ...oldBlocks.keys(), ...(old.waterFaces??[]).map(r=>r.id),
+      ...(old.terrainFaces??[]).map(r=>r.id)]);
+    for (const group of groups) {
+      const sources = group.oldIds.map(id => oldBlocks.get(id));
+      const faces = group.candidateKeys.map(key => matches.get(key));
+      if (sources.some(block => !block) || faces.some(face => face?.kind !== 'block') ||
+          new Set(sources.map(block => block.districtId)).size !== 1 ||
+          new Set(sources.map(block => block.usage)).size !== 1)
+        return fail('district-decision-required', 'The restructured blocks span different districts or land uses.');
+      if (group.overlapArea <= 1e-6)
+        return fail('unresolved-face-ownership', 'The new blocks have no provable overlap with their former district.');
+      const inherited = sources[0];
+      const records = faces.map(face => ({
+        ...inherited, vertices: face.vertices, area: face.area,
+        id: sources.length === 1 && faces.length === 1 ? inherited.id : roadTopologyId('BLK-X', face.key, used),
+      }));
+      for (const { id } of sources) replacements.set(id, records);
+    }
+    for (const match of matching.changed) {
+      if (match.kind !== 'block') return fail('protected-face-change', 'A protected face would change.');
+      replacements.set(match.id, [match.record]);
+    }
+    const affectedBlocks = old.blocks.filter(block => !preserved.has(block.id));
+    if (!affectedBlocks.length || affectedBlocks.length > TOPOLOGY_BLOCK_LIMIT ||
+        affectedBlocks.some(block => !replacements.has(block.id)))
+      return fail('unresolved-face-ownership', 'The neighborhood is too large or its replacement blocks cannot be identified.');
+    const oldPlots = riIndex(old.plots);
+    const customized = old.properties.find(property => replacements.has(property.blockId) &&
+      classifyRoadProvenance(property, property.plotIds.map(id => oldPlots.get(id))) !== 'generated');
+    if (customized) return fail('parcel-decision-required', 'A custom or older parcel needs a decision before this block can be rebuilt.',
+      'property', customized.id);
+    const fixed = old.buildings.find(building => replacements.has(building.blockId) &&
+      classifyRoadProvenance(building) !== 'generated');
+    if (fixed) return fail('building-decision-required', 'A custom or older building needs a decision before this block can be rebuilt.',
+      'building', fixed.id);
+    const rebuilt = [...new Map([...replacements.values()].flat().map(block => [block.id, block])).values()];
+    const uniqueBlocks = (ids) => [...new Set(ids.flatMap(id => replacements.get(id)?.map(block => block.id) ?? [id]))];
+    const nextBlocks = riIndex(rebuilt);
+    city.blocks = uniqueBlocks(old.blocks.map(block => block.id)).map(id => nextBlocks.get(id) ?? oldBlocks.get(id));
+    city.districts = city.districts.map(district => ({ ...district, blockIds: uniqueBlocks(district.blockIds) }));
+    const kept = c3RetainDevelopment(old, city, replacements, graph);
+    const regenerated = c3Development(project.seed, city, rebuilt, old, kept);
+    for (const key of Object.keys(regenerated))
+      city[key] = [...city[key].filter(record => !replacements.has(record.blockId)), ...regenerated[key]];
+
+    const oldRoads = riIndex(old.roads);
+    const oldNodes = riIndex(old.nodes);
+    const roadIds = new Set(city.roads.filter(road => !riEqual(road, oldRoads.get(road.id)) ||
+      [road.a, road.b].some(id => !riEqual(graph.nodesById.get(id), oldNodes.get(id)))).map(road => road.id));
+    const context = { roadIds: [...roadIds], junctionIds: draft.proposedNodes.map(node => node.id),
+      changedBlockIds: rebuilt.map(block => block.id), acceptedValid: true };
+    inspectRoadContextReferences(city, city, context, emit, spend);
+    inspectRoadDependencies(city, city, context, (kind,id,code,...args) => {
+      // Stored-project validation checks shared-edge plot containment with the
+      // subdivision tolerance. These reports describe frontage re-inspection.
+      if (code !== 'frontage-geometry' && !(kind === 'plot' && code === 'property-containment'))
+        emit(kind,id,code,...args);
+    }, spend);
+    const conflict = items().find(row => row.severity !== 'info');
+    if (conflict) return fail(conflict.code, conflict.message, conflict.kind, conflict.id);
+    const candidateProject = { ...structuredClone(project), city };
+    validateStoredProject(candidateProject);
+    validation.parcels = 'pass';
+    validation.project = 'valid';
+
+    const changed = [], ledger = [];
+    const retainedIds = new Set(Object.values(kept).flat().map(record => record.id));
+    for (const [key, kind] of ROAD_RECORDS) {
+      const before = riIndex(old[key]), after = riIndex(city[key]);
+      for (const id of new Set([...before.keys(), ...after.keys()])) {
+        const a = before.get(id), b = after.get(id);
+        const movedBoundary = (kind === 'road' && roadIds.has(id)) ||
+          (kind === 'block' && replacements.has(id));
+        if (riEqual(a,b) && !movedBoundary) continue;
+        const disposition = !a ? (kind === 'junction' ? 'created-junction' : 'created') :
+          !b ? (kind === 'road' ? 'removed-road' : 'replaced') : retainedIds.has(id) ? 'retained' : kind === 'road' && splitRoadIds.includes(id) ? 'split' : 'reshaped';
+        ledger.push({ kind, oldId: a?.id ?? null, newId: b?.id ?? null, disposition,
+          ...(kind === 'block' && a ? { successorIds: replacements.get(id)?.map(row => row.id) ?? [id] } : {}) });
+        changed.push({ kind, id, fields: ['geometry'] });
+      }
+    }
+    return { phase: 'C3', status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation };
+  } catch (error) {
+    return fail('topology-reflow-blocked', error.message);
+  }
+}
+
+
+// src/core/road-building-reflow.js
+
+
+
+
+
+
+function reflowGeneratedRoadBuildings(seed, before, after, plots, original, reservedIds) {
+  const oldFrame = before.frame, newFrame = after.frame;
+  const center = local => local.x + local.width / 2;
+  const transform = point => {
+    const dx = point.x - oldFrame.origin.x, dy = point.y - oldFrame.origin.y;
+    const u = dx * oldFrame.tangent.x + dy * oldFrame.tangent.y + center(after.local) - center(before.local);
+    const v = dx * oldFrame.inward.x + dy * oldFrame.inward.y + after.local.y - before.local.y;
+    return {
+      x: newFrame.origin.x + newFrame.tangent.x * u + newFrame.inward.x * v,
+      y: newFrame.origin.y + newFrame.tangent.y * u + newFrame.inward.y * v,
+    };
+  };
+  const rotation = Math.atan2(newFrame.tangent.y, newFrame.tangent.x) -
+    Math.atan2(oldFrame.tangent.y, oldFrame.tangent.x);
+  const moved = original.map(building => {
+    const footprint = building.footprint.map(transform);
+    const holes = building.holes.map(hole => hole.map(transform));
+    const entrance = transform(building.entrance);
+    const u = (entrance.x - newFrame.origin.x) * newFrame.tangent.x +
+      (entrance.y - newFrame.origin.y) * newFrame.tangent.y;
+    const end = {
+      x: newFrame.origin.x + u * newFrame.tangent.x,
+      y: newFrame.origin.y + u * newFrame.tangent.y,
+    };
+    const plotIds = plots.filter(plot =>
+      Math.abs(polygonSignedArea(clipToConvexPolygon(footprint, plot.boundary))) -
+      holes.reduce((area, hole) => area + Math.abs(polygonSignedArea(clipToConvexPolygon(hole, plot.boundary))), 0) > 1e-5
+    ).map(plot => plot.id);
+    return { ...building, footprint, holes, entrance, accessPath: [entrance, end],
+      plotIds, orientation: building.orientation + rotation };
+  });
+  if (moved.every(building => building.plotIds.length && shapeContained(building.footprint, after.boundary))) {
+    for (const building of moved) stampRoadGenerated(building);
+    return { buildings: moved, disposition: 'relocated' };
+  }
+
+  if (after.local.width < 7 || after.local.depth < 7)
+    throw new Error('The reshaped parcel has insufficient room for replacement buildings.');
+  const replacements = [];
+  const generatedParcel = { ...after, buildingIds: [] };
+  const key = JSON.stringify([seed, after.id, after.boundary]);
+  populateProperty(generatedParcel, plots, createRng(key), replacements);
+  let suffix = 0;
+  for (const building of replacements) {
+    do {
+      building.id = 'BLD-REFLOW-' + hashSeed(key).toString(36) + '-' + ++suffix;
+    } while (reservedIds.has(building.id));
+    reservedIds.add(building.id);
+    if (after.districtId !== undefined) building.districtId = after.districtId;
+    stampRoadGenerated(building);
+  }
+  if (!replacements.length) throw new Error('The reshaped parcel has no suitable replacement building.');
+  return { buildings: replacements, disposition: 'regenerated' };
+}
+
+
 // src/core/road-intent-c1.js
 
 
@@ -15509,12 +15910,18 @@ function prepareRoadIntentC1(project,roadId,offset){
 
 
 
+
+
 const C2_PARCEL_LIMIT = 256;
+const rebuildableLandIssues = new Set([
+  'road-clearance', 'road-setback', 'block-containment', 'parcel-reflow-blocked',
+  'access-reflow-blocked', 'candidate-validation',
+]);
 const c2LandIssues = new Set(['frontage-geometry', 'block-containment', 'road-setback', 'frame-reference']);
 const c2Issue = (kind, id, code, message) => ({ kind, id, code, message, severity: 'needs-review' });
 const c2Margin = road => (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
 
-function c2Parcel(city, property, road, edges, buildings) {
+function c2Parcel(city, property, road, edges, fixed) {
   const edge = edges.find(e => e.road.id === road.id);
   if (!edge || property.boundary.length !== 4)
     throw new Error('This parcel needs a four-corner envelope with frontage on its own block.');
@@ -15525,7 +15932,6 @@ function c2Parcel(city, property, road, edges, buildings) {
   const frame = { origin: a, tangent, inward };
   const u = p => (p.x - a.x) * tangent.x + (p.y - a.y) * tangent.y;
   const v = p => (p.x - a.x) * inward.x + (p.y - a.y) * inward.y;
-  const fixed = property.buildingIds.flatMap(id => buildings.get(id).footprint);
   const front = c2Margin(road) + .05;
   if (fixed.some(p => v(p) < front))
     throw new Error('The street setback reaches a fixed building. Adjust the street or resolve the building placement.');
@@ -15559,10 +15965,34 @@ function c2Parcel(city, property, road, edges, buildings) {
 }
 
 function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoadIntentC1(project, roadId, offset)) {
+  return prepareNeighborhoodReflow(project, roadId, draft, false);
+}
+
+function prepareNeighborhoodReflowC3(project, roadId, offset, draft = prepareRoadIntentC1(project, roadId, offset)) {
+  if (draft.draftable && !draft.issues.some(row => row.code === 'boundary-escape') &&
+      draft.issues.some(row => row.code === 'unnormalized-crossing'))
+    return prepareRoadTopologyReflowC3(project, roadId, draft);
+  const preserved = prepareNeighborhoodReflow(project, roadId, draft, false);
+  if (preserved.candidateProject || !preserved.unresolved.some(row => rebuildableLandIssues.has(row.code)))
+    return preserved;
+  const adapted = prepareNeighborhoodReflow(project, roadId, draft, true);
+  if (adapted.candidateProject || !draft.facesResolved) return adapted;
+  // If a fixed parcel layout cannot be repaired, try filling the same affected
+  // blocks again. Topology reflow independently verifies provenance, protects
+  // authored work, retains compatible geometry, and validates the whole result.
+  if (!adapted.unresolved.length || adapted.unresolved.some(row => !rebuildableLandIssues.has(row.code)))
+    return adapted;
+  const rebuilt = prepareRoadTopologyReflowC3(project, roadId, draft);
+  return rebuilt.candidateProject || rebuilt.unresolved.some(row =>
+    ['parcel-decision-required', 'building-decision-required'].includes(row.code)) ? rebuilt : adapted;
+}
+
+function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
   const changed = [], ledger = [];
+  const phase = adaptBuildings ? 'C3' : 'C2';
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
   const blocked = unresolved => ({
-    phase: 'C2', status: 'needs-review', candidateProject: null, changed: [], ledger, unresolved, validation,
+    phase, status: 'needs-review', candidateProject: null, changed: [], ledger, unresolved, validation,
   });
   const fail = (code, message) => blocked([c2Issue('road', roadId, code, message)]);
   if (!draft.draftable || draft.status === 'unchanged' || !draft.topologyResolved ||
@@ -15600,11 +16030,13 @@ function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoa
     }).map(node => node.id);
     if (!junctionIds.length) return fail('unchanged-street', 'The offset does not move either street endpoint.');
     const plots = riIndex(city.plots), buildings = riIndex(city.buildings);
-    const buildingsByBlock = new Map();
-    for (const building of city.buildings) {
-      if (!changedBlocks.has(building.blockId)) continue;
-      if (!buildingsByBlock.has(building.blockId)) buildingsByBlock.set(building.blockId, []);
-      buildingsByBlock.get(building.blockId).push(building);
+    const reservedIds = new Set(buildings.keys());
+    const replacements = new Map();
+    const displacedParcels = new Set();
+    if (adaptBuildings) for (const row of impact.issues) {
+      const building = buildings.get(row.id);
+      if (row.kind === 'building' && building && ['road-clearance', 'block-containment'].includes(row.code))
+        displacedParcels.add(building.propertyId);
     }
     const affected = city.properties.filter(p => changedBlocks.has(p.blockId));
     if (affected.length > C2_PARCEL_LIMIT)
@@ -15614,7 +16046,9 @@ function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoa
     const unresolved = impact.issues.filter(row => !(
       ((row.kind === 'property' || row.kind === 'plot') && c2LandIssues.has(row.code)) ||
       (row.kind === 'plot' && row.code === 'property-containment') ||
-      (row.kind === 'building' && ['frontage-geometry', 'access-connection'].includes(row.code))
+      (row.kind === 'building' && (['frontage-geometry', 'access-connection'].includes(row.code) ||
+        (adaptBuildings && displacedParcels.has(buildings.get(row.id)?.propertyId) &&
+          ['road-clearance', 'block-containment'].includes(row.code))))
     ));
     if (unresolved.length) return blocked(unresolved);
 
@@ -15639,7 +16073,7 @@ function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoa
       const ownPlots = property.plotIds.map(id => plots.get(id));
       const provenance = classifyRoadProvenance(property, ownPlots);
       const changedFrontage = roadIds.has(property.frontageRoadId);
-      if (!changedFrontage && !parcelIssues.has(property.id)) {
+      if (!changedFrontage && !parcelIssues.has(property.id) && !displacedParcels.has(property.id)) {
         record('property', property.id, 'preserved', [], provenance);
         for (const plot of ownPlots) record('plot', plot.id, 'preserved', [], provenance);
         continue;
@@ -15651,7 +16085,39 @@ function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoa
       }
       const road = graph.roadsById.get(property.frontageRoadId);
       try {
-        const next = c2Parcel(city, property, road, blockEdges.get(property.blockId), buildings);
+        const ownBuildings = property.buildingIds.map(id => buildings.get(id));
+        const mayAdapt = adaptBuildings && ownBuildings.length &&
+          ownBuildings.every(building => classifyRoadProvenance(building) === 'generated');
+        const edges = blockEdges.get(property.blockId);
+        let next;
+        let adapt = displacedParcels.has(property.id);
+        if (!adapt) {
+          try {
+            next = c2Parcel(city, property, road, edges, ownBuildings.flatMap(building => building.footprint));
+          } catch (error) {
+            if (!mayAdapt) throw error;
+            adapt = true;
+          }
+        }
+        if (adapt) {
+          if (!mayAdapt) throw new Error('A custom or unknown building needs a decision before it can move.');
+          next = c2Parcel(city, property, road, edges, []);
+          const proposedPlots = ownPlots.map((plot, i) => ({ ...plot, boundary: next.plots[i].boundary }));
+          const result = reflowGeneratedRoadBuildings(project.seed, property, next.property, proposedPlots,
+            ownBuildings, reservedIds);
+          next.property.buildingIds = result.buildings.map(building => building.id);
+          replacements.set(property.id, result.buildings);
+          for (const building of ownBuildings) {
+            const relocated = result.disposition === 'relocated';
+            ledger.push({ kind: 'building', oldId: building.id,
+              newId: relocated ? building.id : null, disposition: relocated ? 'relocated' : 'replaced', provenance });
+            changed.push({ kind: 'building', id: building.id, fields: ['footprint', 'accessPath'] });
+          }
+          if (result.disposition === 'regenerated') for (const building of result.buildings) {
+            ledger.push({ kind: 'building', oldId: null, newId: building.id, disposition: 'regenerated', provenance });
+            changed.push({ kind: 'building', id: building.id, fields: ['footprint', 'accessPath'] });
+          }
+        }
         Object.assign(property, next.property);
         for (const update of next.plots) {
           const plot = plots.get(update.id);
@@ -15665,8 +16131,31 @@ function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoa
         unresolved.push(c2Issue('property', property.id, 'parcel-reflow-blocked', error.message));
       }
     }
+    const inserted = new Set();
+    city.buildings = city.buildings.flatMap(building => {
+      if (!replacements.has(building.propertyId)) return [building];
+      if (inserted.has(building.propertyId)) return [];
+      inserted.add(building.propertyId);
+      return replacements.get(building.propertyId);
+    });
+
+    const buildingsByBlock = new Map();
     for (const building of city.buildings) {
       if (!changedBlocks.has(building.blockId)) continue;
+      if (!buildingsByBlock.has(building.blockId)) buildingsByBlock.set(building.blockId, []);
+      buildingsByBlock.get(building.blockId).push(building);
+    }
+    for (const building of city.buildings) {
+      if (!changedBlocks.has(building.blockId)) continue;
+      const intersectsBuilding = (start, end) => buildingsByBlock.get(building.blockId).some(other =>
+        other.footprint.some((point, index) => segmentCuts(start, end, point,
+          other.footprint[(index + 1) % other.footprint.length]).some(t => t > 1e-6)));
+      if (replacements.has(building.propertyId)) {
+        if (intersectsBuilding(...building.accessPath))
+          unresolved.push(c2Issue('building', building.id, 'access-reflow-blocked',
+            'The adapted entrance path intersects another footprint.'));
+        continue;
+      }
       const provenance = classifyRoadProvenance(building);
       if (!roadIds.has(building.frontageRoadId)) {
         record('building', building.id, 'preserved', [], provenance);
@@ -15694,10 +16183,7 @@ function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoa
       }
       const end = { x: a.x + t * dx, y: a.y + t * dy };
       const start = building.accessPath[0];
-      const crossing = buildingsByBlock.get(building.blockId).some(other =>
-        other.footprint.some((point, index) => segmentCuts(start, end, point,
-          other.footprint[(index + 1) % other.footprint.length]).some(t => t > 1e-6)));
-      if (crossing) {
+      if (intersectsBuilding(start, end)) {
         unresolved.push(c2Issue('building', building.id, 'access-reflow-blocked',
           'The proposed entrance path intersects a fixed building.'));
         continue;
@@ -15707,7 +16193,6 @@ function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoa
       record('building', building.id, 'access-reconnected', ['accessPath'], provenance);
     }
     if (unresolved.length) return blocked(unresolved);
-
     const occupied = new Map();
     for (const property of affected)
       occupied.set(property.blockId, (occupied.get(property.blockId) ?? 0) + property.area);
@@ -15733,7 +16218,7 @@ function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoa
     validateStoredProject(candidateProject);
     validation.parcels = 'pass';
     validation.project = 'valid';
-    return { phase: 'C2', status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation };
+    return { phase, status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation };
   } catch (error) {
     return fail('candidate-validation', 'The reflow cannot be accepted: ' + error.message);
   }
@@ -15813,23 +16298,20 @@ function roadReportHighlights(report) {
   };
 }
 
-function roadPreviewPoints(city, kind, id) {
-  const map = {junction:'nodes',road:'roads',block:'blocks',property:'properties',
-    plot:'plots','open-space':'openSpaces'};
-  const record = (city?.[map[kind]] ?? []).find(r=>r.id===id);
-  if(!record)return null;
-  const nodes = new Map((city.nodes??[]).map(n=>[n.id,n]));
-  const points = kind==='junction' ? [record] : kind==='road' ?
-    [nodes.get(record.a),nodes.get(record.b)] : kind==='block' ?
+const previewCollections = {
+  junction:'nodes',road:'roads',block:'blocks',property:'properties',plot:'plots',
+  building:'buildings','open-space':'openSpaces',
+};
+const roadPreviewIndex = (city, kind) => new Map((city?.[previewCollections[kind]] ?? [])
+  .map(record => [record.id,record]));
+function roadPreviewPoints(nodes, kind, record) {
+  if (!record) return null;
+  const points = kind === 'junction' ? [record] : kind === 'road' ?
+    [nodes.get(record.a),nodes.get(record.b)] : kind === 'block' ?
     record.vertices.map(n=>nodes.get(n)) : record.boundary ?? record.footprint ?? null;
   return Array.isArray(points) && points.length &&
-    points.every(p=>p && Number.isFinite(p.x)&&Number.isFinite(p.y))
+    points.every(p=>p && Number.isFinite(p.x) && Number.isFinite(p.y))
       ? points.map(p=>({x:p.x,y:p.y})) : null;
-}
-function roadPreviewRecord(city,kind,id) {
-  const map={junction:'nodes',road:'roads',block:'blocks',property:'properties',
-    plot:'plots','open-space':'openSpaces'};
-  return (city?.[map[kind]]??[]).find(r=>r.id===id)??null;
 }
 const roadPreviewArea = (record,points,kind) => {
   if(Number.isFinite(record?.area))return record.area;
@@ -15858,12 +16340,16 @@ function roadReconciliationPreviewB3(project,reconciliation,topology=null) {
   const mode=full?'reconciled':candidate?'topology-only':'unavailable';
   const changes=full ? (reconciliation?.changed??[]) : candidate ? (topology?.changed??[]) : [];
   const entries=[];
+  const kinds = new Set(changes.map(row => row.kind));
+  const beforeNodes = roadPreviewIndex(original, 'junction'), afterNodes = roadPreviewIndex(candidate, 'junction');
+  const beforeRecords = new Map([...kinds].map(kind => [kind, roadPreviewIndex(original, kind)]));
+  const afterRecords = new Map([...kinds].map(kind => [kind, roadPreviewIndex(candidate, kind)]));
   for(const item of changes){
-    const before=roadPreviewRecord(original,item.kind,item.id);
-    const after=roadPreviewRecord(candidate,item.kind,item.id);
-    const originalPoints=roadPreviewPoints(original,item.kind,item.id);
-    const proposedPoints=roadPreviewPoints(candidate,item.kind,item.id);
-    if(!before||!after)continue;
+    const before=beforeRecords.get(item.kind).get(item.id);
+    const after=afterRecords.get(item.kind).get(item.id);
+    const originalPoints=roadPreviewPoints(beforeNodes,item.kind,before);
+    const proposedPoints=roadPreviewPoints(afterNodes,item.kind,after);
+    if (!before && !after) continue;
     const oldArea=roadPreviewArea(before,originalPoints,item.kind);
     const newArea=roadPreviewArea(after,proposedPoints,item.kind);
     const oldLength=roadPreviewLength(originalPoints);
@@ -15877,9 +16363,9 @@ function roadReconciliationPreviewB3(project,reconciliation,topology=null) {
       originalPoints,proposedPoints,oldArea,newArea,oldLength,newLength,oldFrontage,newFrontage});
   }
   entries.sort((a,b)=>a.kind.localeCompare(b.kind)||a.id.localeCompare(b.id));
-  const counts={roads:0,blocks:0,properties:0,plots:0,openSpaces:0};
+  const counts={roads:0,blocks:0,properties:0,plots:0,buildings:0,openSpaces:0};
   for(const row of entries){
-    const field={road:'roads',block:'blocks',property:'properties',plot:'plots',
+    const field={road:'roads',block:'blocks',property:'properties',plot:'plots',building:'buildings',
       'open-space':'openSpaces'}[row.kind];
     if(field)counts[field]++;
   }
@@ -15888,13 +16374,14 @@ function roadReconciliationPreviewB3(project,reconciliation,topology=null) {
     unresolved:(reconciliation?.unresolved??[]).map(row=>({
       kind:row.kind,id:row.id,code:row.code,message:row.message,severity:row.severity
     })),
-    buildingsPreserved:original?.buildings?.length??0,
+    buildingsPreserved:(original?.buildings?.length??0) - entries.filter(row=>row.kind==='building' && row.originalPoints).length,
     verified:!!full && reconciliation?.validation?.project==='valid',
   };
 }
 
 
 // src/editor/road-preview.js
+
 
 
 
@@ -15946,6 +16433,7 @@ class RoadPreviewSession {
     this.active = false;
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
+    this.roadConnectionEdit = null;
     this.roadIntentOffset = null;
     this.roadIntentAnalysis = null;
     this.roadIntentInputError = '';
@@ -15963,8 +16451,8 @@ class RoadPreviewSession {
   get pending() {
     const d = this.details;
     if(d?.kind==='road')
-      return Boolean(this.roadIntentOffset &&
-        (this.roadIntentOffset.x!==0 || this.roadIntentOffset.y!==0));
+      return Boolean(this.roadConnectionEdit || (this.roadIntentOffset &&
+        (this.roadIntentOffset.x!==0 || this.roadIntentOffset.y!==0)));
     return Boolean(
       d?.kind === 'junction' && this.point && (this.point.x !== d.record.x || this.point.y !== d.record.y),
     );
@@ -15976,7 +16464,7 @@ class RoadPreviewSession {
         !this.graph.roadClasses.get(roadId)?.protected)));
   }
   get roadIntentNodes(){
-    if(!this.roadIntentEligible || !this.roadIntentOffset)return null;
+    if(!this.roadIntentEligible || !this.roadIntentOffset || this.roadConnectionEdit)return null;
     const d=this.details,coords=new Map();
     for(const id of d.endpoints){
       const accepted=this.graph.nodesById.get(id);
@@ -15988,6 +16476,7 @@ class RoadPreviewSession {
   updateRoadIntent(offset,{defer=true,dragging=false}={}){
     if(!this.roadIntentEligible)return false;
     this.invalidate();
+    this.roadConnectionEdit = null;
     // Never present NaN, Infinity or a blank field as a real road draft.
     // Drop the previous preview, rather than keeping an outdated ghost while
     // displaying a new invalid displacement in the input.
@@ -16004,24 +16493,41 @@ class RoadPreviewSession {
     this.changed();
     if(!finite)return false;
     if(!this.pending || dragging)return true;
-    const revision=this.revision;
-    const run=()=>{
-      if(!this.current() || revision!==this.revision)return;
-      this.timer=undefined;
+    this.evaluateRoadDraft(defer);
+    return true;
+  }
+  previewRoadConnection(edit) {
+    if (!this.roadIntentEligible || this.drag) return false;
+    this.reset();
+    this.roadConnectionEdit = { ...edit };
+    this.checking = true;
+    this.changed();
+    this.evaluateRoadDraft(true);
+    return true;
+  }
+  evaluateRoadDraft(defer) {
+    const revision = this.revision;
+    const run = () => {
+      if (!this.current() || revision !== this.revision) return;
+      this.timer = undefined;
       try {
-        this.roadIntentAnalysis = prepareRoadIntentC1(this.project, this.selection.id, this.roadIntentOffset);
-        this.reconciliation = prepareNeighborhoodReflowC2(
-          this.project, this.selection.id, this.roadIntentOffset, this.roadIntentAnalysis);
+        if (this.roadConnectionEdit) {
+          this.reconciliation = prepareRoadTopologyReflowC3(this.project, this.selection.id, null, this.roadConnectionEdit);
+        } else {
+          this.roadIntentAnalysis = prepareRoadIntentC1(this.project, this.selection.id, this.roadIntentOffset);
+          this.reconciliation = prepareNeighborhoodReflowC3(
+            this.project, this.selection.id, this.roadIntentOffset, this.roadIntentAnalysis);
+        }
         this.settledRevision = revision;
         this.acceptedFingerprint = JSON.stringify(this.project);
       } catch (error) {
         this.error = 'Road adaptation preview unavailable: ' + error.message;
       }
-      this.checking=false;this.changed();
+      this.checking = false;
+      this.changed();
     };
-    if(defer)this.timer=this.schedule(run,180);
+    if (defer) this.timer = this.schedule(run, 180);
     else run();
-    return true;
   }
   select(selection) {
     this.invalidate();
@@ -16032,6 +16538,7 @@ class RoadPreviewSession {
     this.invalidate();
     const d = this.details;
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
+    this.roadConnectionEdit = null;
     this.roadIntentOffset = d?.kind === 'road' ? {x:0,y:0} : null;
     this.roadIntentAnalysis = null;
     this.roadIntentInputError = '';
@@ -16123,7 +16630,7 @@ class RoadPreviewSession {
     if (hit.kind !== this.selection?.kind || hit.id !== this.selection?.id) this.select(hit);
     this.drag = {
       point: this.point ? { ...this.point } : null,
-      offset: this.roadIntentOffset ? {...this.roadIntentOffset} : null,
+      offset: {...(this.roadIntentOffset ?? {x:0,y:0})},
       kind: this.details.kind,
       start: { ...point },
       movable: this.details.movable || this.roadIntentEligible,
@@ -16486,6 +16993,13 @@ class RoadInspectionWorkspace {
         id: this.$('roadSelectionId').value,
       }),
     );
+    for (const [id, kind] of [['roadReconnectC3','reconnect'], ['roadAddC3','add'], ['roadRemoveC3','remove']]) {
+      this.$(id).addEventListener('click', () => this.session.previewRoadConnection({
+        kind,
+        endpoint: this.$('roadConnectionEndpointC3').value,
+        target: this.$('roadConnectionTargetC3').value,
+      }));
+    }
     for(const id of ['roadIntentDxC1','roadIntentDyC1'])
       this.$(id).addEventListener('input',()=>{
         const read=id=>this.$(id).value.trim()===''?NaN:Number(this.$(id).value);
@@ -16573,6 +17087,25 @@ class RoadInspectionWorkspace {
           ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
           : '';
     this.$('roadIntentPanelC1').hidden=kind!=='road';
+    if (kind === 'road' && d && (this.connectionGraph !== s.graph || this.connectionRoad !== d.record.id)) {
+      this.connectionGraph = s.graph;
+      this.connectionRoad = d.record.id;
+      const option = (value, label = value) => {
+        const item = document.createElement('option');
+        item.value = value;
+        item.textContent = label;
+        return item;
+      };
+      this.$('roadConnectionEndpointC3').replaceChildren(option('a', d.record.a), option('b', d.record.b));
+      this.$('roadConnectionEndpointC3').value = 'b';
+      const targets = [...s.graph.nodesById.values()]
+        .filter(node => !d.endpoints.includes(node.id) && s.graph.incidentRoads.get(node.id)
+          .every(id => !s.graph.roadClasses.get(id).protected))
+        .sort((a,b) => a.id.localeCompare(b.id));
+      this.$('roadConnectionTargetC3').replaceChildren(option('', 'Choose junction'), ...targets.map(node => option(node.id)));
+    }
+    for (const id of ['roadReconnectC3','roadAddC3','roadRemoveC3','roadConnectionEndpointC3','roadConnectionTargetC3'])
+      this.$(id).disabled = !s.roadIntentEligible || Boolean(s.drag);
     for(const [id,field] of [['roadIntentDxC1','x'],['roadIntentDyC1','y']]){
       this.$(id).disabled=!s.roadIntentEligible;
       if(document.activeElement!==this.$(id))
@@ -16581,7 +17114,7 @@ class RoadInspectionWorkspace {
     this.$('roadIntentStatusC1').textContent=!s.roadIntentEligible ?
       'Protected connection: choose a road with two ordinary unprotected endpoints.' :
       s.roadIntentInputError || s.error ||
-      (s.pending ? s.checking?'Street positioned in draft; checking the road network...':
+      (s.pending ? s.checking?'Checking the street and neighborhood…':
         s.reconciliation?.candidateProject ? 'Street and local neighborhood ready to review.' :
         'Street placement held in draft. '+(s.reconciliation?.unresolved?.[0]?.message ??
           'The neighborhood could not be reconciled.') :
@@ -16667,12 +17200,17 @@ class RoadInspectionWorkspace {
       preview.counts.roads+' roads · '+preview.counts.blocks+' blocks · '+
       preview.counts.properties+' properties · '+preview.counts.plots+' plots · '+
       preview.counts.openSpaces+' open-space summaries · '+
+      preview.counts.buildings+' building changes · '+
       preview.buildingsPreserved+' building footprints held fixed · '+preview.unresolved.length+' unresolved':
       'No reconciled candidate yet.';
-    const rows=preview?.rows??[];
+    const rows=[...(preview?.rows??[])];
+    if (s.roadConnectionEdit || s.reconciliation?.ledger?.some(row => row.disposition === 'created-junction')) {
+      const priority = { junction:0, road:1, block:2, property:3, building:4, plot:5, 'open-space':6 };
+      rows.sort((a,b) => (priority[a.kind] ?? 7) - (priority[b.kind] ?? 7));
+    }
     const unresolved=preview?.unresolved??[];
     const ledger=s.reconciliation?.ledger??[];
-    const provenance=new Map(ledger.map(row=>[row.kind+' '+row.oldId,row.provenance]));
+    const disposition=new Map(ledger.map(row=>[row.kind+' '+(row.oldId??row.newId),row]));
     const access=ledger.filter(row=>row.disposition==='access-reconnected')
       .map(row=>({kind:row.kind,id:row.oldId,state:'access-reconnected',entryType:'change'}));
     const all=[...rows.map(row=>({...row,entryType:'change'})),...access,
@@ -16683,9 +17221,14 @@ class RoadInspectionWorkspace {
       if(row.entryType==='change'){
         const measure=(name,oldValue,newValue)=>oldValue!=null&&newValue!=null?
           ' · '+name+': '+oldValue.toFixed(2)+' → '+newValue.toFixed(2):'';
+        const entry=disposition.get(row.kind+' '+row.id);
+        const descriptions={relocated:'Relocated building',regenerated:'Generated replacement',
+          'created-junction':'New junction','removed-road':'Removed street',split:'Split at junction',
+          created:'New record',retained:'Retained geometry',replaced:row.kind==='building'?'Replaced building':'Previous record'};
         description.textContent=row.kind+' '+row.id+' · '+
-          (row.state==='topology-only'?'Proposed topology only':row.state==='access-reconnected'?'Reconnected access':'Adapted geometry')+
-          (provenance.get(row.kind+' '+row.id)==='generated'?' · Generated record':'')+
+          (row.state==='topology-only'?'Proposed topology only':row.state==='access-reconnected'?'Reconnected access':
+            descriptions[entry?.disposition]??'Adapted geometry')+
+          (entry?.provenance==='generated'?' · Generated record':'')+
           measure('area',row.oldArea,row.newArea)+
           measure('length',row.oldLength,row.newLength)+
           measure('frontage',row.oldFrontage,row.newFrontage);
@@ -16709,7 +17252,7 @@ class RoadInspectionWorkspace {
     more.hidden=all.length<=this.reconciliationLimit;
     this.$('roadReconciliationLegendB3').textContent=preview?.mode==='topology-only'?
       'Gray = accepted outlines · amber dashed = proposed roads/blocks only. Parcel adjustments remain unresolved.':
-      'Gray = accepted · amber dashed = proposed blocks/roads · violet dashed = properties · teal dashed = plots. Buildings remain fixed.';
+      'Gray = accepted · amber dashed = proposed blocks/roads · violet dashed = properties · teal dashed = plots · pink dashed = buildings.';
   }
   locateReconciliationB3(row) {
     const s=this.session;
@@ -16910,14 +17453,20 @@ function drawRoadInspectionOverlay(canvas, camera, city, session) {
   // B3 overlays only geometry computed from detached B1/B2 candidates.
   if(session.previewVisible!==false){
     for(const row of session.previewGeometry?.rows??[]){
-      const color=row.kind==='property'?'#8053a5':row.kind==='plot'?'#168578':'#cf8731';
+      const color=row.kind==='property'?'#8053a5':row.kind==='plot'?'#168578':row.kind==='building'?'#b45468':'#cf8731';
       const focused=session.focusKey===JSON.stringify([row.kind,row.id]);
       const closed=!['road','junction'].includes(row.kind);
       if(path(row.originalPoints,closed)){
         ctx.strokeStyle='#5d717b';ctx.lineWidth=focused?3:1.4;
         ctx.setLineDash([]);ctx.stroke();
       }
-      if(path(row.proposedPoints,closed)){
+      if (row.kind === 'junction' && row.proposedPoints?.length === 1) {
+        const p = camera.worldToScreen(row.proposedPoints[0]);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, focused ? 9 : 6, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+      } else if(path(row.proposedPoints,closed)){
         ctx.strokeStyle=color;ctx.lineWidth=focused?5:2.8;
         ctx.setLineDash([7,4]);ctx.stroke();ctx.setLineDash([]);
       }
@@ -16954,6 +17503,18 @@ function drawRoadInspectionOverlay(canvas, camera, city, session) {
   }
   const d = session.details;
   if (d?.kind === 'road') segment(d.record, '#315c69', 5);
+  if (d?.kind === 'road' && session.roadConnectionEdit && session.previewVisible !== false) {
+    const { kind, endpoint, target } = session.roadConnectionEdit;
+    const start = kind === 'add' ? d.record[endpoint] : d.record[endpoint === 'a' ? 'b' : 'a'];
+    const ids = kind === 'remove' ? d.endpoints : [start,target];
+    if (path(ids.map(id => graph.nodesById.get(id)))) {
+      ctx.setLineDash([8,5]);
+      ctx.strokeStyle = kind === 'remove' ? rpColors.invalid : '#168f80';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
   if (d?.kind === 'junction') {
     const p = camera.worldToScreen(d.record);
     ctx.beginPath();
@@ -17394,6 +17955,7 @@ function prepareParcelReconciliationB2(project,junctionId,point) {
 
 
 
+
 // B4 owns acceptance. B1/B2/B3 statuses never grant write permission.
 const b4Same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
 function reject(code,message){
@@ -17523,10 +18085,12 @@ function prepareRoadApplyC2(project, workspace, session, expectedRevision, curre
   if (session.selection?.kind !== 'road' || !session.pending || session.drag || session.checking ||
       session.error || session.roadIntentInputError || session.settledRevision !== session.revision ||
       session.acceptedFingerprint !== JSON.stringify(project) || !session.previewGeometry?.verified ||
-      inspected?.phase !== 'C2' || !inspected.candidateProject)
+      !['C2', 'C3'].includes(inspected?.phase) || !inspected.candidateProject)
     return reject('stale-preview', 'The street proposal is not a complete, current preview.');
   try {
-    const fresh = prepareNeighborhoodReflowC2(project, session.selection.id, session.roadIntentOffset);
+    const fresh = session.roadConnectionEdit
+      ? prepareRoadTopologyReflowC3(project, session.selection.id, null, session.roadConnectionEdit)
+      : prepareNeighborhoodReflowC3(project, session.selection.id, session.roadIntentOffset);
     if (!fresh.candidateProject)
       return reject('candidate-invalid', fresh.unresolved[0]?.message ?? 'Fresh reflow did not pass validation.');
     if (!b4Same(fresh.candidateProject, inspected.candidateProject) || !b4Same(fresh.ledger, inspected.ledger))

@@ -161,6 +161,18 @@
                 <label>Street offset X<input id="roadIntentDxC1" type="number" step="any" value="0"></label>
                 <label>Street offset Y<input id="roadIntentDyC1" type="number" step="any" value="0"></label>
               </div>
+              <details>
+                <summary>Change street connections</summary>
+                <div class="road-preview-selectors">
+                  <label>Endpoint to replace or branch from<select id="roadConnectionEndpointC3"></select></label>
+                  <label>Target junction<select id="roadConnectionTargetC3"></select></label>
+                </div>
+                <div class="road-preview-actions">
+                  <button id="roadReconnectC3" type="button" class="minor-button">Preview reconnect</button>
+                  <button id="roadAddC3" type="button" class="minor-button">Preview added street</button>
+                  <button id="roadRemoveC3" type="button" class="minor-button">Preview removal</button>
+                </div>
+              </details>
               <p id="roadIntentStatusC1" class="hint" role="status" aria-live="polite">Select an ordinary street to draft its new placement.</p>
             </section>
             <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>

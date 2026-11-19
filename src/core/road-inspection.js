@@ -71,23 +71,20 @@ export function roadReportHighlights(report) {
   };
 }
 
-function roadPreviewPoints(city, kind, id) {
-  const map = {junction:'nodes',road:'roads',block:'blocks',property:'properties',
-    plot:'plots','open-space':'openSpaces'};
-  const record = (city?.[map[kind]] ?? []).find(r=>r.id===id);
-  if(!record)return null;
-  const nodes = new Map((city.nodes??[]).map(n=>[n.id,n]));
-  const points = kind==='junction' ? [record] : kind==='road' ?
-    [nodes.get(record.a),nodes.get(record.b)] : kind==='block' ?
+const previewCollections = {
+  junction:'nodes',road:'roads',block:'blocks',property:'properties',plot:'plots',
+  building:'buildings','open-space':'openSpaces',
+};
+const roadPreviewIndex = (city, kind) => new Map((city?.[previewCollections[kind]] ?? [])
+  .map(record => [record.id,record]));
+function roadPreviewPoints(nodes, kind, record) {
+  if (!record) return null;
+  const points = kind === 'junction' ? [record] : kind === 'road' ?
+    [nodes.get(record.a),nodes.get(record.b)] : kind === 'block' ?
     record.vertices.map(n=>nodes.get(n)) : record.boundary ?? record.footprint ?? null;
   return Array.isArray(points) && points.length &&
-    points.every(p=>p && Number.isFinite(p.x)&&Number.isFinite(p.y))
+    points.every(p=>p && Number.isFinite(p.x) && Number.isFinite(p.y))
       ? points.map(p=>({x:p.x,y:p.y})) : null;
-}
-function roadPreviewRecord(city,kind,id) {
-  const map={junction:'nodes',road:'roads',block:'blocks',property:'properties',
-    plot:'plots','open-space':'openSpaces'};
-  return (city?.[map[kind]]??[]).find(r=>r.id===id)??null;
 }
 const roadPreviewArea = (record,points,kind) => {
   if(Number.isFinite(record?.area))return record.area;
@@ -116,12 +113,16 @@ export function roadReconciliationPreviewB3(project,reconciliation,topology=null
   const mode=full?'reconciled':candidate?'topology-only':'unavailable';
   const changes=full ? (reconciliation?.changed??[]) : candidate ? (topology?.changed??[]) : [];
   const entries=[];
+  const kinds = new Set(changes.map(row => row.kind));
+  const beforeNodes = roadPreviewIndex(original, 'junction'), afterNodes = roadPreviewIndex(candidate, 'junction');
+  const beforeRecords = new Map([...kinds].map(kind => [kind, roadPreviewIndex(original, kind)]));
+  const afterRecords = new Map([...kinds].map(kind => [kind, roadPreviewIndex(candidate, kind)]));
   for(const item of changes){
-    const before=roadPreviewRecord(original,item.kind,item.id);
-    const after=roadPreviewRecord(candidate,item.kind,item.id);
-    const originalPoints=roadPreviewPoints(original,item.kind,item.id);
-    const proposedPoints=roadPreviewPoints(candidate,item.kind,item.id);
-    if(!before||!after)continue;
+    const before=beforeRecords.get(item.kind).get(item.id);
+    const after=afterRecords.get(item.kind).get(item.id);
+    const originalPoints=roadPreviewPoints(beforeNodes,item.kind,before);
+    const proposedPoints=roadPreviewPoints(afterNodes,item.kind,after);
+    if (!before && !after) continue;
     const oldArea=roadPreviewArea(before,originalPoints,item.kind);
     const newArea=roadPreviewArea(after,proposedPoints,item.kind);
     const oldLength=roadPreviewLength(originalPoints);
@@ -135,9 +136,9 @@ export function roadReconciliationPreviewB3(project,reconciliation,topology=null
       originalPoints,proposedPoints,oldArea,newArea,oldLength,newLength,oldFrontage,newFrontage});
   }
   entries.sort((a,b)=>a.kind.localeCompare(b.kind)||a.id.localeCompare(b.id));
-  const counts={roads:0,blocks:0,properties:0,plots:0,openSpaces:0};
+  const counts={roads:0,blocks:0,properties:0,plots:0,buildings:0,openSpaces:0};
   for(const row of entries){
-    const field={road:'roads',block:'blocks',property:'properties',plot:'plots',
+    const field={road:'roads',block:'blocks',property:'properties',plot:'plots',building:'buildings',
       'open-space':'openSpaces'}[row.kind];
     if(field)counts[field]++;
   }
@@ -146,7 +147,7 @@ export function roadReconciliationPreviewB3(project,reconciliation,topology=null
     unresolved:(reconciliation?.unresolved??[]).map(row=>({
       kind:row.kind,id:row.id,code:row.code,message:row.message,severity:row.severity
     })),
-    buildingsPreserved:original?.buildings?.length??0,
+    buildingsPreserved:(original?.buildings?.length??0) - entries.filter(row=>row.kind==='building' && row.originalPoints).length,
     verified:!!full && reconciliation?.validation?.project==='valid',
   };
 }
