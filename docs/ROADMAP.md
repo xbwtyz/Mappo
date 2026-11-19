@@ -27,10 +27,10 @@ Historical implementation artifacts and QA notes are retained in [`docs/history/
 
 ## Mappo 0.2 — Approved 2D designer direction
 
-**2026-11-18 roadmap update:** Flexible Road Editing becomes 0.2C. Manual property creation/splitting/merging follows in 0.2D, advanced buildings in 0.2E, conditional civic places in 0.2F, and 0.2 release QA/migration in 0.2G.
+**2026-11-19 approved direction:** 0.2C becomes **Road-First Editing with Intelligent City Adaptation**. Users deliberately move/reshape streets, the city locally reflows generated blocks/properties/buildings as provenance and validation allow, and users then fine-tune properties and boundaries in 0.2D. Later phases remain 0.2E advanced buildings, 0.2F optional civic places, and 0.2G release hardening.
 
 See the [updated master 0.2 roadmap](plans/0.2/README.md) and [0.2C six-cycle technical plan](plans/0.2/MILESTONE_0_2C_DESIGN.md).
 
-**Current implementation:** 0.2A and B1–B4 merged. B5 [PR #32](https://github.com/xbwtyz/Mappo/pull/32) passed CI and is awaiting separate merge authorization. The 0.2C direction and plan are approved, **not 0.2C implementation, schema migration, release, or merge**.
+**Current implementation:** 0.2A and B1–B5 are merged. The previous bounded-segment C1 prototype [PR #34](https://github.com/xbwtyz/Mappo/pull/34) passed its own CI but remains an **unmerged draft**, superseded as the product-level C1 contract. Its source can be reviewed and ported selectively; it is not evidence that the road-first user story is finished.
 
-The same staged preservation contract remains authoritative: detached previews, clear impacts, protected identities/metadata, local reconciliation only when proved safe, atomic Apply and reversible history. The editor must continue to support schema-9 saves, property-first selection and reproducible offline standalone HTML. Future 3D work is deferred.
+The **road intent must be previewable independently of property-fit constraints**; generated untouched parcels/buildings should adapt locally when supported. Protect authored/ambiguous records and water/terrain/defense infrastructure; require explicit conflict choices and independently validated, atomic Apply with reversible history. The editor must continue to support schema-9 saves, property-first selection and reproducible offline standalone HTML. Future 3D work is deferred.

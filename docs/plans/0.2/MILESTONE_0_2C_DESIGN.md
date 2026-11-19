@@ -1,107 +1,124 @@
-# Mappo 0.2C — Flexible Road Editing (approved direction; design only)
+# Mappo 0.2C — Road-First Editing and Intelligent City Adaptation
 
-**Decision:** 2026-11-18 · Official 0.2C direction approved by project owner.  
-**Implementation:** Not authorized. No C1–C6 feature branch, source edits, schema migration or merge is implied.  
-**Predecessor:** Merge and verify B5 separately before implementation begins.  
-**Product objective:** Let users deliberately reshape an existing 2D city road network, with inspectable consequences, protected custom work and one reversible Apply per accepted operation.
+**Decision:** 2026-11-19 · Owner-approved product direction.  
+**Status:** Proposed detailed technical execution plan, documentation only. No feature code, schema change, merge or release authorized by this document.  
+**Base:** Mappo 0.2A and 0.2B including B5 on `main`.  
+**Supersedes:** The earlier 0.2C "Flexible Road Editing" cycle definitions in this path. Their safety engineering remains relevant, but preservation does not give generated properties veto power over deliberate street placements.
 
-## 1. What changes from the original 0.2C
+## 1. Product contract: the user draws the roads, Mappo arranges the city
 
-Original 0.2C was manual property creation, splitting, merging and building/ownership reconciliation. That work moves to **0.2D**, rather than disappearing. New 0.2C focuses on road flexibility and the minimum general-purpose topology/parcel reconciliation required to support it. Future advanced buildings move to **0.2E**; conditional civic places to **0.2F**; release hardening to **0.2G**. All remain 0.2 milestone phases; exact scope/release date is subject to separate approvals.
+The road network is the primary layout authority. The user directly moves, reconnects, adds, deletes and reshapes eligible ordinary streets, then Mappo proposes an intelligent **local** regeneration of affected blocks, properties, plots, open space and compatible buildings. The user can subsequently manually edit properties and boundaries in 0.2D. An old generated parcel is an input to adaptation, *not a road-placement prohibition*.
 
-0.2A provided graph, face, impact and preview APIs. 0.2B B1–B4 developed conservative ordinary-junction candidates, parcel/plot adaptation, visual previews, atomic Apply, scoped history and schema-9 round-trip. B5 adds hardening/QA and explicitly defers segment translation, edge creation/removal and classification where invariants remain unproved. **Do not confuse 'candidate geometry is valid' with 'accepted neighborhood is preservable'.**
+Primary story: "Drag a street to where I want it; preview the revised streets, blocks, properties and buildings; accept the whole adaptation in one reversible operation; fine-tune parcels afterward."
 
-## 2. Strict, continuing preservation contract
+The editor must **distinguish three different outcomes**:
+1. **Draftable:** A user's valid pointing/coordinate gesture can define a road intent even if current buildings, properties or face topology do not fit. Display the road intent and its consequences instead of refusing to draw it.
+2. **Reconciled candidate:** A deterministic, dependency-complete updated city can be built. Show exactly which objects moved, resized, regenerated, stayed untouched, need a decision or could not be resolved.
+3. **Apply-ready:** Every dependency, protection, user authorization, schema contract and full-project validation gate has passed on an independently recomputed candidate. A draft by itself is never permission to write the city.
 
-1. **Accepted state immutability:** All draft computation uses detached data. Cancel, invalid input, timeout, stale preview, failed save validation or user rejection writes no project/history/file revision/recovery.
-2. **Stable identity and metadata:** Preserve every surviving city/node/road/face/block/property/plot/building ID, custom name, usage, ownership link and unknown extension field. No automatic global regeneration or renumbering. New IDs are deterministic and collision-free.
-3. **Protected topology:** City outlines, water/shoreline/bank faces, bridges, plazas, hills/passes and fortification-sensitive edges are immutable unless a *separate, explicit* operation establishes all necessary invariants. Reject crossing/overlapping/zero-length/dangling edges, invalid embedding, broken connectivity and unresolved special ownership.
-4. **Dependency-closed reconciliation:** Track affected old/new roads and faces through blocks, districts, parcels, frontage, plots, buildings, entrances, access, clearances, fortifications and protected land/water features. Recompute the changed neighborhood and validate the *entire* project before acceptance; never rely solely on a local graph check.
-5. **Split/merge identity policy:** Retain an original ID only with provable one-to-one correspondence. A genuinely split/merged face has no automatic identity inheritance; require explicit ownership/identity decisions, replacement IDs and audited references. Unresolved/unknown semantics block Apply.
-6. **Building preservation:** Preserve footprints, position, entrance, geometry and metadata exactly by default. No silent move, shrink, rebuild, delete or reattachment. A future explicit building-resolution action needs a visible choice, separate validation and rollback; until proven, it is a blocked preview.
-7. **Authoritative Apply:** UI eligibility is informational. At Apply, recompute from current accepted project, check project identity/fingerprint/revision/intent, compare inspected and recomputed candidates, audit every permitted change, validate graph, faces, dependent entities and portable round-trip. Apply as one coupled accepted transaction with exactly one recovery revision.
-8. **Undo/Redo and serialization:** Restore the entire coupled road/neighborhood state. Incompatible unrelated edits invalidate stale history; no old history can overwrite later work. Preserve format-1/schema-9 portable compatibility wherever possible; schema 10 requires explicit prior approval plus migration and legacy fixture coverage.
-9. **Conservative by default:** Every ambiguous or unsupported outcome is **Needs review** or **Invalid**, with actionable IDs, reasons and safe reset. Review-required edits never become accepted solely because the user chooses a more permissive UI mode.
-10. **Property-first workflow:** Existing land selection, building tools, controls and offline standalone HTML must remain usable throughout.
+### User-facing acceptance stories
+- Drag an ordinary street by a visibly significant distance in a developed organic city. Mappo updates incident streets, block shapes and generated parcels around the accepted position rather than forcing trial-and-error 0.001-unit moves.
+- Edit streets in radial, planned and linear layouts, including the creation/closure of ordinary block faces. Resolve crossings through the explicit network-normalization tool as its cycle becomes available.
+- Automatically reflow an untouched generated parcel/plot as needed, or preserve it intact if still compatible, while retaining stable semantic information where provable.
+- Present a preview of generated-building shifts or replacements, with summary and confirmation. Protect a user's custom building placement by default and offer explicit, validated conflict choices.
+- Apply once; Undo once restores the *entire* previously accepted neighborhood and its identity metadata; Save/Load reproduces exactly the accepted change.
+- When an operation truly cannot complete (protected water/defense crossing, impossible plot access, unsupported ownership semantics), leave the street *draft visible* with precise blockers and choices; never silently mutate or drop content.
 
-## 3. Six sequential development cycles
+## 2. Editorial hierarchy / provenance policy
 
-### C1 — Multi-junction transactions and bounded road-segment movement
+**A. User-authored intent has priority.** A deliberately placed ordinary road defines the proposed layout. Other generated content should adapt to it, not silently override it. Existing protected infrastructure (shorelines, rivers, bridges, city boundary, plaza, fortifications, terrain-pass structures) needs a dedicated separate edit and cannot be casually overwritten.
 
-**Deliverable:** Extend the proven B4 accepted change model to a deterministic, **bounded two-endpoint translation** of one eligible ordinary segment, including its incident network. Show ghost geometry and dependent impact before Apply. Preserve single-junction movement and all previous workflows.
+**B. Generated, not customized:** Automatically reshape/regenerate *inside the affected local neighborhood* using reproducible seeds/IDs and the new road-derived blocks. Metadata with unambiguous continuity can survive. If a property/building is replaced, report its old/new IDs and disposition; do not pretend that geometric regeneration is identity preservation.
 
-**Rules:** Both endpoints must be editable, unprotected, unambiguously identified and moved as one intent. Graph remains connected and embedded without crossings/overlaps or unintended node coalescence; all affected faces still map one-to-one under this cycle. No new/deleted edges or block splits/merges yet. A candidate that requires currently unsupported parcel or building adaptation is rejected, not silently accepted. Selection and coordinate controls should explain endpoint coupling.
+**C. User-customized:** The user's edits, fixed building positions, named/custom records, manual geometry and unknown extension semantics are protected preferences. If road-first reflow conflicts with them, preview preservation options and ask the user to decide. Never secretly delete, move or reassign authored work.
 
-**Tests:** Endpoint symmetry and reversal, zero displacement/no-op, crossings and protected-road rejection, disconnected/dangling cases, seeds/morphologies/custom outline sizes, preserving IDs and opaque fields, focused/developed-city fixtures, stale two-point draft, true Apply→Undo→Redo, schema-9 reload and B4 regression.
+**D. Mixed and legacy:** Existing schema-9 records may not carry reliable "generated versus customized" provenance. **Do not infer the status from shape, timestamps, naming conventions or IDs.** Treat ambiguous records conservatively until explicit provenance or user choice is available. Build a typed provenance/decision ledger before any acceptance of broad regeneration. If provenance storage cannot be accommodated without a schema migration, design schema 10 separately and seek authorization.
 
-**Gate:** Demonstrate at least one meaningful positive segment movement (not just negatives) on a developed city, together with real-browser interaction. If no supported case survives the full dependency chain, keep the capability preview-only and report the limitation instead of merging a nonfunctional editor.
+**E. Immutable special features:** Water, coastline, protected road links, mountain passes, gates/defenses and perimeter remain governed by their own validators. "Road-first" does not mean that unconstrained drafts can be silently accepted across those systems.
 
-### C2 — Explicit face, block and ownership reconciliation foundations
+## 3. Road intent → reconciliation pipeline
 
-**Deliverable:** Introduce a detached, typed **change-set and identity-decision layer** for old/new roads, faces and blocks, plus references through property/plot/building and district/defense relationships. This is infrastructure to support C3, *not* unrestricted manual property editing.
+```mermaid
+flowchart TD
+  A[Direct drag / point / numeric road intent] --> B[Detached draft, always previewable]
+  B --> C[Normalize planar road network and junctions]
+  C --> D[Match old/new faces and trace dependent records]
+  D --> E[Classify provenance and owner decisions]
+  E --> F[Locally regenerate eligible parcels / plots / spaces]
+  F --> G[Fit generated buildings and resolve custom conflicts]
+  G --> H[Report complete old/new object ledger]
+  H --> I{All guards and decisions resolved?}
+  I -->|No| J[Visible draft + specific blockers / choices]
+  I -->|Yes| K[Independent re-evaluation + full-project validator]
+  K --> L[One atomic Apply / coupled Undo-Redo / Save-Load]
+```
 
-**Rules:** One-to-one faces keep IDs/metadata; split/merge/created/removed faces carry proposed provisional IDs, affected reference inventories and explicit identity/ownership decision requirements. Never guess which child inherits an old ID or which merged block receives unrelated metadata. Record per-field provenance; distinguish deterministic compatible migrations from user decisions and unresolvable constraints. A preview can be richer than the presently accepted subset.
+**Data model boundaries:** Represent user road intent separately from accepted street/parcel records. Internal candidates include: original reference/fingerprint/revision, operation, geometric changes; new planar graph; old/new face pairing; typed object disposition (preserved, moved, resized, generated, replaced, retired, unresolved); provenance; ownership remaps; building impacts; diagnostics; decision inputs; validation and deterministic reproducibility keys. Never use one `valid` boolean for all of these stages.
 
-**Tests:** Synthetic face split/merge/adjacent changes; collision-free deterministic IDs under order permutations; one-to-many/many-to-one ownership ambiguity; shared frontier and roads; unknown extension fields; rollback of incomplete decisions; property/plot/building and district/defense reference closure. Pure tests must establish no mutation.
+**Determinism:** Stable sorting, bounded work, explicit tolerances and predictable new IDs. Distinct geometry operators must produce the same candidate from equivalent accepted data/intent/choices. Candidate status is *not* identical to final Apply status.
 
-**Gate:** Complete traceable dependency graph and explicit unresolved outcomes. Merge must not silently enable split/merge Apply just because a candidate appears graph-valid.
+**Locality:** Recompute only the road-induced connected impact zone plus a tested safety margin; prove global reference closure and run global validation. Unrelated block/property/building metadata and geometry remain untouched. Never regenerate the entire city to make a local road move work.
 
-### C3 — Insert, remove, reconnect and cautiously classify roads
+**Identity:** Retain ID on verified one-to-one continuity. On split/merge, introduce deterministic provisional IDs and an auditable old→new provenance ledger; ownership cannot be assigned arbitrarily. Compatible generated content may be regenerated according to an explicit policy; user-custom content requires a decision. Preserve all unknown fields unless semantics are affirmatively understood or individually approved.
 
-**Deliverable:** Provide tools and non-destructive previews for adding an ordinary road, deleting an eligible ordinary edge, reconnecting endpoints and changing eligible ordinary road classifications. Each operation has its own acceptance rule and inverse history record.
+**Atomicity:** Preview/Reset/Cancel/search must not write accepted state, saved files, recovery or history. Apply checks latest city identity, revision, operation, resolutions, fingerprint, candidate equality and schema format; one accepted replacement, one recovery revision, coupled Undo/Redo.
 
-**Rules:** Adding/removing an edge may create, split or merge faces; use C2 identity decisions and reject unresolved ownership, property, district, infrastructure or building consequences. New node/edge IDs deterministic and unique. Road classification must not strip or bypass any protected reason, bridge/bank/defense requirement, or road-reference semantics. No arbitrary rewrites of land ownership and no full-city rebuild. Subfeatures not meeting their individual proofs remain inspection-only, clearly labeled.
+## 4. Revised six-cycle development plan
 
-**Tests:** Edge duplicate/crossing/zero-length and invalid connecting cases; split/merge identity and ownership decisions; protected-edge and bridge/defense cases; deterministic replay and inverse Apply/Undo/Redo; unrelated project data byte-/semantic-equivalent; chained edits and stale selection; save/load and cross-browser gestures.
+### C1 — Direct freeform road-intent editing (preview foundation)
 
-**Gate:** At least one verifiably accepted example *per operation actually shipped*. Publish an explicit supported-operation matrix. Unsupported classes do not block supported ones but must not look editable.
+**Deliverable:** Mouse/touch drag of an ordinary road or its endpoints, keyboard nudges and numerical adjustment, with obvious original/proposed street overlays. **The drag sets where the user wants the road**, not where current parcels permit it. Drafts can be blocked for Apply without being blocked from positioning/inspection. Clear reason categories: planar topology to normalize, generated neighborhood to reflow, protected infrastructure conflict, authored-content decision needed.
 
-### C4 — Road path reshaping with control points
+**Implementation:** Split draft intent from B4 acceptance, support multi-junction transaction geometry and bounded performance; migrate proven geometry preview, field-audit and cancellation infrastructure from PR #34 selectively. The earlier "Find a valid move" can remain optional diagnostics, not the default editing workflow. No property-dependent movement whitelist in drag handling. For C1 alone, Apply remains limited to cases the existing B4 transaction can authoritatively validate.
 
-**Deliverable:** Editable bends and polyline paths with point addition/removal, segment handles, precision nudges and non-destructive path previews. Keep the internal planar graph coherent.
+**Positive gate:** In a developed city, drag a street several screen pixels / materially measurable world units and see the *chosen position* persist as a detached draft even if parcels conflict. Test reversals, snapping/no-snap, mouse/pointer/touch, high zoom, pan vs drag, stale draft, rollback and complete state immutability. **C1 is an interaction/foundation checkpoint, not a promise that all drafts can already be applied.**
 
-**Rules:** Start with **piecewise straight segments** and canonicalized connected junctions. Visual smoothing may be used for display only if it never disagrees with collision/face geometry. Do not claim unrestricted spline/curve support within 0.2 unless a separate geometry and persistence contract proves planar topology and deterministic encoding. Protect banks, bridges, passes, plaza/outlines and building access as above.
+### C2 — Intelligent neighborhood reflow and provenance foundations
 
-**Tests:** Collinear simplification, sharp bends, self-intersection and crossing, coincident control points, same topology under equivalent vertex order, water/terrain proximity, high zoom/touch accuracy, shape-save round-trip, Undo/Redo, large outlines and rendering/geometry agreement.
+**Deliverable:** Trace affected road faces into blocks, generated properties, plot subdivisions, frontage/access and open space; locally adapt/regenerate around the *user's target street geometry*. Provide an explicit typed old→new inventory, stable one-to-one identities, split/merge handling and generated-vs-custom/unknown classification. Initial supported Apply includes realistic road translations on developed neighborhoods with fully resolved generated records.
 
-**Gate:** A demonstrably useful bounded reshape tool with true full-project validation, and no hidden curve semantics that serialized schema 9 cannot express. Any persistent control-point model change is schema-reviewed before code work.
+**Implementation:** Deterministic parcel reflow, non-intersecting footprints, street setbacks, frontage, building plot access, zoning/ownership references, district relationships and spare-area accounting. Preserve untouched parcels, and preserve user-custom geometry when valid. For unsupported building conflicts, keep draft and report decision needed; don't invent a fallback.
 
-### C5 — Adaptive neighborhoods and explicit building-conflict choices
+**Positive gate:** Several materially visible **Apply→Undo→Redo→Save/Reload** road moves on developed layouts with no missing/orphan records and no changes to unrelated custom work. Include unusual parcel geometry, multiple plots/roads, empty land and formerly false-rejected "unchanged frontage" cases. Prove local changes are smaller than global regeneration.
 
-**Deliverable:** Extend local, provenance-rich adaptation for supported property boundaries, frontages, plots, access and setbacks after changed roads. Provide a clear per-object conflict-resolution UI: preserve automatically when proven, otherwise block and explain, or offer *separately validated* user-authorized transformations.
+### C3 — Planar network restructuring
 
-**Rules:** Never silently reposition, delete, scale, rebuild or orphan buildings. Explicit choices are previews, not blanket permission; a proposed relocation/removal is implemented only if ownership, placement, entrances, clearances, districts and reference rewrites have a fully tested decision path. Preserve unrelated properties and all custom fields. Editing one neighborhood cannot invalidate another.
+**Deliverable:** Add/delete/reconnect ordinary streets, create/manage intersections, and handle ordinary face splits/merges after road intent moves through the network. Basic eligible road class changes where their semantics can be proved. Crossings are explicitly normalized into shared junctions with deterministic IDs and compatible block reflow; no silent crossing edges.
 
-**Tests:** Multiple developed neighboring blocks, disjoint lots, unusual plot shapes, frontage reflow, building-to-street access, setbacks, shared boundaries, custom/named/owned records, cross-feature dependencies, opt-in versus cancel, approved change provenance, rejection at final commit, inverse history and format-1/schema-9 compatibility.
+**Gate:** Each shipped tool has multiple positive, negative and recovery test cases. Split/merge provenance, preserved districts, ownership relationships, non-self-intersecting graph, protected features, serial round-trips, and inverse history must pass. Operations not supported in the validator remain preview/decision-required, not a fake Apply.
 
-**Gate:** Positive developed-city transformations and explicit negative conflicts tested. Any complex building operation that cannot be proven remains blocked and is scheduled separately; a destructive fallback is not acceptable.
+### C4 — Road shaping, bends and path controls
 
-### C6 — Unified road editor, integration, performance and release handoff
+**Deliverable:** Direct control of road path via straight-segment/polyline handles, insert/remove/move bend points, practical snapping and precise controls. The same network normalization and reflow pipeline from C2–C3 is reused. Curved/smoothed display is only promoted to persistent geometry when topology and storage semantics are approved.
 
-**Deliverable:** Cohesive road-edit workspace with clear tools, selection, before/after geometry, grouped impact reports, affected IDs, actionable blockers, explicit confirmation for consequential changes and accessible history. Consolidate and document accepted operation availability.
+**Gate:** Multi-bend streets, complex intersections, reversal, repeated editing, nearly coincident nodes, water/boundary collision, save/reload equivalence, touch and high-resolution desktop/ultrawide gestures. No unsupported spline persistence or stealth schema change.
 
-**Rules:** Every UI action routes through the same authoritative Apply and preservation contract. Keyboard/touch/desktop controls cannot bypass guards. Preview remains transient, restoring camera/selection on cancellation. Existing property-first inspectors, saved project loading, file recovery and legacy edits remain intact.
+### C5 — Adaptive buildings and explicit custom-work resolution
 
-**Tests:** Full Node suite; cross-mode/cross-history interactions; old 0.1/0.2A and schema-9 fixtures; determinism and performance worst-case cities; offline build parity; Chromium and Firefox desktop (1440×900), ultrawide (5120×1440), tablet (768×1024), phone (390×844); keyboard/pointer/touch; accessibility and manual physical-device checklist.
+**Deliverable:** Refit, move, regenerate or replace eligible **generated and untouched** buildings in the adapted neighborhood. Show old→new footprint and placement, impact counts and identity policy. Provide user decisions for custom/legacy-unknown buildings: retain as fixed obstacle, choose another placement, explicitly authorize a transformed outcome, or cancel.
 
-**Gate:** Green complete CI, reproducible versioned HTML, clear limitation/release notes, and separately approved C6 merge. The 0.2C milestone is complete only when its stated supported operations have passed the actual positive acceptance stories.
+**Gate:** No silent deletion, overwriting or reassignment of authored/unknown records. Buildings have complete parcel/plot/frontage/entrance/clearance consistency, correct metadata, and auditable provenance. Test multi-property developed zones, conflict UIs, cancellations, custom-preservation defaults and complete Undo/Redo.
 
-## 4. Development protocol and dependency gates
+### C6 — Unified road-first experience and release acceptance
 
-- Each C-cycle receives **separate scope approval** and starts from the latest **explicitly merged** `main`; resolve B5 approval/merge first.
-- Develop a focused cycle on its own branch; test and fix within the pass, preferably **one final implementation commit** with complete versioned offline HTML and one PR. Avoid needless micro-commits.
-- Require focused positive/negative unit/integration tests, full Node suite, generated `index.html` parity and required Chromium/Firefox QA before calling a cycle ready.
-- Every completed PR is **left unmerged until owner explicitly approves**. Approval of the 0.2C direction and this plan is *not* approval to implement, merge, release, or migrate schema.
-- Keep shipping older `dist/` versions, maintain property-first selection, and do not cite or advertise competing applications in builds.
-- No C1 implementation until owner approves its detailed, frozen scope.
+**Deliverable:** A cohesive editor: select/drag streets, preview adaptive neighborhood, understand blockers, resolve generated/custom decisions, Apply/Undo/Redo, inspect affected records, save and continue to manual property editing. Replace trial-and-error "find permissible moves" as the primary interaction. Clearly describe operations still limited by protected infrastructure.
 
-## 5. Scope exclusions and 0.2 handoff
+**Gate:** Multiple real end-user tasks with intentional road movements in **all four morphologies**, including changes larger than precision nudges and block topology edits. Full Node suite, legacy schema-9 fixtures, deterministic project reload, finite work/performance, reproducible offline versioned HTML and root parity; Chromium/Firefox desktop 1440×900, ultrawide 5120×1440, tablet 768×1024, phone 390×844; keyboard/pointer/touch checks and physical-device accessibility checklist. C6 is complete only when users can deliberately lay out streets and see intelligent city adaptation, not merely when diagnostic errors are correct.
 
-Excluded from 0.2C unless later separately approved: free-form unbounded splines, arbitrary protected-edge destruction, automatic city regeneration, speculative owner reassignment, hidden building relocation, 3D renderer, population/economy simulation and unrelated UI overhaul.
+## 5. Acceptance/merge workflow and relationship to existing C1 PR #34
 
-After C6, **0.2D** performs manual property create/split/merge workflows; **0.2E** advances 2D building design; **0.2F** handles civic/landmark tools conditionally; **0.2G** integrates, migrates, profiles, hardens and prepares the 0.2 release. Any meaningful schema-10 design needs its own approved migration plan. The final 0.2 release date is not assumed.
+- **PR #34 is a reusable experimental branch, not a completed C1 against this new product contract.** Its accepted-junction history, geometry, preview/report and schema safeguards may be ported after focused review. Do not merge PR #34 unchanged into `main`, despite passing its earlier technical CI.
+- Adopt this new design on a separate **documentation PR** so `main` can track the decision without prematurely accepting incomplete road-edit code.
+- Start the redefined C1 from the latest merged `main`, carrying forward only audited reusable portions of PR #34. Avoid presenting a tiny positive candidate survey as evidence of an intuitive road editor.
+- Each C-cycle has a defined preview/reconciliation/Apply contract, positive behavior tests and review gate. C1 draft acceptance is distinct from C2 accepted neighborhood changes.
+- Prefer a single coherent implementation pass/commit per scoped checkpoint (with required fixes as necessary), versioned standalone HTML and a PR. No merges/release/schema change without explicit approval. Do not delete historical compiled versions.
+- Keep ordinary property-first selection, manual building/property tools, water/terrain editors and all existing 0.1/0.2 saved-project fixtures working throughout.
 
-## 6. Official plan decision
+## 6. Subsequent 0.2 roadmap
 
-**Approved now:** Flexible Road Editing as 0.2C direction, six-cycle design refinement and revised downstream phase order.  
-**Not approved now:** Feature implementation, new schema, merging planning or implementation PRs, or automatically merging B5.
+0.2D = **manual properties** (create, split, merge, edit boundaries and plot divisions after automatic road-first reflow); 0.2E = advanced 2D buildings; 0.2F = optional civic/landmarks; 0.2G = final 2D integrations, migrations, performance, regression and 0.2 release. 3D remains deferred. Schema 9 stays unchanged until an explicitly approved schema migration becomes essential to provenance or geometry representation.
+
+## 7. Decision record
+
+**Owner approved now:** Road-first product philosophy, intelligent local adaptation, user-fine-tuned properties afterward, and restructuring C1–C6 around that outcome.  
+**Separate decisions still required:** Any destructive custom-work transformation, schema migration, implementation PR merge, and release. This document does not assert complete implementation.
