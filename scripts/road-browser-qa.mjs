@@ -551,9 +551,10 @@ for (const [name, type] of [
       await page.locator('#roadModeButton').click();
       await page.evaluate(() => { __buildingQA.c2Revision = __buildingQA.state().files.revision; });
       await page.locator('#roadSelectionKind').selectOption('road');
-      await page.locator('#roadSelectionId').selectOption('RD-0116');
-      await page.locator('#roadIntentDxC1').fill('5');
+      await page.locator('#roadSelectionId').selectOption('RD-0113');
+      await page.locator('#roadIntentDxC1').fill('12');
       await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);
+      assert.match(await page.locator('#roadReconciliationListB3').innerText(), /Generated replacement/);
       assert.equal(await page.evaluate(() => __buildingQA.state().files.revision === __buildingQA.c2Revision), true);
       await page.locator('#roadApplyB4').click();
       const applied = await page.evaluate(() => JSON.stringify(__buildingQA.state().project));
