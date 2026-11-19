@@ -303,16 +303,17 @@ test('compiled mode refuses an unfinished tool and paginates report text without
     })),
   };
   road.render();
-  assert.equal(app.el('roadReportList').children.length, 50);
-  assert.equal(app.el('roadShowMore').hidden, false);
-  assert.equal(
-    app.el('roadReportList').children[0].children[0].textContent,
-    'property <P-0> · needs-review · test-code',
-  );
-  app.el('roadShowMore').handlers.click();
-  assert.equal(app.el('roadReportList').children.length, 73);
+  // A5 groups 73 repeated issues into one cause without losing any exact IDs.
+  assert.equal(app.el('roadReportList').children.length, 1);
   assert.equal(app.el('roadShowMore').hidden, true);
-  assert.match(app.el('roadReportList').children[72].children[1].textContent, /72.*<script>/);
+  const group = app.el('roadReportList').children[0].children[0];
+  assert.match(group.children[0].textContent, /73 affected objects/);
+  const details = group.children[2].children;
+  assert.equal(details.length, 73);
+  assert.match(details[0].children[0].textContent, /property <P-0>/);
+  assert.match(details[72].children[0].textContent, /72.*<script>/);
+  assert.match(details[72].children[1].textContent, /test-code/);
+  assert.equal(details[72].children[2].textContent, 'Locate property <P-72>');
   road.reset();
   assert.equal(app.el('roadReportList').children.length, 0);
   road.exit();

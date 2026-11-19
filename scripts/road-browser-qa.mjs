@@ -109,7 +109,11 @@ for (const [name, type] of [
         ),
       );
       assert.ok(statusText.includes(`${expected.counts.affectedObjects} affected`));
-      const descriptions = await page.locator('#roadReportList').innerText();
+      // A5 groups repeated issues into collapsed details. Check every preserved
+      // ID and message, including rows not initially expanded in the UI.
+      while (await page.locator('#roadShowMore').isVisible())
+        await page.locator('#roadShowMore').click();
+      const descriptions = await page.locator('#roadReportList').textContent();
       for (const row of expected.rows) {
         assert.ok(descriptions.includes(row.id));
         assert.ok(descriptions.includes(row.message));
