@@ -152,6 +152,6 @@ test('C3 refuses to automatically replace a custom building', () => {
   const before = structuredClone(project);
   const blocked = prepareNeighborhoodReflowC3(project, roadId, offset);
   assert.equal(blocked.candidateProject, null);
-  assert.ok(blocked.unresolved.some(row => /custom or unknown/.test(row.message)));
+  assert.ok(blocked.unresolved.some(row => /custom or (unknown|older)/.test(row.message)));
   assert.deepEqual(project, before);
 });

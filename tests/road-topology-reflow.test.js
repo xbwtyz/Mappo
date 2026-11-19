@@ -97,3 +97,27 @@ test('The standalone applies a crossing and road removal with Undo, Redo and por
     assert.equal(JSON.stringify(loaded.project),after);
   }
 });
+
+test('A large same-topology move rebuilds only the affected generated neighborhood', () => {
+  const project = createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+  const roadId = 'RD-0113', offset = {x:0,y:18};
+  const draft = prepareRoadIntentC1(project,roadId,offset);
+  assert.equal(draft.facesResolved,true);
+  const result = prepareNeighborhoodReflowC3(project,roadId,offset);
+  assert.ok(result.candidateProject,result.unresolved[0]?.message);
+  const city = result.candidateProject.city;
+  assert.deepEqual(city.roads,project.city.roads);
+  assert.deepEqual(city.blocks.map(block=>block.id),project.city.blocks.map(block=>block.id));
+  const replacement = result.ledger.find(row=>row.kind==='property' && row.oldId && !row.newId);
+  assert.ok(replacement);
+  const changed = new Set(result.ledger.filter(row=>row.kind==='block').map(row=>row.oldId));
+  const untouched = project.city.properties.filter(property=>!changed.has(property.blockId));
+  assert.ok(untouched.length>0);
+  for (const property of untouched)
+    assert.deepEqual(city.properties.find(row=>row.id===property.id),property);
+
+  project.city.properties.find(row=>row.id===replacement.oldId).customName='My workshop';
+  const protectedMove = prepareNeighborhoodReflowC3(project,roadId,offset);
+  assert.equal(protectedMove.candidateProject,null);
+  assert.equal(protectedMove.unresolved[0].code,'parcel-decision-required');
+});

@@ -217,7 +217,9 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null)
       const before = riIndex(old[key]), after = riIndex(city[key]);
       for (const id of new Set([...before.keys(), ...after.keys()])) {
         const a = before.get(id), b = after.get(id);
-        if (riEqual(a,b) && !(kind === 'road' && roadIds.has(id))) continue;
+        const movedBoundary = (kind === 'road' && roadIds.has(id)) ||
+          (kind === 'block' && replacements.has(id));
+        if (riEqual(a,b) && !movedBoundary) continue;
         const disposition = !a ? (kind === 'junction' ? 'created-junction' : 'created') :
           !b ? (kind === 'road' ? 'removed-road' : 'replaced') : retainedIds.has(id) ? 'retained' : kind === 'road' && splitRoadIds.includes(id) ? 'split' : 'reshaped';
         ledger.push({ kind, oldId: a?.id ?? null, newId: b?.id ?? null, disposition,
