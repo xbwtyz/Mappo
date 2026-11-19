@@ -1,79 +1,61 @@
-# Mappo 0.2 — City Designer milestone
+# Mappo 0.2 — 2D City Designer roadmap
 
-> **0.2A implementation authorized 2026-11-18; later phases remain proposals.**
-> Decision recorded 2026-11-18: prioritize a complete **2D city designer**, defer a 3D renderer.
-> Road editing policy: **staged editing** — strict preservation first, then separately designed, explicit impact review and controlled local reconciliation.
+> **Official direction updated 2026-11-18:** 0.2C is Flexible Road Editing, followed by dedicated manual property restructuring. This is an **approved planning direction, not approval to implement** C1–C6 or merge any PR.
+>
+> Primary objective: complete a dependable, highly editable **2D** fantasy city designer before pursuing 3D.
 
-[0.2A implementation proposal](MILESTONE_0_2A_PLAN.md) · [0.2A preservation/QA contract](ROAD_EDIT_CONTRACT.md) · [Repository roadmap](../../ROADMAP.md)
+[0.2C detailed design](MILESTONE_0_2C_DESIGN.md) · [0.2B design](MILESTONE_0_2B_DESIGN.md) · [Road preservation contract](ROAD_EDIT_CONTRACT.md) · [Repository roadmap](../../ROADMAP.md)
 
-## Outcome and release thesis
+## Release thesis
 
-Mappo 0.1 can generate a city and edit selected properties and building geometry. **Mappo 0.2 should let users deliberately redesign a generated city's roads, parcels, buildings, and meaningful places without silently regenerating or destroying unrelated work.**
+A procedural city is a starting point, not something users must accept unchanged. Users should intentionally edit roads, blocks, properties, buildings and places while retaining unrelated creative work. New geometry never licenses silent regeneration or destruction.
 
-The generator creates the city. The editor preserves and evolves it.
-
-## Dependency layout
+## Revised dependencies and phases
 
 ```mermaid
 flowchart TD
-    G["Existing Mappo city / generated road graph"] --> A["0.2A · reusable topology + impact/preview foundations"]
-    A --> B["0.2B · accepted road editing + atomic history"]
-    B --> C["0.2C · property creation, splits and merges"]
-    C --> D["0.2D · advanced 2D building design"]
-    D --> E["0.2E · landmarks and public spaces"]
-    E --> F["0.2F · hardening, migrations, performance and 0.2 release"]
-    A --> R["Future explicit local reconciliation workflow"]
-    B --> R
-    C --> R
+  A["0.2A · road topology, reports and preview"] --> B["0.2B · conservative accepted junction moves and history"]
+  B --> C["0.2C · flexible road editing and explicit block/parcel reconciliation"]
+  C --> D["0.2D · manual property creation / splits / merges"]
+  D --> E["0.2E · advanced 2D building design"]
+  E --> F["0.2F · civic places / landmarks (conditional)"]
+  F --> G["0.2G · final integrations / migrations / performance / release"]
 ```
 
-Road dependency chain: **road nodes/segments → planar faces (blocks, plaza, wet/terrain faces) → property frontage/block membership → plots → buildings → district/defense dependencies.**
-
-## Proposed milestones and checkpoint layout
-
-| Phase | Scope | Checkpoints | Definition of success |
+| Phase | Revised scope | Planned development cycles | Completion principle |
 | --- | --- | --- | --- |
-| **0.2A — Road foundations** | Reusable topology, stable identity matching, impact detection, read-only road/junction adjustment preview | **A1:** graph API; **A2:** face/block extraction and matching; **A3:** object impact reports; **A4:** interactive preview and QA | Proposed road changes can be inspected without changing accepted city; no Apply in A4 |
-| **0.2B — Road editing** | Selection, move/add/remove/classify, safe Apply, Undo/Redo | **B1:** selection; **B2:** move; **B3:** add; **B4:** remove/classify; **B5:** atomic Apply/history | Safe edits commit without global regeneration; review-required edits remain blocked until explicit reconciliation is designed |
-| **0.2C — Property restructuring** | Create parcels, split, merge, reconcile plots and owned buildings | **C1:** create; **C2:** split; **C3:** merge; **C4:** dependent IDs/ownership; **C5:** validation/history | Property-first workflow continues; no silent orphaning or automatic destruction |
-| **0.2D — Building design** | Expanded footprint vocabulary, manual placement control and meaningful categories | **D1:** shapes; **D2:** footprint editing; **D3:** categories; **D4:** integrated QA | Users can intentionally customize diverse building geometry |
-| **0.2E — Civic places** | Squares, markets, gardens and landmark identities | **E1:** public-space records; **E2:** tools; **E3:** identity; **E4:** district integration | Meaningful, editable places; **conditional** phase that may be deferred if stability needs priority |
-| **0.2F — Release** | Editing usability, migration, browser regression, performance and release candidate | **F1:** workflows; **F2:** saves/migrations; **F3:** performance; **F4:** QA; **F5:** RC | Supported legacy projects migrate; standalone HTML runs offline; cross-browser checks green |
+| **0.2A — foundations** | Graph, stable faces, impact reports, interactive read-only preview | A1–A5 | Inspections never write accepted project |
+| **0.2B — conservative Apply** | Local junction candidate, compatible parcel adaptation, before/after view, atomic Apply/history, hardening | B1–B5 | Supported ordinary moves persist, safely reversible; reject unresolved cases |
+| **0.2C — flexible roads** | Bounded segment movement, topology/ownership decision model, adding/removing/reconnecting/classifying ordinary roads, reshape handles, adaptation, integration | **C1–C6** — [detailed plan](MILESTONE_0_2C_DESIGN.md) | Each shipped operation has proven positive examples and full preservation gates |
+| **0.2D — properties** | Manual parcel creation, split, merge, plot/ownership reconciliation, validation/history | D1 create, D2 split, D3 merge, D4 dependent objects, D5 QA | Property-first identity preserved, no orphaned buildings |
+| **0.2E — buildings** | Richer 2D footprints, precision placement/editing, categories, QA | E1 shapes, E2 manual geometry, E3 categories, E4 QA | Precise buildings with accessible custom metadata |
+| **0.2F — civic spaces** (conditional) | Editable markets, squares, gardens, landmarks; identity and district links | F1 records, F2 tools, F3 identity, F4 integration | Optional; may defer if 0.2 release scope requires |
+| **0.2G — release** | Cross-editor polish, legacy migration, performance, browsers, release candidate | G1 workflows, G2 save/migrate, G3 perf, G4 QA, G5 RC | Offline standalone HTML, verified old saves, cross-browser regression |
 
-The checkpoints are planning units, **not automatically 27 PRs**. Work can be grouped when independently testable. No feature or PR is authorized merely by its inclusion here.
+These are *planning cycles*, not automatic one-to-one commits or PRs. Each specific implementation scope and merge requires separate approval. If the conditional civic phase is deferred, the final release phase remains the final release gate (its name may be relabeled later by an approved roadmap update).
 
-## Chosen editing strategy: staged preservation
+## Reordering from the original plan
 
-1. **Strict-first:** reject acceptance when an edit would break any existing property, plot, building, frontage, district, water/terrain, or other protected relationship.
-2. **Explain consequences:** distinguish a valid network with dependent-object conflicts (**Needs review**) from malformed/disconnected geometry (**Invalid**).
-3. **Separate local reconciliation:** allow future explicit, previewed transformations only after their preservation/Undo rules are approved in their own design checkpoint.
-4. **Never quietly regenerate:** previously accepted identities and geometry do not disappear or renumber due to a road edit.
-5. **Use a single atomic commit:** every future accepted topology edit and its approved dependent changes either complete together or do not apply at all.
+Originally 0.2C was manual property create/split/merge, followed by 0.2D buildings, 0.2E optional landmarks and 0.2F release. The owner **approved moving flexible road editing into 0.2C**; manual property editing moves to 0.2D, buildings to 0.2E, civic spaces to 0.2F, and release hardening to 0.2G.
 
-## Scope boundaries and sequencing
+C2 creates the *internal* block/property ownership reconciliation necessary for road edits. It does **not** replace the manual property-creation/split/merge tools planned for 0.2D.
 
-**Not required for 0.2:** 3D renderer, population/economy simulation, NPCs, unrestricted curved splines, arbitrary concave parcels, hidden full-city regeneration after edits, or replacing every editing history with a universal timeline.
+## Global edit policy
 
-Roads can be represented as connected straight segments initially. Special edges (city boundary, plaza, banks, bridges, mountain foothills and passes) are protected in initial editing tools.
+1. Preserve accepted IDs, names, ownership, metadata, building positions, access, district/defense and protected water/terrain geometry unless a separately validated explicit change is approved.
+2. Show before/after changes, dependencies and blockers; don't confuse a graph-valid road with a safe neighborhood transaction.
+3. Apply only from fresh, independently recomputed and completely validated candidates. Failed/cancelled previews leave files, history and recovery untouched.
+4. Use one coupled Apply/Undo/Redo record, no silent data loss or unrelated neighborhood regeneration.
+5. Maintain **schema 9** unless a real persistence change requires a separately approved schema-10 migration.
+6. Deliver modular development source and versioned, reproducible **single-file offline HTML**. Test Node and Chromium/Firefox desktop, ultrawide, tablet and phone viewports.
+7. Preserve property-first selection and older distribution artifacts.
+8. Protected edges and unsupported splits/merges stay blocked until independently proved.
 
-The existing project format remains **schema 9 unless a real persistence-model change requires schema 10**. For any new schema, migration from existing 0.1 saves and round-trip tests are a mandatory release gate.
+## Status and authority
 
-## Project delivery rules
-
-- Keep modular sources and a reproducibly compiled, **versioned single-file offline HTML** after each approved development checkpoint.
-- Start from an agreed merged baseline and make each meaningful cycle on a separate feature branch.
-- Node, compile/parity, Chromium and Firefox tests are required; include desktop, ultrawide, tablet and phone viewports for UI changes.
-- Keep property-first selection as the primary land workflow. Existing names, custom uses, IDs and ownership must survive compatible edits.
-- Preserve older standalone distributions and portable saves. Protect `main`; **never merge without separate owner approval**.
-- The original planning branch remains a design reference. Implementation checkpoints start from merged `main`, with separate approval before each merge.
-
-## Release-level acceptance contract
-
-A 0.2 release is ready when a user can safely move/add/remove supported roads, create/split/merge properties, customize diverse 2D buildings, inspect all affected objects before applying, reverse accepted structural actions where feasible, and migrate old projects reliably. Scope may be narrowed rather than ship unstable subsystems.
-
-## Planning state
-
-- **Direction chosen:** 2D city designer.
-- **Edit policy chosen:** strict preservation before controlled local reconciliation.
-- **0.2A:** A1–A4 authorized in order; A1 merged as PR #22. A2 merged as PR #23. A3 merged as PR #24. A4 is implemented on `feature/mappo-0.2a-a4-road-preview` from merged main, pending separate review/merge approval. See [A1 record](A1_ROAD_GRAPH.md), [A2 record](A2_FACE_IDENTITY.md), [A3 record](A3_IMPACT_REPORT.md) and [A4 record](A4_ROAD_PREVIEW.md).
-- **Not yet approved:** checkpoint merges, implementation of later phases, schema migration, release date.
+- **0.1.0:** released.
+- **0.2A:** implemented/merged, including A5 impact report improvements.
+- **0.2B:** B1–B4 merged. B5 stabilization [PR #32](https://github.com/xbwtyz/Mappo/pull/32) passed full CI and is **awaiting separate merge approval** as of the roadmap decision.
+- **0.2C:** direction and design **approved for planning**, but implementation **has not started**. C1 starts only after an explicitly approved B5 merge and separate C1 implementation approval.
+- **0.2D–G:** roadmap-level plans only; cycle scopes subject to future review.
+- **3D:** deferred until the 2D city designer is capable and stable.
