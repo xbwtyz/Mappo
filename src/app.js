@@ -1376,6 +1376,7 @@ propertySplitE2 = new PropertySplitControlsE2({
     &&!buildingPlacementSession?.isActive&&!propertyEditSession?.isActive
     &&!identityWorkspace?.hasPending()),
   onCommit:(candidate,propertyId,direction,receipt)=>{
+    const revisionBeforeCommit=files?.revision??0;
     project=candidate;
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     propertyCreationHistoryE1.clear();buildingHistory.clear();buildingStructureHistory.clear();
@@ -1385,7 +1386,9 @@ propertySplitE2 = new PropertySplitControlsE2({
     propertyWorkspace.refresh();buildingWorkspace.refresh();
     updateDetails();workspaceShell.select({kind:'property',id:propertyId},{reveal:false});
     workspaceShell.refresh();requestDraw();
-    workspaceChanged(); // one accepted transaction, one file/recovery revision
+    // Selection dispatch may already have marked the accepted project dirty.
+    // Signal exactly once rather than treating a second UI event as another edit.
+    if((files?.revision??0)===revisionBeforeCommit)workspaceChanged();
     // The phone Inspector and Tools drawers were collapsed on entering E2.
 
     $('statusMessage').textContent=direction==='apply'
