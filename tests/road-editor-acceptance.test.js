@@ -148,3 +148,48 @@ test('D1 summary clears when the accepted revision changes', async () => {
   assert.equal(s.roadPreviewVerifiedD1,false);
   assert.equal(JSON.stringify(app.state().project),accepted);
 });
+
+
+test('D2 keeps a settled building choice visible and supports targeted clearing before Apply', async () => {
+  const app = await buildingAppHarness();
+  const project = createProject({seed:'c2-radial',size:'small',morphology:'radial'});
+  project.city.buildings.find(b=>b.id==='BLD-00048').customName = 'Market Hall';
+  app.apply({project,workspace:defaultWorkspace(project)});
+  const road = app.state().roadWorkspace, before = JSON.stringify(app.state().project);
+  road.start();
+  const s = road.session;
+  s.schedule = run => { run(); };
+  s.select({kind:'junction',id:'N-0101'});
+  const {x,y}=s.point;
+  s.update({x,y:y+15},{defer:false});
+  assert.equal(app.el('roadBuildingDecisionsD2').hidden,false);
+  assert.equal(app.el('roadApplyB4').disabled,true);
+  assert.equal(s.decideBuilding('BLD-00048',{kind:'auto'}),true);
+  assert.equal(app.el('roadApplyB4').disabled,false);
+  assert.equal(app.el('roadBuildingDecisionsD2').hidden,false);
+  assert.equal(s.buildingDecisions.get('BLD-00048').kind,'auto');
+  assert.equal(s.clearBuildingDecision('BLD-00048'),true);
+  assert.equal(s.buildingDecisions.has('BLD-00048'),false);
+  assert.equal(app.el('roadApplyB4').disabled,true);
+  assert.equal(app.el('roadBuildingDecisionsD2').hidden,false);
+  assert.equal(JSON.stringify(app.state().project),before);
+});
+
+test('D2 rejects a new building decision if the road draft was reset', async () => {
+  const app = await buildingAppHarness();
+  const project = createProject({seed:'c2-radial',size:'small',morphology:'radial'});
+  project.city.buildings.find(b=>b.id==='BLD-00048').customName = 'Market Hall';
+  app.apply({project,workspace:defaultWorkspace(project)});
+  const road = app.state().roadWorkspace;
+  road.start();
+  const s = road.session;
+  s.schedule = run => { run(); };
+  s.select({kind:'junction',id:'N-0101'});
+  const {x,y}=s.point;
+  s.update({x,y:y+15},{defer:false});
+  assert.equal(s.decideBuilding('BLD-00048',{kind:'auto'}),true);
+  s.reset();
+  assert.equal(s.decideBuilding('BLD-00048',{kind:'fixed'}),false);
+  assert.equal(s.clearBuildingDecision('BLD-00048'),false);
+  assert.equal(app.el('roadBuildingDecisionsD2').hidden,true);
+});
