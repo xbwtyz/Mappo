@@ -1,0 +1,29 @@
+name: E4 Recompile and browser QA (temporary)
+on:
+  push:
+    branches: [feature/mappo-0.2e-e4-plot-count]
+    paths: ['.github/workflows/e4-recompile.yml']
+permissions:
+  contents: write
+jobs:
+  recompile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Update to current branch head
+        run: git pull --rebase origin feature/mappo-0.2e-e4-plot-count
+      - name: Build E4 offline HTML
+        run: npm run build
+      - name: Commit checked-in standalone outputs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html dist/mappo-0.2-dev.e4.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'build(e4): synchronize standalone after browser QA fixes'
+            git push origin HEAD:feature/mappo-0.2e-e4-plot-count
+          fi
