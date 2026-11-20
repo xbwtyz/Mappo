@@ -28,3 +28,5 @@ Existing independent fresh Apply reconstruction and schema-9 round-trip remain i
 - [ ] Verify C6 street/bend/split/merge and C7 four-layout junctions, protected/named building decisions, Undo/Redo and schema 9 offline parity.
 - [ ] Evaluate separate synchronous Apply stalls without weakening independent validation.
 - [ ] Keep Issue #44 open until its acceptance criteria are actually met.
+
+**Testing cadence:** [CI testing policy](../../CI_TEST_POLICY.md) separates fast development smoke checks from review-ready/full validation and conditional C7 benchmarking.
