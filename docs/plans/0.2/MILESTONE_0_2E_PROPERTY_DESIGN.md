@@ -1,6 +1,6 @@
 # Mappo 0.2E — Manual Property Restructuring (planning draft)
 
-> **Status:** E1 property creation merged via [PR #58](https://github.com/xbwtyz/Mappo/pull/58). **E2 straight frontage-to-rear splitting design approved**, documented in [E2 detailed contract](E2_PROPERTY_SPLIT_DESIGN.md); no E2 implementation is authorized or started by this planning PR. Later E3–E5 scopes remain proposed. Schema 9 and separate code/merge/release approvals remain gates. See the [master roadmap](README.md) and [0.2F building design](MILESTONE_0_2F_BUILDING_DESIGN.md).
+> **Status:** E1 property creation merged via [PR #58](https://github.com/xbwtyz/Mappo/pull/58). **E2 straight frontage-to-rear splitting design approved**, documented in [E2 detailed contract](E2_PROPERTY_SPLIT_DESIGN.md); E2 implementation is underway separately in [feature PR #60](https://github.com/xbwtyz/Mappo/pull/60), which remains unmerged and requires independent acceptance. Later E3–E5 scopes remain proposed. Schema 9 and separate code/merge/release approvals remain gates. See the [master roadmap](README.md) and [0.2F building design](MILESTONE_0_2F_BUILDING_DESIGN.md).
 
 ## Purpose
 

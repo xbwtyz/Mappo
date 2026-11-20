@@ -31,7 +31,7 @@ flowchart TD
 | **0.2B — conservative Apply** | Local adaptation, candidate preview, whole-edit Apply and history | B1–B5 **merged** | One verified reversible edit |
 | **0.2C — road-first streets** | Street manipulation, generated-neighborhood reflow, topology, bends, building conflict policy | C1–C7 and P1–P7 **merged** | Streets drive supported local adaptation; protect authored work |
 | **0.2D — road editing experience** | Readable map preview, contextual building decisions, blocked recovery and acceptance | D1–D4 **merged** in PRs #51–#53, #56 | Understand/rescue edits without technical reports |
-| **0.2E — manual property restructuring** | Create/split/merge parcels, adjust plot counts and reconcile dependent references | **E1** create (**merged PR #58**); **E2** straight frontage-to-rear split (**design approved; code pending**); **E3** merge; **E4** plot/ownership reconciliation; **E5** integrated QA | No orphaned buildings or unapproved identity loss |
+| **0.2E — manual property restructuring** | Create/split/merge parcels, adjust plot counts and reconcile dependent references | **E1** create (**merged PR #58**); **E2** straight frontage-to-rear split (**approved design; implementation PR #60 in review, unmerged**); **E3** merge; **E4** plot/ownership reconciliation; **E5** integrated QA | No orphaned buildings or unapproved identity loss |
 | **0.2F — advanced building design** | Extended 2D footprints, direct vertex/wing/hole editing, meaningful categories, QA | **F1** shapes; **F2** direct geometry; **F3** categories; **F4** integrated QA | True new capabilities, no duplication of 3G/3H |
 | **0.2G — civic places** (optional) | Editable plazas, markets, gardens, landmarks, district links | **G1** records; **G2** tools; **G3** identity; **G4** integration | Skip/defer if release stability or scope takes priority |
 | **0.2H — release hardening** | Cross-editor integration, migration audit, performance, browsers, release candidate | **H1** release workflows; **H2** save/migrate; **H3** performance; **H4** QA; **H5** RC | Stable offline standalone with tested old saves |
@@ -59,7 +59,7 @@ The new milestone identifiers replace **older active roadmap labels**; they do n
 
 - **0.1.0:** stable published release (do not confuse this with the newer development build on `main`).
 - **0.2A–D:** merged on `main`, with D4 closeout in [PR #56](https://github.com/xbwtyz/Mappo/pull/56).
-- **0.2E:** **underway**. E1 creation merged in [PR #58](https://github.com/xbwtyz/Mappo/pull/58); E2's straight frontage-to-rear splitting approach is **approved for design only**, with [detailed implementation and acceptance gates](E2_PROPERTY_SPLIT_DESIGN.md). E2 code requires separate approval. E3–E5 remain planned.
+- **0.2E:** **underway**. E1 creation merged in [PR #58](https://github.com/xbwtyz/Mappo/pull/58); E2's straight frontage-to-rear splitting approach is **approved for the straight frontage-to-rear design**, now implemented for review in [PR #60](https://github.com/xbwtyz/Mappo/pull/60). The [detailed acceptance gates](E2_PROPERTY_SPLIT_DESIGN.md) remain required before any merge. E3–E5 remain planned.
 - **0.2F:** [proposed F1–F4 building plan](MILESTONE_0_2F_BUILDING_DESIGN.md), following accepted 0.2E.
 - **0.2G:** conditional; defer if necessary rather than block a stable release for optional civic features.
 - **0.2H:** final 0.2 release integration and stabilization, even if 0.2G is deferred.
