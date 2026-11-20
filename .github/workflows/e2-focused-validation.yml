@@ -1,0 +1,19 @@
+name: E2 Focused Model Tests (temporary)
+on:
+  push:
+    branches:
+      - feature/mappo-0.2e-e2-straight-property-split
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run E2 focused Node acceptance
+        run: node --test tests/property-split-e2.test.js
