@@ -139,6 +139,7 @@ test('E5 accepted road adaptation remains authoritative for subsequent plot-coun
  const app=await buildingAppHarness();
  const start=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
  app.apply({project:start,workspace:defaultWorkspace(start)});
+ const beforeRoad=JSON.stringify(app.state().project.city);
  const roadWorkspace=app.state().roadWorkspace;
  roadWorkspace.start();
  const drag=roadWorkspace.session;
@@ -154,7 +155,7 @@ test('E5 accepted road adaptation remains authoritative for subsequent plot-coun
   'The established road acceptance fixture must be valid.');
  app.el('roadApplyB4').handlers.click();
  const adapted=app.state().project;
- assert.notDeepEqual(adapted.city.nodes,start.city.nodes);
+ assert.notEqual(JSON.stringify(adapted.city),beforeRoad,'Accepted road edit must change city state');
  let edited=null;
  for(const p of adapted.city.properties){
   const session=new PropertyEditSession3I();
