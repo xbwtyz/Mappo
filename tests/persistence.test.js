@@ -359,6 +359,28 @@ test('recovery writes keep current and previous snapshots and do not rotate back
   assert.equal(saved.current, b);
 });
 
+test('recovery reuses exact committed documents and protects changed unsupported bytes', async () => {
+  const adapter = adapterFixture(), store = new RecoveryStore(adapter);
+  const document = documentFixture();
+  const first = await store.saveDocument(document);
+  const later = { ...document, savedAt: '2026-11-17T10:00:00.000Z' };
+  const repeat = await store.saveDocument(later);
+  assert.equal(repeat.state.current, first.text);
+  assert.equal(repeat.state.backup, null);
+
+  const changed = copyJson(later);
+  changed.project.city.name = 'A changed workspace';
+  const next = await store.saveDocument(changed);
+  assert.equal(next.state.backup, first.text);
+  assert.equal(next.state.current, next.text);
+
+  const unsupported = JSON.stringify({ ...changed, formatVersion: 99 });
+  adapter.set({ ...adapter.raw(), current: unsupported });
+  await assert.rejects(store.saveDocument(document), /preserved|newer/);
+  assert.equal(adapter.raw().current, unsupported);
+  assert.equal(adapter.raw().backup, first.text);
+});
+
 test('quota and transaction failures preserve the last committed recovery snapshot', async () => {
   const storage = fakeStorage(),
     store = new RecoveryStore(localStorageRecoveryAdapter(storage));

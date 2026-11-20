@@ -99,6 +99,7 @@ export class ProjectFiles {
           try {
             const doc = decodeProjectDocument(stored[key]);
             this[key + 'Recovery'] = doc;
+            this[key + 'RecoveryText'] = stored[key];
             button.disabled = false;
             button.textContent = `${label}: ${doc.project.city.name}`;
             recoverable++;
@@ -129,21 +130,30 @@ export class ProjectFiles {
       this.timer = null;
     }
     const operation = this.writeQueue.catch(() => {}).then(async () => {
-      const revision = this.revision,
-        document = this.captureDocument(),
+      const revision = this.revision, document = this.captureDocument();
+      let text, savedState;
+      if (this.store.saveDocument) {
+        ({ text, state: savedState } = await this.store.saveDocument(document));
+      } else {
         text = encodeProjectDocument(document);
-      const savedState = await this.store.save(text);
+        savedState = await this.store.save(text);
+      }
       this.base = document;
       this.recoveredRevision = revision;
       this.lastError = null;
-      if (savedState.backup) {
+      const snapshots = new Map([
+        [this.currentRecoveryText, this.currentRecovery],
+        [this.backupRecoveryText, this.backupRecovery],
+        [text, document],
+      ]);
+      for (const [key, button] of [['current','restoreRecoveryButton'], ['backup','restoreBackupButton']]) {
+        if (!savedState[key]) continue;
         try {
-          this.backupRecovery = decodeProjectDocument(savedState.backup);
-          this.$('restoreBackupButton').disabled = false;
+          this[key + 'Recovery'] = snapshots.get(savedState[key]) ?? decodeProjectDocument(savedState[key]);
+          this[key + 'RecoveryText'] = savedState[key];
+          this.$(button).disabled = false;
         } catch {}
       }
-      this.currentRecovery = document;
-      this.$('restoreRecoveryButton').disabled = false;
       if (this.revision === revision) this.status(`Recovery saved in this browser at ${new Date(document.savedAt).toLocaleTimeString()}. Download a portable copy when you want to keep a version.`);
       return document;
     }).catch(error => {

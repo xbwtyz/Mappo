@@ -1,5 +1,6 @@
 import {
-  decodeProjectDocument
+  decodeProjectDocument,
+  encodeProjectDocument
 } from './project-format.js';
 
 const STORAGE_KEY = 'mappo:recovery:v1';
@@ -7,11 +8,18 @@ const DB_NAME = 'mappo-project-recovery';
 const STORE_NAME = 'snapshots';
 export const RECOVERY_CONFLICT = 'Another Mappo tab changed recovery. Download your project to keep it, then reload this page.';
 
-function nextRecoveryState(previous, text, expectedToken) {
+function recoveryContent(document) {
+  const { savedAt, appVersion, ...content } = document;
+  return JSON.stringify(content);
+}
+
+function nextRecoveryState(previous, text, expectedToken, known, content) {
   if ((previous?.token ?? null) !== expectedToken) throw new Error(RECOVERY_CONFLICT);
   let current = null,
     backup = previous?.backup ?? null;
-  if (previous?.current) {
+  if (known && previous?.current === known.text) {
+    current = known.text;
+  } else if (previous?.current) {
     try {
       decodeProjectDocument(previous.current);
       current = previous.current;
@@ -20,13 +28,9 @@ function nextRecoveryState(previous, text, expectedToken) {
     }
   }
   if (current) {
-    const a = JSON.parse(current),
-      b = JSON.parse(text);
-    delete a.savedAt;
-    delete b.savedAt;
-    delete a.appVersion;
-    delete b.appVersion;
-    if (JSON.stringify(a) === JSON.stringify(b)) return previous;
+    const before = current === known?.text ? known.content : recoveryContent(JSON.parse(current));
+    const after = content ?? recoveryContent(JSON.parse(text));
+    if (before === after) return previous;
   }
   return {
     token: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`,
@@ -36,6 +40,8 @@ function nextRecoveryState(previous, text, expectedToken) {
 }
 
 export class RecoveryStore {
+  #knownCurrent = null;
+
   constructor(adapter) {
     this.adapter = adapter;
     this.token = null;
@@ -52,10 +58,22 @@ export class RecoveryStore {
     };
   }
   save(text) {
+    return this.#save(text);
+  }
+  async saveDocument(document) {
+    const text = encodeProjectDocument(document);
+    const state = await this.#save(text, recoveryContent(document));
+    return { text, state };
+  }
+  #save(text, content) {
     const operation = this.queue.catch(() => {}).then(async () => {
       if (!this.initialized) await this.read();
-      const state = await this.adapter.update(previous => nextRecoveryState(previous, text, this.token));
+      const state = await this.adapter.update(previous =>
+        nextRecoveryState(previous, text, this.token, this.#knownCurrent, content));
       this.token = state.token;
+      // Remember only exact bytes produced by the encoder and committed by storage.
+      if (content !== undefined && state.current === text) this.#knownCurrent = { text, content };
+      else if (this.#knownCurrent?.text !== state.current) this.#knownCurrent = null;
       return state;
     });
     this.queue = operation;

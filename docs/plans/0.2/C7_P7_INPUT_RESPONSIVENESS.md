@@ -37,3 +37,14 @@ block to skip detailed intersection checks for clearly separated pairs.
 Pairs whose bounds touch or nearly touch still get the full test. Separated
 pairs consume the same work budget as before. Clearance calculation also
 avoids a temporary distance array.
+
+## Recovery work during previews
+
+Chromium's engine trace found long IndexedDB recovery callbacks on the main
+thread during large-city previews. Recovery can reuse a snapshot only when
+storage returns the exact text previously validated and committed in this
+session. Changed, imported, and previously unseen snapshots still go through
+the existing checks. The conflict token, current and backup rotation, and
+storage transaction remain in place. The file panel reuses already validated
+recovery documents when their stored bytes match, and project capture copies
+metadata without copying the project it is about to replace.
