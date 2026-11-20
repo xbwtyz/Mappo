@@ -520,3 +520,19 @@
   .road-disclosure-d1 > summary { min-height: 44px; box-sizing: border-box; padding: 10px 6px; }
   .road-preview-panel .road-apply-footer #roadApplyB4 { min-height: 44px; }
 }
+
+
+/* D2: contextual, per-building decisions remain visible after valid previews. */
+.road-building-decisions-d2{border:1px solid #b7c9c2;border-radius:6px;background:#f5f8f4;padding:9px;margin:8px 0}
+.road-building-decisions-d2 h3{font-size:12px;margin:0 0 5px}
+.road-building-decisions-d2 .hint{font-size:11px;line-height:1.45}
+#roadDecisionListD2{display:grid;gap:8px}
+.road-building-choice-d2{border:1px solid #c7d0ca;background:#fffdf6;border-radius:5px;padding:8px}
+.road-building-choice-d2 h4{font-size:12px;margin:0}
+.road-building-result-d2{font-size:11px;line-height:1.45;margin:3px 0}
+.road-building-actions-d2{display:flex;flex-wrap:wrap;gap:6px}
+.road-building-actions-d2 button:first-child{background:#226c61;color:white;border-color:#14564e;font-weight:700}
+.road-building-more-d2{margin:5px 0}
+.road-building-more-d2>summary{cursor:pointer;font-weight:600;padding:5px}
+.road-building-selected-d2{font-size:11px;font-weight:600;margin:6px 0}
+@media(max-width:900px){.road-building-actions-d2 button,.road-building-more-d2>summary{min-height:44px}}
