@@ -87,7 +87,12 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         assert.notEqual(accepted.city,before);
         assert.equal(accepted.properties,initialCount+1);
         assert.equal(accepted.plots,initialPlots+1);
-        assert.equal(accepted.revision,revision+1,'Split has exactly one accepted revision');
+        // ProjectFiles.revision also tracks Inspector/selection changes and is
+        // not the structural transaction counter. A split must notify recovery,
+        // but exactly one whole-city history entry is the atomicity invariant.
+        assert.ok(accepted.revision>=revision+1,'Accepted split must update file/recovery revision');
+        assert.equal(await page.evaluate(()=>__buildingQA.state().propertySplitE2.history.past.length),1,
+          'One Apply must create one structural split history transaction');
 
         if(viewport.name==='phone'){
           if(await page.locator('#workspaceCloseInspector').isVisible())await page.locator('#workspaceCloseInspector').click();
