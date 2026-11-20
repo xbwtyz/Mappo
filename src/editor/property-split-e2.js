@@ -9,15 +9,13 @@ import { propertyLocalBounds3I } from '../core/property-geometry.js';
 import { propertySplitGeometryE2 } from '../core/property-split-geometry-e2.js';
 import { PropertyCreationHistoryE1 } from './property-creation-e1.js';
 
-// Structural history is the same complete before/after transaction mechanism
+// Structural history is the e2Same complete before/after transaction mechanism
 // as E1; do not duplicate a second whole-project history implementation.
 export const PropertySplitHistoryE2=PropertyCreationHistoryE1;
-const issue=(code,message,targetId=null)=>({code,message,targetId});
-const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-const plotFields=new Set(['id','blockId','propertyId','frontageRoadId','boundary']);
-const landFields=['id','blockId','districtId','plotIds','buildingIds','boundary','frontageRoadId',
-  'frontage','area','usage','frame','local','roadProvenance','propertySplitHistoryE2'];
-function nextId(rows,prefix){
+const e2Issue=(code,message,targetId=null)=>({code,message,targetId});
+const e2Same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const e2PlotFields=new Set(['id','blockId','propertyId','frontageRoadId','boundary']);
+function e2NextId(rows,prefix){
   const used=new Set(rows.map(row=>row.id));
   let n=1;
   for(const id of used)if(id.startsWith(prefix)&&/^\d+$/.test(id.slice(prefix.length)))
@@ -26,10 +24,10 @@ function nextId(rows,prefix){
   while(used.has(prefix+String(n).padStart(5,'0')))n++;
   return prefix+String(n).padStart(5,'0');
 }
-function strictInterior(point,polygon){
+function e2StrictInterior(point,polygon){
   return pointInPolygon(point,polygon)&&clearance(point,polygon)>1e-6;
 }
-function routeIntersectsPolygon(path,polygon){
+function e2RouteIntersectsPolygon(path,polygon){
   if(!Array.isArray(path)||path.length<2)return true;
   for(let i=0;i<path.length-1;i++){
     const a=path[i],b=path[i+1];
@@ -40,7 +38,7 @@ function routeIntersectsPolygon(path,polygon){
     factors.sort((x,y)=>x-y);
     for(let k=0;k<factors.length-1;k++){
       const t=(factors[k]+factors[k+1])/2;
-      if(strictInterior({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t},polygon))return true;
+      if(e2StrictInterior({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t},polygon))return true;
     }
   }
   return false;
@@ -73,41 +71,41 @@ export class PropertySplitSessionE2 {
 // accepted state or running the full O(city) schema validator on pointer frames.
 export function inspectPropertySplitE2(project,session){
   const city=project?.city;
-  if(!city||!session?.active)return {ok:false,status:'choose',issues:[issue('selection','Choose a property to split.')],preview:null};
+  if(!city||!session?.active)return {ok:false,status:'choose',issues:[e2Issue('selection','Choose a property to split.')],preview:null};
   let g;
   try{g=propertySplitGeometryE2(city,session.propertyId,session.t);}
-  catch(e){return {ok:false,status:'invalid',issues:[issue('geometry',e.message)],preview:null};}
+  catch(e){return {ok:false,status:'invalid',issues:[e2Issue('geometry',e.message)],preview:null};}
   const issues=[], transfers=[],buildings=city.buildings.filter(b=>b.propertyId===g.propertyId);
   const source=city.properties.find(p=>p.id===g.propertyId);
   if(!source.frame||!source.local||source.frontageRoadId==null)
-    issues.push(issue('frontage','The accepted property has no verifiable frontage frame.',source.id));
+    issues.push(e2Issue('frontage','The accepted property has no verifiable frontage frame.',source.id));
   const sides=new Map();
   for(const building of buildings){
     const left=shapeContained(building.footprint,g.left),right=shapeContained(building.footprint,g.right);
     if(left===right){
-      issues.push(issue('building','Building '+(building.customName||building.id)+' crosses or touches the split ambiguously. Move the line instead.',building.id));continue;
+      issues.push(e2Issue('building','Building '+(building.customName||building.id)+' crosses or touches the split ambiguously. Move the line instead.',building.id));continue;
     }
     const side=left?'left':'right';sides.set(building.id,side);
     const sibling=left?g.right:g.left;
-    if(routeIntersectsPolygon(building.accessPath,sibling))
-      issues.push(issue('access','Building '+(building.customName||building.id)+' has an access path through the other property.',building.id));
+    if(e2RouteIntersectsPolygon(building.accessPath,sibling))
+      issues.push(e2Issue('access','Building '+(building.customName||building.id)+' has an access path through the other property.',building.id));
     if(right){
       const protectedRecord=classifyRoadProvenance(building)!=='generated';
       const accepted=session.approved?.has(building.id)??false;
       transfers.push({buildingId:building.id,name:building.customName||building.id,
         protected:protectedRecord,approved:accepted});
       if(protectedRecord&&!accepted)
-        issues.push(issue('authorization','Approve ownership transfer of protected building '+(building.customName||building.id)+'.',building.id));
+        issues.push(e2Issue('authorization','Approve ownership transfer of protected building '+(building.customName||building.id)+'.',building.id));
     }
   }
   for(const fragment of g.fragments){
     const plot=city.plots.find(p=>p.id===fragment.originalId);
-    if(!plot){issues.push(issue('plot','A required existing plot disappeared.',fragment.originalId));break;}
-    if(fragment.crossesCut&&Object.keys(plot).some(key=>!plotFields.has(key))){
-      issues.push(issue('plot-metadata','Annotated plot '+plot.id+' cannot be safely split without new metadata rules.',plot.id));break;
+    if(!plot){issues.push(e2Issue('plot','A required existing plot disappeared.',fragment.originalId));break;}
+    if(fragment.crossesCut&&Object.keys(plot).some(key=>!e2PlotFields.has(key))){
+      issues.push(e2Issue('plot-metadata','Annotated plot '+plot.id+' cannot be safely split without new metadata rules.',plot.id));break;
     }
     if(!shapeWellFormed(fragment.boundary)||polygonSignedArea(fragment.boundary)<1e-5){
-      issues.push(issue('plot','A resulting plot fragment is invalid or too narrow.',fragment.originalId));break;
+      issues.push(e2Issue('plot','A resulting plot fragment is invalid or too narrow.',fragment.originalId));break;
     }
   }
   return {ok:issues.length===0,status:issues.length?'invalid':'valid',issues,
@@ -123,7 +121,7 @@ export function preparePropertySplitE2(project,workspace,session){
   try{
     const candidate=copyJson(project),city=candidate.city,g=inspection.preview;
     const source=city.properties.find(p=>p.id===g.propertyId);
-    const newPropertyId=nextId(city.properties,'PROP-');
+    const newPropertyId=e2NextId(city.properties,'PROP-');
     const existingIds=city.plots.map(p=>p.id);
     const leftPlots=[],rightPlots=[],plotMapping=[];
     for(const oldId of source.plotIds){
@@ -132,7 +130,7 @@ export function preparePropertySplitE2(project,workspace,session){
       const crosses=fragments.length===2;
       for(const fragment of fragments){
         const isRight=fragment.side==='right';
-        const fragmentId=crosses&&isRight?nextId(existingIds.map(id=>({id})),'PLOT-'):oldId;
+        const fragmentId=crosses&&isRight?e2NextId(existingIds.map(id=>({id})),'PLOT-'):oldId;
         if(crosses&&isRight)existingIds.push(fragmentId);
         const base=crosses&&isRight
           ?{id:fragmentId,blockId:source.blockId,propertyId:newPropertyId,
@@ -183,10 +181,10 @@ export function preparePropertySplitE2(project,workspace,session){
     // No recalculation of open-space totals: area is exactly conserved.
     validateStoredProject(candidate);
     const restored=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace))).project;
-    if(!same(candidate.city,restored.city))throw Error('Portable save/load changed the split project.');
+    if(!e2Same(candidate.city,restored.city))throw Error('Portable save/load changed the split project.');
     return {...inspection,ok:true,status:'valid',candidate:restored,
       newPropertyId,sourcePropertyId:source.id,plotMapping,movements,lineage};
   }catch(e){
-    return {...inspection,ok:false,status:'invalid',issues:[issue('project','Split Apply rejected: '+e.message)],candidate:null};
+    return {...inspection,ok:false,status:'invalid',issues:[e2Issue('project','Split Apply rejected: '+e.message)],candidate:null};
   }
 }
