@@ -154,7 +154,7 @@ export function summarizeRoadImpact(report) {
       const fallback = code.replace(/[-_]/g, ' ').replace(/^./, (c) => c.toUpperCase());
       const [title, suggestion] = roadImpactGuidance[code] ?? [
         fallback,
-        'Inspect the detailed diagnostic for the affected records.'
+        'This dependency cannot be safely resolved from the available preview. Inspect the affected records in Details.'
       ];
       groups.set(key, { key, severity, code, title, suggestion, rows: [], objects: new Set() });
     }
