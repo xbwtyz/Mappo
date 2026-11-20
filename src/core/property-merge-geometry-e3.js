@@ -26,7 +26,7 @@ export function propertyMergeGeometryE3(city,primaryId,secondaryId){
     throw Error('Properties need the same verified block, district and frontage road.');
   if(primary.boundary?.length!==4||secondary.boundary?.length!==4||
     !e3MergeConvex(primary.boundary)||!e3MergeConvex(secondary.boundary))
-    throw Error('E3 initially supports well-formed e3MergeConvex four-corner properties only.');
+    throw Error('E3 initially supports well-formed convex four-corner properties only.');
   if(!e3MergeEqualFrame(primary.frame,secondary.frame))
     throw Error('Frontage frames differ; merging would require an unsafe geometry adjustment.');
   if(!primary.local||!secondary.local||!Array.isArray(primary.plotIds)||!Array.isArray(secondary.plotIds))
@@ -38,7 +38,7 @@ export function propertyMergeGeometryE3(city,primaryId,secondaryId){
   else throw Error('Properties must share one complete frontage-to-rear edge.');
   const l=left.boundary,r=right.boundary;
   const union=[l[0],r[1],r[2],l[3]].map(p=>({...p}));
-  if(!e3MergeConvex(union))throw Error('The combined property would not be one legal e3MergeConvex four-corner parcel.');
+  if(!e3MergeConvex(union))throw Error('The combined property would not be one legal convex four-corner parcel.');
   const area=polygonSignedArea(union);
   if(!e3MergeApprox(area,primary.area+secondary.area)||area<60||
     e3MergeEdgeLength(union[0],union[1])<7||
@@ -85,7 +85,9 @@ export function propertyMergeGeometryE3(city,primaryId,secondaryId){
 
 export function propertyMergeNeighborsE3(city,primaryId){
   if(!city?.properties?.some(p=>p.id===primaryId))return [];
-  return city.properties.filter(p=>p.id!==primaryId)
+  const primary=city.properties.find(p=>p.id===primaryId);
+  return city.properties.filter(p=>p.id!==primaryId&&p.blockId===primary.blockId&&
+      p.frontageRoadId===primary.frontageRoadId)
     .filter(p=>{try{propertyMergeGeometryE3(city,primaryId,p.id);return true;}catch{return false;}})
     .map(p=>({id:p.id,name:p.customName||p.id}));
 }
