@@ -558,8 +558,19 @@ export class RoadInspectionWorkspace {
     this.$('roadReconciliationB3').hidden = false;
     this.$('roadClearBuildingChoicesC5').hidden = !s.buildingDecisions.size;
     this.$('roadClearBuildingChoicesC5').disabled = Boolean(s.drag) || s.checking;
-    const computed = s.reconciliation ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology) : null;
-    s.previewGeometry = computed;
+    // A settled reconciliation is immutable for the life of this detached draft.
+    // Reuse its derived display geometry on unrelated redraws and focus changes.
+    if (this.previewProject !== s.project ||
+        this.previewReconciliation !== s.reconciliation ||
+        this.previewTopology !== s.topology) {
+      this.previewProject = s.project;
+      this.previewReconciliation = s.reconciliation;
+      this.previewTopology = s.topology;
+      this.cachedPreviewGeometry = s.reconciliation
+        ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology)
+        : null;
+    }
+    s.previewGeometry = this.cachedPreviewGeometry;
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
     const ready=Boolean((kind==='junction' || kind==='road') && s.current() && s.pending && !s.checking && !s.drag && !s.error &&
       !s.reconciliationError && s.reconciliation?.candidateProject &&

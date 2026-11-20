@@ -59,6 +59,9 @@ jobs:
       - name: Run Chromium and Firefox browser matrices
         run: npm run test:browser
 
+      - name: C7 browser performance and stale-draft checks
+        run: node scripts/c7-browser-performance.mjs
+
       - name: Upload browser screenshots and failure evidence
         if: always()
         uses: actions/upload-artifact@v4

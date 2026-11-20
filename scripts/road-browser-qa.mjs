@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile, mkdir } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
 import { createProject } from '../src/core/city-model.js';
-import { defaultWorkspace } from '../src/data/project-format.js';
+import { createProjectDocument, decodeProjectDocument, defaultWorkspace, encodeProjectDocument } from '../src/data/project-format.js';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 
 const html = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'));
@@ -666,18 +666,65 @@ for (const [name, type] of [
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),original);
       }
       if (viewport.name === 'desktop') {
+        // C7 release acceptance: real user controls, all four developed layouts.
+        for (const [morphology,id,axis,delta] of [
+          ['planned','N-0105','x',12],['radial','N-0101','y',15],
+          ['organic','N-0139','y',15],['linear','N-0118','y',8],
+        ]) {
+          const cityProject=createProject({seed:'c2-'+morphology,size:'small',morphology});
+          await page.evaluate(doc=>__buildingQA.apply(doc),
+            {project:cityProject,workspace:defaultWorkspace(cityProject)});
+          await page.locator('#roadModeButton').click();
+          await page.locator('#roadSelectionKind').selectOption('junction');
+          await page.locator('#roadSelectionId').selectOption(id);
+          const before=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
+          const original=cityProject.city.nodes.find(node=>node.id===id);
+          await page.locator(axis==='x'?'#roadProposedX':'#roadProposedY')
+            .fill(String(original[axis]+delta));
+          await page.waitForFunction(()=>!document.querySelector('#roadApplyB4').disabled);
+          if (['radial','organic'].includes(morphology)) {
+            assert.equal(await page.evaluate(()=>__buildingQA.state().roadWorkspace.session.reconciliation.ledger
+              .some(row=>row.disposition==='created-junction')),true,morphology+' crossing');
+          }
+          assert.match(await page.locator('#roadReportStatus').innerText(),/preview ready|Safe/);
+          await page.locator('#roadApplyB4').click();
+          assert.equal(await page.evaluate(({id,axis})=>__buildingQA.state().project.city.nodes
+            .find(node=>node.id===id)[axis],{id,axis}),original[axis]+delta);
+          const accepted=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
+          assert.notEqual(accepted,before);
+          assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
+          assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),before);
+          assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('redo')),true);
+          assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),accepted);
+          const saved=await page.evaluate(()=>__buildingQA.capture());
+          const reopened=decodeProjectDocument(encodeProjectDocument(createProjectDocument(
+            saved.project,saved.workspace)));
+          await page.evaluate(doc=>__buildingQA.apply(doc),reopened);
+          assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),accepted);
+        }
         const radial=createProject({seed:'c2-radial',size:'small',morphology:'radial'});
-        await page.evaluate(doc=>__buildingQA.apply(doc),{project:radial,workspace:defaultWorkspace(radial)});
+        radial.city.buildings.find(b=>b.id==='BLD-00048').customName='Market Hall';
+        await page.evaluate(doc=>__buildingQA.apply(doc),
+          {project:radial,workspace:defaultWorkspace(radial)});
         await page.locator('#roadModeButton').click();
         await page.locator('#roadSelectionKind').selectOption('junction');
         await page.locator('#roadSelectionId').selectOption('N-0101');
-        const junction=radial.city.nodes.find(node=>node.id==='N-0101');
-        await page.locator('#roadProposedY').fill(String(junction.y+15));
+        const beforeCustom=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
+        const original=radial.city.nodes.find(n=>n.id==='N-0101');
+        await page.locator('#roadProposedY').fill(String(original.y+15));
+        await page.waitForFunction(()=>!document.querySelector('#roadResolveConflictC6').hidden);
+        assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+        await page.locator('#roadPreviewMinimize').click();
+        await page.getByRole('button',{name:'Resolve conflict'}).click();
+        assert.equal(await page.evaluate(()=>document.activeElement.textContent),'Keep footprint here');
+        const choice=page.locator('#roadConflictC6-BLD-00048');
+        await choice.getByRole('button',{name:'Find a new placement'}).click();
         await page.waitForFunction(()=>!document.querySelector('#roadApplyB4').disabled);
-        assert.match(await page.locator('#roadReportStatus').innerText(),/preview ready/);
         await page.locator('#roadApplyB4').click();
-        assert.equal(await page.evaluate(()=>__buildingQA.state().project.city.nodes.find(node=>node.id==='N-0101').y),junction.y+15);
+        assert.equal(await page.evaluate(()=>__buildingQA.state().project.city.buildings
+          .find(b=>b.id==='BLD-00048').customName),'Market Hall');
         assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
+        assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),beforeCustom);
       }
       assert.equal(errors.length, 0, errors.join('; '));
       console.log(
