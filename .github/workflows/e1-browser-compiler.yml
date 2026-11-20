@@ -1,0 +1,49 @@
+name: E1 temporary browser acceptance and compiler
+on:
+  push:
+    branches:
+      - feature/mappo-0.2e-e1-property-creation
+permissions:
+  contents: write
+concurrency:
+  group: mappo-e1-browser-compiler
+  cancel-in-progress: true
+jobs:
+  e1:
+    if: "!startsWith(github.event.head_commit.message, 'build(e1): compile')"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/mappo-0.2e-e1-property-creation
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile and validate new property geometry
+        run: |
+          npm run build
+          node --test tests/property-creation-e1.test.js
+      - name: Install browser dependencies
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium firefox
+      - name: Verify real desktop and mobile interactions in both browsers
+        run: node scripts/property-creation-e1-browser-qa.mjs
+      - name: Commit versioned standalone distribution
+        run: |
+          cmp index.html dist/mappo-0.2-dev.e1.html
+          git add index.html dist/mappo-0.2-dev.e1.html
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "build(e1): compile browser-verified standalone HTML"
+            git push origin HEAD:feature/mappo-0.2e-e1-property-creation
+          fi
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e1-mobile-debug-screenshots
+          path: artifacts/e1/
+          if-no-files-found: ignore
