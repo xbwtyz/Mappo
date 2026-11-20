@@ -134,6 +134,9 @@ cancel with Details closed. A single Undo restores the whole edit. Acceptance
 requires zero participant recruitment, mandatory walkthroughs, feedback
 prompts, or owner-run checks.
 
-Manual parcel creation, splitting, merging, boundary editing, and plot
-division remain follow-up work. The existing schema and local reflow rules
-carry through this milestone.
+**After D4:** Manual parcel creation, splitting, merging, boundary editing,
+and plot-count/ownership reconciliation are explicitly planned for
+[0.2E](MILESTONE_0_2E_PROPERTY_DESIGN.md). More expressive custom building
+geometry follows in [0.2F](MILESTONE_0_2F_BUILDING_DESIGN.md). The existing
+schema-9 preservation and local reflow rules remain authoritative. D1–D4
+are merged; these later plans do not retroactively expand D4's acceptance.
