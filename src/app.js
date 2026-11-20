@@ -1571,8 +1571,10 @@ propertyWorkspace = new PropertyWorkspace({
   startPropertySplit: id=>{
     if(workspaceShell.state.selection?.kind!=='property'||workspaceShell.state.selection.id!==id)return false;
     const started=propertySplitE2.start(id);
-    if(started&&Number.isFinite(window.innerWidth)&&window.innerWidth<=900)
+    if(started&&Number.isFinite(window.innerWidth)&&window.innerWidth<=900){
+      workspaceShell.dispatch({type:'tools',collapsed:true});
       workspaceShell.dispatch({type:'inspector',collapsed:true});
+    }
     return started;
   },
   deleteProperty: deleteProperty4A,
