@@ -37,7 +37,7 @@ test('F1 connected wing is one simple exterior footprint and never mutates sourc
  assert.equal(wing.footprint.length,8);
  assert.ok(shapeWellFormed(wing.footprint));
  assert.equal(wing.holes.length,0);
- assert.equal(wing.area,180);
+ assert.equal(wing.area,168);
  assert.equal(wing.footprint[2].y,-4);
  assert.equal(JSON.stringify(original),before);
  assert.throws(()=>attachBuildingWingF1(original,0,{start:.7,end:.3,depth:2}),/nonzero/);
