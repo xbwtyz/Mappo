@@ -84,9 +84,13 @@ jobs:
         shell: bash
         run: |
           tests=(tests/build.test.js tests/core.test.js tests/persistence.test.js)
-          if [[ -f tests/road-preview.test.js ]]; then
-            tests+=(tests/road-preview.test.js)
-          fi
+          # Core preview and worker cancellation are low-cost, high-value
+          # regression guards for every active development branch.
+          for core_test in tests/road-preview.test.js tests/c7-junction-preview-worker.test.js tests/c7-p2-worker-cancellation.test.js; do
+            if [[ -f "$core_test" ]]; then
+              tests+=("$core_test")
+            fi
+          done
           while IFS= read -r path; do
             if [[ "$path" == tests/*.test.js && -f "$path" ]]; then
               tests+=("$path")
