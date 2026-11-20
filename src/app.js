@@ -1590,8 +1590,12 @@ function enterPropertyEditing3I(propertyId) {
   stopWorkspaceTools('city');
   if(editor.mode!=='pan')editor.setMode('pan');
   const started=propertyEditSession.start(project.city,propertyId);
-  if(started && Number.isFinite(window.innerWidth) && window.innerWidth<=900)
+  if(started && Number.isFinite(window.innerWidth) && window.innerWidth<=900){
+    // The City Tools drawer can intercept taps on the floating property editor.
+    // Close both drawers while editing, matching the E2/E3 map-preview pattern.
+    workspaceShell.dispatch({type:'tools',collapsed:true});
     workspaceShell.dispatch({type:'inspector',collapsed:true});
+  }
   return started;
 }
 function enterBuildingEditing(id) {
