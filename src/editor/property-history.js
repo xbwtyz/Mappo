@@ -54,9 +54,11 @@ export class PropertyGeometryHistory3I {
   entry(direction,id){return (direction==='undo'?this.past:this.future).findLast(row=>row.propertyId===id)??null;}
   record(before,after,propertyId){
     const from=snapshot(before,propertyId),to=snapshot(after,propertyId);
-    if(giPropertyHistorySame(from,to))return false;
+    const structural=!giPropertyHistorySame(from.plotIds,to.plotIds);
+    if(giPropertyHistorySame(from,to)&&!structural)return false;
     this.future=this.future.filter(row=>row.propertyId!==propertyId);
-    this.past.push({propertyId,from,to,serial:++this.serial});
+    this.past.push({propertyId,from:structural?giCopy(before.city):from,
+      to:structural?giCopy(after.city):to,structural,serial:++this.serial});
     while(this.past.length+this.future.length>this.limit){
       const oldest=[...this.past,...this.future].sort((a,b)=>a.serial-b.serial)[0];
       const stack=this.past.includes(oldest)?this.past:this.future;
@@ -68,7 +70,8 @@ export class PropertyGeometryHistory3I {
     if(!['undo','redo'].includes(direction)||!propertyId)return false;
     const entry=this.entry(direction,propertyId);
     if(!entry)return false;
-    try{return giPropertyHistorySame(snapshot(project,propertyId),direction==='undo'?entry.to:entry.from);}
+    try{return giPropertyHistorySame(entry.structural?project?.city:snapshot(project,propertyId),
+      direction==='undo'?entry.to:entry.from);}
     catch{return false;}
   }
   prepare(project,workspace,propertyId,direction){
@@ -76,7 +79,9 @@ export class PropertyGeometryHistory3I {
       return {ok:false,reason:'No compatible property '+direction+' entry is available.'};
     const entry=this.entry(direction,propertyId);
     try{
-      const candidate=restore(project,propertyId,direction==='undo'?entry.from:entry.to);
+      const candidate=entry.structural?giCopy(project)
+        :restore(project,propertyId,direction==='undo'?entry.from:entry.to);
+      if(entry.structural)candidate.city=giCopy(direction==='undo'?entry.from:entry.to);
       validateStoredProject(candidate);
       const saved=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
       if(!giPropertyHistorySame(candidate.city,saved.project.city))throw new Error('Portable save/load changed the restored city.');
