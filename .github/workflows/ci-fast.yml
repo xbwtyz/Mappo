@@ -1,0 +1,96 @@
+name: Mappo Fast Checks
+
+# Fast branch feedback. An already review-ready PR owns full CI.
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'chore/**'
+      - 'fix/**'
+      - 'refactor/**'
+      - 'release/**'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: mappo-fast-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast:
+    name: Build, syntax and targeted Node smoke tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Skip duplicate tests when a ready PR has full CI
+        id: gate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Draft PRs continue receiving fast checks; ready PRs run full CI.
+          count=$(gh api --method GET \
+            "repos/${GITHUB_REPOSITORY}/pulls?state=open&head=${GITHUB_REPOSITORY_OWNER}:${GITHUB_REF_NAME}&per_page=100" \
+            --jq '[.[] | select(.draft == false)] | length') || {
+            echo "::warning::PR lookup failed; run fast checks to be safe."
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
+          if (( count > 0 )); then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Full PR CI is active; avoid duplicate test work."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out repository
+        if: steps.gate.outputs.run == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node.js
+        if: steps.gate.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check changed JavaScript syntax
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        run: |
+          while IFS= read -r path; do
+            if [[ -f "$path" && ( "$path" == *.js || "$path" == *.mjs ) ]]; then
+              node --check "$path"
+            fi
+          done < <(git diff --name-only HEAD^ HEAD -- src/ scripts/ tests/)
+
+      - name: Build and verify offline standalone parity
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        run: |
+          npm run build
+          version=$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")
+          test -s index.html
+          test -s "dist/mappo-$version.html"
+          git ls-files --error-unmatch index.html "dist/mappo-$version.html" > /dev/null
+          cmp index.html "dist/mappo-$version.html"
+          git diff --exit-code -- index.html "dist/mappo-$version.html"
+
+      - name: Run smoke tests and directly modified Node tests
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        run: |
+          tests=(tests/build.test.js tests/core.test.js tests/persistence.test.js)
+          if [[ -f tests/road-preview.test.js ]]; then
+            tests+=(tests/road-preview.test.js)
+          fi
+          while IFS= read -r path; do
+            if [[ "$path" == tests/*.test.js && -f "$path" ]]; then
+              tests+=("$path")
+            fi
+          done < <(git diff --name-only HEAD^ HEAD -- tests/)
+          mapfile -t unique_tests < <(printf '%s\n' "${tests[@]}" | sort -u)
+          node --test "${unique_tests[@]}"
