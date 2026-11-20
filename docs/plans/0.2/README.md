@@ -4,7 +4,7 @@
 >
 > Primary objective: a dependable, fully editable **2D** city designer before 3D. Users deliberately reshape roads; generated neighborhoods adapt where verifiably safe; then users fine-tune land and buildings.
 
-[0.2E property plan](MILESTONE_0_2E_PROPERTY_DESIGN.md) · [E2 straight-split design](E2_PROPERTY_SPLIT_DESIGN.md) · [0.2F building plan](MILESTONE_0_2F_BUILDING_DESIGN.md) · [0.2D closeout](MILESTONE_0_2D_ROAD_UX_PLAN.md) · [0.2C road-first design](MILESTONE_0_2C_DESIGN.md) · [Road preservation contract](ROAD_EDIT_CONTRACT.md) · [Repository roadmap](../../ROADMAP.md)
+[0.2E property plan](MILESTONE_0_2E_PROPERTY_DESIGN.md) · [E2 straight-split design](E2_PROPERTY_SPLIT_DESIGN.md) · [E3 adjacent merge proposal](E3_PROPERTY_MERGE_DESIGN.md) · [0.2F building plan](MILESTONE_0_2F_BUILDING_DESIGN.md) · [0.2D closeout](MILESTONE_0_2D_ROAD_UX_PLAN.md) · [0.2C road-first design](MILESTONE_0_2C_DESIGN.md) · [Road preservation contract](ROAD_EDIT_CONTRACT.md) · [Repository roadmap](../../ROADMAP.md)
 
 ## Release thesis
 
@@ -17,7 +17,7 @@ flowchart TD
   A["0.2A · road graph, impact reports, preview · merged"] --> B["0.2B · conservative Apply, local reconciliation · merged"]
   B --> C["0.2C · road-first editing and local adaptation · merged"]
   C --> D["0.2D · understandable, recoverable street editing · merged"]
-  D --> E["0.2E · manual property create/split/merge/plots · next"]
+  D --> E["0.2E · E1/E2 merged; E3 merge design proposed; E4/E5 next"]
   E --> F["0.2F · advanced 2D building design"]
   F --> G{"0.2G · civic places necessary for 0.2?"}
   G -->|Yes| G1["0.2G · civic places / landmarks"]

@@ -1,6 +1,6 @@
 # Mappo 0.2E — Manual Property Restructuring (planning draft)
 
-> **Status:** E1 property creation merged via [PR #58](https://github.com/xbwtyz/Mappo/pull/58). **E2 straight frontage-to-rear splitting design approved**, documented in [E2 detailed contract](E2_PROPERTY_SPLIT_DESIGN.md); E2 implementation is underway separately in [feature PR #60](https://github.com/xbwtyz/Mappo/pull/60), which remains unmerged and requires independent acceptance. Later E3–E5 scopes remain proposed. Schema 9 and separate code/merge/release approvals remain gates. See the [master roadmap](README.md) and [0.2F building design](MILESTONE_0_2F_BUILDING_DESIGN.md).
+> **Status (2026-11-20):** E1 property creation merged via [PR #58](https://github.com/xbwtyz/Mappo/pull/58) and E2 frontage-to-rear splitting merged via [PR #60](https://github.com/xbwtyz/Mappo/pull/60). E3 adjacent-property merging is **design proposed**, with the [conservative E3 contract](E3_PROPERTY_MERGE_DESIGN.md) awaiting separate approval before code. E4–E5 remain planned. Preserve schema 9 and separate code, merge and release gates. See the [master roadmap](README.md) and [0.2F building design](MILESTONE_0_2F_BUILDING_DESIGN.md).
 
 ## Purpose
 
@@ -37,7 +37,7 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 - [ ] Create required plot and ownership references atomically; preserve neighboring properties and accepted streets. Establish deterministic ID allocation and ensure Undo/Redo and save/reopen.
 - [ ] **Gate:** generated Small and Large cities, all four morphologies, multiple adjacent lots, and legacy schema-9 saves. Creating then cancelling leaves accepted project byte-equivalent.
 
-### E2 — Split an existing property (approved design, implementation pending)
+### E2 — Split an existing property (merged PR #60)
 
 **Approved design:** Single straight frontage-to-rear divider through an accepted four-corner property; both child parcels retain frontage. Original ID/name stay on the frontage-start successor; new ID for the other. Plot records are partitioned with deterministic, auditable ownership, and buildings never move physically. Crossing buildings block Apply; protected ownership transfers require explicit consent. Details, negative cases, module reuse, checkpoints and release gates are in [E2 property splitting contract](E2_PROPERTY_SPLIT_DESIGN.md).
 
@@ -46,7 +46,9 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 - [ ] Retain buildings in the verified parcel when possible. A building spanning the split line or an unassignable plot must block Apply until the user adjusts the draft or authorizes a supported resolution.
 - [ ] **Gate:** legal and illegal cuts, property at road edge, named buildings, preserved external references, one-step Undo/Redo, round-trip save, and no unresolved ownership.
 
-### E3 — Merge adjacent compatible properties
+### E3 — Merge adjacent compatible properties (design proposal)
+
+**Detailed proposed contract:** [E3 property merging design](E3_PROPERTY_MERGE_DESIGN.md). The primary/secondary identity policy, metadata retirement consent, exact adjacency geometry, and schema-9 lineage must be approved before implementation. This document does not authorize E3 code.
 
 - [ ] Require verified geometric adjacency, compatible block/frontage and a valid combined parcel. No cross-block or road-crossing merge without separately authorized design.
 - [ ] Show the identity/metadata conflict policy before Apply. Prefer a clear resulting identity and an auditable merge ledger; never silently discard either customized property identity.
@@ -70,7 +72,7 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 
 ## Design authority and remaining decisions
 
-[E1's accepted contract](E1_PROPERTY_CREATION_DESIGN.md) defines safe vacant land using real block geometry; E1 was merged with schema-9 safeguards. [E2's approved design](E2_PROPERTY_SPLIT_DESIGN.md) now defines the straight frontage-to-rear cut and its preservation rules **before implementation**. Identity conflict policy for E3 merges and general plot-count operations for E4 still require separately reviewed designs. Never let code infer these policies silently.
+[E1's accepted contract](E1_PROPERTY_CREATION_DESIGN.md) and [E2's accepted design](E2_PROPERTY_SPLIT_DESIGN.md) underpin merged functionality. The [E3 proposed design](E3_PROPERTY_MERGE_DESIGN.md) records the **unapproved** identity conflict and conservative geometry rules for review; do not quietly infer either in code. E4 plot-count changes likewise need a reviewed design.
 
 ## Explicitly deferred
 
