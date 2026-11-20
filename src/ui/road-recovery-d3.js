@@ -11,6 +11,7 @@ const guidance = Object.freeze({
   'disconnected-graph': ['Street connection breaks', 'The proposed road leaves parts of the street network disconnected. Reconnect or reposition the road.', 'adjust'],
   'boundary-escape': ['Outside city boundary', 'The proposed street extends beyond the accepted city boundary. Adjust its placement.', 'adjust'],
   'candidate-coordinate': ['Coordinates cannot be used', 'Enter usable finite coordinates or drag the proposed road back within supported bounds.', 'adjust'],
+  'coordinate-limit': ['Coordinates cannot be used', 'The point is beyond the permitted coordinate range. Move it closer to the city or enter a supported value.', 'adjust'],
   'face-ambiguous': ['Block identity unclear', 'The affected blocks cannot be assigned safe identities. Adjust the road; Mappo will not guess which block owns existing property.', 'adjust'],
   'face-coverage': ['Block geometry is incomplete', 'The proposed streets do not form safely covered city blocks. Change the street position or connections.', 'adjust'],
   'plot-ownership': ['Plot ownership cannot be preserved', 'A plot would lose its verified property relationship. Adjust the draft or edit the protected property separately.', 'adjust'],
