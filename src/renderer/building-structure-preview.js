@@ -3,7 +3,7 @@ export function drawBuildingStructurePreview3H(ctx,camera,city,layers,session) {
   if (!session?.isActive || layers?.buildings===false)return;
   const property=city?.properties.find(p=>p.id===session.propertyId);
   const geometry=session.previewFor(city);
-  if(!property || !geometry?.footprint?.length)return;
+  if (!property) return;
   const trace=points=>{
     ctx.beginPath();
     points.forEach((p,i)=>{
@@ -21,7 +21,18 @@ export function drawBuildingStructurePreview3H(ctx,camera,city,layers,session) {
   const original=city.buildings.find(b=>b.id===session.buildingId);
   if(original){
     trace(original.footprint);
+    for (const hole of original.holes ?? []) {
+      hole.forEach((point,i) => {
+        const p = camera.worldToScreen(point);
+        if (i) ctx.lineTo(p.x,p.y); else ctx.moveTo(p.x,p.y);
+      });
+      ctx.closePath();
+    }
     ctx.strokeStyle='#a88d6b';ctx.lineWidth=2;ctx.setLineDash([5,5]);ctx.stroke();
+  }
+  if (!geometry?.footprint?.length) {
+    ctx.restore();
+    return;
   }
   trace(geometry.footprint);
   for(const hole of geometry.holes) {

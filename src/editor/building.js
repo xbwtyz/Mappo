@@ -3,19 +3,45 @@ import {
   previewBuildingGeometry, buildingFrame, buildingPreviewHit, buildingPreviewPivot
 } from '../core/building-transform.js';
 
-// All 3G-B transforms are ephemeral preview state, never accepted city geometry.
+import {
+  insertFootprintVertexF1, moveFootprintVertexF1, deleteFootprintVertexF1, attachBuildingWingF1,
+  addRectangularCourtyardF1, removeBuildingCourtyardF1, rectangularCourtyardFrame
+} from '../core/building-footprint-f1.js';
+
+export const BUILDING_EDIT_TOOLS = Object.freeze(['Move', 'Rotate', 'Resize', 'Vertices', 'Edges', 'Courtyard']);
+
+export function buildingDirectHandles(preview, tool, holeIndex) {
+  const ring = holeIndex === null ? preview?.footprint : preview?.holes[holeIndex];
+  if (!ring || !['vertices', 'edges'].includes(tool)) return [];
+  return ring.map((point, index) => {
+    if (tool === 'vertices') return { ...point, index, kind: 'vertex' };
+    const next = ring[(index + 1) % ring.length];
+    return { x: (point.x + next.x) / 2, y: (point.y + next.y) / 2, index, kind: 'edge' };
+  });
+}
+
+// All edits live in this session until the existing project Apply succeeds.
 export class BuildingEditSession {
   constructor(changed = () => {}) {
     this.active = null;
     this.changed = changed;
     this.tool = 'move';
-    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
-    this.drag = null;
+    this.clearDraft();
   }
   get isActive() { return this.active !== null; }
   get buildingId() { return this.active?.buildingId ?? null; }
   get propertyId() { return this.active?.propertyId ?? null; }
-  get isPending() { return this.isActive && buildingTransformDirty(this.transform); }
+  get isPending() { return this.isActive && (this.draft !== null || buildingTransformDirty(this.transform)); }
+  get isDirect() { return ['vertices', 'edges', 'courtyard'].includes(this.tool); }
+  clearDraft() {
+    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
+    this.draft = null;
+    this.topologyChanged = false;
+    this.holeIndex = null;
+    this.handleIndex = 0;
+    this.operationError = '';
+    this.drag = null;
+  }
   isEditing(id) { return Boolean(this.active && this.active.buildingId === id); }
   resolve(city, layers, id, propertyId = null) {
     if (!city || layers?.buildings === false || typeof id !== 'string') return null;
@@ -29,17 +55,17 @@ export class BuildingEditSession {
     return this.isActive ? city?.buildings?.find(b => b.id === this.buildingId && b.propertyId === this.propertyId) ?? null : null;
   }
   previewFor(city) {
-    const source = this.source(city);
-    return source ? previewBuildingGeometry(source, this.transform) : null;
+    const base = this.draft ?? this.source(city);
+    return base ? previewBuildingGeometry(base, this.transform) : null;
   }
   start(city, layers, id) {
     const target = this.resolve(city, layers, id);
     if (!target) return false;
     if (this.isEditing(id)) return true;
     this.active = target;
-    this.drag = null;
+    this.acceptedCity = city;
     this.tool = 'move';
-    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
+    this.clearDraft();
     this.changed();
     return true;
   }
@@ -50,17 +76,18 @@ export class BuildingEditSession {
     if (!this.allows(city, layers, id)) return false;
     if (this.isEditing(id)) return true;
     this.active = this.resolve(city, layers, id, this.active.propertyId);
-    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
-    this.drag = null;
+    this.acceptedCity = city;
+    this.clearDraft();
     this.tool = 'move';
     this.changed();
     return true;
   }
   setTool(tool) {
-    if (!this.isActive || !['move','rotate','resize'].includes(tool)) return false;
+    if (!this.isActive || !BUILDING_EDIT_TOOLS.some(name => name.toLowerCase() === tool)) return false;
     if (this.drag) this.endGesture(true);
     if (this.tool === tool) return true;
     this.tool = tool;
+    this.operationError = '';
     this.changed();
     return true;
   }
@@ -69,22 +96,23 @@ export class BuildingEditSession {
     let next;
     try { next = normalizeBuildingTransform({ ...this.transform, ...values }); }
     catch { return false; }
+    this.operationError = '';
     this.transform = next;
     this.changed();
     return true;
   }
-  reset() {
+  reset(city = this.acceptedCity) {
     if (!this.isActive) return false;
-    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
-    this.drag = null;
+    this.acceptedCity = city;
+    this.clearDraft();
     this.changed();
     return true;
   }
   stop() {
     if (!this.active) return false;
     this.active = null;
-    this.transform = { ...EMPTY_BUILDING_TRANSFORM };
-    this.drag = null;
+    this.acceptedCity = null;
+    this.clearDraft();
     this.tool = 'move';
     this.changed();
     return true;
@@ -92,14 +120,94 @@ export class BuildingEditSession {
   reconcile(city, layers, selection) {
     if (!this.active) return true;
     const live = this.resolve(city, layers, this.active.buildingId, this.active.propertyId);
-    if (!live || selection?.kind !== 'building' || selection.id !== live.buildingId) {
+    if (city !== this.acceptedCity || !live || selection?.kind !== 'building' || selection.id !== live.buildingId) {
       this.stop(); return false;
     }
     return true;
   }
-  beginGesture(city, layers, point, zoom = 1) {
+  selectDirectRing(city, holeIndex) {
+    if (!this.isDirect || this.drag || (holeIndex !== null && !this.previewFor(city)?.holes[holeIndex])) return false;
+    this.holeIndex = holeIndex;
+    this.handleIndex = 0;
+    this.operationError = '';
+    this.changed();
+    return true;
+  }
+  selectDirectHandle(city, index) {
+    if (!this.isDirect || this.drag ||
+        !buildingDirectHandles(this.previewFor(city), this.tool, this.holeIndex)[index]) return false;
+    this.handleIndex = index;
+    this.operationError = '';
+    this.changed();
+    return true;
+  }
+  editDirectGeometry(city, operation, values = {}) {
+    if (!this.isActive || !this.isDirect || this.drag || city !== this.acceptedCity) return false;
+    const topology = !['move', 'adjust courtyard'].includes(operation);
+    if (topology && this.topologyChanged) return false;
+    const preview = this.previewFor(city);
+    const index = this.handleIndex;
+    const target = { holeIndex: this.holeIndex };
+    let next;
+    try {
+      switch (operation) {
+        case 'move': next = moveFootprintVertexF1(preview, index, values, target); break;
+        case 'insert': next = insertFootprintVertexF1(preview, index, .5, target); break;
+        case 'delete': next = deleteFootprintVertexF1(preview, index, target); break;
+        case 'wing':
+          if (this.holeIndex !== null) throw new Error('Select an exterior edge to attach a wing.');
+          next = attachBuildingWingF1(preview, index, values); break;
+        case 'add courtyard': next = addRectangularCourtyardF1(preview, values); break;
+        case 'adjust courtyard': {
+          const frame = rectangularCourtyardFrame(preview.holes[this.holeIndex]);
+          if (!frame) throw new Error('Use Vertices to adjust a nonrectangular courtyard.');
+          next = addRectangularCourtyardF1(preview, { ...values, angle: frame.angle }, this.holeIndex);
+          break;
+        }
+        case 'remove courtyard': next = removeBuildingCourtyardF1(preview, this.holeIndex); break;
+        default: return false;
+      }
+    } catch (error) {
+      this.operationError = error.message;
+      this.changed();
+      return false;
+    }
+    if (operation === 'add courtyard') this.holeIndex = next.holes.length - 1;
+    if (operation === 'remove courtyard') this.holeIndex = null;
+    const ring = this.holeIndex === null ? next.footprint : next.holes[this.holeIndex];
+    this.handleIndex = Math.min(this.handleIndex, ring.length - 1);
+    this.operationError = '';
+    this.topologyChanged ||= topology;
+    this.setGeometryDraft(preview, next);
+    return true;
+  }
+  setGeometryDraft(preview, geometry) {
+    if (JSON.stringify([preview.footprint, preview.holes]) !== JSON.stringify([geometry.footprint, geometry.holes])) {
+      this.draft = { footprint: geometry.footprint, holes: geometry.holes, orientation: preview.orientation };
+      this.transform = { ...EMPTY_BUILDING_TRANSFORM };
+    }
+    this.changed();
+  }
+  beginGesture(city, layers, point, zoom = 1, pointerType = 'mouse') {
     if (!this.isActive || this.drag || !this.resolve(city, layers, this.buildingId, this.propertyId)) return false;
-    const source = this.source(city);
+    if (city !== this.acceptedCity) return false;
+    if (this.isDirect) {
+      const preview = this.previewFor(city);
+      const radius = pointerType === 'touch' ? 22 : 13;
+      const handle = buildingDirectHandles(preview, this.tool, this.holeIndex)
+        .map(item => ({ item, distance: Math.hypot(point.x - item.x, point.y - item.y) * zoom }))
+        .filter(hit => hit.distance <= radius)
+        .sort((a, b) => a.distance - b.distance)[0]?.item;
+      if (!handle) return false;
+      this.handleIndex = handle.index;
+      this.operationError = '';
+      if (handle.kind === 'vertex') {
+        this.drag = { handle, preview, start: { ...point }, draft: this.draft, initial: this.transform };
+      }
+      this.changed();
+      return true;
+    }
+    const source = this.draft ?? this.source(city);
     const handle = buildingPreviewHit(source, this.transform, point, this.tool, zoom);
     if (!handle) return false;
     const initial = { ...this.transform };
@@ -112,6 +220,19 @@ export class BuildingEditSession {
     if (!this.drag || !Number.isFinite(point?.x) || !Number.isFinite(point?.y)) return false;
     const { handle, initial, start, pivot, frame, startAngle } = this.drag;
     const dx = point.x - start.x, dy = point.y - start.y;
+    if (handle.kind === 'vertex') {
+      const { preview, draft } = this.drag;
+      this.draft = draft;
+      this.transform = initial;
+      const vertex = { x: handle.x + dx, y: handle.y + dy };
+      // Display the actual drag, including invalid candidates. Shared preview
+      // validation blocks Apply until the polygon and its relationships are legal.
+      const geometry = moveFootprintVertexF1(preview, handle.index, vertex, {
+        holeIndex: this.holeIndex, validate: false
+      });
+      this.setGeometryDraft(preview, geometry);
+      return true;
+    }
     if (handle.kind === 'move') return this.setTransform({ dx: initial.dx + dx, dy: initial.dy + dy });
     if (handle.kind === 'rotate') {
       const angle = Math.atan2(point.y-pivot.y,point.x-pivot.x);
@@ -130,7 +251,10 @@ export class BuildingEditSession {
     if (!this.drag) return false;
     const old = this.drag;
     this.drag = null;
-    if (cancelled) this.setTransform(old.initial);
+    if (cancelled) {
+      if (old.handle.kind === 'vertex') this.draft = old.draft;
+      this.setTransform(old.initial);
+    }
     else this.changed(); // Recheck full project/road validation when a gesture ends.
     return true;
   }

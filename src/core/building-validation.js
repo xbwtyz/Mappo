@@ -64,7 +64,7 @@ export function shapesOverlapInterior(a,b) {
   return false;
 }
 
-export function inspectBuildingGeometry(city, buildingId, transform) {
+export function inspectBuildingGeometry(city, buildingId, transform, draft = null) {
   const issues=[];
   const fail=(code,message,targetId=null)=>issues.push({code,message,targetId});
   const source=city?.buildings?.find(b=>b.id===buildingId);
@@ -74,14 +74,17 @@ export function inspectBuildingGeometry(city, buildingId, transform) {
     return {ok:false,issues,preview:null,property:null};
   }
   let preview;
-  try{preview=previewBuildingGeometry(source,transform);}
+  try{preview=previewBuildingGeometry(draft ? {
+    ...source, footprint: draft.footprint, holes: draft.holes, orientation: draft.orientation ?? source.orientation
+  } : source,transform);}
   catch(error){
     fail('transform',error.message);
     return {ok:false,issues,preview:null,property};
   }
-  if(!shapeWellFormed(preview.footprint)||preview.area<=1)
+  const wellFormed = shapeWellFormed(preview.footprint);
+  if(!wellFormed||preview.area<=1)
     fail('shape','Building footprint is self-crossing, reversed, degenerate, or too small.');
-  if(shapeWellFormed(preview.footprint)&&!shapeContained(preview.footprint,property.boundary))
+  if(wellFormed&&!shapeContained(preview.footprint,property.boundary))
     fail('property','Building extends outside its property boundary.',property.id);
   for(const hole of preview.holes??[]){
     if(!shapeWellFormed(hole) || !shapeContained(hole,preview.footprint)
@@ -94,7 +97,7 @@ export function inspectBuildingGeometry(city, buildingId, transform) {
   for(let i=0;i<holes.length;i++)for(let j=i+1;j<holes.length;j++)
     if(shapesOverlapInterior(holes[i],holes[j]))
       fail('courtyard','Courtyard holes cannot overlap.');
-  if(shapeWellFormed(preview.footprint)){
+  if(wellFormed){
     for(const neighbor of city.buildings){
       if(neighbor.id===buildingId||neighbor.propertyId!==property.id)continue;
       if(shapesOverlapInterior(preview.footprint,neighbor.footprint))

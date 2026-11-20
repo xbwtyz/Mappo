@@ -37,8 +37,8 @@ export function buildingMeasurements4C(city, session) {
   const source = session?.isActive ? session.source(city) : null;
   if (!source) return null;
   const original = previewBuildingGeometry(source);
-  const preview = previewBuildingGeometry(source, session.transform);
-  const frame = buildingFrame(source), { dx, dy, scaleX, scaleY } = session.transform;
+  const preview = session.previewFor(city);
+  const frame = buildingFrame(session.draft ?? source), { dx, dy, scaleX, scaleY } = session.transform;
   return { width:frame.width*scaleX, depth:frame.height*scaleY,
     area:preview.area, areaDelta:preview.area-original.area,
     x:frame.x+dx, y:frame.y+dy, dx, dy };
