@@ -7,6 +7,7 @@
 | [0.1.0 Release Notes](releases/v0.1.0.md) | Stable launch, distribution, shipped features, compatibility and limitations |
 | [User Guide](user-guide.md) | City generation, tools, Inspector, navigation and saved projects |
 | [Developer Guide](development.md) | Modules, testing, build pipeline and release process |
+| [Architecture Atlas](architecture/Mappo_Repository_Atlas.md) | Complete repository hierarchy, visual system diagrams, and a purpose description for every tracked file |
 | [Unified CI Guide](CI.md) | Branch and PR tests, browser matrices, artifacts and local commands |
 | [Current Roadmap](ROADMAP.md) | Completed milestones and separately proposed future work |
 | [3G-A Checkpoint](history/3g/MILESTONE_3GA_QA.md) | Visual building edit mode design and verification |
