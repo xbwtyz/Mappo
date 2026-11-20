@@ -488,7 +488,7 @@
 
 .road-preview-panel:not([hidden]){display:flex;flex-direction:column;overflow:hidden}
 .road-preview-panel .road-preview-header{position:static;flex:none}
-#roadPreviewBody{min-height:0;overflow:auto;overscroll-behavior:contain}
+#roadPreviewBody{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;scroll-padding-block:10px}
 .road-apply-footer{flex:none;background:#f9f6ed;padding:6px 0 3px;border-top:1px solid #d5dbd0}
 .road-apply-footer .road-apply-status-b4{margin:0 0 5px}
 .road-preview-panel .road-preview-actions{position:static}
@@ -699,6 +699,15 @@
           </div>
           <div id="roadPreviewBody">
             <p class="hint road-preview-legend"><span><i aria-hidden="true"></i>Current road</span><span><i aria-hidden="true"></i>Proposed road</span></p>
+            <section id="roadRecoveryD3" class="road-recovery-d3" aria-labelledby="roadRecoveryHeadingD3" hidden>
+              <h4 id="roadRecoveryHeadingD3"></h4>
+              <p id="roadRecoveryExplanationD3"></p>
+              <div class="road-recovery-actions-d3">
+                <button id="roadRecoveryPrimaryD3" type="button" class="minor-button">Adjust road</button>
+                <button id="roadRecoveryLocateD3" type="button" class="minor-button" hidden>Locate obstruction</button>
+                <button id="roadRecoveryDetailsD3" type="button" class="minor-button">Details</button>
+              </div>
+            </section>
             <section id="roadBuildingDecisionsD2" class="road-building-decisions-d2" aria-labelledby="roadBuildingDecisionsHeadingD2" hidden>
               <h3 id="roadBuildingDecisionsHeadingD2">Building decisions</h3>
               <p id="roadDecisionIntroD2" class="hint"></p>
@@ -775,15 +784,7 @@
               <p id="roadApplyStatusB4" class="road-apply-status-b4"></p>
               <p id="roadChangeSummaryD1" class="road-change-summary-d1" hidden></p>
             </div>
-            <section id="roadRecoveryD3" class="road-recovery-d3" aria-labelledby="roadRecoveryHeadingD3" hidden>
-              <h4 id="roadRecoveryHeadingD3"></h4>
-              <p id="roadRecoveryExplanationD3"></p>
-              <div class="road-recovery-actions-d3">
-                <button id="roadRecoveryPrimaryD3" type="button" class="minor-button">Adjust road</button>
-                <button id="roadRecoveryLocateD3" type="button" class="minor-button" hidden>Locate obstruction</button>
-                <button id="roadRecoveryDetailsD3" type="button" class="minor-button">Details</button>
-              </div>
-            </section>
+
             <button id="roadResolveConflictC6" type="button" class="minor-button" hidden>Resolve conflict</button>
             <div class="road-preview-actions">
               <button id="roadApplyB4" type="button" class="tool-button" aria-describedby="roadReportStatus roadApplyStatusB4 roadChangeSummaryD1" disabled>Apply road edit</button>
