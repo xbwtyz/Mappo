@@ -68,6 +68,10 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
                   return result;
                 };
                 measured._p1Original=fn;
+                // Preserve real P2 cancellation when the instrumentation
+                // temporarily wraps the worker adapter.
+                measured.cancel=()=>fn.cancel?.();
+                measured.suspend=()=>fn.suspend?.();
                 s.computeJunctionAsync=measured;
               }
               const changed=s.changed;

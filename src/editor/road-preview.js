@@ -47,9 +47,16 @@ export class RoadPreviewSession {
     this.revision++;
     if (this.timer !== undefined) this.unschedule(this.timer);
     this.timer = undefined;
+    // Cancel the actual old worker calculation, not just its UI callback.
+    // Ordinary street/bend edits and drag movement also invalidate a pending
+    // junction preview, so no stale calculation remains queued.
+    this.computeJunctionAsync?.cancel?.();
   }
   stop() {
     this.invalidate();
+    // Release the idle worker while the road editor is closed. The controller
+    // will create a clean worker on the next preview.
+    this.computeJunctionAsync?.suspend?.();
     this.active = false;
     this.selection = this.point = this.proposal = this.report = this.drag = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
@@ -306,8 +313,13 @@ export class RoadPreviewSession {
           this.checking = false;
           this.changed();
         };
-        Promise.resolve().then(() => this.computeJunctionAsync(input)).then(result => {
-          if (!current()) return;
+        Promise.resolve().then(() => {
+          // Invalidation can happen before the first queued microtask.
+          // Never enqueue a worker request for a superseded revision.
+          if (!current()) return null;
+          return this.computeJunctionAsync(input);
+        }).then(result => {
+          if (!current() || result === null) return;
           if (fingerprint !== JSON.stringify(project)) {
             this.error = 'Accepted project changed during background preview. Start a new draft.';
             settle();

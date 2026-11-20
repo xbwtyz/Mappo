@@ -19,9 +19,19 @@ Worker preview must never mutate accepted city/history/recovery or authorize App
 Existing independent fresh Apply reconstruction and schema-9 round-trip remain intact.
 
 ## P2: Interrupt and coalesce superseded work
-- [ ] Bound the queued worker workload, cancel/replace obsolete computations, handle lifecycle and failure.
-- [ ] Stress rapid drags/nudges and project/selection changes; latest draft wins.
-- [ ] Keep status announcements concise, enable continued UI responsiveness.
+- [x] Terminate an actively computing worker on session invalidation or newer request.
+  Lazy-create the replacement; never allow a queue of stale expensive calculations.
+- [x] Cancel work on drag, changes to selection, reset, editor exit or switching to street/bend editing.
+- [x] Handle worker errors, undecodable responses, structured-clone errors and timeouts;
+  release idle workers on exit and recover on future drafts.
+- [x] Prevent superseded microtasks from dispatching stale requests.
+- [x] Preserve cancellation when browser benchmarks instrument the worker adapter.
+- [ ] Verify race conditions: rapid nudges, drag, selection, exit/reopen, project change,
+  newer worker failures, late replies, and accepted-state immutability.
+- [ ] Verify syntax, versioned offline bundle, targeted Node tests and browser checks.
+- [ ] Present P2 review against passing checks, with PR #45 still draft.
+
+Detailed P2 implementation and acceptance: [C7_P2_CANCELLATION_PLAN.md](C7_P2_CANCELLATION_PLAN.md).
 
 ## P3: Performance and acceptance
 - [ ] Compare identical Small/Large Organic fixtures, Chromium/Firefox and phone/desktop viewports, cold/warm medians/p95/frame gaps.
