@@ -1,19 +1,26 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
-import { defaultWorkspace,copyJson } from '../src/data/project-format.js';
+import { defaultWorkspace } from '../src/data/project-format.js';
+import { preparePropertyBuildingClear4E } from '../src/editor/property-building-clear-4e.js';
 import { propertySplitGeometryE2 } from '../src/core/property-split-geometry-e2.js';
 import { PropertySplitSessionE2,PropertySplitHistoryE2,
   inspectPropertySplitE2,preparePropertySplitE2 } from '../src/editor/property-split-e2.js';
 import { validateStoredProject } from '../src/data/project-validation.js';
 
 function candidate(seed='e2-geometry',morphology='planned',size='small'){
-  const project=createProject({seed,morphology,size});
-  for(const p of project.city.properties){
-    if(p.boundary.length!==4||p.buildingIds.length)continue;
-    const session=new PropertySplitSessionE2();session.start(project.city,p.id);
-    const inspection=inspectPropertySplitE2(project,session);
-    if(inspection.ok)return {project,session,property:p};
+  const original=createProject({seed,morphology,size});
+  for(const p of original.city.properties){
+    if(p.boundary.length!==4)continue;
+    const frontage=Math.hypot(p.boundary[1].x-p.boundary[0].x,p.boundary[1].y-p.boundary[0].y);
+    if(frontage<16)continue;
+    const cleared=p.buildingIds.length
+      ?preparePropertyBuildingClear4E(original,defaultWorkspace(original),p.id)
+      :{ok:true,candidate:original};
+    if(!cleared.ok)continue;
+    const project=cleared.candidate,property=project.city.properties.find(x=>x.id===p.id);
+    const session=new PropertySplitSessionE2();session.start(project.city,property.id);
+    if(inspectPropertySplitE2(project,session).ok)return {project,session,property};
   }
   return null;
 }
@@ -68,7 +75,7 @@ test('E2 rejects invalid fractions, undersized remnants, crossing buildings and 
   const oldPlot=project.city.plots.find(p=>p.id===property.plotIds[0]);
   oldPlot.customAnnotation='protected';
   assert.equal(inspectPropertySplitE2(project,session).ok,false);
-  assert.equal(JSON.stringify(project.city),JSON.stringify(project.city));
+  assert.equal(preparePropertySplitE2(project,defaultWorkspace(project),session).candidate,null);
   assert.notEqual(JSON.stringify(project.city),original);
 });
 
