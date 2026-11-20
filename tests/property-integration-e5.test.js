@@ -163,6 +163,7 @@ test('E5 accepted road adaptation remains authoritative for subsequent plot-coun
  }
  assert.ok(edited,'An accepted adapted city must support a legal later plot edit.');
  unchanged(adapted,edited);
- assert.deepEqual(edited.city.nodes,adapted.city.nodes,'Later land changes cannot revert accepted street positions');
+ assert.equal(JSON.stringify(edited.city.nodes),JSON.stringify(adapted.city.nodes),
+  'Later land changes cannot revert accepted street positions');
  roundTrip(edited);
 });
