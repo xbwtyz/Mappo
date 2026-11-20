@@ -15,3 +15,5 @@ jobs:
         with:
           node-version: '22'
       - run: node --test tests/property-integration-e5.test.js
+      - name: Informational E5 Small/Large benchmark
+        run: node scripts/e5-property-performance.mjs
