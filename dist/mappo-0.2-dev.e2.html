@@ -565,7 +565,7 @@
 }
 
 /* E2 reuses the existing floating preview; controls remain reachable on phone. */
-.property-split-panel-e2{max-height:calc(100% - 30px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.property-split-panel-e2{z-index:15;max-height:calc(100% - 30px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
 .property-split-panel-e2 .property-split-percent-e2{display:block;font-size:11px}
 .property-split-panel-e2 .property-split-percent-e2 input{width:100%;height:36px;margin:5px 0 8px}
 .property-split-transfer-e2{display:flex;align-items:flex-start;gap:8px;margin:7px 0;font-size:11px;line-height:1.45}
@@ -20641,6 +20641,7 @@ function exitStructurePlacement3H() {
   return true;
 }
 function startStructurePlacement3H(propertyId,buildingId=null) {
+  if(propertySplitE2?.active)return false;
   if(!project || layers.buildings===false || !propertyId)return false;
   if(!exitPropertyEditing3I() || !exitStructurePlacement3H() || !exitBuildingEditing())return false;
   if(workspaceShell.state.section!=='city')workspaceShell.navigate('city');
@@ -20744,6 +20745,7 @@ function applyStructurePlacement3H() {
 }
 // Dev 4e: one confirmation, one validated transaction and one structural Undo.
 function clearPropertyBuildings4E(propertyId) {
+  if(propertySplitE2?.active)return false;
   const selected=workspaceShell?.state.selection;
   const site=project?.city?.properties.find(p=>p.id===propertyId);
   if(!site||layers.buildings===false||selected?.kind!=='property'||selected.id!==propertyId)return false;
@@ -21518,16 +21520,21 @@ propertySplitE2 = new PropertySplitControlsE2({
     &&!buildingPlacementSession?.isActive&&!propertyEditSession?.isActive
     &&!identityWorkspace?.hasPending()),
   onCommit:(candidate,propertyId,direction,receipt)=>{
+    const revisionBeforeCommit=files?.revision??0;
     project=candidate;
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     propertyCreationHistoryE1.clear();buildingHistory.clear();buildingStructureHistory.clear();
     identityWorkspace.reset();
-    propertyWorkspace.refresh({replaced:true});buildingWorkspace.refresh({replaced:true});
+    // The retained parent property ID remains selected. Replaced:true would
+    // clear it and trigger multiple workspace revisions for a single Apply.
+    propertyWorkspace.refresh();buildingWorkspace.refresh();
     updateDetails();workspaceShell.select({kind:'property',id:propertyId},{reveal:false});
-    workspaceShell.refresh();requestDraw();workspaceChanged();
-    if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900
-      &&!workspaceShell.state.inspectorCollapsed)
-      workspaceShell.dispatch({type:'inspector',collapsed:true});
+    workspaceShell.refresh();requestDraw();
+    // Selection dispatch may already have marked the accepted project dirty.
+    // Signal exactly once rather than treating a second UI event as another edit.
+    if((files?.revision??0)===revisionBeforeCommit)workspaceChanged();
+    // The phone Inspector and Tools drawers were collapsed on entering E2.
+
     $('statusMessage').textContent=direction==='apply'
       ?'Split '+propertyId+' into two verified frontage properties. Undo split is available.'
       :(direction==='undo'?'Undid':'Redid')+' the complete property split.';
