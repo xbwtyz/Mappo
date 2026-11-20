@@ -368,8 +368,7 @@ export class RoadInspectionWorkspace {
       const issue = this.session.reconciliation?.unresolved.find(hasRoadBuildingChoice);
       if (!issue) return;
       if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
-      this.$('roadDetailsD1').open = true;
-      const target = this.$('roadConflictC6-' + issue.id);
+      const target = document.getElementById('roadConflictC6-' + issue.id);
       if (!target) return;
       this.locateReconciliationB3(issue);
       target.scrollIntoView({block:'center'});
@@ -669,6 +668,7 @@ export class RoadInspectionWorkspace {
       if (element.textContent !== text) element.textContent = text;
       if (element.hidden !== !text) element.hidden = !text;
     }
+    this.renderBuildingDecisionsD2();
     panel.setAttribute('data-report-status', ready ? 'safe' : s.checking || applying ? 'checking' :
       problem || status==='Preview blocked' ? 'invalid' : s.pending ? 'needs-review' : 'idle');
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
@@ -782,8 +782,19 @@ export class RoadInspectionWorkspace {
         locate.addEventListener('click', () => this.locateReconciliationB3(successor));
         item.append(locate);
       }
-      if (row.entryType==='unresolved' && hasRoadBuildingChoice(row))
-        item.append(this.buildingConflictControls(row.id));
+      if (row.entryType==='unresolved' && hasRoadBuildingChoice(row)) {
+        const jump = document.createElement('button');
+        jump.type = 'button';
+        jump.className = 'minor-button';
+        jump.textContent = 'Review building choice';
+        jump.addEventListener('click', () => {
+          const target = document.getElementById('roadConflictC6-' + row.id);
+          if (!target) return;
+          target.scrollIntoView({block:'center'});
+          target.querySelector('button')?.focus({preventScroll:true});
+        });
+        item.append(jump);
+      }
       return item;
     };
     list.replaceChildren(...[...groups].map(([title, rows]) => {
@@ -801,43 +812,96 @@ export class RoadInspectionWorkspace {
       'Gray = accepted outlines · amber dashed = proposed roads/blocks only. Parcel adjustments remain unresolved.':
       'Gray = accepted · amber dashed = proposed blocks/roads · violet dashed = properties · teal dashed = plots · pink dashed = buildings.';
   }
-  buildingConflictControls(id) {
+  renderBuildingDecisionsD2() {
+    const s = this.session, section = this.$('roadBuildingDecisionsD2');
+    const list = this.$('roadDecisionListD2');
+    const issues = s.reconciliation?.unresolved?.filter(hasRoadBuildingChoice) ?? [];
+    const unresolved = new Map(issues.map(row => [row.id, row]));
+    const ids = [...new Set([...unresolved.keys(), ...s.buildingDecisions.keys()])];
+    // Superseded responses never authorize a choice or describe an Apply-ready preview.
+    const settled = s.current() && s.pending && !s.drag && !s.checking &&
+      s.settledRevision === s.revision;
+    if (!settled || !ids.length) {
+      section.hidden = true;
+      list.replaceChildren();
+      return;
+    }
+    section.hidden = false;
+    const remaining = unresolved.size;
+    this.$('roadDecisionIntroD2').textContent = remaining
+      ? remaining + (remaining === 1 ? ' building needs a choice. ' : ' buildings need choices. ') +
+        'Review the buildings below. The city is unchanged until Apply.'
+      : 'These choices are previewed, not applied. Revise or clear an individual choice before Apply.';
+    list.replaceChildren(...ids.map((id,index) =>
+      this.buildingConflictControls(id,unresolved.get(id),index+1,ids.length)));
+  }
+  buildingConflictControls(id, issue, index, total) {
     const s=this.session, building=s.city.buildings.find(record=>record.id===id);
-    const frame=buildingFrame(building);
-    const controls=document.createElement('div');
-    controls.className='road-building-choices';
+    const last=s.buildingDecisions.get(id), frame=buildingFrame(building);
+    const controls=document.createElement('article');
+    controls.className='road-building-choices road-building-choice-d2';
     controls.id='roadConflictC6-' + id;
+    controls.setAttribute('aria-label',(building?.customName || 'Building '+id)+' decision');
+    const heading=document.createElement('h4');
+    heading.textContent=index+' of '+total+' · '+(building?.customName || 'Building '+id);
+    const result=document.createElement('p');
+    result.className='road-building-result-d2';
+    const verified=s.previewGeometry?.verified && s.reconciliation?.status==='candidate-only' &&
+      !s.reconciliation.unresolved?.length;
+    const geometry=s.previewGeometry?.rows?.find(row=>row.kind==='building'&&row.id===id);
+    result.textContent=issue ? 'Not resolved: '+issue.message
+      :last?.kind==='fixed' ? 'Original footprint kept in the proposed city. Apply is still required.'
+      :verified && geometry?.proposedPoints ? 'Proposed footprint shown on map. Apply is still required.'
+      :'Choice recorded for this draft. A new footprint has not been verified.';
     const button=(label,action)=>{
       const node=document.createElement('button');
-      node.type='button';
-      node.className='minor-button';
-      node.textContent=label;
+      node.type='button';node.className='minor-button';node.textContent=label;
+      node.disabled=s.checking||Boolean(s.drag);
       node.addEventListener('click',action);
       return node;
     };
-    const fields=document.createElement('div');
-    fields.className='road-preview-selectors';
-    const last=s.buildingDecisions.get(id);
+    const actions=document.createElement('div');
+    actions.className='road-building-actions-d2';
+    const suggest=button('Suggest a new location',()=>s.decideBuilding(id,{kind:'auto'}));
+    const keep=button('Keep it here',()=>s.decideBuilding(id,{kind:'fixed'}));
+    const rejectedFixed=last?.kind==='fixed'&&issue?.code==='building-placement-blocked';
+    if(rejectedFixed)keep.disabled=true;
+    const locate=button('Locate on map',()=>this.locateReconciliationB3({kind:'building',id}));
+    actions.append(suggest,keep,locate);
+    const note=document.createElement('p');
+    note.className='hint';
+    note.textContent=rejectedFixed
+      ?'Keeping the original footprint failed validation. Try another location.'
+      :'Only a verified proposal can be applied. The accepted building stays unchanged.';
+    const more=document.createElement('details');
+    more.className='road-building-more-d2';
+    const summary=document.createElement('summary');summary.textContent='More options';
+    const fields=document.createElement('div');fields.className='road-preview-selectors';
     const input=(title,value)=>{
       const label=document.createElement('label'), field=document.createElement('input');
-      label.textContent=title;
-      field.type='number';
-      field.step='any';
-      field.value=String(value);
-      label.append(field);
-      fields.append(label);
-      return field;
+      label.textContent=title;field.type='number';field.step='any';field.value=String(value);
+      label.append(field);fields.append(label);return field;
     };
-    const x=input('Center X',last?.x ?? frame.x), y=input('Center Y',last?.y ?? frame.y);
-    const angle=input('Rotate by degrees',last?.angle != null ? last.angle*180/Math.PI : 0);
-    const number=field=>field.value.trim()==='' ? NaN : Number(field.value);
-    controls.append(
-      button('Keep footprint here',()=>s.decideBuilding(id,{kind:'fixed'})),
-      button('Find a new placement',()=>s.decideBuilding(id,{kind:'auto'})),
-      fields,
-      button('Preview this placement',()=>s.decideBuilding(id,{kind:'position',
-        x:number(x),y:number(y),angle:number(angle)*Math.PI/180})),
-    );
+    const x=input('Center X',last?.x??frame.x),y=input('Center Y',last?.y??frame.y);
+    const angle=input('Rotate by degrees',last?.angle!=null?last.angle*180/Math.PI:0);
+    const number=field=>field.value.trim()===''?NaN:Number(field.value);
+    const place=button('Preview exact placement',()=>{
+      const position={x:number(x),y:number(y),angle:number(angle)*Math.PI/180};
+      if(!Object.values(position).every(Number.isFinite)){
+        note.textContent='Enter valid finite coordinates and rotation before previewing.';
+        return;
+      }
+      s.decideBuilding(id,{kind:'position',...position});
+    });
+    more.replaceChildren(summary,fields,place);
+    controls.replaceChildren(heading,result,actions,note,more);
+    if(last){
+      const chosen=document.createElement('p');chosen.className='road-building-selected-d2';
+      chosen.textContent='Your choice: '+({fixed:'Keep it here',auto:'Suggest a new location',
+        position:'Exact placement'}[last.kind]??'Placement')+
+        (issue?' · revise this choice to continue':' · previewed');
+      controls.append(chosen,button('Clear this choice',()=>s.clearBuildingDecision(id)));
+    }
     return controls;
   }
   locateReconciliationB3(row) {

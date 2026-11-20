@@ -1,6 +1,6 @@
 # Mappo 0.2D road editing experience
 
-**Status** · D1 implemented for review. Baseline is merged C7/P7 at `8f1f6f2`.
+**Status** · D1 merged in PR #51; D2 implemented on a new branch from merged `main` at `1efe316`. D3–D4 remain planned.
 
 0.2D makes the existing road editor easier to read and recover from when a
 move affects a developed neighborhood. The normal path is **select → move →
@@ -55,23 +55,25 @@ preview after its accepted revision becomes stale.
 
 ## D2 · Keep building decisions beside the affected edit
 
-- [ ] Reuse the existing building choice and map-location paths. Present
+- [x] Reuse the existing building choice and map-location paths. Present
   **Suggest a new location** as the primary action where relocation can be
   attempted. Put precise coordinates and rotation under **More options**.
   Offer **Keep it here** as a preview attempt when appropriate. Explain a
   known rejection for the current draft without running extra geometry
   checks just to present the panel.
-- [ ] Show original and proposed footprints, plus access changes where
+- [x] Show original and proposed footprints, plus access changes where
   verified geometry is available. Retain a compact list of pending and made
   choices. Let the editor revisit or clear an individual choice, retaining
   other choices only when they still validate for that draft. With multiple
   conflicts, display unresolved choices before claiming a settled preview.
-- [ ] Tie each choice to the building and current road draft. Keep the
+- [x] Tie each choice to the building and current road draft. Keep the
   existing explicit authorization for authored changes and one final Apply.
   Generated-only moves use the normal review-and-Apply path.
-- [ ] Test named and older buildings, fixed and rejected placement,
+- [x] Test named and older buildings, fixed and rejected placement,
   relocation, multiple conflicts, clearing one choice, stale draft changes,
   keyboard focus, and cancelling while a placement is checking.
+
+D2 implementation: the ordinary preview now presents named protected buildings and an actionable choice next to the road draft. Suggestions come first, fixed-footprint attempts remain available, invalid fixed choices explain why they failed, and precision coordinates live under More options. Decisions remain individually revisable/clearable even after the candidate preview succeeds. All decisions are scoped to a validated draft; they never modify the accepted project until the independently verified atomic Apply. No required walkthroughs or onboarding.
 
 ## D3 · Make blocked moves recoverable
 
