@@ -1,6 +1,6 @@
 # D4 acceptance and responsiveness report
 
-**Status:** D4 branch acceptance evidence collected; the full PR review-ready CI gate must pass before merge. **Baseline:** [pre-D4 main 42b295a](https://github.com/xbwtyz/Mappo/commit/42b295aee524ba7cbf7354174c68bb47e54275d8). **Candidate:** `0.2-dev.d4`, schema 9, modular sources and generated offline standalone.
+**Status:** D4 acceptance complete; both required GitHub CI checks passed for [PR #56](https://github.com/xbwtyz/Mappo/pull/56). See the PR for merge status. **Baseline:** [pre-D4 main 42b295a](https://github.com/xbwtyz/Mappo/commit/42b295aee524ba7cbf7354174c68bb47e54275d8). **Candidate:** `0.2-dev.d4`, schema 9, modular sources and generated offline standalone.
 
 ## Coverage and safety contract
 
@@ -14,7 +14,7 @@ D4 adds `scripts/d4-browser-acceptance.mjs` to the **full** browser command. It 
 
 **Focused evidence:** [D4 acceptance workflow](https://github.com/xbwtyz/Mappo/actions/runs/44696676423), **10/10 targeted Node** and **4/4 additional Chromium/Firefox viewport cases**, all passing. Original first-run test-harness issues (mobile inspector already collapsed, browser-specific scroll-container tab stop) were corrected; no engine validation rules changed.
 
-The standalone compiler emits byte-identical `index.html` and `dist/mappo-0.2-dev.d4.html`. Offline runtime remains dependency-free. Full `npm run check`, `npm run test:browser` and built-artifact parity are enforced by PR CI. No mandatory tours, participant recruitment, physical-owner check, prompts or forced user interaction.
+The standalone compiler emits byte-identical `index.html` and `dist/mappo-0.2-dev.d4.html`. Offline runtime remains dependency-free. Full `npm run check`, `npm run test:browser` and built-artifact parity were verified by [successful PR CI](https://github.com/xbwtyz/Mappo/actions/runs/44698777095): **411/411 Node tests**, **8/8 general browser checks**, **8/8 property/building checks**, **8/8 road editor checks**, **4/4 additional D4 browser scenarios**, and byte-identical root/distribution HTML. No mandatory tours, participant recruitment, physical-owner check, prompts or forced user interaction.
 
 ## Same-runner C7 responsiveness comparison
 
@@ -44,7 +44,7 @@ The comparison is a targeted **non-regression check**, not a speedup claim. Inpu
 
 ## Merge gate
 
-1. Full Node and Chromium/Firefox browser CI completes successfully on D4's current PR head.
-2. Built root `index.html` and versioned `dist/mappo-0.2-dev.d4.html` remain checked in and byte-identical.
-3. No weakening of schema-9 validation, older custom-data protection, atomic Apply, Undo/Redo, or save/recovery behavior.
-4. D4 PR remains unmerged and unreleased until separately approved.
+1. **Passed:** Full Node and Chromium/Firefox browser CI for the validated D4 implementation; [run #44698777095](https://github.com/xbwtyz/Mappo/actions/runs/44698777095).
+2. **Passed:** Built root `index.html` and versioned `dist/mappo-0.2-dev.d4.html` checked in and byte-identical.
+3. **Preserved:** Schema-9 validation, older custom-data protection, atomic Apply, Undo/Redo, and save/recovery safeguards in regression tests.
+4. **Release policy:** Merge approval and release/tag/publish decisions are separate; this acceptance report does not authorize a release. The [PR](https://github.com/xbwtyz/Mappo/pull/56) records the merge outcome.
