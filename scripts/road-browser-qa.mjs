@@ -57,20 +57,28 @@ for (const [name, type] of [
           s.propertyDeletionHistory4A,
         ].map((h) => JSON.stringify(h));
       });
-      await page.locator('#roadModeButton').click();
+      const controls = page.locator('#roadEditControlsD1 > summary');
+      const details = page.locator('#roadDetailsD1 > summary');
+      const openRoadEditor = async (editControls = true) => {
+        await page.locator('#roadModeButton').click();
+        if (editControls) await controls.click();
+      };
+      await openRoadEditor(false);
       assert.equal(await page.locator('#roadPreviewPanel').isVisible(), true);
       assert.equal(await page.evaluate(() => document.activeElement.id), 'roadPreviewHeading');
       assert.equal(await page.locator('#roadApplyB4').count(), 1);
       assert.equal(await page.locator('#roadApplyB4').isDisabled(), true);
       assert.equal(await page.locator('#roadHistoryUndoB4').isDisabled(), true);
-      assert.equal(await page.locator('#roadApplyStatusB4').getAttribute('role'), 'status');
-      assert.equal(await page.locator('#roadReportStatus').getAttribute('role'), 'status');
-      assert.equal(await page.locator('#roadReconciliationB3').isVisible(), true);
-      assert.equal(await page.locator('#roadReconciliationStatusB3').getAttribute('role'), 'status');
+      assert.equal(await page.locator('#roadPreviewPanel [role="status"]').count(),1);
+      assert.equal(await page.locator('#roadDetailsD1').evaluate(el=>el.open),false);
+      assert.equal(await page.locator('#roadEditControlsD1').evaluate(el=>el.open),false);
+      assert.equal(await page.locator('#roadReconciliationB3').isVisible(),false);
+      await details.click();
       assert.equal(await page.locator('#roadOverlayB3').isChecked(), true);
       await page.locator('#roadOverlayB3').uncheck();
       assert.equal(await page.evaluate(() => __buildingQA.state().roadWorkspace.session.previewVisible), false);
       await page.locator('#roadOverlayB3').check();
+      await details.click();
       const id = await page.evaluate(() => __buildingQA.state().roadWorkspace.session.selection.id);
       // Move the inspected junction to an unobstructed map location. Camera
       // adjustments are transient; the serialized view must remain the baseline.
@@ -108,19 +116,18 @@ for (const [name, type] of [
         // Compare displayed status, counts and every list description with A3's
         // unaltered report. Core classification is tested separately in Node.
         return {
-          status: session.report.status,
-          ready: session.reconciliation?.validation?.project === 'valid' && session.hasApplyCandidate,
-          counts: session.report.counts,
+          ready: !document.querySelector('#roadApplyB4').disabled,
           rows: session.report.affected.slice(0, 50),
         };
       });
-      const statusText = await page.locator('#roadReportStatus').innerText();
-      if (expected.ready && expected.status!=='safe') {
-        assert.match(statusText,/Junction preview ready/);
+      if (expected.ready) {
+        assert.equal(await page.locator('#roadReportStatus').innerText(),'Preview ready');
+        assert.equal(await page.locator('#roadChangeSummaryD1').isVisible(),true);
       } else {
-        assert.ok(statusText.startsWith({safe:'Safe','needs-review':'Needs review',invalid:'Invalid'}[expected.status]));
-        assert.ok(statusText.includes(`${expected.counts.affectedObjects} affected`));
+        assert.match(await page.locator('#roadReportStatus').innerText(),/blocked|choice|only/i);
       }
+      assert.equal(await page.locator('#roadDetailsD1').evaluate(el=>el.open),false);
+      await details.click();
       // A5 groups repeated issues into collapsed details. Check every preserved
       // ID and message, including rows not initially expanded in the UI.
       while (await page.locator('#roadShowMore').isVisible())
@@ -130,6 +137,8 @@ for (const [name, type] of [
         assert.ok(descriptions.includes(row.id));
         assert.ok(descriptions.includes(row.message));
       }
+      await details.click();
+      await controls.click();
       await page.locator('#roadPreviewReset').click();
       assert.ok((await page.locator('#roadReportStatus').innerText()).startsWith('Accepted position'));
       // Numeric invalid -> corrected clears stale issues and uses A3 again.
@@ -138,7 +147,8 @@ for (const [name, type] of [
       await page.waitForFunction(
         () => __buildingQA.state().roadWorkspace.session.report?.status === 'invalid',
       );
-      assert.ok((await page.locator('#roadReportStatus').innerText()).startsWith('Invalid'));
+      assert.equal(await page.locator('#roadReportStatus').innerText(),'Preview blocked');
+      assert.equal(await page.locator('#roadChangeSummaryD1').isVisible(),false);
       await page.locator('#roadProposedX').fill(String(original.x + 0.01));
       await page.waitForFunction(() =>
         ['safe', 'needs-review'].includes(__buildingQA.state().roadWorkspace.session.report?.status),
@@ -146,8 +156,9 @@ for (const [name, type] of [
       assert.equal(
         await page.locator('#roadPreviewPanel').getAttribute('data-report-status'),
         await page.evaluate(() => {
-          const session=__buildingQA.state().roadWorkspace.session;
-          return session.hasApplyCandidate ? 'safe' : session.report.status;
+          const {session}=__buildingQA.state().roadWorkspace;
+          return !document.querySelector('#roadApplyB4').disabled ? 'safe' :
+            session.previewGeometry?.mode==='topology-only' ? 'needs-review' : 'invalid';
         }),
       );
       // All preview data, pan/zoom, file downloads and recovery captures exclude
@@ -519,12 +530,12 @@ for (const [name, type] of [
       );
       // Route changes and replacement cancel pending work, then ordinary roof
       // selection again resolves to the property-first workflow.
-      await page.locator('#roadModeButton').click();
+      await openRoadEditor();
       await page.locator('#roadNudgeRight').click();
       await page.locator('#workspaceTab-landscape').click();
       assert.equal(await page.evaluate(() => __buildingQA.state().roadWorkspace.active), false);
       await page.locator('#workspaceTab-city').click();
-      await page.locator('#roadModeButton').click();
+      await openRoadEditor();
       await page.locator('#roadNudgeRight').click();
       await page.evaluate(() => {
         const saved = JSON.parse(__buildingQA.before);
@@ -549,11 +560,11 @@ for (const [name, type] of [
         saved.workspace.ui.selection = null;
         __buildingQA.apply(saved);
       });
-      await page.locator('#roadModeButton').click();
+      await openRoadEditor();
       const safePoint = await page.evaluate(() => __buildingQA.state().roadWorkspace.session.point);
       await page.locator('#roadProposedX').fill(String(safePoint.x + 0.01));
       await page.waitForFunction(() => __buildingQA.state().roadWorkspace.session.report?.status === 'safe');
-      assert.ok((await page.locator('#roadReportStatus').innerText()).startsWith('Safe'));
+      assert.equal(await page.locator('#roadReportStatus').innerText(),'Preview ready');
       await page.locator('#roadPreviewCancel').click();
       const project = createProject({seed:'c2-planned',size:'small',morphology:'planned'});
       await page.evaluate(doc => {
@@ -561,13 +572,27 @@ for (const [name, type] of [
         const s = __buildingQA.state();
         __buildingQA.c2Before = JSON.stringify(s.project);
       }, {project, workspace:defaultWorkspace(project)});
-      await page.locator('#roadModeButton').click();
+      await openRoadEditor();
       await page.evaluate(() => { __buildingQA.c2Revision = __buildingQA.state().files.revision; });
       await page.locator('#roadSelectionKind').selectOption('road');
       await page.locator('#roadSelectionId').selectOption('RD-0113');
       await page.locator('#roadIntentDxC1').fill('12');
       await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);
+      await controls.click();
+      assert.equal(await page.locator('#roadDetailsD1').evaluate(el=>el.open),false);
+      assert.match(await page.locator('#roadChangeSummaryD1').innerText(),
+        /Rebuild development \(4 existing buildings replaced, 2 generated\).*Reconnect access for 1 building/);
+      assert.equal(await page.evaluate(() => {
+        const body = document.querySelector('#roadPreviewBody').getBoundingClientRect();
+        return [...document.querySelectorAll('.road-preview-disclosures-d1 > details > summary')].every(el => {
+          const box = el.getBoundingClientRect();
+          return box.top >= body.top - 1 && box.bottom <= body.bottom + 1;
+        });
+      }), true, 'Both disclosures must be reachable in the compact preview');
+      await details.click();
       assert.match(await page.locator('#roadReconciliationListB3').innerText(), /Generated replacement/);
+      assert.ok(await page.locator('#roadReconciliationListB3 .road-change-group-d1 h4').count());
+      await details.click();
       assert.equal(await page.evaluate(() => __buildingQA.state().files.revision === __buildingQA.c2Revision), true);
       await page.locator('#roadApplyB4').click();
       const applied = await page.evaluate(() => JSON.stringify(__buildingQA.state().project));
@@ -581,7 +606,7 @@ for (const [name, type] of [
         const radial = createProject({seed:'c2-radial',size:'small',morphology:'radial'});
         for (const [id, delta] of [['RD-0103', 1], ['RD-0099', -1]]) {
           await page.evaluate(doc => __buildingQA.apply(doc), {project:radial, workspace:defaultWorkspace(radial)});
-          await page.locator('#roadModeButton').click();
+          await openRoadEditor();
           await page.locator('#roadSelectionKind').selectOption('road');
           await page.locator('#roadSelectionId').selectOption(id);
           if (delta === 1) {
@@ -591,8 +616,11 @@ for (const [name, type] of [
             await page.locator('#roadRemoveC3').click();
           }
           await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);
+          await details.click();
           assert.match(await page.locator('#roadReconciliationListB3').innerText(),
             delta === 1 ? /New junction/ : /Removed street/);
+          assert.match(await page.locator('#roadReconciliationListB3').innerText(), /Related blocks/);
+          await details.click();
           await page.locator('#roadApplyB4').click();
           assert.equal(await page.evaluate(() => __buildingQA.state().project.city.blocks.length), radial.city.blocks.length + delta);
           assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')), true);
@@ -600,7 +628,7 @@ for (const [name, type] of [
         }
       }
       await page.evaluate(doc => __buildingQA.apply(doc), {project, workspace:defaultWorkspace(project)});
-      await page.locator('#roadModeButton').click();
+      await openRoadEditor();
       const bendBaseline=await page.evaluate(() => JSON.stringify(__buildingQA.state().project));
       await page.locator('#roadSelectionKind').selectOption('road');
       await page.locator('#roadSelectionId').selectOption('RD-0113');
@@ -643,12 +671,12 @@ for (const [name, type] of [
         const custom=structuredClone(project);
         custom.city.buildings.find(building=>building.id==='BLD-00061').customName='Market Hall';
         await page.evaluate(doc=>__buildingQA.apply(doc),{project:custom,workspace:defaultWorkspace(custom)});
-        await page.locator('#roadModeButton').click();
+        await openRoadEditor();
         const original=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
         await page.locator('#roadSelectionKind').selectOption('road');
         await page.locator('#roadSelectionId').selectOption('RD-0113');
         await page.locator('#roadIntentDyC1').fill('18');
-        const needsChoice=page.locator('#roadReconciliationListB3 li').filter({hasText:'Market Hall'});
+        const needsChoice=page.locator('#roadReconciliationListB3 .road-change-record-d1').filter({hasText:'Market Hall'});
         await page.locator('#roadPreviewMinimize').click();
         await page.getByRole('button',{name:'Resolve conflict'}).click();
         assert.match(await page.locator('#roadApplyStatusB4').innerText(),/Market Hall/);
@@ -674,7 +702,7 @@ for (const [name, type] of [
           const cityProject=createProject({seed:'c2-'+morphology,size:'small',morphology});
           await page.evaluate(doc=>__buildingQA.apply(doc),
             {project:cityProject,workspace:defaultWorkspace(cityProject)});
-          await page.locator('#roadModeButton').click();
+          await openRoadEditor();
           await page.locator('#roadSelectionKind').selectOption('junction');
           await page.locator('#roadSelectionId').selectOption(id);
           const before=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
@@ -686,7 +714,7 @@ for (const [name, type] of [
             assert.equal(await page.evaluate(()=>__buildingQA.state().roadWorkspace.session.reconciliation.ledger
               .some(row=>row.disposition==='created-junction')),true,morphology+' crossing');
           }
-          assert.match(await page.locator('#roadReportStatus').innerText(),/preview ready|Safe/);
+          assert.equal(await page.locator('#roadReportStatus').innerText(),'Preview ready');
           await page.locator('#roadApplyB4').click();
           await page.waitForFunction(() => !__buildingQA.state().roadWorkspace.active);
           assert.equal(await page.evaluate(({id,axis})=>__buildingQA.state().project.city.nodes
@@ -707,7 +735,7 @@ for (const [name, type] of [
         radial.city.buildings.find(b=>b.id==='BLD-00048').customName='Market Hall';
         await page.evaluate(doc=>__buildingQA.apply(doc),
           {project:radial,workspace:defaultWorkspace(radial)});
-        await page.locator('#roadModeButton').click();
+        await openRoadEditor();
         await page.locator('#roadSelectionKind').selectOption('junction');
         await page.locator('#roadSelectionId').selectOption('N-0101');
         const beforeCustom=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project));

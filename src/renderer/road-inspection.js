@@ -36,7 +36,11 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
       ctx.stroke();
     }
   };
-  const highlights = roadReportHighlights(session.report);
+  const highlights = session.showRoadDiagnostics ? roadReportHighlights(session.report) : {
+    preserved: [],
+    affected: session.roadPreviewVerifiedD1 ? [] :
+      session.previewGeometry?.unresolved?.length ? session.previewGeometry.unresolved : session.report?.issues ?? [],
+  };
   const preservedBlocks = highlights.preserved.filter(row => row.kind === 'block');
   const records = new Map();
   if (highlights.affected.length || preservedBlocks.length) {
@@ -96,11 +100,13 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
   preservedBlocks.forEach(row => highlight(row, true));
   highlights.affected.forEach((r) => highlight(r, false));
   // B3 overlays only geometry computed from detached B1/B2 candidates.
-  if(session.previewVisible!==false){
-    for(const row of session.previewGeometry?.rows??[]){
-      const color=row.kind==='property'?'#8053a5':row.kind==='plot'?'#168578':row.kind==='building'?'#b45468':'#cf8731';
+  const preview = session.previewGeometry;
+  if(session.previewVisible!==false && (session.roadPreviewVerifiedD1 || preview?.mode==='topology-only')){
+    for(const row of preview?.rows??[]){
+      const color=row.kind==='property'?'#8053a5':row.kind==='plot'?'#168578':row.kind==='building'?'#b45468':row.kind==='road'?'#168f80':'#cf8731';
       const focused=session.focusKey===JSON.stringify([row.kind,row.id]);
       const closed=!['road','junction'].includes(row.kind);
+      if (!session.showRoadDiagnostics && !focused && ['property','plot','open-space'].includes(row.kind)) continue;
       if(path(row.originalPoints,closed)){
         ctx.strokeStyle='#5d717b';ctx.lineWidth=focused?3:1.4;
         ctx.setLineDash([]);ctx.stroke();
@@ -112,6 +118,12 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
         ctx.fillStyle = color;
         ctx.fill();
       } else if(path(row.proposedPoints,closed)){
+        if (row.kind === 'block' || row.kind === 'building') {
+          ctx.fillStyle = color;
+          ctx.globalAlpha = row.kind === 'building' ? .23 : .12;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
         ctx.strokeStyle=color;ctx.lineWidth=focused?5:2.8;
         ctx.setLineDash([7,4]);ctx.stroke();ctx.setLineDash([]);
       }
@@ -169,7 +181,7 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
     ctx.stroke();
   }
   if (session.pending && d?.kind==='junction') {
-    const color = session.previewGeometry?.verified ? rpColors.safe : rpColors[session.report?.status] ?? rpColors.checking;
+    const color = session.roadPreviewVerifiedD1 ? rpColors.safe : rpColors[session.report?.status] ?? rpColors.checking;
     ctx.setLineDash([7, 5]);
     for (const id of d.roadIds) segment(graph.roadsById.get(id), color, 3, true);
     ctx.setLineDash([]);

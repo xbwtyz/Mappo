@@ -114,6 +114,7 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
             },doc);
             await page.locator('#roadModeButton').scrollIntoViewIfNeeded();
             await page.locator('#roadModeButton').click();
+            await page.locator('#roadEditControlsD1 > summary').click();
             assert.equal(await page.evaluate(() =>
               typeof __buildingQA.state().roadWorkspace.session.computeJunctionAsync === 'function'),
               true, 'P1 offline build must activate the background junction worker');
