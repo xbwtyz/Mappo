@@ -37,10 +37,13 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
     }
   };
   const highlights = roadReportHighlights(session.report);
+  const preservedBlocks = highlights.preserved.filter(row => row.kind === 'block');
   const records = new Map();
-  for (const [collection, kind] of ROAD_IMPACT_COLLECTIONS)
-    for (const record of city[collection] ?? []) records.set(JSON.stringify([kind, record.id]), record);
-  if (city.plaza) records.set(JSON.stringify(['plaza', city.plaza.id]), city.plaza);
+  if (highlights.affected.length || preservedBlocks.length) {
+    for (const [collection, kind] of ROAD_IMPACT_COLLECTIONS)
+      for (const record of city[collection] ?? []) records.set(JSON.stringify([kind, record.id]), record);
+    if (city.plaza) records.set(JSON.stringify(['plaza', city.plaza.id]), city.plaza);
+  }
   const highlight = (row, preserved) => {
     const record = records.get(JSON.stringify([row.kind, row.id]));
     if (!record) return;
@@ -90,7 +93,7 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
   };
   ctx.save();
   // Preserved block shading is intentionally subtle; affected geometry wins.
-  highlights.preserved.filter((r) => r.kind === 'block').forEach((r) => highlight(r, true));
+  preservedBlocks.forEach(row => highlight(row, true));
   highlights.affected.forEach((r) => highlight(r, false));
   // B3 overlays only geometry computed from detached B1/B2 candidates.
   if(session.previewVisible!==false){

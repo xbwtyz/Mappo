@@ -78,6 +78,9 @@ export class RoadPreviewSession {
   get details() {
     return this.active ? roadInspectionDetails(this.graph, this.selection) : null;
   }
+  get hasApplyCandidate() {
+    return Boolean(this.reconciliation?.candidateJson || this.reconciliation?.candidateProject);
+  }
   get pending() {
     const d = this.details;
     if(d?.kind==='road')
@@ -329,7 +332,7 @@ export class RoadPreviewSession {
           this.proposal = result.proposal;
           this.report = result.report;
           this.reconciliation = result.reconciliation;
-          this.topology = result.topology;
+          this.topology = result.topology ?? null;
           this.workerPreviewGeometry = result.previewGeometry ?? null;
           this.reconciliationError = result.reconciliationError ?? '';
           if (this.reconciliation && !this.reconciliationError) {

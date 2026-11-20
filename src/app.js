@@ -1435,11 +1435,11 @@ function applyRoadEditB4(session,baselineRevision){
   const projectJson = JSON.stringify(previous);
   const check = checkRoadApplyC2(previous, session, baselineRevision, revision, projectJson);
   if (!check.ok) return commit(check);
-  const { candidateProject, ledger } = session.reconciliation;
+  const { candidateJson, ledger } = session.reconciliation;
   return session.computeJunctionAsync({
     operation: 'apply', projectJson, junctionId, workspace,
     point: { ...session.point }, decisions: [...session.buildingDecisions],
-    inspected: { candidateProject, ledger },
+    inspected: { candidateJson, ledger },
   }).then(receipt => {
     if (project !== previous || JSON.stringify(project) !== projectJson)
       return {ok:false,message:'The accepted project changed during Apply.'};

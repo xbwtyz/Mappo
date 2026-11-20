@@ -29,6 +29,20 @@ export function calculateJunctionPreviewP1({ project, junctionId, point, decisio
     timings: { analyzeMs, reconcileMs,
       totalMs: performance.now() - start } };
 }
+// Keep the reviewed candidate as exact JSON for Apply's equality check.
+// Preview consumes display geometry and diagnostics, so it need not clone a city.
+export function junctionPreviewMessage(result) {
+  const { reconciliation, proposal, report, previewGeometry, reconciliationError, timings } = result;
+  const display = { proposal, report, previewGeometry, reconciliationError, timings };
+  if (!reconciliation) return { ...display, reconciliation: null };
+  const { candidateProject, phase, status, validation, unresolved, ledger } = reconciliation;
+  return {
+    ...display,
+    reconciliation: { phase, status, validation, unresolved, ledger,
+      candidateJson: candidateProject ? JSON.stringify(candidateProject) : null },
+  };
+}
+
 if (typeof self !== 'undefined' && typeof self.addEventListener === 'function' &&
     typeof self.postMessage === 'function') {
   self.addEventListener('message', event => {
@@ -39,7 +53,8 @@ if (typeof self !== 'undefined' && typeof self.addEventListener === 'function' &
         ? validateRoadApplyC2(project, workspace, {
           selection: { kind: 'junction', id: junctionId }, point, buildingDecisions: new Map(decisions),
         }, inspected)
-        : calculateJunctionPreviewP1({ project, junctionId, point, decisions });
+        : junctionPreviewMessage(calculateJunctionPreviewP1({ project, junctionId, point, decisions }));
+      if (result.timings) result.timings.sentAt = performance.timeOrigin + performance.now();
       self.postMessage({ requestId, result });
     } catch (error) {
       const message = operation === 'apply' ? 'Road Apply blocked: ' : 'Report unavailable: ';

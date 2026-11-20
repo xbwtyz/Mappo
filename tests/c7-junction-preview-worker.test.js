@@ -4,7 +4,7 @@ import { createProject } from '../src/core/city-model.js';
 import { proposeJunctionMove } from '../src/core/road-graph.js';
 import { analyzeRoadImpact } from '../src/core/road-impact.js';
 import { prepareJunctionReflowC7 } from '../src/core/neighborhood-reflow.js';
-import { calculateJunctionPreviewP1 } from '../src/worker/junction-preview-worker.js';
+import { calculateJunctionPreviewP1, junctionPreviewMessage } from '../src/worker/junction-preview-worker.js';
 import { roadReconciliationPreviewB3 } from '../src/core/road-inspection.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
 import { validateRoadApplyC2 } from '../src/editor/road-application.js';
@@ -77,6 +77,15 @@ test('P4 fresh Apply rejects a changed candidate or ledger before exposing an ac
   const receipt = validateRoadApplyC2(project,workspace,draft,inspected);
   assert.equal(receipt.ok,true);
   assert.deepEqual(receipt.candidate,inspected.candidateProject);
+  const preview = junctionPreviewMessage(calculateJunctionPreviewP1({project,junctionId:id,point}));
+  assert.equal(preview.reconciliation.candidateJson,JSON.stringify(inspected.candidateProject));
+  assert.equal(Object.hasOwn(preview.reconciliation,'candidateProject'),false);
+  assert.equal(Object.hasOwn(preview,'topology'),false);
+  assert.equal(preview.previewGeometry.verified,true);
+  const compact = validateRoadApplyC2(project,workspace,draft,preview.reconciliation);
+  assert.deepEqual(compact,receipt);
+  const wrongJson = {...preview.reconciliation,candidateJson:original};
+  assert.equal(validateRoadApplyC2(project,workspace,draft,wrongJson).issues[0].code,'candidate-changed');
   const changedCandidate = structuredClone(inspected.candidateProject);
   changedCandidate.city.nodes.find(n=>n.id===id).y++;
   for (const altered of [{...inspected,candidateProject:changedCandidate}, {...inspected,ledger:[]}]) {
