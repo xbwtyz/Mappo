@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { createProjectDocument, decodeProjectDocument, defaultWorkspace, encodeProjectDocument } from '../src/data/project-format.js';
 import { buildingAppHarness } from './helpers/building-app.js';
+import { roadRecoveryGuidanceD3, roadRecoveryIssueD3 } from '../src/ui/road-recovery-d3.js';
 
 const scenarios = [
   ['planned','RD-0113',12,0],
@@ -192,4 +193,80 @@ test('D2 rejects a new building decision if the road draft was reset', async () 
   assert.equal(s.decideBuilding('BLD-00048',{kind:'fixed'}),false);
   assert.equal(s.clearBuildingDecision('BLD-00048'),false);
   assert.equal(app.el('roadBuildingDecisionsD2').hidden,true);
+});
+
+
+test('D3 maps supported blockers to useful actions without inventing a map target', () => {
+  const scenarios = [
+    ['protected-edge','Protected infrastructure','adjust'],
+    ['unnormalized-crossing','Road crossing needs a junction','adjust'],
+    ['face-ambiguous','Block identity unclear','adjust'],
+    ['plot-ownership','Plot ownership cannot be preserved','adjust'],
+    ['access-connection','Access would disconnect','adjust'],
+    ['building-decision-required','Building needs a decision','building'],
+    ['building-placement-blocked','Building placement was rejected','building'],
+    ['protected-junction','Protected road junction','choose'],
+    ['candidate-coordinate','Coordinates cannot be used','adjust'],
+  ];
+  for (const [code,title,action] of scenarios) {
+    const guide=roadRecoveryGuidanceD3({code,message:'source note'});
+    assert.equal(guide.title,title);
+    assert.equal(guide.action,action);
+    assert.ok(guide.description.length>30);
+  }
+  assert.equal(roadRecoveryGuidanceD3({code:'unsupported-case',message:'Original explanation'}).description,
+    'Original explanation');
+  assert.equal(roadRecoveryIssueD3({pending:false,checking:false}),null);
+  assert.equal(roadRecoveryIssueD3({pending:true,checking:true}),null);
+  const session={pending:true,checking:false,drag:null,
+    reconciliation:{unresolved:[
+      {kind:'road',id:'RD-4',code:'overlapping-roads'},
+      {kind:'building',id:'BLD-1',code:'building-decision-required'}]}};
+  assert.equal(roadRecoveryIssueD3(session).id,'BLD-1');
+});
+
+test('D3 invalid junction proposal offers adjustment without changing accepted geometry', async () => {
+  const app=await buildingAppHarness();
+  const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+  app.apply({project,workspace:defaultWorkspace(project)});
+  const road=app.state().roadWorkspace, before=JSON.stringify(app.state().project);
+  road.start();
+  const s=road.session;
+  s.select({kind:'junction',id:'N-0105'});
+  s.update({x:200000,y:s.point.y},{defer:false});
+  assert.equal(app.el('roadApplyB4').disabled,true);
+  assert.equal(app.el('roadRecoveryD3').hidden,false);
+  assert.equal(app.el('roadRecoveryHeadingD3').textContent,'Coordinates cannot be used');
+  assert.equal(app.el('roadRecoveryLocateD3').hidden,true);
+  app.el('roadRecoveryPrimaryD3').handlers.click();
+  assert.equal(app.el('roadEditControlsD1').open,true);
+  assert.equal(JSON.stringify(app.state().project),before);
+  road.reset();
+  assert.equal(app.el('roadRecoveryD3').hidden,true);
+  assert.equal(JSON.stringify(app.state().project),before);
+});
+
+test('D3 locates a known accepted road obstruction without changing the draft or Apply safety', async () => {
+  const app=await buildingAppHarness();
+  const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+  app.apply({project,workspace:defaultWorkspace(project)});
+  const road=app.state().roadWorkspace, before=JSON.stringify(app.state().project);
+  road.start();
+  const s=road.session;
+  s.select({kind:'junction',id:'N-0105'});
+  s.update({x:s.point.x+12,y:s.point.y},{defer:false});
+  const draft={...s.point};
+  s.reconciliation={...s.reconciliation,
+    unresolved:[{kind:'road',id:'RD-0113',code:'overlapping-roads',message:'Road overlap'}]};
+  s.changed();
+  assert.equal(app.el('roadRecoveryD3').hidden,false);
+  assert.equal(app.el('roadRecoveryHeadingD3').textContent,'Roads overlap');
+  assert.equal(app.el('roadRecoveryLocateD3').hidden,false);
+  assert.equal(app.el('roadApplyB4').disabled,true);
+  app.el('roadRecoveryLocateD3').handlers.click();
+  assert.equal(s.recoveryFocusD3.id,'RD-0113');
+  assert.equal(JSON.stringify(s.point),JSON.stringify(draft));
+  assert.equal(JSON.stringify(app.state().project),before);
+  s.update({x:draft.x+1,y:draft.y},{defer:false});
+  assert.equal(s.recoveryFocusD3,null);
 });
