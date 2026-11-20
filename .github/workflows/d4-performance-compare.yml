@@ -1,0 +1,52 @@
+# D4 same-runner measurement (temporary; preserve evidence in documentation).
+name: D4 same-runner C7 performance comparison
+on:
+  push:
+    branches:
+      - feature/mappo-0.2d-d4-acceptance-stabilization
+permissions:
+  contents: read
+concurrency:
+  group: mappo-d4-benchmark
+  cancel-in-progress: true
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/mappo-0.2d-d4-acceptance-stabilization
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare identical browser environment
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium firefox
+      - name: Measure frozen pre-D4 baseline
+        run: |
+          git checkout --detach 42b295aee524ba7cbf7354174c68bb47e54275d8
+          npm run build
+          node scripts/c7-browser-performance.mjs
+          cp artifacts/c7/performance.json /tmp/mappo-d4-baseline.json
+      - name: Measure tested D4 candidate
+        run: |
+          git checkout --detach "$GITHUB_SHA"
+          npm run build
+          node scripts/c7-browser-performance.mjs
+          cp artifacts/c7/performance.json /tmp/mappo-d4-candidate.json
+      - name: Compare identical fixtures and record raw evidence
+        run: |
+          node scripts/d4-compare-performance.mjs /tmp/mappo-d4-baseline.json /tmp/mappo-d4-candidate.json
+          cp /tmp/mappo-d4-baseline.json artifacts/d4/baseline.json
+          cp /tmp/mappo-d4-candidate.json artifacts/d4/candidate.json
+      - name: Upload D4 performance report and raw data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: d4-same-runner-performance-evidence
+          path: artifacts/d4/
+          if-no-files-found: ignore
+          retention-days: 30
