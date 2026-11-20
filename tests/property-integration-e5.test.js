@@ -10,6 +10,7 @@ import {PropertyMergeSessionE3,inspectPropertyMergeE3,preparePropertyMergeE3} fr
 import {PropertyEditSession3I} from '../src/editor/property-edit.js';
 import {inspectPropertyEdit3I,preparePropertyApply3I} from '../src/editor/property-application.js';
 import {PropertyGeometryHistory3I} from '../src/editor/property-history.js';
+import {buildingAppHarness} from './helpers/building-app.js';
 
 const MORPHOLOGIES=['planned','radial','organic','linear'];
 const SIZES=['small','large'];
@@ -132,4 +133,37 @@ test('E5 generated baseline supports independent E4 draft decisions for all morp
   assert.equal(JSON.stringify(project.city),before,'E4 testing must never mutate source city');
   console.log('E5 fixture '+morphology+'/'+size+': validated split in '+elapsed.toFixed(1)+'ms (runner sample, not benchmark)');
  }
+});
+
+test('E5 accepted road adaptation remains authoritative for subsequent plot-count editing and portable saves',async()=>{
+ const app=await buildingAppHarness();
+ const start=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+ app.apply({project:start,workspace:defaultWorkspace(start)});
+ const roadWorkspace=app.state().roadWorkspace;
+ roadWorkspace.start();
+ const drag=roadWorkspace.session;
+ drag.schedule=run=>run();
+ drag.select({kind:'road',id:'RD-0113'});
+ const road=drag.details.record;
+ const a=drag.graph.nodesById.get(road.a),b=drag.graph.nodesById.get(road.b);
+ const center={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+ assert.equal(drag.begin(center,5,'mouse'),true);
+ drag.move({x:center.x+12,y:center.y});
+ drag.end(false);
+ assert.equal(app.el('roadApplyB4').disabled,false,
+  'The established road acceptance fixture must be valid.');
+ app.el('roadApplyB4').handlers.click();
+ const adapted=app.state().project;
+ assert.notDeepEqual(adapted.city.nodes,start.city.nodes);
+ let edited=null;
+ for(const p of adapted.city.properties){
+  const session=new PropertyEditSession3I();
+  if(!session.start(adapted.city,p.id)||!session.addDivider(adapted.city,0))continue;
+  const result=preparePropertyApply3I(adapted,defaultWorkspace(adapted),session);
+  if(result.ok){edited=result.candidate;break;}
+ }
+ assert.ok(edited,'An accepted adapted city must support a legal later plot edit.');
+ unchanged(adapted,edited);
+ assert.deepEqual(edited.city.nodes,adapted.city.nodes,'Later land changes cannot revert accepted street positions');
+ roundTrip(edited);
 });
