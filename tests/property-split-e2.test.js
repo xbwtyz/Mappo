@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
 import { preparePropertyBuildingClear4E } from '../src/editor/property-building-clear-4e.js';
-import { propertySplitGeometryE2 } from '../src/core/property-split-geometry-e2.js';
+import { propertySplitGeometryE2, splitStripE2 } from '../src/core/property-split-geometry-e2.js';
 import { PropertySplitSessionE2,PropertySplitHistoryE2,
   inspectPropertySplitE2,preparePropertySplitE2 } from '../src/editor/property-split-e2.js';
 import { validateStoredProject } from '../src/data/project-validation.js';
@@ -77,6 +77,26 @@ test('E2 rejects invalid fractions, undersized remnants, crossing buildings and 
   assert.equal(inspectPropertySplitE2(project,session).ok,false);
   assert.equal(preparePropertySplitE2(project,defaultWorkspace(project),session).candidate,null);
   assert.notEqual(JSON.stringify(project.city),original);
+});
+
+test('E2 explicitly blocks a building crossing the proposed divider without changing accepted city',()=>{
+  const fixture=candidate('e2-crossing-building');
+  assert.ok(fixture);
+  const {project,property,session}=fixture;
+  const building={
+    id:'E2-CROSSING-TEST-BUILDING',propertyId:property.id,
+    footprint:splitStripE2(property.boundary,.45,.55),accessPath:[]
+  };
+  project.city.buildings.push(building);
+  property.buildingIds.push(building.id);
+  const before=JSON.stringify(project.city);
+  const inspected=inspectPropertySplitE2(project,session);
+  assert.equal(inspected.ok,false);
+  assert.ok(inspected.issues.some(issue=>issue.code==='building'&&issue.targetId===building.id));
+  const result=preparePropertySplitE2(project,defaultWorkspace(project),session);
+  assert.equal(result.ok,false);
+  assert.equal(result.candidate,null);
+  assert.equal(JSON.stringify(project.city),before);
 });
 
 test('E2 declared morphologies produce deterministic nonmutating geometry',()=>{
