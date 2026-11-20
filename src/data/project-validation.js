@@ -359,9 +359,19 @@ export function validateStoredProject(project) {
       }
     }
     const neighbors = grouped.get(property.blockId) || [];
-    for (const other of neighbors)
-      if (polygonsOverlapInterior(property.boundary, other.boundary, spend)) throw new Error('Property boundaries overlap.');
-    neighbors.push(property);
+    const bounds = boundsOf(property.boundary);
+    for (const other of neighbors) {
+      const box = other.bounds;
+      const separated = bounds.maxX < box.minX - 1e-6 || box.maxX < bounds.minX - 1e-6 ||
+        bounds.maxY < box.minY - 1e-6 || box.maxY < bounds.minY - 1e-6;
+      if (separated) {
+        // Charge the same edge-pair checks even when the boxes prove separation.
+        spend(property.boundary.length * other.boundary.length);
+      } else if (polygonsOverlapInterior(property.boundary, other.boundary, spend)) {
+        throw new Error('Property boundaries overlap.');
+      }
+    }
+    neighbors.push({ boundary: property.boundary, bounds });
     grouped.set(property.blockId, neighbors);
     const ownPlots = references(property.plotIds, maps.plots, 'Property plots');
     let plotArea = 0;

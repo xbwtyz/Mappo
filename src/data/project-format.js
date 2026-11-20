@@ -64,7 +64,7 @@ export function defaultWorkspace(project) {
   };
 }
 export function createProjectDocument(project, workspace = defaultWorkspace(project), base = null, now = new Date().toISOString()) {
-  const document = base ? copyJson(base) : {
+  const document = base ? copyJson({ ...base, project: null }) : {
     format: PROJECT_FORMAT,
     formatVersion: CURRENT_FORMAT_VERSION,
     documentId: newDocumentId(),

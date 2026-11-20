@@ -10,8 +10,8 @@ globalThis.__buildingQA = {
 };
 `;
 
-export function observeBuildingApp(html) {
-  return html.replace(/\n\}\)\(\);\s*<\/script>/, `${buildingObservation}\n})();\n</script>`);
+export function observeBuildingApp(html, extraObservation = '') {
+  return html.replace(/\n\}\)\(\);\s*<\/script>/, `${buildingObservation}\n${extraObservation}\n})();\n</script>`);
 }
 
 export async function buildingAppHarness() {

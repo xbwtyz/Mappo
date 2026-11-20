@@ -55,7 +55,7 @@ The initial road-first roadmap moved manual property editing out of 0.2C. The fo
 - **0.1.0:** released.
 - **0.2A:** implemented/merged, including A5 impact report improvements.
 - **0.2B:** B1–B5 merged, including stabilization PR #32.
-- **0.2C:** C1–C6 merged. [C7 PR #42](https://github.com/xbwtyz/Mappo/pull/42) is in draft with the remaining release checks recorded in the C7 plan.
-- **0.2D:** Road experience work plan documented. Implementation awaits the C7 baseline and separate approval.
+- **0.2C:** Road-first editing is accepted through C7/P7. See the [C7 closeout](C7_CLOSEOUT_REVIEW.md) and [P7 benchmark results](C7_P7_INPUT_RESPONSIVENESS.md#results-and-disposition). [Issue #44](https://github.com/xbwtyz/Mappo/issues/44) tracks remaining input stalls as a follow-up.
+- **0.2D:** Next planned implementation. [The road experience plan](MILESTONE_0_2D_ROAD_UX_PLAN.md) starts with clearer previews, followed by simpler building choices and recovery from blocked drafts.
 - **Later phases:** Roadmap-level plans with sequencing subject to review.
 - **3D:** deferred until the 2D city designer is capable and stable.
