@@ -42,6 +42,10 @@ proposals accumulate behind it. Queued work may delay the latest valid draft.
   browser behavior and fast CI pass. See P3 for final performance comparisons.
 - [ ] PR remains unmerged pending approval.
 
+## P2 build and validation
+
+The versioned development artifact is `0.2-dev.c7-p2`. The generation script continues to emit `index.html` and a byte-identical `dist/mappo-0.2-dev.c7-p2.html`. A temporary development-only workflow produces the checked-in distribution and is removed afterward; CI fast checks enforce parity.
+
 ## Deliberately deferred to P3
 
 Performance median/p95 and frame-gap closeout on identical Small/Large Organic

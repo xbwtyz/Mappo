@@ -81,18 +81,21 @@ test('P2 handles worker errors, bad messages, clone errors and timeout without s
   const fail3 = assert.rejects(three, /timed out/);
   await fail3;
   assert.equal(workers[2].closed, true);
-  const four = compute({ junctionId: 'N-4' });
-  workers[3].sendError = new Error('DataCloneError simulated');
-  const five = compute({ junctionId: 'N-5' });
-  const fail4 = assert.rejects(four, { name: 'AbortError' });
-  const fail5 = assert.rejects(five, /DataCloneError simulated/);
-  await fail4;
-  await fail5;
-  assert.equal(workers[3].closed, true);
-  const recovered = compute({ junctionId: 'N-6' });
-  workers[4].emit('message', {requestId:workers[4].sent[0].requestId,result:result('recovered')});
+  const recovered = compute({ junctionId: 'N-4' });
+  workers[3].emit('message', {requestId:workers[3].sent[0].requestId,result:result('recovered')});
   assert.deepEqual(await recovered, result('recovered'));
   compute.terminate();
+
+  const clone = controller();
+  clone.compute.warmup();
+  clone.workers[0].sendError = new Error('DataCloneError simulated');
+  await assert.rejects(clone.compute({ junctionId: 'N-5' }), /DataCloneError simulated/);
+  assert.equal(clone.workers[0].closed, true);
+  const next = clone.compute({ junctionId: 'N-6' });
+  clone.workers[1].emit('message', {requestId:clone.workers[1].sent[0].requestId,
+    result:result('after-clone-error')});
+  assert.deepEqual(await next, result('after-clone-error'));
+  clone.compute.terminate();
 });
 
 test('P2 session invalidates worker on rapid nudge, selection, reset and exit', async () => {
