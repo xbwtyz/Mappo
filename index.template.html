@@ -57,6 +57,10 @@
             <button id="propertyCreateUndoE1" type="button" class="minor-button" disabled>Undo property creation</button>
             <button id="propertyCreateRedoE1" type="button" class="minor-button" disabled>Redo property creation</button>
           </div>
+          <div class="road-history-actions-b4" role="group" aria-label="Property split history">
+            <button id="propertySplitUndoE2" type="button" class="minor-button" disabled>Undo property split</button>
+            <button id="propertySplitRedoE2" type="button" class="minor-button" disabled>Redo property split</button>
+          </div>
           <button id="roadModeButton" class="tool-button full-width" aria-pressed="false" aria-controls="roadPreviewPanel">Inspect / edit roads</button>
           <div class="road-history-actions-b4" role="group" aria-label="Accepted road edit history">
             <button type="button" id="roadHistoryUndoB4" class="minor-button" disabled>Undo road</button>
@@ -263,6 +267,23 @@
             <button id="propertyCreateApplyE1" type="button" class="tool-button" aria-describedby="propertyCreateStatusE1" disabled>Apply new property</button>
             <button id="propertyCreateResetE1" type="button" class="minor-button" disabled>Reset</button>
             <button id="propertyCreateCancelE1" type="button" class="minor-button">Cancel</button>
+          </div>
+        </section>
+
+        <section id="propertySplitPanelE2" class="building-transform-panel property-split-panel-e2" aria-label="Split property preview" hidden>
+          <div class="building-transform-heading"><strong>SPLIT PROPERTY</strong><span id="propertySplitTargetE2">—</span></div>
+          <p class="hint">Drag the golden divider from the street frontage to the rear, or enter its percentage. Both parcels need road frontage; buildings never move. The original name and ID stay on the frontage-start side.</p>
+          <label class="property-split-percent-e2">Divider along frontage (%)
+            <input id="propertySplitPercentE2" type="number" min="0.1" max="99.9" step="0.5" value="50" aria-label="Property split percentage"/>
+          </label>
+          <p id="propertySplitSummaryE2" class="building-history-status" aria-live="polite"></p>
+          <div id="propertySplitTransfersE2" role="group" aria-label="Building ownership transfers"></div>
+          <ul id="propertySplitIssuesE2" class="property-split-issues-e2" aria-label="Split blockers"></ul>
+          <p id="propertySplitStatusE2" class="building-history-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="road-preview-actions">
+            <button id="propertySplitApplyE2" type="button" class="tool-button" aria-describedby="propertySplitStatusE2" disabled>Apply property split</button>
+            <button id="propertySplitResetE2" type="button" class="minor-button" disabled>Reset</button>
+            <button id="propertySplitCancelE2" type="button" class="minor-button">Cancel</button>
           </div>
         </section>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
