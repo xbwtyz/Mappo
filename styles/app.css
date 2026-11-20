@@ -536,3 +536,12 @@
 .road-building-more-d2>summary{cursor:pointer;font-weight:600;padding:5px}
 .road-building-selected-d2{font-size:11px;font-weight:600;margin:6px 0}
 @media(max-width:900px){.road-building-actions-d2 button,.road-building-more-d2>summary{min-height:44px}}
+
+
+/* D3: clear actionable blockers without introducing an onboarding flow. */
+.road-recovery-d3{margin:5px 0 8px;padding:8px;border:1px solid #b8a587;border-radius:5px;background:#fcf5e9}
+.road-recovery-d3 h4{margin:0 0 3px;font-size:12px;color:#6f472b}
+.road-recovery-d3 p{font-size:11px;line-height:1.45;margin:0 0 6px}
+.road-recovery-actions-d3{display:flex;flex-wrap:wrap;gap:5px}
+.road-recovery-actions-d3 button:first-child{font-weight:700;border-color:#7d906e}
+@media(max-width:900px){.road-recovery-actions-d3 button{min-height:44px}}
