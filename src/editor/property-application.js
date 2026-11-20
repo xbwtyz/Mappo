@@ -6,6 +6,10 @@ import { deriveOccupiedPlots } from './building-application.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 
+const E4_PLOT_BASE_FIELDS=new Set(['id','blockId','propertyId','frontageRoadId','boundary']);
+const e4Annotated=plot=>Boolean(plot&&Object.keys(plot).some(key=>!E4_PLOT_BASE_FIELDS.has(key)));
+const e4Issue=(code,message,targetId=null)=>({code,message,targetId});
+
 const giCross=(a,b,c)=>(b.x-a.x)*(c.y-b.y)-(b.y-a.y)*(c.x-b.x);
 const giConvex=points=>points.length===4&&points.every((p,i)=>giCross(p,points[(i+1)%4],points[(i+2)%4])>1e-7);
 const giIssue=(issues,code,message,targetId=null)=>issues.push({code,message,targetId});
@@ -19,10 +23,21 @@ export function inspectPropertyEdit3I(project,session){
     return {ok:false,status:'invalid',issues,preview:null};
   }
   let preview=null;
-  try{preview=propertyGeometryPreview3I(city,property.id,session.boundary,session.dividers);}
+  try{preview=propertyGeometryPreview3I(city,property.id,session.boundary,session.dividers,session.plotIds);}
   catch(error){
     giIssue(issues,'subdivision',error.message);
     return {ok:false,status:'invalid',issues,preview:null};
+  }
+  const change=session.countChange;
+  if(change){
+    const sourceId=change.kind==='split'?change.sourceId:change.retiredId;
+    const sourcePlot=city.plots.find(p=>p.id===sourceId&&p.propertyId===property.id);
+    if(!sourcePlot)giIssue(issues,'identity','The source plot is missing or belongs to another property.',sourceId);
+    else if(e4Annotated(sourcePlot)&&!session.approved)
+      giIssue(issues,'authorization','Authorize the '+(change.kind==='split'?'scope change of':'retirement of')+
+        ' authored plot '+sourceId+'; its original record will be preserved in history.',sourceId);
+    if(change.kind==='split'&&city.plots.some(p=>p.id===change.newId))
+      giIssue(issues,'identity','The new plot ID is already in use.',change.newId);
   }
   const polygon=preview.boundary;
   if(!shapeWellFormed(polygon)||!giConvex(polygon))
@@ -87,6 +102,29 @@ export function preparePropertyApply3I(project,workspace,session){
     original.frontage=copyJson([preview.boundary[0],preview.boundary[1]]);
     original.area=polygonSignedArea(preview.boundary);
     original.local=propertyLocalBounds3I(original,preview.boundary);
+    const change=session.countChange;
+    if(change){
+      const history=original.plotCountHistoryE4;
+      if(history!==undefined&&(!Array.isArray(history)||history.length>=20))
+        throw new Error('Unsupported or full plot-count audit history; cannot overwrite it.');
+      const sourceId=change.kind==='split'?change.sourceId:change.retiredId;
+      const oldSource=city.plots.find(p=>p.id===sourceId&&p.propertyId===original.id);
+      if(!oldSource)throw new Error('Original plot identity changed.');
+      const receipt={operation:change.kind,retainedId:change.kind==='split'?change.sourceId:change.retainedId,
+        newId:change.kind==='split'?change.newId:null,
+        retiredId:change.kind==='merge'?change.retiredId:null,
+        sourceRecord:copyJson(oldSource),previousPlotIds:copyJson(original.plotIds)};
+      original.plotCountHistoryE4=[...(history??[]),receipt];
+      if(change.kind==='merge'){
+        city.plots=city.plots.filter(plot=>plot.id!==change.retiredId);
+      }else{
+        const source=city.plots.find(p=>p.id===change.sourceId);
+        if(!source)throw new Error('Split plot identity changed.');
+        city.plots.push({id:change.newId,propertyId:original.id,blockId:source.blockId,
+          frontageRoadId:source.frontageRoadId,boundary:[]});
+      }
+      original.plotIds=[...session.plotIds];
+    }
     for(const row of preview.plots){
       const plot=city.plots.find(p=>p.id===row.id);
       if(!plot||plot.propertyId!==original.id)throw new Error('The original plot ownership changed.');

@@ -55,9 +55,9 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 - [ ] Validate dependent plots, buildings and protected relationships; keep an invalid or contested merge draft editable.
 - [ ] **Gate:** merge generated lots, merge customized lots with explicit decisions, reject nonadjacent/ambiguous cases and prove exact Undo/Redo.
 
-### E4 — Plot division and dependency reconciliation (design proposed)
+### E4 — Plot division and dependency reconciliation (feature PR #64 unmerged)
 
-**Detailed proposed contract:** [E4 plot-count and dependency design](E4_PLOT_COUNT_DESIGN.md). Plot ID retention, metadata retirement consent, new lineage and building membership rules require review before implementation.
+**Detailed proposed contract:** [E4 plot-count and dependency design](E4_PLOT_COUNT_DESIGN.md). The approved identity, metadata retirement consent, lineage and building membership rules are implemented in feature PR #64; final CI and separate merge authorization remain required.
 
 - [ ] Extend the **existing** plot-divider tooling to support deliberate plot-count changes (split/merge plots) where schema and geometry allow; avoid a second competing plot editor.
 - [ ] Reconcile plot IDs, property ownership, building plot memberships, entrance/frontage paths and necessary connected records using only verified geometry and recorded lineage.

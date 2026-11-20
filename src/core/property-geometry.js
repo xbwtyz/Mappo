@@ -19,12 +19,14 @@ export function propertyDividerFractions3I(city, property) {
   return ratios;
 }
 
-export function propertyGeometryPreview3I(city,propertyId,boundary,dividers) {
+export function propertyGeometryPreview3I(city,propertyId,boundary,dividers,draftPlotIds=null) {
   const property=city?.properties?.find(p=>p.id===propertyId);
   if(!property || !Array.isArray(boundary)||boundary.length!==4
       || !boundary.every(p=>p&&giFinite(p.x)&&giFinite(p.y)&&Math.abs(p.x)<10000&&Math.abs(p.y)<10000))
     throw new Error('Property preview needs four finite boundary corners.');
-  const ids=property.plotIds;
+  const ids=draftPlotIds??property.plotIds;
+  if(!Array.isArray(ids)||!ids.length||new Set(ids).size!==ids.length ||
+      ids.some(id=>typeof id!=='string'||!id))throw new Error('Draft plot identities must be unique and nonempty.');
   if(!Array.isArray(dividers)||dividers.length!==ids.length-1)throw new Error('Plot subdivision count must remain unchanged.');
   const ratios=[0,...dividers,1];
   if(ratios.some((v,i)=>!giFinite(v)||v<0||v>1||(i>0&&v-ratios[i-1]<.0001)))
