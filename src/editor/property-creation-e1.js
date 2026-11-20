@@ -154,7 +154,7 @@ export function preparePropertyCreationE1(project,workspace,draft){
     const boundary=copyJson(preview.boundary);
     const plot={id:plotId,blockId:draft.blockId,propertyId,frontageRoadId:draft.roadId,
       boundary:copyJson(boundary)};
-    const property={id:propertyId,blockId:draft.blockId,plotIds:[plotId],buildingIds:[],
+    const property={id:propertyId,blockId:draft.blockId,districtId:city.blocks.find(row=>row.id===draft.blockId)?.districtId??null,plotIds:[plotId],buildingIds:[],
       boundary,frontageRoadId:draft.roadId,frontage:copyJson(boundary.slice(0,2)),
       area:preview.area,usage:'undeveloped',
       frame:copyJson(preview.frontage.frame),
