@@ -8,7 +8,6 @@ import { validateStoredProject } from '../data/project-validation.js';
 
 const E4_PLOT_BASE_FIELDS=new Set(['id','blockId','propertyId','frontageRoadId','boundary']);
 const e4Annotated=plot=>Boolean(plot&&Object.keys(plot).some(key=>!E4_PLOT_BASE_FIELDS.has(key)));
-const e4Issue=(code,message,targetId=null)=>({code,message,targetId});
 
 const giCross=(a,b,c)=>(b.x-a.x)*(c.y-b.y)-(b.y-a.y)*(c.x-b.x);
 const giConvex=points=>points.length===4&&points.every((p,i)=>giCross(p,points[(i+1)%4],points[(i+2)%4])>1e-7);
