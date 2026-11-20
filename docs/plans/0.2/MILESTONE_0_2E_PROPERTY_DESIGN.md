@@ -1,6 +1,6 @@
 # Mappo 0.2E — Manual Property Restructuring (planning draft)
 
-> **Status:** Roadmap sequencing approved after completion of 0.2D. This is a **proposed implementation scope**, not authorization to implement, merge, publish or change schema. See the [master roadmap](README.md) and [0.2F building design](MILESTONE_0_2F_BUILDING_DESIGN.md).
+> **Status:** E1 property creation merged via [PR #58](https://github.com/xbwtyz/Mappo/pull/58). **E2 straight frontage-to-rear splitting design approved**, documented in [E2 detailed contract](E2_PROPERTY_SPLIT_DESIGN.md); no E2 implementation is authorized or started by this planning PR. Later E3–E5 scopes remain proposed. Schema 9 and separate code/merge/release approvals remain gates. See the [master roadmap](README.md) and [0.2F building design](MILESTONE_0_2F_BUILDING_DESIGN.md).
 
 ## Purpose
 
@@ -30,14 +30,16 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 
 ## Proposed development sequence
 
-### E1 — Create a property in eligible land
+### E1 — Create a property in eligible land (merged PR #58)
 
 - [ ] Reuse accepted block geometry and existing property/plot/empty-space records to show eligible locations. Let the user draw or adjust a candidate property with ordinary map gestures and numeric refinement, without spawning a new user flow.
 - [ ] Begin with geometry already supported by the validator. Reject overlap, illegal boundaries, missing street access and unprovable residual open-space tiling with specific, locatable reasons.
 - [ ] Create required plot and ownership references atomically; preserve neighboring properties and accepted streets. Establish deterministic ID allocation and ensure Undo/Redo and save/reopen.
 - [ ] **Gate:** generated Small and Large cities, all four morphologies, multiple adjacent lots, and legacy schema-9 saves. Creating then cancelling leaves accepted project byte-equivalent.
 
-### E2 — Split an existing property
+### E2 — Split an existing property (approved design, implementation pending)
+
+**Approved design:** Single straight frontage-to-rear divider through an accepted four-corner property; both child parcels retain frontage. Original ID/name stay on the frontage-start successor; new ID for the other. Plot records are partitioned with deterministic, auditable ownership, and buildings never move physically. Crossing buildings block Apply; protected ownership transfers require explicit consent. Details, negative cases, module reuse, checkpoints and release gates are in [E2 property splitting contract](E2_PROPERTY_SPLIT_DESIGN.md).
 
 - [ ] Preview a division line and both resulting parcels, including access, dimensions and dependent plots/buildings.
 - [ ] Carry original names/uses and IDs only where the continued identity is unambiguous. Show explicit source/successor records and require an explicit choice for contested authored identities.
@@ -66,9 +68,9 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 - [ ] Run full Node and browser regression, verify root HTML is byte-identical to the versioned offline distribution, document coverage and limitations.
 - [ ] Merge only with explicit separate approval. Do not tag or publish a 0.2 release from E alone.
 
-## Design decisions to settle before E1 code
+## Design authority and remaining decisions
 
-The implementation design must specify **how unoccupied block area is represented**, which parcel geometries can be created in schema 9, what successor IDs/metadata mean after a split or merge, and which building conflicts are safely resolvable. Resolve these in a reviewed E1 design/contract, rather than letting implementation quietly invent policy.
+[E1's accepted contract](E1_PROPERTY_CREATION_DESIGN.md) defines safe vacant land using real block geometry; E1 was merged with schema-9 safeguards. [E2's approved design](E2_PROPERTY_SPLIT_DESIGN.md) now defines the straight frontage-to-rear cut and its preservation rules **before implementation**. Identity conflict policy for E3 merges and general plot-count operations for E4 still require separately reviewed designs. Never let code infer these policies silently.
 
 ## Explicitly deferred
 

@@ -11,7 +11,8 @@
 | [Unified CI Guide](CI.md) | Branch and PR tests, browser matrices, artifacts and local commands |
 | [Current Roadmap](ROADMAP.md) | Completed milestones and separately proposed future work |
 | [0.2 Master Roadmap](plans/0.2/README.md) | Approved post-D4 order: property restructuring, advanced buildings, optional civic places, release hardening |
-| [0.2E Property Design](plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md) | Proposed create, split, merge, plot and ownership development gates |
+| [0.2E Property Design](plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md) | E1 creation merged; E2 straight-split design approved; later merge/plot work planned |
+| [E2 Straight-Split Design](plans/0.2/E2_PROPERTY_SPLIT_DESIGN.md) | Frontage-to-rear geometry, identity lineage, plot/building ownership and five implementation/QA gates |
 | [0.2F Building Design](plans/0.2/MILESTONE_0_2F_BUILDING_DESIGN.md) | Proposed advanced footprints, direct editing and categories without duplicating existing tools |
 | [3G-A Checkpoint](history/3g/MILESTONE_3GA_QA.md) | Visual building edit mode design and verification |
 | [3G-B Checkpoint](history/3g/MILESTONE_3GB_QA.md) | Non-destructive building transformation previews, controls and QA |
