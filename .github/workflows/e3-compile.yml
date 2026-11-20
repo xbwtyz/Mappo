@@ -1,0 +1,30 @@
+name: E3 temporary standalone compiler
+on:
+  push:
+    branches: [feature/mappo-0.2e-e3-property-merge]
+    paths: ['.github/workflows/e3-compile.yml']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sync latest feature branch
+        run: git pull --rebase origin feature/mappo-0.2e-e3-property-merge
+      - name: Compile offline distribution
+        run: npm run build
+      - name: Commit compiled e3 files
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html dist/mappo-0.2-dev.e3.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'build(e3): sync compiled output with updated merge guards'
+            git push origin HEAD:feature/mappo-0.2e-e3-property-merge
+          fi
