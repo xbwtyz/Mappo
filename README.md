@@ -1,6 +1,6 @@
 # Mappo
 
-> **Development track: Mappo 0.2E — Manual Property Restructuring (planning).** Road editing through 0.2D is merged. Next: [0.2E create/split/merge plan](docs/plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md), followed by [0.2F advanced building design](docs/plans/0.2/MILESTONE_0_2F_BUILDING_DESIGN.md). [Full 0.2 roadmap](docs/plans/0.2/README.md). The stable published release remains **0.1.0**; 0.2E code is not started.
+> **Development track: Mappo 0.2E — Manual Property Restructuring.** E1 **Create Properties** is merged ([PR #58](https://github.com/xbwtyz/Mappo/pull/58)); E2 **Split Properties** has an approved straight frontage-to-rear [design and QA plan](docs/plans/0.2/E2_PROPERTY_SPLIT_DESIGN.md), with implementation not yet started. See the [0.2E roadmap](docs/plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md) and [full 0.2 roadmap](docs/plans/0.2/README.md). The published stable release remains **0.1.0**.
 
 **Mappo 0.1.0** is an offline-first medieval and fantasy city generator and 2D editor, built from modular JavaScript and shipped as **one standalone HTML file**.
 
