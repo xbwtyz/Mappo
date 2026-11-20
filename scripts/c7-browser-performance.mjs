@@ -86,8 +86,15 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               });
               throw Error(name+'/'+viewport.name+'/'+size+'/'+id+' Apply not ready: '+JSON.stringify(detail));
             }
-            assert.equal(await page.evaluate(b=>JSON.stringify(__buildingQA.state().project)===b.original),true,before);
-            assert.equal(await page.evaluate(b=>__buildingQA.state().files.revision===b.revision),true,before);
+            assert.equal(await page.evaluate(b=>JSON.stringify(__buildingQA.state().project)===b.original,before),true,before);
+            assert.equal(await page.evaluate(b=>__buildingQA.state().files.revision===b.revision,before),true,before);
+            const steadyRenderMs=await page.evaluate(()=>{
+              const session=__buildingQA.state().roadWorkspace.session,elapsed=[];
+              for(let i=0;i<3;i++){
+                const t=performance.now();session.changed();elapsed.push(performance.now()-t);
+              }
+              return elapsed;
+            });
             let applyMs=null;
             if(pass==='warm'){
               applyMs=await page.evaluate(b=>{
@@ -116,13 +123,14 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               },{id,axis,delta});
               await page.waitForFunction(()=>{const s=__buildingQA.state().roadWorkspace.session;
                 return !s.checking && s.settledRevision===s.revision;},null,{timeout:120000});
-              assert.equal(await page.evaluate(b=>JSON.stringify(__buildingQA.state().project)===b.original),true,before);
+              assert.equal(await page.evaluate(b=>JSON.stringify(__buildingQA.state().project)===b.original,before),true,before);
             }
             results.push({browser:name,version:browser.version(),viewport:viewport.name,size,
               nodeCount:project.city.nodes.length,propertyCount:project.city.properties.length,
               id,pass,previewMs:round(result.previewMs),analyzeMs:round(result.analyzeMs),
               reconcileMs:round(result.reconcileMs),renderMs:round(result.renderMs),
-              frameGapMs:round(result.frameGapMs),applyMs:applyMs===null?null:round(applyMs)});
+              frameGapMs:round(result.frameGapMs),steadyRenderMs:round(median(steadyRenderMs)),
+              applyMs:applyMs===null?null:round(applyMs)});
           }
         }
       }catch(e){errors.push(name+'/'+viewport.name+': '+e.stack);}
@@ -136,7 +144,8 @@ for(const group of [...new Set(results.map(r=>[r.browser,r.viewport,r.size].join
   const sorted=rows.map(r=>r.previewMs).sort((a,b)=>a-b);
   summary.push({group,n:rows.length,medianMs:round(median(sorted)),
     p95Ms:round(sorted[Math.ceil(.95*sorted.length)-1]),
-    maxFrameGapMs:round(Math.max(...rows.map(r=>r.frameGapMs)))});
+    maxFrameGapMs:round(Math.max(...rows.map(r=>r.frameGapMs))),
+    medianSteadyRenderMs:round(median(rows.map(r=>r.steadyRenderMs)))});
 }
 const report={runner:{cpu:os.cpus()[0]?.model,logicalCpus:os.cpus().length,
   memoryGiB:round(os.totalmem()/2**30),platform:process.platform,node:process.version},
