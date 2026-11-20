@@ -744,6 +744,24 @@ function syncPropertyEditUI3I() {
   dividerIndex.value=String(session.selectedDivider);
   dividerInput.disabled=dividers.length===0;
   dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
+  $('propertyAddDividerE4').disabled=Boolean(session.countChange||session.drag);
+  $('propertyRemoveDividerE4').disabled=Boolean(session.countChange||session.drag||!dividers.length);
+  const countChange=session.countChange;
+  $('propertyCountSummaryE4').textContent=countChange
+    ? (countChange.kind==='split'
+      ?'Split plot '+countChange.sourceId+' · keep original ID; new plot '+countChange.newId+'.'
+      :'Merge two plots · retain '+countChange.retainedId+'; retire '+countChange.retiredId+'.')+
+      ' Building memberships will be recalculated; geometry never moves.'
+    :'Plots: '+session.plotIds.length+'. Select a divider to merge neighboring plots, or split the plot after it.';
+  const protectedPlot=countChange&&project.city.plots.find(p=>p.id===
+    (countChange.kind==='split'?countChange.sourceId:countChange.retiredId));
+  const annotated=Boolean(protectedPlot&&Object.keys(protectedPlot).some(key=>
+    !['id','blockId','propertyId','frontageRoadId','boundary'].includes(key)));
+  $('propertyCountConsentWrapE4').hidden=!annotated;
+  $('propertyCountConsentE4').checked=session.approved;
+  $('propertyCountConsentTextE4').textContent=countChange?.kind==='split'
+    ?'I authorize the original plot metadata to remain on the retained plot only; the full source record is saved in plot history.'
+    :'I authorize retiring the second plot; its full authored record is saved in plot history.';
   const canHistory=!session.isPending&&!session.drag;
   $('propertyHistoryUndo3I').disabled=!(canHistory&&propertyHistory.can('undo',project,session.propertyId));
   $('propertyHistoryRedo3I').disabled=!(canHistory&&propertyHistory.can('redo',project,session.propertyId));
@@ -1905,6 +1923,19 @@ function applyPropertyEdit3I() {
 $('propertyEditReset3I').addEventListener('click',()=>propertyEditSession?.reset());
 $('propertyEditCancel3I').addEventListener('click',exitPropertyEditing3I);
 $('propertyEditApply3I').addEventListener('click',applyPropertyEdit3I);
+$('propertyAddDividerE4').addEventListener('click',()=>{
+  const session=propertyEditSession;
+  if(!session?.isActive||!session.addDivider(project?.city,
+      Math.min(Math.max(0,session.selectedDivider),session.plotIds.length-1)))
+    $('statusMessage').textContent='Plot split unavailable; reset this structural draft or choose a valid plot.';
+});
+$('propertyRemoveDividerE4').addEventListener('click',()=>{
+  const session=propertyEditSession;
+  if(!session?.isActive||!session.removeDivider(session.selectedDivider))
+    $('statusMessage').textContent='Plot merge unavailable; select an existing divider or reset this draft.';
+});
+$('propertyCountConsentE4').addEventListener('change',()=>propertyEditSession?.approvePlotCount(
+  $('propertyCountConsentE4').checked));
 function movePropertyHistory3I(direction){
   const session=propertyEditSession;
   if(!project||!session?.isActive||session.isPending||session.drag)return false;
