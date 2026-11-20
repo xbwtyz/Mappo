@@ -83,10 +83,14 @@ function reconcileRoadIntent(project,roadId,draft,decisions) {
     return prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions);
   if (decisions.size && draft.facesResolved && !draft.issues.some(row=>row.code==='boundary-escape'))
     return prepareRoadTopologyReflowC3(project,roadId,draft,null,decisions);
-  const preserved = prepareNeighborhoodReflow(project, roadId, draft, false);
+  // Both attempts start from the same detached draft. Reuse its read-only
+  // analysis within this call, including when Apply runs a fresh rebuild.
+  let analysis;
+  const analyze = () => analysis ??= analyzeNeighborhoodDraft(project, draft);
+  const preserved = prepareNeighborhoodReflow(project, roadId, draft, false, analyze);
   if (preserved.candidateProject || !preserved.unresolved.some(row => rebuildableLandIssues.has(row.code)))
     return preserved;
-  const adapted = prepareNeighborhoodReflow(project, roadId, draft, true);
+  const adapted = prepareNeighborhoodReflow(project, roadId, draft, true, analyze);
   if (adapted.candidateProject || !draft.facesResolved) return adapted;
   // If a fixed parcel layout cannot be repaired, try filling the same affected
   // blocks again. Topology reflow independently verifies provenance, protects
@@ -98,7 +102,19 @@ function reconcileRoadIntent(project,roadId,draft,decisions) {
     ['parcel-decision-required', 'building-decision-required'].includes(row.code)) ? rebuilt : adapted;
 }
 
-function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
+function analyzeNeighborhoodDraft(project, draft) {
+  const graph = buildRoadGraph(draft.proposedCity);
+  const faces = extractRoadFaces(graph, project.city);
+  const identity = matchExistingFaces(project.city, faces);
+  let impact;
+  return { graph, faces, identity, get impact() {
+    return impact ??= analyzeRoadImpact(project,
+      { operation: draft.junctionId ? 'move-junction' : 'translate-road', graph });
+  } };
+}
+
+function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
+  analyze = () => analyzeNeighborhoodDraft(project, draft)) {
   const changed = [], ledger = [];
   const phase = adaptBuildings ? 'C3' : 'C2';
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
@@ -115,10 +131,8 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
   }
   try {
     const accepted = project.city;
-    const city = structuredClone(draft.proposedCity);
-    const graph = buildRoadGraph(city);
-    const faces = extractRoadFaces(graph, accepted);
-    const identity = matchExistingFaces(accepted, faces);
+    const draftAnalysis = analyze();
+    const { graph, faces, identity } = draftAnalysis;
     if (!graph.valid || !faces.valid)
       return blocked([...graph.issues, ...faces.issues].map(issue => c2Issue(kind, roadId, issue.code, issue.message)));
     if (!identity.valid || identity.requiresReview || identity.issues.length ||
@@ -129,7 +143,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
         fail('unresolved-topology', 'This move changes block identities. Face restructuring comes in C3.');
     }
     validation.graph = validation.faces = 'pass';
-    const impact = analyzeRoadImpact(project, { operation: draft.junctionId ? 'move-junction' : 'translate-road', graph });
+    const impact = draftAnalysis.impact;
     if (!impact.complete || impact.status === 'invalid')
       return impact.issues.length ? blocked(impact.issues) :
         fail('impact-incomplete', 'The full street and neighborhood impact could not be verified.');
@@ -141,17 +155,15 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
       return node.x !== old.x || node.y !== old.y;
     }).map(node => node.id);
     if (!junctionIds.length) return fail('unchanged-street', 'The offset does not move either street endpoint.');
-    const plots = riIndex(city.plots), buildings = riIndex(city.buildings);
-    const reservedIds = new Set(buildings.keys());
+    const draftBuildings = riIndex(draft.proposedCity.buildings);
     const replacements = new Map();
     const displacedParcels = new Set();
     if (adaptBuildings) for (const row of impact.issues) {
-      const building = buildings.get(row.id);
+      const building = draftBuildings.get(row.id);
       if (row.kind === 'building' && building && ['road-clearance', 'block-containment'].includes(row.code))
         displacedParcels.add(building.propertyId);
     }
-    const affected = city.properties.filter(p => changedBlocks.has(p.blockId));
-    if (affected.length > C2_PARCEL_LIMIT)
+    if (draft.proposedCity.properties.filter(p => changedBlocks.has(p.blockId)).length > C2_PARCEL_LIMIT)
       return fail('reflow-work-limit', 'This move affects too many parcels for one local reflow.');
     const parcelIssues = new Set(impact.issues.filter(row =>
       row.kind === 'property' && c2LandIssues.has(row.code)).map(row => row.id));
@@ -159,10 +171,15 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
       ((row.kind === 'property' || row.kind === 'plot') && c2LandIssues.has(row.code)) ||
       (row.kind === 'plot' && row.code === 'property-containment') ||
       (row.kind === 'building' && (['frontage-geometry', 'access-connection'].includes(row.code) ||
-        (adaptBuildings && displacedParcels.has(buildings.get(row.id)?.propertyId) &&
+        (adaptBuildings && displacedParcels.has(draftBuildings.get(row.id)?.propertyId) &&
           ['road-clearance', 'block-containment'].includes(row.code))))
     ));
     if (unresolved.length) return blocked(unresolved);
+
+    const city = structuredClone(draft.proposedCity);
+    const plots = riIndex(city.plots), buildings = riIndex(city.buildings);
+    const reservedIds = new Set(buildings.keys());
+    const affected = city.properties.filter(p => changedBlocks.has(p.blockId));
 
     function record(kind, id, disposition, fields, provenance = 'derived') {
       ledger.push({ kind, oldId: id, newId: id, disposition, provenance });
@@ -326,7 +343,8 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings) {
       !(row.kind === 'plot' && row.code === 'property-containment'));
     if (remaining.length) return blocked(remaining);
 
-    const candidateProject = { ...structuredClone(project), city };
+    // Clone project metadata, with the already detached city in its original key position.
+    const candidateProject = { ...structuredClone({ ...project, city: null }), city };
     validateStoredProject(candidateProject);
     validation.parcels = 'pass';
     validation.project = 'valid';
