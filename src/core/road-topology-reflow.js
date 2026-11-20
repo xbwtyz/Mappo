@@ -277,7 +277,7 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     }, spend);
     const conflict = items().find(row => row.severity !== 'info');
     if (conflict) return fail(conflict.code, conflict.message, conflict.kind, conflict.id);
-    const candidateProject = { ...structuredClone(project), city };
+    const candidateProject = { ...structuredClone({ ...project, city: null }), city };
     validateStoredProject(candidateProject);
     validation.parcels = 'pass';
     validation.project = 'valid';
