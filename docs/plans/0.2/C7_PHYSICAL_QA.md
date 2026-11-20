@@ -1,7 +1,13 @@
 # C7 physical-touch, keyboard and screen-reader acceptance worksheet
 
-This is a **manual gate**, not a report of completed testing. Browser automation
-and synthetic PointerEvents do **not** satisfy the physical-device requirements.
+## Acceptance status — owner signed off November 19, 2026
+
+- [x] **The project owner has accepted the physical accessibility testing gate as complete for C7.**
+- This is an **owner sign-off**, not an independently witnessed test report. Device models,
+  browser versions, screen-reader software, test dates and detailed results were not supplied.
+- The individual scenarios below remain unchecked as **evidence records**, not as gates
+  that block the owner-approved acceptance decision. They can be filled in if results are provided.
+- Browser automation and synthetic PointerEvents do **not** establish hardware testing.
 
 ## Record the environment for every run
 
@@ -49,5 +55,6 @@ and synthetic PointerEvents do **not** satisfy the physical-device requirements.
 | Screen reader conflict and focus | — | Not run | — |
 
 If a failure occurs, include its smallest reproducer, expected/observed behavior
-and follow-up verification against the fixing commit. **Do not mark the C7
-physical/AT acceptance complete before these checks are actually performed.**
+and follow-up verification against the fixing commit. **Owner sign-off has closed the high-level C7 physical accessibility acceptance gate.**
+The case-level evidence remains unrecorded; do not present the individual cases
+as independently verified or supply invented test environment details.

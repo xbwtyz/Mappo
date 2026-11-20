@@ -18,12 +18,16 @@ C7 closes the remaining road-versus-junction behavior gap in 0.2C. A junction dr
 - [ ] Repeat the same tasks after the fix. Confirm the latest draft wins during rapid input. A slow or superseded draft must keep Apply disabled and preserve accepted geometry, history, and recovery.
 - [ ] Review remaining stalls against the interaction users actually see. The proposed usability goals are an immediate drag preview, prompt checking feedback on release, and no frozen controls during longer calculations. Record any latency tradeoffs before release review.
 
-### 2. Verify physical touch and assistive technology
+### 2. Verify physical touch and assistive technology — owner sign-off recorded
 
-- [ ] On physical touch hardware, drag a street, a junction, and a bend. Verify target placement, finger release, cancel, and pan with a draft open. Confirm the Apply explanation and conflict controls remain reachable while scrolling the panel.
-- [ ] Using keyboard only, select and nudge a junction, read its blocked state, enter and exit building choices, and Apply and Undo a valid edit. Verify visible focus and usable scrolling with the panel expanded and minimized.
-- [ ] With a screen reader, confirm that checking, blocked, and ready statuses are announced without repeated chatter. Activate **Resolve conflict** from a minimized panel, confirm focus lands on the first choice, and verify controls are labeled and can be exited.
-- [ ] Record device, browser, input method, and result. File reproducible failures and rerun the affected tasks after fixes. Keep the physical checks marked open until they are performed.
+- [x] On physical touch hardware, drag a street, a junction, and a bend. Verify target placement, finger release, cancel, and pan with a draft open. Confirm the Apply explanation and conflict controls remain reachable while scrolling the panel.
+- [x] Using keyboard only, select and nudge a junction, read its blocked state, enter and exit building choices, and Apply and Undo a valid edit. Verify visible focus and usable scrolling with the panel expanded and minimized.
+- [x] With a screen reader, confirm that checking, blocked, and ready statuses are announced without repeated chatter. Activate **Resolve conflict** from a minimized panel, confirm focus lands on the first choice, and verify controls are labeled and can be exited.
+- [ ] Record per-device/browser/input-method evidence and any reproducible issues if provided.
+  **Acceptance note (2026-11-19):** The project owner explicitly signed off this
+  physical accessibility gate. No device, browser or screen-reader run details
+  were supplied, so these checked items represent **owner acceptance**, not
+  independently verified individual test results. See [the manual worksheet](C7_PHYSICAL_QA.md).
 
 ### 3. Run final 0.2C acceptance
 
