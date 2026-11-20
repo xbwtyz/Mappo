@@ -65,7 +65,7 @@ export class PropertyEditSession3I {
     let serial=1,id;
     do{id='PLOT-'+String(serial++).padStart(5,'0');}while(used.has(id)&&serial<50000);
     if(used.has(id))return false;
-    this.dividers.splice(index,(left+right)/2);
+    this.dividers.splice(index,0,(left+right)/2);
     this.plotIds.splice(index+1,0,id);
     this.active.countChange={kind:'split',sourceId:source,newId:id};
     this.active.approved=false;this.selectedDivider=index;
