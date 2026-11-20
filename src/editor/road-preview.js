@@ -45,6 +45,7 @@ export class RoadPreviewSession {
   }
   invalidate() {
     this.revision++;
+    this.workerPreviewGeometry = null;
     if (this.timer !== undefined) this.unschedule(this.timer);
     this.timer = undefined;
     // Cancel the actual old worker calculation, not just its UI callback.
@@ -329,7 +330,7 @@ export class RoadPreviewSession {
           this.report = result.report;
           this.reconciliation = result.reconciliation;
           this.topology = result.topology;
-          this.previewGeometry = result.previewGeometry ?? null;
+          this.workerPreviewGeometry = result.previewGeometry ?? null;
           this.reconciliationError = result.reconciliationError ?? '';
           if (this.reconciliation && !this.reconciliationError) {
             this.settledRevision = revision;

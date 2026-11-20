@@ -578,19 +578,19 @@ export class RoadInspectionWorkspace {
       this.previewReconciliation = s.reconciliation;
       this.previewTopology = s.topology;
       this.cachedPreviewGeometry = s.reconciliation
-        ? s.previewGeometry ?? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology)
+        ? s.workerPreviewGeometry ?? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology)
         : null;
     }
     s.previewGeometry = this.cachedPreviewGeometry;
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
-    const ready=Boolean((kind==='junction' || kind==='road') && s.current() && s.pending && !s.checking && !s.drag && !s.error &&
+    const applying = this.applyingRevision === s.revision;
+    const ready=Boolean(!applying && (kind==='junction' || kind==='road') && s.current() && s.pending && !s.checking && !s.drag && !s.error &&
       !s.reconciliationError && s.reconciliation?.candidateProject &&
       s.reconciliation?.status==='candidate-only' && !s.reconciliation.unresolved?.length &&
       s.previewGeometry?.verified && s.settledRevision===s.revision &&
       s.acceptedFingerprint===JSON.stringify(s.project) &&
       this.getRevision()===this.baseRevision);
-    const applying = this.applyingRevision === s.revision;
-    this.$('roadApplyB4').disabled = applying || !ready;
+    this.$('roadApplyB4').disabled = !ready;
     const issue = s.reconciliation?.unresolved?.find(hasRoadBuildingChoice) ?? s.reconciliation?.unresolved?.[0];
     const actionable = !s.checking && !s.drag && hasRoadBuildingChoice(issue);
     const building = actionable && s.city.buildings.find(record => record.id === issue.id);
