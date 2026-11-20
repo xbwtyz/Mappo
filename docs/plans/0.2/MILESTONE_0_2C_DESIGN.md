@@ -122,7 +122,7 @@ Verify substantial junction movement in all four morphologies, shared intersecti
 
 ## 6. Subsequent 0.2 roadmap
 
-[C7 finalization](C7_JUNCTION_FINALIZATION_PLAN.md) contains the remaining 0.2C acceptance work. [0.2D](MILESTONE_0_2D_ROAD_UX_PLAN.md) focuses on the experience of moving roads. Manual parcel creation, splitting, merging, boundary edits, and plot divisions follow. The later building, civic, and release phases remain on the roadmap with labels subject to sequencing review. Schema 9 remains the baseline. 3D remains deferred.
+[C7 finalization](C7_JUNCTION_FINALIZATION_PLAN.md) contains the remaining 0.2C acceptance work. [0.2D](MILESTONE_0_2D_ROAD_UX_PLAN.md) focuses on the experience of moving roads. Those follow in [0.2E Manual Property Restructuring](MILESTONE_0_2E_PROPERTY_DESIGN.md), after merged [0.2D road usability](MILESTONE_0_2D_ROAD_UX_PLAN.md). Advanced buildings are [0.2F](MILESTONE_0_2F_BUILDING_DESIGN.md), optional civic places are 0.2G, and release integration is 0.2H. These newer labels replace earlier planning drafts, without renaming historical work. Schema 9 remains the baseline. 3D remains deferred.
 
 ## 7. Decision record
 
