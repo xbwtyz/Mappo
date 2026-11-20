@@ -109,7 +109,7 @@ for (const [name, type] of [
         // unaltered report. Core classification is tested separately in Node.
         return {
           status: session.report.status,
-          ready: session.reconciliation?.validation?.project === 'valid' && Boolean(session.reconciliation.candidateProject),
+          ready: session.reconciliation?.validation?.project === 'valid' && session.hasApplyCandidate,
           counts: session.report.counts,
           rows: session.report.affected.slice(0, 50),
         };
@@ -147,7 +147,7 @@ for (const [name, type] of [
         await page.locator('#roadPreviewPanel').getAttribute('data-report-status'),
         await page.evaluate(() => {
           const session=__buildingQA.state().roadWorkspace.session;
-          return session.reconciliation?.candidateProject ? 'safe' : session.report.status;
+          return session.hasApplyCandidate ? 'safe' : session.report.status;
         }),
       );
       // All preview data, pan/zoom, file downloads and recovery captures exclude
@@ -282,7 +282,7 @@ for (const [name, type] of [
         return {
           pending:session.pending,applyReady:analysis.applyReady,
           reconciled:session.reconciliation?.validation?.project === 'valid' &&
-            Boolean(session.reconciliation.candidateProject),
+            session.hasApplyCandidate,
           draftable:analysis.draftable,changedRoads:analysis.changedRoadIds.length,
           displaced:analysis.proposedNodes.every(n=>Math.abs(n.x-accepted.get(n.id).x-15)<1e-8 &&
             n.y===accepted.get(n.id).y),
@@ -450,7 +450,7 @@ for (const [name, type] of [
         const {roadWorkspace,files}=__buildingQA.state(), session=roadWorkspace.session;
         return {offset:session.roadIntentOffset, pending:session.pending,
           reconciled:session.reconciliation?.validation?.project === 'valid' &&
-            Boolean(session.reconciliation.candidateProject),
+            session.hasApplyCandidate,
           acceptedUnchanged:JSON.stringify(__buildingQA.capture())===__buildingQA.before,
           recoveryUnchanged:files.revision===__buildingQA.revision};
       });

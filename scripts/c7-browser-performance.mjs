@@ -62,7 +62,15 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               if (typeof s.computeJunctionAsync === 'function') {
                 const fn=s.computeJunctionAsync._p1Original ?? s.computeJunctionAsync;
                 const measured=async (...args)=>{
-                  const result=await fn(...args);
+                  const started=performance.now();
+                  const pending=fn(...args);
+                  const dispatchMs=performance.now()-started;
+                  const result=await pending;
+                  if (!row.done && result.timings?.sentAt) {
+                    row.dispatchMs=dispatchMs;
+                    row.deliveryMs=Math.max(0, performance.timeOrigin + performance.now() - result.timings.sentAt);
+                    row.candidateChars=result.reconciliation?.candidateJson?.length??0;
+                  }
                   row.analyzeMs+=result.timings?.analyzeMs??0;
                   row.reconcileMs+=result.timings?.reconcileMs??0;
                   return result;
@@ -93,7 +101,7 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               const detail=await page.evaluate(()=>{
                 const app=__buildingQA.state(),s=app.roadWorkspace.session;
                 return {selection:s.selection,point:s.point,pending:s.pending,checking:s.checking,
-                  reconciled:s.reconciliation?.status,candidate:!!s.reconciliation?.candidateProject,
+                  reconciled:s.reconciliation?.status,candidate:s.hasApplyCandidate,
                   unresolved:s.reconciliation?.unresolved?.slice(0,3),
                   validation:s.reconciliation?.validation,previewVerified:s.previewGeometry?.verified,
                   error:s.error,reconciliationError:s.reconciliationError,
@@ -104,6 +112,8 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               });
               throw Error(name+'/'+viewport.name+'/'+size+'/'+id+' Apply not ready: '+JSON.stringify(detail));
             }
+            assert.ok(result.candidateChars > 0 && Number.isFinite(result.dispatchMs) && Number.isFinite(result.deliveryMs),
+              'preview must report exact candidate transport and worker timings');
             assert.equal(await page.evaluate(b=>JSON.stringify(__buildingQA.state().project)===b.original,before),true,before);
             assert.equal(await page.evaluate(b=>__buildingQA.state().files.revision===b.revision,before),true,before);
             const steadyRenderMs=await page.evaluate(()=>{
@@ -168,6 +178,8 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               nodeCount:project.city.nodes.length,propertyCount:project.city.properties.length,
               id,pass,previewMs:round(result.previewMs),analyzeMs:round(result.analyzeMs),
               reconcileMs:round(result.reconcileMs),renderMs:round(result.renderMs),
+              dispatchMs:round(result.dispatchMs),deliveryMs:round(result.deliveryMs),
+              candidateChars:result.candidateChars,
               frameGapMs:round(result.frameGapMs),steadyRenderMs:round(median(steadyRenderMs)),
               applyMs:apply?.elapsedMs??null,applyClickMs:apply?.clickMs??null,applyFrameGapMs:apply?.frameGapMs??null});
           }
@@ -188,6 +200,8 @@ for(const group of [...new Set(results.map(r=>[r.browser,r.viewport,r.size].join
     medianApplyMs:round(median(applies.map(r=>r.applyMs))),
     maxApplyClickMs:round(Math.max(...applies.map(r=>r.applyClickMs))),
     maxApplyFrameGapMs:round(Math.max(...applies.map(r=>r.applyFrameGapMs))),
+    medianDispatchMs:round(median(rows.map(r=>r.dispatchMs))),
+    maxDeliveryMs:round(Math.max(...rows.map(r=>r.deliveryMs))),
     medianSteadyRenderMs:round(median(rows.map(r=>r.steadyRenderMs)))});
 }
 const report={runner:{cpu:os.cpus()[0]?.model,logicalCpus:os.cpus().length,

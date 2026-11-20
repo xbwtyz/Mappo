@@ -525,7 +525,7 @@ export class RoadInspectionWorkspace {
       'Protected connection: choose a road with two ordinary unprotected endpoints.' :
       s.roadIntentInputError || s.error ||
       (s.pending ? s.checking?'Checking the street and neighborhood…':
-        s.reconciliation?.candidateProject ? 'Street and local neighborhood ready to review.' :
+        s.hasApplyCandidate ? 'Street and local neighborhood ready to review.' :
         'Street placement held in draft. '+(s.reconciliation?.unresolved?.[0]?.message ??
           'The neighborhood could not be reconciled.') :
         bends ? 'Add or move a bend to preview the street shape.' :
@@ -546,7 +546,7 @@ export class RoadInspectionWorkspace {
     }
     for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || (bends ? bend : s.roadIntentEligible));
     this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error && !s.roadIntentInputError;
-    const reconciledJunction = kind==='junction' && s.reconciliation?.candidateProject &&
+    const reconciledJunction = kind==='junction' && s.hasApplyCandidate &&
       s.reconciliation.validation?.project==='valid' && s.report?.status!=='safe';
     const status = reconciledJunction ? 'Junction preview ready' : s.roadIntentInputError ? 'Invalid road offset' :
       s.details?.kind==='road' && s.pending ?
@@ -585,7 +585,7 @@ export class RoadInspectionWorkspace {
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
     const applying = this.applyingRevision === s.revision;
     const ready=Boolean(!applying && (kind==='junction' || kind==='road') && s.current() && s.pending && !s.checking && !s.drag && !s.error &&
-      !s.reconciliationError && s.reconciliation?.candidateProject &&
+      !s.reconciliationError && s.hasApplyCandidate &&
       s.reconciliation?.status==='candidate-only' && !s.reconciliation.unresolved?.length &&
       s.previewGeometry?.verified && s.settledRevision===s.revision &&
       s.acceptedFingerprint===JSON.stringify(s.project) &&

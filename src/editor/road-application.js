@@ -135,7 +135,8 @@ export function checkRoadApplyC2(project, session, expectedRevision, currentRevi
   if (!['road','junction'].includes(session.selection?.kind) || !session.pending || session.drag || session.checking ||
       session.error || session.roadIntentInputError || session.settledRevision !== session.revision ||
       session.acceptedFingerprint !== fingerprint || !session.previewGeometry?.verified ||
-      !['C2', 'C3'].includes(inspected?.phase) || !inspected.candidateProject)
+      !['C2', 'C3'].includes(inspected?.phase) ||
+      !(inspected.candidateProject || inspected.candidateJson))
     return reject('stale-preview', 'The street proposal is not a complete, current preview.');
   return { ok: true };
 }
@@ -151,7 +152,8 @@ export function validateRoadApplyC2(project, workspace, draft, inspected) {
       : prepareNeighborhoodReflowC3(project, selection.id, roadIntentOffset, undefined, buildingDecisions);
     if (!fresh.candidateProject)
       return reject('candidate-invalid', fresh.unresolved[0]?.message ?? 'Fresh reflow did not pass validation.');
-    if (!b4Same(fresh.candidateProject, inspected.candidateProject) || !b4Same(fresh.ledger, inspected.ledger))
+    const inspectedJson = inspected.candidateJson ?? JSON.stringify(inspected.candidateProject);
+    if (JSON.stringify(fresh.candidateProject) !== inspectedJson || !b4Same(fresh.ledger, inspected.ledger))
       return reject('candidate-changed', 'The reconstruction differs from the inspected proposal.');
     const roundtrip = decodeProjectDocument(encodeProjectDocument(createProjectDocument(fresh.candidateProject, workspace)));
     if (!b4Same(roundtrip.project, fresh.candidateProject) || !b4Same(roundtrip.workspace, workspace))

@@ -48,7 +48,8 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     },null,{timeout:120000});
     const after=await page.evaluate(()=>{
       const app=__buildingQA.state(),s=app.roadWorkspace.session;
-      return {candidate:!!s.reconciliation?.candidateProject,
+      return {candidate:s.hasApplyCandidate, candidateJson:typeof s.reconciliation?.candidateJson,
+        hasClonedCandidate:Object.hasOwn(s.reconciliation, 'candidateProject'),
         validation:s.reconciliation?.validation?.project,
         report:s.report?.status,
         apply:!document.querySelector('#roadApplyB4').disabled,
@@ -56,6 +57,8 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
         error:s.error,reconciliationError:s.reconciliationError};
     });
     assert.equal(after.candidate,true,browserName+': offline preview candidate');
+    assert.equal(after.candidateJson,'string');
+    assert.equal(after.hasClonedCandidate,false);
     assert.equal(after.validation,'valid');
     assert.equal(after.apply,true,browserName+': offline preview must become Apply-ready');
     assert.equal(after.error,'');
