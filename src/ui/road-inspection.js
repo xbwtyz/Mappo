@@ -651,10 +651,16 @@ export class RoadInspectionWorkspace {
     this.$('roadResolveConflictC6').hidden = !actionable;
     const problem = this.applyError || s.roadIntentInputError || s.error || s.reconciliationError;
     const topologyOnly = s.previewGeometry?.mode==='topology-only';
+    // A verified geometry snapshot can still contain real unresolved blockers.
+    // "Out of date" is only for a changed accepted project/revision, not for
+    // an unresolved obstruction in the current draft.
+    const stale = s.pending && s.settledRevision === s.revision &&
+      (this.getRevision() !== this.baseRevision ||
+        s.acceptedFingerprint !== JSON.stringify(s.project));
     const status = applying ? 'Applying road edit' : this.applyError ? 'Apply failed' : problem ? 'Preview blocked' :
       s.drag ? 'Placement in progress' : s.checking ? 'Checking preview' :
-      ready ? 'Preview ready' : actionable ? 'Building choice needed' :
-      s.pending && s.settledRevision === s.revision && s.previewGeometry?.verified ? 'Preview out of date' :
+      ready ? 'Preview ready' : stale ? 'Preview out of date' :
+      actionable ? 'Building choice needed' :
       topologyOnly ? 'Roads and blocks only' : s.pending ? 'Preview blocked' : 'Accepted position';
     const message = applying ? 'Validating the road and neighborhood before Apply…' :
       problem || (s.drag ? 'Release the handle to check this edit.' :
