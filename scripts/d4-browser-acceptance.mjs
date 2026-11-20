@@ -29,7 +29,8 @@ for(const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]){
           ?route.fulfill({contentType:'text/html',body:html}):route.abort());
         await page.goto('http://mappo.test/index.html',{waitUntil:'domcontentloaded'});
         await page.waitForFunction(()=>__buildingQA.state().files.ready);
-        if(viewport.name==='phone')await page.locator('#workspaceCloseInspector').click();
+        if(viewport.name==='phone' && await page.locator('#workspaceCloseInspector').isVisible())
+          await page.locator('#workspaceCloseInspector').click();
         const start=async(project)=>{
           await page.evaluate(doc=>__buildingQA.apply(doc),{project,workspace:defaultWorkspace(project)});
           await page.locator('#roadModeButton').scrollIntoViewIfNeeded();
@@ -75,16 +76,25 @@ for(const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]){
         assert.deepEqual(afterDraft,before,'Preview must not persist data or advance revision');
         // A real Tab keyboard traversal must have an accessible, visibly focused control.
         await page.locator('#roadPreviewMinimize').focus();
-        await page.keyboard.press('Tab');
-        const keyboardFocus=await page.evaluate(()=>{
-          const el=document.activeElement,css=getComputedStyle(el);
-          return {tag:el.tagName,id:el.id,outline:css.outlineStyle,width:css.outlineWidth,
-            visible:Boolean(el.getClientRects().length)};
-        });
-        assert.equal(keyboardFocus.visible,true,'Tab target must be visible');
-        assert.ok(['BUTTON','INPUT','SELECT','SUMMARY'].includes(keyboardFocus.tag),
-          'Tab must land on an interactive control, not a hidden element');
-        assert.notEqual(keyboardFocus.outline,'none','Tab focus must have a visible outline');
+        // Firefox can insert a scrollable panel itself into the tab sequence.
+        // Continue through that legitimate landmark until an interactive control
+        // receives visible keyboard focus; do not require browser-identical order.
+        let keyboardFocus=null;
+        for(let tab=0;tab<5;tab++){
+          await page.keyboard.press('Tab');
+          const state=await page.evaluate(()=>{
+            const el=document.activeElement,css=getComputedStyle(el);
+            return {tag:el.tagName,id:el.id,outline:css.outlineStyle,
+              visible:Boolean(el.getClientRects().length)};
+          });
+          assert.equal(state.visible,true,'Tab must not focus a hidden element');
+          if(['BUTTON','INPUT','SELECT','SUMMARY'].includes(state.tag)){
+            keyboardFocus=state;
+            break;
+          }
+        }
+        assert.ok(keyboardFocus,'Tab traversal must reach an interactive control');
+        assert.notEqual(keyboardFocus.outline,'none','Keyboard focus must have a visible outline');
         // Reset and Cancel do not mutate the developed city or recovery state.
         await page.locator('#roadPreviewReset').click();
         assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
