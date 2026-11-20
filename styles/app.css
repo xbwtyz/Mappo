@@ -482,7 +482,7 @@
 
 .road-preview-panel:not([hidden]){display:flex;flex-direction:column;overflow:hidden}
 .road-preview-panel .road-preview-header{position:static;flex:none}
-#roadPreviewBody{min-height:0;overflow:auto;overscroll-behavior:contain}
+#roadPreviewBody{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;scroll-padding-block:10px}
 .road-apply-footer{flex:none;background:#f9f6ed;padding:6px 0 3px;border-top:1px solid #d5dbd0}
 .road-apply-footer .road-apply-status-b4{margin:0 0 5px}
 .road-preview-panel .road-preview-actions{position:static}
