@@ -4,7 +4,7 @@
 >
 > Primary objective: a dependable, fully editable **2D** city designer before 3D. Users deliberately reshape roads; generated neighborhoods adapt where verifiably safe; then users fine-tune land and buildings.
 
-[0.2E property plan](MILESTONE_0_2E_PROPERTY_DESIGN.md) · [E2 straight-split design](E2_PROPERTY_SPLIT_DESIGN.md) · [E3 approved merge design](E3_PROPERTY_MERGE_DESIGN.md) · [E4 approved plot-count design](E4_PLOT_COUNT_DESIGN.md) · [E4 acceptance report](E4_ACCEPTANCE_REPORT.md) · [E3 acceptance report](E3_ACCEPTANCE_REPORT.md) · [0.2F building plan](MILESTONE_0_2F_BUILDING_DESIGN.md) · [0.2D closeout](MILESTONE_0_2D_ROAD_UX_PLAN.md) · [0.2C road-first design](MILESTONE_0_2C_DESIGN.md) · [Road preservation contract](ROAD_EDIT_CONTRACT.md) · [Repository roadmap](../../ROADMAP.md)
+[0.2E property plan](MILESTONE_0_2E_PROPERTY_DESIGN.md) · [E2 straight-split design](E2_PROPERTY_SPLIT_DESIGN.md) · [E3 approved merge design](E3_PROPERTY_MERGE_DESIGN.md) · [E4 approved plot-count design](E4_PLOT_COUNT_DESIGN.md) · [E4 acceptance report](E4_ACCEPTANCE_REPORT.md) · [E5 integrated acceptance proposal](E5_INTEGRATED_ACCEPTANCE_PLAN.md) · [E3 acceptance report](E3_ACCEPTANCE_REPORT.md) · [0.2F building plan](MILESTONE_0_2F_BUILDING_DESIGN.md) · [0.2D closeout](MILESTONE_0_2D_ROAD_UX_PLAN.md) · [0.2C road-first design](MILESTONE_0_2C_DESIGN.md) · [Road preservation contract](ROAD_EDIT_CONTRACT.md) · [Repository roadmap](../../ROADMAP.md)
 
 ## Release thesis
 
@@ -17,7 +17,7 @@ flowchart TD
   A["0.2A · road graph, impact reports, preview · merged"] --> B["0.2B · conservative Apply, local reconciliation · merged"]
   B --> C["0.2C · road-first editing and local adaptation · merged"]
   C --> D["0.2D · understandable, recoverable street editing · merged"]
-  D --> E["0.2E · E1/E2 merged; E3 implementation PR #62 in review; E4/E5 next"]
+  D --> E["0.2E · E1–E4 merged; E5 integrated QA proposed"]
   E --> F["0.2F · advanced 2D building design"]
   F --> G{"0.2G · civic places necessary for 0.2?"}
   G -->|Yes| G1["0.2G · civic places / landmarks"]
@@ -31,7 +31,7 @@ flowchart TD
 | **0.2B — conservative Apply** | Local adaptation, candidate preview, whole-edit Apply and history | B1–B5 **merged** | One verified reversible edit |
 | **0.2C — road-first streets** | Street manipulation, generated-neighborhood reflow, topology, bends, building conflict policy | C1–C7 and P1–P7 **merged** | Streets drive supported local adaptation; protect authored work |
 | **0.2D — road editing experience** | Readable map preview, contextual building decisions, blocked recovery and acceptance | D1–D4 **merged** in PRs #51–#53, #56 | Understand/rescue edits without technical reports |
-| **0.2E — manual property restructuring** | Create/split/merge parcels, adjust plot counts and reconcile dependent references | **E1** create (**merged PR #58**); **E2** straight frontage-to-rear split (**approved design; implementation PR #60 in review, unmerged**); **E3** merge; **E4** plot/ownership reconciliation; **E5** integrated QA | No orphaned buildings or unapproved identity loss |
+| **0.2E — manual property restructuring** | Create/split/merge parcels, adjust plot counts and reconcile dependent references | **E1** create (merged #58); **E2** split (merged #60); **E3** merge (merged #62); **E4** plot-count editing (merged #64); **E5** integrated QA proposed | No orphaned buildings or unapproved identity loss |
 | **0.2F — advanced building design** | Extended 2D footprints, direct vertex/wing/hole editing, meaningful categories, QA | **F1** shapes; **F2** direct geometry; **F3** categories; **F4** integrated QA | True new capabilities, no duplication of 3G/3H |
 | **0.2G — civic places** (optional) | Editable plazas, markets, gardens, landmarks, district links | **G1** records; **G2** tools; **G3** identity; **G4** integration | Skip/defer if release stability or scope takes priority |
 | **0.2H — release hardening** | Cross-editor integration, migration audit, performance, browsers, release candidate | **H1** release workflows; **H2** save/migrate; **H3** performance; **H4** QA; **H5** RC | Stable offline standalone with tested old saves |
