@@ -1,0 +1,30 @@
+# Temporary D3 branch-only compiler; removed after committed HTML is verified.
+name: Compile D3 standalone on branch
+on:
+  push:
+    branches:
+      - feature/mappo-0.2d-d3-blocked-recovery
+permissions:
+  contents: write
+jobs:
+  compile:
+    if: github.repository == 'xbwtyz/Mappo'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/mappo-0.2d-d3-blocked-recovery
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and commit reproducible offline bundle
+        run: |
+          npm run build
+          git add index.html dist/mappo-0.2-dev.d3.html
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "build(d3): generate standalone 0.2-dev.d3 distribution"
+            git push origin HEAD:feature/mappo-0.2d-d3-blocked-recovery
+          fi
