@@ -25,6 +25,7 @@ export class RoadPreviewSession {
     this.revision = 0;
     this.previewVisible = true;
     this.focusKey = null;
+    this.recoveryFocusD3 = null;
   }
   start() {
     this.stop();
@@ -45,6 +46,7 @@ export class RoadPreviewSession {
   }
   invalidate() {
     this.revision++;
+    this.recoveryFocusD3 = null;
     this.workerPreviewGeometry = null;
     if (this.timer !== undefined) this.unschedule(this.timer);
     this.timer = undefined;
