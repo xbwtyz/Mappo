@@ -210,8 +210,9 @@ export class RoadPreviewSession {
   }
   decideBuilding(id,choice) {
     if (!this.current() || this.drag || this.checking || !this.pending ||
-        !this.reconciliation?.unresolved.some(row=>row.kind==='building' && row.id===id &&
-          ['building-decision-required','building-placement-blocked'].includes(row.code))) return false;
+        !(this.buildingDecisions.has(id) ||
+          this.reconciliation?.unresolved.some(row=>row.kind==='building' && row.id===id &&
+            ['building-decision-required','building-placement-blocked'].includes(row.code)))) return false;
     this.invalidate();
     this.buildingDecisions.set(id,{...choice});
     this.checking = true;
@@ -220,8 +221,19 @@ export class RoadPreviewSession {
     else this.evaluateRoadDraft(true);
     return true;
   }
+  clearBuildingDecision(id) {
+    if (!this.current() || !this.pending || this.drag || this.checking || !this.buildingDecisions.has(id))
+      return false;
+    this.invalidate();
+    this.buildingDecisions.delete(id);
+    this.checking = true;
+    this.changed();
+    if (this.selection.kind === 'junction') this.evaluateJunctionDraft(true);
+    else this.evaluateRoadDraft(true);
+    return true;
+  }
   clearBuildingDecisions() {
-    if (!this.buildingDecisions.size || !this.pending || this.drag) return false;
+    if (!this.current() || this.checking || !this.buildingDecisions.size || !this.pending || this.drag) return false;
     this.invalidate();
     this.buildingDecisions.clear();
     this.checking = true;
