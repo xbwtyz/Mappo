@@ -31,31 +31,31 @@ const roadImpactGuidance = {
   ],
   "protected-edge": [
     "Protected infrastructure would change",
-    "This boundary, bridge, bank, plaza, or terrain connection cannot be altered in 0.2A."
+    "Boundary, bridge, bank, plaza, and terrain connections are protected in road editing."
   ],
   "road-setback": [
     "Buildings or parcels are too close to the road",
-    "Try a smaller movement. Setback reconciliation is planned for 0.2B."
+    "Review the preview for any setback adjustments."
   ],
   "frontage-missing": [
     "Property loses its road-facing edge",
-    "Preserving or rebuilding property frontage requires controlled reconciliation in 0.2B."
+    "Review the proposed property frontage in the neighborhood preview."
   ],
   "frontage-block": [
     "Property frontage no longer matches its block",
-    "The adjacent block and property frontage would need coordinated updates in 0.2B."
+    "The block and property frontage may need coordinated updates."
   ],
   "frontage-unusable": [
     "Property frontage cannot be used",
-    "Try a smaller movement or postpone until frontage reconciliation is implemented."
+    "Inspect the proposed frontage or try a smaller movement."
   ],
   "frontage-geometry": [
     "Property frontage shape would change",
-    "Reshaping this property safely is reserved for 0.2B."
+    "Review the proposed property shape and its street-facing edge."
   ],
   "frontage-distance": [
     "Property frontage shifts away from the road",
-    "Try less displacement or review the property during later reconciliation."
+    "Review the proposed property frontage or try less displacement."
   ],
   "property-containment": [
     "Property would extend beyond its block",
@@ -63,11 +63,11 @@ const roadImpactGuidance = {
   ],
   "plot-ownership": [
     "Plot relationship would need updating",
-    "Plot ownership must be preserved and explicitly reconciled in 0.2B."
+    "Check plot ownership in the proposed neighborhood."
   ],
   "building-ownership": [
     "Building relationship would need updating",
-    "Review the affected building and property before future acceptance."
+    "Review the affected building and its property in the preview."
   ],
   "road-clearance": [
     "Road clearance around a building changes",
@@ -75,11 +75,11 @@ const roadImpactGuidance = {
   ],
   "access-connection": [
     "Access route would disconnect",
-    "Keep the route connected or resolve access relationships during 0.2B."
+    "Inspect the proposed access route before applying."
   ],
   "access-entrance": [
     "Building entrance access is affected",
-    "A future Apply must preserve a usable entrance connection."
+    "Apply requires a usable entrance connection."
   ],
   "access-unproven": [
     "Building access cannot be verified",
@@ -103,11 +103,11 @@ const roadImpactGuidance = {
   ],
   "face-added": [
     "A new block would appear",
-    "A future edit must explicitly assign ownership and a stable new identity."
+    "See the proposed block and its ownership in Details."
   ],
   "face-removed": [
     "An existing block would disappear",
-    "Deletion is not allowed in 0.2A; a future reconciliation must explicitly resolve it."
+    "See the replacement block group and its ownership in Details."
   ],
   "district-reference": [
     "District references would be affected",
@@ -154,7 +154,7 @@ export function summarizeRoadImpact(report) {
       const fallback = code.replace(/[-_]/g, ' ').replace(/^./, (c) => c.toUpperCase());
       const [title, suggestion] = roadImpactGuidance[code] ?? [
         fallback,
-        'Inspect the detailed diagnostic. This dependency cannot be safely resolved by the 0.2A preview.'
+        'Inspect the detailed diagnostic for the affected records.'
       ];
       groups.set(key, { key, severity, code, title, suggestion, rows: [], objects: new Set() });
     }
@@ -171,6 +171,55 @@ export function summarizeRoadImpact(report) {
 function hasRoadBuildingChoice(row) {
   return row?.kind === 'building' &&
     ['building-decision-required','building-placement-blocked'].includes(row.code);
+}
+
+const roadRecordKeyD1 = (kind, id) => JSON.stringify([kind, id]);
+
+function roadOutcomeD1(preview, ledger) {
+  const moved = new Set(), access = new Set(), removed = new Set(), added = new Set();
+  const visibleBuildings = new Set(preview.rows.filter(row =>
+    row.kind === 'building' && row.originalPoints && row.proposedPoints).map(row => row.id));
+  for (const entry of ledger) {
+    if (entry.kind !== 'building') continue;
+    if (['relocated','authorized-relocation'].includes(entry.disposition) && visibleBuildings.has(entry.newId))
+      moved.add(entry.newId);
+    if (entry.disposition === 'access-reconnected' && entry.newId) access.add(entry.newId);
+    if (entry.oldId && !entry.newId) removed.add(entry.oldId);
+    if (entry.newId && !entry.oldId) added.add(entry.newId);
+  }
+  for (const id of moved) access.delete(id);
+  const count = (n, noun) => n + ' ' + noun + (n === 1 ? '' : 's');
+  const parts = [];
+  const groups = roadBlockGroupsD1(ledger);
+  const blocks = preview.rows.filter(row => row.kind === 'block');
+  const areas = new Set(blocks.map(row => groups.get(row.id) ?? row.id)).size;
+  if (blocks.length) {
+    const noun = areas === blocks.length ? 'block' : 'block area';
+    parts.push(count(areas, noun) + (areas === 1 ? ' changes' : ' change'));
+  }
+  if (moved.size) parts.push(count(moved.size, 'building') + (moved.size === 1 ? ' moves' : ' move'));
+  if (removed.size && added.size) parts.push('Rebuild development (' + removed.size + ' existing buildings replaced, ' + added.size + ' generated)');
+  else if (removed.size) parts.push('Remove ' + count(removed.size, 'building'));
+  else if (added.size) parts.push('Generate ' + count(added.size, 'building'));
+  if (access.size) parts.push('Reconnect access for ' + count(access.size, 'building'));
+  if (!parts.length && preview.counts.properties) {
+    const n = preview.counts.properties;
+    parts.push(n === 1 ? '1 property changes' : n + ' properties change');
+  }
+  return parts.length ? parts.join(' · ') : 'Change street geometry.';
+}
+
+// Group split and merged blocks by ledger links. Membership never implies
+// one-to-one ancestry between old and newly generated buildings.
+function roadBlockGroupsD1(ledger) {
+  const groups = new Map();
+  for (const entry of ledger) {
+    if (entry.kind !== 'block') continue;
+    const ids = [entry.oldId, entry.newId, ...(entry.successorIds ?? [])].filter(Boolean);
+    const group = new Set(ids.flatMap(id => [...(groups.get(id) ?? [id])]));
+    for (const id of group) groups.set(id, group);
+  }
+  return groups;
 }
 
 export class RoadInspectionWorkspace {
@@ -234,6 +283,9 @@ export class RoadInspectionWorkspace {
       return;
     }
     this.$('roadPreviewBody').hidden = false;
+    this.$('roadEditControlsD1').open = false;
+    this.$('roadDetailsD1').open = false;
+    this.session.showRoadDiagnostics = false;
     this.$('roadOverlayB3').checked = true;
     this.session.previewVisible = true;
     this.$('roadPreviewMinimize').textContent = 'Minimize';
@@ -316,6 +368,7 @@ export class RoadInspectionWorkspace {
       const issue = this.session.reconciliation?.unresolved.find(hasRoadBuildingChoice);
       if (!issue) return;
       if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
+      this.$('roadDetailsD1').open = true;
       const target = this.$('roadConflictC6-' + issue.id);
       if (!target) return;
       this.locateReconciliationB3(issue);
@@ -345,6 +398,13 @@ export class RoadInspectionWorkspace {
       body.hidden = !body.hidden;
       this.$('roadPreviewMinimize').setAttribute('aria-expanded', String(!body.hidden));
       this.$('roadPreviewMinimize').textContent = body.hidden ? 'Expand' : 'Minimize';
+    });
+    this.$('roadDetailsD1').addEventListener('toggle', () => {
+      const open = this.$('roadDetailsD1').open;
+      if (this.session.active && this.session.showRoadDiagnostics !== open) {
+        this.session.showRoadDiagnostics = open;
+        this.draw();
+      }
     });
     this.$('roadSelectionKind').addEventListener('change', () => {
       this.optionsKind = null;
@@ -546,25 +606,6 @@ export class RoadInspectionWorkspace {
     }
     for (const dir of ['Left', 'Right', 'Up', 'Down']) this.$('roadNudge' + dir).disabled = !(d?.movable || (bends ? bend : s.roadIntentEligible));
     this.$('roadPreviewReset').disabled = !s.pending && !s.checking && !s.error && !s.roadIntentInputError;
-    const reconciledJunction = kind==='junction' && s.hasApplyCandidate &&
-      s.reconciliation.validation?.project==='valid' && s.report?.status!=='safe';
-    const status = reconciledJunction ? 'Junction preview ready' : s.roadIntentInputError ? 'Invalid road offset' :
-      s.details?.kind==='road' && s.pending ?
-      (s.checking?'Checking road draft':'Street placement drafted') : s.error
-      ? 'Report unavailable'
-      : s.checking
-        ? 'Checking'
-        : s.report
-          ? { safe: 'Safe', 'needs-review': 'Needs review', invalid: 'Invalid' }[s.report.status]
-          : 'Accepted position · no proposed change';
-    const live =
-      status +
-      (s.report && !reconciledJunction
-        ? ` · ${s.report.counts.affectedObjects} affected · ${s.report.counts.issues} issues · ${s.report.counts.preservedObjects} preserved`
-        : '');
-    if (this.$('roadReportStatus').textContent !== live) this.$('roadReportStatus').textContent = live;
-    panel.setAttribute('data-report-status',
-      reconciledJunction ? 'safe' : s.roadIntentInputError ? 'invalid' : s.report?.status ?? (s.checking ? 'checking' : 'idle'));
     this.$('roadReportError').textContent = s.error;
     this.$('roadReconciliationB3').hidden = false;
     this.$('roadClearBuildingChoicesC5').hidden = !s.buildingDecisions.size;
@@ -584,27 +625,52 @@ export class RoadInspectionWorkspace {
     s.previewGeometry = this.cachedPreviewGeometry;
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
     const applying = this.applyingRevision === s.revision;
-    const ready=Boolean(!applying && (kind==='junction' || kind==='road') && s.current() && s.pending && !s.checking && !s.drag && !s.error &&
-      !s.reconciliationError && s.hasApplyCandidate &&
+    const verified = Boolean(s.current() && s.pending && !s.checking && !s.drag && !s.error &&
+      !s.roadIntentInputError && !s.reconciliationError && s.hasApplyCandidate &&
       s.reconciliation?.status==='candidate-only' && !s.reconciliation.unresolved?.length &&
       s.previewGeometry?.verified && s.settledRevision===s.revision &&
-      s.acceptedFingerprint===JSON.stringify(s.project) &&
-      this.getRevision()===this.baseRevision);
+      this.getRevision()===this.baseRevision && s.acceptedFingerprint===JSON.stringify(s.project));
+    const ready = !applying && verified && (kind==='junction' || kind==='road');
+    s.roadPreviewVerifiedD1 = verified;
     this.$('roadApplyB4').disabled = !ready;
     const issue = s.reconciliation?.unresolved?.find(hasRoadBuildingChoice) ?? s.reconciliation?.unresolved?.[0];
     const actionable = !s.checking && !s.drag && hasRoadBuildingChoice(issue);
     const building = actionable && s.city.buildings.find(record => record.id === issue.id);
     this.$('roadResolveConflictC6').hidden = !actionable;
-    const message = applying ? 'Validating the road and neighborhood before Apply…' : this.applyError || s.roadIntentInputError || s.error || s.reconciliationError ||
-      (ready ? 'Ready to apply. The road and neighborhood changes will be saved together.' :
-        s.drag ? 'Release the handle to check this edit.' :
-        s.checking ? 'Checking the street and nearby properties…' :
-        actionable ? (building?.customName || 'Building ' + issue.id) + '. ' + issue.message :
+    const problem = this.applyError || s.roadIntentInputError || s.error || s.reconciliationError;
+    const topologyOnly = s.previewGeometry?.mode==='topology-only';
+    const status = applying ? 'Applying road edit' : this.applyError ? 'Apply failed' : problem ? 'Preview blocked' :
+      s.drag ? 'Placement in progress' : s.checking ? 'Checking preview' :
+      ready ? 'Preview ready' : actionable ? 'Building choice needed' :
+      s.pending && s.settledRevision === s.revision && s.previewGeometry?.verified ? 'Preview out of date' :
+      topologyOnly ? 'Roads and blocks only' : s.pending ? 'Preview blocked' : 'Accepted position';
+    const message = applying ? 'Validating the road and neighborhood before Apply…' :
+      problem || (s.drag ? 'Release the handle to check this edit.' :
+        s.checking || ready ? '' :
+        actionable ? (building?.customName || 'A building') + '. ' + issue.message :
+        status==='Preview out of date' ? 'Reset the preview and try the edit again.' :
         issue?.message || s.proposal?.issues?.[0]?.message ||
-        (s.pending ? 'This preview is no longer current. Reset it and try the edit again.' :
-          'Move a street or junction to preview an edit.'));
-    const applyStatus = this.$('roadApplyStatusB4');
-    if (applyStatus.textContent !== message) applyStatus.textContent = message;
+        (s.pending ? 'The neighborhood change could not be verified.' : 'Drag a road or junction to preview an edit.'));
+    let summary = '';
+    if (ready) {
+      if (this.outcomePreview !== s.previewGeometry) {
+        this.outcomePreview = s.previewGeometry;
+        this.outcomeSummary = roadOutcomeD1(s.previewGeometry, s.reconciliation.ledger ?? []);
+      }
+      summary = this.outcomeSummary;
+    } else if (actionable) {
+      const count = new Set(s.reconciliation.unresolved.filter(hasRoadBuildingChoice).map(row => row.id)).size;
+      summary = count === 1 ? '1 building needs a choice' : count + ' buildings need choices';
+    } else if (topologyOnly && !problem && !s.checking && !s.drag) {
+      summary = 'Property and building changes are unresolved.';
+    }
+    for (const [id,text] of [['roadReportStatus',status],['roadApplyStatusB4',message],['roadChangeSummaryD1',summary]]) {
+      const element = this.$(id);
+      if (element.textContent !== text) element.textContent = text;
+      if (element.hidden !== !text) element.hidden = !text;
+    }
+    panel.setAttribute('data-report-status', ready ? 'safe' : s.checking || applying ? 'checking' :
+      problem || status==='Preview blocked' ? 'invalid' : s.pending ? 'needs-review' : 'idle');
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
         this.lastReconciliationError !== s.reconciliationError || this.lastChecking !== s.checking) {
       this.lastReconciliation = s.reconciliation;
@@ -649,20 +715,37 @@ export class RoadInspectionWorkspace {
     const unresolved=[...(preview?.unresolved??[])]
       .sort((a,b)=>Number(hasRoadBuildingChoice(b))-Number(hasRoadBuildingChoice(a)));
     const ledger=s.reconciliation?.ledger??[];
-    const disposition=new Map(ledger.map(row=>[row.kind+' '+(row.oldId??row.newId),row]));
-    const visibleRows=new Set(rows.map(row=>row.kind+' '+row.id));
+    const disposition=new Map();
+    for (const entry of ledger)
+      for (const id of new Set([entry.oldId,entry.newId].filter(Boolean)))
+        disposition.set(roadRecordKeyD1(entry.kind,id),entry);
+    const visibleRows=new Set(rows.map(row=>roadRecordKeyD1(row.kind,row.id)));
+    const successorGeometry=new Map(rows.filter(row=>row.kind==='block' && row.proposedPoints)
+      .map(row=>[row.id,row]));
     const access=ledger.filter(row=>row.disposition==='access-reconnected' &&
-      !visibleRows.has(row.kind+' '+row.oldId))
+      !visibleRows.has(roadRecordKeyD1(row.kind,row.oldId)))
       .map(row=>({kind:row.kind,id:row.oldId,state:'access-reconnected',entryType:'change'}));
-    const all=[...rows.map(row=>({...row,entryType:'change'})),...access,
-      ...unresolved.map(row=>({...row,entryType:'unresolved'}))];
-    list.replaceChildren(...all.slice(0,this.reconciliationLimit).map(row=>{
+    const all=[...unresolved.map(row=>({...row,entryType:'unresolved'})),
+      ...rows.map(row=>({...row,entryType:'change'})),...access];
+    const blockGroups = roadBlockGroupsD1(ledger);
+    const groups = new Map();
+    for (const row of all.slice(0,this.reconciliationLimit)) {
+      const block = row.beforeBlockId ?? row.afterBlockId;
+      const group = blockGroups.get(block);
+      const key = row.entryType==='unresolved' ? 'Unresolved changes' :
+        group?.size>1 ? 'Related blocks · ' + [...group].sort().join(', ') :
+        block ? 'Block ' + block : 'Other changes';
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(row);
+    }
+    const renderRow = row => {
       const item=document.createElement('li');
+      item.className='road-change-record-d1';
       const description=document.createElement('p');
+      const entry=row.entryType==='change' ? disposition.get(roadRecordKeyD1(row.kind,row.id)) : null;
       if(row.entryType==='change'){
         const measure=(name,oldValue,newValue)=>oldValue!=null&&newValue!=null?
           ' · '+name+': '+oldValue.toFixed(2)+' → '+newValue.toFixed(2):'';
-        const entry=disposition.get(row.kind+' '+row.id);
         const descriptions={'authorized-relocation':'Approved building relocation',relocated:'Relocated building',regenerated:'Generated replacement',
           'created-junction':'New junction','removed-road':'Removed street',split:'Split at junction',
           created:'New record',retained:'Retained geometry',replaced:row.kind==='building'?'Replaced building':'Previous record'};
@@ -670,6 +753,7 @@ export class RoadInspectionWorkspace {
           (row.state==='topology-only'?'Proposed topology only':row.state==='access-reconnected'?'Reconnected access':
             descriptions[entry?.disposition]??'Adapted geometry')+
           (entry?.provenance==='generated'?' · Generated record':'')+
+          (entry?.successorIds?.some(id=>id!==row.id) ? ' · Successor blocks: ' + entry.successorIds.join(', ') : '')+
           measure('area',row.oldArea,row.newArea)+
           measure('length',row.oldLength,row.newLength)+
           measure('frontage',row.oldFrontage,row.newFrontage);
@@ -682,16 +766,35 @@ export class RoadInspectionWorkspace {
         description.textContent='Unresolved '+row.kind+' '+row.id+(name?' · '+name:'')+
           ' · '+row.code+': '+row.message+(values?' · '+values:'');
       }
-      item.replaceChildren(description);
       const focus=document.createElement('button');
       focus.type='button';focus.className='minor-button';
       focus.textContent='Locate '+row.kind+' '+row.id;
       focus.setAttribute('aria-label','Locate '+row.kind+' '+row.id+' in the reconciliation preview');
       focus.addEventListener('click',()=>this.locateReconciliationB3(row));
       item.replaceChildren(description,focus);
+      for (const id of entry?.successorIds ?? []) {
+        const successor = successorGeometry.get(id);
+        if (!successor || id===row.id) continue;
+        const locate = document.createElement('button');
+        locate.type = 'button';
+        locate.className = 'minor-button';
+        locate.textContent = 'Locate successor ' + id;
+        locate.addEventListener('click', () => this.locateReconciliationB3(successor));
+        item.append(locate);
+      }
       if (row.entryType==='unresolved' && hasRoadBuildingChoice(row))
         item.append(this.buildingConflictControls(row.id));
       return item;
+    };
+    list.replaceChildren(...[...groups].map(([title, rows]) => {
+      const section = document.createElement('li');
+      section.className = 'road-change-group-d1';
+      const heading = document.createElement('h4');
+      heading.textContent = title;
+      const entries = document.createElement('ul');
+      entries.replaceChildren(...rows.map(renderRow));
+      section.replaceChildren(heading, entries);
+      return section;
     }));
     more.hidden=all.length<=this.reconciliationLimit;
     this.$('roadReconciliationLegendB3').textContent=preview?.mode==='topology-only'?
@@ -815,7 +918,7 @@ export class RoadInspectionWorkspace {
         locate.setAttribute('aria-label', 'Locate affected ' + row.kind + ' ' + row.id + ' on map');
         locate.addEventListener('click', () => this.locateImpact(row));
         line.replaceChildren(text, technical, locate);
-        details.replaceChildren(...(details.children ?? []), line);
+        details.append(line);
       }
       heading.replaceChildren(summary, explanation, details);
       item.replaceChildren(heading);
@@ -828,7 +931,7 @@ export class RoadInspectionWorkspace {
         groups.filter(g=>g.severity==='invalid').length + ' blocking cause groups · ' +
         groups.filter(g=>g.severity==='needs-review').length + ' review groups · ' +
         (report.counts?.affectedObjects ?? 0) + ' affected objects. ' +
-        (report.requiresReconciliation ? 'Road-dependent city objects require future 0.2B reconciliation. ' : '') +
+        (report.requiresReconciliation ? 'The initial impact analysis flags dependencies for reconciliation. ' : '') +
         Math.min(this.limit,groups.length) + ' of ' + groups.length + ' groups shown. Expand a group for exact IDs, technical details, and map navigation.'
       : 'Change a junction position to inspect its impact. Accepted geometry stays unchanged.';
     const metrics=report?.metrics;

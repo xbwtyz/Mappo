@@ -488,3 +488,35 @@
 .road-preview-panel .road-preview-actions{position:static}
 .road-apply-footer .road-preview-actions{border:0;padding:4px 0 0}
 .road-preview-panel .road-apply-footer #roadApplyB4{flex-basis:auto}
+
+.road-preview-panel .road-primary-status-d1 .road-report-status {
+  margin: 0; padding: 3px 6px; font-size: 12px; line-height: 1.35;
+}
+.road-preview-panel .road-primary-status-d1 .road-apply-status-b4,
+.road-preview-panel .road-change-summary-d1 {
+  margin: 4px 0 2px; line-height: 1.35;
+}
+.road-change-summary-d1 { font-weight: 600; }
+.road-preview-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.road-preview-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.road-preview-legend i { width: 16px; border-top: 2px solid #315c69; }
+.road-preview-legend span + span i { border-top: 2px dashed #168f80; }
+.road-disclosure-d1 { margin: 5px 0; }
+.road-preview-disclosures-d1:not(:has(> details[open])) {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+}
+.road-disclosure-d1 > summary {
+  cursor: pointer; color: #315c69; background: #fffdf6;
+  border: 1px solid #a8bab4; border-radius: 5px;
+  padding: 6px; font-weight: 650;
+}
+.road-disclosure-d1 > summary > * { color: inherit; }
+.road-change-groups-d1,
+.road-change-groups-d1 .road-change-group-d1 { list-style: none; padding-left: 0; }
+.road-change-group-d1 h4 { margin: 2px 0 5px; font-size: 11px; }
+.road-change-group-d1 ul { padding-left: 15px; }
+.road-change-groups-d1 .road-change-record-d1 { list-style: disc; }
+@media(max-width:900px) {
+  .road-disclosure-d1 > summary { min-height: 44px; box-sizing: border-box; padding: 10px 6px; }
+  .road-preview-panel .road-apply-footer #roadApplyB4 { min-height: 44px; }
+}

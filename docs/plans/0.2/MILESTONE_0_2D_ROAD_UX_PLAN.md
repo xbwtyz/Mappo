@@ -1,6 +1,6 @@
 # Mappo 0.2D road editing experience
 
-**Status** · Revised plan for review. Baseline is merged C7/P7 at `8f1f6f2`.
+**Status** · D1 implemented for review. Baseline is merged C7/P7 at `8f1f6f2`.
 
 0.2D makes the existing road editor easier to read and recover from when a
 move affects a developed neighborhood. The normal path is **select → move →
@@ -27,26 +27,31 @@ old and new footprints, and the individual choice then disappears.
 
 ## D1 · Make the preview readable by default
 
-- [ ] Use the existing map and panel. Put plain-language state, a compact
+- [x] Use the existing map and panel. Put plain-language state, a compact
   impact summary, and Apply/Reset/Cancel in the primary view. Reuse the footer
   and keep it reachable when the body scrolls or is minimized. Retain numeric
   placement, record selection, and topology tools behind contextual controls.
-- [ ] Make existing and proposed road geometry distinguishable by line style
+- [x] Make existing and proposed road geometry distinguishable by line style
   and labels. Highlight changed blocks and relevant buildings. Keep the
   proposal legible on the phone layout with the panel open. Use text and shape
   cues alongside color.
-- [ ] Summarize a settled candidate from its ledger and verified geometry.
+- [x] Summarize a settled candidate from its ledger and verified geometry.
   Separate moved buildings, regenerated development, access-only changes,
   and unresolved decisions. Collapse related old and new records so a
   replacement isn't counted twice. Show group-level regeneration when the
   ledger lacks one-to-one ancestry. An unavailable or topology-only preview
   displays its limited scope and keeps Apply disabled.
-- [ ] Put record IDs, source and successor links, measurements, and full
+- [x] Put record IDs, source and successor links, measurements, and full
   diagnostics under **Details**. Keep existing Locate behavior available
   there. Use a primary live status for meaningful state transitions.
-- [ ] Verify one generated-only move, one topology change, and checking,
+- [x] Verify one generated-only move, one topology change, and checking,
   stale, zero-change, and blocked states. Assert that status, next action,
   and verified scope are visible with Details closed on desktop and phone.
+
+D1 ships as `0.2-dev.d1`. The extended road browser suite checks status
+and consequences with Details closed, compact controls, exact grouped counts,
+and existing conflict navigation. Node acceptance also checks a settled
+preview after its accepted revision becomes stale.
 
 ## D2 · Keep building decisions beside the affected edit
 

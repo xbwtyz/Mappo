@@ -88,7 +88,7 @@ test('C7 substantial junction drags use local road reflow across all four layout
     assert.ok(s.reconciliation.ledger.some(row=>row.kind==='property'||row.kind==='building'),morphology);
     if (['radial','organic'].includes(morphology)) {
       assert.ok(s.reconciliation.ledger.some(row=>row.disposition==='created-junction'));
-      assert.match(app.el('roadReportStatus').textContent,/preview ready/);
+      assert.match(app.el('roadReportStatus').textContent,/Preview ready/);
     }
     assert.equal(JSON.stringify(app.state().project),before);
     app.el('roadApplyB4').handlers.click();
@@ -125,4 +125,26 @@ test('C7 junction conflicts use the same explicit building choice and Apply gate
   assert.equal(JSON.stringify(app.state().project),before);
   app.el('roadApplyB4').handlers.click();
   assert.equal(app.state().project.city.buildings.find(row=>row.id==='BLD-00048').customName,'Market Hall');
+});
+
+test('D1 summary clears when the accepted revision changes', async () => {
+  const app=await buildingAppHarness();
+  const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+  app.apply({project,workspace:defaultWorkspace(project)});
+  const {roadWorkspace,files}=app.state();
+  roadWorkspace.start();
+  const s=roadWorkspace.session;
+  s.select({kind:'junction',id:'N-0105'});
+  s.update({x:s.point.x+12,y:s.point.y},{defer:false});
+  assert.equal(app.el('roadDetailsD1').open,false);
+  assert.equal(app.el('roadReportStatus').textContent,'Preview ready');
+  assert.equal(app.el('roadChangeSummaryD1').hidden,false);
+  const accepted=JSON.stringify(app.state().project);
+  files.revision++;
+  s.changed();
+  assert.equal(app.el('roadApplyB4').disabled,true);
+  assert.equal(app.el('roadReportStatus').textContent,'Preview out of date');
+  assert.equal(app.el('roadChangeSummaryD1').hidden,true);
+  assert.equal(s.roadPreviewVerifiedD1,false);
+  assert.equal(JSON.stringify(app.state().project),accepted);
 });

@@ -133,6 +133,8 @@ export function roadReconciliationPreviewB3(project,reconciliation,topology=null
        oldArea===newArea && oldLength===newLength && oldFrontage===newFrontage)continue;
     entries.push({kind:item.kind,id:item.id,fields:[...(item.fields??[])],
       state:mode==='reconciled'?'reconciled':'topology-only',
+      beforeBlockId:item.kind==='block' ? before?.id : before?.blockId,
+      afterBlockId:item.kind==='block' ? after?.id : after?.blockId,
       originalPoints,proposedPoints,oldArea,newArea,oldLength,newLength,oldFrontage,newFrontage});
   }
   entries.sort((a,b)=>a.kind.localeCompare(b.kind)||a.id.localeCompare(b.id));

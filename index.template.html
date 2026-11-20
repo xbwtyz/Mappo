@@ -146,9 +146,13 @@
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div id="mapEditDiagnostic4D" class="map-edit-diagnostic-4d" role="status" aria-live="polite" hidden></div>
         <section id="roadPreviewPanel" class="road-preview-panel" aria-labelledby="roadPreviewHeading" hidden>
-          <div class="road-preview-header"><div class="road-preview-heading"><strong id="roadPreviewHeading" tabindex="-1">ROAD INSPECTION</strong><button id="roadPreviewMinimize" class="minor-button" aria-expanded="true" aria-controls="roadPreviewBody">Minimize</button></div>
-          <p id="roadReportStatus" class="road-report-status" role="status" aria-live="polite" aria-atomic="true"></p></div>
+          <div class="road-preview-header"><div class="road-preview-heading"><strong id="roadPreviewHeading" tabindex="-1">ROAD EDIT</strong><button id="roadPreviewMinimize" class="minor-button" aria-expanded="true" aria-controls="roadPreviewBody">Minimize</button></div>
+          </div>
           <div id="roadPreviewBody">
+            <p class="hint road-preview-legend"><span><i aria-hidden="true"></i>Current road</span><span><i aria-hidden="true"></i>Proposed road</span></p>
+            <div class="road-preview-disclosures-d1">
+            <details id="roadEditControlsD1" class="road-disclosure-d1">
+              <summary>Edit controls</summary>
             <div class="road-preview-selectors"><label>Record type<select id="roadSelectionKind"><option value="junction">Junctions</option><option value="road">Roads</option></select></label><label>Record ID<select id="roadSelectionId"></select></label></div>
             <p id="roadRecordDetails"></p><p id="roadAcceptedPoint" class="hint"></p>
             <button id="roadLocate" class="minor-button">Locate on map</button>
@@ -188,32 +192,40 @@
                   <button id="roadRemoveC3" type="button" class="minor-button">Preview removal</button>
                 </div>
               </details>
-              <p id="roadIntentStatusC1" class="hint" role="status" aria-live="polite">Select an ordinary street to draft its new placement.</p>
+              <p id="roadIntentStatusC1" class="hint">Select an ordinary street to draft its new placement.</p>
             </section>
             <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
             <label class="road-step-label">Nudge units<input id="roadNudgeStep" type="number" min="0.001" step="0.5" value="0.5"></label>
             <div class="road-nudge-buttons" role="group" aria-label="Nudge proposed junction"><button id="roadNudgeLeft" aria-label="Nudge left">←</button><button id="roadNudgeUp" aria-label="Nudge up">↑</button><button id="roadNudgeDown" aria-label="Nudge down">↓</button><button id="roadNudgeRight" aria-label="Nudge right">→</button></div>
-            <p class="hint road-preview-legend">Accepted roads are solid. Proposed roads are dashed.</p>
+            </details>
+            <details id="roadDetailsD1" class="road-disclosure-d1">
+              <summary>Details</summary>
             <section id="roadReconciliationB3" class="road-reconciliation-b3" aria-label="Road and property reconciliation" hidden>
               <h3>NEIGHBORHOOD ADAPTATION</h3>
-              <p id="roadReconciliationStatusB3" role="status" aria-live="polite">Accepted city unchanged.</p>
+              <p id="roadReconciliationStatusB3">Accepted city unchanged.</p>
               <label class="road-overlay-option-b3"><input id="roadOverlayB3" type="checkbox" checked> Show proposed geometry overlay</label>
               <p id="roadReconciliationCountsB3" class="hint"></p>
               <p id="roadReconciliationLegendB3" class="hint"></p>
               <button id="roadClearBuildingChoicesC5" type="button" class="minor-button" hidden>Clear building choices</button>
-              <ol id="roadReconciliationListB3" class="road-report-list" aria-label="Proposed and unresolved geometry changes"></ol>
+              <ol id="roadReconciliationListB3" class="road-report-list road-change-groups-d1" aria-label="Proposed and unresolved geometry changes"></ol>
               <button type="button" id="roadReconciliationMoreB3" class="minor-button" hidden>Show 50 more changes</button>
             </section>
             <p id="roadReportError" class="validation-error"></p><p id="roadReportSummary" class="hint"></p><p id="roadReportMetrics" class="hint"></p>
             <ol id="roadReportList" class="road-report-list" aria-label="Affected objects and impact descriptions"></ol><button id="roadShowMore" class="minor-button" hidden>Show 50 more entries</button>
+            </details>
+            </div>
           </div>
           <div class="road-apply-footer">
-            <p id="roadApplyStatusB4" class="road-apply-status-b4" role="status" aria-live="polite">Move a street or junction to preview an edit.</p>
+            <div class="road-primary-status-d1" role="status" aria-live="polite" aria-atomic="true">
+              <p id="roadReportStatus" class="road-report-status"></p>
+              <p id="roadApplyStatusB4" class="road-apply-status-b4"></p>
+              <p id="roadChangeSummaryD1" class="road-change-summary-d1" hidden></p>
+            </div>
             <button id="roadResolveConflictC6" type="button" class="minor-button" hidden>Resolve conflict</button>
             <div class="road-preview-actions">
-              <button id="roadApplyB4" type="button" class="tool-button" aria-describedby="roadApplyStatusB4" disabled>Apply road edit</button>
-              <button id="roadPreviewReset" class="minor-button" disabled>Reset preview</button>
-              <button id="roadPreviewCancel" class="minor-button">Cancel inspection</button>
+              <button id="roadApplyB4" type="button" class="tool-button" aria-describedby="roadReportStatus roadApplyStatusB4 roadChangeSummaryD1" disabled>Apply road edit</button>
+              <button id="roadPreviewReset" class="minor-button" disabled>Reset</button>
+              <button id="roadPreviewCancel" class="minor-button">Cancel</button>
             </div>
           </div>
         </section>
