@@ -497,6 +497,7 @@ function exitStructurePlacement3H() {
   return true;
 }
 function startStructurePlacement3H(propertyId,buildingId=null) {
+  if(propertySplitE2?.active)return false;
   if(!project || layers.buildings===false || !propertyId)return false;
   if(!exitPropertyEditing3I() || !exitStructurePlacement3H() || !exitBuildingEditing())return false;
   if(workspaceShell.state.section!=='city')workspaceShell.navigate('city');
@@ -600,6 +601,7 @@ function applyStructurePlacement3H() {
 }
 // Dev 4e: one confirmation, one validated transaction and one structural Undo.
 function clearPropertyBuildings4E(propertyId) {
+  if(propertySplitE2?.active)return false;
   const selected=workspaceShell?.state.selection;
   const site=project?.city?.properties.find(p=>p.id===propertyId);
   if(!site||layers.buildings===false||selected?.kind!=='property'||selected.id!==propertyId)return false;
@@ -1378,12 +1380,14 @@ propertySplitE2 = new PropertySplitControlsE2({
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     propertyCreationHistoryE1.clear();buildingHistory.clear();buildingStructureHistory.clear();
     identityWorkspace.reset();
-    propertyWorkspace.refresh({replaced:true});buildingWorkspace.refresh({replaced:true});
+    // The retained parent property ID remains selected. Replaced:true would
+    // clear it and trigger multiple workspace revisions for a single Apply.
+    propertyWorkspace.refresh();buildingWorkspace.refresh();
     updateDetails();workspaceShell.select({kind:'property',id:propertyId},{reveal:false});
-    workspaceShell.refresh();requestDraw();workspaceChanged();
-    if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900
-      &&!workspaceShell.state.inspectorCollapsed)
-      workspaceShell.dispatch({type:'inspector',collapsed:true});
+    workspaceShell.refresh();requestDraw();
+    workspaceChanged(); // one accepted transaction, one file/recovery revision
+    // The phone Inspector and Tools drawers were collapsed on entering E2.
+
     $('statusMessage').textContent=direction==='apply'
       ?'Split '+propertyId+' into two verified frontage properties. Undo split is available.'
       :(direction==='undo'?'Undid':'Redid')+' the complete property split.';
