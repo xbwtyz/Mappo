@@ -1,6 +1,6 @@
 # Mappo 0.2E / E3 — Feature acceptance report
 
-> **Status (2026-11-20):** E3 is proposed for review in [PR #62](https://github.com/xbwtyz/Mappo/pull/62). The E3 design is approved and merged in [PR #61](https://github.com/xbwtyz/Mappo/pull/61). **Implementation is unmerged and unreleased.** The latest full CI result on the final feature branch must pass before an acceptance/merge recommendation.
+> **Status (2026-11-20):** E3 was **merged into main** via [PR #62](https://github.com/xbwtyz/Mappo/pull/62) after passing [full CI run #44822183815](https://github.com/xbwtyz/Mappo/actions/runs/44822183815). The design was merged separately in PR #61. This document retains the historical acceptance scope; **Mappo 0.2 remains unreleased.**
 
 ## Implemented scope
 

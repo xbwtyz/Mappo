@@ -64,9 +64,9 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 - [ ] Display grouped consequences with Details available; focus and recover from affected authored buildings without forcing global redevelopment.
 - [ ] **Gate:** multiple buildings/plots, old custom metadata, ambiguous ownership, cancelled authorizations, and no orphaned reference after Apply/Undo/Redo/save.
 
-### E5 — Integrated stabilization and milestone acceptance (planning PR)
+### E5 — Integrated stabilization and milestone acceptance (implementation under review)
 
-**Detailed acceptance plan:** [E5 integrated acceptance](E5_INTEGRATED_ACCEPTANCE_PLAN.md). E1–E4 are merged, including E4 in [PR #64](https://github.com/xbwtyz/Mappo/pull/64). E5 is **integration/QA**, not new property editing functionality; its implementation requires separate approval.
+**Detailed acceptance plan:** [E5 integrated acceptance](E5_INTEGRATED_ACCEPTANCE_PLAN.md). E1–E4 are merged, including E4 in [PR #64](https://github.com/xbwtyz/Mappo/pull/64). E5 is **integration/QA**, not new property editing functionality; the approved plan is now being implemented on a separate branch. Its merge still requires final CI and separate approval. See the [E5 acceptance report](E5_ACCEPTANCE_REPORT.md).
 
 - [ ] End-to-end browser cases: **road edit → inspect adapted neighborhood → create/split/merge parcel → adjust plot division → Apply/Undo/Redo → portable save/reopen**, on Chromium and Firefox at desktop and phone sizes.
 - [ ] Test all four morphologies, developed Small/Large fixtures, legacy schema-9 datasets, access/landscape/civic protections, stale drafts, and repeated edits.

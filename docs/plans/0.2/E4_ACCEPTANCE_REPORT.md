@@ -1,6 +1,6 @@
 # Mappo 0.2E / E4 — Plot count acceptance report
 
-> **Status (2026-11-20):** E4 feature branch implemented for review, **not merged or published**. Design merged in PR #63. Final merge requires a successful latest-head Mappo CI run and separate owner approval.
+> **Status (2026-11-20):** E4 was **merged into main** via [PR #64](https://github.com/xbwtyz/Mappo/pull/64) after successful [full CI run #44826623008](https://github.com/xbwtyz/Mappo/actions/runs/44826623008). This report preserves historical acceptance evidence. **Mappo 0.2 remains unreleased.**
 
 ## User-facing changes
 
@@ -17,8 +17,8 @@
 | --- | --- |
 | Existing 3I plus E4 model tests | Passed focused Node workflow |
 | Compiled E4 standalone/root HTML | Build workflow passed; both blobs have identical SHA |
-| Full Node regression | Await final-head permanent CI |
-| Chromium and Firefox browser matrix, desktop and phone | Await final-head permanent CI |
+| Full Node regression | Passed on merged PR #64 head |
+| Chromium and Firefox browser matrix, desktop and phone | Passed on merged PR #64 head |
 | Authored plot metadata, save round-trip, consent and lineage | E4 Node cases; inspect negative edge cases before merge |
 | Temporary CI workflows | Removed from implementation branch |
 | Schema compatibility | Schema 9 retained |
