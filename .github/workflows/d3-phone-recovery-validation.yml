@@ -1,0 +1,50 @@
+# Temporary D3 viewport-verification workflow; remove after the checked-in bundle is refreshed.
+name: D3 phone recovery validation
+on:
+  push:
+    branches:
+      - feature/mappo-0.2d-d3-blocked-recovery
+permissions:
+  contents: write
+concurrency:
+  group: d3-phone-qa
+  cancel-in-progress: true
+jobs:
+  verify-mobile-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/mappo-0.2d-d3-blocked-recovery
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build D3 and verify targeted regression
+        run: |
+          npm run build
+          node --test tests/road-editor-acceptance.test.js
+      - name: Install isolated test browsers
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium firefox
+      - name: Real Chromium and Firefox road UI checks on four viewports
+        run: node scripts/road-browser-qa.mjs
+      - name: Commit verified standalone HTML on branch
+        run: |
+          git add index.html dist/mappo-0.2-dev.d3.html
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "build(d3): regenerate standalone for phone road action layout"
+            git push origin HEAD:feature/mappo-0.2d-d3-blocked-recovery
+          fi
+      - name: Preserve browser failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: d3-phone-recovery-failures
+          path: artifacts/road-qa/
+          if-no-files-found: ignore
+          retention-days: 7
