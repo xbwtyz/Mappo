@@ -21,7 +21,7 @@ for(const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]){
     for(const viewport of cases){
       const label=browserName+'-'+viewport.name;
       const page=await browser.newPage({viewport,hasTouch:browserName==='chromium'});
-      page.setDefaultTimeout(120000);
+      page.setDefaultTimeout(20000);
       const pageErrors=[];
       page.on('pageerror',error=>pageErrors.push(error.message));
       try {
