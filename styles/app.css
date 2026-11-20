@@ -570,3 +570,13 @@
  .property-split-panel-e2{left:8px;right:auto;top:auto;bottom:56px;width:min(245px,calc(100% - 16px));max-height:39%;padding:9px}
  .property-split-panel-e2 .road-preview-actions button{min-height:44px}
 }
+
+/* E3 reuses the shared floating preview stack; no separate editor shell. */
+.property-merge-panel-e3{z-index:16;max-height:calc(100% - 30px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.property-merge-panel-e3>label{display:block;font-size:11px;line-height:1.5;margin:7px 0}
+.property-merge-panel-e3 select{width:100%;max-width:100%;min-height:36px}
+.property-merge-panel-e3 .road-preview-actions button{min-height:38px}
+@media(max-width:700px){
+ .property-merge-panel-e3{left:8px;right:auto;top:auto;bottom:56px;width:min(245px,calc(100% - 16px));max-height:39%;padding:9px}
+ .property-merge-panel-e3 .road-preview-actions button{min-height:44px}
+}
