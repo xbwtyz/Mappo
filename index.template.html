@@ -52,6 +52,11 @@
             <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
             <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div></div>
           </div>
+          <button id="propertyCreateStartE1" type="button" class="tool-button full-width actions" aria-pressed="false" aria-controls="propertyCreatePanelE1">+ Create property</button>
+          <div class="road-history-actions-b4" role="group" aria-label="Property creation history">
+            <button id="propertyCreateUndoE1" type="button" class="minor-button" disabled>Undo property creation</button>
+            <button id="propertyCreateRedoE1" type="button" class="minor-button" disabled>Redo property creation</button>
+          </div>
           <button id="roadModeButton" class="tool-button full-width" aria-pressed="false" aria-controls="roadPreviewPanel">Inspect / edit roads</button>
           <div class="road-history-actions-b4" role="group" aria-label="Accepted road edit history">
             <button type="button" id="roadHistoryUndoB4" class="minor-button" disabled>Undo road</button>
@@ -242,6 +247,22 @@
               <button id="roadPreviewReset" class="minor-button" disabled>Reset</button>
               <button id="roadPreviewCancel" class="minor-button">Cancel</button>
             </div>
+          </div>
+        </section>
+        <section id="propertyCreatePanelE1" class="building-transform-panel property-creation-panel-e1" aria-label="Create property preview" hidden>
+          <div class="building-transform-heading"><strong>NEW PROPERTY</strong><span id="propertyCreateBlockE1">Choose vacant land</span></div>
+          <p class="hint">Click open land inside a street block. Mappo previews one new property with one plot and no buildings. Drag the ghost along its frontage or refine the numbers. Invalid proposals never change your city.</p>
+          <div class="building-transform-values">
+            <label>Frontage street <select id="propertyCreateRoadE1" disabled aria-label="New property's frontage street"></select></label>
+            <label>Along street (units) <input id="propertyCreateUE1" type="number" step="0.5" disabled></label>
+            <label>Width (units) <input id="propertyCreateWidthE1" type="number" min="7" max="200" step="0.5" disabled></label>
+            <label>Depth (units) <input id="propertyCreateDepthE1" type="number" min="9" max="200" step="0.5" disabled></label>
+          </div>
+          <p id="propertyCreateStatusE1" class="building-history-status" role="status" aria-live="polite" aria-atomic="true">Choose a block to begin.</p>
+          <div class="road-preview-actions">
+            <button id="propertyCreateApplyE1" type="button" class="tool-button" aria-describedby="propertyCreateStatusE1" disabled>Apply new property</button>
+            <button id="propertyCreateResetE1" type="button" class="minor-button" disabled>Reset</button>
+            <button id="propertyCreateCancelE1" type="button" class="minor-button">Cancel</button>
           </div>
         </section>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>

@@ -545,3 +545,15 @@
 .road-recovery-actions-d3{display:flex;flex-wrap:wrap;gap:5px}
 .road-recovery-actions-d3 button:first-child{font-weight:700;border-color:#7d906e}
 @media(max-width:900px){.road-recovery-actions-d3 button{min-height:44px}}
+
+/* E1: contextual property-creation controls reuse the existing floating preview. */
+.property-creation-panel-e1{max-height:calc(100% - 28px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.property-creation-panel-e1 .building-transform-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.property-creation-panel-e1 label{display:block;min-width:0;font-size:11px}
+.property-creation-panel-e1 input,.property-creation-panel-e1 select{width:100%;min-width:0}
+.property-creation-panel-e1 .building-transform-heading{gap:8px;flex-wrap:wrap}
+.property-creation-panel-e1 [data-validation="invalid"]{color:#a94436}
+@media(max-width:700px){
+  .property-creation-panel-e1{max-height:calc(100% - 16px);max-width:calc(100% - 16px);overflow:auto}
+  .property-creation-panel-e1 .building-transform-values{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
