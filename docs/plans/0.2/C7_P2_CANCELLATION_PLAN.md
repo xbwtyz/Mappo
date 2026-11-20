@@ -36,10 +36,11 @@ proposals accumulate behind it. Queued work may delay the latest valid draft.
 - [x] Unit regression added: no backlog on rapid updates; latest result alone may settle the session.
 - [ ] Stop, reset, selection switch, changed accepted project, and drag
   invalidation reject stale results while keeping Apply disabled (initial Node cases cover stop/reset/selection; add browser stress evidence).
-- [ ] Worker failure, message decode failure, and send/clone error recover
-  without ever writing accepted state, history or recovery data.
-- [ ] Node race tests, full offline build parity, Chromium/Firefox focused
-  browser behavior and fast CI pass. See P3 for final performance comparisons.
+- [x] Targeted Node tests cover worker crash, decode failure, send/clone error,
+  timeout recovery, stale dispatches, invalidation and accepted-state isolation.
+- [ ] Confirm compiled standalone parity, targeted Node/Chromium/Firefox tests,
+  and fast CI. P2 browser integration is now in `scripts/c7-p2-browser-qa.mjs`
+  and part of `npm run test:browser`.
 - [ ] PR remains unmerged pending approval.
 
 ## P2 build and validation
