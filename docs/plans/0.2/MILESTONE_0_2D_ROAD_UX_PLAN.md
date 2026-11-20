@@ -1,6 +1,6 @@
 # Mappo 0.2D road editing experience
 
-**Status** · D1 merged in PR #51; D2 implemented on a new branch from merged `main` at `1efe316`. D3–D4 remain planned.
+**Status** · D1 and D2 merged in PRs #51–#52. D3 implemented for review on a fresh branch from merged D2 (`6957509`). D4 remains planned.
 
 0.2D makes the existing road editor easier to read and recover from when a
 move affects a developed neighborhood. The normal path is **select → move →
@@ -77,20 +77,32 @@ D2 implementation: the ordinary preview now presents named protected buildings a
 
 ## D3 · Make blocked moves recoverable
 
-- [ ] Map structured blocker codes to plain-language explanations and actions.
+- [x] Map structured blocker codes to plain-language explanations and actions.
   Start with protected infrastructure, invalid crossings, unresolved
   ownership, and building or access conflicts. Use the existing Locate path
   when there is a trustworthy map target. Offer Adjust, Reset, or Cancel
   according to the situation. Retain extra diagnoses in Details.
-- [ ] Keep the intended road visible while locating an obstruction, changing
+- [x] Keep the intended road visible while locating an obstruction, changing
   a choice, or adjusting the draft. During recalculation, clear obsolete
   summaries and keep the latest-draft safeguards on Apply.
-- [ ] Verify a protected feature, an invalid crossing, a blocked building
+- [x] Verify a protected feature, an invalid crossing, a blocked building
   choice, and an obstruction without reliable map geometry. Test normal
   pointer, keyboard, and simulated touch actions, including focus return.
-- [ ] Defer the earlier nearby-placement search proposal. This cycle makes
+- [x] Defer the earlier nearby-placement search proposal. This cycle makes
   the existing blockers actionable and avoids adding a new search workload
   to the preview path.
+
+D3 delivery: structured diagnostics are mapped to clear explanations for
+protected infrastructure, crossings, block/plot ownership, building decisions,
+and access. Recovery actions focus the relevant editable controls or building
+choice, safely locate only an existing accepted map feature, and expose technical
+Details on request. Reset and Cancel remain in the unchanged footer. No nearby
+placement search is introduced. During preview recalculation, stale blocker
+cards disappear; new drafts clear obstruction highlights. All safety checks,
+authorizations, offline saves, and independent Apply remain authoritative.
+Automated Node and browser tests cover ordinary and blocked paths, keyboard
+focus, map navigation, and draft preservation. D4 still owns final end-to-end
+accessibility and performance acceptance across all layouts.
 
 ## D4 · Verify the complete editing path
 

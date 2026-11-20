@@ -43,7 +43,7 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
   };
   const preservedBlocks = highlights.preserved.filter(row => row.kind === 'block');
   const records = new Map();
-  if (highlights.affected.length || preservedBlocks.length) {
+  if (highlights.affected.length || preservedBlocks.length || session.recoveryFocusD3) {
     for (const [collection, kind] of ROAD_IMPACT_COLLECTIONS)
       for (const record of city[collection] ?? []) records.set(JSON.stringify([kind, record.id]), record);
     if (city.plaza) records.set(JSON.stringify(['plaza', city.plaza.id]), city.plaza);
@@ -99,6 +99,10 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
   // Preserved block shading is intentionally subtle; affected geometry wins.
   preservedBlocks.forEach(row => highlight(row, true));
   highlights.affected.forEach((r) => highlight(r, false));
+  // D3 identifies a verified, accepted obstruction without changing the
+  // proposed road geometry or implying that a blocked candidate is safe.
+  if (session.recoveryFocusD3)
+    highlight({...session.recoveryFocusD3,severity:'invalid'}, false);
   // B3 overlays only geometry computed from detached B1/B2 candidates.
   const preview = session.previewGeometry;
   if(session.previewVisible!==false && (session.roadPreviewVerifiedD1 || preview?.mode==='topology-only')){

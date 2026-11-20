@@ -149,6 +149,12 @@ for (const [name, type] of [
       );
       assert.equal(await page.locator('#roadReportStatus').innerText(),'Preview blocked');
       assert.equal(await page.locator('#roadChangeSummaryD1').isVisible(),false);
+      assert.equal(await page.locator('#roadRecoveryD3').isVisible(),true);
+      assert.match(await page.locator('#roadRecoveryHeadingD3').innerText(),/Coordinates cannot be used/);
+      assert.equal(await page.locator('#roadRecoveryLocateD3').isVisible(),false);
+      await page.locator('#roadRecoveryPrimaryD3').click();
+      assert.equal(await page.locator('#roadEditControlsD1').evaluate(el=>el.open),true);
+      assert.equal(await page.evaluate(()=>document.activeElement.id),'roadProposedX');
       await page.locator('#roadProposedX').fill(String(original.x + 0.01));
       await page.waitForFunction(() =>
         ['safe', 'needs-review'].includes(__buildingQA.state().roadWorkspace.session.report?.status),
@@ -680,7 +686,15 @@ for (const [name, type] of [
         await page.locator('#roadPreviewMinimize').click();
         await page.getByRole('button',{name:'Resolve conflict'}).click();
         assert.match(await page.locator('#roadApplyStatusB4').innerText(),/Market Hall/);
+        assert.equal(await page.locator('#roadRecoveryD3').isVisible(),true);
+        assert.match(await page.locator('#roadRecoveryHeadingD3').innerText(),/Building needs a decision/);
         assert.equal(await page.evaluate(()=>document.activeElement.textContent),'Suggest a new location');
+        if (viewport.name === 'phone') {
+          const bodyHeight = await page.locator('#roadPreviewBody').evaluate(el=>el.getBoundingClientRect().height);
+          assert.ok(bodyHeight >= 44,'Phone road preview must reserve room for an unobstructed touch target');
+        }
+        // Real pointer clicks verify the action is not covered by the fixed
+        // header/status/Apply footer; do not force or simulate this click.
         await needsChoice.getByRole('button',{name:'Keep it here'}).click();
         await page.waitForFunction(()=>__buildingQA.state().roadWorkspace.session.reconciliation?.unresolved[0]?.code==='building-placement-blocked');
         assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);

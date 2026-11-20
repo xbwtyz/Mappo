@@ -1,4 +1,5 @@
 import { buildingFrame } from '../core/building-transform.js';
+import { roadRecoveryGuidanceD3, roadRecoveryIssueD3 } from './road-recovery-d3.js';
 import { ROAD_BEND_LIMIT } from '../core/road-shape.js';
 import { RoadPreviewSession } from '../editor/road-preview.js';
 import { roadInspectionDetails, roadReconciliationPreviewB3 } from '../core/road-inspection.js';
@@ -364,6 +365,18 @@ export class RoadInspectionWorkspace {
       this.draw();
     });
     this.$('roadPreviewReset').addEventListener('click', () => this.reset());
+    this.$('roadRecoveryPrimaryD3').addEventListener('click', () => this.openRoadRecoveryD3());
+    this.$('roadRecoveryLocateD3').addEventListener('click', () => {
+      const target = this.roadRecoveryTargetD3(this.recoveryIssueD3);
+      if (!target || !this.locateImpact(target, {dryRun:true})) return;
+      this.session.recoveryFocusD3 = target;
+      this.locateImpact(target);
+    });
+    this.$('roadRecoveryDetailsD3').addEventListener('click', () => {
+      if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
+      this.$('roadDetailsD1').open = true;
+      this.$('roadDetailsD1').querySelector('summary')?.focus();
+    });
     this.$('roadResolveConflictC6').addEventListener('click', () => {
       const issue = this.session.reconciliation?.unresolved.find(hasRoadBuildingChoice);
       if (!issue) return;
@@ -638,10 +651,16 @@ export class RoadInspectionWorkspace {
     this.$('roadResolveConflictC6').hidden = !actionable;
     const problem = this.applyError || s.roadIntentInputError || s.error || s.reconciliationError;
     const topologyOnly = s.previewGeometry?.mode==='topology-only';
+    // A verified geometry snapshot can still contain real unresolved blockers.
+    // "Out of date" is only for a changed accepted project/revision, not for
+    // an unresolved obstruction in the current draft.
+    const stale = s.pending && s.settledRevision === s.revision &&
+      (this.getRevision() !== this.baseRevision ||
+        s.acceptedFingerprint !== JSON.stringify(s.project));
     const status = applying ? 'Applying road edit' : this.applyError ? 'Apply failed' : problem ? 'Preview blocked' :
       s.drag ? 'Placement in progress' : s.checking ? 'Checking preview' :
-      ready ? 'Preview ready' : actionable ? 'Building choice needed' :
-      s.pending && s.settledRevision === s.revision && s.previewGeometry?.verified ? 'Preview out of date' :
+      ready ? 'Preview ready' : stale ? 'Preview out of date' :
+      actionable ? 'Building choice needed' :
       topologyOnly ? 'Roads and blocks only' : s.pending ? 'Preview blocked' : 'Accepted position';
     const message = applying ? 'Validating the road and neighborhood before Apply…' :
       problem || (s.drag ? 'Release the handle to check this edit.' :
@@ -669,6 +688,7 @@ export class RoadInspectionWorkspace {
       if (element.hidden !== !text) element.hidden = !text;
     }
     this.renderBuildingDecisionsD2();
+    this.renderRoadRecoveryD3({ready, applying, status});
     panel.setAttribute('data-report-status', ready ? 'safe' : s.checking || applying ? 'checking' :
       problem || status==='Preview blocked' ? 'invalid' : s.pending ? 'needs-review' : 'idle');
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
@@ -812,6 +832,63 @@ export class RoadInspectionWorkspace {
       'Gray = accepted outlines · amber dashed = proposed roads/blocks only. Parcel adjustments remain unresolved.':
       'Gray = accepted · amber dashed = proposed blocks/roads · violet dashed = properties · teal dashed = plots · pink dashed = buildings.';
   }
+  roadRecoveryTargetD3(issue) {
+    if (!issue || !this.session.current()) return null;
+    const candidates = [];
+    if (issue.kind && issue.id) candidates.push({kind:issue.kind,id:issue.id});
+    // Graph diagnostics provide road and node IDs, not generic record IDs.
+    // Never guess the kind for relatedIds or locate a new, unaccepted record.
+    for (const id of issue.roadIds ?? []) candidates.push({kind:'road',id});
+    for (const id of issue.nodeIds ?? []) candidates.push({kind:'junction',id});
+    return candidates.find(row => this.locateImpact(row,{dryRun:true})) ?? null;
+  }
+  openRoadRecoveryD3() {
+    const s = this.session, guide = roadRecoveryGuidanceD3(this.recoveryIssueD3);
+    if (!guide || !s.active || !s.pending || s.checking || s.drag) return;
+    if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
+    if (guide.action === 'building') {
+      const issue = this.recoveryIssueD3;
+      const target = issue?.id && document.getElementById('roadConflictC6-' + issue.id);
+      if (target) {
+        target.scrollIntoView({block:'center'});
+        target.querySelector('button:not([disabled])')?.focus({preventScroll:true});
+        return;
+      }
+    }
+    this.$('roadEditControlsD1').open = true;
+    const control = guide.action === 'choose' ? 'roadSelectionId'
+      : s.details?.kind === 'road' ? 'roadIntentDxC1' : 'roadProposedX';
+    const input = this.$(control);
+    if (!input.disabled) {
+      input.scrollIntoView?.({block:'center'});
+      input.focus({preventScroll:true});
+    } else this.$('roadSelectionId').focus();
+  }
+  renderRoadRecoveryD3({ready,applying,status}) {
+    const s = this.session, panel = this.$('roadRecoveryD3');
+    const fresh = s.current() && s.pending && !s.checking && !s.drag &&
+      this.getRevision() === this.baseRevision && !ready && !applying &&
+      status !== 'Preview out of date' && !this.applyError &&
+      (s.settledRevision == null || s.settledRevision === s.revision);
+    const issue = fresh ? roadRecoveryIssueD3(s) : null;
+    this.recoveryIssueD3 = issue;
+    const guide = roadRecoveryGuidanceD3(issue);
+    panel.hidden = !guide;
+    if (!guide) {
+      this.$('roadRecoveryHeadingD3').textContent = '';
+      this.$('roadRecoveryExplanationD3').textContent = '';
+      this.$('roadRecoveryLocateD3').hidden = true;
+      return;
+    }
+    this.$('roadRecoveryHeadingD3').textContent = guide.title;
+    this.$('roadRecoveryExplanationD3').textContent = guide.description;
+    const primary = this.$('roadRecoveryPrimaryD3');
+    primary.textContent = guide.action === 'building' ? 'Review building choice'
+      : guide.action === 'choose' ? 'Choose another road' : 'Adjust road';
+    const target = this.roadRecoveryTargetD3(issue);
+    this.$('roadRecoveryLocateD3').hidden = !target;
+    this.$('roadRecoveryLocateD3').disabled = !target;
+  }
   renderBuildingDecisionsD2() {
     const s = this.session, section = this.$('roadBuildingDecisionsD2');
     const list = this.$('roadDecisionListD2');
@@ -916,9 +993,9 @@ export class RoadInspectionWorkspace {
     s.focusKey=JSON.stringify([row.kind,row.id]);
     this.draw();
   }
-  locateImpact(row) {
+  locateImpact(row, {dryRun=false} = {}) {
     const city = this.getProject()?.city;
-    if (!city || !row) return;
+    if (!city || !row) return false;
     const lookup = {
       junction: ['nodes'], road: ['roads'], block: ['blocks'], property: ['properties'],
       plot: ['plots'], building: ['buildings'], district: ['districts'],
@@ -944,10 +1021,12 @@ export class RoadInspectionWorkspace {
       points = (Array.isArray(raw) ? raw : []).map(p=>typeof p==='string' ? nodes.get(p) : p);
     }
     const valid = points.filter(p=>p && Number.isFinite(p.x) && Number.isFinite(p.y));
-    if (!valid.length) return;
+    if (!valid.length) return false;
+    if (dryRun) return true;
     this.camera.x = valid.reduce((sum,p)=>sum+p.x,0)/valid.length;
     this.camera.y = valid.reduce((sum,p)=>sum+p.y,0)/valid.length;
     this.draw();
+    return true;
   }
   renderReport() {
     const report = this.session.report;
