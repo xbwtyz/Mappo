@@ -1,0 +1,34 @@
+name: E2 temporary compile and commit
+on:
+  push:
+    branches:
+      - feature/mappo-0.2e-e2-straight-property-split
+    paths:
+      - '.github/workflows/e2-compile.yml'
+      - 'src/**'
+      - 'index.template.html'
+      - 'styles/**'
+      - 'package.json'
+permissions:
+  contents: write
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build verified standalone files
+        run: npm run build
+      - name: Commit build outputs only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html dist/mappo-0.2-dev.e2.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'build(e2): compile standalone property split editor'
+            git push origin HEAD:feature/mappo-0.2e-e2-straight-property-split
+          fi
