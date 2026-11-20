@@ -1,0 +1,31 @@
+name: F1 focused geometry QA and compile (temporary)
+on:
+  push:
+    branches: [feature/mappo-0.2f-f1-footprint-primitives]
+    paths: ['.github/workflows/f1-verification.yml']
+permissions:
+  contents: write
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pull current source
+        run: git pull --rebase origin feature/mappo-0.2f-f1-footprint-primitives
+      - name: F1 primitives and existing building regression
+        run: node --test tests/building-footprint-f1.test.js tests/building-structures.test.js tests/building-transform.test.js
+      - name: Compile standalone F1
+        run: npm run build
+      - name: Commit standalone copies
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html dist/mappo-0.2-dev.f1.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'build(f1): compile offline standalone'
+            git push origin HEAD:feature/mappo-0.2f-f1-footprint-primitives
+          fi
