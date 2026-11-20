@@ -17,13 +17,13 @@ E5 adds **integration and acceptance testing**, not a new editor or a new persis
 
 | Acceptance gate | Evidence | Status |
 | --- | --- | --- |
-| Focused E2/E3/E4 integration, metadata, morphology/size | `tests/property-integration-e5.test.js` | Passed focused CI before road test; final extended test pending |
-| Accepted road adaptation → property editing | E5 road-first integration assertion | Final focused CI pending |
+| Focused E2/E3/E4 integration, metadata, morphology/size | `tests/property-integration-e5.test.js` | Passed full focused E5 cross-editor CI |
+| Accepted road adaptation → property editing | E5 road-first integration assertion | Passed [focused run #44829548335](https://github.com/xbwtyz/Mappo/actions/runs/44829548335) |
 | Chromium/Firefox desktop/phone continuous E3→E4 UI | `scripts/property-integration-e5-browser-qa.mjs` | Pending permanent full CI |
 | Preexisting road and E1–E4 regression | Full `npm test`, `npm run test:browser` | Pending permanent full CI |
 | E5 standalone build | `npm run build` | Passed temporary controlled compiler |
 | E5 root ↔ versioned offline HTML | `index.html` ↔ `dist/mappo-0.2-dev.e5.html` | Confirmed byte-identical Git blob SHA `d83f801a5f946c1dfa14f582fb743c1e084ec10b` |
-| Temporary workflow cleanup | Git branch | Temporary E5 compiler and initial focused workflows removed; final focused workflow to remove after last verification |
+| Temporary workflow cleanup | Git branch | All temporary E5 workflows removed after successful build and focused verification |
 | Schema | Existing schema-9 format-1 document APIs | Remains schema 9; no migration |
 
 ## Performance: controlled measurement, not an optimization claim
