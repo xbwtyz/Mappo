@@ -173,7 +173,9 @@ test('P2 failure does not authorize Apply and a new draft can recover', async ()
   session.update({x:p.x+1,y:p.y},{defer:false});
   await Promise.resolve();
   workers[0].emit('error',{message:'test crash'});
-  await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
+  // Worker promise rejection propagates through dispatch, then, and catch.
+  // Flush an event-loop turn rather than assuming exactly three microtasks.
+  await new Promise(resolve=>setImmediate(resolve));
   assert.equal(session.checking,false);
   assert.match(session.error,/test crash/);
   assert.equal(session.settledRevision,null);
@@ -185,7 +187,7 @@ test('P2 failure does not authorize Apply and a new draft can recover', async ()
     result:{proposal:{issues:[],graphValid:true},report:{status:'needs-review'},
       reconciliation:{status:'candidate-only',candidateProject:project},
       topology:null,reconciliationError:''}});
-  await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
+  await new Promise(resolve=>setImmediate(resolve));
   assert.equal(session.checking,false);
   assert.equal(session.error,'');
   assert.equal(session.settledRevision,session.revision);
