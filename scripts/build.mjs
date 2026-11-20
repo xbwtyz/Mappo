@@ -8,24 +8,28 @@ const entry = join(root, 'src/app.js');
 const metadata = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if (metadata.version.replace(/^(\d+\.\d+)\.0-/, '$1-') !== APP_VERSION) throw new Error('Package and app versions disagree');
 const imports = /^\s*import\s+[^;]+?\s+from\s+['"]([^'"]+)['"];?\s*$/gm;
-const visited = new Set();
-const fragments = [];
-
-async function visit(file) {
-  if (visited.has(file)) return;
-  visited.add(file);
-  let source = await readFile(file, 'utf8');
-  for (const match of source.matchAll(imports)) {
-    if (!match[1].startsWith('.')) throw new Error(`External runtime dependency forbidden: ${match[1]}`);
-    await visit(resolve(dirname(file), match[1]));
+// Two independent module-closure builds: browser main thread and pure worker.
+async function bundle(entryFile) {
+  const visited = new Set(), fragments = [];
+  async function visit(file) {
+    if (visited.has(file)) return;
+    visited.add(file);
+    let source = await readFile(file, 'utf8');
+    for (const match of source.matchAll(imports)) {
+      if (!match[1].startsWith('.')) throw new Error('External runtime dependency forbidden: ' + match[1]);
+      await visit(resolve(dirname(file), match[1]));
+    }
+    source = source.replace(imports, '').replace(/^export\s+(?=((?:async\s+)?function|class|const|let)\b)/gm, '');
+    if (/^\s*(import|export)\s/m.test(source)) throw new Error('Unsupported module syntax: ' + file);
+    fragments.push('\n// ' + file.slice(root.length + 1) + '\n' + source);
   }
-  source = source.replace(imports, '').replace(/^export\s+(?=((?:async\s+)?function|class|const|let)\b)/gm, '');
-  if (/^\s*(import|export)\s/m.test(source)) throw new Error(`Unsupported module syntax: ${file}`);
-  fragments.push(`\n// ${file.slice(root.length + 1)}\n${source}`);
+  await visit(entryFile);
+  return fragments.join('\n');
 }
-
-await visit(entry);
-const script = `(function(){\n'use strict';${fragments.join('\n')}\n})();`;
+const workerScript = "(function(){\n'use strict';" +
+  await bundle(join(root, 'src/worker/junction-preview-worker.js')) + "\n})();";
+const script = "(function(){\n'use strict';\nconst ROAD_JUNCTION_WORKER_SOURCE_P1 = " +
+  JSON.stringify(workerScript) + ";" + await bundle(entry) + "\n})();";
 const css = await readFile(join(root, 'styles/app.css'), 'utf8');
 const template = (await readFile(join(root, 'index.template.html'), 'utf8')).replaceAll('{{APP_VERSION}}', APP_VERSION);
 if (!template.includes('<!-- INLINE_CSS -->') || !template.includes('<!-- INLINE_JS -->')) throw new Error('HTML template markers missing');

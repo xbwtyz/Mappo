@@ -185,6 +185,7 @@ export class RoadInspectionWorkspace {
     draw,
     reconcile = null,
     reconcileRoad = null,
+    computeJunctionAsync = null,
     getRevision = () => 0,
     applyEdit = () => ({ok:false,message:'Road Apply not configured.'}),
     afterExit = () => {},
@@ -206,6 +207,7 @@ export class RoadInspectionWorkspace {
       getProject,
       reconcile,
       reconcileRoad,
+      computeJunctionAsync,
       changed: () => {
         this.render();
         this.draw();

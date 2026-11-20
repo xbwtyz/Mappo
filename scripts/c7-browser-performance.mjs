@@ -40,6 +40,9 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
             },doc);
             await page.locator('#roadModeButton').scrollIntoViewIfNeeded();
             await page.locator('#roadModeButton').click();
+            assert.equal(await page.evaluate(() =>
+              typeof __buildingQA.state().roadWorkspace.session.computeJunctionAsync === 'function'),
+              true, 'P1 offline build must activate the background junction worker');
             const before=await page.evaluate(args=>{
               const app=__buildingQA.state(),s=app.roadWorkspace.session;
               s.select({kind:'junction',id:args.id});
@@ -55,6 +58,21 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
                 const fn=s[key];if(typeof fn!=='function')continue;
                 s[key]=(...p)=>{const t=performance.now();try{return fn(...p);}finally{
                   row[key==='analyze'?'analyzeMs':'reconcileMs']+=performance.now()-t;}};
+              }
+              if (typeof s.computeJunctionAsync === 'function') {
+                const fn=s.computeJunctionAsync._p1Original ?? s.computeJunctionAsync;
+                const measured=async (...args)=>{
+                  const result=await fn(...args);
+                  row.analyzeMs+=result.timings?.analyzeMs??0;
+                  row.reconcileMs+=result.timings?.reconcileMs??0;
+                  return result;
+                };
+                measured._p1Original=fn;
+                // Preserve real P2 cancellation when the instrumentation
+                // temporarily wraps the worker adapter.
+                measured.cancel=()=>fn.cancel?.();
+                measured.suspend=()=>fn.suspend?.();
+                s.computeJunctionAsync=measured;
               }
               const changed=s.changed;
               s.changed=(...p)=>{
