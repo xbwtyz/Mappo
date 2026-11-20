@@ -1,0 +1,51 @@
+# Temporary isolated D4 acceptance and distribution compiler; remove after verification.
+name: D4 focused browser acceptance and standalone
+on:
+  push:
+    branches:
+      - feature/mappo-0.2d-d4-acceptance-stabilization
+permissions:
+  contents: write
+concurrency:
+  group: mappo-d4-focused
+  cancel-in-progress: true
+jobs:
+  acceptance:
+    if: "!startsWith(github.event.head_commit.message, 'build(d4): regenerate')"
+    name: D4 acceptance, build and commit distribution
+    runs-on: ubuntu-24.04
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/mappo-0.2d-d4-acceptance-stabilization
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build D4 and run Node acceptance
+        run: |
+          npm run build
+          node --test tests/road-editor-acceptance.test.js
+      - name: Install browser test dependencies
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium firefox
+      - name: Verify D4 developed-city, schema-9 and accessibility scenarios
+        run: node scripts/d4-browser-acceptance.mjs
+      - name: Commit byte-identical offline distribution
+        run: |
+          git add index.html dist/mappo-0.2-dev.d4.html
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "build(d4): regenerate verified offline standalone HTML"
+            git push origin HEAD:feature/mappo-0.2d-d4-acceptance-stabilization
+          fi
+      - name: Upload browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: d4-focused-browser-evidence
+          path: artifacts/d4/
+          if-no-files-found: ignore
