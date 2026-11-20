@@ -9,6 +9,7 @@ import {validateStoredProject} from '../src/data/project-validation.js';
 
 function candidate(op='split',seed='e4-plot-count'){
   const source=createProject({seed,size:'small',morphology:'planned'});
+  const rejections=[];
   for(const p of source.city.properties){
     if(p.boundary.length!==4||!p.plotIds.length||(op==='merge'&&p.plotIds.length<2))continue;
     const s=new PropertyEditSession3I();
