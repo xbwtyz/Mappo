@@ -688,6 +688,7 @@ for (const [name, type] of [
           }
           assert.match(await page.locator('#roadReportStatus').innerText(),/preview ready|Safe/);
           await page.locator('#roadApplyB4').click();
+          await page.waitForFunction(() => !__buildingQA.state().roadWorkspace.active);
           assert.equal(await page.evaluate(({id,axis})=>__buildingQA.state().project.city.nodes
             .find(node=>node.id===id)[axis],{id,axis}),original[axis]+delta);
           const accepted=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
@@ -721,6 +722,7 @@ for (const [name, type] of [
         await choice.getByRole('button',{name:'Find a new placement'}).click();
         await page.waitForFunction(()=>!document.querySelector('#roadApplyB4').disabled);
         await page.locator('#roadApplyB4').click();
+        await page.waitForFunction(() => !__buildingQA.state().roadWorkspace.active);
         assert.equal(await page.evaluate(()=>__buildingQA.state().project.city.buildings
           .find(b=>b.id==='BLD-00048').customName),'Market Hall');
         assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);

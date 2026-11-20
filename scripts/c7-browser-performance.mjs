@@ -113,17 +113,38 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               }
               return elapsed;
             });
-            let applyMs=null;
+            let apply = null;
             if(pass==='warm'){
-              applyMs=await page.evaluate(b=>{
-                const t=performance.now();
-                document.querySelector('#roadApplyB4').click();
-                const duration=performance.now()-t;
-                if(__buildingQA.state().files.revision!==b.revision+1)throw Error('Apply not atomic');
+              apply=await page.evaluate(b=>new Promise((resolve,reject)=>{
+                requestAnimationFrame(() => {
+                  const started=performance.now();
+                  let last=started, frameGapMs=0;
+                  const button=document.querySelector('#roadApplyB4');
+                  button.click();
+                  const clickMs=performance.now()-started;
+                  const frame=()=>{
+                    const now=performance.now(), app=__buildingQA.state();
+                    frameGapMs=Math.max(frameGapMs,now-last);
+                    if(!app.roadWorkspace.active){
+                      if(app.files.revision!==b.revision+1)reject(Error('Apply not atomic'));
+                      else resolve({elapsedMs:roundInPage(now-started),clickMs:roundInPage(clickMs),frameGapMs:roundInPage(frameGapMs)});
+                      return;
+                    }
+                    if(!button.disabled || now-started>35000){
+                      reject(Error('Apply did not complete: '+document.querySelector('#roadApplyStatusB4').textContent));
+                      return;
+                    }
+                    last=now;
+                    requestAnimationFrame(frame);
+                  };
+                  requestAnimationFrame(frame);
+                });
+                function roundInPage(value){return Math.round(value*10)/10;}
+              }),before);
+              await page.evaluate(b=>{
                 if(!__buildingQA.moveRoadHistory('undo'))throw Error('Undo failed');
                 if(JSON.stringify(__buildingQA.state().project)!==b.original)throw Error('Undo mismatch');
                 if(!__buildingQA.moveRoadHistory('redo'))throw Error('Redo failed');
-                return duration;
               },before);
             }else{
               await page.evaluate(()=>{
@@ -148,7 +169,7 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               id,pass,previewMs:round(result.previewMs),analyzeMs:round(result.analyzeMs),
               reconcileMs:round(result.reconcileMs),renderMs:round(result.renderMs),
               frameGapMs:round(result.frameGapMs),steadyRenderMs:round(median(steadyRenderMs)),
-              applyMs:applyMs===null?null:round(applyMs)});
+              applyMs:apply?.elapsedMs??null,applyClickMs:apply?.clickMs??null,applyFrameGapMs:apply?.frameGapMs??null});
           }
         }
       }catch(e){errors.push(name+'/'+viewport.name+': '+e.stack);}
@@ -160,9 +181,13 @@ const summary=[];
 for(const group of [...new Set(results.map(r=>[r.browser,r.viewport,r.size].join('/')))]){
   const rows=results.filter(r=>[r.browser,r.viewport,r.size].join('/')===group);
   const sorted=rows.map(r=>r.previewMs).sort((a,b)=>a-b);
+  const applies=rows.filter(row=>row.applyMs!==null);
   summary.push({group,n:rows.length,medianMs:round(median(sorted)),
     p95Ms:round(sorted[Math.ceil(.95*sorted.length)-1]),
     maxFrameGapMs:round(Math.max(...rows.map(r=>r.frameGapMs))),
+    medianApplyMs:round(median(applies.map(r=>r.applyMs))),
+    maxApplyClickMs:round(Math.max(...applies.map(r=>r.applyClickMs))),
+    maxApplyFrameGapMs:round(Math.max(...applies.map(r=>r.applyFrameGapMs))),
     medianSteadyRenderMs:round(median(rows.map(r=>r.steadyRenderMs)))});
 }
 const report={runner:{cpu:os.cpus()[0]?.model,logicalCpus:os.cpus().length,

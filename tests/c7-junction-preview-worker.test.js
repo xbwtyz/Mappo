@@ -5,6 +5,9 @@ import { proposeJunctionMove } from '../src/core/road-graph.js';
 import { analyzeRoadImpact } from '../src/core/road-impact.js';
 import { prepareJunctionReflowC7 } from '../src/core/neighborhood-reflow.js';
 import { calculateJunctionPreviewP1 } from '../src/worker/junction-preview-worker.js';
+import { roadReconciliationPreviewB3 } from '../src/core/road-inspection.js';
+import { defaultWorkspace } from '../src/data/project-format.js';
+import { validateRoadApplyC2 } from '../src/editor/road-application.js';
 import { RoadPreviewSession } from '../src/editor/road-preview.js';
 
 test('P1 worker reproduces A3 and C7 results and returns clone-safe data', () => {
@@ -19,6 +22,7 @@ test('P1 worker reproduces A3 and C7 results and returns clone-safe data', () =>
   assert.deepEqual(actual.reconciliation,prepareJunctionReflowC7(project,junctionId,point,new Map()));
   assert.deepEqual(actual.proposal.issues,proposal.issues);
   assert.equal(actual.proposal.graphValid,proposal.graphValid);
+  assert.deepEqual(actual.previewGeometry,roadReconciliationPreviewB3(project,actual.reconciliation,actual.topology));
   assert.doesNotThrow(()=>structuredClone(actual));
   assert.equal(JSON.stringify(project),before);
 });
@@ -60,4 +64,25 @@ test('P1 asynchronous session ignores superseded and stopped worker replies', as
   await Promise.resolve(); await Promise.resolve();
   assert.equal(session.report,null);
   assert.equal(session.settledRevision,null);
+});
+
+test('P4 fresh Apply rejects a changed candidate or ledger before exposing an accepted candidate', () => {
+  const project = createProject({size:'small',seed:'c2-organic',morphology:'organic'});
+  const id = 'N-0139', node = project.city.nodes.find(n=>n.id===id);
+  const point = {x:node.x,y:node.y+15}, buildingDecisions = new Map();
+  const draft = {selection:{kind:'junction',id},point,buildingDecisions};
+  const inspected = prepareJunctionReflowC7(project,id,point,buildingDecisions);
+  const workspace = defaultWorkspace(project);
+  const original = JSON.stringify(project);
+  const receipt = validateRoadApplyC2(project,workspace,draft,inspected);
+  assert.equal(receipt.ok,true);
+  assert.deepEqual(receipt.candidate,inspected.candidateProject);
+  const changedCandidate = structuredClone(inspected.candidateProject);
+  changedCandidate.city.nodes.find(n=>n.id===id).y++;
+  for (const altered of [{...inspected,candidateProject:changedCandidate}, {...inspected,ledger:[]}]) {
+    const rejected = validateRoadApplyC2(project,workspace,draft,altered);
+    assert.equal(rejected.issues[0].code,'candidate-changed');
+    assert.equal(rejected.candidate,null);
+  }
+  assert.equal(JSON.stringify(project),original);
 });

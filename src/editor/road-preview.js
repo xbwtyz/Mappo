@@ -304,7 +304,7 @@ export class RoadPreviewSession {
         // after another edit, project replacement or in-place project change.
         const project = this.project, fingerprint = JSON.stringify(project);
         const input = {
-          project, junctionId: this.selection.id, point: { ...this.point },
+          projectJson: fingerprint, junctionId: this.selection.id, point: { ...this.point },
           decisions: [...this.buildingDecisions].map(([id, choice]) => [id, { ...choice }]),
         };
         const current = () => this.current() && revision === this.revision;
@@ -329,6 +329,7 @@ export class RoadPreviewSession {
           this.report = result.report;
           this.reconciliation = result.reconciliation;
           this.topology = result.topology;
+          this.previewGeometry = result.previewGeometry ?? null;
           this.reconciliationError = result.reconciliationError ?? '';
           if (this.reconciliation && !this.reconciliationError) {
             this.settledRevision = revision;

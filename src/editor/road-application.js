@@ -127,22 +127,28 @@ export function prepareRoadApplyB4(project,workspace,session,expectedRevision,cu
 }
 
 
-export function prepareRoadApplyC2(project, workspace, session, expectedRevision, currentRevision) {
+export function checkRoadApplyC2(project, session, expectedRevision, currentRevision, fingerprint = JSON.stringify(project)) {
   if (!session?.current?.() || session.project !== project || session.city !== project?.city ||
       !Number.isSafeInteger(expectedRevision) || expectedRevision !== currentRevision)
     return reject('stale-project', 'The accepted project changed. Reopen the road preview.');
   const inspected = session.reconciliation;
   if (!['road','junction'].includes(session.selection?.kind) || !session.pending || session.drag || session.checking ||
       session.error || session.roadIntentInputError || session.settledRevision !== session.revision ||
-      session.acceptedFingerprint !== JSON.stringify(project) || !session.previewGeometry?.verified ||
+      session.acceptedFingerprint !== fingerprint || !session.previewGeometry?.verified ||
       !['C2', 'C3'].includes(inspected?.phase) || !inspected.candidateProject)
     return reject('stale-preview', 'The street proposal is not a complete, current preview.');
+  return { ok: true };
+}
+
+// The standalone worker and synchronous fallback run the same fresh validation.
+export function validateRoadApplyC2(project, workspace, draft, inspected) {
+  const { selection, point, roadConnectionEdit, roadIntentOffset, buildingDecisions } = draft;
   try {
-    const fresh = session.selection.kind==='junction'
-      ? prepareJunctionReflowC7(project,session.selection.id,session.point,session.buildingDecisions)
-      : session.roadConnectionEdit
-      ? prepareRoadTopologyReflowC3(project, session.selection.id, null, session.roadConnectionEdit, session.buildingDecisions)
-      : prepareNeighborhoodReflowC3(project, session.selection.id, session.roadIntentOffset, undefined, session.buildingDecisions);
+    const fresh = selection.kind === 'junction'
+      ? prepareJunctionReflowC7(project, selection.id, point, buildingDecisions)
+      : roadConnectionEdit
+      ? prepareRoadTopologyReflowC3(project, selection.id, null, roadConnectionEdit, buildingDecisions)
+      : prepareNeighborhoodReflowC3(project, selection.id, roadIntentOffset, undefined, buildingDecisions);
     if (!fresh.candidateProject)
       return reject('candidate-invalid', fresh.unresolved[0]?.message ?? 'Fresh reflow did not pass validation.');
     if (!b4Same(fresh.candidateProject, inspected.candidateProject) || !b4Same(fresh.ledger, inspected.ledger))
@@ -154,4 +160,9 @@ export function prepareRoadApplyC2(project, workspace, session, expectedRevision
   } catch (error) {
     return reject('apply-validation', 'Road Apply blocked: ' + error.message);
   }
+}
+
+export function prepareRoadApplyC2(project, workspace, session, expectedRevision, currentRevision) {
+  const check = checkRoadApplyC2(project, session, expectedRevision, currentRevision);
+  return check.ok ? validateRoadApplyC2(project, workspace, session, session.reconciliation) : check;
 }

@@ -324,12 +324,21 @@ export class RoadInspectionWorkspace {
     });
     this.$('roadApplyB4').addEventListener('click', () => {
       if(this.$('roadApplyB4').disabled || !this.session.current())return;
-      const result=this.applyEdit(this.session,this.baseRevision);
-      if(!result?.ok){
-        this.applyError=result?.message??'Road Apply failed without changing the accepted city.';
-        this.applyErrorRevision=this.session.revision;
+      const revision = this.session.revision;
+      const finish = result => {
+        if (!this.session.current() || this.session.revision !== revision) return;
+        this.applyingRevision = null;
+        this.applyError = result?.ok ? '' : result?.message ?? 'Road Apply failed without changing the accepted city.';
+        this.applyErrorRevision = revision;
         this.render();
-      }
+      };
+      const result = this.applyEdit(this.session, this.baseRevision);
+      if (result?.then) {
+        this.applyingRevision = revision;
+        this.applyError = '';
+        this.render();
+        result.then(finish, error => finish({message: error.message}));
+      } else finish(result);
     });
     this.$('roadPreviewMinimize').addEventListener('click', () => {
       const body = this.$('roadPreviewBody');
@@ -569,7 +578,7 @@ export class RoadInspectionWorkspace {
       this.previewReconciliation = s.reconciliation;
       this.previewTopology = s.topology;
       this.cachedPreviewGeometry = s.reconciliation
-        ? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology)
+        ? s.previewGeometry ?? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology)
         : null;
     }
     s.previewGeometry = this.cachedPreviewGeometry;
@@ -580,12 +589,13 @@ export class RoadInspectionWorkspace {
       s.previewGeometry?.verified && s.settledRevision===s.revision &&
       s.acceptedFingerprint===JSON.stringify(s.project) &&
       this.getRevision()===this.baseRevision);
-    this.$('roadApplyB4').disabled=!ready;
+    const applying = this.applyingRevision === s.revision;
+    this.$('roadApplyB4').disabled = applying || !ready;
     const issue = s.reconciliation?.unresolved?.find(hasRoadBuildingChoice) ?? s.reconciliation?.unresolved?.[0];
     const actionable = !s.checking && !s.drag && hasRoadBuildingChoice(issue);
     const building = actionable && s.city.buildings.find(record => record.id === issue.id);
     this.$('roadResolveConflictC6').hidden = !actionable;
-    const message = this.applyError || s.roadIntentInputError || s.error || s.reconciliationError ||
+    const message = applying ? 'Validating the road and neighborhood before Apply…' : this.applyError || s.roadIntentInputError || s.error || s.reconciliationError ||
       (ready ? 'Ready to apply. The road and neighborhood changes will be saved together.' :
         s.drag ? 'Release the handle to check this edit.' :
         s.checking ? 'Checking the street and nearby properties…' :
