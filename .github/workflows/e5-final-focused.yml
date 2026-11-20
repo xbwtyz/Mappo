@@ -16,3 +16,4 @@ jobs:
           node-version: '22'
       - run: node --test tests/property-integration-e5.test.js
 # Corrected road transaction assertion
+# Normalize cross-realm record checks
