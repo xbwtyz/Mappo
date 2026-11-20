@@ -13,7 +13,7 @@
 | [0.2 Master Roadmap](plans/0.2/README.md) | Approved post-D4 order: property restructuring, advanced buildings, optional civic places, release hardening |
 | [0.2E Property Design](plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md) | E1 and E2 merged; E3 adjacent merge design proposed; E4/E5 planned |
 | [E2 Straight-Split Design](plans/0.2/E2_PROPERTY_SPLIT_DESIGN.md) | Frontage-to-rear geometry, identity lineage, plot/building ownership and five implementation/QA gates |
-| [E2 Acceptance](plans/0.2/E2_ACCEPTANCE_REPORT.md) | E2 implemented and merged via PR #60; historical acceptance evidence |\n| [E3 Adjacent Merge Design](plans/0.2/E3_PROPERTY_MERGE_DESIGN.md) | Proposed identity, adjacency, metadata, ownership and implementation gates awaiting approval |
+| [E2 Acceptance](plans/0.2/E2_ACCEPTANCE_REPORT.md) | E2 implemented and merged via PR #60; historical acceptance evidence |\n| [E3 Adjacent Merge Design](plans/0.2/E3_PROPERTY_MERGE_DESIGN.md) | Approved design for conservative adjacent property merging |\n| [E3 Acceptance Report](plans/0.2/E3_ACCEPTANCE_REPORT.md) | Unmerged PR #62 implementation scope, safeguards and CI gates |
 | [0.2F Building Design](plans/0.2/MILESTONE_0_2F_BUILDING_DESIGN.md) | Proposed advanced footprints, direct editing and categories without duplicating existing tools |
 | [3G-A Checkpoint](history/3g/MILESTONE_3GA_QA.md) | Visual building edit mode design and verification |
 | [3G-B Checkpoint](history/3g/MILESTONE_3GB_QA.md) | Non-destructive building transformation previews, controls and QA |
