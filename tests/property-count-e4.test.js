@@ -17,8 +17,9 @@ function candidate(op='split',seed='e4-plot-count'){
     if(!edited)continue;
     const attempt=preparePropertyApply3I(source,defaultWorkspace(source),s);
     if(attempt.ok)return {source,property:p,session:s,attempt};
+    if(rejections.length<6)rejections.push({id:p.id,issues:attempt.issues});
   }
-  throw Error('Could not find a validated '+op+' candidate from generated city.');
+  throw Error('Could not find a validated '+op+' candidate from generated city: '+JSON.stringify(rejections));
 }
 
 test('E4 split retains plot ID and originals, assigns unique ID, preserves structure, and round-trips schema 9',()=>{
