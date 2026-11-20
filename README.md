@@ -1,6 +1,6 @@
 # Mappo
 
-> **Development track: Mappo 0.2E — Manual Property Restructuring.** E1 **Create Properties** ([PR #58](https://github.com/xbwtyz/Mappo/pull/58)) and E2 **Split Properties** ([PR #60](https://github.com/xbwtyz/Mappo/pull/60)) are merged. E3 **Merge Properties** has a [proposed conservative design](docs/plans/0.2/E3_PROPERTY_MERGE_DESIGN.md) awaiting approval before code. See the [0.2E roadmap](docs/plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md). The published stable release remains **0.1.0**.
+> **Development track: Mappo 0.2E — Manual Property Restructuring.** E1 **Create Properties** ([PR #58](https://github.com/xbwtyz/Mappo/pull/58)) and E2 **Split Properties** ([PR #60](https://github.com/xbwtyz/Mappo/pull/60)) are merged. E3 **Merge Properties** has an approved [conservative design](docs/plans/0.2/E3_PROPERTY_MERGE_DESIGN.md) and an unmerged [implementation PR #62](https://github.com/xbwtyz/Mappo/pull/62), pending full CI and separate merge approval. See the [0.2E roadmap](docs/plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md). The published stable release remains **0.1.0**.
 
 **Mappo 0.1.0** is an offline-first medieval and fantasy city generator and 2D editor, built from modular JavaScript and shipped as **one standalone HTML file**.
 
