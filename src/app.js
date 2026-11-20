@@ -109,6 +109,7 @@ import { extractRoadFaces, matchExistingFaces } from './core/road-faces.js';
 import { analyzeRoadImpact, inspectJunctionImpact } from './core/road-impact.js';
 
 import { RoadInspectionWorkspace } from './ui/road-inspection.js';
+import { createJunctionPreviewWorkerP1 } from './editor/junction-preview-worker-client.js';
 import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 // B1 candidate API is compiled for later editor integration; no Apply or UI hooks.
 import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
@@ -1403,6 +1404,7 @@ identityWorkspace.bind();
 roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
   reconcile:prepareJunctionReflowC7,reconcileRoad:prepareRoadReconciliationB1,
+  computeJunctionAsync:createJunctionPreviewWorkerP1(),
   getRevision:()=>files?.revision??0,applyEdit:applyRoadEditB4,
   canEnter:()=>!project?.city?'Generate a city before inspecting roads.':
     workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive

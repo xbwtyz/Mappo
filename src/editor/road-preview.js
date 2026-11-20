@@ -18,8 +18,9 @@ export class RoadPreviewSession {
     analyze = analyzeRoadImpact,
     reconcile = null,
     reconcileRoad = null,
+    computeJunctionAsync = null,
   }) {
-    Object.assign(this, { getProject, changed, schedule, unschedule, analyze, reconcile, reconcileRoad });
+    Object.assign(this, { getProject, changed, schedule, unschedule, analyze, reconcile, reconcileRoad, computeJunctionAsync });
     this.active = false;
     this.revision = 0;
     this.previewVisible = true;
@@ -290,6 +291,46 @@ export class RoadPreviewSession {
     const run = () => {
       if (!this.current() || revision !== this.revision) return;
       this.timer = undefined;
+      if (this.computeJunctionAsync && this.reconcile) {
+        // The accepted snapshot, selection and revision are immutable inputs
+        // to this worker request. No result is allowed to authorize Apply
+        // after another edit, project replacement or in-place project change.
+        const project = this.project, fingerprint = JSON.stringify(project);
+        const input = {
+          project, junctionId: this.selection.id, point: { ...this.point },
+          decisions: [...this.buildingDecisions].map(([id, choice]) => [id, { ...choice }]),
+        };
+        const current = () => this.current() && revision === this.revision;
+        const settle = () => {
+          if (!current()) return;
+          this.checking = false;
+          this.changed();
+        };
+        Promise.resolve().then(() => this.computeJunctionAsync(input)).then(result => {
+          if (!current()) return;
+          if (fingerprint !== JSON.stringify(project)) {
+            this.error = 'Accepted project changed during background preview. Start a new draft.';
+            settle();
+            return;
+          }
+          this.proposal = result.proposal;
+          this.report = result.report;
+          this.reconciliation = result.reconciliation;
+          this.topology = result.topology;
+          this.reconciliationError = result.reconciliationError ?? '';
+          if (this.reconciliation && !this.reconciliationError) {
+            this.settledRevision = revision;
+            this.acceptedFingerprint = fingerprint;
+          }
+          settle();
+        }).catch(error => {
+          if (!current()) return;
+          this.error = error.message?.startsWith('Report unavailable:')
+            ? error.message : 'Report unavailable: ' + error.message;
+          settle();
+        });
+        return;
+      }
       try {
         this.proposal = proposeJunctionMove(this.city, this.selection.id, this.point);
         this.report = this.analyze(this.project, this.proposal);

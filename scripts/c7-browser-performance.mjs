@@ -56,6 +56,15 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
                 s[key]=(...p)=>{const t=performance.now();try{return fn(...p);}finally{
                   row[key==='analyze'?'analyzeMs':'reconcileMs']+=performance.now()-t;}};
               }
+              if (typeof s.computeJunctionAsync === 'function') {
+                const fn=s.computeJunctionAsync;
+                s.computeJunctionAsync=async (...args)=>{
+                  const result=await fn(...args);
+                  row.analyzeMs+=result.timings?.analyzeMs??0;
+                  row.reconcileMs+=result.timings?.reconcileMs??0;
+                  return result;
+                };
+              }
               const changed=s.changed;
               s.changed=(...p)=>{
                 const t=performance.now();changed(...p);
