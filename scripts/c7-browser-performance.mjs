@@ -37,8 +37,9 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
             const doc={project,workspace:defaultWorkspace(project)};
             await page.evaluate(doc=>{
               __buildingQA.apply(doc);
-              __buildingQA.state().roadWorkspace.start();
             },doc);
+            await page.locator('#roadModeButton').scrollIntoViewIfNeeded();
+            await page.locator('#roadModeButton').click();
             const before=await page.evaluate(args=>{
               const app=__buildingQA.state(),s=app.roadWorkspace.session;
               s.select({kind:'junction',id:args.id});
@@ -65,14 +66,26 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
                   row.done=true;
                 }
               };
-              const field=document.querySelector(args.axis==='x'?'#roadProposedX':'#roadProposedY');
-              field.value=String(point[args.axis]+args.delta);
-              field.dispatchEvent(new Event('input',{bubbles:true}));
               return {original,revision,point};
             },{id,axis,delta});
+            await page.locator(axis==='x'?'#roadProposedX':'#roadProposedY').fill(String(before.point[axis]+delta));
             await page.waitForFunction(()=>window.__c7?.done,null,{timeout:120000});
             const result=await page.evaluate(()=>({...window.__c7}));
-            assert.equal(result.ready,true,name+'/'+viewport.name+'/'+size+'/'+id+' Apply not ready');
+            if(!result.ready){
+              const detail=await page.evaluate(()=>{
+                const app=__buildingQA.state(),s=app.roadWorkspace.session;
+                return {selection:s.selection,point:s.point,pending:s.pending,checking:s.checking,
+                  reconciled:s.reconciliation?.status,candidate:!!s.reconciliation?.candidateProject,
+                  unresolved:s.reconciliation?.unresolved?.slice(0,3),
+                  validation:s.reconciliation?.validation,previewVerified:s.previewGeometry?.verified,
+                  error:s.error,reconciliationError:s.reconciliationError,
+                  baseRevision:app.roadWorkspace.baseRevision,fileRevision:app.files.revision,
+                  settled:s.settledRevision,current:s.revision,
+                  fingerprintMatches:s.acceptedFingerprint===JSON.stringify(s.project),
+                  applyStatus:document.querySelector('#roadApplyStatusB4').textContent};
+              });
+              throw Error(name+'/'+viewport.name+'/'+size+'/'+id+' Apply not ready: '+JSON.stringify(detail));
+            }
             assert.equal(await page.evaluate(b=>JSON.stringify(__buildingQA.state().project)===b.original),true,before);
             assert.equal(await page.evaluate(b=>__buildingQA.state().files.revision===b.revision),true,before);
             let applyMs=null;
