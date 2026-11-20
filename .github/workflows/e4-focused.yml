@@ -17,3 +17,4 @@ jobs:
       - run: node --test tests/property-count-e4.test.js tests/property-edit.test.js
 # E4 diagnostics repeat
 # E4 fixture diagnostics
+# Corrected splice insert
