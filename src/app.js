@@ -115,7 +115,7 @@ import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
 // B2 conservative parcel adaptation remains preview-only until B4 Apply.
 import { prepareJunctionReflowC7 } from './core/neighborhood-reflow.js';
-import { prepareRoadApplyC2 } from './editor/road-application.js';
+import { checkRoadApplyC2, prepareRoadApplyC2 } from './editor/road-application.js';
 import { RoadGeometryHistoryB4 } from './editor/road-history.js';
 
 const $ = id => document.getElementById(id),
@@ -1419,19 +1419,43 @@ function applyRoadEditB4(session,baselineRevision){
   const previous=project,revision=files?.revision??0;
   if(!previous||!session?.current())
     return {ok:false,message:'The road preview is stale. Reopen it before Apply.'};
-  const receipt=prepareRoadApplyC2(previous,captureWorkspace().workspace,session,baselineRevision,revision);
-  if(!receipt.ok)return {ok:false,message:receipt.issues?.[0]?.message??'Road Apply blocked.'};
-  if(project!==previous||revision!==(files?.revision??0)||session.revision!==session.settledRevision)
-    return {ok:false,message:'Accepted project or preview changed during Apply.'};
-  const junctionId=session.selection.id;
+  const workspace = captureWorkspace().workspace;
+  const draftRevision = session.revision;
+  const junctionId = session.selection?.id;
+  const commit = receipt => {
+    if (!receipt.ok) return {ok:false,message:receipt.issues?.[0]?.message??'Road Apply blocked.'};
+    if (project !== previous || revision !== (files?.revision ?? 0) || !session.current() ||
+        session.revision !== draftRevision || session.settledRevision !== draftRevision)
+      return {ok:false,message:'Accepted project or preview changed during Apply.'};
+    return commitRoadEditB4(previous, revision, receipt.candidate, junctionId);
+  };
+  if (session.selection?.kind !== 'junction' || !session.computeJunctionAsync)
+    return commit(prepareRoadApplyC2(previous, workspace, session, baselineRevision, revision));
+
+  const projectJson = JSON.stringify(previous);
+  const check = checkRoadApplyC2(previous, session, baselineRevision, revision, projectJson);
+  if (!check.ok) return commit(check);
+  const { candidateProject, ledger } = session.reconciliation;
+  return session.computeJunctionAsync({
+    operation: 'apply', projectJson, junctionId, workspace,
+    point: { ...session.point }, decisions: [...session.buildingDecisions],
+    inspected: { candidateProject, ledger },
+  }).then(receipt => {
+    if (project !== previous || JSON.stringify(project) !== projectJson)
+      return {ok:false,message:'The accepted project changed during Apply.'};
+    return commit(receipt);
+  }, error => ({ok:false,message:'Road Apply failed: ' + error.message}));
+}
+
+function commitRoadEditB4(previous, revision, candidate, junctionId) {
   // Exit only transient UI state before accepted data is replaced. No file or
   // history writes occur until the candidate passes the entire B4 gate.
   roadWorkspace.exit({restore:true});
   if(project!==previous||revision!==(files?.revision??0))
     return {ok:false,message:'The accepted project changed before commit.'};
-  if(!roadHistory.record(previous,receipt.candidate,junctionId))
+  if(!roadHistory.record(previous,candidate,junctionId))
     return {ok:false,message:'Nothing was changed.'};
-  project=receipt.candidate; // one atomic accepted-state replacement
+  project=candidate; // one atomic accepted-state replacement
   buildingHistory.clear();
   buildingStructureHistory.clear();
   propertyHistory.clear();

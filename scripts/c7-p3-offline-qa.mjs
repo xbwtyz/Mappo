@@ -1,8 +1,7 @@
-// P3 offline acceptance: real file:// standalone with an inline Blob Worker.
+// Offline acceptance for junction preview and Apply in the inline Blob Worker.
 // This deliberately does NOT use the HTTP route used by the browser QA suite.
 import assert from 'node:assert/strict';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
-import { pathToFileURL } from 'node:url';
 import { chromium, firefox } from 'playwright';
 import { createProject } from '../src/core/city-model.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
@@ -63,12 +62,45 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     assert.equal(after.reconciliationError,'');
     assert.equal(after.accepted,before.accepted,'preview never changes accepted project');
     assert.equal(after.revision,before.revision,'preview never persists changes');
+    const cancelled = await page.evaluate(async () => {
+      const app = __buildingQA.state(), s = app.roadWorkspace.session;
+      const button = document.querySelector('#roadApplyB4');
+      const done = app.roadHistory.past.length;
+      button.click();
+      const validating = button.disabled && /Validating/.test(document.querySelector('#roadApplyStatusB4').textContent);
+      s.reset();
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      return {
+        validating, disabled: button.disabled, revision: app.files.revision,
+        accepted: JSON.stringify(__buildingQA.state().project), historyUnchanged: app.roadHistory.past.length === done,
+      };
+    });
+    assert.equal(cancelled.validating,true,'Apply immediately reports validation and disables repeat clicks');
+    assert.equal(cancelled.disabled,true,'reset cancels validation and disables Apply');
+    assert.equal(cancelled.revision,before.revision);
+    assert.equal(cancelled.accepted,before.accepted);
+    assert.equal(cancelled.historyUnchanged,true);
+
+    await page.evaluate(() => {
+      const s = __buildingQA.state().roadWorkspace.session;
+      const node = s.city.nodes.find(n=>n.id==='N-0139');
+      s.update({x:node.x,y:node.y+15},{defer:false});
+    });
+    await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);
+    await page.locator('#roadApplyB4').click();
+    await page.waitForFunction(() => !__buildingQA.state().roadWorkspace.active);
+    const applied = await page.evaluate(() => {
+      const app = __buildingQA.state();
+      return { revision: app.files.revision, moved: app.project.city.nodes.find(n=>n.id==='N-0139').y,
+        history: app.roadHistory.past.length };
+    });
+    assert.equal(applied.revision,before.revision+1);
+    assert.equal(applied.moved,project.city.nodes.find(n=>n.id==='N-0139').y+15);
+    assert.equal(applied.history,1);
     assert.deepEqual(external,[],browserName+': offline HTML attempted a network request');
     assert.deepEqual(errors,[],browserName+': offline JavaScript page errors');
-    await page.evaluate(()=>__buildingQA.state().roadWorkspace.session.reset());
-    assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
-    console.log('C7_P3_OFFLINE '+JSON.stringify({browser:browserName,passed:true,
-      candidate:after.candidate,networkRequests:external.length}));
+    console.log('C7_OFFLINE '+JSON.stringify({browser:browserName,passed:true,
+      preview:true,apply:true,resetDuringApply:true,networkRequests:external.length}));
     await page.close();
   } finally { await browser.close(); }
 }

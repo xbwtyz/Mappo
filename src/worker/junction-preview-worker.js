@@ -2,8 +2,10 @@ import { proposeJunctionMove } from '../core/road-graph.js';
 import { analyzeRoadImpact } from '../core/road-impact.js';
 import { prepareJunctionReflowC7 } from '../core/neighborhood-reflow.js';
 import { prepareRoadReconciliationB1 } from '../core/road-reconciliation.js';
+import { roadReconciliationPreviewB3 } from '../core/road-inspection.js';
+import { validateRoadApplyC2 } from '../editor/road-application.js';
 
-// Pure computation: no Apply, persistence or accepted-state mutations.
+// Worker computations operate on detached snapshots.
 export function calculateJunctionPreviewP1({ project, junctionId, point, decisions = [] }) {
   const start = performance.now();
   const proposal = proposeJunctionMove(project.city, junctionId, point);
@@ -18,23 +20,30 @@ export function calculateJunctionPreviewP1({ project, junctionId, point, decisio
   } catch (error) {
     reconciliationError = 'Adaptation preview unavailable: ' + error.message;
   }
+  const reconcileMs = performance.now() - reflowStart;
+  const previewGeometry = reconciliation ? roadReconciliationPreviewB3(project, reconciliation, topology) : null;
   // proposal.graph contains functions in its read-only index facades, so
   // only send clone-safe fields back across the worker message boundary.
   return { proposal: { issues: proposal.issues, graphValid: proposal.graphValid },
-    report, reconciliation, topology, reconciliationError,
-    timings: { analyzeMs, reconcileMs: performance.now() - reflowStart,
+    report, reconciliation, topology, previewGeometry, reconciliationError,
+    timings: { analyzeMs, reconcileMs,
       totalMs: performance.now() - start } };
 }
 if (typeof self !== 'undefined' && typeof self.addEventListener === 'function' &&
     typeof self.postMessage === 'function') {
   self.addEventListener('message', event => {
-    const { requestId, project, junctionId, point, decisions } = event.data ?? {};
+    const { requestId, operation, projectJson, junctionId, point, decisions, workspace, inspected } = event.data ?? {};
     try {
-      self.postMessage({ requestId, result: calculateJunctionPreviewP1({
-        project, junctionId, point, decisions,
-      }) });
+      const project = JSON.parse(projectJson);
+      const result = operation === 'apply'
+        ? validateRoadApplyC2(project, workspace, {
+          selection: { kind: 'junction', id: junctionId }, point, buildingDecisions: new Map(decisions),
+        }, inspected)
+        : calculateJunctionPreviewP1({ project, junctionId, point, decisions });
+      self.postMessage({ requestId, result });
     } catch (error) {
-      self.postMessage({ requestId, error: 'Report unavailable: ' + error.message });
+      const message = operation === 'apply' ? 'Road Apply blocked: ' : 'Report unavailable: ';
+      self.postMessage({ requestId, error: message + error.message });
     }
   });
 }
