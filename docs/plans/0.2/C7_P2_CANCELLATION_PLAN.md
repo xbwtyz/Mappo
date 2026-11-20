@@ -32,10 +32,10 @@ proposals accumulate behind it. Queued work may delay the latest valid draft.
 
 ## Acceptance evidence
 
-- [ ] Repeated computation cancels the prior active worker (not just the UI).
-- [ ] No backlog on rapid updates; latest result alone may settle the session.
+- [x] Unit regression added: repeated computation cancels the prior active worker (not just UI).
+- [x] Unit regression added: no backlog on rapid updates; latest result alone may settle the session.
 - [ ] Stop, reset, selection switch, changed accepted project, and drag
-  invalidation reject stale results while keeping Apply disabled.
+  invalidation reject stale results while keeping Apply disabled (initial Node cases cover stop/reset/selection; add browser stress evidence).
 - [ ] Worker failure, message decode failure, and send/clone error recover
   without ever writing accepted state, history or recovery data.
 - [ ] Node race tests, full offline build parity, Chromium/Firefox focused
