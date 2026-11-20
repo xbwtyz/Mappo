@@ -1,6 +1,6 @@
 # Mappo
 
-> Development branch: **0.2-dev.a4**, road/junction inspection and temporary impact previews. [Scope, controls and verification](docs/plans/0.2/A4_ROAD_PREVIEW.md). The stable 0.1 distribution remains available below.
+> **Development track: Mappo 0.2D** — road-first editing, contextual building choices, and recoverable blocked previews. [0.2D roadmap](docs/plans/0.2/MILESTONE_0_2D_ROAD_UX_PLAN.md) · [D4 automated acceptance and performance report](docs/plans/0.2/D4_ACCEPTANCE_REPORT.md). The published stable release remains 0.1.0.
 
 **Mappo 0.1.0** is an offline-first medieval and fantasy city generator and 2D editor, built from modular JavaScript and shipped as **one standalone HTML file**.
 
