@@ -207,6 +207,7 @@ test('D3 maps supported blockers to useful actions without inventing a map targe
     ['building-placement-blocked','Building placement was rejected','building'],
     ['protected-junction','Protected road junction','choose'],
     ['candidate-coordinate','Coordinates cannot be used','adjust'],
+    ['coordinate-limit','Coordinates cannot be used','adjust'],
   ];
   for (const [code,title,action] of scenarios) {
     const guide=roadRecoveryGuidanceD3({code,message:'source note'});
