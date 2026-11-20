@@ -31,7 +31,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Successful CI for 0.2 development must not attempt to republish 0.1.
+      - name: Check if the tested commit is a stable 0.1.0 build
+        id: stable
+        shell: bash
+        run: |
+          app_version="$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")"
+          package_version="$(node -p "require('./package.json').version")"
+          if [[ "$app_version" == '0.1.0' && "$package_version" == '0.1.0' ]]; then
+            echo 'eligible=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'eligible=false' >> "$GITHUB_OUTPUT"
+            echo "Skipping old v0.1.0 publisher for app=$app_version package=$package_version."
+          fi
       - name: Confirm stable version and reproducible build
+        if: steps.stable.outputs.eligible == 'true'
         run: |
           test "$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")" = '0.1.0'
           test "$(node -p "require('./package.json').version")" = '0.1.0'
@@ -40,6 +54,7 @@ jobs:
           git diff --exit-code -- index.html dist/mappo-0.1.0.html
           test -f docs/releases/v0.1.0.md
       - name: Tag and publish GitHub Release with offline HTML
+        if: steps.stable.outputs.eligible == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
