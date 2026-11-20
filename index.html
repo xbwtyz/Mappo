@@ -13966,7 +13966,7 @@ class PropertySplitControlsE2 {
     Object.assign(this,{getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed});
     this.session=new PropertySplitSessionE2(()=>this.changed());
     this.history=new PropertySplitHistoryE2(20);
-    this.boundRevision=null;
+    this.boundProject=null;
     this.bind();
     this.refresh();
   }
@@ -13975,12 +13975,12 @@ class PropertySplitControlsE2 {
     if(this.canEnter()!==true)return false;
     const project=this.getProject();
     if(!this.session.start(project?.city,id))return false;
-    this.boundRevision=this.getRevision();
+    this.boundProject=project;
     this.refresh();
     return true;
   }
   reset(){return this.session.reset();}
-  stop(){const previous=this.session.stop();this.boundRevision=null;this.refresh();return previous;}
+  stop(){const previous=this.session.stop();this.boundProject=null;this.refresh();return previous;}
   clear(){this.stop();this.history.clear();this.refresh();}
   candidate() {
     const project=this.getProject(),result=inspectPropertySplitE2(project,this.session);
@@ -14009,12 +14009,12 @@ class PropertySplitControlsE2 {
         info.buildingsRight+' right. Original ID stays on the frontage-start side.'
       :'Adjust the dividing line inside a valid four-corner property.';
     const status=$('propertySplitStatusE2');
-    status.textContent=this.boundRevision!==this.getRevision()
+    status.textContent=this.boundProject!==this.getProject()
       ?'BLOCKED · Accepted city changed. Cancel and start a new split.'
       :result.ok?'CANDIDATE READY · Apply independently verifies project and saved-data integrity.'
         :'BLOCKED · '+(result.issues[0]?.message??'Please adjust the divider.');
     $('propertySplitApplyE2').disabled=!result.ok||!!session.drag||
-      this.boundRevision!==this.getRevision();
+      this.boundProject!==this.getProject();
     $('propertySplitIssuesE2').replaceChildren(...result.issues.map(row=>{
       const li=document.createElement('li');li.textContent=row.message;return li;
     }));
@@ -14039,7 +14039,7 @@ class PropertySplitControlsE2 {
     if(!this.active||this.session.drag)return false;
     const previous=this.getProject(),revision=this.getRevision(),
       signature=JSON.stringify({id:this.session.propertyId,t:this.session.t,approved:[...this.session.approved].sort()});
-    if(revision!==this.boundRevision)return false;
+    if(previous!==this.boundProject)return false;
     const result=preparePropertySplitE2(previous,this.getWorkspace(),this.session);
     if(!result.ok){
       this.session.validation=result;
@@ -21715,8 +21715,10 @@ propertyWorkspace = new PropertyWorkspace({
   startPropertySplit: id=>{
     if(workspaceShell.state.selection?.kind!=='property'||workspaceShell.state.selection.id!==id)return false;
     const started=propertySplitE2.start(id);
-    if(started&&Number.isFinite(window.innerWidth)&&window.innerWidth<=900)
+    if(started&&Number.isFinite(window.innerWidth)&&window.innerWidth<=900){
+      workspaceShell.dispatch({type:'tools',collapsed:true});
       workspaceShell.dispatch({type:'inspector',collapsed:true});
+    }
     return started;
   },
   deleteProperty: deleteProperty4A,
