@@ -71,8 +71,8 @@ for(const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]){
     const saved=await page.evaluate(()=>__buildingQA.capture());
     await page.evaluate(doc=>__buildingQA.apply(doc),saved);
     assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),accepted.city);
-    assert.equal(await page.evaluate(()=>__buildingQA.state().propertyHistory.can(
-      'undo',__buildingQA.state().project,sample.id)),false);
+    assert.equal(await page.evaluate(id=>__buildingQA.state().propertyHistory.can(
+      'undo',__buildingQA.state().project,id),sample.id),false);
     assert.deepEqual(errors,[]);
     console.log('PASS E4 '+label+' draft/reset/Apply/Undo/Redo/save');
    }catch(error){
