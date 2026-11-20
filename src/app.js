@@ -508,7 +508,7 @@ function exitStructurePlacement3H() {
   return true;
 }
 function startStructurePlacement3H(propertyId,buildingId=null) {
-  if(propertySplitE2?.active)return false;
+  if(propertySplitE2?.active||propertyMergeE3?.active)return false;
   if(!project || layers.buildings===false || !propertyId)return false;
   if(!exitPropertyEditing3I() || !exitStructurePlacement3H() || !exitBuildingEditing())return false;
   if(workspaceShell.state.section!=='city')workspaceShell.navigate('city');
@@ -612,7 +612,7 @@ function applyStructurePlacement3H() {
 }
 // Dev 4e: one confirmation, one validated transaction and one structural Undo.
 function clearPropertyBuildings4E(propertyId) {
-  if(propertySplitE2?.active)return false;
+  if(propertySplitE2?.active||propertyMergeE3?.active)return false;
   const selected=workspaceShell?.state.selection;
   const site=project?.city?.properties.find(p=>p.id===propertyId);
   if(!site||layers.buildings===false||selected?.kind!=='property'||selected.id!==propertyId)return false;
@@ -1354,6 +1354,7 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
     buildingPlacementSession?.stop();
     propertyEditSession?.stop();
     propertySplitE2?.stop();
+    propertyMergeE3?.stop();
     stopWorkspaceTools();
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
@@ -1376,6 +1377,7 @@ landscapeWorkspace = new LandscapeWorkspace({
     buildingEditSession?.stop();
     buildingPlacementSession?.stop();
     propertyEditSession?.stop();
+    propertyMergeE3?.stop();
     districtPanel.editor.selectedDistrictId = null;
     districtPanel.editor.selectedBlockId = null;
     districtPanel.refresh();
@@ -1562,7 +1564,7 @@ for(const [id,key] of [['propertyCreateUE1','u'],['propertyCreateWidthE1','width
 }
 
 function enterPropertyEditing3I(propertyId) {
-  if(propertyCreationSessionE1?.active||propertySplitE2?.active)return false;
+  if(propertyCreationSessionE1?.active||propertySplitE2?.active||propertyMergeE3?.active)return false;
   if(!project || workspaceShell?.state.selection?.kind!=='property'
       || workspaceShell.state.selection.id!==propertyId)return false;
   if(!exitBuildingEditing() || !exitStructurePlacement3H())return false;
@@ -1575,7 +1577,7 @@ function enterPropertyEditing3I(propertyId) {
   return started;
 }
 function enterBuildingEditing(id) {
-  if(propertyCreationSessionE1?.active||propertySplitE2?.active)return false;
+  if(propertyCreationSessionE1?.active||propertySplitE2?.active||propertyMergeE3?.active)return false;
   if (!project || !exitPropertyEditing3I() || !exitStructurePlacement3H()) return false;
   if (workspaceShell.state.section !== 'city') workspaceShell.navigate('city');
   stopWorkspaceTools('city');
@@ -1814,7 +1816,7 @@ $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
 // Dev 4a: deleting a parcel removes its dependent records, never neighboring land.
 function deleteProperty4A(propertyId) {
-  if(propertyCreationSessionE1?.active||propertySplitE2?.active)return false;
+  if(propertyCreationSessionE1?.active||propertySplitE2?.active||propertyMergeE3?.active)return false;
   const selected=workspaceShell?.state.selection;
   const property=project?.city?.properties.find(p=>p.id===propertyId);
   if(!property || selected?.kind!=='property' || selected.id!==propertyId)return false;
