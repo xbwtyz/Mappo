@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Sync latest feature branch before building
+        run: git pull --rebase origin feature/mappo-0.2e-e3-property-merge
       - name: Compile offline distribution
         run: npm run build
       - name: Commit compiled e3 files
