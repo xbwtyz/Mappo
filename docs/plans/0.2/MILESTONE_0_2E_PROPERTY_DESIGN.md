@@ -1,6 +1,6 @@
 # Mappo 0.2E — Manual Property Restructuring (planning draft)
 
-> **Status (2026-11-20):** E1 property creation merged via [PR #58](https://github.com/xbwtyz/Mappo/pull/58) and E2 frontage-to-rear splitting merged via [PR #60](https://github.com/xbwtyz/Mappo/pull/60). E3 adjacent-property merging is **design proposed**, with the [conservative E3 contract](E3_PROPERTY_MERGE_DESIGN.md) awaiting separate approval before code. E4–E5 remain planned. Preserve schema 9 and separate code, merge and release gates. See the [master roadmap](README.md) and [0.2F building design](MILESTONE_0_2F_BUILDING_DESIGN.md).
+> **Status (2026-11-20):** E1 property creation merged via [PR #58](https://github.com/xbwtyz/Mappo/pull/58) and E2 frontage-to-rear splitting merged via [PR #60](https://github.com/xbwtyz/Mappo/pull/60). E3 adjacent-property merging has an **approved** [conservative E3 contract](E3_PROPERTY_MERGE_DESIGN.md) and an **unmerged** [feature PR #62](https://github.com/xbwtyz/Mappo/pull/62), pending full validation and separate merge approval. E4–E5 remain planned. Preserve schema 9 and separate code, merge and release gates. See the [master roadmap](README.md) and [0.2F building design](MILESTONE_0_2F_BUILDING_DESIGN.md).
 
 ## Purpose
 
@@ -46,9 +46,9 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 - [ ] Retain buildings in the verified parcel when possible. A building spanning the split line or an unassignable plot must block Apply until the user adjusts the draft or authorizes a supported resolution.
 - [ ] **Gate:** legal and illegal cuts, property at road edge, named buildings, preserved external references, one-step Undo/Redo, round-trip save, and no unresolved ownership.
 
-### E3 — Merge adjacent compatible properties (design proposal)
+### E3 — Merge adjacent compatible properties (implementation PR #62 pending acceptance)
 
-**Detailed proposed contract:** [E3 property merging design](E3_PROPERTY_MERGE_DESIGN.md). The primary/secondary identity policy, metadata retirement consent, exact adjacency geometry, and schema-9 lineage must be approved before implementation. This document does not authorize E3 code.
+**Detailed proposed contract:** [E3 property merging design](E3_PROPERTY_MERGE_DESIGN.md). The primary/secondary identity policy, metadata retirement consent, exact adjacency geometry, and schema-9 lineage must be approved before implementation. The design has been approved in merged PR #61; PR #62 implementation still requires full CI and separate merge permission.
 
 - [ ] Require verified geometric adjacency, compatible block/frontage and a valid combined parcel. No cross-block or road-crossing merge without separately authorized design.
 - [ ] Show the identity/metadata conflict policy before Apply. Prefer a clear resulting identity and an auditable merge ledger; never silently discard either customized property identity.
