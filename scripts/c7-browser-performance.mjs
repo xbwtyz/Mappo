@@ -19,7 +19,41 @@ const measurePreviewDraw = (name, draw) => (...args) => {
 renderMap = measurePreviewDraw('map', renderMap);
 drawRoadInspectionOverlay = measurePreviewDraw('road-overlay', drawRoadInspectionOverlay);
 `;
-const html = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'), observePreviewDraws);
+const traceWorkerPhases = process.env.C7_TRACE_WORKER_PHASES === '1';
+function observeWorkerPhases(html) {
+  const marker = /^(const ROAD_JUNCTION_WORKER_SOURCE_P1 = )(.+);$/m;
+  if (!marker.test(html)) throw Error('Could not find the bundled junction worker for phase tracing');
+  return html.replace(marker, (_, prefix, encoded) => {
+    const source = JSON.parse(encoded);
+    const end = '\n})();';
+    if (!source.endsWith(end)) throw Error('Unexpected bundled junction worker closure');
+    const phaseNames = ['validateStoredProject','analyzeRoadImpact','prepareJunctionIntentC7',
+      'prepareNeighborhoodReflow','prepareRoadTopologyReflowC3','extractRoadFaces'];
+    const observation = `
+let c7WorkerTrace;
+const measureC7WorkerPhase = (name, fn) => (...args) => {
+  if (!c7WorkerTrace) return fn(...args);
+  const started = performance.timeOrigin + performance.now();
+  try { return fn(...args); }
+  finally { c7WorkerTrace.push({name, started, ended: performance.timeOrigin + performance.now()}); }
+};
+${phaseNames.map(name => `${name} = measureC7WorkerPhase('${name}', ${name});`).join('\n')}
+const calculateUnmeasuredJunction = calculateJunctionPreviewP1;
+calculateJunctionPreviewP1 = (...args) => {
+  c7WorkerTrace = [];
+  try {
+    const result = calculateUnmeasuredJunction(...args);
+    result.timings.phases = c7WorkerTrace;
+    return result;
+  } finally { c7WorkerTrace = null; }
+};
+`;
+    const observed = JSON.stringify(source.slice(0, -end.length) + observation + end);
+    return prefix + observed.replaceAll('</script', '<\\/script') + ';';
+  });
+}
+const standalone = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+const html = observeBuildingApp(traceWorkerPhases ? observeWorkerPhases(standalone) : standalone, observePreviewDraws);
 const cases = [
   ['small','N-0139','y',15],
   ['large','N-0145','x',8],
@@ -92,11 +126,12 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               window.__c7=row;
               let prev=performance.now();
               const frame=now=>{
+                if(row.done)return;
                 const gap=now-prev;
                 row.frameGapMs=Math.max(row.frameGapMs,gap);
                 if(gap>50)row.frameGaps.push({startMs:prev-row.started,endMs:now-row.started});
                 prev=now;
-                if(!row.done)requestAnimationFrame(frame);
+                requestAnimationFrame(frame);
               };
               requestAnimationFrame(frame);
               let lastTick=performance.now();
@@ -117,6 +152,10 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
                   row.replyAtMs=received-row.started;
                   row.workerSentAtMs=result.timings.sentAt-performance.timeOrigin-row.started;
                   row.workerComputeMs=result.timings.totalMs;
+                  row.workerPhases=result.timings.phases?.map(({name,started,ended})=>({
+                    name,startMs:started-performance.timeOrigin-row.started,
+                    endMs:ended-performance.timeOrigin-row.started,
+                  }));
                   row.deliveryMs=Math.max(0,row.replyAtMs-row.workerSentAtMs);
                   row.candidateChars=result.reconciliation?.candidateJson?.length??0;
                 }
@@ -170,6 +209,8 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
             assert.ok(Number.isFinite(result.drawCompleteAtMs) && result.draws.some(draw=>draw.name==='map'),
               'preview must report the queued canvas draw');
             if(size==='large') assert.ok(result.keys.some(key=>key.checking), 'large preview must receive trusted input');
+            if(traceWorkerPhases) assert.ok(result.workerPhases?.some(phase=>phase.name==='validateStoredProject'),
+              'worker phase trace must include project validation');
             assert.equal(await page.evaluate(b=>JSON.stringify(__buildingQA.state().project)===b.original,before),true,before);
             assert.equal(await page.evaluate(b=>__buildingQA.state().files.revision===b.revision,before),true,before);
             const steadyRenderMs=await page.evaluate(()=>{
@@ -238,7 +279,7 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               workerComputeMs:round(result.workerComputeMs),
               candidateChars:result.candidateChars,
               frameGapMs:round(result.frameGapMs),timerGapMs:round(result.timerGapMs),
-              keyCommandMs,keys:result.keys,frameGaps:result.frameGaps,draws:result.draws,
+              keyCommandMs,keys:result.keys,frameGaps:result.frameGaps,draws:result.draws,workerPhases:result.workerPhases,
               timeline:{dispatchAtMs:result.dispatchAtMs,workerSentAtMs:result.workerSentAtMs,
                 replyAtMs:result.replyAtMs,readyAtMs:result.previewMs,drawCompleteAtMs:result.drawCompleteAtMs},
               steadyRenderMs:round(median(steadyRenderMs)),

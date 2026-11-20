@@ -100,7 +100,12 @@ export function cleanOutline(raw, tolerance = 3) {
 }
 
 export function clearance(p, boundary) {
-  return Math.min(...boundary.map((a, i) => distanceToSegment(p, a, boundary[(i + 1) % boundary.length])));
+  let nearest = Infinity;
+  for (let i = 0; i < boundary.length; i++) {
+    const next = boundary[(i + 1) % boundary.length];
+    nearest = Math.min(nearest, distanceToSegment(p, boundary[i], next));
+  }
+  return nearest;
 }
 export function findCityCenter(boundary) {
   const b = boundsOf(boundary);

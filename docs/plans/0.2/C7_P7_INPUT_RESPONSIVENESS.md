@@ -21,3 +21,19 @@ desktop and phone-sized viewports in Chromium and Firefox.
   choosing a runtime change. A slow preview can still process input smoothly.
 - Verify cancellation, the independent Apply rebuild, unchanged accepted state
   during preview, and atomic Apply/Undo/Redo. Keep Issue #44 open.
+
+## Worker phase trace and validation change
+
+Set `C7_TRACE_WORKER_PHASES=1` when running the benchmark to collect worker
+intervals for stored-project validation, impact analysis, junction intent,
+neighborhood reflow, topology reflow, and face extraction. The benchmark
+instruments the worker in the served test HTML and includes intervals in
+`artifacts/c7/performance.json`. Compare their overlap with each trial's
+frame gaps. A gap can overlap multiple phases, and overlap alone does not
+establish its cause.
+
+Stored-project validation uses the bounds of validated parcels in the same
+block to skip detailed intersection checks for clearly separated pairs.
+Pairs whose bounds touch or nearly touch still get the full test. Separated
+pairs consume the same work budget as before. Clearance calculation also
+avoids a temporary distance array.
