@@ -14,13 +14,11 @@ import {buildingAppHarness} from './helpers/building-app.js';
 
 const MORPHOLOGIES=['planned','radial','organic','linear'];
 const SIZES=['small','large'];
-const unchanged=(previous,next)=>({
- roads:assert.deepEqual(next.city.roads,previous.city.roads),
- blocks:assert.deepEqual(next.city.blocks,previous.city.blocks),
- nodes:assert.deepEqual(next.city.nodes,previous.city.nodes),
- openSpaces:assert.deepEqual(next.city.openSpaces,previous.city.openSpaces),
- districts:assert.deepEqual(next.city.districts,previous.city.districts)
-});
+const unchanged=(previous,next)=>{
+ for(const key of ['roads','blocks','nodes','openSpaces','districts'])
+  assert.equal(JSON.stringify(next.city[key]),JSON.stringify(previous.city[key]),
+   'Unrelated '+key+' must be byte-equivalent after local property edits');
+};
 function roundTrip(project){
  validateStoredProject(project);
  const workspace=defaultWorkspace(project);
