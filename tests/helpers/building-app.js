@@ -5,7 +5,7 @@ import vm from 'node:vm';
 export const buildingObservation = `
 globalThis.__buildingQA = {
   state: () => ({ project, camera, editor, layers, workspaceShell, roadWorkspace, buildingWorkspace, buildingEditSession, propertyWorkspace, identityWorkspace,
-    landscapeWorkspace, districtPanel, waterPanel, terrainPanel, fortificationPanel, files, buildingHistory, buildingStructureHistory, buildingPlacementSession, propertyEditSession, propertyHistory, propertyDeletionHistory4A, roadHistory }),
+    landscapeWorkspace, districtPanel, waterPanel, terrainPanel, fortificationPanel, files, buildingHistory, buildingStructureHistory, buildingPlacementSession, propertyEditSession, propertyHistory, propertyDeletionHistory4A, propertyCreationSessionE1, propertyCreationHistoryE1, roadHistory }),
   capture: captureWorkspace, apply: applyProjectDocument, applyRoad: applyRoadEditB4, moveRoadHistory: moveRoadHistoryB4, draw: requestDraw
 };
 `;
