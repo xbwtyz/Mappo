@@ -7,10 +7,10 @@
 - [x] Create feature branch and outline, leave main untouched.
 - [x] Introduce reusable pure C7 worker calculation and clone-safe message protocol.
 - [x] Introduce client adapter for a Blob Worker embedded in the compiled single-file HTML.
-- [ ] Bundle worker dependency graph separately and inject worker script into offline build.
-- [ ] Wire UI preview to async request/response, revision/fingerprint safeguards and synchronous fallback.
-- [ ] Add worker parity/race tests, benchmark instrumentation and full CI browser validation.
-- [ ] Commit versioned standalone distribution, open draft PR, owner review.
+- [x] Bundle worker dependency graph separately and inject worker script into offline build.
+- [x] Wire UI preview to async request/response, revision/fingerprint safeguards and synchronous fallback.
+- [x] Add worker parity/race tests and benchmark instrumentation. Full CI browser validation remains pending.
+- [x] Commit versioned standalone distribution and open [draft PR #45](https://github.com/xbwtyz/Mappo/pull/45). Owner review and merge approval pending.
 
 **Request:** `{requestId,project,junctionId,point,decisions}`.
 **Response:** `{requestId,result:{proposal,report,reconciliation,topology,reconciliationError,timings}}` or `{requestId,error}`.
