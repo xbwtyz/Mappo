@@ -5,14 +5,14 @@ import { propertyMergeGeometryE3,propertyMergeNeighborsE3 } from '../core/proper
 import { PropertyCreationHistoryE1 } from './property-creation-e1.js';
 
 export const PropertyMergeHistoryE3=PropertyCreationHistoryE1;
-const issue=(code,message,targetId=null)=>({code,message,targetId});
-const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-const baseFields=new Set(['id','blockId','districtId','plotIds','buildingIds','boundary','frontage',
+const e3MergeIssue=(code,message,targetId=null)=>({code,message,targetId});
+const e3MergeSame=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const e3MergeBaseFields=new Set(['id','blockId','districtId','plotIds','buildingIds','boundary','frontage',
   'frontageRoadId','area','usage','frame','local','roadProvenance','propertySplitHistoryE2',
   'propertyMergeHistoryE3']);
-function requiresAuthorization(source){
+function e3MergeRequiresAuthorization(source){
   return Boolean(source.customName||source.customUse||source.customDescription||
-    Object.keys(source).some(key=>!baseFields.has(key)));
+    Object.keys(source).some(key=>!e3MergeBaseFields.has(key)));
 }
 
 export class PropertyMergeSessionE3{
@@ -36,27 +36,27 @@ export class PropertyMergeSessionE3{
 
 export function inspectPropertyMergeE3(project,session){
   if(!project?.city||!session?.active)return {ok:false,status:'choose',
-    issues:[issue('selection','Select a property before starting E3.')],preview:null};
+    issues:[e3MergeIssue('selection','Select a property before starting E3.')],preview:null};
   if(!session.secondaryId)return {ok:false,status:'choose',
-    issues:[issue('neighbor','Choose a compatible neighboring property from the map or list.')],preview:null};
+    issues:[e3MergeIssue('neighbor','Choose a compatible neighboring property from the map or list.')],preview:null};
   let geometry;
   try{geometry=propertyMergeGeometryE3(project.city,session.primaryId,session.secondaryId);}
-  catch(error){return {ok:false,status:'invalid',issues:[issue('geometry',error.message)],preview:null};}
+  catch(error){return {ok:false,status:'invalid',issues:[e3MergeIssue('geometry',error.message)],preview:null};}
   const issues=[],secondary=geometry.secondary;
-  const protectedSecondary=requiresAuthorization(secondary);
+  const protectedSecondary=e3MergeRequiresAuthorization(secondary);
   if(protectedSecondary&&!session.approved)
-    issues.push(issue('authorization','Authorize retirement of '+(secondary.customName||secondary.id)+
+    issues.push(e3MergeIssue('authorization','Authorize retirement of '+(secondary.customName||secondary.id)+
       ' with its complete identity preserved in merge lineage.',secondary.id));
   const members=new Set(geometry.buildingIds),plotIds=new Set(geometry.plotIds);
   if(members.size!==geometry.buildingIds.length)
-    issues.push(issue('building','The source building lists overlap.'));
+    issues.push(e3MergeIssue('building','The source building lists overlap.'));
   for(const building of project.city.buildings.filter(b=>members.has(b.id))){
     if(!shapeContained(building.footprint,geometry.union)||
       !Array.isArray(building.plotIds)||!building.plotIds.length||
       building.plotIds.some(id=>!plotIds.has(id)))
-      issues.push(issue('building','Building '+building.id+' lacks verifiable footprint or plot membership.',building.id));
+      issues.push(e3MergeIssue('building','Building '+building.id+' lacks verifiable footprint or plot membership.',building.id));
     if(!Array.isArray(building.accessPath)||building.accessPath.length<2)
-      issues.push(issue('access','Building '+building.id+' has no accepted access route.',building.id));
+      issues.push(e3MergeIssue('access','Building '+building.id+' has no accepted access route.',building.id));
   }
   const preview={...geometry,protectedSecondary,approved:session.approved,
     transferredBuildings:secondary.buildingIds.length,retiredId:secondary.id};
@@ -99,11 +99,11 @@ export function preparePropertyMergeE3(project,workspace,session){
     }
     validateStoredProject(candidate);
     const restored=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace))).project;
-    if(!same(candidate.city,restored.city))throw Error('Portable project round-trip changed merge records.');
+    if(!e3MergeSame(candidate.city,restored.city))throw Error('Portable project round-trip changed merge records.');
     return {...inspected,ok:true,status:'valid',candidate:restored,
       retainedId:primary.id,retiredId:secondary.id,lineage};
   }catch(error){
     return {...inspected,ok:false,status:'invalid',
-      issues:[issue('project','Merge Apply rejected: '+error.message)],candidate:null};
+      issues:[e3MergeIssue('project','Merge Apply rejected: '+error.message)],candidate:null};
   }
 }
