@@ -64,7 +64,9 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 - [ ] Display grouped consequences with Details available; focus and recover from affected authored buildings without forcing global redevelopment.
 - [ ] **Gate:** multiple buildings/plots, old custom metadata, ambiguous ownership, cancelled authorizations, and no orphaned reference after Apply/Undo/Redo/save.
 
-### E5 — Integrated stabilization and milestone acceptance
+### E5 — Integrated stabilization and milestone acceptance (planning PR)
+
+**Detailed acceptance plan:** [E5 integrated acceptance](E5_INTEGRATED_ACCEPTANCE_PLAN.md). E1–E4 are merged, including E4 in [PR #64](https://github.com/xbwtyz/Mappo/pull/64). E5 is **integration/QA**, not new property editing functionality; its implementation requires separate approval.
 
 - [ ] End-to-end browser cases: **road edit → inspect adapted neighborhood → create/split/merge parcel → adjust plot division → Apply/Undo/Redo → portable save/reopen**, on Chromium and Firefox at desktop and phone sizes.
 - [ ] Test all four morphologies, developed Small/Large fixtures, legacy schema-9 datasets, access/landscape/civic protections, stale drafts, and repeated edits.
@@ -74,7 +76,7 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 
 ## Design authority and remaining decisions
 
-[E1's accepted contract](E1_PROPERTY_CREATION_DESIGN.md) and [E2's accepted design](E2_PROPERTY_SPLIT_DESIGN.md) underpin merged functionality. The [E3 proposed design](E3_PROPERTY_MERGE_DESIGN.md) records the **unapproved** identity conflict and conservative geometry rules for review; do not quietly infer either in code. E4 plot-count changes likewise need a reviewed design.
+E1–E4 designs were approved and implemented in merged PRs #58, #60, #62 and #64. The remaining 0.2E decision is E5 integrated stabilization, detailed in the [proposed E5 acceptance plan](E5_INTEGRATED_ACCEPTANCE_PLAN.md). Do not broaden E5 into new geometry or schema changes. The milestone remains unreleased.
 
 ## Explicitly deferred
 
