@@ -4,6 +4,8 @@
 >
 > **Authority:** [0.2 master roadmap](README.md) · [0.2E integration acceptance](E5_ACCEPTANCE_REPORT.md) · [developer guide](../../development.md). Review this proposal and choose the explicit design defaults below **before starting F1 code**.
 
+**Implementation update:** F1 pure footprint primitives and focused acceptance are proposed on a separate implementation PR (pending final CI and separate merge permission). See [F1 footprint acceptance](F1_FOOTPRINT_ACCEPTANCE.md). F2 direct editor tools are not implemented by F1.
+
 ## 1. Product goal and boundaries
 
 Make Mappo an intentional **2D building-footprint designer**: select an existing building, add/remove or move exterior vertices, shape connected wings, and define rectangular or editable courtyard voids; see the changed footprint and constraints immediately; accept one validated, reversible edit. Allow clear building-use choices **without replacing geometry or overwriting customized identity**. Work with buildings on E1-created, E2-split, E3-merged and E4-redivided properties.
