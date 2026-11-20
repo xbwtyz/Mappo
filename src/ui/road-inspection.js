@@ -854,7 +854,7 @@ export class RoadInspectionWorkspace {
       : s.details?.kind === 'road' ? 'roadIntentDxC1' : 'roadProposedX';
     const input = this.$(control);
     if (!input.disabled) {
-      input.scrollIntoView({block:'center'});
+      input.scrollIntoView?.({block:'center'});
       input.focus({preventScroll:true});
     } else this.$('roadSelectionId').focus();
   }
