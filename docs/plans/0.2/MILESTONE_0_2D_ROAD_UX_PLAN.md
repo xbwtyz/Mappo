@@ -1,6 +1,6 @@
 # Mappo 0.2D road editing experience
 
-**Status** · D1–D3 merged in PRs #51–#53; D4 acceptance/stabilization implemented for separate PR review on a fresh branch from updated `main` (`42b295a`). Full PR CI and merge approval remain gates.
+**Status** · D1–D3 merged in PRs #51–#53. D4 acceptance/stabilization completed and verified in [PR #56](https://github.com/xbwtyz/Mappo/pull/56) against the pre-D4 `main` baseline (`42b295a`). Both required GitHub CI checks passed. Refer to the PR for merge status.
 
 0.2D makes the existing road editor easier to read and recover from when a
 move affects a developed neighborhood. The normal path is **select → move →
@@ -123,10 +123,10 @@ accessibility and performance acceptance across all layouts.
   the same runner and benchmark settings. Record preview latency, input
   and frame gaps, and any reproducible regression from the new UI. Keep
   general performance follow-up in [#44](https://github.com/xbwtyz/Mappo/issues/44).
-- [ ] Build the versioned offline HTML, verify root parity, and record results
+- [x] Build the versioned offline HTML, verify root parity, and record results
   from the full Node and browser suites.
 
-**D4 implementation:** `scripts/d4-browser-acceptance.mjs` extends the existing Chromium/Firefox four-viewport road suite with large developed-city previews, keyboard focus and status semantics, schema-9 provenance-unknown blockers, and accepted-data isolation. The focused verification passed 10/10 Node and 4/4 new browser scenarios. Two same-runner C7 comparisons measured preview, frame/input gaps and Apply; median previews stayed within a few percent of baseline, while a single worst-case Firefox Large-phone gap did not repeat. Details, fixtures, raw reports, and remaining performance caveat are recorded in [D4 acceptance report](D4_ACCEPTANCE_REPORT.md). The final full Node/browser CI gate is required before completion; the feature branch stays unmerged.
+**D4 implementation:** `scripts/d4-browser-acceptance.mjs` extends the existing Chromium/Firefox four-viewport road suite with large developed-city previews, keyboard focus and status semantics, schema-9 provenance-unknown blockers, and accepted-data isolation. The focused verification passed 10/10 Node and 4/4 new browser scenarios. Two same-runner C7 comparisons measured preview, frame/input gaps and Apply; median previews stayed within a few percent of baseline, while a single worst-case Firefox Large-phone gap did not repeat. Details, fixtures, raw reports, and remaining performance caveat are recorded in [D4 acceptance report](D4_ACCEPTANCE_REPORT.md). The complete [D4 CI run](https://github.com/xbwtyz/Mappo/actions/runs/44698777095) passed: 411/411 Node regression tests, 8/8 general browser checks, 8/8 property/building checks, 8/8 road editor checks, 4/4 new D4 browser checks, and compiled root/distribution parity. D4 implementation acceptance is complete; the PR remains the source of truth for its merge status.
 
 **Completion criterion** · The scripted editing cases can select a road,
 identify the verified scope, resolve a conflict when required, and Apply or
