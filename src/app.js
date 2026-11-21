@@ -1734,7 +1734,7 @@ identityWorkspace = new IdentityWorkspace({
 identityWorkspace.bind();
 roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
-  desktopLayout: new DesktopEditLayout({ viewport, divider: $('desktopEditDivider'), onLayout: resize }),
+  desktopLayout: new DesktopEditLayout({ viewport, divider: $('desktopEditDivider'), dockDivider: $('desktopImpactDivider'), onLayout: resize }),
   reconcile:prepareJunctionReflowC7,reconcileRoad:prepareRoadReconciliationB1,
   computeJunctionAsync:createJunctionPreviewWorkerP1(),
   getRevision:()=>files?.revision??0,applyEdit:applyRoadEditB4,

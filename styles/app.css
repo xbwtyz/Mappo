@@ -638,3 +638,43 @@
     background:#d0edb9;color:#193024;border-color:#d0edb9;
   }
 }
+
+.road-preview-view-actions{display:flex;gap:8px}
+@media(min-width:1000px) and (min-height:650px){
+  .map-viewport.desktop-impact-layout{
+    --desktop-dock-track:clamp(240px,var(--desktop-dock-height,320px),min(480px,58%));
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:minmax(0,1fr) 7px var(--desktop-dock-track);
+  }
+  .desktop-impact-layout>.desktop-edit-divider:not([hidden]){
+    grid-area:2/1;cursor:ns-resize;
+  }
+  .desktop-impact-layout>.workspace-map-controls{right:15px}
+  .workspace-shell .desktop-impact-layout>.tool-hint{max-width:calc(100% - 140px)}
+  .workspace-shell .desktop-impact-layout>.map-legend{
+    bottom:calc(var(--desktop-dock-track) + 24px);max-width:calc(100% - 135px)
+  }
+  .desktop-impact-layout>.desktop-edit-panel:not([hidden]){
+    grid-area:3/1;display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);
+    grid-template-rows:auto minmax(0,1fr) auto;column-gap:16px;padding:10px 16px;
+  }
+  .desktop-impact-layout .road-preview-header{grid-area:1/1/2/3}
+  .desktop-impact-layout .road-preview-heading{margin-bottom:0;padding-bottom:8px}
+  .desktop-impact-layout .road-impact-list{
+    grid-area:2/1/4/2;overflow:auto;overscroll-behavior:contain;padding:0 12px 4px 0;
+    border-right:1px solid #4b6052;
+  }
+  .road-impact-list table{width:100%;border-collapse:collapse;table-layout:fixed;text-align:left}
+  .road-impact-list th{position:sticky;top:0;background:#26362e;color:#c6d4c9}
+  .road-impact-list :is(th,td){padding:6px 8px;border-bottom:1px solid #4b6052;overflow-wrap:anywhere}
+  .road-impact-list tr:has(button[aria-pressed=true]){background:#3a5243}
+  .road-impact-list td button{min-width:0;max-width:100%;text-align:left;white-space:normal}
+  .desktop-impact-layout #roadPreviewBody{grid-area:2/2}
+  .desktop-impact-layout .road-apply-footer{grid-area:3/2;padding-top:4px}
+  .desktop-impact-layout .road-preview-legend{display:none}
+  .desktop-impact-layout .road-impact-detail h3{margin:8px 0 2px;font-size:15px}
+  .desktop-impact-layout .road-impact-detail p{margin:0 0 6px;color:#c6d4c9}
+  .desktop-impact-layout #roadBuildingDecisionsD2{order:0}
+  .desktop-impact-layout #roadDecisionIntroD2{display:none}
+  .desktop-impact-layout .road-preview-panel :focus-visible{outline-color:#d8a473}
+}

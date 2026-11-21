@@ -267,6 +267,14 @@ export class RoadInspectionWorkspace {
     });
     this.limit = 50;
     this.reconciliationLimit = 50;
+    this.dockMedia = window.matchMedia?.('(min-width: 1000px) and (min-height: 650px)');
+    this.dockMedia?.addEventListener('change', () => {
+      if (!this.active || !this.usesDesktopPanel) return;
+      if (this.dockOpen && !this.dockMedia.matches) {
+        this.setImpactDock(false);
+        this.$('roadPreviewHeading').focus();
+      } else this.render();
+    });
     this.bind();
   }
   get active() {
@@ -326,6 +334,9 @@ export class RoadInspectionWorkspace {
     if (!this.transient) return;
     const baseline = this.baseline;
     const desktop = this.usesDesktopPanel;
+    this.dockOpen = false;
+    this.impactKey = null;
+    this.impactRows = [];
     this.session.stop();
     if (desktop) this.desktopLayout.hide();
     this.usesDesktopPanel = false;
@@ -374,6 +385,11 @@ export class RoadInspectionWorkspace {
         (this.camera.width < 900 ? (this.camera.height * 0.22) / this.camera.zoom : 0);
       this.draw();
     });
+    this.$('roadImpactToggle').addEventListener('click', () => this.setImpactDock(!this.dockOpen));
+    this.$('roadImpactRows').addEventListener('click', event => {
+      const button = event.target.closest('button[data-impact-key]');
+      if (button) this.selectImpact(button.dataset.impactKey);
+    });
     this.$('roadPreviewReset').addEventListener('click', () => this.reset());
     this.$('roadRecoveryPrimaryD3').addEventListener('click', () => this.openRoadRecoveryD3());
     this.$('roadRecoveryLocateD3').addEventListener('click', () => {
@@ -391,6 +407,7 @@ export class RoadInspectionWorkspace {
       const issue = this.session.reconciliation?.unresolved.find(hasRoadBuildingChoice);
       if (!issue) return;
       if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
+      if (this.dockOpen) this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
       const target = document.getElementById('roadConflictC6-' + issue.id);
       if (!target) return;
       this.locateReconciliationB3(issue);
@@ -700,6 +717,7 @@ export class RoadInspectionWorkspace {
       if (element.textContent !== text) element.textContent = text;
       if (element.hidden !== !text) element.hidden = !text;
     }
+    this.renderImpactDock(stale);
     this.renderBuildingDecisionsD2();
     this.renderRoadRecoveryD3({ready, applying, status});
     panel.setAttribute('data-report-status', ready ? 'safe' : s.checking || applying ? 'checking' :
@@ -718,6 +736,104 @@ export class RoadInspectionWorkspace {
       this.limit = 50;
       this.renderReport();
     }
+  }
+
+  setImpactDock(open) {
+    if (!this.active || !this.usesDesktopPanel || (open && !this.dockMedia?.matches)) return;
+    if (open) {
+      if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
+      this.roadEditWasOpen = this.$('roadEditControlsD1').open;
+      this.$('roadEditControlsD1').open = false;
+    } else {
+      this.$('roadEditControlsD1').open = this.roadEditWasOpen;
+    }
+    this.dockOpen = open;
+    this.desktopLayout.setDock(open);
+    this.render();
+    if (this.selectedImpact && open) this.locateReconciliationB3(this.selectedImpact);
+    this.$('roadImpactToggle').focus({ preventScroll: true });
+  }
+  selectImpact(key) {
+    const row = this.impactRows.find(item => item.key === key);
+    if (!this.dockOpen || !row) return;
+    this.impactKey = key;
+    this.render();
+    this.locateReconciliationB3(row);
+  }
+  renderImpactDock(stale) {
+    const s = this.session;
+    const toggle = this.$('roadImpactToggle');
+    const open = Boolean(this.dockOpen);
+    toggle.hidden = !this.usesDesktopPanel || !this.dockMedia?.matches;
+    toggle.textContent = open ? 'Collapse impact dock' : 'Review impacts';
+    toggle.setAttribute('aria-expanded', String(open));
+    this.$('roadPreviewMinimize').hidden = open;
+    this.$('roadImpactList').hidden = !open;
+    this.$('roadImpactDetail').hidden = !open;
+    if (!open) return;
+
+    const list = this.$('roadImpactRows');
+    const fresh = s.current() && s.pending && !s.drag && !s.checking && !stale;
+    const impacts = new Map();
+    const add = (row, change, message) => {
+      if (!row?.kind || !row.id) return;
+      const key = roadRecordKeyD1(row.kind, row.id);
+      if (impacts.has(key)) return;
+      impacts.set(key, { kind: row.kind, id: row.id, key, change, message });
+    };
+    const buildings = new Map();
+    if (fresh) {
+      for (const row of s.city.buildings) if (row.customName) buildings.set(row.id, row.customName);
+      for (const row of s.reconciliation?.unresolved ?? [])
+        add(row, hasRoadBuildingChoice(row) ? 'Placement needs review' : 'Blocks this edit', row.message);
+      for (const id of s.buildingDecisions.keys())
+        add({kind:'building', id}, 'Placement choice recorded', 'Review the placement choice for this draft.');
+      for (const row of s.previewGeometry?.rows ?? [])
+        add(row, 'Geometry preview', 'Review the highlighted geometry on the map.');
+      for (const row of s.report?.affected ?? [])
+        add(row, 'Affected by this edit', row.message);
+    }
+    this.impactRows = [...impacts.values()];
+    this.selectedImpact = impacts.get(this.impactKey) ?? this.impactRows[0];
+    if (this.selectedImpact) this.impactKey = this.selectedImpact.key;
+    const label = row => row.kind === 'building' && buildings.has(row.id)
+      ? buildings.get(row.id) : row.kind[0].toUpperCase() + row.kind.slice(1) + ' ' + row.id;
+
+    const focusedKey = list.contains(document.activeElement) ? document.activeElement.dataset.impactKey : null;
+    const signature = JSON.stringify(this.impactRows.map(row => [row.key, label(row), row.change]));
+    if (this.impactSignature !== signature) {
+      this.impactSignature = signature;
+      list.replaceChildren(...this.impactRows.map(row => {
+        const record = document.createElement('tr');
+        const labelCell = document.createElement('td');
+        const change = document.createElement('td');
+        const button = document.createElement('button');
+        button.className = 'minor-button';
+        button.type = 'button';
+        button.dataset.impactKey = row.key;
+        button.textContent = label(row);
+        change.textContent = row.change;
+        labelCell.append(button);
+        record.append(labelCell, change);
+        return record;
+      }));
+    }
+    for (const button of list.querySelectorAll('button')) {
+      button.setAttribute('aria-pressed', String(button.dataset.impactKey === this.impactKey));
+      if (button.dataset.impactKey === focusedKey && document.activeElement !== button)
+        button.focus({ preventScroll: true });
+    }
+    this.$('roadImpactTable').hidden = !this.impactRows.length;
+    const empty = this.$('roadImpactEmpty');
+    empty.hidden = Boolean(this.impactRows.length);
+    empty.textContent = stale ? 'Reset the out-of-date preview to review impacts.'
+      : s.checking || s.drag ? 'Waiting for the current road preview…'
+      : s.pending ? 'This preview has no affected records to list.' : 'Move a road or junction to review affected records.';
+    if (focusedKey && !impacts.has(focusedKey)) toggle.focus({ preventScroll: true });
+    const selected = this.selectedImpact;
+    this.$('roadImpactDetailTitle').textContent = selected ? label(selected) : 'Road edit';
+    this.$('roadImpactDetailMessage').textContent = selected?.message ?? '';
+    if (selected) s.focusKey = selected.key;
   }
 
   renderReconciliationB3() {
@@ -821,6 +937,7 @@ export class RoadInspectionWorkspace {
         jump.className = 'minor-button';
         jump.textContent = 'Review building choice';
         jump.addEventListener('click', () => {
+          if (this.dockOpen) this.selectImpact(roadRecordKeyD1(row.kind, row.id));
           const target = document.getElementById('roadConflictC6-' + row.id);
           if (!target) return;
           target.scrollIntoView({block:'center'});
@@ -861,6 +978,7 @@ export class RoadInspectionWorkspace {
     if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
     if (guide.action === 'building') {
       const issue = this.recoveryIssueD3;
+      if (this.dockOpen && issue?.id) this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
       const target = issue?.id && document.getElementById('roadConflictC6-' + issue.id);
       if (target) {
         target.scrollIntoView({block:'center'});
@@ -911,9 +1029,13 @@ export class RoadInspectionWorkspace {
     // Superseded responses never authorize a choice or describe an Apply-ready preview.
     const settled = s.current() && s.pending && !s.drag && !s.checking &&
       s.settledRevision === s.revision;
-    if (!settled || !ids.length) {
+    const visibleIds = this.dockOpen
+      ? ids.filter(id => this.selectedImpact?.kind === 'building' && this.selectedImpact.id === id) : ids;
+    const focused = this.dockOpen && list.contains(document.activeElement);
+    if (!settled || !visibleIds.length) {
       section.hidden = true;
       list.replaceChildren();
+      if (focused && this.dockOpen) this.$('roadImpactToggle').focus({ preventScroll: true });
       return;
     }
     section.hidden = false;
@@ -922,8 +1044,12 @@ export class RoadInspectionWorkspace {
       ? remaining + (remaining === 1 ? ' building needs a choice. ' : ' buildings need choices. ') +
         'Review the buildings below. The city is unchanged until Apply.'
       : 'These choices are previewed, not applied. Revise or clear an individual choice before Apply.';
-    list.replaceChildren(...ids.map((id,index) =>
-      this.buildingConflictControls(id,unresolved.get(id),index+1,ids.length)));
+    list.replaceChildren(...visibleIds.map((id,index) =>
+      this.buildingConflictControls(id,unresolved.get(id),index+1,visibleIds.length)));
+    if (focused && this.dockOpen) {
+      const selected = this.$('roadImpactRows').querySelector('[aria-pressed="true"]');
+      (selected ?? this.$('roadImpactToggle')).focus({ preventScroll: true });
+    }
   }
   buildingConflictControls(id, issue, index, total) {
     const s=this.session, building=s.city.buildings.find(record=>record.id===id);

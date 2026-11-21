@@ -157,12 +157,24 @@
       <div id="mapViewport" class="map-viewport">
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
         <div id="desktopEditDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize edit panel" aria-orientation="vertical" aria-controls="roadPreviewPanel" aria-valuemin="300" aria-valuemax="520" aria-valuenow="360" hidden></div>
+        <div id="desktopImpactDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize impact dock" aria-orientation="horizontal" aria-controls="roadPreviewPanel" aria-valuemin="240" aria-valuemax="480" aria-valuenow="320" hidden></div>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div id="mapEditDiagnostic4D" class="map-edit-diagnostic-4d" role="status" aria-live="polite" hidden></div>
         <section id="roadPreviewPanel" class="road-preview-panel" aria-labelledby="roadPreviewHeading" hidden>
-          <div class="road-preview-header"><div class="road-preview-heading"><strong id="roadPreviewHeading" tabindex="-1">ROAD EDIT</strong><button id="roadPreviewMinimize" class="minor-button" aria-expanded="true" aria-controls="roadPreviewBody">Minimize</button></div>
+          <div class="road-preview-header"><div class="road-preview-heading"><strong id="roadPreviewHeading" tabindex="-1">ROAD EDIT</strong><div class="road-preview-view-actions"><button id="roadImpactToggle" type="button" class="minor-button" aria-expanded="false" aria-controls="roadImpactList" hidden>Review impacts</button><button id="roadPreviewMinimize" class="minor-button" aria-expanded="true" aria-controls="roadPreviewBody">Minimize</button></div></div>
           </div>
+          <section id="roadImpactList" class="road-impact-list" aria-label="Affected records" hidden>
+            <p id="roadImpactEmpty" class="hint"></p>
+            <table id="roadImpactTable" hidden>
+              <thead><tr><th scope="col">Affected record</th><th scope="col">Change</th></tr></thead>
+              <tbody id="roadImpactRows"></tbody>
+            </table>
+          </section>
           <div id="roadPreviewBody">
+            <div id="roadImpactDetail" class="road-impact-detail" hidden>
+              <h3 id="roadImpactDetailTitle"></h3>
+              <p id="roadImpactDetailMessage"></p>
+            </div>
             <p class="hint road-preview-legend"><span><i aria-hidden="true"></i>Current road</span><span><i aria-hidden="true"></i>Proposed road</span></p>
             <section id="roadRecoveryD3" class="road-recovery-d3" aria-labelledby="roadRecoveryHeadingD3" hidden>
               <h4 id="roadRecoveryHeadingD3"></h4>
