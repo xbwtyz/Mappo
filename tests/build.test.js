@@ -342,7 +342,6 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
   assert.equal(el('districtSelect').value, candidate.block.districtId);
   assert.equal(el('workspaceSection-districts').hidden, false, 'Map selection opens Districts');
   assert.equal(el('districtInspectorControls').hidden, false, 'District form is visible in inspector');
-  assert.equal(el('workspaceShowControls').hidden, true, 'A shortcut is unnecessary for inline forms');
   const selectedDistrictIndex = state().project.city.districts.findIndex(d => d.id === candidate.block.districtId);
   assert.equal(el('districtList').options[selectedDistrictIndex].children[0].revealed, true, 'Map block selection scrolls to its matching district row');
   el('districtNameInput').value = 'Test Quarter';

@@ -71,6 +71,5 @@ export class DistrictWorkspace {
       : null;
     const visible = Boolean(district && district.id === this.panel.editor.selectedDistrictId);
     this.$('districtInspectorControls').hidden = !visible;
-    if (visible) this.$('workspaceShowControls').hidden = true;
   }
 }

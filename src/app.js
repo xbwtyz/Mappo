@@ -120,6 +120,10 @@ import { analyzeRoadImpact, inspectJunctionImpact } from './core/road-impact.js'
 
 import { DesktopEditLayout } from './ui/desktop-edit-layout.js';
 import { DesktopPlaceEditor } from './ui/desktop-place-editor.js';
+import { DesktopWorkspace } from './ui/desktop-workspace.js';
+import { WaterEditor } from './editor/water.js';
+import { DistrictEditor } from './editor/districts.js';
+import { FortificationEditor } from './editor/fortifications.js';
 import { RoadInspectionWorkspace } from './ui/road-inspection.js';
 import { createJunctionPreviewWorkerP1 } from './editor/junction-preview-worker-client.js';
 import { drawRoadComparison } from './renderer/road-comparison.js';
@@ -177,6 +181,7 @@ let propertyWorkspace;
 let identityWorkspace;
 let roadWorkspace;
 let desktopPlaceEditor;
+let desktopWorkspace;
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -298,6 +303,7 @@ function undoCurrentScope() {
   return true;
 }
 function workspaceChanged() {
+  desktopWorkspace?.sync();
   if(roadWorkspace?.transient){syncPropertyDeletionControls4A();updateUndoFeedback();return;}
   syncPropertyDeletionControls4A();
   syncPropertyCreationE1();
@@ -340,6 +346,11 @@ function requestDraw() {
           candidate: roadWorkspace.comparisonCandidate(), target: roadWorkspace.session.selection,
           impact: roadWorkspace.comparisonImpact(),
         });
+        return;
+      }
+      const generationPreview = desktopWorkspace?.mapPreview();
+      if (generationPreview) {
+        renderMap(canvas, camera, generationPreview, null, layers);
         return;
       }
       const roadMode=roadWorkspace?.active;
@@ -871,6 +882,7 @@ function updateMapIndicators() {
   syncMapEditDiagnostic4D();
   syncPropertyDeletionControls4A();
   desktopPlaceEditor?.sync();
+  desktopWorkspace?.sync();
   const creationActive = Boolean(propertyCreationSessionE1?.active);
   const splitActive=Boolean(propertySplitE2?.active);
   const mergeActive=Boolean(propertyMergeE3?.active);
@@ -954,6 +966,53 @@ function updateDetails() {
     })) $(id).textContent = value;
 }
 
+function cityGenerationOptions(outline = editor, waterDraft = waterPanel?.editor.definition()) {
+  return {
+    seed: $('seedInput').value,
+    size: $('sizeInput').value,
+    morphology: $('morphologyInput').value,
+    boundary: outline.boundary,
+    center: outline.center,
+    water: waterDraft,
+    terrain: terrainPanel?.editor.definition(),
+    districtCount: $('districtNumberInput').value || 'auto',
+    fortifications: {
+      enabled: $('wallsEnabledInput').checked,
+      gateCount: $('gateCountInput').value || 4,
+      towerSpacing: $('towerSpacingInput').value || 100,
+      seed: $('fortificationSeedInput').value || $('seedInput').value
+    }
+  };
+}
+
+function prepareDesktopGeneration(tool) {
+  if (tool === 'districts') {
+    const city = new DistrictEditor().generate(project.city, {
+      count: $('districtNumberInput').value,
+      seed: $('districtSeedInput').value,
+    });
+    return { ...project, city };
+  }
+  if (tool === 'defenses') {
+    const city = new FortificationEditor().apply(project.city, fortificationPanel.controls());
+    return { ...project, city };
+  }
+  const outline = new OutlineEditor(() => {}, () => {});
+  Object.assign(outline, { boundary: editor.boundary, center: editor.center, closed: editor.closed });
+  outline.validate();
+  const water = new WaterEditor();
+  water.restore(waterPanel.editor.definition());
+  if (water.features.some(feature => feature.kind === 'river')) water.width($('riverWidthInput').value);
+  water.tidyWater(outline.boundary);
+  return createProject(cityGenerationOptions(outline, water.definition()));
+}
+
+function desktopGenerationKey(tool) {
+  if (tool === 'districts') return JSON.stringify([$('districtNumberInput').value, $('districtSeedInput').value]);
+  if (tool === 'defenses') return JSON.stringify(fortificationPanel.controls());
+  return JSON.stringify([editor.closed, $('riverWidthInput').value, cityGenerationOptions()]);
+}
+
 function generate({ discardIdentities = false } = {}) {
   roadWorkspace?.exit();
   if (!discardIdentities && identityWorkspace)
@@ -962,22 +1021,7 @@ function generate({ discardIdentities = false } = {}) {
     editor.validate();
     if (waterPanel?.editor.features.some(f => f.kind === 'river')) waterPanel.editor.width($('riverWidthInput').value);
     const tidiedWater = waterPanel?.editor.tidyWater(editor.boundary) ?? [];
-    const next = createProject({
-      seed: $('seedInput').value,
-      size: $('sizeInput').value,
-      morphology: $('morphologyInput').value,
-      boundary: editor.boundary,
-      center: editor.center,
-      water: waterPanel?.editor.definition(),
-      terrain: terrainPanel?.editor.definition(),
-      districtCount: $('districtNumberInput').value || 'auto',
-      fortifications: {
-        enabled: $('wallsEnabledInput').checked,
-        gateCount: $('gateCountInput').value || 4,
-        towerSpacing: $('towerSpacingInput').value || 100,
-        seed: $('fortificationSeedInput').value || $('seedInput').value
-      }
-    });
+    const next = createProject(cityGenerationOptions());
     buildingEditSession?.stop();
     buildingPlacementSession?.stop();
     propertyEditSession?.stop();
@@ -1123,9 +1167,10 @@ $('newSeedButton').addEventListener('click', () => {
     v[1] = Math.random() * 2 ** 32;
   }
   $('seedInput').value = `${v[0].toString(36)}-${v[1].toString(36)}`;
-  generate({ discardIdentities: true });
+  if (desktopWorkspace?.usesGeneration) workspaceChanged();
+  else generate({ discardIdentities: true });
   };
-  if (identityWorkspace) identityWorkspace.requestRebuild(rebuild);
+  if (identityWorkspace && !desktopWorkspace?.usesGeneration) identityWorkspace.requestRebuild(rebuild);
   else rebuild();
 });
 $('fitButton').addEventListener('click', fitMap);
@@ -1143,7 +1188,10 @@ $('morphologyInput').addEventListener('change', updatePattern);
 $('sizeInput').addEventListener('change', updatePattern);
 $('seedInput').addEventListener('input', updatePattern);
 $('seedInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') generate();
+  if (e.key === 'Enter') {
+    if (desktopWorkspace?.usesGeneration) desktopWorkspace.preview();
+    else generate();
+  }
 });
 window.addEventListener('keydown', e => {
   if(propertyMergeE3?.active && e.key==='Escape'){propertyMergeE3.stop();e.preventDefault();return;}
@@ -1168,6 +1216,11 @@ window.addEventListener('keydown', e => {
     e.preventDefault();return;
   }
   if (!isMapShortcutEvent(e, document.activeElement)) return;
+  if (e.key === 'Escape' && desktopWorkspace?.mapPreview()) {
+    desktopWorkspace.cancelPreview();
+    e.preventDefault();
+    return;
+  }
   if(roadWorkspace?.active){
     if((e.ctrlKey||e.metaKey)&&['z','y'].includes(e.key.toLowerCase())){
       if(e.key.toLowerCase()==='z'&&!e.shiftKey)roadWorkspace.reset();
@@ -1442,6 +1495,7 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
     landscapeWorkspace?.render();
     districtWorkspace?.render();
     identityWorkspace?.render();
+    desktopWorkspace?.sync();
   },
   clearSelection: () => {
     buildingEditSession?.stop();
@@ -1477,7 +1531,8 @@ landscapeWorkspace = new LandscapeWorkspace({
     districtPanel.refresh();
   },
   changed: () => files?.changed(),
-  draw: requestDraw
+  draw: requestDraw,
+  revealGeneration: () => desktopWorkspace?.revealGeneration(),
 });
 propertyEditSession = new PropertyEditSession3I(() => {updateMapIndicators();requestDraw();});
 propertyCreationSessionE1 = new PropertyCreationSessionE1(() => {updateMapIndicators();updateUndoFeedback();requestDraw();});
@@ -1792,6 +1847,7 @@ desktopPlaceEditor = new DesktopPlaceEditor({
 roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
   desktopLayout: desktopEditLayout,
+  desktopEntry: () => desktopWorkspace?.roadEntry(),
   reconcile:prepareJunctionReflowC7,reconcileRoad:prepareRoadReconciliationB1,
   computeJunctionAsync:createJunctionPreviewWorkerP1(),
   getRevision:()=>files?.revision??0,applyEdit:applyRoadEditB4,
@@ -2120,7 +2176,7 @@ $('propertyDividerPercent3I').addEventListener('change',()=>{
 const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
 // An editor cannot receive map input unless its section is visible.
 // Even corrupted/older saved modes cannot activate hidden draft tools.
-const activeMapEditor = () => workspaceShell.state.section === 'landscape'
+const activeMapEditor = () => desktopWorkspace?.mapPreview() ? mapPanEditor : workspaceShell.state.section === 'landscape'
   ? (terrainPanel.editor.mode !== 'pan' ? terrainPanel.editor : waterPanel.editor.mode !== 'pan' ? waterPanel.editor : mapPanEditor)
   : workspaceShell.state.section === 'city' ? editor : mapPanEditor;
 const runMapEdit = (method, args) => {
@@ -2140,7 +2196,9 @@ const mapEditor = {
 
 bindCanvasInteraction($('roadComparisonProposed'), camera, requestDraw, updateViewport, mapPanEditor);
 bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => {
-  if (roadWorkspace?.comparisonOpen) return;
+  if (roadWorkspace?.comparisonOpen || desktopWorkspace?.mapPreview()) return;
+  if (desktopWorkspace?.awaitingProperty &&
+      desktopWorkspace.chooseBuildingProperty(propertyWorkspace.hit(point, camera.zoom)?.id)) return;
   if(propertyMergeE3?.active){
     const neighbor=propertyWorkspace.hit(point,camera.zoom);
     if(neighbor&&neighbor.id!==propertyMergeE3.session.primaryId)propertyMergeE3.choose(neighbor.id);
@@ -2595,6 +2653,24 @@ files = new ProjectFiles({
 });
 files.bind();
 files.start();
+desktopWorkspace = new DesktopWorkspace({
+  getElement: $, layout: desktopEditLayout, shell: workspaceShell, road: roadWorkspace,
+  landscape: landscapeWorkspace,
+  leaveTools: () => {
+    if (!exitPropertyEditing3I() || !exitBuildingEditing() || !exitStructurePlacement3H()) return false;
+    stopWorkspaceTools();
+    return true;
+  },
+  addProperty: startPropertyCreationE1,
+  addBuilding: startStructurePlacement3H,
+  prepareGeneration: prepareDesktopGeneration,
+  generationKey: desktopGenerationKey,
+  acceptedProject: () => project,
+  redraw: requestDraw,
+  enabled: url.searchParams.get('workspace') !== 'legacy',
+
+});
+desktopWorkspace.bind();
 window.addEventListener('beforeunload', event => {
   if (files.needsUnloadWarning) {
     event.preventDefault();

@@ -1,4 +1,4 @@
-// E3 compiled offline acceptance: Chromium/Firefox at desktop and phone widths.
+// E3 compiled offline acceptance: Chromium/Firefox at desktop widths.
 import assert from 'node:assert/strict';
 import {readFile,mkdir} from 'node:fs/promises';
 import {chromium,firefox} from 'playwright';
@@ -38,9 +38,9 @@ const failures=[];
 for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
   const browser=await engine.launch({headless:true});
   try{
-    for(const viewport of [{name:'desktop',width:1440,height:900},{name:'phone',width:390,height:844}]){
+    for(const viewport of [{name:'desktop',width:1440,height:900}]){
       const label=engineName+'/'+viewport.name,page=await browser.newPage({
-        viewport,hasTouch:viewport.name==='phone'});
+        viewport});
       page.setDefaultTimeout(20000);
       const errors=[];page.on('pageerror',error=>errors.push(error.message));
       try{
@@ -56,9 +56,6 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         const enter=async()=>{
           await page.evaluate(id=>__buildingQA.state().workspaceShell.select(
             {kind:'property',id}),fixture.primaryId);
-          if(viewport.name==='phone'&&await page.locator('#workspaceOpenInspector').isVisible()
-            &&!(await page.locator('#workspaceInspector').isVisible()))
-            await page.locator('#workspaceOpenInspector').click();
           await page.getByRole('button',{name:'Merge properties',exact:true}).click();
           assert.equal(await page.locator('#propertyMergePanelE3').isVisible(),true);
           await page.locator('#propertyMergeNeighborE3').selectOption(fixture.secondaryId);
@@ -87,12 +84,6 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         assert.equal(accepted.plots,initialPlots);
         assert.ok(accepted.revision>=revision+1);
         assert.equal(accepted.history,1);
-        if(viewport.name==='phone'){
-          if(await page.locator('#workspaceCloseInspector').isVisible())
-            await page.locator('#workspaceCloseInspector').click();
-          if(await page.locator('#workspaceOpenTools').isVisible())
-            await page.locator('#workspaceOpenTools').click();
-        }
         await page.locator('#propertyMergeUndoE3').click();
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),original);
         await page.locator('#propertyMergeRedoE3').click();

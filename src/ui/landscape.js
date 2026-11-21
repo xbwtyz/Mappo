@@ -26,7 +26,8 @@ export class LandscapeWorkspace {
     stopTools,
     onSelect = () => {},
     changed = () => {},
-    draw = () => {}
+    draw = () => {},
+    revealGeneration = () => false,
   }) {
     this.$ = getElement;
     this.document = document;
@@ -37,6 +38,7 @@ export class LandscapeWorkspace {
     this.onSelect = onSelect;
     this.changed = changed;
     this.draw = draw;
+    this.revealGeneration = revealGeneration;
     this.filter = 'all';
     this.hover = null;
     this.rows = new Map();
@@ -52,7 +54,6 @@ export class LandscapeWorkspace {
       resolve: id => LANDSCAPE_FIELDS[id] ? {
         type: 'Add landscape feature',
         title: 'New feature',
-        description: 'Create a landscape preview, then Generate city to build around it.',
         sections: []
       } : null
     });
@@ -286,8 +287,6 @@ export class LandscapeWorkspace {
     this.$('landscapeEmpty').textContent = records.length ? 'No features match this filter.' : 'Add a river, coastline, lake or mountain range.';
     for (const filter of ['all', 'water', 'mountains']) this.$(`landscapeFilter-${filter}`).setAttribute('aria-pressed', String(this.filter === filter));
     this.$('landscapeAddButton').disabled = !Object.keys(LANDSCAPE_FIELDS).some(t => this.available(t));
-    this.$('landscapeUndoWater').disabled = !this.water.editor.history.length;
-    this.$('landscapeUndoTerrain').disabled = !this.terrain.editor.history.length;
   }
   render() {
     if (this.restoring) return;
@@ -312,7 +311,13 @@ export class LandscapeWorkspace {
       this.context = selection;
       this.contextType = type;
     }
-    this.$('workspaceShowControls').hidden = true;
+    const pending = [this.water.editor.dirty && 'water', this.terrain.editor.dirty && 'terrain'].filter(Boolean);
+    const draftStatus = this.$('landscapeDraftStatus');
+    const message = pending.length
+      ? `Draft changes to ${pending.join(' and ')}. Rebuild city to apply.`
+      : 'Changes here create a draft. Rebuild city to apply it.';
+    if (draftStatus.textContent !== message) draftStatus.textContent = message;
+    this.$('landscapeReviewRebuild').hidden = !pending.length;
     this.$('landscapeCreationType').hidden = !creating;
     this.$('landscapeTypeInput').value = creating ? type : 'lake';
     for (const option of Array.from(this.$('landscapeTypeInput').options ?? [])) option.disabled = !this.available(option.value);
@@ -326,7 +331,7 @@ export class LandscapeWorkspace {
         ['coast', 'landscapeCoastControls'],
         ['lake', 'landscapeLakeControls']
       ]) this.$(id).hidden = type !== kind;
-    for (const id of ['editRiverButton', 'tidyRiverButton', 'removeRiverButton', 'editBridgesButton', 'addBridgeButton', 'editCoastButton', 'flipCoastButton', 'tidyCoastButton', 'removeCoastButton', 'editLakeButton', 'moveLakeButton', 'removeLakeButton', 'regenerateLakeButton', 'editTerrainButton', 'moveTerrainButton', 'editRidgeButton', 'removeTerrainButton', 'editPassButton', 'addPassButton', 'regenerateTerrainButton', 'removeTerrainItemButton', 'undoTerrainButton', 'revertTerrainButton']) this.$(id).hidden = creating;
+    for (const id of ['editRiverButton', 'tidyRiverButton', 'removeRiverButton', 'editBridgesButton', 'addBridgeButton', 'editCoastButton', 'flipCoastButton', 'tidyCoastButton', 'removeCoastButton', 'editLakeButton', 'moveLakeButton', 'removeLakeButton', 'regenerateLakeButton', 'editTerrainButton', 'moveTerrainButton', 'editRidgeButton', 'removeTerrainButton', 'editPassButton', 'addPassButton', 'regenerateTerrainButton', 'removeTerrainItemButton']) this.$(id).hidden = creating;
     this.$('landscapeWaterShared').hidden = creating;
     this.$('addLakeButton').hidden = !creating;
     this.$('addTerrainButton').hidden = !creating;
@@ -338,14 +343,20 @@ export class LandscapeWorkspace {
     this.$('waterMessage').hidden = false;
   }
   bind() {
+    this.$('landscapeReviewRebuild').addEventListener('click', () => {
+      if (this.revealGeneration()) return;
+      if (globalThis.window?.matchMedia?.('(max-width: 900px)').matches)
+        this.shell.dispatch({ type: 'inspector', collapsed: true });
+      if (this.shell.state.toolsCollapsed) this.shell.dispatch({ type: 'tools', collapsed: false });
+      this.$('workspaceRebuildGuide').open = true;
+      this.$('generateButton').focus();
+    });
     for (const filter of ['all', 'water', 'mountains']) this.$(`landscapeFilter-${filter}`).addEventListener('click', () => {
       this.filter = filter;
       this.renderList();
     });
     this.$('landscapeAddButton').addEventListener('click', () => this.beginAdd());
     this.$('landscapeTypeInput').addEventListener('change', () => this.beginAdd(this.$('landscapeTypeInput').value));
-    this.$('landscapeUndoWater').addEventListener('click', () => this.$('undoWaterButton').click());
-    this.$('landscapeUndoTerrain').addEventListener('click', () => this.$('undoTerrainButton').click());
     this.render();
   }
 }

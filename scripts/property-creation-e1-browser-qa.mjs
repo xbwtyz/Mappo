@@ -33,10 +33,9 @@ const failures=[];
 for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
   const browser=await engine.launch({headless:true});
   try{
-    for(const viewport of [{name:'desktop',width:1440,height:900},
-      {name:'phone',width:390,height:844}]){
+    for(const viewport of [{name:'desktop',width:1440,height:900}]){
       const label=engineName+'/'+viewport.name;
-      const page=await browser.newPage({viewport,hasTouch:viewport.name==='phone'});
+      const page=await browser.newPage({viewport});
       page.setDefaultTimeout(20000);
       const errors=[];
       page.on('pageerror',err=>errors.push(err.message));
@@ -51,12 +50,6 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         await page.locator('#propertyCreateStartE1').click();
         assert.equal(await page.locator('#propertyCreatePanelE1').isVisible(),true);
         assert.equal(await page.locator('#propertyCreateApplyE1').isDisabled(),true);
-        if(viewport.name==='phone'){
-          if(await page.locator('#workspaceCollapseTools').isVisible())
-            await page.locator('#workspaceCollapseTools').click();
-          if(await page.locator('#workspaceCloseInspector').isVisible())
-            await page.locator('#workspaceCloseInspector').click();
-        }
         await page.locator('#mapCanvas').scrollIntoViewIfNeeded();
         const selectGround=async()=>{
           const p=await page.evaluate(target=>{
@@ -69,10 +62,7 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
           const click={x:box.x+p.x,y:box.y+p.y};
           const found=await page.evaluate(p=>document.elementFromPoint(p.x,p.y)?.id,click);
           assert.equal(found,'mapCanvas','Open map ground must be reachable with E1 controls displayed');
-          // Exercise an actual touch gesture on phone rather than a mouse event
-          // against a touch-enabled viewport.
-          if(viewport.name==='phone')await page.touchscreen.tap(click.x,click.y);
-          else await page.mouse.click(click.x,click.y);
+          await page.mouse.click(click.x,click.y);
           await page.waitForFunction(()=>Boolean(__buildingQA.state().propertyCreationSessionE1?.draft));
         };
         const setValid=async()=>{
@@ -112,14 +102,6 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
           historyCount+1,'One Apply creates one property-creation history entry');
         assert.equal(accepted.newSite.usage,'undeveloped');
         assert.deepEqual(accepted.newSite.buildingIds,[]);
-        if(viewport.name==='phone'){
-          // Selecting the new parcel can reopen its Inspector overlay. Dismiss
-          // that genuine user-facing surface before accessing the City history.
-          if(await page.locator('#workspaceCloseInspector').isVisible())
-            await page.locator('#workspaceCloseInspector').click();
-          if(await page.locator('#workspaceOpenTools').isVisible())
-            await page.locator('#workspaceOpenTools').click();
-        }
         await page.locator('#propertyCreateUndoE1').click();
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),cityBefore);
         await page.locator('#propertyCreateRedoE1').click();

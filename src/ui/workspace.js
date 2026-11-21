@@ -176,27 +176,36 @@ export class WorkspaceShell {
     }
     return element;
   }
-  renderQuickInspector(quick) {
+  renderQuickInspector(quick, inlineControls) {
     const $ = this.$;
     const enabled = Boolean(quick);
     const details = $('workspaceInspectorDetails');
     const sections = $('workspaceSelectionSections');
-    if (enabled !== Boolean(this.quickInspectorActive)) {
-      (enabled ? details : $('workspaceInspectorSectionsHost')).append(sections);
-      $('workspaceSelectionInspector').classList.toggle('workspace-inspector-action-first', enabled);
-      this.quickInspectorActive = enabled;
+    const detailsTitle = quick?.detailsTitle ?? inlineControls?.factsTitle;
+    const foldFacts = Boolean(detailsTitle);
+    if (foldFacts !== Boolean(this.inspectorFactsFolded)) {
+      (foldFacts ? details : $('workspaceInspectorSectionsHost')).append(sections);
+      $('workspaceSelectionInspector').classList.toggle('workspace-inspector-action-first', foldFacts);
+      this.inspectorFactsFolded = foldFacts;
+    }
+    const showToolsFirst = Boolean(inlineControls);
+    if (showToolsFirst !== Boolean(this.inspectorToolsFirst)) {
+      $(showToolsFirst ? 'workspaceInspectorTools' : 'workspaceInspectorToolsFallback')
+        .append($('workspaceInspectorLocalControls'));
+      this.inspectorToolsFirst = showToolsFirst;
     }
     $('workspaceInspectorActions').hidden = !enabled;
     $('workspaceInspectorMore').hidden = !quick?.more?.length;
     $('workspaceInspectorRelated').hidden = !quick?.related;
     $('workspaceSelectionParent').hidden = !quick?.parent;
     $('workspaceSelectionLocate').hidden = !quick?.locate;
-    details.hidden = !enabled;
+    details.hidden = !foldFacts;
+    if (detailsTitle) $('workspaceInspectorDetailsTitle').textContent = detailsTitle;
     const ref = this.state.selection;
-    const key = enabled ? ref.kind + ':' + ref.id : null;
+    const key = foldFacts ? ref.kind + ':' + ref.id : null;
     const identity = $('identityInspector');
     if (key !== this.quickInspectorKey) {
-      if (enabled) {
+      if (foldFacts) {
         details.open = false;
         $('workspaceInspectorMore').open = false;
         $('workspaceInspectorScroll').scrollTop = 0;
@@ -221,7 +230,6 @@ export class WorkspaceShell {
     $('workspaceSelectionParent').replaceChildren(...(quick.parent ? [action(quick.parent)] : []));
     $('workspaceSelectionLocate').replaceChildren(...(quick.locate ? [action(quick.locate)] : []));
     $('workspaceInspectorMoreButtons').replaceChildren(...quick.more.map(action));
-    $('workspaceInspectorDetailsTitle').textContent = quick.detailsTitle;
     if (quick.related) {
       const count = quick.related.actions.length;
       $('workspaceInspectorRelatedTitle').textContent = quick.related.title + ' · ' + count;
@@ -233,11 +241,13 @@ export class WorkspaceShell {
   }
   renderInspector() {
     const descriptor = this.descriptor();
-    const quick = this.quickInspectorMedia?.matches ? descriptor?.quickInspector : null;
+    const desktop = this.quickInspectorMedia?.matches;
+    const quick = desktop ? descriptor?.quickInspector : null;
+    const inlineControls = desktop ? descriptor?.inlineControls : null;
     this.$('workspaceEmptyInspector').hidden = Boolean(descriptor);
     this.$('workspaceSelectionInspector').hidden = !descriptor;
     this.$('workspaceClearSelection').hidden = !descriptor;
-    this.renderQuickInspector(quick);
+    this.renderQuickInspector(quick, inlineControls);
     if (!descriptor) {
       this.$('workspaceSelectionSections').replaceChildren();
       this.onInspect(this.state.selection);
@@ -249,8 +259,6 @@ export class WorkspaceShell {
     this.$('workspaceSelectionSections').replaceChildren(
       ...(quick?.facts ?? descriptor.sections ?? []).map(section => this.inspectorSection(section, !quick)),
     );
-    this.$('workspaceShowControls').hidden = !descriptor.section;
-    this.$('workspaceShowControls').textContent = descriptor.controlLabel ?? 'Open editing controls';
     this.onInspect(this.state.selection);
   }
   render() {
@@ -327,10 +335,6 @@ export class WorkspaceShell {
       type: 'pin'
     }));
     this.$('workspaceClearSelection').addEventListener('click', () => this.clear());
-    this.$('workspaceShowControls').addEventListener('click', () => {
-      const descriptor = this.descriptor();
-      if (descriptor?.section) this.navigate(descriptor.section);
-    });
     this.render();
   }
 }

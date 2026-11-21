@@ -240,6 +240,7 @@ export class RoadInspectionWorkspace {
     applyEdit = () => ({ok:false,message:'Road Apply not configured.'}),
     afterExit = () => {},
     desktopLayout = null,
+    desktopEntry = () => null,
   }) {
     Object.assign(this, {
       $: getElement,
@@ -254,6 +255,7 @@ export class RoadInspectionWorkspace {
       applyEdit,
       afterExit,
       desktopLayout,
+      desktopEntry,
     });
     this.session = new RoadPreviewSession({
       getProject,
@@ -374,7 +376,7 @@ export class RoadInspectionWorkspace {
     this.render();
     this.afterExit();
     this.draw();
-    if (focus) this.$(desktop ? 'roadDesktopPreviewG2' : 'roadModeButton').focus();
+    if (focus) (desktop ? this.desktopEntry() ?? this.$('roadDesktopPreviewG2') : this.$('roadModeButton')).focus();
   }
   reset() {
     if (!this.active) return;

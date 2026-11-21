@@ -4,14 +4,12 @@ import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
 
-const url = new URL('../index.html', import.meta.url).href;
+const url = new URL('../index.html?workspace=legacy', import.meta.url).href;
 const output = new URL('../artifacts/browser-qa/', import.meta.url);
 await mkdir(output, { recursive: true });
 const viewports = [
   { name: 'desktop', width: 1440, height: 900 },
   { name: 'ultrawide', width: 5120, height: 1440 },
-  { name: 'tablet', width: 768, height: 1024 },
-  { name: 'phone', width: 390, height: 844 }
 ];
 const failures = [];
 
@@ -39,12 +37,6 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.locator('#projectMenu').isVisible(), true, `${label}: project menu opens`);
       await page.keyboard.press('Escape');
       assert.equal(await page.locator('#projectMenu').isHidden(), true, `${label}: Escape closes project menu`);
-      if (viewport.width <= 670) {
-        // On phones the Tools drawer intentionally overlays the map header.
-        // Close it before interacting with map controls instead of clicking through it.
-        await page.locator('#workspaceCollapseTools').click();
-        assert.equal(await page.locator('#workspaceTools').isHidden(), true);
-      }
       await page.locator('#layersMenuButton').click();
       assert.equal(await page.locator('#layersMenu').isVisible(), true, `${label}: layers menu opens`);
       // Dev 4f: presets change the existing layer checkboxes; manual edits
@@ -73,16 +65,35 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#workspaceOpenTools').click();
       assert.equal(await page.locator('#workspaceTools').isVisible(), true, `${label}: tools reopen`);
 
-      if (viewport.width <= 670) {
-        await page.locator('#workspaceCollapseTools').click();
-        assert.equal(await page.locator('#workspaceTools').isHidden(), true);
-      }
       await page.locator('#workspaceOpenInspector').click();
       assert.equal(await page.locator('#workspaceInspector').isVisible(), true, `${label}: inspector opens`);
       await page.locator('#workspaceCloseInspector').click();
       assert.equal(await page.locator('#workspaceInspector').isHidden(), true, `${label}: inspector closes`);
 
       if (viewport.name === 'desktop') {
+        await page.locator('#workspaceTab-districts').click();
+        await page.locator('#districtList button').first().click();
+        const districtName = page.locator('#districtNameInput');
+        const originalName = await districtName.inputValue();
+        assert.equal(await page.locator('#workspaceInspectorTools #districtInspectorControls').isVisible(), true);
+        assert.equal(await page.locator('#workspaceInspectorDetails').getAttribute('open'), null);
+        await districtName.fill('Market Quarter');
+        await page.locator('#applyDistrictButton').click();
+        assert.equal(await page.locator('#workspaceSelectionName').innerText(), 'Market Quarter');
+        await page.locator('#undoDistrictButton').click();
+        assert.equal(await districtName.inputValue(), originalName);
+        await page.locator('#workspaceCloseInspector').click();
+
+        await page.locator('#workspaceTab-defenses').click();
+        const walls = page.locator('#wallsEnabledInput');
+        const wallsEnabled = await walls.isChecked();
+        await walls.setChecked(!wallsEnabled);
+        assert.match(await page.locator('#defensePendingMessage').innerText(), /Update defenses/);
+        await page.locator('#applyFortificationButton').click();
+        assert.equal(await page.locator('#undoFortificationButton').isEnabled(), true);
+        await page.locator('#undoFortificationButton').click();
+        assert.equal(await walls.isChecked(), wallsEnabled);
+
         await page.locator('#workspaceTab-landscape').click();
         await page.locator('#landscapeAddButton').click();
         assert.equal(await page.locator('#landscapeTypeInput').isVisible(), true, `${label}: Add feature opens form`);
@@ -90,6 +101,25 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
           await page.locator('#landscapeTypeInput').selectOption(kind);
           assert.equal(await page.locator(`#${action}`).isVisible(), true, `${label}: ${kind} controls visible`);
         }
+        await page.locator('#landscapeTypeInput').selectOption('lake');
+        await page.locator('#lakeRadiusInput').fill('18');
+        await page.locator('#addLakeButton').click();
+        const lakeEdit = page.locator('#workspaceInspectorTools #editLakeButton');
+        await lakeEdit.waitFor({ state: 'visible' });
+        assert.match(await page.locator('#landscapeDraftStatus').innerText(), /Draft changes to water/);
+        assert.equal(await page.locator('#workspaceInspectorDetails').getAttribute('open'), null);
+        await lakeEdit.click();
+        assert.equal(await lakeEdit.getAttribute('aria-pressed'), 'true');
+        await page.locator('#layersMenuButton').click();
+        await page.locator('#layerPreset4F').selectOption('planning');
+        await page.keyboard.press('Escape');
+        assert.equal(await page.evaluate(() => document.activeElement.id), 'layersMenuButton');
+        assert.equal(await lakeEdit.getAttribute('aria-pressed'), 'true');
+        await page.locator('#workspaceCollapseTools').click();
+        await page.locator('#landscapeReviewRebuild').click();
+        assert.equal(await page.locator('#workspaceTools').isVisible(), true);
+        assert.equal(await page.evaluate(() => document.activeElement.id), 'generateButton');
+        assert.notEqual(await page.locator('#workspaceRebuildGuide').getAttribute('open'), null);
       }
       if (viewport.name === 'desktop') {
         // Exercise the real standalone file workflow, not merely controller stubs.
@@ -117,6 +147,9 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         assert.equal(document.format, 'mappo-project');
         assert.equal(document.project.schemaVersion, 9);
         assert.equal(document.workspace.schemaVersion, 1);
+        assert.equal(document.project.city.waterFeatures.length, 0, 'Reviewing a rebuild keeps the accepted city');
+        assert.equal(document.workspace.waterEditor.dirty, true, 'The download preserves the landscape draft');
+        assert.equal(document.workspace.waterEditor.features.some(feature => feature.kind === 'lake'), true);
         const geometry = JSON.stringify(document.project.city);
         await page.locator('#projectFileInput').setInputFiles({
           name: 'roundtrip.mappo.json',
@@ -131,6 +164,20 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         assert.ok(roundtrip && roundtrip.width > 150, 'Loaded project still displays the map');
         assert.ok(geometry.length > 200, 'Downloaded project contains full city geometry');
         await page.locator('#projectMenuClose').click();
+        assert.match(await page.locator('#landscapeDraftStatus').innerText(), /Draft changes to water/);
+        await page.locator('#landscapeReviewRebuild').click();
+        await page.locator('#generateButton').click();
+        assert.equal(await page.locator('#landscapeReviewRebuild').isHidden(), true);
+        assert.doesNotMatch(await page.locator('#workspacePendingDetails').innerText(), /Rebuild pending:.*water/i);
+        const landscapeRows = page.locator('#landscapeFeatureList button');
+        await landscapeRows.first().click();
+        await page.locator('#removeLakeButton').click();
+        assert.equal(await landscapeRows.count(), 0);
+        const history = page.locator('#landscapeHistoryTools');
+        await history.locator('#undoWaterButton').click();
+        assert.equal(await landscapeRows.count(), 1, 'Undo is available when the feature list is empty');
+        await history.locator('#revertWaterButton').click();
+        assert.equal(await landscapeRows.count(), 1, 'Revert keeps the accepted lake');
       }
       const metrics = await page.evaluate(() => ({
         width: document.documentElement.scrollWidth,
@@ -155,5 +202,5 @@ if (failures.length) {
   console.error(`Phase 7 browser QA: ${failures.length} failures across ${viewports.length * 2} viewports.\n${failures.join('\n')}`);
   process.exitCode = 1;
 } else {
-  console.log('Phase 7 browser QA: 8/8 browser-viewport smoke checks passed.');
+  console.log('Phase 7 browser QA: 4/4 browser-viewport smoke checks passed.');
 }

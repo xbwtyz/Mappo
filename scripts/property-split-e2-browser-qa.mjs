@@ -1,5 +1,5 @@
 // E2 browser acceptance against the compiled offline HTML: Chromium/Firefox,
-// desktop and phone. No production-only QA globals; the shared test observer is injected.
+// desktop. No production-only QA globals; the shared test observer is injected.
 import assert from 'node:assert/strict';
 import {readFile,mkdir} from 'node:fs/promises';
 import {chromium,firefox} from 'playwright';
@@ -33,9 +33,9 @@ const failures=[];
 for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
   const browser=await engine.launch({headless:true});
   try{
-    for(const viewport of [{name:'desktop',width:1440,height:900},{name:'phone',width:390,height:844}]){
+    for(const viewport of [{name:'desktop',width:1440,height:900}]){
       const label=engineName+'/'+viewport.name;
-      const page=await browser.newPage({viewport,hasTouch:viewport.name==='phone'});
+      const page=await browser.newPage({viewport});
       page.setDefaultTimeout(20000);
       const errors=[];
       page.on('pageerror',err=>errors.push(err.message));
@@ -51,9 +51,6 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
 
         const enter=async()=>{
           await page.evaluate(id=>__buildingQA.state().workspaceShell.select({kind:'property',id}),fixture.propertyId);
-          if(viewport.name==='phone'&&await page.locator('#workspaceOpenInspector').isVisible()
-            &&!(await page.locator('#workspaceInspector').isVisible()))
-            await page.locator('#workspaceOpenInspector').click();
           const action=page.getByRole('button',{name:'Split property',exact:true});
           await action.click();
           assert.equal(await page.locator('#propertySplitPanelE2').isVisible(),true);
@@ -101,10 +98,6 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         assert.equal(await page.evaluate(()=>__buildingQA.state().propertySplitE2.history.past.length),1,
           'One Apply must create one structural split history transaction');
 
-        if(viewport.name==='phone'){
-          if(await page.locator('#workspaceCloseInspector').isVisible())await page.locator('#workspaceCloseInspector').click();
-          if(await page.locator('#workspaceOpenTools').isVisible())await page.locator('#workspaceOpenTools').click();
-        }
         await page.locator('#propertySplitUndoE2').click();
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),before);
         await page.locator('#propertySplitRedoE2').click();

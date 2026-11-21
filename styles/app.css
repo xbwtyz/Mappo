@@ -896,3 +896,72 @@
   max-height:160px;overflow:auto;overscroll-behavior:contain;padding:2px;
 }
 .workspace-inspector-action-first .workspace-inspector-title h2{min-width:0;overflow-wrap:anywhere}
+
+.workspace-tool-heading{margin:12px 0 8px;color:#e5e9d6;font-size:13px}
+.workspace-tool-actions{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
+.workspace-tool-actions:has(> button:only-child)>button,
+.workspace-tool-actions>.tool-button{flex:1 0 100%}
+.workspace-tool-actions>.minor-button{flex:1 1 auto}
+.workspace-tool-actions:not(:has(> button:not([hidden]))){display:none}
+.workspace-landscape-draft{margin:12px 0;border:1px solid #536b5c;border-radius:5px;padding:9px 10px;background:#23372e}
+.workspace-landscape-draft .hint{margin:0}
+.workspace-landscape-draft button{margin-top:7px}
+#workspaceInspectorTools .district-inspector-controls{margin-top:12px}
+#workspaceInspectorTools .district-inspector-controls .district-name-row{margin-top:0}
+.workspace-shell .district-inspector-controls>.file-status:empty,
+.workspace-shell .landscape-inspector-controls .file-status:empty,
+.workspace-shell .defense-workflow>.file-status:empty{display:none}
+
+/* Desktop Generation, Add and Roads share the map and resizable edit track. */
+.desktop-workspace-tabs{display:none}
+@media(min-width:1000px){
+  .workspace-shell.three-tab-workspace .legacy-workspace-tabs,
+  .workspace-shell.three-tab-workspace .sidebar-left,
+  .workspace-shell.three-tab-workspace #workspaceOpenTools,
+  .workspace-shell.three-tab-workspace #roadDesktopPreviewG2{display:none}
+  .workspace-shell.three-tab-workspace .desktop-workspace-tabs{display:flex}
+  .workspace-shell.three-tab-workspace{--workspace-tools:0px}
+  .workspace-shell.three-tab-workspace .workspace{grid-template-columns:minmax(0,1fr) var(--workspace-inspector)}
+  .workspace-shell.three-tab-workspace .workspace>.map-shell{grid-column:1}
+  .workspace-shell.three-tab-workspace .workspace>.sidebar-right{grid-column:2}
+  .workspace-shell.three-tab-workspace.desktop-home-open .workspace{grid-template-columns:minmax(0,1fr) 0}
+  .workspace-shell.three-tab-workspace.desktop-home-open .workspace>.sidebar-right{display:none}
+  .desktop-edit-layout>#desktopWorkspaceHome:not([hidden]){
+    display:flex;flex-direction:column;padding:0;border-left:1px solid #4b6052;
+    background:#26362e;color:#eff3e6;
+  }
+  .desktop-home-header,.desktop-home-footer{flex:none;padding:14px 16px;background:#1e3026}
+  .desktop-home-header{border-bottom:1px solid #4b6052}
+  .desktop-home-header h2{margin:0 0 10px;font:650 20px system-ui}
+  .desktop-home-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:14px 16px}
+  .desktop-home-footer{border-top:1px solid #4b6052}
+  .desktop-home-footer .hint{margin:0 0 8px}
+  .desktop-home-footer .road-preview-actions{position:static;padding:0;margin:0;background:transparent;border:0}
+  .desktop-home-footer .road-preview-actions>button{min-width:0;padding:7px 8px}
+  .desktop-home-footer .workspace-apply{padding:7px 0 0;border:0;background:transparent}
+  .desktop-home-footer .workspace-apply>#generateButton{display:none}
+  .desktop-home-footer .workspace-apply .workspace-pending-details{margin:0 0 5px}
+  .desktop-home-scroll .road-menu-views{margin-bottom:12px}
+  .desktop-add-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .desktop-add-grid+.workspace-settings{margin-top:12px}
+  .desktop-home-scroll h3{margin:10px 0 6px;font-size:13px}
+  #desktopHomeAdd .landscape-list-heading{display:none}
+  #desktopAddFeatureControls .water-panel{margin-top:12px}
+  #desktopWorkspaceHome button[aria-pressed=true]{background:#405b49;color:#fff;border-color:#adc897}
+}
+@media(min-width:1000px){
+  #desktopGenerationControls :is(#generateDistrictButton,#applyFortificationButton){display:none}
+  #desktopAddFeatureControls #landscapeCreationType{display:none}
+}
+@media(min-width:1000px){
+  #desktopGenerationControls>#cityGenerationControls{display:flex;flex-direction:column}
+  #desktopGenerationControls .desktop-street-settings{order:-1}
+  #desktopGenerationControls .desktop-street-settings>h2{display:none}
+  #desktopGenerationControls #desktopOutlineSettings{margin-top:12px}
+  #desktopWorkspaceHome #desktopGenerationApply:not(:disabled),
+  #desktopWorkspaceHome #desktopGenerationPreview:has(~#desktopGenerationApply:disabled){
+    background:#d3e7b3;color:#20372b;border-color:#d3e7b3
+  }
+}
+#workspaceTools #desktopOutlineSettings{margin:0;padding:0;border:0;background:transparent}
+#workspaceTools #desktopOutlineSettings>summary{display:none}

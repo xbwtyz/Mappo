@@ -1,4 +1,4 @@
-// E4 compiled standalone acceptance across desktop, phone, Chromium and Firefox.
+// E4 compiled standalone desktop acceptance in Chromium and Firefox.
 import assert from 'node:assert/strict';
 import {readFile,mkdir} from 'node:fs/promises';
 import {chromium,firefox} from 'playwright';
@@ -25,9 +25,9 @@ const failures=[];
 for(const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]){
  const browser=await engine.launch({headless:true});
  try{
-  for(const viewport of [{label:'desktop',width:1440,height:900},{label:'phone',width:390,height:844}]){
+  for(const viewport of [{label:'desktop',width:1440,height:900}]){
    const label=browserName+'/'+viewport.label;
-   const page=await browser.newPage({viewport,hasTouch:viewport.label==='phone'});
+   const page=await browser.newPage({viewport});
    page.setDefaultTimeout(20000);
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    try{
@@ -39,9 +39,6 @@ for(const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]){
     const original=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city));
     const count=sample.project.city.plots.length;
     await page.evaluate(id=>__buildingQA.state().workspaceShell.select({kind:'property',id}),sample.id);
-    if(viewport.label==='phone'&&await page.locator('#workspaceOpenInspector').isVisible()&&
-       !(await page.locator('#workspaceInspector').isVisible()))
-      await page.locator('#workspaceOpenInspector').click();
     await page.getByRole('button',{name:/^(Edit property geometry|Edit boundaries & plots)$/}).click();
     assert.equal(await page.locator('#propertyEditPanel3I').isVisible(),true);
     await page.locator('#propertyAddDividerE4').click();

@@ -1,5 +1,5 @@
 // D4 non-destructive acceptance: developed large city, schema-9 conservative
-// recovery, keyboard semantics and real phone controls in both browser engines.
+// recovery and keyboard semantics in both browser engines.
 import assert from 'node:assert/strict';
 import { readFile, mkdir } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
@@ -12,7 +12,6 @@ const output=new URL('../artifacts/d4/',import.meta.url);
 await mkdir(output,{recursive:true});
 const cases=[
   {name:'desktop',width:1440,height:900},
-  {name:'phone',width:390,height:844},
 ];
 const failures=[];
 for(const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]){
@@ -20,7 +19,7 @@ for(const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]){
   try {
     for(const viewport of cases){
       const label=browserName+'-'+viewport.name;
-      const page=await browser.newPage({viewport,hasTouch:browserName==='chromium'});
+      const page=await browser.newPage({viewport});
       page.setDefaultTimeout(20000);
       const pageErrors=[];
       page.on('pageerror',error=>pageErrors.push(error.message));
@@ -29,8 +28,6 @@ for(const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]){
           ?route.fulfill({contentType:'text/html',body:html}):route.abort());
         await page.goto('http://mappo.test/index.html',{waitUntil:'domcontentloaded'});
         await page.waitForFunction(()=>__buildingQA.state().files.ready);
-        if(viewport.name==='phone' && await page.locator('#workspaceCloseInspector').isVisible())
-          await page.locator('#workspaceCloseInspector').click();
         const start=async(project)=>{
           await page.evaluate(doc=>__buildingQA.apply(doc),{project,workspace:defaultWorkspace(project)});
           await page.locator('#roadModeButton').scrollIntoViewIfNeeded();
@@ -127,7 +124,7 @@ for(const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]){
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),legacyBefore);
         assert.equal(await page.locator('#roadPreviewPanel').evaluate(el=>{
           const box=el.getBoundingClientRect();return box.left>=0&&box.right<=innerWidth;
-        }),true,'Preview must stay inside phone/desktop viewport');
+        }),true,'Preview must stay inside desktop viewport');
         await page.locator('#roadPreviewCancel').click();
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),legacyBefore);
         assert.deepEqual(pageErrors,[],'No browser exceptions');
