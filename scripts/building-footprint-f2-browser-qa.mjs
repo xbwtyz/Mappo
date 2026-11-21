@@ -150,6 +150,23 @@ async function exerciseF2(browserName, browserType, phone) {
     page.once('dialog', dialog => dialog.accept());
     await page.locator('#structureCancel').click();
 
+    // F4 keeps classification, geometry history, and portable save in one workflow.
+    if (await page.locator('#identityInspector').getAttribute('open') === null)
+      await page.locator('#identityEditorTitle').click();
+    const beforeUse = await appliedBuilding();
+    const type = beforeUse.type === 'inn' ? 'shop' : 'inn';
+    await page.locator('#identityBuildingType').selectOption(type);
+    await page.locator('#identityApplyButton').click();
+    assert.deepEqual(await appliedBuilding(), { ...beforeUse, type });
+    const classified = await readCity(page);
+    await page.getByRole('button', { name: 'Edit building footprint' }).click();
+    await page.locator('#buildingHistoryUndo').click();
+    assert.equal((await appliedBuilding()).type, type);
+    assert.equal((await appliedBuilding()).holes.length, 0);
+    await page.locator('#buildingHistoryRedo').click();
+    assert.equal(JSON.stringify(await readCity(page)), JSON.stringify(classified));
+    await page.locator('#buildingPreviewCancel').click();
+
     const saved = await page.evaluate(() => __buildingQA.state().files.captureDocument());
     await page.locator('#projectFileInput').setInputFiles({
       name: 'f2.mappo.json', mimeType: 'application/json', buffer: Buffer.from(encodeProjectDocument(saved))
@@ -157,10 +174,10 @@ async function exerciseF2(browserName, browserType, phone) {
     await page.locator('#loadPreview').waitFor({ state: 'visible' });
     await page.locator('#openProjectButton').click();
     await page.waitForFunction(() => document.querySelector('#fileStatus').textContent.startsWith('Opened '));
-    assert.ok(JSON.stringify(await readCity(page)) === JSON.stringify(withCourtyard), 'Accepted city should match the expected snapshot');
+    assert.equal(JSON.stringify(await readCity(page)), JSON.stringify(classified));
     assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isActive), false);
     assert.deepEqual(errors, []);
-    console.log('PASS F2 ' + browserName + ' ' + (phone ? 'phone touch' : 'desktop'));
+    console.log('PASS F2/F4 ' + browserName + ' ' + (phone ? 'phone touch' : 'desktop'));
   } finally {
     await browser.close();
   }

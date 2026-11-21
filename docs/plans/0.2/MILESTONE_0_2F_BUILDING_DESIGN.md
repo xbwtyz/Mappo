@@ -1,10 +1,10 @@
 # Mappo 0.2F — Advanced 2D Building Design
 
-> **Status (2026-11-20): revised design proposed for owner review.** Prerequisite 0.2E E1–E5 is **merged** into `main` through [PR #66](https://github.com/xbwtyz/Mappo/pull/66). This document is a **design proposal**, not authorization to implement, merge, release, migrate schema or publish. The stable release remains `0.1.0`; the current development build is `0.2-dev.e5`.
->
-> **Authority:** [0.2 master roadmap](README.md) · [0.2E integration acceptance](E5_ACCEPTANCE_REPORT.md) · [developer guide](../../development.md). Review this proposal and choose the explicit design defaults below **before starting F1 code**.
-
-**Implementation update:** F1 pure footprint primitives and focused acceptance are proposed on a separate implementation PR (pending final CI and separate merge permission). See [F1 footprint acceptance](F1_FOOTPRINT_ACCEPTANCE.md). F2 direct editor tools are not implemented by F1.
+**Status.** F1 ([#68](https://github.com/xbwtyz/Mappo/pull/68)),
+F2 ([#69](https://github.com/xbwtyz/Mappo/pull/69)), and
+F3 ([#70](https://github.com/xbwtyz/Mappo/pull/70)) are merged.
+F4 is the [integration and acceptance pass](F4_ACCEPTANCE_REPORT.md).
+0.2E completed in [PR #66](https://github.com/xbwtyz/Mappo/pull/66).
 
 ## 1. Product goal and boundaries
 
