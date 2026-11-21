@@ -1,6 +1,6 @@
 # Mappo 0.2H H3 — Large-city road responsiveness audit
 
-**Status:** Benchmark and issue review completed on [H3 PR #89](https://github.com/xbwtyz/Mappo/pull/89). Final PR-head CI and owner merge approval are separate. No production JS, historical-save fixture, schema or compiled distribution is changed by H3.
+**Status:** Benchmark and issue review completed and [H3 PR #89](https://github.com/xbwtyz/Mappo/pull/89) merged after successful [final CI](https://github.com/xbwtyz/Mappo/actions/runs/44957313588) and explicit owner approval. Issues #44 and #46 were subsequently closed for their original regressions, with remaining limitations documented. No production JS, historical-save fixture, schema or compiled distribution is changed by H3.
 
 ## Source and reproducibility
 
@@ -46,7 +46,7 @@ The latest historical [P7 report](C7_P7_INPUT_RESPONSIVENESS.md) recorded Large 
 
 **[#79 — Connected dead-end deletion](https://github.com/xbwtyz/Mappo/issues/79): UNCHANGED.** Requires engine/face/parcel support for dead-end corridors, not H3 performance work.
 
-No issues were closed or edited without explicit review of these findings.
+**Owner decision after H3:** The owner approved closing [#44](https://github.com/xbwtyz/Mappo/issues/44) and [#46](https://github.com/xbwtyz/Mappo/issues/46) for the original freeze and synchronous junction Apply problems. Both issues now have evidence-linked closure comments that explicitly note shorter residual frame hitches, potentially synchronous fallback paths, and the need for fresh narrowly reproduced real-user reports if disruptive behavior recurs. [#79](https://github.com/xbwtyz/Mappo/issues/79) remains open, and 0.2.0 release is not blocked by incremental benchmark optimization.
 
 ## H3 gates
 
@@ -57,8 +57,8 @@ No issues were closed or edited without explicit review of these findings.
 - [x] No material performance regression identified requiring speculative changes to the app runtime.
 - [x] No forced interactions, mobile-specific tests, new schema, Pages publish or release introduced.
 - [x] One-off audit CI benchmark trigger removed; original manual-only benchmark is preserved.
-- [ ] Final review-ready H3 PR six-runner CI green with release-policy test restored.
-- [ ] Owner separately approves PR merge and issue dispositions.
+- [x] [Final H3 PR CI](https://github.com/xbwtyz/Mappo/actions/runs/44957313588) green with original main-only release-policy test restored.
+- [x] Owner separately approved H3 PR merge and closure dispositions; PR #89 merged, issues #44/#46 closed.
 
 ## User experience since H2
 

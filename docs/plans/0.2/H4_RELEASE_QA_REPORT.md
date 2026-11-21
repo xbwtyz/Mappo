@@ -1,6 +1,6 @@
 # Mappo 0.2H H4 — Final integrated desktop release QA
 
-**Status:** H4 implementation on a separate PR; full CI evidence pending. Current application baseline: `0.2-dev.g3g`, project schema **9**, portable file format **1**. H4 is *not* a stable 0.2.0 release, version bump, migration, runtime feature, or public-site publication.
+**Status:** H4 implementation and first complete CI acceptance passed on [PR #90](https://github.com/xbwtyz/Mappo/pull/90); final documentation-only PR-head CI and owner merge approval remain pending. Current application baseline: `0.2-dev.g3g`, project schema **9**, portable file format **1**. H4 is *not* a stable 0.2.0 release, version bump, migration, runtime feature, or public-site publication.
 
 ## Release-support scope
 
@@ -23,15 +23,26 @@
 | General integration and QA | `scripts/browser-qa.mjs`, `scripts/d4-browser-acceptance.mjs`, `scripts/building-performance-f4.mjs` | Layers, districts, defenses, landscape, exports, error guidance, desktop regressions |
 | Release safeguards and known issues | `tests/h1-release-policy.test.js`, H3 measurements, [#79](https://github.com/xbwtyz/Mappo/issues/79) | Release and Pages remain manual-only, version check fails on development version, documented limitations |
 
+## Verified CI and evidence
+
+- [H4 first full six-runner CI, run #44958095092](https://github.com/xbwtyz/Mappo/actions/runs/44958095092) **passed in 2m 56s**. Both native Node shards, browser desktop, roads, property, integration and combined required `Build, Node tests and browser QA` gate passed.
+- Native Node regression: **228/228 in shard 1 + 231/231 in shard 2 = 459/459** tests.
+- [Desktop browser QA evidence artifact](https://github.com/xbwtyz/Mappo/actions/runs/44958095092/artifacts/14728402047) contains `artifacts/h4/recovery-acceptance.json`: **Chromium PASS**, **Firefox PASS**, with latest/previous snapshot restores, no silent acceptance, portable export/reopen and zero external HTTP requests.
+- [Compiled standalone artifact](https://github.com/xbwtyz/Mappo/actions/runs/44958095092/artifacts/14728128753) contains the unchanged `index.html` and `dist/mappo-0.2-dev.g3g.html` verified by the Node build/parity checks; separate road/property/integration QA artifacts also uploaded (five artifacts total).
+- The unchanged existing G4/H2 browser suite passed inside desktop QA: real `file://` startup, all 3 supported desktop widths, road/property/building integrated Apply/Undo/Redo and native archived save migration. Other suites covered roads, property editing, integration and performance smoke checks.
+- No product runtime or schema changes and no manual release or Pages workflow was triggered. No additional versioned HTML artifact was required.
+
+**H4 release-readiness assessment:** No H4 test failures or release-blocking regressions are currently identified. The only open issue is [#79](https://github.com/xbwtyz/Mappo/issues/79) (connected dead-end deletion), explicitly deferred beyond 0.2.0. The [H3 limitations](H3_PERFORMANCE_AUDIT.md) are recorded as known behaviors and **not** 0.2.0 blockers by owner decision. The application still needs H5's stable-version bump, approved release notes and separate publication approval.
+
 ## H4 completion gates
 
-- [ ] All Node tests and six full-CI jobs + required aggregate check pass on the exact H4 PR head.
-- [ ] Browser recovery test passes in Chromium and Firefox; diagnostic `artifacts/h4/recovery-acceptance.json` uploaded.
-- [ ] G4/H2 offline, history, migration and desktop matrix remain green.
-- [ ] CI uploads compiled standalone HTML and four browser QA artifacts; no production code changes or runtime network requirements.
+- [x] All Node tests and six full-CI jobs + required aggregate check pass on the H4 implementation commit (final docs-only commit to be rechecked).
+- [x] Browser recovery test passes in Chromium and Firefox; diagnostic `artifacts/h4/recovery-acceptance.json` uploaded.
+- [x] G4/H2 offline, history, migration and desktop matrix remain green.
+- [x] CI uploads compiled standalone HTML and four browser QA artifacts; no production code changes or runtime network requirements.
 - [x] Known #44/#46 closures reflected accurately without claiming zero remaining frame hitches.
 - [x] #79 clearly listed as a 0.2.0 known limitation; no unsupported features implied.
-- [ ] Exact CI run and final release-readiness assessment added here.
+- [x] Exact CI run and final release-readiness assessment added here.
 - [ ] Separate owner review and approval required to merge H4; H5 still needs separate explicit authorization.
 
 ## User experience since H3

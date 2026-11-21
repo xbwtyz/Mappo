@@ -42,13 +42,13 @@ The [H3 desktop performance audit](H3_PERFORMANCE_AUDIT.md) reproduces Large Org
 
 The [H4 release acceptance report](H4_RELEASE_QA_REPORT.md) is the authoritative final test matrix on the existing `0.2-dev.g3g` app. H4 does **not** promote it to the stable `0.2.0` version; that remains a separately approved H5 commit. Full existing Node and browser suites remain required.
 
-- [ ] Full 459+ Node regression tests and all four independent browser QA suites pass on the H4 PR head in current Firefox and Chromium, with the combined required gate green.
-- [ ] Existing G4 canonical desktop acceptance verifies laptop **1366×768**, desktop **1440×900**, ultrawide **5120×1440** and cross-editor roads/property/building accepted/draft separation, scoped Undo/Redo and failed Apply safety.
-- [ ] H2 frozen schema **1–8** files and current schema **9** preserve geometry/IDs, and real native Project-menu export/reopen passes both browsers.
-- [ ] New H4 real browser database-recovery test verifies latest and previous recovery snapshots after reload, explicit restore rather than auto-overwrite, accepted-city/identity preservation and an exported portable file reopening in both browsers.
-- [ ] Existing real `file://` browser launch and zero external runtime HTTP checks pass in both browsers; generated `index.html` and `dist/mappo-0.2-dev.g3g.html` are byte-identical and unchanged by build.
-- [ ] Supported desktop/browser policy and known limitations (#79 connected dead ends; occasional transient frame stalls, some fallback/ordinary road paths synchronous) are documented accurately.
-- [ ] Final H4 acceptance report updated with direct CI run/artifact links, regression counts, result and any remaining blockers.
+- [x] All **459 Node tests** and all four browser QA suites passed the H4 implementation run [#44958095092](https://github.com/xbwtyz/Mappo/actions/runs/44958095092), with the combined gate green. Final docs-only commit to be rechecked.
+- [x] G4 desktop matrix (1366×768 / 1440×900 / 5120×1440) and cross-editor accepted/draft, scoped history and failed Apply regression passed in both browsers.
+- [x] H2 frozen schema **1–8** and schema-9 compatibility, unchanged geometry/IDs and actual Project-menu export/reopen passed both browsers.
+- [x] H4 native browser database recovery passed **Chromium and Firefox**: current/backup after reload, explicit latest/previous restore, authored identities and exported portable file reopening.
+- [x] Real `file://` startup and zero external HTTP checks passed in both browsers, and root/versioned compiled HTML bytes remained identical.
+- [x] Desktop/browser policy and #79, transient frame stalls and fallback ordinary-road Apply limitations are recorded in [H4 release report](H4_RELEASE_QA_REPORT.md).
+- [x] H4 report includes successful CI and artifacts, 459-test result and release-readiness assessment.
 - [ ] Owner separately approves H4 PR merge. No tag, stable release, or Pages publishing in H4.
 
 ## H5 — Owner-approved 0.2.0 release candidate / publication
