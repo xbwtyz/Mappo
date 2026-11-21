@@ -60,6 +60,25 @@ GitHub Actions runs the full applicable suite at review. Use targeted local
 tests for failure diagnosis. Implementation and merge approvals follow the
 existing project workflow.
 
+## G1 review prototype
+
+Download [the standalone prototype](../../../prototypes/0.2g/index.html) and
+open it directly in a desktop browser. Choose **Move road**, then open
+**Impact dock** to select affected records. **Before + proposed** is available
+at widths of at least 1600 CSS pixels when the offset is +18. On narrower
+windows the same relocation can be previewed and selected in the active map.
+Use the **Properties** and **Buildings** tabs for the parcel and courtyard
+sketches.
+
+The prototype uses geometry from Mappo's planned-city Market Hall fixture
+and scripted preview, validation, and history. Property and courtyard
+sketches use independent scripted states. It exercises the interaction
+model without writing a project file. The production app and build use
+their existing entry points. G2 will wire the production road session.
+
+GitHub CI exercises the prototype offline in Chromium and Firefox at all
+three planned viewports and includes screenshots in its browser artifacts.
+
 ## Integration rules
 
 - **Workspace responsibilities.** Own panel layout, focus, selection
