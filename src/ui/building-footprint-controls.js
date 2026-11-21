@@ -79,8 +79,6 @@ export class BuildingFootprintControls {
     const direct = Boolean(session?.isActive && session.isDirect);
     el('buildingDirectControls').hidden = !direct;
     el('buildingTransformValues').hidden = direct;
-    el('buildingNudgeControls').hidden = direct;
-    el('buildingTransformHint').hidden = direct;
     el('buildingTransformPanel').setAttribute('data-direct', String(direct));
     if (!direct) {
       this.courtyardKey = '';

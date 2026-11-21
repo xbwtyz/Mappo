@@ -338,14 +338,13 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#buildingOffsetX').press('Tab');
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.transform.dx), 7);
       assert.match(await page.locator('#buildingPreviewMeasurements4C').innerText(),/Width.*Area.*Center/);
-      await page.locator('#buildingNudgeRight4C').click();
+      await page.locator('#mapCanvas').press('ArrowRight');
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.transform.dx), 7.5);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
-      await page.locator('#buildingToolRotate').click();
+      assert.equal(await page.locator('#buildingToolTransform').getAttribute('aria-pressed'), 'true');
       await page.locator('#buildingAngle').fill('30');
       await page.locator('#buildingAngle').press('Tab');
       assert.ok(await page.evaluate(() => Math.abs(__buildingQA.state().buildingEditSession.transform.angle)>0.4));
-      await page.locator('#buildingToolResize').click();
       const currentWidth=await page.evaluate(() => {
         const b=__buildingQA.state().buildingEditSession.source(__buildingQA.state().project.city);
         return Math.max(...b.footprint.map(p=>p.x))-Math.min(...b.footprint.map(p=>p.x));

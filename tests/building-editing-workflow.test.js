@@ -81,16 +81,13 @@ test('3G-A edited context safely exits on Escape, property return, layer hiding 
   assert.equal(app.state().buildingEditSession.isActive, false);
   assert.equal(JSON.stringify(app.state().project.city), before);
 });
-test('3G-B retains panning and zooming away from active transform handles', async () => {
+test('3G-B retains middle-button panning and zooming in Transform mode', async () => {
   const app = await buildingAppHarness(), state = app.state();
   const property = state.project.city.properties.find(p => p.buildingIds.length > 1);
   const id = property.buildingIds[0], before = JSON.stringify(state.project.city);
   openEditing(app, property, id);
-  // 3G-B turns an ordinary selected-roof drag into a Move preview.
-  // In Rotate mode, dragging away from the rotation handle still pans.
-  state.buildingEditSession.setTool('rotate');
   const beforeX = state.camera.x, point = pickRoof(app, id);
-  app.fire('pointerdown', point);
+  app.fire('pointerdown', point, { button: 1 });
   app.fire('pointermove', { x: point.x + 22, y: point.y + 6 });
   app.fire('pointerup', { x: point.x + 22, y: point.y + 6 });
   assert.notEqual(state.camera.x, beforeX);

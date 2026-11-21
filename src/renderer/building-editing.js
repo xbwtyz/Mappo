@@ -44,13 +44,33 @@ export function drawBuildingEditOverlay(ctx, camera, city, layers, edit) {
   ctx.setLineDash([]);
   const base = edit.draft ?? building;
   const points = edit.isDirect ? buildingDirectHandles(preview, edit.tool, edit.holeIndex)
-    : buildingPreviewHandles(base,edit.transform,camera.zoom).filter(h => h.kind === edit.tool);
-  if (edit.tool === 'move') {
+    : buildingPreviewHandles(base, edit.transform, camera.zoom);
+  const handleColor = edit.isDirect ? '#14788a' : '#234c39';
+  if (!edit.isDirect) {
+    const corners = points.filter(handle => handle.kind === 'resize');
+    const rotation = points.find(handle => handle.kind === 'rotate');
+    const anchor = camera.worldToScreen(rotation.anchor);
+    const knob = camera.worldToScreen(rotation);
+    ctx.beginPath();
+    corners.forEach((corner, index) => {
+      const p = camera.worldToScreen(corner);
+      if (index) ctx.lineTo(p.x, p.y);
+      else ctx.moveTo(p.x, p.y);
+    });
+    ctx.closePath();
+    ctx.moveTo(anchor.x, anchor.y);
+    ctx.lineTo(knob.x, knob.y);
+    ctx.strokeStyle = handleColor; ctx.lineWidth = 1.5; ctx.stroke();
     const p = camera.worldToScreen(buildingPreviewPivot(base,edit.transform));
     ctx.beginPath();
-    ctx.moveTo(p.x-7,p.y); ctx.lineTo(p.x+7,p.y);
-    ctx.moveTo(p.x,p.y-7); ctx.lineTo(p.x,p.y+7);
-    ctx.strokeStyle = '#14788a'; ctx.lineWidth = 2; ctx.stroke();
+    for (const [x, y] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const tipX = p.x + x * 8, tipY = p.y + y * 8;
+      ctx.moveTo(p.x, p.y); ctx.lineTo(tipX, tipY);
+      ctx.moveTo(tipX - x * 4 - y * 3, tipY - y * 4 + x * 3);
+      ctx.lineTo(tipX, tipY);
+      ctx.lineTo(tipX - x * 4 + y * 3, tipY - y * 4 - x * 3);
+    }
+    ctx.strokeStyle = handleColor; ctx.lineWidth = 2; ctx.stroke();
   }
   for (const handle of points) {
     const p = camera.worldToScreen(handle);
@@ -59,7 +79,16 @@ export function drawBuildingEditOverlay(ctx, camera, city, layers, edit) {
     else ctx.arc(p.x,p.y,7,0,Math.PI*2);
     ctx.fillStyle = edit.isDirect && handle.index === edit.handleIndex ? '#f3bd58' : '#fffaf0';
     ctx.fill();
-    ctx.strokeStyle = '#14788a'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = handleColor; ctx.lineWidth = 2; ctx.stroke();
+    if (handle.kind === 'rotate') {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3.3, Math.PI / 4, 2 * Math.PI);
+      ctx.lineTo(p.x + 3.3, p.y - 2.5);
+      ctx.moveTo(p.x + 3.3, p.y);
+      ctx.lineTo(p.x + 1, p.y - .8);
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
   }
   const accepted = edit.draft && edit.validation?.candidate?.city.buildings.find(item => item.id === edit.buildingId);
   if (accepted?.accessPath && accepted.entrance) {

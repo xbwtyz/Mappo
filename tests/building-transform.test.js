@@ -35,13 +35,14 @@ test('3G-B1 invalid transforms are rejected and immutable originals stay intact'
 test('3G-B2 pointer movement and cancellation create only a transient draft',()=>{
  const original=JSON.stringify(city),session=new BuildingEditSession();
  assert.equal(session.start(city,{buildings:true},'b1'),true);
- assert.equal(session.beginGesture(city,{buildings:true},{x:1,y:1},2),true);
- assert.equal(session.moveGesture({x:8,y:5}),true);
+ const center={x:6,y:4.5};
+ assert.equal(session.beginGesture(city,{buildings:true},center,2),true);
+ assert.equal(session.moveGesture({x:13,y:8.5}),true);
  assert.equal(session.transform.dx,7);assert.equal(session.transform.dy,4);
  assert.equal(session.isPending,true);
  session.endGesture(true);assert.equal(session.isPending,false);
- session.beginGesture(city,{buildings:true},{x:1,y:1},2);
- session.moveGesture({x:3,y:2});session.endGesture();
+ session.beginGesture(city,{buildings:true},center,2);
+ session.moveGesture({x:8,y:5.5});session.endGesture();
  assert.equal(session.transform.dx,2);
  assert.equal(JSON.stringify(city),original);
  assert.equal(session.focus(city,{buildings:true},'b2'),true);
@@ -50,17 +51,24 @@ test('3G-B2 pointer movement and cancellation create only a transient draft',()=
 });
 test('3G-B3 rotation and resize handles produce observable, cancelable previews',()=>{
  const session=new BuildingEditSession(),layers={buildings:true};session.start(city,layers,'b1');
- session.setTool('rotate');
  const rotation=buildingPreviewHandles(sample,session.transform,2).find(h=>h.kind==='rotate');
- assert.ok(buildingPreviewHit(sample,session.transform,rotation,'rotate',2));
+ assert.equal(buildingPreviewHit(sample,session.transform,rotation,2)?.kind,'rotate');
  assert.equal(session.beginGesture(city,layers,rotation,2),true);
  session.moveGesture({x:rotation.x+20,y:rotation.y+20});session.endGesture();
  assert.ok(Math.abs(session.transform.angle)>.01);
- session.reset();session.setTool('resize');
+ session.reset();
  const corner=buildingPreviewHandles(sample,session.transform,2).find(h=>h.sx===1&&h.sy===1);
  session.beginGesture(city,layers,corner,2);
  session.moveGesture({x:corner.x+3,y:corner.y+2});session.endGesture();
  assert.ok(session.transform.scaleX>1&&session.transform.scaleY>1);
+ assert.equal(session.transform.scaleX,session.transform.scaleY);
+ session.lockRatio=false;
+ const resized=buildingPreviewHandles(sample,session.transform,2).find(h=>h.sx===1&&h.sy===1);
+ const depth=session.transform.scaleY;
+ assert.equal(session.beginGesture(city,layers,resized,2),true);
+ session.moveGesture({x:resized.x+3,y:resized.y});
+ session.endGesture();
+ assert.equal(session.transform.scaleY,depth);
  assert.ok(Math.abs(polygonSignedArea(session.previewFor(city).footprint))>108);
  assert.equal(session.reset(),true);
  assert.equal(session.isPending,false);
