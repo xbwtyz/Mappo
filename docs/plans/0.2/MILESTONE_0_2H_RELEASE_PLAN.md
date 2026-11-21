@@ -1,6 +1,6 @@
 # Mappo 0.2H — Release hardening implementation plan
 
-**Status:** H1/H2 merged in PR #88, H3 benchmark and disposition completed on PR #89 (merge awaiting approval); H4/H5 pending. **Baseline:** merged 0.2G G4 PR #87, runtime `0.2-dev.g3g`, package `0.2.0-dev.g3g`, project schema 9, portable format 1. Current stable GitHub Release: **v0.1.0**.
+**Status:** H1/H2 merged in PR #88; H3 merged in PR #89 with issues #44 and #46 closed following owner approval; H4 final integrated QA under review; H5 release candidate and publication are separate. **Baseline:** merged 0.2G G4 PR #87, runtime `0.2-dev.g3g`, package `0.2.0-dev.g3g`, project schema 9, portable format 1. Current stable GitHub Release: **v0.1.0**.
 
 **Goal:** Finish the existing 2D designer as a dependable offline 0.2.0 release without weakening preservation rules, forcing onboarding, adding phone support, or silently publishing on a merge. All work remains modular. Any production or schema change is individually justified and verified.
 
@@ -27,23 +27,29 @@
 
 Do not delete or rewrite frozen fixture files. Preserve unsupported newer saves rather than attempting destructive migration; browser recovery is an additional backup, not a replacement for portable downloads.
 
-## H3 — Responsiveness and issue disposition (completed measurement; PR #89 awaits merge)
+## H3 — Responsiveness and issue disposition (merged PR #89)
 
 The [H3 desktop performance audit](H3_PERFORMANCE_AUDIT.md) reproduces Large Organic `c2-organic` junction edits in Firefox and Chromium with the original C7 benchmark. Worker computation remains approximately 0.6–0.7 seconds; the preview takes roughly 0.93–1.02 seconds total. Worst observed UI-frame gaps were 133 ms Chromium and 183 ms Firefox, **not** the earlier ~1-second frozen frame. Fresh Apply finishes in 0.79–0.87 seconds but the click handler's worst measured time was only 39 ms. These observations are from a shared Intel CI runner, n=6 Large previews per browser; they are not physical-device performance guarantees.
 
 - [x] Preview median/p95, main-thread frame/input gaps and Apply click/finish time measured and compared to historical P7.
 - [x] Worker path, latest-draft cancellation, accepted-state preservation, independent Apply, atomic commit and Undo/Redo verified.
 - [x] No measured material regression justifying speculative runtime changes or weakening validation. One-off benchmark CI trigger removed.
-- [ ] Owner reviews issue dispositions: [#44](https://github.com/xbwtyz/Mappo/issues/44) remains open for residual 100–183 ms stalls; [#46](https://github.com/xbwtyz/Mappo/issues/46) is a candidate for closure for the **primary junction worker path only** (other road/fallback paths can be synchronous).
-- [ ] Final PR-head CI green and separate merge approval.
+- [x] Owner approved closure of the original freezes and blocking reports; [#44](https://github.com/xbwtyz/Mappo/issues/44) and [#46](https://github.com/xbwtyz/Mappo/issues/46) are closed with evidence and remaining caveats. Reopen new narrowly reproduced real-user stalls as new work, not benchmark chasing.
+- [x] PR #89 passed [full final six-runner CI](https://github.com/xbwtyz/Mappo/actions/runs/44957313588) and received separate owner merge approval.
 - [x] [#79](https://github.com/xbwtyz/Mappo/issues/79) dead-end deletion remains separate, unmodified engine work.
 
-## H4 — Final integrated release QA
+## H4 — Final integrated release QA (current cycle)
 
-- [ ] Complete all existing Node/Chromium/Firefox desktop + road/property/integration tests on the proposed release candidate; verify supported laptop, desktop and ultrawide workflows.
-- [ ] Verify current/archived saves, export, offline `file://`, recovery and failed Apply isolation in both browsers.
-- [ ] Freeze documented open limitations, release support policy, full integration evidence and reproducible benchmark caveats.
-- [ ] Confirm compiled standalone has zero external runtime dependencies and exact root/distribution byte parity.
+The [H4 release acceptance report](H4_RELEASE_QA_REPORT.md) is the authoritative final test matrix on the existing `0.2-dev.g3g` app. H4 does **not** promote it to the stable `0.2.0` version; that remains a separately approved H5 commit. Full existing Node and browser suites remain required.
+
+- [ ] Full 459+ Node regression tests and all four independent browser QA suites pass on the H4 PR head in current Firefox and Chromium, with the combined required gate green.
+- [ ] Existing G4 canonical desktop acceptance verifies laptop **1366×768**, desktop **1440×900**, ultrawide **5120×1440** and cross-editor roads/property/building accepted/draft separation, scoped Undo/Redo and failed Apply safety.
+- [ ] H2 frozen schema **1–8** files and current schema **9** preserve geometry/IDs, and real native Project-menu export/reopen passes both browsers.
+- [ ] New H4 real browser database-recovery test verifies latest and previous recovery snapshots after reload, explicit restore rather than auto-overwrite, accepted-city/identity preservation and an exported portable file reopening in both browsers.
+- [ ] Existing real `file://` browser launch and zero external runtime HTTP checks pass in both browsers; generated `index.html` and `dist/mappo-0.2-dev.g3g.html` are byte-identical and unchanged by build.
+- [ ] Supported desktop/browser policy and known limitations (#79 connected dead ends; occasional transient frame stalls, some fallback/ordinary road paths synchronous) are documented accurately.
+- [ ] Final H4 acceptance report updated with direct CI run/artifact links, regression counts, result and any remaining blockers.
+- [ ] Owner separately approves H4 PR merge. No tag, stable release, or Pages publishing in H4.
 
 ## H5 — Owner-approved 0.2.0 release candidate / publication
 
