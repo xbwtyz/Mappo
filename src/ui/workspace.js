@@ -26,6 +26,8 @@ export class WorkspaceShell {
     this.providers = new Map();
     this.state = workspaceInitialState();
     this.sectionScroll = new Map();
+    this.quickInspectorMedia = globalThis.window?.matchMedia?.('(min-width: 1000px)');
+    this.quickInspectorMedia?.addEventListener('change', () => this.renderInspector());
   }
   registerInspector(kind, provider) {
     if (typeof kind !== 'string' || !kind || !provider || typeof provider.resolve !== 'function') throw new Error('An inspector provider needs a kind and a resolver.');
@@ -134,11 +136,108 @@ export class WorkspaceShell {
     if(transient)this.restoredScroll = new Map(['workspaceToolScroll','workspaceInspectorScroll']
       .map(id=>[id,Number(this.$(id).scrollTop??0)]));
   }
+  createInspectorAction(action, compact = false) {
+    const button = this.document.createElement('button');
+    button.type = 'button';
+    button.className = 'workspace-inspector-action';
+    button.textContent = compact ? action.shortLabel || action.label : action.label;
+    button.disabled = Boolean(action.disabled);
+    if (action.selection) {
+      button.setAttribute('data-inspector-kind', action.selection.kind);
+      button.setAttribute('data-inspector-id', action.selection.id);
+    }
+    if (compact && action.primary) button.className += ' workspace-inspector-primary';
+    if (compact && action.danger) button.className += ' workspace-inspector-danger';
+    if (compact && action.note) {
+      const note = this.document.createElement('span');
+      note.className = 'workspace-inspector-action-note';
+      note.textContent = action.note;
+      button.append(note);
+    }
+    button.addEventListener('click', () => {
+      action.run();
+      if (!compact || !button.isConnected) {
+        const heading = this.$('workspaceSelectionName');
+        heading.setAttribute('tabindex', '-1');
+        heading.focus?.();
+      }
+    });
+    return button;
+  }
+  inspectorSection(section, includeActions) {
+    const element = this.document.createElement('section');
+    element.className = 'workspace-inspector-section';
+    element.textContent = [section.title ?? '', ...(section.rows ?? []).map(([label, value]) => `${label}: ${value}`)].filter(Boolean).join('\n');
+    if (includeActions && section.actions?.length) {
+      const summary = this.document.createElement('div');
+      summary.textContent = element.textContent;
+      element.textContent = '';
+      element.replaceChildren(summary, ...section.actions.map(action => this.createInspectorAction(action)));
+    }
+    return element;
+  }
+  renderQuickInspector(quick) {
+    const $ = this.$;
+    const enabled = Boolean(quick);
+    const details = $('workspaceInspectorDetails');
+    const sections = $('workspaceSelectionSections');
+    if (enabled !== Boolean(this.quickInspectorActive)) {
+      (enabled ? details : $('workspaceInspectorSectionsHost')).append(sections);
+      $('workspaceSelectionInspector').classList.toggle('workspace-inspector-action-first', enabled);
+      this.quickInspectorActive = enabled;
+    }
+    $('workspaceInspectorActions').hidden = !enabled;
+    $('workspaceInspectorMore').hidden = !quick?.more?.length;
+    $('workspaceInspectorRelated').hidden = !quick?.related;
+    $('workspaceSelectionParent').hidden = !quick?.parent;
+    $('workspaceSelectionLocate').hidden = !quick?.locate;
+    details.hidden = !enabled;
+    const ref = this.state.selection;
+    const key = enabled ? ref.kind + ':' + ref.id : null;
+    const identity = $('identityInspector');
+    if (key !== this.quickInspectorKey) {
+      if (enabled) {
+        details.open = false;
+        $('workspaceInspectorMore').open = false;
+        $('workspaceInspectorScroll').scrollTop = 0;
+      }
+      if (enabled || this.quickInspectorKey) identity.open = false;
+      this.quickInspectorKey = key;
+    }
+    if (!quick) return;
+    const action = descriptor => this.createInspectorAction(descriptor, true);
+    const nameAndUse = this.document.createElement('button');
+    nameAndUse.type = 'button';
+    nameAndUse.className = 'workspace-inspector-action';
+    nameAndUse.textContent = 'Name & use';
+    nameAndUse.setAttribute('aria-controls', 'identityInspector');
+    nameAndUse.setAttribute('aria-expanded', String(identity.open));
+    nameAndUse.addEventListener('click', () => {
+      identity.open = !identity.open;
+      nameAndUse.setAttribute('aria-expanded', String(identity.open));
+      if (identity.open) $('identityNameInput').focus();
+    });
+    $('workspaceInspectorQuickButtons').replaceChildren(...quick.actions.map(action), nameAndUse);
+    $('workspaceSelectionParent').replaceChildren(...(quick.parent ? [action(quick.parent)] : []));
+    $('workspaceSelectionLocate').replaceChildren(...(quick.locate ? [action(quick.locate)] : []));
+    $('workspaceInspectorMoreButtons').replaceChildren(...quick.more.map(action));
+    $('workspaceInspectorDetailsTitle').textContent = quick.detailsTitle;
+    if (quick.related) {
+      const count = quick.related.actions.length;
+      $('workspaceInspectorRelatedTitle').textContent = quick.related.title + ' · ' + count;
+      const hint = $('workspaceInspectorRelatedHint');
+      hint.textContent = quick.related.hint;
+      hint.hidden = !quick.related.hint;
+      $('workspaceInspectorRelatedButtons').replaceChildren(...quick.related.actions.map(action));
+    }
+  }
   renderInspector() {
     const descriptor = this.descriptor();
+    const quick = this.quickInspectorMedia?.matches ? descriptor?.quickInspector : null;
     this.$('workspaceEmptyInspector').hidden = Boolean(descriptor);
     this.$('workspaceSelectionInspector').hidden = !descriptor;
     this.$('workspaceClearSelection').hidden = !descriptor;
+    this.renderQuickInspector(quick);
     if (!descriptor) {
       this.$('workspaceSelectionSections').replaceChildren();
       this.onInspect(this.state.selection);
@@ -146,35 +245,10 @@ export class WorkspaceShell {
     }
     this.$('workspaceSelectionType').textContent = descriptor.type ?? 'Selection';
     this.$('workspaceSelectionName').textContent = descriptor.title ?? this.state.selection.id;
-    this.$('workspaceSelectionDescription').textContent = descriptor.description ?? '';
-    this.$('workspaceSelectionSections').replaceChildren(...(descriptor.sections ?? []).map(section => {
-      const element = this.document.createElement('section');
-      element.className = 'workspace-inspector-section';
-      element.textContent = [section.title ?? '', ...(section.rows ?? []).map(([label, value]) => `${label}: ${value}`)].filter(Boolean).join('\n');
-      if (section.actions?.length) {
-        const summary = this.document.createElement('div');
-        summary.textContent = element.textContent;
-        element.textContent = '';
-        element.replaceChildren(summary, ...section.actions.map(action => {
-          const button = this.document.createElement('button');
-          button.type = 'button';
-          button.className = 'workspace-inspector-action';
-          button.textContent = action.label;
-          button.disabled = Boolean(action.disabled);
-          if (action.selection) {
-            button.setAttribute('data-inspector-kind', action.selection.kind);
-            button.setAttribute('data-inspector-id', action.selection.id);
-          }
-          button.addEventListener('click', () => {
-            action.run();
-            this.$('workspaceSelectionName').setAttribute('tabindex', '-1');
-            this.$('workspaceSelectionName').focus?.();
-          });
-          return button;
-        }));
-      }
-      return element;
-    }));
+    this.$('workspaceSelectionDescription').textContent = quick?.subtitle ?? descriptor.description ?? '';
+    this.$('workspaceSelectionSections').replaceChildren(
+      ...(quick?.facts ?? descriptor.sections ?? []).map(section => this.inspectorSection(section, !quick)),
+    );
     this.$('workspaceShowControls').hidden = !descriptor.section;
     this.$('workspaceShowControls').textContent = descriptor.controlLabel ?? 'Open editing controls';
     this.onInspect(this.state.selection);

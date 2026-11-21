@@ -5,6 +5,18 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 
+async function openInspectorFold(page, id) {
+  const fold = page.locator('#' + id);
+  if (await fold.isVisible() && !await fold.evaluate(node => node.open))
+    await fold.locator(':scope > summary').click();
+}
+async function openIdentity(page) {
+  if (await page.locator('#identityInspector').getAttribute('open') !== null) return;
+  const action = page.getByRole('button', {name:'Name & use', exact:true});
+  if (await action.isVisible()) await action.click();
+  else await page.locator('#identityEditorTitle').click();
+}
+
 const html = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'));
 const output = new URL('../artifacts/building-qa/', import.meta.url);
 await mkdir(output, { recursive: true });
@@ -76,6 +88,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         return { plotIds: property.plotIds, buildingIds: property.buildingIds, blockId: property.blockId,
           roadId: property.frontageRoadId, district: city.districts.find(d => d.id === property.districtId)?.name };
       }, id);
+      await openInspectorFold(page, 'workspaceInspectorDetails');
       let informationText = await page.locator('#workspaceSelectionSections').innerText();
       // Dev 4d: summary stays readable, and unbuilt is explicitly an estimate.
       for(const label of ['Street frontage length:', 'Estimated unbuilt area:', 'not guaranteed buildable'])
@@ -87,6 +100,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       // Dev 4e: one confirmed property-wide clear, one history entry and
       // exact undo/redo restores accepted city and preserves every plot.
       assert.ok(siteContext.buildingIds.length > 0);
+      await openInspectorFold(page, 'workspaceInspectorMore');
       const clearButton=page.getByRole('button',{name:'Clear all buildings…'});
       assert.equal(await clearButton.isDisabled(),false);
       page.once('dialog',async dialog=>{
@@ -133,7 +147,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       const focusBefore=await page.evaluate(()=>{
         const c=__buildingQA.state().camera;return {x:c.x,y:c.y,zoom:c.zoom};
       });
-      await page.getByRole('button',{name:'Zoom to this property'}).click();
+      await page.getByRole('button',{name:/^(Zoom to this property|Locate)$/}).click();
       const focused=await page.evaluate(id=>{
         const {camera,project,workspaceShell}=__buildingQA.state();
         const p=project.city.properties.find(p=>p.id===id),xs=p.boundary.map(q=>q.x),ys=p.boundary.map(q=>q.y);
@@ -164,7 +178,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
       await page.screenshot({ path: new URL(`${label}-selected.png`, output).pathname });
       // 3I-A: real browser property preview must not mutate any accepted land.
-      await page.getByRole('button', { name: 'Edit property geometry' }).click();
+      await page.getByRole('button', { name: /^(Edit property geometry|Edit boundaries & plots)$/ }).click();
       assert.equal(await page.locator('#propertyEditPanel3I').isVisible(),true);
       assert.equal(await page.locator('#propertyEditApply3I').isDisabled(),true);
       assert.equal(await page.evaluate(() => __buildingQA.state().propertyEditSession.propertyId),id);
@@ -226,6 +240,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         assert.ok(dialog.message().includes('plot(s)') && dialog.message().includes('building(s)'));
         await dialog.accept();
       });
+      await openInspectorFold(page, 'workspaceInspectorMore');
       await page.getByRole('button',{name:'Delete property…'}).click();
       assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.some(p=>p.id===id),id),false);
       const countAfter=await page.evaluate(() => {
@@ -247,7 +262,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         await page.locator('#workspaceOpenInspector').click();
 
       // 3H: property-first Add starts a ghost, not a committed building.
-      await page.getByRole('button', { name: 'Add building to this property' }).click();
+      await page.getByRole('button', { name: /^(Add building to this property|Add building)$/ }).click();
       assert.equal(await page.locator('#buildingStructurePanel').isVisible(),true);
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingPlacementSession.isActive),true);
       await page.locator('#structurePreset').selectOption('T');
@@ -281,6 +296,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       // 3H-D: the actual browser Delete and structural Undo restore all links.
       await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).click();
       page.once('dialog',dialog=>dialog.accept());
+      await openInspectorFold(page, 'workspaceInspectorMore');
       await page.getByRole('button', { name: 'Delete building…' }).click();
       assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.some(b=>b.id===id),buildingId),false);
       assert.equal(await page.locator('#structureUndo').isDisabled(),false);
@@ -292,6 +308,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).press('Enter');
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Building');
       assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes(buildingId));
+      await openInspectorFold(page, 'workspaceInspectorDetails');
       informationText = await page.locator('#workspaceSelectionSections').innerText();
       const childContext = await page.evaluate(id => {
         const building = __buildingQA.state().project.city.buildings.find(b => b.id === id);
@@ -304,8 +321,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.screenshot({ path: new URL(`${label}-child.png`, output).pathname });
       // F3: classify through the Inspector, capture the save, then undo metadata only.
       if (viewport.name === 'desktop' || viewport.name === 'phone') {
-        if (await page.locator('#identityInspector').getAttribute('open') === null)
-          await page.locator('#identityEditorTitle').click();
+        await openIdentity(page);
         const acceptedBuilding = id => page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id), id);
         const original = await acceptedBuilding(buildingId);
         const type = original.type === 'inn' ? 'shop' : 'inn';
@@ -320,7 +336,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
       }
       // 3G-A: use the real Inspector action and verify a visual-only mode in every viewport.
-      await page.getByRole('button', { name: 'Edit building footprint' }).click();
+      await page.getByRole('button', { name: /^(Edit building footprint|Edit footprint)$/ }).click();
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isEditing(__buildingQA.buildingId)), true);
       // 3G-D: real browsers expose scoped, initially disabled accepted-edit history.
       assert.equal(await page.locator('#buildingHistoryUndo').isDisabled(), true);
@@ -367,8 +383,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       page.once('dialog',dialog=>dialog.accept());
       await page.locator('#buildingPreviewReset').click();
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isPending), false);
-      if (viewport.width <= 900) await page.locator('#buildingPreviewCancel').click();
-      else await page.getByRole('button', { name: 'Exit building editing' }).click();
+      await page.locator('#buildingPreviewCancel').click();
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isActive), false);
       assert.equal(await page.locator('#workspaceInspector').isVisible(), true);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 3), 'Child Inspector must not overflow horizontally');
@@ -441,6 +456,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
           const building = city.buildings.find(b => b.id === id);
           return city.districts.find(d => d.id === building.districtId).name;
         }, buildingId);
+        await openInspectorFold(page, 'workspaceInspectorDetails');
         assert.ok((await page.locator('#workspaceSelectionSections').innerText()).includes(ward));
         await page.locator('#undoDistrictButton').click();
         assert.deepEqual(await page.evaluate(() => __buildingQA.state().project.city), beforeDistricts);
@@ -452,8 +468,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(saved.workspace.schemaVersion, 1);
       assert.deepEqual(saved.workspace.ui.selection, { kind: 'property', id }, 'Property selection travels with schema-1 UI state');
       // 3F-C: native identity editing, scoped undo and portable metadata.
-      if (await page.locator('#identityInspector').getAttribute('open') === null)
-        await page.locator('#identityEditorTitle').click();
+      await openIdentity(page);
       const histories = await page.evaluate(() => {
         const s = __buildingQA.state();
         return [s.editor, s.waterPanel.editor, s.terrainPanel.editor, s.districtPanel.editor, s.fortificationPanel.editor].map(e => e.history.length);
@@ -465,6 +480,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#identityApplyButton').click();
       assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes('The Silver Stag'));
       await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).click();
+      await openIdentity(page);
       assert.equal(await page.locator('#identityNameInput').inputValue(), '');
       await page.locator('#identityNameInput').fill('West Wing');
       await page.locator('#identityUseInput').selectOption('other');
@@ -472,10 +488,13 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#identityApplyButton').click();
       assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes('West Wing'));
       await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
+      await openIdentity(page);
       await page.locator('#identityNameInput').fill('Pending property name');
       await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).click();
+      await openIdentity(page);
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'West Wing');
       await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
+      await openIdentity(page);
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'Pending property name');
       await page.locator('#identityDiscardButton').click();
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'The Silver Stag');
@@ -514,12 +533,13 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.deepEqual(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), { kind: 'property', id }, 'Saved Inspector selection restores after loading');
       assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.find(p => p.id === id).customName, id), 'The Silver Stag');
       assert.equal(await page.evaluate(() => __buildingQA.state().identityWorkspace.editor.history.length), 0);
-      if (viewport.width <= 900 && await page.locator('#workspaceInspector').isVisible())
-        await page.locator('#workspaceCloseInspector').click();
-      p = await target();
-      await page.mouse.click(p.x, p.y);
-      if (await page.locator('#identityInspector').getAttribute('open') === null)
-        await page.locator('#identityEditorTitle').click();
+      if (viewport.width <= 900) {
+        if (await page.locator('#workspaceInspector').isVisible())
+          await page.locator('#workspaceCloseInspector').click();
+        p = await target();
+        await page.mouse.click(p.x, p.y);
+      }
+      await openIdentity(page);
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'The Silver Stag');
       await page.screenshot({ path: new URL(`${label}-identity.png`, output).pathname });
       if (await page.locator('#workspaceInspector').isVisible()) await page.locator('#workspaceCloseInspector').click();

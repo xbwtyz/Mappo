@@ -74,7 +74,7 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
     if(viewport.name==='phone'&&await page.locator('#workspaceOpenInspector').isVisible()
        &&!(await page.locator('#workspaceInspector').isVisible()))
       await page.locator('#workspaceOpenInspector').click();
-    await page.getByRole('button',{name:'Edit property geometry',exact:true}).click();
+    await page.getByRole('button',{name:/^(Edit property geometry|Edit boundaries & plots)$/}).click();
     assert.equal(await page.locator('#propertyEditPanel3I').isVisible(),true);
     await page.locator('#propertyAddDividerE4').click();
     assert.match(await page.locator('#propertyCountSummaryE4').innerText(),/Split plot/);

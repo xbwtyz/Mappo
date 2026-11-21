@@ -1,2 +1,2 @@
-export const APP_VERSION = '0.2-dev.g3b2';
+export const APP_VERSION = '0.2-dev.g3c';
 export const PROJECT_SCHEMA_VERSION = 9;

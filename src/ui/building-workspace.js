@@ -5,7 +5,7 @@ import { buildingInformation } from '../core/selection-information.js';
 // Building inspection owns only transient view state. Accepted city records,
 // geometry tools and their histories remain owned by their existing modules.
 export class BuildingWorkspace {
-  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, exitEditing = () => false, startReplacement = () => false, deleteBuilding = () => false, focusSelection = () => false, confirmPreviewDiscard = () => true, onSelect = () => {}, draw = () => {} }) {
+  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, showCourtyardShortcut = () => false, exitEditing = () => false, startReplacement = () => false, deleteBuilding = () => false, focusSelection = () => false, confirmPreviewDiscard = () => true, onSelect = () => {}, draw = () => {} }) {
     this.shell = shell;
     this.getCity = getCity;
     this.getLayers = getLayers;
@@ -28,37 +28,38 @@ export class BuildingWorkspace {
         if (!building) return null;
         const information = buildingInformation(this.getCity(), building);
         const editing = this.getEditSession()?.isEditing(id) ?? false;
-        if (property) information.sections.find(section => section.title === 'Parent property').actions = [{
-          label: 'Back to property', selection: { kind: 'property', id: property.id },
-          run: () => properties.select({ kind: 'property', id: property.id })
-        }];
-        information.sections.push({
-          title: 'Building footprint editing',
-          rows: editing ? [
-            ['Mode', 'Preview · ' + this.getEditSession().tool],
-            ['Controls', 'Move, rotate, resize, edit vertices and edges, or add courtyards.'],
-            ['Geometry', this.getEditSession().isPending ? 'Unsaved preview · not applied' : 'Original geometry unchanged']
-          ] : [
-            ['Mode', 'Inspection only'],
-            ['Geometry', 'Edit mode previews transformations without altering saved geometry.']
-          ],
-          actions: [{
-            label: editing ? 'Exit building editing' : 'Edit building footprint',
-            run: () => editing ? this.exitEditing() : this.enterEditing(id)
-          }, {
-            label:'Replace building (preview)',
-            run:()=>this.startReplacement(property?.id,id)
-          }, {
-            label:'Delete building…',
-            run:()=>this.deleteBuilding(property?.id,id)
-          }]
-        });
-        information.sections.push({title:'Map navigation',rows:[],actions:[{label:'Zoom to this building',run:()=>this.focusSelection({kind:'building',id:building.id})}]});
+        const facts = [...information.sections];
+        const parent = property ? {
+          label: 'Back to property', shortLabel: '← ' + (property.customName || property.id),
+          selection: { kind: 'property', id: property.id },
+          run: () => properties.select({ kind: 'property', id: property.id }),
+        } : null;
+        if (parent) information.sections.find(section => section.title === 'Parent property').actions = [parent];
+        const footprint = {
+          label: editing ? 'Exit building editing' : 'Edit building footprint',
+          shortLabel: editing ? 'Exit building editing' : 'Edit footprint',
+          primary: true, run: () => editing ? this.exitEditing() : this.enterEditing(id),
+        };
+        const courtyard = !editing && showCourtyardShortcut()
+          ? { label: 'Edit courtyard', run: () => this.enterEditing(id, 'courtyard') } : null;
+        const replace = { label: 'Replace building (preview)', shortLabel: 'Preview replacement',
+          run: () => this.startReplacement(property?.id, id) };
+        const remove = { label: 'Delete building…', danger: true, run: () => this.deleteBuilding(property?.id, id) };
+        const locate = { label: 'Zoom to this building', shortLabel: 'Locate',
+          run: () => this.focusSelection({ kind: 'building', id: building.id }) };
+        const actions = [footprint, ...(courtyard ? [courtyard] : [])];
+        information.sections.push(
+          { title: 'Building footprint editing', actions: [...actions, replace, remove] },
+          { title: 'Map navigation', actions: [locate] },
+        );
         return {
-          type: 'Building',
-          title: information.title,
+          type: 'Building', title: information.title,
           description: 'Details from the current city. Footprint area excludes open courtyard space.',
-          sections: information.sections
+          sections: information.sections,
+          quickInspector: {
+            subtitle: building.id, actions, more: [replace, remove], parent, locate,
+            detailsTitle: 'Footprint, plots & access', facts,
+          }
         };
       }
     });

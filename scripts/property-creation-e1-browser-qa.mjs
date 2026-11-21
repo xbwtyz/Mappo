@@ -94,7 +94,10 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),cityBefore);
         await selectGround();
         await setValid();
-        const revision=await page.evaluate(()=>__buildingQA.state().files.revision);
+        const {revision,historyCount}=await page.evaluate(()=>({
+          revision:__buildingQA.state().files.revision,
+          historyCount:__buildingQA.state().propertyCreationHistoryE1.past.length
+        }));
         await page.locator('#propertyCreateApplyE1').click();
         await page.waitForFunction(()=>!__buildingQA.state().propertyCreationSessionE1.active);
         const accepted=await page.evaluate(()=>({
@@ -103,7 +106,10 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
           newSite:__buildingQA.state().project.city.properties.at(-1)
         }));
         assert.notEqual(accepted.city,cityBefore);
-        assert.equal(accepted.revision,revision+1,'One accepted edit creates one revision');
+        // Workspace changes can also advance the file revision. History counts city edits.
+        assert.ok(accepted.revision>revision,'Applying a property notifies file recovery');
+        assert.equal(await page.evaluate(()=>__buildingQA.state().propertyCreationHistoryE1.past.length),
+          historyCount+1,'One Apply creates one property-creation history entry');
         assert.equal(accepted.newSite.usage,'undeveloped');
         assert.deepEqual(accepted.newSite.buildingIds,[]);
         if(viewport.name==='phone'){
