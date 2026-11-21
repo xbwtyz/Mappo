@@ -862,6 +862,47 @@
   .desktop-place-footer #desktopPlaceReviewChoice{margin-top:7px}
 }
 
+/* Desktop Inspector puts place actions above the informational sections. */
+.workspace-inspector-action-first .workspace-inspector-title{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+}
+.workspace-inspector-action-first #workspaceSelectionType{margin-bottom:5px}
+.workspace-inspector-action-first #workspaceSelectionDescription{margin:4px 0 13px;color:#becdc0}
+.workspace-inspector-action-first .workspace-inspector-action{
+  margin:0;min-height:34px;padding:6px 9px;
+  border-color:#698372;background:#263c31;color:#f0eee0;font-size:12px;
+}
+.workspace-inspector-action-first .workspace-inspector-action:hover{background:#3d5748;border-color:#afc5aa}
+.workspace-inspector-action-first .workspace-inspector-action:focus-visible,
+.workspace-inspector-action-first summary:focus-visible{
+  outline:2px solid #e5ba80;outline-offset:2px;
+}
+.workspace-inspector-quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.workspace-inspector-action-first .workspace-inspector-primary{
+  grid-column:1/-1;background:#d3e7b3;border-color:#d3e7b3;color:#223a2a;font-weight:700;
+}
+.workspace-inspector-action-first .workspace-inspector-primary:hover{background:#e3f0cf;color:#223a2a}
+.workspace-inspector-action-first .workspace-inspector-danger{color:#ffbfaa;border-color:#9a7566}
+.workspace-inspector-quick h3,.workspace-inspector-related h3{margin:0 0 6px;font-size:13px;color:#d8e3d6}
+.workspace-inspector-related{margin-top:14px}
+.workspace-inspector-related .hint{margin:2px 0 7px;color:#bfcec2}
+#workspaceInspectorRelatedButtons,#workspaceInspectorMoreButtons{
+  display:grid;gap:5px;
+}
+.workspace-inspector-related .workspace-inspector-action{display:flex;justify-content:space-between;gap:6px}
+.workspace-inspector-action-note{color:#bacbbd;font-size:11px}
+.workspace-inspector-parent .workspace-inspector-action{padding:0;min-height:30px;background:transparent;border:0;color:#d2e2cc}
+.workspace-inspector-action-first .workspace-inspector-fold{
+  margin-top:13px;padding-top:8px;border-top:1px solid #566c60;
+}
+.workspace-inspector-fold>summary{font-size:12px;color:#d8e3d6;cursor:pointer;margin-bottom:6px}
+.workspace-inspector-action-first .identity-inspector{margin:10px 0}
+.workspace-inspector-action-first .identity-inspector>summary{display:none}
+.workspace-inspector-action-first #workspaceInspectorRelatedButtons{
+  max-height:160px;overflow:auto;overscroll-behavior:contain;padding:2px;
+}
+.workspace-inspector-action-first .workspace-inspector-title h2{min-width:0;overflow-wrap:anywhere}
+
 </style>
 </head>
 <body>
@@ -1422,7 +1463,16 @@
       <div class="sidebar-heading workspace-panel-heading"><span>INSPECTOR</span><div class="workspace-panel-actions"><button id="workspacePinInspector" class="workspace-pin-button" aria-label="Pin inspector open" aria-pressed="false">Pin</button><button id="workspaceCloseInspector" class="workspace-icon-button" aria-label="Collapse inspector" title="Collapse inspector">›</button></div></div>
       <div id="workspaceInspectorScroll" class="sidebar-content">
         <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a landscape feature or city block, or use Add feature in Landscape. Pin this panel to keep the city report available.</p></div>
-        <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><details id="identityInspector" class="identity-inspector" hidden>
+        <div id="workspaceSelectionInspector" hidden>
+          <div id="workspaceSelectionParent" class="workspace-inspector-parent" hidden></div>
+          <p id="workspaceSelectionType" class="eyebrow"></p>
+          <div class="workspace-inspector-title"><h2 id="workspaceSelectionName"></h2><div id="workspaceSelectionLocate" hidden></div></div>
+          <p id="workspaceSelectionDescription" class="intro"></p>
+          <section id="workspaceInspectorActions" class="workspace-inspector-quick" aria-labelledby="workspaceInspectorActionsTitle" hidden>
+            <h3 id="workspaceInspectorActionsTitle">Actions</h3>
+            <div id="workspaceInspectorQuickButtons" class="workspace-inspector-quick-grid"></div>
+          </section>
+          <details id="identityInspector" class="identity-inspector" hidden>
           <summary id="identityEditorTitle">Property identity</summary>
           <p class="hint">Apply identity saves changes to this selection. Undo identity keeps the last 20 applied edits in this session.</p>
           <div class="control-group"><label for="identityNameInput">Custom name</label><input id="identityNameInput" maxlength="80" placeholder="Use generated label" autocomplete="off"></div>
@@ -1433,7 +1483,21 @@
           <button id="identityApplyButton" class="tool-button full-width">Apply identity</button>
           <div class="tool-grid actions"><button id="identityDiscardButton" class="minor-button">Discard draft</button><button id="identityUndoButton" class="minor-button" disabled>Undo identity</button></div>
           <p id="identityStatus" class="file-status" role="status" aria-live="polite"></p>
-        </details><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+        </details>
+          <section id="workspaceInspectorRelated" class="workspace-inspector-related" aria-labelledby="workspaceInspectorRelatedTitle" hidden>
+            <h3 id="workspaceInspectorRelatedTitle">Buildings</h3>
+            <p id="workspaceInspectorRelatedHint" class="hint" hidden></p>
+            <div id="workspaceInspectorRelatedButtons"></div>
+          </section>
+          <details id="workspaceInspectorMore" class="workspace-inspector-fold" hidden>
+            <summary>More actions</summary>
+            <div id="workspaceInspectorMoreButtons"></div>
+          </details>
+          <details id="workspaceInspectorDetails" class="workspace-inspector-fold" hidden>
+            <summary id="workspaceInspectorDetailsTitle">Details</summary>
+          </details>
+          <div id="workspaceInspectorSectionsHost"><div id="workspaceSelectionSections"></div></div>
+          <button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
         <div id="districtInspectorControls" class="district-inspector-controls" hidden>
           <p id="districtStats" class="hint"></p>
           <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>
@@ -3272,39 +3336,38 @@ class BuildingWorkspace {
         if (!building) return null;
         const information = buildingInformation(this.getCity(), building);
         const editing = this.getEditSession()?.isEditing(id) ?? false;
-        if (property) information.sections.find(section => section.title === 'Parent property').actions = [{
-          label: 'Back to property', selection: { kind: 'property', id: property.id },
-          run: () => properties.select({ kind: 'property', id: property.id })
-        }];
-        information.sections.push({
-          title: 'Building footprint editing',
-          rows: editing ? [
-            ['Mode', 'Preview · ' + this.getEditSession().tool],
-            ['Controls', 'Move, rotate, resize, edit vertices and edges, or add courtyards.'],
-            ['Geometry', this.getEditSession().isPending ? 'Unsaved preview · not applied' : 'Original geometry unchanged']
-          ] : [
-            ['Mode', 'Inspection only'],
-            ['Geometry', 'Edit mode previews transformations without altering saved geometry.']
-          ],
-          actions: [{
-            label: editing ? 'Exit building editing' : 'Edit building footprint',
-            run: () => editing ? this.exitEditing() : this.enterEditing(id)
-          }, ...(!editing && showCourtyardShortcut() ? [{
-            label: 'Edit courtyard', run: () => this.enterEditing(id, 'courtyard')
-          }] : []), {
-            label:'Replace building (preview)',
-            run:()=>this.startReplacement(property?.id,id)
-          }, {
-            label:'Delete building…',
-            run:()=>this.deleteBuilding(property?.id,id)
-          }]
-        });
-        information.sections.push({title:'Map navigation',rows:[],actions:[{label:'Zoom to this building',run:()=>this.focusSelection({kind:'building',id:building.id})}]});
+        const facts = [...information.sections];
+        const parent = property ? {
+          label: 'Back to property', shortLabel: '← ' + (property.customName || property.id),
+          selection: { kind: 'property', id: property.id },
+          run: () => properties.select({ kind: 'property', id: property.id }),
+        } : null;
+        if (parent) information.sections.find(section => section.title === 'Parent property').actions = [parent];
+        const footprint = {
+          label: editing ? 'Exit building editing' : 'Edit building footprint',
+          shortLabel: editing ? 'Exit building editing' : 'Edit footprint',
+          primary: true, run: () => editing ? this.exitEditing() : this.enterEditing(id),
+        };
+        const courtyard = !editing && showCourtyardShortcut()
+          ? { label: 'Edit courtyard', run: () => this.enterEditing(id, 'courtyard') } : null;
+        const replace = { label: 'Replace building (preview)', shortLabel: 'Preview replacement',
+          run: () => this.startReplacement(property?.id, id) };
+        const remove = { label: 'Delete building…', danger: true, run: () => this.deleteBuilding(property?.id, id) };
+        const locate = { label: 'Zoom to this building', shortLabel: 'Locate',
+          run: () => this.focusSelection({ kind: 'building', id: building.id }) };
+        const actions = [footprint, ...(courtyard ? [courtyard] : [])];
+        information.sections.push(
+          { title: 'Building footprint editing', actions: [...actions, replace, remove] },
+          { title: 'Map navigation', actions: [locate] },
+        );
         return {
-          type: 'Building',
-          title: information.title,
+          type: 'Building', title: information.title,
           description: 'Details from the current city. Footprint area excludes open courtyard space.',
-          sections: information.sections
+          sections: information.sections,
+          quickInspector: {
+            subtitle: building.id, actions, more: [replace, remove], parent, locate,
+            detailsTitle: 'Footprint, plots & access', facts,
+          }
         };
       }
     });
@@ -4121,28 +4184,48 @@ class PropertyWorkspace {
     if (!property) return null;
     const structures = buildingsOnProperty(this.getCity(), property);
     const information = propertyInformation(this.getCity(), property);
+    const facts = [...information.sections];
     const buildingSection = information.sections.find(section => section.title === 'Buildings on this property');
-    buildingSection.actions = structures.map(building => ({
+    const buildingsVisible = this.getLayers().buildings !== false;
+    const buildingActions = structures.map(building => ({
       label: `${building.customName || inspectionValue(building.type)} · ${inspectionValue(building.shape)} · ${building.id}`,
+      shortLabel: building.customName || inspectionValue(building.type),
+      note: building.customName ? inspectionValue(building.type) : building.id,
       selection: { kind: 'building', id: building.id },
-      disabled: this.getLayers().buildings === false,
+      disabled: !buildingsVisible,
       run: () => this.selectBuilding(property.id, building.id)
     }));
-    buildingSection.actions.push({label:'Add building to this property',disabled:this.getLayers().buildings===false,run:()=>this.startBuilding(property.id)});
-    buildingSection.actions.push({
-      label:'Clear all buildings…',disabled:structures.length===0 || this.getLayers().buildings===false,
-      run:()=>this.clearBuildings(property.id)
-    });
-    information.sections.push({title:'Property geometry (3I)',rows:[['Edit status','Draft geometry is validated before atomic Apply; accepted land is unchanged until then.']],actions:[{label:'Edit property geometry',run:()=>this.startPropertyEdit(property.id)}]});
-    information.sections.push({title:'Property splitting (E2)',rows:[['Split','Straight frontage-to-rear division; both parcels retain verified street access.']],actions:[{label:'Split property',run:()=>this.startPropertySplit(property.id)}]});
-    information.sections.push({title:'Property merging (E3)',rows:[['Merge','Combine verified adjacent properties while preserving plots and buildings.']],actions:[{label:'Merge properties',run:()=>this.startPropertyMerge(property.id)}]});
-    information.sections.push({title:'Property actions (Dev 4a)', rows:[['Deletion','Removes this property and all owned plots and buildings; safe session Undo is available.']], actions:[{label:'Delete property…',run:()=>this.deleteProperty(property.id)}]});
-    information.sections.push({title:'Map navigation',rows:[],actions:[{label:'Zoom to this property',run:()=>this.focusSelection({kind:'property',id:property.id})}]});
+    const add = { label: 'Add building to this property', shortLabel: 'Add building', disabled: !buildingsVisible,
+      run: () => this.startBuilding(property.id) };
+    const clear = { label: 'Clear all buildings…', danger: true, disabled: !structures.length || !buildingsVisible,
+      run: () => this.clearBuildings(property.id) };
+    const geometry = { label: 'Edit property geometry', shortLabel: 'Edit boundaries & plots', primary: true,
+      run: () => this.startPropertyEdit(property.id) };
+    const split = { label: 'Split property', run: () => this.startPropertySplit(property.id) };
+    const merge = { label: 'Merge properties', run: () => this.startPropertyMerge(property.id) };
+    const remove = { label: 'Delete property…', danger: true, run: () => this.deleteProperty(property.id) };
+    const locate = { label: 'Zoom to this property', shortLabel: 'Locate',
+      run: () => this.focusSelection({ kind: 'property', id: property.id }) };
+    buildingSection.actions = [...buildingActions, add, clear];
+    information.sections.push(
+      { title: 'Property geometry (3I)', actions: [geometry] },
+      { title: 'Property splitting (E2)', actions: [split] },
+      { title: 'Property merging (E3)', actions: [merge] },
+      { title: 'Property actions (Dev 4a)', actions: [remove] },
+      { title: 'Map navigation', actions: [locate] },
+    );
+    const description = buildingsVisible
+      ? 'Choose a building below to inspect its footprint.' : 'Turn on Buildings in Layers to inspect individual footprints.';
     return {
       type: 'Property', title: information.title,
-      description: 'The site containing these plots and buildings. ' + (this.getLayers().buildings === false
-        ? 'Turn on Buildings in Layers to inspect individual footprints.' : 'Choose a building below to inspect its footprint.'),
-      sections: information.sections
+      description: 'The site containing these plots and buildings. ' + description,
+      sections: information.sections,
+      quickInspector: {
+        subtitle: property.id, actions: [geometry, split, merge, add], more: [clear, remove], locate,
+        related: { title: 'Buildings', actions: buildingActions, hint: !buildingsVisible ? description
+          : structures.length ? '' : 'This property has no buildings.' },
+        detailsTitle: 'Property details & plot IDs', facts,
+      }
     };
   }
   hit(point, zoom) {
@@ -4497,6 +4580,8 @@ class WorkspaceShell {
     this.providers = new Map();
     this.state = workspaceInitialState();
     this.sectionScroll = new Map();
+    this.quickInspectorMedia = globalThis.window?.matchMedia?.('(min-width: 1000px)');
+    this.quickInspectorMedia?.addEventListener('change', () => this.renderInspector());
   }
   registerInspector(kind, provider) {
     if (typeof kind !== 'string' || !kind || !provider || typeof provider.resolve !== 'function') throw new Error('An inspector provider needs a kind and a resolver.');
@@ -4605,11 +4690,109 @@ class WorkspaceShell {
     if(transient)this.restoredScroll = new Map(['workspaceToolScroll','workspaceInspectorScroll']
       .map(id=>[id,Number(this.$(id).scrollTop??0)]));
   }
+  createInspectorAction(action, compact = false) {
+    const button = this.document.createElement('button');
+    button.type = 'button';
+    button.className = 'workspace-inspector-action';
+    button.textContent = compact ? action.shortLabel || action.label : action.label;
+    button.disabled = Boolean(action.disabled);
+    if (action.selection) {
+      button.setAttribute('data-inspector-kind', action.selection.kind);
+      button.setAttribute('data-inspector-id', action.selection.id);
+    }
+    if (compact && action.primary) button.className += ' workspace-inspector-primary';
+    if (compact && action.danger) button.className += ' workspace-inspector-danger';
+    if (compact && action.note) {
+      const note = this.document.createElement('span');
+      note.className = 'workspace-inspector-action-note';
+      note.textContent = action.note;
+      button.append(note);
+    }
+    button.addEventListener('click', () => {
+      action.run();
+      if (!compact || !button.isConnected) {
+        const heading = this.$('workspaceSelectionName');
+        heading.setAttribute('tabindex', '-1');
+        heading.focus?.();
+      }
+    });
+    return button;
+  }
+  inspectorSection(section, includeActions) {
+    const element = this.document.createElement('section');
+    element.className = 'workspace-inspector-section';
+    element.textContent = [section.title ?? '', ...(section.rows ?? []).map(([label, value]) => `${label}: ${value}`)].filter(Boolean).join('
+');
+    if (includeActions && section.actions?.length) {
+      const summary = this.document.createElement('div');
+      summary.textContent = element.textContent;
+      element.textContent = '';
+      element.replaceChildren(summary, ...section.actions.map(action => this.createInspectorAction(action)));
+    }
+    return element;
+  }
+  renderQuickInspector(quick) {
+    const $ = this.$;
+    const enabled = Boolean(quick);
+    const details = $('workspaceInspectorDetails');
+    const sections = $('workspaceSelectionSections');
+    if (enabled !== Boolean(this.quickInspectorActive)) {
+      (enabled ? details : $('workspaceInspectorSectionsHost')).append(sections);
+      $('workspaceSelectionInspector').classList.toggle('workspace-inspector-action-first', enabled);
+      this.quickInspectorActive = enabled;
+    }
+    $('workspaceInspectorActions').hidden = !enabled;
+    $('workspaceInspectorMore').hidden = !quick?.more?.length;
+    $('workspaceInspectorRelated').hidden = !quick?.related;
+    $('workspaceSelectionParent').hidden = !quick?.parent;
+    $('workspaceSelectionLocate').hidden = !quick?.locate;
+    details.hidden = !enabled;
+    const ref = this.state.selection;
+    const key = enabled ? ref.kind + ':' + ref.id : null;
+    const identity = $('identityInspector');
+    if (key !== this.quickInspectorKey) {
+      if (enabled) {
+        details.open = false;
+        $('workspaceInspectorMore').open = false;
+        $('workspaceInspectorScroll').scrollTop = 0;
+      }
+      if (enabled || this.quickInspectorKey) identity.open = false;
+      this.quickInspectorKey = key;
+    }
+    if (!quick) return;
+    const action = descriptor => this.createInspectorAction(descriptor, true);
+    const nameAndUse = this.document.createElement('button');
+    nameAndUse.type = 'button';
+    nameAndUse.className = 'workspace-inspector-action';
+    nameAndUse.textContent = 'Name & use';
+    nameAndUse.setAttribute('aria-controls', 'identityInspector');
+    nameAndUse.setAttribute('aria-expanded', String(identity.open));
+    nameAndUse.addEventListener('click', () => {
+      identity.open = !identity.open;
+      nameAndUse.setAttribute('aria-expanded', String(identity.open));
+      if (identity.open) $('identityNameInput').focus();
+    });
+    $('workspaceInspectorQuickButtons').replaceChildren(...quick.actions.map(action), nameAndUse);
+    $('workspaceSelectionParent').replaceChildren(...(quick.parent ? [action(quick.parent)] : []));
+    $('workspaceSelectionLocate').replaceChildren(...(quick.locate ? [action(quick.locate)] : []));
+    $('workspaceInspectorMoreButtons').replaceChildren(...quick.more.map(action));
+    $('workspaceInspectorDetailsTitle').textContent = quick.detailsTitle;
+    if (quick.related) {
+      const count = quick.related.actions.length;
+      $('workspaceInspectorRelatedTitle').textContent = quick.related.title + ' · ' + count;
+      const hint = $('workspaceInspectorRelatedHint');
+      hint.textContent = quick.related.hint;
+      hint.hidden = !quick.related.hint;
+      $('workspaceInspectorRelatedButtons').replaceChildren(...quick.related.actions.map(action));
+    }
+  }
   renderInspector() {
     const descriptor = this.descriptor();
+    const quick = this.quickInspectorMedia?.matches ? descriptor?.quickInspector : null;
     this.$('workspaceEmptyInspector').hidden = Boolean(descriptor);
     this.$('workspaceSelectionInspector').hidden = !descriptor;
     this.$('workspaceClearSelection').hidden = !descriptor;
+    this.renderQuickInspector(quick);
     if (!descriptor) {
       this.$('workspaceSelectionSections').replaceChildren();
       this.onInspect(this.state.selection);
@@ -4617,35 +4800,10 @@ class WorkspaceShell {
     }
     this.$('workspaceSelectionType').textContent = descriptor.type ?? 'Selection';
     this.$('workspaceSelectionName').textContent = descriptor.title ?? this.state.selection.id;
-    this.$('workspaceSelectionDescription').textContent = descriptor.description ?? '';
-    this.$('workspaceSelectionSections').replaceChildren(...(descriptor.sections ?? []).map(section => {
-      const element = this.document.createElement('section');
-      element.className = 'workspace-inspector-section';
-      element.textContent = [section.title ?? '', ...(section.rows ?? []).map(([label, value]) => `${label}: ${value}`)].filter(Boolean).join('\n');
-      if (section.actions?.length) {
-        const summary = this.document.createElement('div');
-        summary.textContent = element.textContent;
-        element.textContent = '';
-        element.replaceChildren(summary, ...section.actions.map(action => {
-          const button = this.document.createElement('button');
-          button.type = 'button';
-          button.className = 'workspace-inspector-action';
-          button.textContent = action.label;
-          button.disabled = Boolean(action.disabled);
-          if (action.selection) {
-            button.setAttribute('data-inspector-kind', action.selection.kind);
-            button.setAttribute('data-inspector-id', action.selection.id);
-          }
-          button.addEventListener('click', () => {
-            action.run();
-            this.$('workspaceSelectionName').setAttribute('tabindex', '-1');
-            this.$('workspaceSelectionName').focus?.();
-          });
-          return button;
-        }));
-      }
-      return element;
-    }));
+    this.$('workspaceSelectionDescription').textContent = quick?.subtitle ?? descriptor.description ?? '';
+    this.$('workspaceSelectionSections').replaceChildren(
+      ...(quick?.facts ?? descriptor.sections ?? []).map(section => this.inspectorSection(section, !quick)),
+    );
     this.$('workspaceShowControls').hidden = !descriptor.section;
     this.$('workspaceShowControls').textContent = descriptor.controlLabel ?? 'Open editing controls';
     this.onInspect(this.state.selection);

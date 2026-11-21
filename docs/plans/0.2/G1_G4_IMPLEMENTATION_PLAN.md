@@ -134,6 +134,12 @@ footprint editor with Courtyard selected. Preview an opening, review the
 measured occupied area and any blockers, then Apply or Cancel. The parent
 property remains available through the building Inspector.
 
+The desktop Inspector puts common actions first. For properties, the building
+list sits directly below them. For buildings, the parent-property link and
+Locate action sit in the header. **Name & use** opens the existing identity
+form. **More actions** holds deletion and replacement actions. Record facts
+are collapsed by default.
+
 The same desktop panel hosts property creation, merge, property and plot
 geometry, and building placement or replacement. Existing domain tools
 own the edit, validation, and history. The review branch holds layout

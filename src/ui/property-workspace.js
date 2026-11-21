@@ -21,28 +21,48 @@ export class PropertyWorkspace {
     if (!property) return null;
     const structures = buildingsOnProperty(this.getCity(), property);
     const information = propertyInformation(this.getCity(), property);
+    const facts = [...information.sections];
     const buildingSection = information.sections.find(section => section.title === 'Buildings on this property');
-    buildingSection.actions = structures.map(building => ({
+    const buildingsVisible = this.getLayers().buildings !== false;
+    const buildingActions = structures.map(building => ({
       label: `${building.customName || inspectionValue(building.type)} · ${inspectionValue(building.shape)} · ${building.id}`,
+      shortLabel: building.customName || inspectionValue(building.type),
+      note: building.customName ? inspectionValue(building.type) : building.id,
       selection: { kind: 'building', id: building.id },
-      disabled: this.getLayers().buildings === false,
+      disabled: !buildingsVisible,
       run: () => this.selectBuilding(property.id, building.id)
     }));
-    buildingSection.actions.push({label:'Add building to this property',disabled:this.getLayers().buildings===false,run:()=>this.startBuilding(property.id)});
-    buildingSection.actions.push({
-      label:'Clear all buildings…',disabled:structures.length===0 || this.getLayers().buildings===false,
-      run:()=>this.clearBuildings(property.id)
-    });
-    information.sections.push({title:'Property geometry (3I)',rows:[['Edit status','Draft geometry is validated before atomic Apply; accepted land is unchanged until then.']],actions:[{label:'Edit property geometry',run:()=>this.startPropertyEdit(property.id)}]});
-    information.sections.push({title:'Property splitting (E2)',rows:[['Split','Straight frontage-to-rear division; both parcels retain verified street access.']],actions:[{label:'Split property',run:()=>this.startPropertySplit(property.id)}]});
-    information.sections.push({title:'Property merging (E3)',rows:[['Merge','Combine verified adjacent properties while preserving plots and buildings.']],actions:[{label:'Merge properties',run:()=>this.startPropertyMerge(property.id)}]});
-    information.sections.push({title:'Property actions (Dev 4a)', rows:[['Deletion','Removes this property and all owned plots and buildings; safe session Undo is available.']], actions:[{label:'Delete property…',run:()=>this.deleteProperty(property.id)}]});
-    information.sections.push({title:'Map navigation',rows:[],actions:[{label:'Zoom to this property',run:()=>this.focusSelection({kind:'property',id:property.id})}]});
+    const add = { label: 'Add building to this property', shortLabel: 'Add building', disabled: !buildingsVisible,
+      run: () => this.startBuilding(property.id) };
+    const clear = { label: 'Clear all buildings…', danger: true, disabled: !structures.length || !buildingsVisible,
+      run: () => this.clearBuildings(property.id) };
+    const geometry = { label: 'Edit property geometry', shortLabel: 'Edit boundaries & plots', primary: true,
+      run: () => this.startPropertyEdit(property.id) };
+    const split = { label: 'Split property', run: () => this.startPropertySplit(property.id) };
+    const merge = { label: 'Merge properties', run: () => this.startPropertyMerge(property.id) };
+    const remove = { label: 'Delete property…', danger: true, run: () => this.deleteProperty(property.id) };
+    const locate = { label: 'Zoom to this property', shortLabel: 'Locate',
+      run: () => this.focusSelection({ kind: 'property', id: property.id }) };
+    buildingSection.actions = [...buildingActions, add, clear];
+    information.sections.push(
+      { title: 'Property geometry (3I)', actions: [geometry] },
+      { title: 'Property splitting (E2)', actions: [split] },
+      { title: 'Property merging (E3)', actions: [merge] },
+      { title: 'Property actions (Dev 4a)', actions: [remove] },
+      { title: 'Map navigation', actions: [locate] },
+    );
+    const description = buildingsVisible
+      ? 'Choose a building below to inspect its footprint.' : 'Turn on Buildings in Layers to inspect individual footprints.';
     return {
       type: 'Property', title: information.title,
-      description: 'The site containing these plots and buildings. ' + (this.getLayers().buildings === false
-        ? 'Turn on Buildings in Layers to inspect individual footprints.' : 'Choose a building below to inspect its footprint.'),
-      sections: information.sections
+      description: 'The site containing these plots and buildings. ' + description,
+      sections: information.sections,
+      quickInspector: {
+        subtitle: property.id, actions: [geometry, split, merge, add], more: [clear, remove], locate,
+        related: { title: 'Buildings', actions: buildingActions, hint: !buildingsVisible ? description
+          : structures.length ? '' : 'This property has no buildings.' },
+        detailsTitle: 'Property details & plot IDs', facts,
+      }
     };
   }
   hit(point, zoom) {

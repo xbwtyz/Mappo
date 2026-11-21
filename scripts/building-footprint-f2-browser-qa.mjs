@@ -5,6 +5,18 @@ import { observeBuildingApp } from '../tests/helpers/building-app.js';
 import { findDirectFootprintFixture } from '../tests/helpers/building-footprint-fixture.js';
 import { encodeProjectDocument } from '../src/data/project-format.js';
 
+async function openInspectorFold(page, id) {
+  const fold = page.locator('#' + id);
+  if (await fold.isVisible() && !await fold.evaluate(node => node.open))
+    await fold.locator(':scope > summary').click();
+}
+async function openIdentity(page) {
+  if (await page.locator('#identityInspector').getAttribute('open') !== null) return;
+  const action = page.getByRole('button', {name:'Name & use', exact:true});
+  if (await action.isVisible()) await action.click();
+  else await page.locator('#identityEditorTitle').click();
+}
+
 const html = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'));
 const origin = 'http://mappo-f2.test/';
 const readCity = page => page.evaluate(() => __buildingQA.state().project.city);
@@ -15,7 +27,7 @@ async function openBuildingEditor(page, building, tool) {
     __buildingQA.state().propertyWorkspace.select({ kind: 'property', id: propertyId });
   }, building.propertyId);
   await page.locator('[data-inspector-kind="building"][data-inspector-id="' + building.id + '"]').click();
-  await page.getByRole('button', { name: 'Edit building footprint' }).click();
+  await page.getByRole('button', { name: /^(Edit building footprint|Edit footprint)$/ }).click();
   await page.locator('#buildingTool' + tool).click();
   assert.equal(await page.locator(editorPanel).isVisible(), true);
 }
@@ -137,7 +149,8 @@ async function exerciseF2(browserName, browserType, phone) {
     assert.equal((await appliedBuilding()).holes.length, 1);
 
     await page.locator('#buildingPreviewCancel').click();
-    await page.getByRole('button', { name: 'Replace building (preview)', exact: true }).click();
+    await openInspectorFold(page, 'workspaceInspectorMore');
+    await page.getByRole('button', { name: /^(Replace building \(preview\)|Preview replacement)$/ }).click();
     assert.equal(await page.locator('#structurePreset').inputValue(), '');
     assert.equal(await page.locator('#structureApply').isDisabled(), true);
     await page.locator('#structurePreset').selectOption('rectangle');
@@ -151,15 +164,14 @@ async function exerciseF2(browserName, browserType, phone) {
     await page.locator('#structureCancel').click();
 
     // F4 keeps classification, geometry history, and portable save in one workflow.
-    if (await page.locator('#identityInspector').getAttribute('open') === null)
-      await page.locator('#identityEditorTitle').click();
+    await openIdentity(page);
     const beforeUse = await appliedBuilding();
     const type = beforeUse.type === 'inn' ? 'shop' : 'inn';
     await page.locator('#identityBuildingType').selectOption(type);
     await page.locator('#identityApplyButton').click();
     assert.deepEqual(await appliedBuilding(), { ...beforeUse, type });
     const classified = await readCity(page);
-    await page.getByRole('button', { name: 'Edit building footprint' }).click();
+    await page.getByRole('button', { name: /^(Edit building footprint|Edit footprint)$/ }).click();
     await page.locator('#buildingHistoryUndo').click();
     assert.equal((await appliedBuilding()).type, type);
     assert.equal((await appliedBuilding()).holes.length, 0);

@@ -563,7 +563,16 @@
       <div class="sidebar-heading workspace-panel-heading"><span>INSPECTOR</span><div class="workspace-panel-actions"><button id="workspacePinInspector" class="workspace-pin-button" aria-label="Pin inspector open" aria-pressed="false">Pin</button><button id="workspaceCloseInspector" class="workspace-icon-button" aria-label="Collapse inspector" title="Collapse inspector">›</button></div></div>
       <div id="workspaceInspectorScroll" class="sidebar-content">
         <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a landscape feature or city block, or use Add feature in Landscape. Pin this panel to keep the city report available.</p></div>
-        <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><details id="identityInspector" class="identity-inspector" hidden>
+        <div id="workspaceSelectionInspector" hidden>
+          <div id="workspaceSelectionParent" class="workspace-inspector-parent" hidden></div>
+          <p id="workspaceSelectionType" class="eyebrow"></p>
+          <div class="workspace-inspector-title"><h2 id="workspaceSelectionName"></h2><div id="workspaceSelectionLocate" hidden></div></div>
+          <p id="workspaceSelectionDescription" class="intro"></p>
+          <section id="workspaceInspectorActions" class="workspace-inspector-quick" aria-labelledby="workspaceInspectorActionsTitle" hidden>
+            <h3 id="workspaceInspectorActionsTitle">Actions</h3>
+            <div id="workspaceInspectorQuickButtons" class="workspace-inspector-quick-grid"></div>
+          </section>
+          <details id="identityInspector" class="identity-inspector" hidden>
           <summary id="identityEditorTitle">Property identity</summary>
           <p class="hint">Apply identity saves changes to this selection. Undo identity keeps the last 20 applied edits in this session.</p>
           <div class="control-group"><label for="identityNameInput">Custom name</label><input id="identityNameInput" maxlength="80" placeholder="Use generated label" autocomplete="off"></div>
@@ -574,7 +583,21 @@
           <button id="identityApplyButton" class="tool-button full-width">Apply identity</button>
           <div class="tool-grid actions"><button id="identityDiscardButton" class="minor-button">Discard draft</button><button id="identityUndoButton" class="minor-button" disabled>Undo identity</button></div>
           <p id="identityStatus" class="file-status" role="status" aria-live="polite"></p>
-        </details><div id="workspaceSelectionSections"></div><button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+        </details>
+          <section id="workspaceInspectorRelated" class="workspace-inspector-related" aria-labelledby="workspaceInspectorRelatedTitle" hidden>
+            <h3 id="workspaceInspectorRelatedTitle">Buildings</h3>
+            <p id="workspaceInspectorRelatedHint" class="hint" hidden></p>
+            <div id="workspaceInspectorRelatedButtons"></div>
+          </section>
+          <details id="workspaceInspectorMore" class="workspace-inspector-fold" hidden>
+            <summary>More actions</summary>
+            <div id="workspaceInspectorMoreButtons"></div>
+          </details>
+          <details id="workspaceInspectorDetails" class="workspace-inspector-fold" hidden>
+            <summary id="workspaceInspectorDetailsTitle">Details</summary>
+          </details>
+          <div id="workspaceInspectorSectionsHost"><div id="workspaceSelectionSections"></div></div>
+          <button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
         <div id="districtInspectorControls" class="district-inspector-controls" hidden>
           <p id="districtStats" class="hint"></p>
           <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>

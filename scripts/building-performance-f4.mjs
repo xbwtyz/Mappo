@@ -52,7 +52,7 @@ try {
       kind: 'property', id: propertyId
     }), building.propertyId);
     await page.locator(`[data-inspector-kind="building"][data-inspector-id="${building.id}"]`).click();
-    await page.getByRole('button', { name: 'Edit building footprint' }).click();
+    await page.getByRole('button', { name: /^(Edit building footprint|Edit footprint)$/ }).click();
     await page.locator('#buildingToolVertices').click();
     const { from, to } = await page.evaluate(({ vertex, moved }) => {
       const { camera } = __buildingQA.state();

@@ -855,3 +855,44 @@
   .place-editor-active .building-structure-history{display:none}
   .desktop-place-footer #desktopPlaceReviewChoice{margin-top:7px}
 }
+
+/* Desktop Inspector puts place actions above the informational sections. */
+.workspace-inspector-action-first .workspace-inspector-title{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+}
+.workspace-inspector-action-first #workspaceSelectionType{margin-bottom:5px}
+.workspace-inspector-action-first #workspaceSelectionDescription{margin:4px 0 13px;color:#becdc0}
+.workspace-inspector-action-first .workspace-inspector-action{
+  margin:0;min-height:34px;padding:6px 9px;
+  border-color:#698372;background:#263c31;color:#f0eee0;font-size:12px;
+}
+.workspace-inspector-action-first .workspace-inspector-action:hover{background:#3d5748;border-color:#afc5aa}
+.workspace-inspector-action-first .workspace-inspector-action:focus-visible,
+.workspace-inspector-action-first summary:focus-visible{
+  outline:2px solid #e5ba80;outline-offset:2px;
+}
+.workspace-inspector-quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.workspace-inspector-action-first .workspace-inspector-primary{
+  grid-column:1/-1;background:#d3e7b3;border-color:#d3e7b3;color:#223a2a;font-weight:700;
+}
+.workspace-inspector-action-first .workspace-inspector-primary:hover{background:#e3f0cf;color:#223a2a}
+.workspace-inspector-action-first .workspace-inspector-danger{color:#ffbfaa;border-color:#9a7566}
+.workspace-inspector-quick h3,.workspace-inspector-related h3{margin:0 0 6px;font-size:13px;color:#d8e3d6}
+.workspace-inspector-related{margin-top:14px}
+.workspace-inspector-related .hint{margin:2px 0 7px;color:#bfcec2}
+#workspaceInspectorRelatedButtons,#workspaceInspectorMoreButtons{
+  display:grid;gap:5px;
+}
+.workspace-inspector-related .workspace-inspector-action{display:flex;justify-content:space-between;gap:6px}
+.workspace-inspector-action-note{color:#bacbbd;font-size:11px}
+.workspace-inspector-parent .workspace-inspector-action{padding:0;min-height:30px;background:transparent;border:0;color:#d2e2cc}
+.workspace-inspector-action-first .workspace-inspector-fold{
+  margin-top:13px;padding-top:8px;border-top:1px solid #566c60;
+}
+.workspace-inspector-fold>summary{font-size:12px;color:#d8e3d6;cursor:pointer;margin-bottom:6px}
+.workspace-inspector-action-first .identity-inspector{margin:10px 0}
+.workspace-inspector-action-first .identity-inspector>summary{display:none}
+.workspace-inspector-action-first #workspaceInspectorRelatedButtons{
+  max-height:160px;overflow:auto;overscroll-behavior:contain;padding:2px;
+}
+.workspace-inspector-action-first .workspace-inspector-title h2{min-width:0;overflow-wrap:anywhere}
