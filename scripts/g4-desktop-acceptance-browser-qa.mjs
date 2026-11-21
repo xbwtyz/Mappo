@@ -177,7 +177,11 @@ async function runCase(browser, engine, viewport) {
       });
       await el('loadPreview').waitFor({ state: 'visible' });
       await el('openProjectButton').click();
-      await page.waitForFunction(() => document.querySelector('#fileStatus')?.textContent?.startsWith('Opened '));
+      await page.waitForFunction(() => {
+        const files = __buildingQA.state().files;
+        return !files.busy && !files.opening &&
+          document.querySelector('#fileStatus')?.textContent?.startsWith('Opened ');
+      });
       const migrated = await page.evaluate(() => ({
         schema: __buildingQA.state().project.schemaVersion,
         nodes: __buildingQA.state().project.city.nodes.map(n => [n.id, n.x, n.y]),
@@ -188,10 +192,11 @@ async function runCase(browser, engine, viewport) {
         'Loading an older save may not regenerate street geometry');
       assert.deepEqual(migrated.roads, oldSave.project.city.roads.map(r => r.id));
       await el('projectMenuButton').click();
-      const [download] = await Promise.all([
-        page.waitForEvent('download'),
-        el('saveProjectButton').click(),
-      ]);
+      const downloadEvent = page.waitForEvent('download', { timeout: 12000 }).catch(() => null);
+      await el('saveProjectButton').click();
+      const download = await downloadEvent;
+      const downloadStatus = await el('fileStatus').innerText();
+      assert.ok(download, 'Historical save re-export produced no download. Status: ' + downloadStatus);
       const exported = JSON.parse(await readFile(await download.path(), 'utf8'));
       assert.equal(exported.project.schemaVersion, 9);
       assert.equal(exported.formatVersion, 1);
