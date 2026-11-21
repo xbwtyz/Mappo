@@ -1,33 +1,39 @@
 # Mappo CI and Repository Hygiene
 
-The consolidated validation workflow is `.github/workflows/ci.yml`. It runs on new pushes to `main`, feature/chore/fix/refactor/release branches, pull requests, or manual dispatch. PRs and long-lived branches use the same build, Node regression and two-browser matrix. Superseded runs for the same workflow/ref/PR are canceled.
+The required `Mappo CI` runs full validation on review-ready PRs, main pushes, merge groups and manual dispatch. Lightweight `Mappo Fast Checks` run on feature branch pushes. Superseded checks for the same PR/ref are canceled.
 
-## Checks
+## Six concurrent full CI jobs
 
-1. Resolve `APP_VERSION` dynamically and run `npm run check` (build + Node tests).
-2. Verify `index.html` and `dist/mappo-<APP_VERSION>.html` both exist as tracked files, compare byte-for-byte, and fail on generated changes.
-3. Install **test-only** Playwright 1.56.1, Chromium and Firefox; execute both existing browser suites at desktop, ultrawide, tablet and phone sizes (16 checks total).
-4. Upload browser screenshots/failure evidence on successful or failed jobs where generated; upload the matching standalone HTML files when the version is known. Retention: **14 days**.
+| Runner | Responsibilities |
+| --- | --- |
+| Node shard 1/2 | Compile offline standalone; run native Node file shard; verify `index.html` equals tracked versioned HTML |
+| Node shard 2/2 | Compile; run complementary Node shard; verify standalone distribution parity |
+| Browser desktop | G3G canonical workspace, three-tab navigation, G4 desktop acceptance |
+| Browser roads | Road editing, C7 cancellation and offline browser QA |
+| Browser property | Building/plot/property transformation, creation, merge and split checks |
+| Browser integration | General browser QA, D4 acceptance and F4 performance |
 
-## Local commands
+All six jobs must pass for the unchanged required `Build, Node tests and browser QA` check to succeed. Browser runners install test-only Playwright 1.56.1 with Chromium and Firefox. Existing 16 scripts remain; G4 adds a modern-desktop acceptance script, including 1366×768, 1440×900 and 5120×1440, old-save migration and actual `file://` startup.
 
-```sh
+Node and build do not need npm installation. For local testing:
+
+```bash
 npm run build
 npm test
-npm run test:node
 npm run check
-npm run test:browser  # requires installed test-only Playwright and browsers
-npm run test:full     # check + browser QA
+npm run test:node:shard:1
+npm run test:node:shard:2
+npm run test:browser                 # after Playwright browser setup
+npm run test:browser:desktop
+npm run test:browser:g4
 ```
 
-Browser QA requires `npm install --no-save --no-package-lock playwright@1.56.1` and `npx playwright install chromium firefox` for a local test machine. The shipped app has no new dependencies. `npm test`, `npm run build`, and `npm run check` have unchanged behavior.
+Browser setup: `npm install --no-save --no-package-lock playwright@1.56.1`; `npx playwright install chromium firefox` (with dependencies on Linux).
 
-## Permissions and deployment
+## Artifacts and deployment
 
-CI uses `contents: read`; it never commits, pushes, tags, or deploys. The existing `.github/workflows/pages.yml` remains separate and untouched. Under current Pages configuration, changes to generated `index.html` or `dist/**` on `main` trigger publishing.
+CI's Node shard uploads the compiled `index.html` and matching `dist/mappo-<APP_VERSION>.html`; each browser suite uploads independent screenshots and QA evidence, retained 14 days. G4 stores machine context and Small/Large draw and road preview results in `artifacts/g4/desktop-acceptance.json` / `.md`. Wall-clock results on shared CI hardware are comparative diagnostics, not physical-device measurements.
 
-The old milestone-specific workflows were removed from this branch **only after** the unified workflow passed its first full run: [Mappo CI #44272377893](https://github.com/xbwtyz/Mappo/actions/runs/44272377893), with **205/205 Node tests**, **16/16 real-browser checks**, exact standalone build parity and both artifact uploads. GitHub retains the prior workflow history; older feature-branch copies remain until optional branch cleanup. Avoid reintroducing fixed-version paths or automated commit/push steps into CI.
+CI uses `contents: read`; it never commits, tags or publishes. The separate `pages.yml` uses **manual dispatch on main only**; merging a PR doesn't publish Pages. The optional heavy C7 browser benchmark is only run by selecting `run_c7_benchmark` on a manual Mappo CI dispatch.
 
-## Local files
-
-`.gitignore` excludes temporary test screenshots, caches, logs, local editors and coverage. It does **not** exclude `dist/`, `index.html`, `tests/fixtures/`, or `docs/images/`.
+See [G4 acceptance](plans/0.2/G4_ACCEPTANCE_REPORT.md), [current roadmap](ROADMAP.md) and [desktop implementation plan](plans/0.2/G1_G4_IMPLEMENTATION_PLAN.md).

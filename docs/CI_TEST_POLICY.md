@@ -31,9 +31,7 @@ their releases.
 
 ## C7 performance runs
 
-The C7 browser benchmark runs automatically in full validation when a PR or
-main-branch commit changes road-related core/editor/renderer/UI code, C7 or
-road tests, or build tooling. On unrelated changes it is skipped.
+The heavy C7 browser benchmark is **manual opt-in only** via `run_c7_benchmark` on the Mappo CI workflow. Ordinary PR validation still runs C7 browser correctness suites and all main regression tests.
 
 The manual Mappo CI workflow also accepts the **run_c7_benchmark** option to
 force it (once this workflow definition is available on the default branch).

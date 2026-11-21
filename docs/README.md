@@ -17,6 +17,7 @@
 | [0.2F Building Design](plans/0.2/MILESTONE_0_2F_BUILDING_DESIGN.md) | Merged footprint tools, classification, and integration acceptance |
 | [0.2G Desktop Workspace](plans/0.2/MILESTONE_0_2G_DESKTOP_UI.md) | Desktop-only scope and modular workspace architecture |
 | [0.2G Implementation Passes](plans/0.2/G1_G4_IMPLEMENTATION_PLAN.md) | G1–G4 implementation sequence, tool migration, and desktop acceptance gates |
+| [G4 Desktop Acceptance](plans/0.2/G4_ACCEPTANCE_REPORT.md) | Modern desktop cross-editor, historical-save and offline QA evidence |
 | [0.2G Workspace Mockups](plans/0.2/assets/Mappo_0.2G_UI_Mockups.pdf) | Three desktop layouts for the same road-editing scenario and their tradeoffs |
 | [3G-A Checkpoint](history/3g/MILESTONE_3GA_QA.md) | Visual building edit mode design and verification |
 | [3G-B Checkpoint](history/3g/MILESTONE_3GB_QA.md) | Non-destructive building transformation previews, controls and QA |
