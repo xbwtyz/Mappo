@@ -1,12 +1,8 @@
 name: Publish Mappo standalone builds to Pages
 
+# GitHub Pages is published only when explicitly requested on main.
+# Merging development PRs must never redeploy the public site.
 on:
-  push:
-    branches: [main]
-    paths:
-      - index.html
-      - dist/**
-      - .github/workflows/pages.yml
   workflow_dispatch:
 
 permissions:
@@ -20,6 +16,8 @@ concurrency:
 
 jobs:
   deploy:
+    # Prevent manually deploying preview or feature branches.
+    if: github.ref == 'refs/heads/main'
     name: Publish standalone HTML distribution
     runs-on: ubuntu-latest
     environment:
