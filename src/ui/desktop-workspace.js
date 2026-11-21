@@ -95,7 +95,7 @@ export class DesktopWorkspace {
 
   open(mode) {
     if (!this.media?.matches || this.switching) return false;
-    if (mode === this.mode) return true;
+    if (mode === this.mode && (mode !== 'roads' || this.road.active)) return true;
     if (!this.leaveTools()) return false;
     this.switching = true;
     try {
