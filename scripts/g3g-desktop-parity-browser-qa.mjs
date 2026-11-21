@@ -48,6 +48,9 @@ for (const name of names) {
         await page.keyboard.press('Escape');
         assert.equal(await el('roadPreviewPanel').isHidden(),true);
         assert.equal(await page.evaluate(() => document.activeElement.dataset.workspace),'roads');
+        await tab('Roads').click();
+        assert.equal(await el('roadPreviewPanel').isVisible(),true,'Roads can reopen after Escape');
+        await page.keyboard.press('Escape');
         await tab('Generation').click();
         await el('projectMenuButton').click();
         assert.equal(await el('projectMenu').isVisible(),true);
