@@ -19,6 +19,16 @@ The full CI workflow's name **Mappo CI** and check name
 **Build, Node tests and browser QA** are deliberately retained to avoid
 breaking release-workflow compatibility or existing required status checks.
 
+## Desktop browser acceptance from 0.2G
+
+The [desktop workspace plan](plans/0.2/MILESTONE_0_2G_DESKTOP_UI.md)
+sets the support target for 0.2G and subsequent updates. Cover desktop
+Chromium and Firefox at laptop, desktop, and ultrawide viewport sizes, with
+mouse, keyboard, and trackpad-style navigation. The workspace implementation
+will transition the browser matrix away from phone and tablet viewports and
+touch gestures. Historical acceptance reports record the coverage used for
+their releases.
+
 ## C7 performance runs
 
 The C7 browser benchmark runs automatically in full validation when a PR or

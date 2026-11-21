@@ -1,14 +1,14 @@
 # Mappo 0.2 — 2D City Designer roadmap
 
-> **Current sequencing decision (2026-11-20):** Finish the street-editing experience (0.2D), then implement **0.2E manual property restructuring**, **0.2F advanced building design**, optionally **0.2G civic places**, and **0.2H integration / release hardening**. This approves the milestone order and documentation, **not feature implementation, merge, schema migration or publishing**.
+> **Current sequencing.** 0.2D street editing, 0.2E property restructuring, and 0.2F building design are merged. Next is **0.2G, the desktop workspace rebuild**, followed by **0.2H release hardening**. Civic places are deferred.
 >
 > Primary objective: a dependable, fully editable **2D** city designer before 3D. Users deliberately reshape roads; generated neighborhoods adapt where verifiably safe; then users fine-tune land and buildings.
 
-[0.2E property plan](MILESTONE_0_2E_PROPERTY_DESIGN.md) · [E2 straight-split design](E2_PROPERTY_SPLIT_DESIGN.md) · [E3 approved merge design](E3_PROPERTY_MERGE_DESIGN.md) · [E4 approved plot-count design](E4_PLOT_COUNT_DESIGN.md) · [E4 acceptance report](E4_ACCEPTANCE_REPORT.md) · [E5 approved acceptance plan](E5_INTEGRATED_ACCEPTANCE_PLAN.md) · [E5 acceptance report](E5_ACCEPTANCE_REPORT.md) · [E3 acceptance report](E3_ACCEPTANCE_REPORT.md) · [0.2F building plan](MILESTONE_0_2F_BUILDING_DESIGN.md) · [0.2D closeout](MILESTONE_0_2D_ROAD_UX_PLAN.md) · [0.2C road-first design](MILESTONE_0_2C_DESIGN.md) · [Road preservation contract](ROAD_EDIT_CONTRACT.md) · [Repository roadmap](../../ROADMAP.md)
+[0.2E property plan](MILESTONE_0_2E_PROPERTY_DESIGN.md) · [E2 straight-split design](E2_PROPERTY_SPLIT_DESIGN.md) · [E3 approved merge design](E3_PROPERTY_MERGE_DESIGN.md) · [E4 approved plot-count design](E4_PLOT_COUNT_DESIGN.md) · [E4 acceptance report](E4_ACCEPTANCE_REPORT.md) · [E5 approved acceptance plan](E5_INTEGRATED_ACCEPTANCE_PLAN.md) · [E5 acceptance report](E5_ACCEPTANCE_REPORT.md) · [E3 acceptance report](E3_ACCEPTANCE_REPORT.md) · [0.2F building plan](MILESTONE_0_2F_BUILDING_DESIGN.md) · [0.2G desktop workspace plan](MILESTONE_0_2G_DESKTOP_UI.md) · [0.2D closeout](MILESTONE_0_2D_ROAD_UX_PLAN.md) · [0.2C road-first design](MILESTONE_0_2C_DESIGN.md) · [Road preservation contract](ROAD_EDIT_CONTRACT.md) · [Repository roadmap](../../ROADMAP.md)
 
 ## Release thesis
 
-A generated city is a starting point, not something users must accept unchanged. Road, property, plot, building and public-space edits must be previewable, independently validated and reversible without silently destroying unrelated authored work. **Real structural land editing is a prerequisite for advanced architecture**, because a building's footprint, plot membership, access and identity depend on its parent parcel.
+A generated city is a starting point, not something users must accept unchanged. Road, property, plot and building edits must be previewable, independently validated and reversible without silently destroying unrelated authored work. **Real structural land editing is a prerequisite for advanced architecture**, because a building's footprint, plot membership, access and identity depend on its parent parcel.
 
 ## Revised dependencies and phases
 
@@ -18,11 +18,9 @@ flowchart TD
   B --> C["0.2C · road-first editing and local adaptation · merged"]
   C --> D["0.2D · understandable, recoverable street editing · merged"]
   D --> E["0.2E · E1–E5 merged"]
-  E --> F["0.2F · advanced 2D building design"]
-  F --> G{"0.2G · civic places necessary for 0.2?"}
-  G -->|Yes| G1["0.2G · civic places / landmarks"]
-  G -->|Defer| H["0.2H · final integration / release"]
-  G1 --> H
+  E --> F["0.2F · advanced building design · merged"]
+  F --> G["0.2G · desktop workspace rebuild"]
+  G --> H["0.2H · final integration / release"]
 ```
 
 | Milestone | Scope | Proposed/completed development cycles | Completion principle |
@@ -32,8 +30,8 @@ flowchart TD
 | **0.2C — road-first streets** | Street manipulation, generated-neighborhood reflow, topology, bends, building conflict policy | C1–C7 and P1–P7 **merged** | Streets drive supported local adaptation; protect authored work |
 | **0.2D — road editing experience** | Readable map preview, contextual building decisions, blocked recovery and acceptance | D1–D4 **merged** in PRs #51–#53, #56 | Understand/rescue edits without technical reports |
 | **0.2E — manual property restructuring** | Create/split/merge parcels, adjust plot counts and reconcile dependent references | **E1** create (merged #58); **E2** split (merged #60); **E3** merge (merged #62); **E4** plot-count editing (merged #64); **E5** integrated QA (merged #66) | No orphaned buildings or unapproved identity loss |
-| **0.2F — advanced building design** | Extended 2D footprints, direct vertex/wing/hole editing, meaningful categories, QA | **F1** shapes (merged #68); **F2** direct geometry (merged #69); **F3** uses (merged #70); [**F4** integrated QA](F4_ACCEPTANCE_REPORT.md) | True new capabilities, no duplication of 3G/3H |
-| **0.2G — civic places** (optional) | Editable plazas, markets, gardens, landmarks, district links | **G1** records; **G2** tools; **G3** identity; **G4** integration | Skip/defer if release stability or scope takes priority |
+| **0.2F — advanced building design** | Extended 2D footprints, direct vertex/wing/hole editing, meaningful categories, QA | **F1** shapes (merged #68); **F2** direct geometry (merged #69); **F3** uses (merged #70); [**F4** integrated QA](F4_ACCEPTANCE_REPORT.md) (merged #71) | True new capabilities, no duplication of 3G/3H |
+| **0.2G — desktop workspace rebuild** | Desktop and laptop UI with shared selection, Inspector, preview, and edit controls | **G1** prototype, **G2** workspace, **G3** migrate tools, **G4** acceptance and switch | Feature parity and a clear path from selection to decision to Apply |
 | **0.2H — release hardening** | Cross-editor integration, migration audit, performance, browsers, release candidate | **H1** release workflows; **H2** save/migrate; **H3** performance; **H4** QA; **H5** RC | Stable offline standalone with tested old saves |
 
 The new milestone identifiers replace **older active roadmap labels**; they do not rename or invalidate already merged 0.2C/0.2D commits, earlier planning branches, historical QA records or compiled distributions. Old proposals with conflicting labels remain archived context, not the current implementation authority.
@@ -41,7 +39,7 @@ The new milestone identifiers replace **older active roadmap labels**; they do n
 ## Why the order changed
 
 1. **Original road-first revisions:** Manual property creation/split/merge was previously called 0.2C or 0.2D. Road-first editing and then its usability work took those labels instead.
-2. **Post-0.2D correction:** Rather than leave manual property restructuring as an unnamed step, it is now explicitly **0.2E**. Building design shifts to **0.2F**, optional civic editing to **0.2G**, release hardening to **0.2H**.
+2. **Post-0.2D correction:** Rather than leave manual property restructuring as an unnamed step, it is now explicitly **0.2E**. Building design followed as **0.2F**. The desktop workspace rebuild now takes **0.2G**, with civic places deferred and release hardening in **0.2H**.
 3. **Reuse existing work:** 3I already edits existing corners/dividers; 3G/3H already support building transformations, placement and basic footprint presets. New phases must extend those tools, not repeat them.
 4. **Dependencies:** Property/plot creation and successor ownership must be proven before adding more complex manually authored footprints that depend on them.
 
@@ -51,7 +49,7 @@ The new milestone identifiers replace **older active roadmap labels**; they do n
 2. Generated untouched parcels/buildings may adapt locally only when provenance, validated geometry and dependencies justify it. Where identity lineage or placement is ambiguous, expose the blocker and require explicit resolution.
 3. Preserve stable IDs and names where provable; make split/merge predecessor/successor lineage explicit. Old customized or legacy-unknown buildings cannot be silently deleted or reassigned.
 4. Validate whole-project topology, block/parcel/plot ownership, building geometry, access, civic/landscape protections, independent Apply and stale draft rejection. Use one atomic transaction with Undo/Redo.
-5. Keep format-1 / project schema-9 compatibility, property-first selection, modular sources, versioned offline HTML and real browser QA. **Any schema migration requires its own explicit design and approval.**
+5. Keep format-1 / project schema-9 compatibility, property-first selection, modular sources, versioned offline HTML and real desktop browser QA. Starting with 0.2G, acceptance targets desktop and laptop Chromium and Firefox with mouse, trackpad, and keyboard. **Any schema migration requires its own explicit design and approval.**
 6. Keep [issue #44](https://github.com/xbwtyz/Mappo/issues/44) open for independently reproducible large-city input stalls. A milestone must not claim to resolve the issue without comparative evidence.
 7. No mandatory onboarding tours, participant recruitment, forced feedback prompts or owner-run acceptance tasks.
 
@@ -60,9 +58,9 @@ The new milestone identifiers replace **older active roadmap labels**; they do n
 - **0.1.0:** stable published release (do not confuse this with the newer development build on `main`).
 - **0.2A–D:** merged on `main`, with D4 closeout in [PR #56](https://github.com/xbwtyz/Mappo/pull/56).
 - **0.2E:** merged through [E5 #66](https://github.com/xbwtyz/Mappo/pull/66).
-- **0.2F:** F1–F3 are merged. [F4 acceptance](F4_ACCEPTANCE_REPORT.md) covers cross-editor behavior and performance.
-- **0.2G:** conditional; defer if necessary rather than block a stable release for optional civic features.
-- **0.2H:** final 0.2 release integration and stabilization, even if 0.2G is deferred.
+- **0.2F:** Complete through [F4 #71](https://github.com/xbwtyz/Mappo/pull/71). [F4 acceptance](F4_ACCEPTANCE_REPORT.md) covers cross-editor behavior and performance.
+- **0.2G:** [Rebuild the desktop workspace](MILESTONE_0_2G_DESKTOP_UI.md), beginning with the G1 workflow prototype.
+- **0.2H:** final 0.2 release integration and stabilization after the new workspace is accepted.
 - **3D:** later, after 2D is capable and stable.
 
 Historical design plans under `docs/history/`, old planning branches and `dist/` remain unchanged.
