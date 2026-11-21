@@ -239,6 +239,7 @@ export class RoadInspectionWorkspace {
     getRevision = () => 0,
     applyEdit = () => ({ok:false,message:'Road Apply not configured.'}),
     afterExit = () => {},
+    desktopLayout = null,
   }) {
     Object.assign(this, {
       $: getElement,
@@ -252,6 +253,7 @@ export class RoadInspectionWorkspace {
       getRevision,
       applyEdit,
       afterExit,
+      desktopLayout,
     });
     this.session = new RoadPreviewSession({
       getProject,
@@ -276,15 +278,18 @@ export class RoadInspectionWorkspace {
   savedWorkspace() {
     return this.transient && this.getProject() === this.baseline.project ? this.baseline.workspace : null;
   }
-  start() {
+  start({ desktop = false } = {}) {
     if (this.active) return;
     const reason = this.canEnter();
     if (reason) {
       this.$('roadModeNotice').textContent = reason;
+      if (desktop) this.$('statusMessage').textContent = reason;
       return;
     }
+    this.usesDesktopPanel = Boolean(desktop && this.desktopLayout);
+    this.$('roadPreviewHeading').textContent = this.usesDesktopPanel ? 'Road workspace' : 'ROAD EDIT';
     this.$('roadPreviewBody').hidden = false;
-    this.$('roadEditControlsD1').open = false;
+    this.$('roadEditControlsD1').open = this.usesDesktopPanel;
     this.$('roadDetailsD1').open = false;
     this.session.showRoadDiagnostics = false;
     this.$('roadOverlayB3').checked = true;
@@ -304,11 +309,12 @@ export class RoadInspectionWorkspace {
       ui: {
         ...ui,
         inspectorCollapsed: true,
-        toolsCollapsed: this.camera.width < 900 ? true : ui.toolsCollapsed,
+        toolsCollapsed: this.usesDesktopPanel || this.camera.width < 900 || ui.toolsCollapsed,
       },
     });
     this.$('workspaceSection-city').inert = true;
     this.$('mapViewport').classList.add('road-inspection-active');
+    if (this.usesDesktopPanel) this.desktopLayout.show(this.$('roadPreviewPanel'));
     this.$('layersMenuButton').disabled = true;
     this.$('workspaceOpenInspector').disabled = true;
     this.$('roadModeNotice').textContent = '';
@@ -319,7 +325,10 @@ export class RoadInspectionWorkspace {
   exit({ restore = true, focus = false } = {}) {
     if (!this.transient) return;
     const baseline = this.baseline;
+    const desktop = this.usesDesktopPanel;
     this.session.stop();
+    if (desktop) this.desktopLayout.hide();
+    this.usesDesktopPanel = false;
     this.$('workspaceSection-city').inert = false;
     this.$('mapViewport').classList.remove('road-inspection-active');
     this.$('layersMenuButton').disabled = false;
@@ -342,7 +351,7 @@ export class RoadInspectionWorkspace {
     this.render();
     this.afterExit();
     this.draw();
-    if (focus) this.$('roadModeButton').focus();
+    if (focus) this.$(desktop ? 'roadDesktopPreviewG2' : 'roadModeButton').focus();
   }
   reset() {
     if (!this.active) return;
@@ -352,6 +361,7 @@ export class RoadInspectionWorkspace {
   }
   bind() {
     this.$('roadModeButton').addEventListener('click', () => this.start());
+    this.$('roadDesktopPreviewG2').addEventListener('click', () => this.start({ desktop: true }));
     this.$('roadPreviewCancel').addEventListener('click', () => this.exit({ focus: true }));
     this.$('roadLocate').addEventListener('click', () => {
       const d = this.session.details;
@@ -494,6 +504,9 @@ export class RoadInspectionWorkspace {
       panel = this.$('roadPreviewPanel');
     panel.hidden = !s.active;
     this.$('roadModeButton').setAttribute('aria-pressed', String(s.active));
+    const desktopEntry = this.$('roadDesktopPreviewG2');
+    desktopEntry.setAttribute('aria-pressed', String(s.active && Boolean(this.usesDesktopPanel)));
+    desktopEntry.disabled = s.active;
     if (!s.active) return;
     const d = s.details,
       kind = d?.kind ?? 'junction';

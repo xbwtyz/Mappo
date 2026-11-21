@@ -118,6 +118,7 @@ import { extractRoadFaces, matchExistingFaces } from './core/road-faces.js';
 // A3 owns classification; A4 only presents its reports.
 import { analyzeRoadImpact, inspectJunctionImpact } from './core/road-impact.js';
 
+import { DesktopEditLayout } from './ui/desktop-edit-layout.js';
 import { RoadInspectionWorkspace } from './ui/road-inspection.js';
 import { createJunctionPreviewWorkerP1 } from './editor/junction-preview-worker-client.js';
 import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
@@ -1235,7 +1236,7 @@ window.addEventListener('keydown', e => {
 });
 
 function resize() {
-  const rect = viewport.getBoundingClientRect();
+  const rect = canvas.getBoundingClientRect();
   camera.resize(Math.max(1, Math.round(rect.width)), Math.max(1, Math.round(rect.height)));
   clearMapHover();
   requestDraw();
@@ -1733,12 +1734,13 @@ identityWorkspace = new IdentityWorkspace({
 identityWorkspace.bind();
 roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
+  desktopLayout: new DesktopEditLayout({ viewport, divider: $('desktopEditDivider'), onLayout: resize }),
   reconcile:prepareJunctionReflowC7,reconcileRoad:prepareRoadReconciliationB1,
   computeJunctionAsync:createJunctionPreviewWorkerP1(),
   getRevision:()=>files?.revision??0,applyEdit:applyRoadEditB4,
   canEnter:()=>!project?.city?'Generate a city before inspecting roads.':
     workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive
-      ||propertyEditSession?.isActive||propertyCreationSessionE1?.active||propertySplitE2?.active||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
+      ||propertyEditSession?.isActive||propertyCreationSessionE1?.active||propertySplitE2?.active||propertyMergeE3?.active||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
       ?'Finish or cancel the current edit, then choose Pan in City to inspect roads.':'',
   beforeEnter:()=>{workspaceMenus.close();clearMapHover();},
   draw:()=>{$('zoomValue').textContent=`${Math.round(camera.zoom*100)}%`;updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();requestDraw();},
@@ -1780,7 +1782,7 @@ function applyRoadEditB4(session,baselineRevision){
 function commitRoadEditB4(previous, revision, candidate, junctionId) {
   // Exit only transient UI state before accepted data is replaced. No file or
   // history writes occur until the candidate passes the entire B4 gate.
-  roadWorkspace.exit({restore:true});
+  roadWorkspace.exit({restore:true,focus:roadWorkspace.usesDesktopPanel});
   if(project!==previous||revision!==(files?.revision??0))
     return {ok:false,message:'The accepted project changed before commit.'};
   if(!roadHistory.record(previous,candidate,junctionId))
