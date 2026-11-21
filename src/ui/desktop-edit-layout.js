@@ -50,16 +50,23 @@ export class DesktopEditLayout {
     this.setDock(false);
   }
   setDock(open) {
+    this.setView(open ? 'dock' : 'side');
+  }
+  setView(view) {
     if (!this.panel) return;
-    this.viewport.classList.toggle('desktop-impact-layout', open);
-    this.divider.hidden = open;
-    this.dockDivider.hidden = !open;
+    const dock = view === 'dock';
+    const compare = view === 'comparison';
+    this.viewport.classList.toggle('desktop-comparison-layout', compare);
+    this.viewport.classList.toggle('desktop-impact-layout', dock);
+    this.divider.hidden = dock || compare;
+    this.dockDivider.hidden = !dock;
     this.onLayout();
   }
   hide() {
     if (!this.panel) return;
     this.panel.classList.remove('desktop-edit-panel');
     this.viewport.classList.remove('desktop-impact-layout');
+    this.viewport.classList.remove('desktop-comparison-layout');
     this.viewport.classList.remove('desktop-edit-layout');
     this.divider.hidden = true;
     this.dockDivider.hidden = true;

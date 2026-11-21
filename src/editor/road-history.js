@@ -1,3 +1,4 @@
+import { reconcileRoadWorkspace } from './road-workspace.js';
 import { createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 
@@ -30,10 +31,11 @@ export class RoadGeometryHistoryB4 {
     try{
       const candidate=structuredClone(direction==='undo'?entry.from:entry.to);
       validateStoredProject(candidate);
-      const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
-      if(!b4HistorySame(candidate,portable.project)||!b4HistorySame(workspace,portable.workspace))
+      const nextWorkspace=reconcileRoadWorkspace(workspace,project.city,candidate.city);
+      const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,nextWorkspace)));
+      if(!b4HistorySame(candidate,portable.project)||!b4HistorySame(nextWorkspace,portable.workspace))
         throw new Error('Portable save/load changed the restored project or workspace.');
-      return {ok:true,candidate,entry};
+      return {ok:true,candidate,entry,workspace:nextWorkspace};
     }catch(error){return {ok:false,reason:'Road '+direction+' blocked: '+error.message};}
   }
   accept(entry,direction){

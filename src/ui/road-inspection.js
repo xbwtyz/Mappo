@@ -270,10 +270,16 @@ export class RoadInspectionWorkspace {
     this.dockMedia = window.matchMedia?.('(min-width: 1000px) and (min-height: 650px)');
     this.dockMedia?.addEventListener('change', () => {
       if (!this.active || !this.usesDesktopPanel) return;
-      if (this.dockOpen && !this.dockMedia.matches) {
+      if (this.dockOpen && !this.comparisonOpen && !this.dockMedia.matches) {
         this.setImpactDock(false);
         this.$('roadPreviewHeading').focus();
       } else this.render();
+    });
+    this.comparisonMedia = window.matchMedia?.('(min-width: 1500px) and (min-height: 650px)');
+    this.comparisonMedia?.addEventListener('change', () => {
+      if (!this.active || !this.usesDesktopPanel) return;
+      if (this.comparisonOpen && !this.comparisonMedia.matches) this.setComparison(false);
+      else this.render();
     });
     this.bind();
   }
@@ -334,6 +340,7 @@ export class RoadInspectionWorkspace {
     if (!this.transient) return;
     const baseline = this.baseline;
     const desktop = this.usesDesktopPanel;
+    if (this.comparisonOpen) this.clearComparison();
     this.dockOpen = false;
     this.impactKey = null;
     this.impactRows = [];
@@ -385,6 +392,7 @@ export class RoadInspectionWorkspace {
         (this.camera.width < 900 ? (this.camera.height * 0.22) / this.camera.zoom : 0);
       this.draw();
     });
+    this.$('roadComparisonToggle').addEventListener('click', () => this.setComparison(!this.comparisonOpen));
     this.$('roadImpactToggle').addEventListener('click', () => this.setImpactDock(!this.dockOpen));
     this.$('roadImpactRows').addEventListener('click', event => {
       const button = event.target.closest('button[data-impact-key]');
@@ -407,7 +415,7 @@ export class RoadInspectionWorkspace {
       const issue = this.session.reconciliation?.unresolved.find(hasRoadBuildingChoice);
       if (!issue) return;
       if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
-      if (this.dockOpen) this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
+      if (this.dockOpen && !this.comparisonOpen) this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
       const target = document.getElementById('roadConflictC6-' + issue.id);
       if (!target) return;
       this.locateReconciliationB3(issue);
@@ -718,6 +726,7 @@ export class RoadInspectionWorkspace {
       if (element.hidden !== !text) element.hidden = !text;
     }
     this.renderImpactDock(stale);
+    this.renderComparison(stale);
     this.renderBuildingDecisionsD2();
     this.renderRoadRecoveryD3({ready, applying, status});
     panel.setAttribute('data-report-status', ready ? 'safe' : s.checking || applying ? 'checking' :
@@ -738,8 +747,95 @@ export class RoadInspectionWorkspace {
     }
   }
 
+  comparisonUnavailable(stale = false) {
+    const s = this.session;
+    if (!this.comparisonMedia?.matches) return 'Comparison needs a window at least 1500 × 650 CSS pixels.';
+    if (stale || !s.current() || this.getRevision() !== this.baseRevision)
+      return 'Reset the out-of-date road draft to compare again.';
+    if (s.checking || s.drag) return 'Waiting for the current road preview…';
+    if (!s.pending) return 'Move a road or junction to create a proposal.';
+    if (!s.roadPreviewVerifiedD1) return 'Resolve blockers and placement choices to compare a verified proposal.';
+    return '';
+  }
+  comparisonCandidate() {
+    if (!this.comparisonOpen || this.comparisonUnavailable()) return null;
+    const result = this.session.reconciliation;
+    if (result !== this.comparisonResult) {
+      this.comparisonResult = result;
+      // Street previews already carry an object. Worker previews carry the exact
+      // candidate JSON used for apply validation. Decode it once while comparing.
+      this.displayCandidate = result.candidateProject ?? JSON.parse(result.candidateJson);
+    }
+    return this.displayCandidate;
+  }
+  comparisonImpact() {
+    return this.comparisonRecord;
+  }
+  clearComparison() {
+    this.comparisonOpen = false;
+    this.comparisonResult = this.displayCandidate = this.comparisonRecord = null;
+    const canvas = this.$('roadComparisonProposed');
+    canvas.width = canvas.height = 1;
+    canvas.hidden = true;
+    this.$('roadComparisonMapStatus').hidden = true;
+  }
+  setComparison(open) {
+    if (!this.active || !this.usesDesktopPanel) return;
+    const toggle = this.$('roadComparisonToggle');
+    const edit = this.$('roadEditControlsD1');
+    if (open) {
+      if (this.comparisonUnavailable()) return;
+      if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
+      const id = this.session.buildingDecisions.keys().next().value;
+      this.comparisonRecord = (this.dockOpen && this.selectedImpact) ||
+        (id ? {kind:'building', id} : null);
+      this.comparisonEditWasOpen = edit.open;
+      edit.open = false;
+      this.comparisonOpen = true;
+      if (this.comparisonRecord) this.locateReconciliationB3(this.comparisonRecord);
+    } else {
+      this.clearComparison();
+      edit.open = this.comparisonEditWasOpen;
+      if (this.dockOpen && !this.dockMedia?.matches) {
+        this.dockOpen = false;
+        edit.open = this.roadEditWasOpen;
+      }
+    }
+    this.desktopLayout.setView(open ? 'comparison' : this.dockOpen ? 'dock' : 'side');
+    this.render();
+    this.$('roadPreviewBody').scrollTop = 0;
+    const focus = open ? this.$('roadComparisonTitle')
+      : toggle.disabled && this.dockOpen ? this.$('roadImpactToggle')
+      : toggle.disabled ? this.$('roadPreviewHeading') : toggle;
+    focus.focus({ preventScroll: true });
+    this.draw();
+  }
+  renderComparison(stale) {
+    const toggle = this.$('roadComparisonToggle');
+    const open = Boolean(this.comparisonOpen);
+    const reason = this.usesDesktopPanel ? this.comparisonUnavailable(stale) : '';
+    toggle.hidden = !this.usesDesktopPanel;
+    toggle.disabled = !open && Boolean(reason);
+    toggle.textContent = !open ? 'Compare' : this.dockOpen ? 'Back to impact list' : 'Back to road edit';
+    toggle.setAttribute('aria-expanded', String(open));
+    const availability = this.$('roadComparisonAvailability');
+    availability.hidden = !reason || open;
+    availability.textContent = reason;
+    this.$('roadComparisonReview').hidden = !open;
+    this.$('roadComparisonProposed').hidden = !open;
+    const status = this.$('roadComparisonMapStatus');
+    status.hidden = !open || !reason;
+    if (status.textContent !== reason) status.textContent = reason;
+    if (!open) return;
+    const record = this.comparisonRecord;
+    const name = record?.kind === 'building'
+      ? this.session.city.buildings.find(building => building.id === record.id)?.customName : '';
+    const target = this.session.selection;
+    this.$('roadComparisonSelection').textContent = name || record?.id || target?.id || '';
+  }
+
   setImpactDock(open) {
-    if (!this.active || !this.usesDesktopPanel || (open && !this.dockMedia?.matches)) return;
+    if (!this.active || !this.usesDesktopPanel || this.comparisonOpen || (open && !this.dockMedia?.matches)) return;
     if (open) {
       if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
       this.roadEditWasOpen = this.$('roadEditControlsD1').open;
@@ -765,11 +861,11 @@ export class RoadInspectionWorkspace {
   renderImpactDock(stale) {
     const s = this.session;
     const toggle = this.$('roadImpactToggle');
-    const open = Boolean(this.dockOpen);
-    toggle.hidden = !this.usesDesktopPanel || !this.dockMedia?.matches;
+    const open = Boolean(this.dockOpen && !this.comparisonOpen);
+    toggle.hidden = this.comparisonOpen || !this.usesDesktopPanel || !this.dockMedia?.matches;
     toggle.textContent = open ? 'Collapse impact dock' : 'Review impacts';
     toggle.setAttribute('aria-expanded', String(open));
-    this.$('roadPreviewMinimize').hidden = open;
+    this.$('roadPreviewMinimize').hidden = open || Boolean(this.comparisonOpen);
     this.$('roadImpactList').hidden = !open;
     this.$('roadImpactDetail').hidden = !open;
     if (!open) return;
@@ -939,7 +1035,7 @@ export class RoadInspectionWorkspace {
         jump.className = 'minor-button';
         jump.textContent = 'Review building choice';
         jump.addEventListener('click', () => {
-          if (this.dockOpen) this.selectImpact(roadRecordKeyD1(row.kind, row.id));
+          if (this.dockOpen && !this.comparisonOpen) this.selectImpact(roadRecordKeyD1(row.kind, row.id));
           const target = document.getElementById('roadConflictC6-' + row.id);
           if (!target) return;
           target.scrollIntoView({block:'center'});
@@ -980,7 +1076,7 @@ export class RoadInspectionWorkspace {
     if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
     if (guide.action === 'building') {
       const issue = this.recoveryIssueD3;
-      if (this.dockOpen && issue?.id) this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
+      if (this.dockOpen && !this.comparisonOpen && issue?.id) this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
       const target = issue?.id && document.getElementById('roadConflictC6-' + issue.id);
       if (target) {
         target.scrollIntoView({block:'center'});
@@ -1031,13 +1127,16 @@ export class RoadInspectionWorkspace {
     // Superseded responses never authorize a choice or describe an Apply-ready preview.
     const settled = s.current() && s.pending && !s.drag && !s.checking &&
       s.settledRevision === s.revision;
-    const visibleIds = this.dockOpen
-      ? ids.filter(id => this.selectedImpact?.kind === 'building' && this.selectedImpact.id === id) : ids;
-    const focused = this.dockOpen && list.contains(document.activeElement);
+    const reviewing = this.dockOpen || this.comparisonOpen;
+    const item = this.comparisonOpen ? this.comparisonRecord : this.selectedImpact;
+    const visibleIds = reviewing
+      ? ids.filter(id => item?.kind === 'building' && item.id === id) : ids;
+    const focused = reviewing && list.contains(document.activeElement);
     if (!settled || !visibleIds.length) {
       section.hidden = true;
       list.replaceChildren();
-      if (focused && this.dockOpen) this.$('roadImpactToggle').focus({ preventScroll: true });
+      if (focused) this.$(this.comparisonOpen ? 'roadComparisonToggle' : 'roadImpactToggle')
+        .focus({ preventScroll: true });
       return;
     }
     section.hidden = false;
@@ -1048,7 +1147,8 @@ export class RoadInspectionWorkspace {
       : 'These choices are previewed, not applied. Revise or clear an individual choice before Apply.';
     list.replaceChildren(...visibleIds.map((id,index) =>
       this.buildingConflictControls(id,unresolved.get(id),index+1,visibleIds.length)));
-    if (focused && this.dockOpen) {
+    if (focused && this.comparisonOpen) this.$('roadComparisonTitle').focus({ preventScroll: true });
+    else if (focused && this.dockOpen) {
       const selected = this.$('roadImpactRows').querySelector('[aria-pressed="true"]');
       (selected ?? this.$('roadImpactToggle')).focus({ preventScroll: true });
     }

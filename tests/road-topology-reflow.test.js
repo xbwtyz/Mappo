@@ -77,24 +77,47 @@ test('The standalone applies a crossing and road removal with Undo, Redo and por
     ['RD-0099',() => app.el('roadRemoveC3').handlers.click(),-1],
   ]) {
     app.apply({project,workspace:defaultWorkspace(project)});
+    let selectedBlock;
+    if (delta === -1) {
+      const removal = prepareRoadTopologyReflowC3(project, roadId, null, {kind:'remove'});
+      const removedBlock = removal.ledger.find(row => row.kind === 'block' && row.oldId && !row.newId);
+      assert.ok(removedBlock);
+      selectedBlock = project.city.blocks.find(row => row.id === removedBlock.oldId);
+      const district = app.state().districtPanel.editor;
+      district.selectedBlockId = selectedBlock.id;
+      district.selectedDistrictId = selectedBlock.districtId;
+    }
     const before = JSON.stringify(app.state().project), rev = app.state().files.revision;
     road.start();
+    assert.equal(road.active, true, app.el('roadModeNotice').textContent);
     road.session.schedule = run => run();
     road.session.select({kind:'road',id:roadId});
     input();
     assert.equal(app.el('roadApplyB4').disabled,false,road.session.reconciliation?.unresolved[0]?.message);
     assert.equal(app.state().files.revision,rev);
     app.el('roadApplyB4').handlers.click();
-    assert.equal(app.state().project.city.blocks.length,project.city.blocks.length+delta);
+    assert.equal(app.state().project.city.blocks.length,project.city.blocks.length+delta,road.applyError);
+    if (delta === -1) {
+      const state = app.capture().workspace.districtEditor;
+      assert.equal(state.selectedBlockId, null);
+      assert.equal(state.selectedDistrictId, selectedBlock.districtId);
+      assert.equal(state.controls.target, '');
+    }
     const after = JSON.stringify(app.state().project);
     assert.equal(app.state().files.revision,rev+1);
     assert.equal(app.moveRoadHistory('undo'),true);
     assert.equal(JSON.stringify(app.state().project),before);
+    if (delta === -1) {
+      // Reselect the restored block. Redo must handle the same retired ID.
+      app.state().districtPanel.editor.selectedBlockId = selectedBlock.id;
+      assert.equal(app.capture().workspace.districtEditor.selectedBlockId, selectedBlock.id);
+    }
     assert.equal(app.moveRoadHistory('redo'),true);
     assert.equal(JSON.stringify(app.state().project),after);
     const doc = app.capture();
     const loaded = decodeProjectDocument(encodeProjectDocument(createProjectDocument(doc.project,doc.workspace)));
     assert.equal(JSON.stringify(loaded.project),after);
+    if (delta === -1) assert.equal(loaded.workspace.districtEditor.selectedBlockId, null);
   }
 });
 
