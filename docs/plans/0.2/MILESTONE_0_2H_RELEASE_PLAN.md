@@ -1,42 +1,42 @@
 # Mappo 0.2H — Release hardening implementation plan
 
-**Status:** H1/H2 implementation in review. **Baseline:** merged 0.2G G4 PR #87, runtime `0.2-dev.g3g`, package `0.2.0-dev.g3g`, project schema 9, portable format 1. Current stable GitHub Release: **v0.1.0**.
+**Status:** H1/H2 merged in PR #88, H3 benchmark and disposition completed on PR #89 (merge awaiting approval); H4/H5 pending. **Baseline:** merged 0.2G G4 PR #87, runtime `0.2-dev.g3g`, package `0.2.0-dev.g3g`, project schema 9, portable format 1. Current stable GitHub Release: **v0.1.0**.
 
 **Goal:** Finish the existing 2D designer as a dependable offline 0.2.0 release without weakening preservation rules, forcing onboarding, adding phone support, or silently publishing on a merge. All work remains modular. Any production or schema change is individually justified and verified.
 
-## H1 — Release workflow readiness (this PR)
+## H1 — Release workflow readiness (merged in PR #88)
 
 - [x] Replace the historical 0.1.0 `workflow_run` publisher with a **manual-only** `workflow_dispatch` stable 0.2.0 release workflow. A successful main CI must never publish automatically.
 - [x] Require manual **PUBLISH-0.2.0** confirmation and execution from `main` in the canonical repository.
 - [x] Fail closed unless both `APP_VERSION` and `package.json` equal the final stable `0.2.0` (not dev), release notes `docs/releases/v0.2.0.md` exist, and the matching tracked standalone exists. **These H5 inputs are intentionally absent in H1/H2.**
 - [x] Require a successful **Mappo CI** push run on exactly the checked-out main SHA, then independently rebuild/execute the complete Node suite and verify byte-identical tracked HTML.
 - [x] Recheck main hasn't moved before publishing. Refuse existing tag/release instead of rewriting history; target only the exact SHA with the versioned `mappo-0.2.0.html` asset.
-- [ ] Final CI validates the guard tests and manual-only YAML without invoking publish.
-- [ ] Owner approves PR merge; do not tag, publish or deploy Pages.
+- [x] Full [PR #88 CI](https://github.com/xbwtyz/Mappo/actions/runs/44955921101) passed the guard tests and manual-only YAML without publishing.
+- [x] Owner approved H1/H2 PR #88 merge; no tag, release or Pages deployment.
 
 **Release authority remains explicit:** G4 approval and H1/H2 merge approval are *not* authorization to publish v0.2.0.
 
-## H2 — Save format and migration audit (this PR)
+## H2 — Save format and migration audit (merged in PR #88)
 
 - [x] Preserve format **1** and project schema **9** unchanged; no new migrations or generator-based reconstruction.
 - [x] Add direct frozen-file Node tests for two historical schema-1 sources plus schemas **2–8**, checking every saved geometry array, IDs, metadata and modern save/load/save round-trip.
 - [x] Check schema-9 authored building names and unrecognized extension/workspace fields still survive serialization.
 - [x] Check malformed, incompatible future format/project/workspace versions and broken endpoints reject without changing accepted work.
 - [x] Add desktop real-browser Project-menu open checks in Chromium/Firefox for native schema **1, 4, and 8** files, exported schema-9 reopen, and rejection of a future file without accepted-city mutation. G4 already covered browser schema 2.
-- [ ] Full CI and both browsers demonstrate this historical matrix passes with current production runtime untouched.
+- [x] All 459 Node tests and Chromium/Firefox historical save import/export/reopen tests passed before H1/H2 merge, with production runtime untouched.
 
 Do not delete or rewrite frozen fixture files. Preserve unsupported newer saves rather than attempting destructive migration; browser recovery is an additional backup, not a replacement for portable downloads.
 
-## H3 — Responsiveness and issue disposition (active: [PR #89](https://github.com/xbwtyz/Mappo/pull/89))
+## H3 — Responsiveness and issue disposition (completed measurement; PR #89 awaits merge)
 
-The [H3 performance audit](H3_PERFORMANCE_AUDIT.md) uses the original C7 P7 harness and the merged H1/H2 build, with Firefox/Chromium desktop only. It compares Large Organic preview readiness and independent Apply completion **separately** from main-thread input/frame gaps. Routine CI benchmarking remains manual-only after the one-off baseline capture. Performance issue closure requires current comparable evidence, not a passing functional test alone.
+The [H3 desktop performance audit](H3_PERFORMANCE_AUDIT.md) reproduces Large Organic `c2-organic` junction edits in Firefox and Chromium with the original C7 benchmark. Worker computation remains approximately 0.6–0.7 seconds; the preview takes roughly 0.93–1.02 seconds total. Worst observed UI-frame gaps were 133 ms Chromium and 183 ms Firefox, **not** the earlier ~1-second frozen frame. Fresh Apply finishes in 0.79–0.87 seconds but the click handler's worst measured time was only 39 ms. These observations are from a shared Intel CI runner, n=6 Large previews per browser; they are not physical-device performance guarantees.
 
-
-
-- [ ] Reproduce Large Organic `c2-organic` junction changes in Firefox and Chromium and record preview median/p95, main-thread frame/input gaps and Apply click/finish time.
-- [ ] Compare issue [#44](https://github.com/xbwtyz/Mappo/issues/44) and [#46](https://github.com/xbwtyz/Mappo/issues/46) against current worker-supported code and prior C7 P7 data; distinguish nonblocking computation from UI stalls, and synchronous fallback from primary worker path.
-- [ ] Fix material regressions without weakening fresh independent Apply validation, provenance and protected-geometry rules; otherwise document supported limits and owner-approved disposition.
-- [ ] [#79](https://github.com/xbwtyz/Mappo/issues/79) dead-end deletion is a separate engine feature choice. Keep open unless owner explicitly scopes it into 0.2.0.
+- [x] Preview median/p95, main-thread frame/input gaps and Apply click/finish time measured and compared to historical P7.
+- [x] Worker path, latest-draft cancellation, accepted-state preservation, independent Apply, atomic commit and Undo/Redo verified.
+- [x] No measured material regression justifying speculative runtime changes or weakening validation. One-off benchmark CI trigger removed.
+- [ ] Owner reviews issue dispositions: [#44](https://github.com/xbwtyz/Mappo/issues/44) remains open for residual 100–183 ms stalls; [#46](https://github.com/xbwtyz/Mappo/issues/46) is a candidate for closure for the **primary junction worker path only** (other road/fallback paths can be synchronous).
+- [ ] Final PR-head CI green and separate merge approval.
+- [x] [#79](https://github.com/xbwtyz/Mappo/issues/79) dead-end deletion remains separate, unmodified engine work.
 
 ## H4 — Final integrated release QA
 

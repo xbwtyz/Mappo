@@ -1,6 +1,6 @@
 # Mappo
 
-> **Development track: Mappo 0.2H release hardening.** 0.2A–G are merged; the desktop Generation/Add/Roads workspace has passed G4. H1 prepares a manual stable release and H2 audits historical saves before H3 performance and H4/H5 release acceptance. The published stable release remains **0.1.0**. See the [0.2 roadmap](docs/plans/0.2/README.md).
+> **Development track: Mappo 0.2H release hardening.** 0.2A–G are merged; the desktop Generation/Add/Roads workspace has passed G4. H1/H2 are merged; H3 has measured large-city road responsiveness and issue scope on PR #89, with H4 final QA and H5 release acceptance ahead. The published stable release remains **0.1.0**. See the [0.2 roadmap](docs/plans/0.2/README.md).
 
 **Mappo 0.1.0** is an offline-first medieval and fantasy city generator and 2D editor, built from modular JavaScript and shipped as **one standalone HTML file**.
 
