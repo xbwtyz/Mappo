@@ -156,12 +156,17 @@
           </section></div><button id="roadDesktopPreviewG2" type="button" class="workspace-map-button road-desktop-preview-g2" aria-controls="roadPreviewPanel" aria-pressed="false">Road workspace preview</button><span id="draftBadge" class="map-draft">● CITY PLAN</span></div>
       <div id="mapViewport" class="map-viewport">
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
+        <canvas id="roadComparisonProposed" width="1" height="1" tabindex="0" aria-label="Proposed city map. Drag to pan both maps, or scroll to zoom." hidden></canvas>
+        <div class="road-comparison-label road-comparison-before">Before</div>
+        <div class="road-comparison-label road-comparison-after">Proposed</div>
+        <p id="roadComparisonMapStatus" class="road-comparison-map-status" role="status" hidden></p>
         <div id="desktopEditDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize edit panel" aria-orientation="vertical" aria-controls="roadPreviewPanel" aria-valuemin="300" aria-valuemax="520" aria-valuenow="360" hidden></div>
         <div id="desktopImpactDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize impact dock" aria-orientation="horizontal" aria-controls="roadPreviewPanel" aria-valuemin="240" aria-valuemax="480" aria-valuenow="320" hidden></div>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div id="mapEditDiagnostic4D" class="map-edit-diagnostic-4d" role="status" aria-live="polite" hidden></div>
         <section id="roadPreviewPanel" class="road-preview-panel" aria-labelledby="roadPreviewHeading" hidden>
-          <div class="road-preview-header"><div class="road-preview-heading"><strong id="roadPreviewHeading" tabindex="-1">ROAD EDIT</strong><div class="road-preview-view-actions"><button id="roadImpactToggle" type="button" class="minor-button" aria-expanded="false" aria-controls="roadImpactList" hidden>Review impacts</button><button id="roadPreviewMinimize" class="minor-button" aria-expanded="true" aria-controls="roadPreviewBody">Minimize</button></div></div>
+          <div class="road-preview-header"><div class="road-preview-heading"><strong id="roadPreviewHeading" tabindex="-1">ROAD EDIT</strong><div class="road-preview-view-actions"><button id="roadComparisonToggle" type="button" class="minor-button" aria-expanded="false" aria-controls="roadComparisonProposed" aria-describedby="roadComparisonAvailability" hidden>Compare</button><button id="roadImpactToggle" type="button" class="minor-button" aria-expanded="false" aria-controls="roadImpactList" hidden>Review impacts</button><button id="roadPreviewMinimize" class="minor-button" aria-expanded="true" aria-controls="roadPreviewBody">Minimize</button></div></div>
+            <p id="roadComparisonAvailability" class="road-comparison-availability hint" hidden></p>
           </div>
           <section id="roadImpactList" class="road-impact-list" aria-label="Affected records" hidden>
             <p id="roadImpactEmpty" class="hint"></p>
@@ -171,6 +176,10 @@
             </table>
           </section>
           <div id="roadPreviewBody">
+            <div id="roadComparisonReview" class="road-comparison-review" hidden>
+              <h3 id="roadComparisonTitle" tabindex="-1">Before and proposed</h3>
+              <p id="roadComparisonSelection"></p>
+            </div>
             <div id="roadImpactDetail" class="road-impact-detail" hidden>
               <h3 id="roadImpactDetailTitle"></h3>
               <p id="roadImpactDetailMessage"></p>

@@ -31,7 +31,7 @@ Open an optional wide-screen comparison from a road draft with a usable
 preview. Place **two maps side by side**, with the accepted city on the
 left and the proposed option on the right. Both maps use the same world
 position and zoom, with linked pan and zoom. A **right-side review panel**
-shows the proposed placement for Market Hall, **Use this placement**,
+shows the proposed placement for Market Hall, its placement choices,
 and the route back to the impact list. Decision and Apply controls live
 in that panel. Closing comparison returns to the previous view with
 the same draft and decisions. Explain when the current window or draft
@@ -88,6 +88,21 @@ Drag the separator or use its Up and Down arrows to adjust the dock.
 draft, selected record, and placement choices. A short or narrow
 window returns to the side panel. The accepted and proposed comparison
 is a separate G3B pass.
+
+## G3B road comparison
+
+Choose **Compare** from the road side panel or impact dock once the draft
+has a verified proposal. The accepted city is on the left and the exact
+candidate is on the right. Pan or zoom in either map to move both together.
+The right panel uses the active placement choices and the existing Apply
+action. Revising a choice refreshes the proposal. During revalidation, the
+proposed map shows a status message until the next verified candidate is
+available.
+
+Comparison needs at least 1500 × 650 CSS pixels. **Back to impact list** or
+**Back to road edit** and Escape restore the originating view. Shrinking the
+window restores that view if it still fits, or the side panel if necessary.
+The draft and its decisions travel with the edit.
 
 ## Integration rules
 

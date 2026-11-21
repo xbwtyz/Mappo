@@ -121,6 +121,7 @@ import { analyzeRoadImpact, inspectJunctionImpact } from './core/road-impact.js'
 import { DesktopEditLayout } from './ui/desktop-edit-layout.js';
 import { RoadInspectionWorkspace } from './ui/road-inspection.js';
 import { createJunctionPreviewWorkerP1 } from './editor/junction-preview-worker-client.js';
+import { drawRoadComparison } from './renderer/road-comparison.js';
 import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 // B1 candidate API is compiled for later editor integration; no Apply or UI hooks.
 import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
@@ -331,6 +332,14 @@ function requestDraw() {
   requestAnimationFrame(() => {
     drawPending = false;
     if (project) {
+      if (roadWorkspace?.comparisonOpen) {
+        drawRoadComparison({
+          acceptedCanvas: canvas, proposedCanvas: $('roadComparisonProposed'), camera, project, layers,
+          candidate: roadWorkspace.comparisonCandidate(), target: roadWorkspace.session.selection,
+          impact: roadWorkspace.comparisonImpact(),
+        });
+        return;
+      }
       const roadMode=roadWorkspace?.active;
       renderMap(canvas, camera, project, roadMode?null:editor, layers, districtPanel?.editor.selectedDistrictId, roadMode?null:waterPanel?.editor, roadMode?null:terrainPanel?.editor, roadMode?null:workspaceShell?.state.selection, roadMode?null:landscapeWorkspace?.hover, roadMode?null:buildingWorkspace?.hover, roadMode?null:propertyWorkspace?.hover, buildingEditSession, buildingPlacementSession, propertyEditSession);
       drawRoadInspectionOverlay(canvas,camera,project.city,roadWorkspace?.session);
@@ -1140,7 +1149,9 @@ window.addEventListener('keydown', e => {
     propertyCreationSessionE1.stop();e.preventDefault();return;
   }
   if(roadWorkspace?.active && e.key==='Escape'){
-    roadWorkspace.exit({focus:true});e.preventDefault();return;
+    if (roadWorkspace.comparisonOpen) roadWorkspace.setComparison(false);
+    else roadWorkspace.exit({focus:true});
+    e.preventDefault();return;
   }
   if (e.key === 'Escape' && buildingEditSession?.drag?.handle.kind === 'vertex') {
     buildingEditSession.endGesture(true);
@@ -1156,8 +1167,13 @@ window.addEventListener('keydown', e => {
     }
     if(['Delete','Backspace'].includes(e.key)){e.preventDefault();return;}
     if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)
-      &&(e.target===canvas||document.activeElement===canvas)){
-      roadWorkspace.nudge(e.key.slice(5),e.shiftKey?10:1);e.preventDefault();return;
+      && (document.activeElement === canvas || document.activeElement === $('roadComparisonProposed'))) {
+      if (roadWorkspace.comparisonOpen) {
+        const pan = {ArrowLeft:[32,0],ArrowRight:[-32,0],ArrowUp:[0,32],ArrowDown:[0,-32]};
+        camera.pan(...pan[e.key]);
+        requestDraw();
+        updateViewport();
+      } else roadWorkspace.nudge(e.key.slice(5),e.shiftKey?10:1);e.preventDefault();return;
     }
   }
   if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
@@ -2074,7 +2090,9 @@ const mapEditor = {
   addPoint: (...args) => activeMapEditor().addPoint(...args)
 };
 
+bindCanvasInteraction($('roadComparisonProposed'), camera, requestDraw, updateViewport, mapPanEditor);
 bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => {
+  if (roadWorkspace?.comparisonOpen) return;
   if(propertyMergeE3?.active){
     const neighbor=propertyWorkspace.hit(point,camera.zoom);
     if(neighbor&&neighbor.id!==propertyMergeE3.session.primaryId)propertyMergeE3.choose(neighbor.id);
@@ -2149,7 +2167,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
         (point.y-edge.frame.origin.y)*edge.frame.tangent.y;
       propertyCreationSessionE1.drag={startU:u,originalU:draft.u};return true;
     }
-    if(roadWorkspace?.active)return roadWorkspace.session.begin(point,zoom,event?.pointerType);
+    if(roadWorkspace?.active)return !roadWorkspace.comparisonOpen && roadWorkspace.session.begin(point,zoom,event?.pointerType);
     if(propertyEditSession?.isActive){
       const index=propertyEditSession.hitCorner(project?.city,point,zoom);
       if(index===null)return false;
