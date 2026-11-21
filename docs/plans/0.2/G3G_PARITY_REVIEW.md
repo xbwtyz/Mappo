@@ -25,5 +25,5 @@ Issue #79 dead-end deletion, #44/#46 Large-city responsiveness, civic sites, 3D,
 ## Acceptance status
 - [x] Audit and targeted desktop retirement
 - [x] Modern-workspace browser test added
-- [ ] Final build and full CI verified
-- [ ] Separate owner merge approval
+- [x] Final build and full CI verified in [G3G PR #84](https://github.com/xbwtyz/Mappo/pull/84)
+- [x] Separate owner merge approval; G3G merged before G4

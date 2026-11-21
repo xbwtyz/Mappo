@@ -4,6 +4,20 @@
 
 Mappo opens directly from its HTML file with no server. Portable project downloads are the recommended backup.
 
+## 0.2 development desktop workspace (G4 candidate)
+
+The detailed sections below retain **stable 0.1.0** control names in places. In the newer, **unreleased 0.2 development candidate** on `main`, desktop and laptop browsers use the three-tab **Generation / Add / Roads** workspace at widths of 1000 CSS pixels and above.
+
+- **Generation:** City outline, main square, street pattern, districts and defenses. Preview a changed city and review the proposal before Apply. Preview alone does not change accepted geometry.
+- **Add:** Create a property, place a building after selecting its property, or work with rivers, coastline, lakes and mountain ranges. Landscape changes use their own draft/Undo and a separate city rebuild.
+- **Roads:** Select an ordinary road or junction, preview movement and connection changes, review impacts and resolve building placement blockers. Open the impact dock, or a linked accepted/proposed comparison when wide enough. Apply still performs independent validation.
+- **Inspector:** Select an existing property to adjust its footprint, split or merge it, modify plots or access buildings. Building edits cover transforms, vertices, edges, wings, courtyard holes and identity/use changes. Undo/Redo remains specific to the active editor.
+- **Project / Layers:** Download/open portable `.mappo.json`, recover local snapshots, export visible-map PNG, change layers and navigate by keyboard.
+
+The separate `?workspace=legacy` desktop entrypoint is retired. Narrow-window compact controls are retained for compatibility but phone/touch acceptance is **not** a 0.2G release target. Drafts never silently replace the accepted city; supported historical project files migrate without regenerating roads or building geometry. The [G4 acceptance report](plans/0.2/G4_ACCEPTANCE_REPORT.md) records the browser and offline acceptance evidence.
+
+**Note:** The historical reference instructions below may describe 0.1 behavior or limitations superseded by the 0.2 development candidate. The public Pages site is published manually and might not be the latest `main` build.
+
 ## 1. Create a city
 
 1. In **City**, choose a starting outline—rounded, organic, long, rectangular, wedge, twin-core, branching or horseshoe—or draw one with **Freehand** or **Click points**. For click points, use **Close outline** or Enter when finished.
@@ -32,9 +46,9 @@ Expand **Edit property identity** or **Edit building identity**. Enter a name, c
 
 Properties and buildings have independent identities, including separate compound wings. Applied names/uses survive save/load, but identity drafts and the 20-step **Undo identity** history are **session-only**. Full city regeneration may replace building IDs and discard identities; Mappo warns before this happens. Local district/defense updates retain them.
 
-### Splitting a property — E2 development preview (unreleased)
+### Splitting a property — 0.2 development feature (unreleased)
 
-> Available only in the unmerged 0.2E E2 development build on [PR #60](https://github.com/xbwtyz/Mappo/pull/60), **not** in stable Mappo 0.1.0.
+> E2 is merged on `main` in the 0.2 development candidate but is **not** in stable 0.1.0. Later 0.2E passes added adjacent property merging and plot-count editing.
 
 In City / Select, select a property and choose **Split property** in the Inspector. An editable line runs straight from the street frontage to the rear. Drag the highlighted divider on the map or enter **Divider along frontage (%)** for precision. Two shaded resulting parcels and their areas, frontage lengths, plot count and building ownership appear in the preview.
 
@@ -42,7 +56,7 @@ Both parcels must keep usable street frontage and enough valid area. The frontag
 
 **Reset** returns the line to its middle position, **Cancel** or Escape discards the draft, and **Apply property split** is available only after preview validation. Apply independently verifies the entire schema-9 city and portable save/reopen, creating one coupled edit. **Undo property split** and **Redo property split** are available in City tools during this session; the accepted two-property geometry survives downloads, but edit history and unfinished previews do not.
 
-E2 supports one straight frontage-to-rear division of an existing convex four-corner property. Arbitrary cuts, merging properties, independent plot-count changes and physically relocating buildings are not part of E2.
+E2 supports one straight frontage-to-rear division of an existing convex four-corner property. Later 0.2E functionality provides adjacent-property merging and independent plot-count changes under their own validations.
 
 ### Building Edit Mode (3G-D, retained in 3H)
 

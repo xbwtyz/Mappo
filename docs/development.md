@@ -1,6 +1,6 @@
 # Mappo Developer Guide
 
-**Stable release:** `0.1.0` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
+**Stable release:** `0.1.0` · **G4 acceptance candidate:** `0.2-dev.g3g` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
 
 ## Source organization
 
@@ -49,21 +49,24 @@ npm test
 npm run check
 ```
 
-The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current stable output: `dist/mappo-0.1.0.html`. External runtime imports are rejected.
+The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current G4-reviewed development output: `dist/mappo-0.2-dev.g3g.html`; stable `dist/mappo-0.1.0.html` remains archived. External runtime imports are rejected. No production version bump is required for acceptance-only test/doc changes.
 
 ```bash
-cmp index.html dist/mappo-0.1.0.html
-git diff --exit-code -- index.html dist/mappo-0.1.0.html
+cmp index.html dist/mappo-0.2-dev.g3g.html
+git diff --exit-code -- index.html dist/mappo-0.2-dev.g3g.html
 ```
 
 Use a Windows binary comparison tool if `cmp` is unavailable. Update paths when the release version changes.
 
-Node tests use `node --test tests/*.test.js` and verify geometry, project migrations, editor behavior and simulated compiled-app interactions. For graphical browser checks, install test-only Playwright and Chromium/Firefox as described in the [current CI guide](CI.md), then run:
+Node tests use `node --test tests/*.test.js` and verify geometry, project migrations, editing and simulated compiled-app interactions. GitHub CI splits them into two native Node shards alongside four browser QA suites. Install test-only Playwright 1.56.1 and Chromium/Firefox as described in [current CI](CI.md), then run:
 
 ```bash
-node scripts/browser-qa.mjs
-node scripts/building-browser-qa.mjs
+npm run test:browser               # all browser suites
+npm run test:browser:desktop       # modern three-tab + G4 acceptance
+npm run test:browser:g4            # focused G4 browser matrix
 ```
+
+G4's desktop suite records `artifacts/g4/desktop-acceptance.json` and `.md` with browser/viewport, historical-save and offline status, Small/Large draw measurements, and road preview timing. Its separate cross-editor test verifies a real canonical desktop split/merge, wing and courtyard changes, accepted history and portable reopen. These are diagnostics, not guaranteed user-device timings.
 
 Dev 4f passed the complete Node, compilation and Chromium/Firefox browser matrices: [CI run #341](https://github.com/xbwtyz/Mappo/actions/runs/44428124074). The 0.1.0 release candidate must pass equivalent CI on its own commit; this does not replace hands-on testing.
 
@@ -78,8 +81,8 @@ Dev 4f passed the complete Node, compilation and Chromium/Firefox browser matric
 5. Run Node tests, source-to-compiled parity, persistence compatibility and relevant graphical browser QA.
 6. Present a pull request for explicit approval before merging.
 
-**Pages behavior:** [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) automatically deploys when the generated HTML or `dist/**` changes on `main`. Documentation-only changes do not match its current path filter. Its publication of historical standalone builds is unchanged in this docs-only cleanup.
+**Pages behavior:** [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) is manual-only on `main`. A PR merge does **not** deploy the site. The owner can explicitly run the Pages workflow when ready.
 
-**Unified CI:** [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs version-derived build parity, Node regressions, and both real-browser QA suites for active development branches, pull requests, and `main`. See the [CI guide](CI.md) and [Pass B QA report](PASS_B_QA.md). The old phase-specific validation workflows have been retired.
+**Unified CI:** [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) uses two Node shards and four browser suites on review-ready PRs, `main`, merge groups and manual dispatch. The required check is still **Build, Node tests and browser QA**. The heavy C7 performance benchmark is manual opt-in. See the [CI guide](CI.md).
 
 [3G-C milestone QA and acceptance safety](history/3g/MILESTONE_3GC_QA.md) · [3G-B milestone QA](history/3g/MILESTONE_3GB_QA.md) · [3G-A milestone QA](history/3g/MILESTONE_3GA_QA.md) · [Workspace UI reference](reference/WORKSPACE_UI.md) · [UI control map](reference/UI_CONTROL_MAP.md) · [Water](reference/WATER.md) · [Terrain](reference/TERRAIN.md) · [Districts](reference/DISTRICTS.md) · [Fortifications](reference/FORTIFICATIONS.md)
