@@ -924,7 +924,9 @@
   .workspace-shell.three-tab-workspace .workspace{grid-template-columns:minmax(0,1fr) var(--workspace-inspector)}
   .workspace-shell.three-tab-workspace .workspace>.map-shell{grid-column:1}
   .workspace-shell.three-tab-workspace .workspace>.sidebar-right{grid-column:2}
-  .workspace-shell.three-tab-workspace.desktop-home-open .workspace{grid-template-columns:minmax(0,1fr) 0}
+  .workspace-shell.three-tab-workspace:is(.desktop-home-open,.place-editor-active) .workspace{
+    grid-template-columns:minmax(0,1fr);
+  }
   .workspace-shell.three-tab-workspace.desktop-home-open .workspace>.sidebar-right{display:none}
   .desktop-edit-layout>#desktopWorkspaceHome:not([hidden]){
     display:flex;flex-direction:column;padding:0;border-left:1px solid #4b6052;
