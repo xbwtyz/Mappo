@@ -1,6 +1,6 @@
 # Mappo
 
-> **Development track: Mappo 0.2H release hardening.** 0.2A–G are merged; the desktop Generation/Add/Roads workspace has passed G4. H1–H3 are merged; H4 is validating full desktop, recovery, offline and save compatibility, before the separately approved H5 release. The published stable release remains **0.1.0**. See the [0.2 roadmap](docs/plans/0.2/README.md).
+> **Release candidate: Mappo 0.2.0 (H5).** 0.2A–G and H1–H4 are merged, and 0.2.0 is prepared on an unmerged review branch. **The currently published GitHub Release remains v0.1.0** until separate approval of H5 merge and manual publication. See the [0.2 roadmap](docs/plans/0.2/README.md).
 
 **Mappo 0.1.0** is an offline-first medieval and fantasy city generator and 2D editor, built from modular JavaScript and shipped as **one standalone HTML file**.
 
@@ -20,9 +20,9 @@
 - Download the **currently visible map as PNG**, with optional filenames shared with `.mappo.json` project downloads.
 - Save/load portable validated project files. Browser-local recovery snapshots provide additional safety; downloaded files are the recommended backup.
 
-## 0.2 development candidate (unreleased)
+## 0.2.0 release candidate (not yet published)
 
-The current `main` branch contains the 0.2 city designer: road editing with local neighborhood adaptation, property creation/splitting/merging, plot-count changes, detailed building footprints and the **Generation / Add / Roads** desktop workspace. The Pages site is manually published and **may not match `main`**. The current development standalone is [`dist/mappo-0.2-dev.g3g.html`](dist/mappo-0.2-dev.g3g.html). H1/H2 are release and compatibility verification only; the active development build and schema 9 are unchanged.
+The merged H4 `main` branch contains the 0.2 city designer; this H5 branch freezes it as a versioned candidate: road editing with local neighborhood adaptation, property creation/splitting/merging, plot-count changes, detailed building footprints and the **Generation / Add / Roads** desktop workspace. The Pages site is manually published and **may not match `main`**. The proposed stable standalone is [`dist/mappo-0.2.0.html`](dist/mappo-0.2.0.html), available on this candidate branch only until merged. [0.2.0 release notes](docs/releases/v0.2.0.md) describe its features and limits. Project schema 9 and portable format 1 are unchanged. The older 0.2 development HTML and published v0.1.0 stay archived.
 
 **Generation** hosts city, districts and defenses. **Add** begins property/building placement and landscape drafts. **Roads** exposes road changes, impact review and comparison. The property-first Inspector edits existing land, plots, buildings, names and uses. Desktop/laptop Firefox and Chromium are the current support targets; phone/touch acceptance is deferred.
 
@@ -58,6 +58,6 @@ Node 20.11+ is needed for development, **not to run** the distributed HTML. CI r
 
 The 0.1 editor does not yet support manual road-network restructuring, property split/merge, unrestricted concave parcel editing or 3D rendering. PNG export captures the **currently visible canvas**, not an automatic full-city tiled image. Accepted project edits survive saving; Undo histories and uncommitted previews generally do not.
 
-**Next on the 0.2 development track:** [0.2H release hardening](docs/plans/0.2/MILESTONE_0_2H_RELEASE_PLAN.md): H1/H2 preparation, H3 performance disposition, H4 final QA, H5 explicit release approval. The stable 0.1.0 release remains separate.
+**Next:** [H5 release candidate review](docs/plans/0.2/H5_RELEASE_CANDIDATE_REPORT.md), complete CI, separate approval to merge, successful CI on final `main`, and **a second approval to publish v0.2.0**. [0.2H release policy](docs/plans/0.2/MILESTONE_0_2H_RELEASE_PLAN.md). The stable v0.1.0 release remains available.
 
-[Development guide](docs/development.md) · [Project format](docs/reference/PROJECT_FORMAT.md) · [Release notes](docs/releases/v0.1.0.md) · [Docs index](docs/README.md)
+[Development guide](docs/development.md) · [Project format](docs/reference/PROJECT_FORMAT.md) · [0.2.0 candidate notes](docs/releases/v0.2.0.md) · [0.1.0 release notes](docs/releases/v0.1.0.md) · [Docs index](docs/README.md)

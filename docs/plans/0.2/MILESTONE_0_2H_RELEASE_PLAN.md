@@ -1,6 +1,6 @@
 # Mappo 0.2H — Release hardening implementation plan
 
-**Status:** H1/H2 merged in PR #88; H3 merged in PR #89 with issues #44 and #46 closed following owner approval; H4 final integrated QA under review; H5 release candidate and publication are separate. **Baseline:** merged 0.2G G4 PR #87, runtime `0.2-dev.g3g`, package `0.2.0-dev.g3g`, project schema 9, portable format 1. Current stable GitHub Release: **v0.1.0**.
+**Status:** H1/H2 merged in PR #88; H3 merged in PR #89 with issues #44/#46 closed; H4 merged in PR #90 after successful [final CI](https://github.com/xbwtyz/Mappo/actions/runs/44958430396); H5 release candidate is under review and publication requires a further explicit approval. **Baseline:** merged 0.2G G4 PR #87, runtime `0.2-dev.g3g`, package `0.2.0-dev.g3g`, project schema 9, portable format 1. Current stable GitHub Release: **v0.1.0**.
 
 **Goal:** Finish the existing 2D designer as a dependable offline 0.2.0 release without weakening preservation rules, forcing onboarding, adding phone support, or silently publishing on a merge. All work remains modular. Any production or schema change is individually justified and verified.
 
@@ -49,12 +49,14 @@ The [H4 release acceptance report](H4_RELEASE_QA_REPORT.md) is the authoritative
 - [x] Real `file://` startup and zero external HTTP checks passed in both browsers, and root/versioned compiled HTML bytes remained identical.
 - [x] Desktop/browser policy and #79, transient frame stalls and fallback ordinary-road Apply limitations are recorded in [H4 release report](H4_RELEASE_QA_REPORT.md).
 - [x] H4 report includes successful CI and artifacts, 459-test result and release-readiness assessment.
-- [ ] Owner separately approves H4 PR merge. No tag, stable release, or Pages publishing in H4.
+- [x] Owner separately approved and merged H4 PR #90. No tag, stable release or Pages publishing occurred.
 
 ## H5 — Owner-approved 0.2.0 release candidate / publication
 
-- [ ] Separately approve an H5 branch updating **both** app/package versions to `0.2.0` and compiled `index.html` and `dist/mappo-0.2.0.html`; preserve older dist assets.
-- [ ] Write reviewed `docs/releases/v0.2.0.md` with changes, compatibility policy and known limitations.
+[H5 candidate checklist and final CI evidence](H5_RELEASE_CANDIDATE_REPORT.md). This phase freezes the already-tested 2D editor; no new feature work or schema migration.
+
+- [x] H5 branch opened with app/package versions set to `0.2.0` and compiled `index.html`/`dist/mappo-0.2.0.html`; older distributions retained. **Merge still needs separate owner approval.**
+- [x] Draft candidate [0.2.0 release notes](../../releases/v0.2.0.md) with changes, compatibility and known limitations; awaiting final review.
 - [ ] CI green on exact final `main` SHA; explicit separate approval for merge and **another explicit approval for publication**.
 - [ ] Only after approval, manually dispatch the guarded `release.yml` workflow with `PUBLISH-0.2.0`. GitHub Pages is a **different**, manual workflow and is not published by the GitHub Release action.
 - [ ] Verify GitHub Release tag/assets, `main`, workflow logs, archived v0.1.0 preservation and optional Pages publication only if authorized.
