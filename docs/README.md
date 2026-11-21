@@ -15,7 +15,9 @@
 | [E2 Straight-Split Design](plans/0.2/E2_PROPERTY_SPLIT_DESIGN.md) | Frontage-to-rear geometry, identity lineage, plot/building ownership and five implementation/QA gates |
 | [E2 Acceptance](plans/0.2/E2_ACCEPTANCE_REPORT.md) | E2 implemented and merged via PR #60; historical acceptance evidence |\n| [E3 Adjacent Merge Design](plans/0.2/E3_PROPERTY_MERGE_DESIGN.md) | Approved design for conservative adjacent property merging |\n| [E4 Plot Count Design](plans/0.2/E4_PLOT_COUNT_DESIGN.md) | Approved plot-count specification, extending existing 3I property geometry editor |\n| [E4 Acceptance Report](plans/0.2/E4_ACCEPTANCE_REPORT.md) | Historical E4 acceptance evidence; E4 merged via PR #64 |\n| [E5 Integrated Acceptance Plan](plans/0.2/E5_INTEGRATED_ACCEPTANCE_PLAN.md) | Approved final 0.2E cross-editor QA and performance scope |\n| [E5 Acceptance Report](plans/0.2/E5_ACCEPTANCE_REPORT.md) | Current integration evidence, measured latency and remaining acceptance gates |\n| [E3 Acceptance Report](plans/0.2/E3_ACCEPTANCE_REPORT.md) | Unmerged PR #62 implementation scope, safeguards and CI gates |
 | [0.2F Building Design](plans/0.2/MILESTONE_0_2F_BUILDING_DESIGN.md) | Merged footprint tools, classification, and integration acceptance |
-| [0.2G Desktop Workspace](plans/0.2/MILESTONE_0_2G_DESKTOP_UI.md) | Desktop-only scope, modular UI architecture, and G1–G4 acceptance gates |
+| [0.2G Desktop Workspace](plans/0.2/MILESTONE_0_2G_DESKTOP_UI.md) | Desktop-only scope and modular workspace architecture |
+| [0.2G Implementation Passes](plans/0.2/G1_G4_IMPLEMENTATION_PLAN.md) | G1–G4 implementation sequence, tool migration, and desktop acceptance gates |
+| [0.2G Workspace Mockups](plans/0.2/assets/Mappo_0.2G_UI_Mockups.pdf) | Three desktop layouts for the same road-editing scenario and their tradeoffs |
 | [3G-A Checkpoint](history/3g/MILESTONE_3GA_QA.md) | Visual building edit mode design and verification |
 | [3G-B Checkpoint](history/3g/MILESTONE_3GB_QA.md) | Non-destructive building transformation previews, controls and QA |
 | [3G-C Checkpoint](history/3g/MILESTONE_3GC_QA.md) | Validated building changes, road access and schema-9 application |
