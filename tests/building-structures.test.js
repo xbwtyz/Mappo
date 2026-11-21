@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
+import { IdentityEditor } from '../src/core/identity.js';
 import { copyJson, defaultWorkspace, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../src/data/project-format.js';
 import { defaultBuildingSpec3H, makeBuildingShape3H, newBuildingId3H, prepareBuildingStructure3H } from '../src/editor/building-structures.js';
 import { BuildingStructureHistory3H } from '../src/editor/building-structure-history.js';
@@ -137,4 +138,37 @@ test('3H-A/D UI inspector adds a preview, protects invalid state and structural 
   assert.doesNotMatch(JSON.stringify(portable),/buildingPlacementSession|buildingStructureHistory/);
   app.apply(portable);
   assert.equal(state.buildingStructureHistory.count('undo',propertyId),0);
+});
+
+test('F3 replacement retains legacy use and supports classification of manually placed buildings', () => {
+  const { project, workspace, building, property, spec } = findStructureTrial();
+  building.type = 'bakehouse';
+  assert.equal(defaultBuildingSpec3H(property, building).type, 'bakehouse');
+  const replace = type => prepareBuildingStructure3H(project, workspace, {
+    operation: 'replace', propertyId: property.id, buildingId: building.id, spec: { ...spec, type }
+  });
+  const retained = replace('bakehouse');
+  assert.ok(retained.ok, JSON.stringify(retained.issues));
+  assert.equal(retained.candidate.city.buildings.find(item => item.id === building.id).type, 'bakehouse');
+  assert.equal(replace('invented').ok, false);
+  const removed = prepareBuildingStructure3H(project, workspace, {
+    operation: 'delete', propertyId: property.id, buildingId: building.id
+  });
+  assert.ok(removed.ok);
+  const buildingId = newBuildingId3H(removed.candidate.city);
+  const place = type => prepareBuildingStructure3H(removed.candidate, defaultWorkspace(removed.candidate), {
+    operation: 'add', propertyId: property.id, buildingId, spec: { ...spec, type }
+  });
+  assert.equal(place('bakehouse').ok, false, 'Only an existing building can keep an unfamiliar type.');
+  const added = place('house');
+  assert.ok(added.ok);
+  const manual = added.candidate.city.buildings.find(item => item.id === buildingId);
+  const editor = new IdentityEditor();
+  const reclassify = candidate => editor.apply(candidate.city, { kind: 'building', id: buildingId }, { buildingType: 'shop' });
+  assert.deepEqual(reclassify(added.candidate).buildings.find(item => item.id === buildingId), { ...manual, type: 'shop' });
+  const replaced = replace('house');
+  assert.ok(replaced.ok);
+  const replacement = replaced.candidate.city.buildings.find(item => item.id === building.id);
+  const changed = editor.apply(replaced.candidate.city, { kind: 'building', id: building.id }, { buildingType: 'inn' });
+  assert.deepEqual(changed.buildings.find(item => item.id === building.id), { ...replacement, type: 'inn' });
 });

@@ -1,3 +1,4 @@
+import { BUILDING_USE_TYPES } from '../core/identity.js';
 import { polygonSignedArea } from '../core/geometry.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
@@ -5,7 +6,7 @@ import { inspectBuildingGeometry } from '../core/building-validation.js';
 import { prepareBuildingApply } from './building-application.js';
 
 export const BUILDING_PRESETS_3H = Object.freeze(['rectangle','L','courtyard','T']);
-export const BUILDING_TYPES_3H = Object.freeze(['house','shop','workshop','inn','warehouse','guildhall','temple']);
+export const BUILDING_TYPES_3H = BUILDING_USE_TYPES;
 const h3Same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
 const h3Finite = x => typeof x === 'number' && Number.isFinite(x);
 const h3Point = (frame,u,v) => ({
@@ -33,11 +34,12 @@ export function defaultBuildingSpec3H(property,source=null) {
   return {u:(minU+maxU)/2,v:(minV+maxV)/2,width:Math.max(2,maxU-minU),
     depth:Math.max(2,maxV-minV),angle:0,
     preset:BUILDING_PRESETS_3H.includes(source.shape)?source.shape:'rectangle',
-    type:BUILDING_TYPES_3H.includes(source.type)?source.type:'house'};
+    type:source.type};
 }
-export function makeBuildingShape3H(property,spec) {
+export function makeBuildingShape3H(property,spec,existingType) {
   if (!property?.frame || !spec || !BUILDING_PRESETS_3H.includes(spec.preset)
-      || !BUILDING_TYPES_3H.includes(spec.type)) throw new Error('Choose a supported shape and building use.');
+      || (!BUILDING_TYPES_3H.includes(spec.type)
+        && !(typeof spec.type === 'string' && spec.type.length > 0 && spec.type === existingType))) throw new Error('Choose a supported shape and building use.');
   if (!['u','v','width','depth','angle'].every(key=>h3Finite(spec[key]))
       || spec.width<2 || spec.depth<2 || spec.width>250 || spec.depth>250
       || Math.abs(spec.u)>10000 || Math.abs(spec.v)>10000 || Math.abs(spec.angle)>360)
@@ -94,7 +96,8 @@ export class BuildingPlacementSession3H {
   property(city){return city?.properties.find(p=>p.id===this.propertyId)??null;}
   previewFor(city) {
     if(!this.active)return null;
-    try{return makeBuildingShape3H(this.property(city),this.spec);}catch{return null;}
+    const existingType = this.operation === 'replace' ? city.buildings.find(b => b.id === this.buildingId)?.type : undefined;
+    try{return makeBuildingShape3H(this.property(city),this.spec,existingType);}catch{return null;}
   }
   stop(){if(!this.active)return false;this.active=null;this.drag=null;this.validation=null;this.changed();return true;}
 }
@@ -113,7 +116,7 @@ export function prepareBuildingStructure3H(project,workspace,request,{quick=fals
     return issue('target','The target building is not on this property.',buildingId);
   let geometry=null;
   if(operation!=='delete') {
-    try{geometry=makeBuildingShape3H(property,spec);}
+    try{geometry=makeBuildingShape3H(property,spec,operation === 'replace' ? existing.type : undefined);}
     catch(error){return issue('shape',error.message);}
   }
   const provisional=copyJson(project),site=provisional.city.properties.find(p=>p.id===propertyId);

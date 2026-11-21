@@ -1,8 +1,10 @@
-import { IdentityEditor, identityRecord, identitySnapshot, customizedIdentityCounts, IDENTITY_USE_PRESETS, normalizeIdentity } from '../core/identity.js';
+import { IdentityEditor, identityRecord, identityChanges, customizedIdentityCounts, IDENTITY_USE_PRESETS } from '../core/identity.js';
+
+import { renderBuildingUseOptions } from './building-use.js';
 
 export class IdentityWorkspace {
-  constructor({ getElement, shell, getCity, commit, changed = () => {} }) {
-    Object.assign(this, { $: getElement, shell, getCity, commit, changed });
+  constructor({ getElement, shell, getCity, commit, canChangeBuildingUse = () => true, changed = () => {} }) {
+    Object.assign(this, { $: getElement, shell, getCity, commit, canChangeBuildingUse, changed });
     this.editor = new IdentityEditor();
     this.drafts = new Map();
     this.mounted = null;
@@ -12,29 +14,37 @@ export class IdentityWorkspace {
   key(ref) { return ref ? `${ref.kind}:${ref.id}` : ''; }
   ref() { return ['property', 'building'].includes(this.shell.state.selection?.kind) ? this.shell.state.selection : null; }
   fields() {
-    return { customName: this.$('identityNameInput').value,
-      customUse: this.$('identityUseInput').value === 'other' ? this.$('identityOtherUseInput').value : this.$('identityUseInput').value,
-      useChoice: this.$('identityUseInput').value };
+    const useChoice = this.$('identityUseInput').value;
+    return {
+      customName: this.$('identityNameInput').value,
+      customUse: useChoice === 'other' ? this.$('identityOtherUseInput').value : useChoice,
+      useChoice,
+      ...(this.mounted?.kind === 'building' ? {
+        buildingType: this.$('identityBuildingType').value,
+        previousBuildingType: this.mounted.previousBuildingType
+      } : {})
+    };
   }
-  pending(draft, record) {
+  pending(draft, record, ref) {
     try {
       if (draft.useChoice === 'other' && !draft.customUse.trim()) return true;
-      return JSON.stringify(normalizeIdentity(draft)) !== JSON.stringify(normalizeIdentity(identitySnapshot(record)));
+      return identityChanges(record, ref, draft).fields.length > 0;
     } catch { return true; }
   }
   stash() {
     const record = identityRecord(this.getCity(), this.mounted);
     if (!record) return;
     const draft = this.fields(), key = this.key(this.mounted);
-    if (this.pending(draft, record)) this.drafts.set(key, draft);
+    if (this.pending(draft, record, this.mounted)) this.drafts.set(key, draft);
     else this.drafts.delete(key);
   }
   hasPending() {
     this.stash();
     for (const [key, draft] of this.drafts) {
       const split = key.indexOf(':');
-      const record = identityRecord(this.getCity(), { kind: key.slice(0, split), id: key.slice(split + 1) });
-      if (!record || !this.pending(draft, record)) this.drafts.delete(key);
+      const ref = { kind: key.slice(0, split), id: key.slice(split + 1) };
+      const record = identityRecord(this.getCity(), ref);
+      if (!record || !this.pending(draft, record, ref)) this.drafts.delete(key);
     }
     return this.drafts.size > 0;
   }
@@ -48,19 +58,24 @@ export class IdentityWorkspace {
     const ref = this.ref(), record = identityRecord(this.getCity(), ref);
     this.$('identityInspector').hidden = !record;
     if (!record) { this.mounted = null; return; }
+    const building = ref.kind === 'building';
+    this.$('identityBuildingTypeGroup').hidden = !building;
+    if (building) renderBuildingUseOptions(this.$('identityBuildingType'), record.type, true);
     if (reload || this.key(ref) !== this.key(this.mounted)) {
       const draft = this.drafts.get(this.key(ref));
       const use = draft?.customUse ?? record.customUse ?? '';
       this.$('identityNameInput').value = draft?.customName ?? record.customName ?? '';
       this.$('identityUseInput').value = draft?.useChoice ?? (use && !IDENTITY_USE_PRESETS.includes(use) ? 'other' : use);
       this.$('identityOtherUseInput').value = use && !IDENTITY_USE_PRESETS.includes(use) ? use : '';
-      this.mounted = { ...ref };
+      this.mounted = { ...ref, previousBuildingType: draft?.previousBuildingType ?? record.type };
+      this.$('identityBuildingType').value = draft?.buildingType ?? '';
       this.showMessage(draft ? 'Unapplied identity changes.' : 'Changes apply only to this ' + ref.kind + '.');
     }
+    if (building && !this.$('identityBuildingType').value) this.mounted.previousBuildingType = record.type;
     this.$('identityEditorTitle').textContent = ref.kind === 'property' ? 'Edit property identity' : 'Edit building identity';
     this.$('identityOtherUseGroup').hidden = this.$('identityUseInput').value !== 'other';
     this.$('identityUndoButton').disabled = !this.editor.history.length;
-    this.$('identityDraftState').textContent = this.pending(this.fields(), record) ? 'Unapplied changes' : 'Up to date';
+    this.$('identityDraftState').textContent = this.pending(this.fields(), record, ref) ? 'Unapplied changes' : 'Up to date';
     if (this.rebuildAction) this.updateRebuildWarning();
   }
   apply() {
@@ -69,12 +84,17 @@ export class IdentityWorkspace {
       if (!ref || this.key(ref) !== this.key(this.mounted)) throw new Error('Select the property or building again before applying.');
       const input = this.fields();
       if (input.useChoice === 'other' && !input.customUse.trim()) throw new Error('Enter a descriptive use for Other, or choose no override.');
-      const next = this.editor.apply(this.getCity(), ref, input);
+      const city = this.getCity();
+      const record = identityRecord(city, ref);
+      const typeChanged = Boolean(input.buildingType && input.buildingType !== record?.type);
+      if (typeChanged && !this.canChangeBuildingUse())
+        throw new Error('Finish or cancel the active map edit before applying building use.');
+      const next = this.editor.apply(city, ref, input);
       this.drafts.delete(this.key(ref));
       this.mounted = null;
       this.commit(next);
       this.render({ reload: true });
-      this.showMessage('Identity applied. Generated data and geometry are unchanged.');
+      this.showMessage(typeChanged ? 'Building use applied.' : 'Identity applied.');
       for (const id of ['identityNameInput', 'identityOtherUseInput']) this.$(id).setAttribute('aria-invalid', 'false');
       this.changed();
       return true;
@@ -88,7 +108,10 @@ export class IdentityWorkspace {
   undo() {
     try {
       this.stash();
-      const target = this.editor.history.at(-1)?.ref;
+      const entry = this.editor.history.at(-1);
+      if (entry?.fields.includes('type') && !this.canChangeBuildingUse())
+        throw new Error('Finish or cancel the active map edit before undoing building use.');
+      const target = entry?.ref;
       const next = this.editor.undo(this.getCity());
       // Undo affects accepted identity only; preserve independently pending fields.
       this.mounted = null;
@@ -126,7 +149,7 @@ export class IdentityWorkspace {
     this.$('identityInspector').hidden = true;
   }
   bind() {
-    for (const id of ['identityNameInput', 'identityUseInput', 'identityOtherUseInput'])
+    for (const id of ['identityNameInput', 'identityUseInput', 'identityOtherUseInput', 'identityBuildingType'])
       for (const event of ['input', 'change']) this.$(id).addEventListener(event, () => {
         this.stash(); this.render(); this.showMessage('Unapplied identity changes. Choose Apply identity to save them.'); this.changed();
       });

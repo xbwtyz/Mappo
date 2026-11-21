@@ -77,6 +77,13 @@ Make Mappo an intentional **2D building-footprint designer**: select an existing
 - [ ] Preserve `customName`, `customUse`, original description and unknown safe fields; distinguish user-facing type, custom description and procedural shape label.
 - [ ] **Gate:** classifications on existing, generated, newly drawn, replaced and unknown legacy buildings; exact metadata save/reopen; category-only changes leave every footprint, hole, entrance, plot ID and road reference byte-equivalent.
 
+**F3 behavior:** The building identity panel exposes the current building use
+and the seven supported choices. **Apply identity** changes the existing
+`type` field, and **Undo identity** restores it during the session. The
+descriptive use and custom name remain independent fields. Existing unfamiliar
+types can be kept, including when replacing an outline. Apply or finish an
+open map edit before committing or undoing a classification change.
+
 ### F4 — Cross-editor acceptance, performance and release readiness
 
 **Goal:** close 0.2F without expanding it into 0.2H release hardening.

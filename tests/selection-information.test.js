@@ -36,7 +36,7 @@ test('property and compound-wing facts use their own area, usage, plots and fron
   assert.equal(facts(site).Buildings, 2);
   assert.equal(facts(site)['Plot IDs'], 'P1, P2, P3');
   assert.equal(facts(site)['Building IDs'], 'west, east');
-  assert.equal(facts(wing)['Generated type'], 'House', 'Parent usage never replaces a building type');
+  assert.equal(facts(wing)['Building use'], 'House', 'Parent usage never replaces a building type');
   assert.equal(facts(wing)['Footprint shape'], 'Compound wing');
   assert.equal(facts(wing)['Footprint area'], '125.5 square survey units');
   assert.equal(facts(wing)['Occupied plots'], 1, 'A wing does not inherit every parent plot');
@@ -76,7 +76,7 @@ test('missing and mismatched links keep reference IDs with explicit fallbacks in
   assert.equal(minimal.District, 'Unassigned');
   assert.equal(minimal['Occupied plots'], 'Not recorded');
   assert.equal(minimal['Plot IDs'], 'Not recorded');
-  assert.equal(minimal['Generated type'], 'Not recorded');
+  assert.equal(minimal['Building use'], 'Not recorded');
   assert.equal(propertyInformation(city, null), null);
   assert.equal(buildingInformation(city, null), null);
 });

@@ -36,10 +36,13 @@ test('3G-D1 bounded scoped history restores geometry and preserves unrelated ide
   assert.equal(history.count('undo',choice.building.id),1);
   assert.equal(history.can('undo',changed.candidate,choice.building.id),true);
   const withIdentity=copyJson(changed.candidate);
-  withIdentity.city.buildings.find(b=>b.id===choice.building.id).customName='Cedar Hall';
+  const namedBuilding = withIdentity.city.buildings.find(b=>b.id===choice.building.id);
+  namedBuilding.customName='Cedar Hall';
+  namedBuilding.type='inn';
   const undo=history.prepare(withIdentity,defaultWorkspace(withIdentity),choice.building.id,'undo');
   assert.equal(undo.ok,true,undo.reason);
   assert.equal(undo.candidate.city.buildings.find(b=>b.id===choice.building.id).customName,'Cedar Hall');
+  assert.equal(undo.candidate.city.buildings.find(b=>b.id===choice.building.id).type,'inn');
   assert.deepEqual(undo.candidate.city.buildings.find(b=>b.id===choice.building.id).footprint,
     original.city.buildings.find(b=>b.id===choice.building.id).footprint);
   history.accept(undo.entry,'undo');
@@ -50,6 +53,7 @@ test('3G-D1 bounded scoped history restores geometry and preserves unrelated ide
   assert.deepEqual(redo.candidate.city.buildings.find(b=>b.id===choice.building.id).footprint,
     changed.candidate.city.buildings.find(b=>b.id===choice.building.id).footprint);
   assert.equal(redo.candidate.city.buildings.find(b=>b.id===choice.building.id).customName,'Cedar Hall');
+  assert.equal(redo.candidate.city.buildings.find(b=>b.id===choice.building.id).type,'inn');
   assert.equal(history.count('redo',choice.building.id),0);
   history.clear(); assert.equal(history.count('undo',choice.building.id),0);
 });
