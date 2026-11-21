@@ -703,7 +703,7 @@ export class RoadInspectionWorkspace {
     const issue = s.reconciliation?.unresolved?.find(hasRoadBuildingChoice) ?? s.reconciliation?.unresolved?.[0];
     const actionable = !s.checking && !s.drag && hasRoadBuildingChoice(issue);
     const building = actionable && s.city.buildings.find(record => record.id === issue.id);
-    this.$('roadResolveConflictC6').hidden = !actionable;
+    this.$('roadResolveConflictC6').hidden = !actionable || this.desktopReview;
     this.$('roadMenuReviewCount').hidden = !actionable;
     if (actionable) {
       const count = new Set(s.reconciliation.unresolved.filter(hasRoadBuildingChoice).map(row => row.id)).size;
@@ -727,7 +727,9 @@ export class RoadInspectionWorkspace {
     const message = applying ? 'Validating the road and neighborhood before Apply…' :
       problem || (s.drag ? 'Release the handle to check this edit.' :
         s.checking || ready ? '' :
-        actionable ? (building?.customName || 'A building') + '. ' + issue.message :
+        actionable ? this.usesDesktopPanel
+          ? (building?.customName || 'A building') + ' needs a placement choice.'
+          : (building?.customName || 'A building') + '. ' + issue.message :
         status==='Preview out of date' ? 'Reset the preview and try the edit again.' :
         issue?.message || s.proposal?.issues?.[0]?.message ||
         (s.pending ? 'The neighborhood change could not be verified.' : 'Drag a road or junction to preview an edit.'));
@@ -740,7 +742,8 @@ export class RoadInspectionWorkspace {
       summary = this.outcomeSummary;
     } else if (actionable) {
       const count = new Set(s.reconciliation.unresolved.filter(hasRoadBuildingChoice).map(row => row.id)).size;
-      summary = count === 1 ? '1 building needs a choice' : count + ' buildings need choices';
+      summary = this.usesDesktopPanel && count === 1 ? ''
+        : count === 1 ? '1 building needs a choice' : count + ' buildings need choices';
     } else if (topologyOnly && !problem && !s.checking && !s.drag) {
       summary = 'Property and building changes are unresolved.';
     }
@@ -879,6 +882,7 @@ export class RoadInspectionWorkspace {
     toggle.disabled = !open && Boolean(reason);
     toggle.textContent = !open ? 'Compare before / after' : 'Back to impact list';
     toggle.setAttribute('aria-expanded', String(open));
+    toggle.title = open ? '' : reason;
     const availability = this.$('roadComparisonAvailability');
     availability.hidden = !this.desktopReview || !reason || open;
     availability.textContent = reason;

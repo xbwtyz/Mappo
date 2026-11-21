@@ -770,3 +770,14 @@
   .road-menu-review .road-impact-list tr:has(button[aria-pressed=true]){background:#e1ebe1}
   .road-menu-record{color:#425b5a}
 }
+.desktop-impact-layout .road-menu-review .road-preview-header{
+  display:grid;grid-template-columns:minmax(190px,1fr) auto auto;grid-template-rows:auto auto;
+  align-items:center;column-gap:14px;border-bottom:1px solid #4b6052;
+}
+.desktop-impact-layout .road-menu-review .road-menu-record{grid-area:1/1;margin:0}
+.desktop-impact-layout .road-menu-review .road-preview-heading{grid-area:2/1;border:0;padding:0 0 6px}
+.desktop-impact-layout .road-menu-review .road-menu-views{grid-area:1/2/3/3;padding:0}
+.desktop-impact-layout .road-menu-review .road-menu-review-actions{grid-area:1/3/3/4;padding:0}
+.desktop-impact-layout .road-menu-review .road-comparison-availability{
+  position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);
+}
