@@ -4,9 +4,9 @@
 
 Mappo opens directly from its HTML file with no server. Portable project downloads are the recommended backup.
 
-## 0.2 development desktop workspace (G4 candidate)
+## 0.2.0 desktop workspace (H5 release candidate)
 
-The detailed sections below retain **stable 0.1.0** control names in places. In the newer, **unreleased 0.2 development candidate** on `main`, desktop and laptop browsers use the three-tab **Generation / Add / Roads** workspace at widths of 1000 CSS pixels and above.
+The detailed sections below retain **stable 0.1.0** control names in places. In the newer **0.2.0 release candidate** on its H5 review branch, desktop and laptop browsers use the three-tab **Generation / Add / Roads** workspace at widths of 1000 CSS pixels and above.
 
 - **Generation:** City outline, main square, street pattern, districts and defenses. Preview a changed city and review the proposal before Apply. Preview alone does not change accepted geometry.
 - **Add:** Create a property, place a building after selecting its property, or work with rivers, coastline, lakes and mountain ranges. Landscape changes use their own draft/Undo and a separate city rebuild.
@@ -14,7 +14,7 @@ The detailed sections below retain **stable 0.1.0** control names in places. In 
 - **Inspector:** Select an existing property to adjust its footprint, split or merge it, modify plots or access buildings. Building edits cover transforms, vertices, edges, wings, courtyard holes and identity/use changes. Undo/Redo remains specific to the active editor.
 - **Project / Layers:** Download/open portable `.mappo.json`, recover local snapshots, export visible-map PNG, change layers and navigate by keyboard.
 
-The separate `?workspace=legacy` desktop entrypoint is retired. Narrow-window compact controls are retained for compatibility but phone/touch acceptance is **not** a 0.2G release target. Drafts never silently replace the accepted city; supported historical project files migrate without regenerating roads or building geometry. The [G4 acceptance report](plans/0.2/G4_ACCEPTANCE_REPORT.md) records the browser and offline acceptance evidence.
+The separate `?workspace=legacy` desktop entrypoint is retired. Narrow-window compact controls are retained for compatibility but phone/touch acceptance is **not** a 0.2G release target. Drafts never silently replace the accepted city; supported historical project files migrate without regenerating roads or building geometry. The [G4 acceptance report](plans/0.2/G4_ACCEPTANCE_REPORT.md), [H4 release QA](plans/0.2/H4_RELEASE_QA_REPORT.md) and [0.2.0 release notes](releases/v0.2.0.md) record the browser, backup and offline release evidence.
 
 **Note:** The historical reference instructions below may describe 0.1 behavior or limitations superseded by the 0.2 development candidate. The public Pages site is published manually and might not be the latest `main` build.
 

@@ -1,6 +1,6 @@
 # Mappo 0.2H H4 — Final integrated desktop release QA
 
-**Status:** H4 implementation and first complete CI acceptance passed on [PR #90](https://github.com/xbwtyz/Mappo/pull/90); final documentation-only PR-head CI and owner merge approval remain pending. Current application baseline: `0.2-dev.g3g`, project schema **9**, portable file format **1**. H4 is *not* a stable 0.2.0 release, version bump, migration, runtime feature, or public-site publication.
+**Status:** H4 final QA completed and [PR #90](https://github.com/xbwtyz/Mappo/pull/90) merged into `main` after [final CI #44958430396](https://github.com/xbwtyz/Mappo/actions/runs/44958430396) (459 Node tests, all six suites, required aggregate gate, 2m 56s), with separate owner approval. Current application baseline: `0.2-dev.g3g`, project schema **9**, portable file format **1**. H4 is *not* a stable 0.2.0 release, version bump, migration, runtime feature, or public-site publication.
 
 ## Release-support scope
 
@@ -43,7 +43,7 @@
 - [x] Known #44/#46 closures reflected accurately without claiming zero remaining frame hitches.
 - [x] #79 clearly listed as a 0.2.0 known limitation; no unsupported features implied.
 - [x] Exact CI run and final release-readiness assessment added here.
-- [ ] Separate owner review and approval required to merge H4; H5 still needs separate explicit authorization.
+- [x] H4 PR #90 received separate owner merge approval; H5 merge and actual release publication each require their own explicit authorization.
 
 ## User experience since H3
 

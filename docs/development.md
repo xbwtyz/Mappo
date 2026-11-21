@@ -1,6 +1,6 @@
 # Mappo Developer Guide
 
-**Stable release:** `0.1.0` · **0.2H acceptance candidate:** `0.2-dev.g3g` (no version bump in H1/H2) · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
+**Currently published GitHub Release:** `0.1.0` · **H5 unmerged release candidate:** `0.2.0` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
 
 ## Source organization
 
@@ -49,11 +49,11 @@ npm test
 npm run check
 ```
 
-The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Current G4-reviewed development output: `dist/mappo-0.2-dev.g3g.html`; stable `dist/mappo-0.1.0.html` remains archived. External runtime imports are rejected. No production version bump is required for acceptance-only test/doc changes.
+The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. H5 reviewed output: `dist/mappo-0.2.0.html` (candidate), with `dist/mappo-0.2-dev.g3g.html` and `dist/mappo-0.1.0.html` archived. External runtime imports are rejected. H5 is a version freeze; there is no schema change.
 
 ```bash
-cmp index.html dist/mappo-0.2-dev.g3g.html
-git diff --exit-code -- index.html dist/mappo-0.2-dev.g3g.html
+cmp index.html dist/mappo-0.2.0.html
+git diff --exit-code -- index.html dist/mappo-0.2.0.html
 ```
 
 Use a Windows binary comparison tool if `cmp` is unavailable. Update paths when the release version changes.

@@ -4,6 +4,8 @@
 
 | Destination | What you'll find |
 | --- | --- |
+| [0.2.0 Release Candidate Notes](releases/v0.2.0.md) | Changes since 0.1, upgrade instructions, known limitations and manual publication policy |
+| [H5 Release Candidate Acceptance](plans/0.2/H5_RELEASE_CANDIDATE_REPORT.md) | Version freeze, deterministic standalone, CI and owner approval gates |
 | [0.1.0 Release Notes](releases/v0.1.0.md) | Stable launch, distribution, shipped features, compatibility and limitations |
 | [User Guide](user-guide.md) | City generation, tools, Inspector, navigation and saved projects |
 | [Developer Guide](development.md) | Modules, testing, build pipeline and release process |
