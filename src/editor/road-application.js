@@ -1,3 +1,4 @@
+import { reconcileRoadWorkspace } from './road-workspace.js';
 import { prepareRoadTopologyReflowC3 } from '../core/road-topology-reflow.js';
 import { prepareJunctionReflowC7, prepareNeighborhoodReflowC3 } from '../core/neighborhood-reflow.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
@@ -155,10 +156,11 @@ export function validateRoadApplyC2(project, workspace, draft, inspected) {
     const inspectedJson = inspected.candidateJson ?? JSON.stringify(inspected.candidateProject);
     if (JSON.stringify(fresh.candidateProject) !== inspectedJson || !b4Same(fresh.ledger, inspected.ledger))
       return reject('candidate-changed', 'The reconstruction differs from the inspected proposal.');
-    const roundtrip = decodeProjectDocument(encodeProjectDocument(createProjectDocument(fresh.candidateProject, workspace)));
-    if (!b4Same(roundtrip.project, fresh.candidateProject) || !b4Same(roundtrip.workspace, workspace))
+    const nextWorkspace = reconcileRoadWorkspace(workspace, project.city, fresh.candidateProject.city);
+    const roundtrip = decodeProjectDocument(encodeProjectDocument(createProjectDocument(fresh.candidateProject, nextWorkspace)));
+    if (!b4Same(roundtrip.project, fresh.candidateProject) || !b4Same(roundtrip.workspace, nextWorkspace))
       throw new Error('Portable save/load changed the candidate or workspace.');
-    return { ok: true, candidate: fresh.candidateProject, changed: fresh.changed, ledger: fresh.ledger };
+    return { ok: true, candidate: fresh.candidateProject, workspace: nextWorkspace, changed: fresh.changed, ledger: fresh.ledger };
   } catch (error) {
     return reject('apply-validation', 'Road Apply blocked: ' + error.message);
   }

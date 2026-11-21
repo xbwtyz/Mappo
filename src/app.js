@@ -1778,7 +1778,7 @@ function applyRoadEditB4(session,baselineRevision){
     if (project !== previous || revision !== (files?.revision ?? 0) || !session.current() ||
         session.revision !== draftRevision || session.settledRevision !== draftRevision)
       return {ok:false,message:'Accepted project or preview changed during Apply.'};
-    return commitRoadEditB4(previous, revision, receipt.candidate, junctionId);
+    return commitRoadEditB4(previous, revision, receipt, junctionId);
   };
   if (session.selection?.kind !== 'junction' || !session.computeJunctionAsync)
     return commit(prepareRoadApplyC2(previous, workspace, session, baselineRevision, revision));
@@ -1798,7 +1798,12 @@ function applyRoadEditB4(session,baselineRevision){
   }, error => ({ok:false,message:'Road Apply failed: ' + error.message}));
 }
 
-function commitRoadEditB4(previous, revision, candidate, junctionId) {
+function refreshRoadDistrictWorkspace(workspace) {
+  if (workspace.districtEditor) districtPanel.editor.load(workspace.districtEditor);
+  districtPanel.refresh();
+}
+
+function commitRoadEditB4(previous, revision, { candidate, workspace }, junctionId) {
   // Exit only transient UI state before accepted data is replaced. No file or
   // history writes occur until the candidate passes the entire B4 gate.
   roadWorkspace.exit({restore:true,focus:roadWorkspace.usesDesktopPanel});
@@ -1807,6 +1812,7 @@ function commitRoadEditB4(previous, revision, candidate, junctionId) {
   if(!roadHistory.record(previous,candidate,junctionId))
     return {ok:false,message:'Nothing was changed.'};
   project=candidate; // one atomic accepted-state replacement
+  refreshRoadDistrictWorkspace(workspace);
   buildingHistory.clear();
   buildingStructureHistory.clear();
   propertyHistory.clear();
@@ -1833,6 +1839,7 @@ function moveRoadHistoryB4(direction){
   }
   project=receipt.candidate;
   roadHistory.accept(receipt.entry,direction);
+  refreshRoadDistrictWorkspace(receipt.workspace);
   buildingHistory.clear();
   buildingStructureHistory.clear();
   propertyHistory.clear();
