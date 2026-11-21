@@ -5,24 +5,37 @@
 
 ## The workspace we are building
 
-**A, Map + edit panel**, is the default workspace. It keeps the selected
-feature, active tool, validation, and Apply in one place. The right panel can
-be resized within limits that preserve usable map space. The Inspector
-presents selection facts and actions when idle and the active edit when a
-tool owns a draft.
+### A · Map + edit panel · mockup page 1
 
-**B, Map + impact dock**, is an optional view for edits with a list of
-affected records. Start with the road impact list. Open or collapse the dock
-without leaving the edit. Selecting a row highlights the feature and brings
-its decision into the edit panel. Reuse the dock for a property workflow
-when it has a comparable review list.
+This is the default desktop layout. A single large map sits to the left of a
+resizable **right-side Inspector and edit panel**. The Inspector shows facts
+and actions for the selected item while idle. During the Market Hall road
+edit, the right panel shows the road offset, affected property count, Market
+Hall's placement decision, and Reset, Cancel, and Apply. The map keeps the
+road preview and affected building visible while you decide.
 
-**C, Before + proposed**, is an optional comparison view for wide screens.
-Open it from a road draft with a usable proposed preview. Show the accepted
-city and the current candidate at the same world position and zoom. Review
-the two maps with linked pan and zoom, then return to the same draft. The
-comparison is read-only. The edit panel owns decisions and Apply, and the
-workspace explains when a proposed preview or sufficient room is unavailable.
+### B · Map + impact dock · mockup page 2
+
+Open a collapsible **bottom dock** below a single full-width map. The dock
+contains the impact table on the **left** and the selected item's details,
+placement decisions, and Reset, Cancel, and Apply on the **right**. Both
+columns sit inside the dock. Opening it moves the active edit controls from
+the right sidebar into the dock. Selecting a row highlights the item on the
+map. Collapsing the dock returns the controls to the right-side panel with
+the draft and selected impact intact. Start with road impacts. Reuse the
+dock for property workflows with a comparable review list.
+
+### C · Before + proposed · mockup page 3
+
+Open an optional wide-screen comparison from a road draft with a usable
+preview. Place **two maps side by side**, with the accepted city on the
+left and the proposed option on the right. Both maps use the same world
+position and zoom, with linked pan and zoom. A **right-side review panel**
+shows the proposed placement for Market Hall, **Use this placement**,
+and the route back to the impact list. Decision and Apply controls live
+in that panel. Closing comparison returns to the previous view with
+the same draft and decisions. Explain when the current window or draft
+cannot show a comparison.
 
 A, B, and C share the same draft, current tool, edit history, and camera
 state. A road remains the primary edit target while a building is inspected
@@ -33,11 +46,11 @@ session, whichever view is open. Project commands have a stable location.
 
 | Pass | What to implement | What must be demonstrated before acceptance |
 | --- | --- | --- |
-| **G1 — Workflow prototype** | Build a lightweight desktop prototype of A. Prototype the dock and comparison as views opened from A. Use the Market Hall road conflict, a parcel split, and adding a courtyard to settle the interaction model. | Walk through select → preview → blocker → decision → Apply or Cancel. Open B and C on the road draft and return to A with the draft and affected item still selected. Check layout at 1366×768, 1440×900, and 5120×1440. Review the prototype and record the agreed panel behavior before building the production shell. |
-| **G2 — Workspace foundation** | Build A in the app. Wire a single end-to-end road workflow to the existing map, road session, and project commands. Add panel sizing, focus, and shortcut scopes. Define the small interface used by domain tools. Keep the current default while the new workspace is available for development and review. | Move a road, select its affected building, resolve or cancel the decision, apply once, and undo through road history. Verify stale validation cannot enable Apply, Escape restores useful focus, and switching between inspection and editing preserves the intended context. |
-| **G3A — Road impact dock** | Move the remaining road controls into the new shell. Add B using the existing road impact results and decisions. Keep the same impact selection in the map, dock, and edit panel. | Review several affected records, act on a blocker, collapse the dock, and return to the map with the same draft. Confirm the dock respects available map height and keyboard focus. |
-| **G3B — Before/proposed comparison** | Add C using the accepted city and the active road preview. Link the cameras and keep the shared Inspector and actions. Render the second map only while comparison is open. | Compare the road move and Market Hall placement on an ultrawide viewport. Change the decision, see it reflected in the proposal, and close C without resetting the draft. Verify stale or missing proposals have a clear state and resizing to a compact layout returns the user to a usable single map. |
-| **G3C — Property, plot, and building tools** | Move E1–E4 and F1–F4 workflows into A. Bring over property-first building selection, identity, numeric geometry controls, replacement confirmation, and scoped history. | Complete a parcel split and a courtyard edit from the same workspace. Check applied edits and blockers, Cancel and Reset, metadata preservation, and geometry Undo/Redo. Use the shared edit panel and keep domain-specific controls in their tool modules. |
+| **G1 — Workflow prototype** | Build a clickable desktop prototype based on page 1. Use the Market Hall road conflict to open the page 2 bottom dock, where the decision controls move into the dock, and the page 3 comparison, where decisions live in its right-side review panel. Sketch parcel split and courtyard editing in the page 1 layout. Production engine integration starts in G2. | Walk through select → preview → blocker → decision → Apply or Cancel. Open the dock and comparison on the same road draft. Return to the default layout with the draft, selected impact, and placement decision intact. Check layout at 1366×768, 1440×900, and 5120×1440. Review the prototype and record the agreed panel behavior before building the production shell. |
+| **G2 — Workspace foundation** | Build the page 1 single-map layout and right-side edit panel in the app. Wire a single end-to-end road workflow to the existing map, road session, and project commands. Add panel sizing, focus, and shortcut scopes. Define the small interface used by domain tools. Keep the current default while the new workspace is available for development and review. | Move a road, select its affected building, resolve or cancel the decision, apply once, and undo through road history. Verify stale validation cannot enable Apply, Escape restores useful focus, and switching between inspection and editing preserves the intended context. |
+| **G3A — Road impact dock** | Move the remaining road controls into the new shell. Implement the page 2 bottom dock using the existing road impact results and decisions. Put the impact table and selected item’s decision controls side by side inside the dock. Keep the map highlight in sync with the selected row. | Review several affected records, act on a blocker, collapse the dock, and return to the map with the same draft. Confirm the dock respects available map height and keyboard focus. |
+| **G3B — Before/proposed comparison** | Implement the page 3 comparison using the accepted city on the left, the active road preview on the right, and the right-side review panel. Link the cameras and reuse the active edit actions. Render the second map only while comparison is open. | Compare the road move and Market Hall placement on an ultrawide viewport. Change the decision, see it reflected in the proposal, and close the comparison without resetting the draft. Verify stale or missing proposals have a clear state and resizing to a compact layout returns the user to a usable single map. |
+| **G3C — Property, plot, and building tools** | Move E1–E4 and F1–F4 workflows into the default single-map workspace. Bring over property-first building selection, identity, numeric geometry controls, replacement confirmation, and scoped history. | Complete a parcel split and a courtyard edit from the same workspace. Check applied edits and blockers, Cancel and Reset, metadata preservation, and geometry Undo/Redo. Use the shared edit panel and keep domain-specific controls in their tool modules. |
 | **G3D — Remaining tools and project workflows** | Migrate generation settings, districts, water and terrain, fortifications, layers, and project files. Build a parity checklist from the current UI and track each workflow as it moves. | Verify generation, visibility controls, save/open, recovery, exports, and shortcuts. Close any parity gaps while the old workspace is still available for review. |
 | **G4 — Desktop acceptance and switch** | Make the new workspace the default after parity. Retire superseded UI entry points and document the new workflows. Produce byte-identical root and versioned standalone HTML. | Pass GitHub CI on the review commit. Exercise the end-to-end desktop matrix, old saves, offline use, and representative Small and Large cities. Record remaining limitations, the user-experience changes, and the evidence for the switch. |
 
