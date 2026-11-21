@@ -66,7 +66,7 @@ npm run test:browser:desktop       # modern three-tab + G4 acceptance
 npm run test:browser:g4            # focused G4 browser matrix
 ```
 
-G4 writes `artifacts/g4/desktop-acceptance.json` and `.md` with browser/viewport, historical-save and offline status, Small/Large draw measurements, and road preview timing. These are diagnostics, not guaranteed user-device timings.
+G4's desktop suite records `artifacts/g4/desktop-acceptance.json` and `.md` with browser/viewport, historical-save and offline status, Small/Large draw measurements, and road preview timing. Its separate cross-editor test verifies a real canonical desktop split/merge, wing and courtyard changes, accepted history and portable reopen. These are diagnostics, not guaranteed user-device timings.
 
 Dev 4f passed the complete Node, compilation and Chromium/Firefox browser matrices: [CI run #341](https://github.com/xbwtyz/Mappo/actions/runs/44428124074). The 0.1.0 release candidate must pass equivalent CI on its own commit; this does not replace hands-on testing.
 

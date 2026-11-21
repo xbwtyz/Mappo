@@ -13,7 +13,7 @@ The required `Mappo CI` runs full validation on review-ready PRs, main pushes, m
 | Browser property | Building/plot/property transformation, creation, merge and split checks |
 | Browser integration | General browser QA, D4 acceptance and F4 performance |
 
-All six jobs must pass for the unchanged required `Build, Node tests and browser QA` check to succeed. Browser runners install test-only Playwright 1.56.1 with Chromium and Firefox. Existing 16 scripts remain; G4 adds a modern-desktop acceptance script, including 1366×768, 1440×900 and 5120×1440, old-save migration and actual `file://` startup.
+All six jobs must pass for the unchanged required `Build, Node tests and browser QA` check to succeed. Browser runners install test-only Playwright 1.56.1 with Chromium and Firefox. Existing 16 scripts remain; G4 adds two modern-desktop scripts: viewport, road-dock/comparison, old-save migration and `file://` startup across 1366×768, 1440×900 and 5120×1440; plus a 1440×900 cross-editor split/merge/wing/courtyard/Undo/Redo and portable reopen acceptance check.
 
 Node and build do not need npm installation. For local testing:
 
