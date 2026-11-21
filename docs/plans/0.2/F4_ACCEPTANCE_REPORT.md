@@ -13,7 +13,7 @@ through PRs [#68](https://github.com/xbwtyz/Mappo/pull/68),
 | E1 creation, E2 split, and E3 merge followed by a building edit | `tests/building-integration-f4.test.js` places a building and inserts a vertex on each processed property. It checks access and plot links and compares unrelated city records. |
 | Building spanning an E4 plot divider | The same suite validates a placement and replacement, adds a wing and courtyard, changes the use, and restores geometry through scoped Undo and Redo. It checks the authored fields and recomputed plot occupancy. |
 | Older history entries after later edits | The structural and plot history reject stale snapshots. The building geometry history restores its own fields and retains the later classification. The Inspector explains when structural Undo or Redo is blocked. |
-| Road conflict on an edited outline | The established C5 road fixture rejects an unresolved or impossible choice. An authorized relocation preserves classification, authored text, unknown fields, and the edited outline. |
+| Road conflict on an edited outline | The established C5 road fixture rejects an unresolved or impossible choice. An authorized relocation preserves classification, authored text, and the edited outline. An unrecognized building field blocks reflow and remains intact. |
 | Continuous browser workflow | `scripts/building-footprint-f2-browser-qa.mjs` combines a wing, courtyard, classification, geometry Undo and Redo, and a portable reopen in Chromium and Firefox at 1440×900 desktop and 390×844 touch. |
 | Offline compatibility | The permanent CI rebuild checks byte parity between `index.html` and `dist/mappo-0.2-dev.f4.html`. Save tests check project schema 9 and portable format 1. |
 

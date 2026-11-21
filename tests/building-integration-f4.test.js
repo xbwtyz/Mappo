@@ -156,7 +156,7 @@ test('F4 on E4 land composes replacement, wing, courtyard, use, exact scoped his
   assert.equal(JSON.stringify(reopened.project), JSON.stringify(classified));
 });
 
-test('F4 road reflow requires a decision for a directly edited outline and keeps legacy metadata through relocation', () => {
+test('F4 road reflow preserves authored fields and blocks unknown dependencies on directly edited outlines', () => {
   const base = createProject({ seed: 'c2-planned', size: 'small', morphology: 'planned' });
   const buildingId = 'BLD-00061';
   const building = buildingIn(base, buildingId);
@@ -164,12 +164,12 @@ test('F4 road reflow requires a decision for a directly edited outline and keeps
   const edited = applyGeometry(base, buildingId, 'edges', 'insert', undefined, 1);
   assert.equal(classifyRoadProvenance(buildingIn(edited, buildingId)), 'custom');
   const custom = buildingIn(edited, buildingId);
+  custom.customName = 'Copper Market';
   custom.customUse = 'Covered market';
-  custom.futureDetail = { attribution: 'survey record' };
   const ref = { kind: 'building', id: buildingId };
   const project = { ...edited, city: new IdentityEditor().apply(edited.city, ref, { buildingType: 'inn' }) };
   const before = JSON.stringify(project);
-  const move = decision => prepareNeighborhoodReflowC3(project, 'RD-0113', { x: 0, y: 18 }, undefined,
+  const move = (decision, source = project) => prepareNeighborhoodReflowC3(source, 'RD-0113', { x: 0, y: 18 }, undefined,
     decision ? new Map([[buildingId, { kind: decision }]]) : undefined);
   for (const [choice, code] of [[undefined, 'building-decision-required'], ['fixed', 'building-placement-blocked']]) {
     const result = move(choice);
@@ -182,11 +182,19 @@ test('F4 road reflow requires a decision for a directly edited outline and keeps
   const next = buildingIn(relocated.candidateProject, buildingId);
   assert.equal(next.type, 'inn');
   assert.equal(next.customUse, 'Covered market');
-  assert.deepEqual(next.futureDetail, custom.futureDetail);
+  assert.equal(next.customName, 'Copper Market');
   assert.equal(next.footprint.length, custom.footprint.length);
   assert.equal(next.holes.length, custom.holes.length);
   assert.ok(Math.abs(next.area - custom.area) < 1e-6);
   assert.deepEqual(next.plotIds, deriveOccupiedPlots(relocated.candidateProject.city,
     propertyIn(relocated.candidateProject, next.propertyId), next));
   assert.equal(JSON.stringify(project), before);
+  const unknown = structuredClone(project);
+  buildingIn(unknown, buildingId).futureDetail = { attribution: 'survey record' };
+  const beforeUnknown = JSON.stringify(unknown);
+  const blocked = move('auto', unknown);
+  assert.ok(blocked.unresolved.some(issue => issue.code === 'unrecognized-dependency'
+    && issue.id === buildingId && issue.metrics?.field === 'buildings.futureDetail'));
+  assert.ok(!blocked.candidateProject);
+  assert.equal(JSON.stringify(unknown), beforeUnknown);
 });
