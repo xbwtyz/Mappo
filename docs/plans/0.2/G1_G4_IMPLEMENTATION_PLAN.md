@@ -204,6 +204,10 @@ history follows the Inspector. Road history feedback stays with its controls,
 and City report and shortcuts sit under City layout. Project and Layers
 retain their header entry points and share the dock styling.
 
+## G3G — Desktop parity and legacy retirement
+
+Use one feature branch/PR and four gates: audit, redundant desktop retirement, regression coverage, full standalone/CI validation. At >=1000 CSS pixels Generation/Add/Roads is canonical; remove the production `?workspace=legacy` override. Retain compact controls and existing domain DOM roots that the desktop dock still reuses. Re-selecting an active tab must not reset its draft. Tests cover the real desktop and keep specialized historical compact regression coverage without a public legacy route. Preserve schema 9, portable format 1, existing histories and independent Apply. G4 still owns release acceptance.
+
 ## Integration rules
 
 - **Workspace responsibilities.** Own panel layout, focus, selection

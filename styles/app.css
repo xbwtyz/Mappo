@@ -926,7 +926,8 @@
 .workspace-shell .landscape-inspector-controls .file-status:empty,
 .workspace-shell .defense-workflow>.file-status:empty{display:none}
 
-/* Desktop Generation, Add and Roads share the map and resizable edit track. */
+/* G3G: Generation/Add/Roads are canonical on desktop. The old DOM controls
+   remain shared by domain editors and the narrow-browser compact fallback. */
 .desktop-workspace-tabs{display:none}
 @media(min-width:1000px){
   .workspace-shell.three-tab-workspace .legacy-workspace-tabs,
