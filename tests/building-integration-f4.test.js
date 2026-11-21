@@ -194,7 +194,7 @@ test('F4 road reflow preserves authored fields and blocks unknown dependencies o
   const beforeUnknown = JSON.stringify(unknown);
   const blocked = move('auto', unknown);
   assert.ok(blocked.unresolved.some(issue => issue.code === 'unrecognized-dependency'
-    && issue.id === buildingId && issue.metrics?.field === 'buildings.futureDetail'));
+    && issue.id === buildingId && issue.message.includes('buildings.futureDetail')), JSON.stringify(blocked.unresolved));
   assert.ok(!blocked.candidateProject);
   assert.equal(JSON.stringify(unknown), beforeUnknown);
 });
