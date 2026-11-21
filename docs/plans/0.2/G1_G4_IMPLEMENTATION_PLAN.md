@@ -104,6 +104,22 @@ Comparison needs at least 1500 × 650 CSS pixels. **Back to impact list** or
 window restores that view if it still fits, or the side panel if necessary.
 The draft and its decisions travel with the edit.
 
+## G3B2 road menu cleanup
+
+**Edit** keeps the selected road or junction, Locate on map, and movement
+controls in view. Select a record on the map or open **Road and junction
+details** to select by ID. **Preview deletion** opens the existing removal
+preview directly. Bends, connections, and precision controls expand within
+Edit.
+
+**Review impacts** shows the affected records and the selected item's
+placement choices or details. Open the wide review or comparison from here.
+Validation details retain technical reports and overlay controls. The footer
+shows the current blocker and the existing Reset, Cancel, and Apply actions
+in either view. Switching views preserves the draft and decisions. This
+pass uses the existing road removal rules, including the limitation tracked
+in [issue #79](https://github.com/xbwtyz/Mappo/issues/79).
+
 ## Integration rules
 
 - **Workspace responsibilities.** Own panel layout, focus, selection

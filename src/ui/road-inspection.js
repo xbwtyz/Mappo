@@ -272,7 +272,7 @@ export class RoadInspectionWorkspace {
       if (!this.active || !this.usesDesktopPanel) return;
       if (this.dockOpen && !this.comparisonOpen && !this.dockMedia.matches) {
         this.setImpactDock(false);
-        this.$('roadPreviewHeading').focus();
+        this.$('roadMenuReview').focus();
       } else this.render();
     });
     this.comparisonMedia = window.matchMedia?.('(min-width: 1500px) and (min-height: 650px)');
@@ -301,7 +301,11 @@ export class RoadInspectionWorkspace {
       return;
     }
     this.usesDesktopPanel = Boolean(desktop && this.desktopLayout);
-    this.$('roadPreviewHeading').textContent = this.usesDesktopPanel ? 'Road workspace' : 'ROAD EDIT';
+    this.desktopReview = false;
+    for (const id of ['roadMenuRecordDetails', 'roadMenuBends', 'roadMenuPrecision'])
+      this.$(id).open = !this.usesDesktopPanel;
+    this.$('roadMenuConnections').open = false;
+    this.$('roadPreviewHeading').textContent = this.usesDesktopPanel ? 'Edit junction' : 'ROAD EDIT';
     this.$('roadPreviewBody').hidden = false;
     this.$('roadEditControlsD1').open = this.usesDesktopPanel;
     this.$('roadDetailsD1').open = false;
@@ -342,6 +346,7 @@ export class RoadInspectionWorkspace {
     const desktop = this.usesDesktopPanel;
     if (this.comparisonOpen) this.clearComparison();
     this.dockOpen = false;
+    this.desktopReview = false;
     this.impactKey = null;
     this.impactRows = [];
     this.session.stop();
@@ -392,6 +397,13 @@ export class RoadInspectionWorkspace {
         (this.camera.width < 900 ? (this.camera.height * 0.22) / this.camera.zoom : 0);
       this.draw();
     });
+    this.$('roadMenuEdit').addEventListener('click', () => this.setDesktopReview(false));
+    this.$('roadMenuReview').addEventListener('click', () => this.setDesktopReview(true));
+    this.$('roadMenuReviewBlocker').addEventListener('click', () => this.setDesktopReview(true));
+    this.$('roadMenuLocate').addEventListener('click', () => this.$('roadLocate').click());
+    this.$('roadMenuDeletePreview').addEventListener('click', () => {
+      if (this.session.previewRoadConnection({kind:'remove'})) this.setDesktopReview(true);
+    });
     this.$('roadComparisonToggle').addEventListener('click', () => this.setComparison(!this.comparisonOpen));
     this.$('roadImpactToggle').addEventListener('click', () => this.setImpactDock(!this.dockOpen));
     this.$('roadImpactRows').addEventListener('click', event => {
@@ -407,6 +419,7 @@ export class RoadInspectionWorkspace {
       this.locateImpact(target);
     });
     this.$('roadRecoveryDetailsD3').addEventListener('click', () => {
+      if (this.usesDesktopPanel && !this.desktopReview) this.setDesktopReview(true);
       if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
       this.$('roadDetailsD1').open = true;
       this.$('roadDetailsD1').querySelector('summary')?.focus();
@@ -415,7 +428,10 @@ export class RoadInspectionWorkspace {
       const issue = this.session.reconciliation?.unresolved.find(hasRoadBuildingChoice);
       if (!issue) return;
       if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
-      if (this.dockOpen && !this.comparisonOpen) this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
+      if (this.usesDesktopPanel && !this.comparisonOpen) {
+        this.setDesktopReview(true);
+        this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
+      }
       const target = document.getElementById('roadConflictC6-' + issue.id);
       if (!target) return;
       this.locateReconciliationB3(issue);
@@ -553,6 +569,7 @@ export class RoadInspectionWorkspace {
     this.$('roadRecordDetails').textContent = d
       ? `${d.id} · ${d.classes.join(', ')} · ${d.roadIds.length} road${d.roadIds.length === 1 ? '' : 's'} · ${d.protected ? 'Protected: ' + d.reasons.join(', ') : 'Ordinary / unprotected'}`
       : 'No road records available.';
+    this.renderDesktopMenu(d, kind);
     const key = JSON.stringify(s.selection);
     if (this.selectionKey !== key) {
       this.selectionKey = key;
@@ -687,6 +704,13 @@ export class RoadInspectionWorkspace {
     const actionable = !s.checking && !s.drag && hasRoadBuildingChoice(issue);
     const building = actionable && s.city.buildings.find(record => record.id === issue.id);
     this.$('roadResolveConflictC6').hidden = !actionable;
+    this.$('roadMenuReviewCount').hidden = !actionable;
+    if (actionable) {
+      const count = new Set(s.reconciliation.unresolved.filter(hasRoadBuildingChoice).map(row => row.id)).size;
+      this.$('roadMenuReviewCount').textContent = String(count);
+    }
+    this.$('roadApplyB4').textContent = this.usesDesktopPanel && s.roadConnectionEdit?.kind === 'remove'
+      ? 'Apply deletion' : 'Apply road edit';
     const problem = this.applyError || s.roadIntentInputError || s.error || s.reconciliationError;
     const topologyOnly = s.previewGeometry?.mode==='topology-only';
     // A verified geometry snapshot can still contain real unresolved blockers.
@@ -725,10 +749,12 @@ export class RoadInspectionWorkspace {
       if (element.textContent !== text) element.textContent = text;
       if (element.hidden !== !text) element.hidden = !text;
     }
-    this.renderImpactDock(stale);
+    this.renderImpacts(stale);
     this.renderComparison(stale);
     this.renderBuildingDecisionsD2();
     this.renderRoadRecoveryD3({ready, applying, status});
+    this.$('roadMenuReviewBlocker').hidden = !(this.usesDesktopPanel && !this.desktopReview &&
+      !actionable && this.recoveryIssueD3);
     panel.setAttribute('data-report-status', ready ? 'safe' : s.checking || applying ? 'checking' :
       problem || status==='Preview blocked' ? 'invalid' : s.pending ? 'needs-review' : 'idle');
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
@@ -745,6 +771,49 @@ export class RoadInspectionWorkspace {
       this.limit = 50;
       this.renderReport();
     }
+  }
+
+  renderDesktopMenu(detail, kind) {
+    const desktop = Boolean(this.usesDesktopPanel);
+    const review = desktop && this.desktopReview;
+    this.$('roadPreviewPanel').classList.toggle('road-menu-edit', desktop && !review);
+    this.$('roadPreviewPanel').classList.toggle('road-menu-review', review);
+    for (const id of ['roadMenuViews', 'roadMenuRecordSummary', 'roadMenuBendsSummary', 'roadMenuPrecisionSummary'])
+      this.$(id).hidden = !desktop;
+    this.$('roadMenuRecord').hidden = !desktop || !detail;
+    this.$('roadMenuLocate').hidden = !desktop || !detail;
+    this.$('roadMenuLegacyEditSummary').hidden = desktop;
+    this.$('roadMenuJunctionCoordinates').hidden = desktop && kind === 'road';
+    this.$('roadMenuReviewActions').hidden = !review;
+    this.$('roadMenuEdit').setAttribute('aria-pressed', String(!review));
+    this.$('roadMenuReview').setAttribute('aria-pressed', String(review));
+    this.$('roadMenuValidationSummary').textContent = desktop ? 'Validation details' : 'Details';
+    this.$('roadMenuDelete').hidden = !desktop || kind !== 'road';
+    if (!desktop) return;
+    const deleting = this.session.roadConnectionEdit?.kind === 'remove';
+    this.$('roadPreviewHeading').textContent = deleting ? 'Preview deletion'
+      : kind === 'road' ? 'Edit road' : 'Edit junction';
+    this.$('roadMenuDeletePreview').hidden = deleting;
+    this.$('roadMenuRecord').textContent = detail ? `${kind === 'road' ? 'Road segment' : 'Junction'} · ${detail.id}` : '';
+    this.$('roadMenuDeletePreview').disabled = !this.session.roadIntentEligible || Boolean(this.session.drag);
+    this.$('roadMenuDeleteHint').textContent = deleting ? 'Removal preview is active.'
+      : this.session.roadIntentEligible ? 'Review which blocks would change.'
+      : 'This road is protected or touches protected infrastructure.';
+  }
+
+  setDesktopReview(review) {
+    if (!this.active || !this.usesDesktopPanel) return;
+    if (!review) {
+      if (this.comparisonOpen) this.clearComparison();
+      this.dockOpen = false;
+      this.desktopLayout.setView('side');
+      this.$('roadEditControlsD1').open = true;
+    }
+    this.desktopReview = review;
+    this.render();
+    this.$('roadPreviewBody').scrollTop = 0;
+    this.$(review ? 'roadMenuReview' : 'roadMenuEdit').focus({ preventScroll: true });
+    this.draw();
   }
 
   comparisonUnavailable(stale = false) {
@@ -780,33 +849,25 @@ export class RoadInspectionWorkspace {
     this.$('roadComparisonMapStatus').hidden = true;
   }
   setComparison(open) {
-    if (!this.active || !this.usesDesktopPanel) return;
+    if (!this.active || !this.desktopReview) return;
     const toggle = this.$('roadComparisonToggle');
-    const edit = this.$('roadEditControlsD1');
     if (open) {
       if (this.comparisonUnavailable()) return;
       if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
       const id = this.session.buildingDecisions.keys().next().value;
-      this.comparisonRecord = (this.dockOpen && this.selectedImpact) ||
+      this.comparisonRecord = this.selectedImpact ||
         (id ? {kind:'building', id} : null);
-      this.comparisonEditWasOpen = edit.open;
-      edit.open = false;
       this.comparisonOpen = true;
       if (this.comparisonRecord) this.locateReconciliationB3(this.comparisonRecord);
     } else {
       this.clearComparison();
-      edit.open = this.comparisonEditWasOpen;
-      if (this.dockOpen && !this.dockMedia?.matches) {
-        this.dockOpen = false;
-        edit.open = this.roadEditWasOpen;
-      }
+      if (this.dockOpen && !this.dockMedia?.matches) this.dockOpen = false;
     }
     this.desktopLayout.setView(open ? 'comparison' : this.dockOpen ? 'dock' : 'side');
     this.render();
     this.$('roadPreviewBody').scrollTop = 0;
     const focus = open ? this.$('roadComparisonTitle')
-      : toggle.disabled && this.dockOpen ? this.$('roadImpactToggle')
-      : toggle.disabled ? this.$('roadPreviewHeading') : toggle;
+      : toggle.disabled ? this.$('roadMenuReview') : toggle;
     focus.focus({ preventScroll: true });
     this.draw();
   }
@@ -814,12 +875,12 @@ export class RoadInspectionWorkspace {
     const toggle = this.$('roadComparisonToggle');
     const open = Boolean(this.comparisonOpen);
     const reason = this.usesDesktopPanel ? this.comparisonUnavailable(stale) : '';
-    toggle.hidden = !this.usesDesktopPanel;
+    toggle.hidden = !this.desktopReview;
     toggle.disabled = !open && Boolean(reason);
-    toggle.textContent = !open ? 'Compare' : this.dockOpen ? 'Back to impact list' : 'Back to road edit';
+    toggle.textContent = !open ? 'Compare before / after' : 'Back to impact list';
     toggle.setAttribute('aria-expanded', String(open));
     const availability = this.$('roadComparisonAvailability');
-    availability.hidden = !reason || open;
+    availability.hidden = !this.desktopReview || !reason || open;
     availability.textContent = reason;
     this.$('roadComparisonReview').hidden = !open;
     this.$('roadComparisonProposed').hidden = !open;
@@ -835,14 +896,7 @@ export class RoadInspectionWorkspace {
   }
 
   setImpactDock(open) {
-    if (!this.active || !this.usesDesktopPanel || this.comparisonOpen || (open && !this.dockMedia?.matches)) return;
-    if (open) {
-      if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
-      this.roadEditWasOpen = this.$('roadEditControlsD1').open;
-      this.$('roadEditControlsD1').open = false;
-    } else {
-      this.$('roadEditControlsD1').open = this.roadEditWasOpen;
-    }
+    if (!this.active || !this.desktopReview || this.comparisonOpen || (open && !this.dockMedia?.matches)) return;
     this.dockOpen = open;
     this.desktopLayout.setDock(open);
     this.render();
@@ -852,20 +906,20 @@ export class RoadInspectionWorkspace {
   }
   selectImpact(key) {
     const row = this.impactRows.find(item => item.key === key);
-    if (!this.dockOpen || !row) return;
+    if (!this.desktopReview || this.comparisonOpen || !row) return;
     this.impactKey = key;
     this.render();
     this.$('roadPreviewBody').scrollTop = 0;
     this.locateReconciliationB3(row);
   }
-  renderImpactDock(stale) {
+  renderImpacts(stale) {
     const s = this.session;
     const toggle = this.$('roadImpactToggle');
-    const open = Boolean(this.dockOpen && !this.comparisonOpen);
-    toggle.hidden = this.comparisonOpen || !this.usesDesktopPanel || !this.dockMedia?.matches;
-    toggle.textContent = open ? 'Collapse impact dock' : 'Review impacts';
-    toggle.setAttribute('aria-expanded', String(open));
-    this.$('roadPreviewMinimize').hidden = open || Boolean(this.comparisonOpen);
+    const open = this.desktopReview && !this.comparisonOpen;
+    toggle.hidden = !open || !this.dockMedia?.matches;
+    toggle.textContent = this.dockOpen ? 'Return to side panel' : 'Open wide review';
+    toggle.setAttribute('aria-expanded', String(Boolean(this.dockOpen && open)));
+    this.$('roadPreviewMinimize').hidden = Boolean(this.usesDesktopPanel);
     this.$('roadImpactList').hidden = !open;
     this.$('roadImpactDetail').hidden = !open;
     if (!open) return;
@@ -927,7 +981,7 @@ export class RoadInspectionWorkspace {
     empty.textContent = stale ? 'Reset the out-of-date preview to review impacts.'
       : s.checking || s.drag ? 'Waiting for the current road preview…'
       : s.pending ? 'This preview has no affected records to list.' : 'Move a road or junction to review affected records.';
-    if (focusedKey && !impacts.has(focusedKey)) toggle.focus({ preventScroll: true });
+    if (focusedKey && !impacts.has(focusedKey)) this.$('roadMenuReview').focus({ preventScroll: true });
     const selected = this.selectedImpact;
     this.$('roadImpactDetailTitle').textContent = selected ? label(selected) : 'Road edit';
     this.$('roadImpactDetailMessage').textContent = selected?.message ?? '';
@@ -1035,7 +1089,7 @@ export class RoadInspectionWorkspace {
         jump.className = 'minor-button';
         jump.textContent = 'Review building choice';
         jump.addEventListener('click', () => {
-          if (this.dockOpen && !this.comparisonOpen) this.selectImpact(roadRecordKeyD1(row.kind, row.id));
+          if (this.desktopReview && !this.comparisonOpen) this.selectImpact(roadRecordKeyD1(row.kind, row.id));
           const target = document.getElementById('roadConflictC6-' + row.id);
           if (!target) return;
           target.scrollIntoView({block:'center'});
@@ -1076,7 +1130,7 @@ export class RoadInspectionWorkspace {
     if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
     if (guide.action === 'building') {
       const issue = this.recoveryIssueD3;
-      if (this.dockOpen && !this.comparisonOpen && issue?.id) this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
+      if (this.desktopReview && !this.comparisonOpen && issue?.id) this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
       const target = issue?.id && document.getElementById('roadConflictC6-' + issue.id);
       if (target) {
         target.scrollIntoView({block:'center'});
@@ -1084,7 +1138,9 @@ export class RoadInspectionWorkspace {
         return;
       }
     }
+    if (this.desktopReview) this.setDesktopReview(false);
     this.$('roadEditControlsD1').open = true;
+    if (this.usesDesktopPanel) this.$('roadMenuRecordDetails').open = guide.action === 'choose';
     const control = guide.action === 'choose' ? 'roadSelectionId'
       : s.details?.kind === 'road' ? 'roadIntentDxC1' : 'roadProposedX';
     const input = this.$(control);
@@ -1127,7 +1183,7 @@ export class RoadInspectionWorkspace {
     // Superseded responses never authorize a choice or describe an Apply-ready preview.
     const settled = s.current() && s.pending && !s.drag && !s.checking &&
       s.settledRevision === s.revision;
-    const reviewing = this.dockOpen || this.comparisonOpen;
+    const reviewing = this.desktopReview;
     const item = this.comparisonOpen ? this.comparisonRecord : this.selectedImpact;
     const visibleIds = reviewing
       ? ids.filter(id => item?.kind === 'building' && item.id === id) : ids;
@@ -1135,7 +1191,7 @@ export class RoadInspectionWorkspace {
     if (!settled || !visibleIds.length) {
       section.hidden = true;
       list.replaceChildren();
-      if (focused) this.$(this.comparisonOpen ? 'roadComparisonToggle' : 'roadImpactToggle')
+      if (focused) this.$(this.comparisonOpen ? 'roadComparisonToggle' : 'roadMenuReview')
         .focus({ preventScroll: true });
       return;
     }
@@ -1148,9 +1204,9 @@ export class RoadInspectionWorkspace {
     list.replaceChildren(...visibleIds.map((id,index) =>
       this.buildingConflictControls(id,unresolved.get(id),index+1,visibleIds.length)));
     if (focused && this.comparisonOpen) this.$('roadComparisonTitle').focus({ preventScroll: true });
-    else if (focused && this.dockOpen) {
+    else if (focused && reviewing) {
       const selected = this.$('roadImpactRows').querySelector('[aria-pressed="true"]');
-      (selected ?? this.$('roadImpactToggle')).focus({ preventScroll: true });
+      (selected ?? this.$('roadMenuReview')).focus({ preventScroll: true });
     }
   }
   buildingConflictControls(id, issue, index, total) {
