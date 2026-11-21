@@ -1167,13 +1167,16 @@ window.addEventListener('keydown', e => {
     }
     if(['Delete','Backspace'].includes(e.key)){e.preventDefault();return;}
     if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)
-      && (document.activeElement === canvas || document.activeElement === $('roadComparisonProposed'))) {
+      && (e.target === canvas || document.activeElement === canvas ||
+        (roadWorkspace.comparisonOpen && document.activeElement === $('roadComparisonProposed')))) {
       if (roadWorkspace.comparisonOpen) {
         const pan = {ArrowLeft:[32,0],ArrowRight:[-32,0],ArrowUp:[0,32],ArrowDown:[0,-32]};
         camera.pan(...pan[e.key]);
         requestDraw();
         updateViewport();
-      } else roadWorkspace.nudge(e.key.slice(5),e.shiftKey?10:1);e.preventDefault();return;
+      } else roadWorkspace.nudge(e.key.slice(5),e.shiftKey?10:1);
+      e.preventDefault();
+      return;
     }
   }
   if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {

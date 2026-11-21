@@ -12,7 +12,10 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     activePointer = null,
     transforming = false;
   window.addEventListener('keydown', e => {
-    if (e.code === 'Space' && isMapShortcutEvent(e, document.activeElement)) {
+    const focused = document.activeElement;
+    // A hidden or unfocused map cannot claim Space from another canvas.
+    if (canvas.hidden || (focused?.tagName === 'CANVAS' && focused !== canvas)) return;
+    if (e.code === 'Space' && isMapShortcutEvent(e, focused)) {
       space = true;
       e.preventDefault();
     }
