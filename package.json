@@ -13,12 +13,13 @@
     "test:node:shard:2": "node --test --test-shard=2/2 tests/*.test.js",
     "test:browser": "npm run test:browser:workspace && npm run test:browser:property && npm run test:browser:integration",
     "test:browser:workspace": "npm run test:browser:desktop && npm run test:browser:roads",
-    "test:browser:desktop": "node scripts/g3g-desktop-parity-browser-qa.mjs && node scripts/desktop-three-tabs-browser-qa.mjs && node scripts/workspace-g2-browser-qa.mjs",
+    "test:browser:desktop": "node scripts/g3g-desktop-parity-browser-qa.mjs && node scripts/desktop-three-tabs-browser-qa.mjs && node scripts/workspace-g2-browser-qa.mjs && node scripts/g4-desktop-acceptance-browser-qa.mjs",
     "test:browser:roads": "node scripts/road-browser-qa.mjs && node scripts/c7-p2-browser-qa.mjs && node scripts/c7-p3-offline-qa.mjs",
     "test:browser:property": "node scripts/building-footprint-f2-browser-qa.mjs && node scripts/property-integration-e5-browser-qa.mjs && node scripts/property-count-e4-browser-qa.mjs && node scripts/property-merge-e3-browser-qa.mjs && node scripts/property-split-e2-browser-qa.mjs && node scripts/property-creation-e1-browser-qa.mjs && node scripts/building-browser-qa.mjs",
     "test:browser:integration": "node scripts/browser-qa.mjs && node scripts/d4-browser-acceptance.mjs && node scripts/building-performance-f4.mjs",
     "test:browser:p2": "node scripts/c7-p2-browser-qa.mjs",
-    "test:full": "npm run check && npm run test:browser"
+    "test:full": "npm run check && npm run test:browser",
+    "test:browser:g4": "node scripts/g4-desktop-acceptance-browser-qa.mjs"
   },
   "engines": {
     "node": ">=20"

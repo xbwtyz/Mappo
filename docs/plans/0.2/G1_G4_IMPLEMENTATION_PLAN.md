@@ -230,6 +230,10 @@ Use one feature branch/PR and four gates: audit, redundant desktop retirement, r
   offline distribution. Treat the old workspace as a temporary migration
   path through G3. Any project-format migration needs separate approval.
 
+## G4 execution
+
+G3G already made Generation/Add/Roads the default desktop entrypoint and retired the public legacy override. G4 does not add a second UI switch. It validates the modern desktop entrypoint and old saves, checks offline startup and cross-editor regression, records Small/Large browser responsiveness evidence, refreshes user/developer documentation and verifies the current G3G root/versioned standalone in full CI. Release/tag/Pages publication remains separate.
+
 ## Desktop acceptance
 
 | Area | Coverage |

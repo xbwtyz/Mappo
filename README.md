@@ -1,10 +1,10 @@
 # Mappo
 
-> **Development track: Mappo 0.2G desktop consolidation.** 0.2A–F are merged; the three-tab Generation/Add/Roads workspace is implemented, and G3G is the desktop parity and legacy-retirement pass preceding G4. The published stable release remains **0.1.0**. See the [0.2 roadmap](docs/plans/0.2/README.md).
+> **Development track: Mappo 0.2G G4 desktop acceptance.** 0.2A–F and G3G are merged; Generation/Add/Roads is the canonical desktop workspace. G4 verifies the desktop integration before 0.2H release hardening. The published stable release remains **0.1.0**. See the [0.2 roadmap](docs/plans/0.2/README.md).
 
 **Mappo 0.1.0** is an offline-first medieval and fantasy city generator and 2D editor, built from modular JavaScript and shipped as **one standalone HTML file**.
 
-**[Launch Mappo (current main build)](https://xbwtyz.github.io/Mappo/)** · **[Download the standalone HTML](dist/mappo-0.1.0.html)** · **[Release notes](docs/releases/v0.1.0.md)** · **[User guide](docs/user-guide.md)** · **[Development roadmap](docs/ROADMAP.md)**
+**[Open the published website](https://xbwtyz.github.io/Mappo/)** · **[Download the standalone HTML](dist/mappo-0.1.0.html)** · **[Release notes](docs/releases/v0.1.0.md)** · **[User guide](docs/user-guide.md)** · **[Development roadmap](docs/ROADMAP.md)**
 
 **Stable release:** `0.1.0` · Project data schema **9** · Offline browser runtime · No installation required.
 
@@ -19,6 +19,12 @@
 - Choose **Presentation**, **Planning**, **Minimal**, or **All layers** presets, or customize visibility manually.
 - Download the **currently visible map as PNG**, with optional filenames shared with `.mappo.json` project downloads.
 - Save/load portable validated project files. Browser-local recovery snapshots provide additional safety; downloaded files are the recommended backup.
+
+## 0.2 development candidate (unreleased)
+
+The current `main` branch contains the 0.2 city designer: road editing with local neighborhood adaptation, property creation/splitting/merging, plot-count changes, detailed building footprints and the **Generation / Add / Roads** desktop workspace. The Pages site is manually published and **may not match `main`**. The current development standalone is [`dist/mappo-0.2-dev.g3g.html`](dist/mappo-0.2-dev.g3g.html). G4 is an acceptance review of this existing runtime; no new application version/schema is needed unless product code changes.
+
+**Generation** hosts city, districts and defenses. **Add** begins property/building placement and landscape drafts. **Roads** exposes road changes, impact review and comparison. The property-first Inspector edits existing land, plots, buildings, names and uses. Desktop/laptop Firefox and Chromium are the current support targets; phone/touch acceptance is deferred.
 
 ## Launch and create a city
 
@@ -52,6 +58,6 @@ Node 20.11+ is needed for development, **not to run** the distributed HTML. CI r
 
 The 0.1 editor does not yet support manual road-network restructuring, property split/merge, unrestricted concave parcel editing or 3D rendering. PNG export captures the **currently visible canvas**, not an automatic full-city tiled image. Accepted project edits survive saving; Undo histories and uncommitted previews generally do not.
 
-**Next:** [0.2 City Designer planning branch](https://github.com/xbwtyz/Mappo/tree/planning/mappo-0.2a-road-network-foundations/docs/plans/0.2) proposes road editing and further 2D design tools. Planning is separate from the stable 0.1 release.
+**Next on the 0.2 development track:** [G4 desktop acceptance](docs/plans/0.2/G4_ACCEPTANCE_REPORT.md), then [0.2H release hardening](docs/plans/0.2/README.md). The stable 0.1.0 release remains separate.
 
 [Development guide](docs/development.md) · [Project format](docs/reference/PROJECT_FORMAT.md) · [Release notes](docs/releases/v0.1.0.md) · [Docs index](docs/README.md)
