@@ -675,6 +675,6 @@
   .desktop-impact-layout .road-impact-detail h3{margin:8px 0 2px;font-size:15px}
   .desktop-impact-layout .road-impact-detail p{margin:0 0 6px;color:#c6d4c9}
   .desktop-impact-layout #roadBuildingDecisionsD2{order:0}
-  .desktop-impact-layout #roadDecisionIntroD2{display:none}
+  .desktop-impact-layout :is(#roadDecisionIntroD2,.road-building-choice-d2>h4){display:none}
   .desktop-impact-layout .road-preview-panel :focus-visible{outline-color:#d8a473}
 }

@@ -750,6 +750,7 @@ export class RoadInspectionWorkspace {
     this.dockOpen = open;
     this.desktopLayout.setDock(open);
     this.render();
+    this.$('roadPreviewBody').scrollTop = 0;
     if (this.selectedImpact && open) this.locateReconciliationB3(this.selectedImpact);
     this.$('roadImpactToggle').focus({ preventScroll: true });
   }
@@ -758,6 +759,7 @@ export class RoadInspectionWorkspace {
     if (!this.dockOpen || !row) return;
     this.impactKey = key;
     this.render();
+    this.$('roadPreviewBody').scrollTop = 0;
     this.locateReconciliationB3(row);
   }
   renderImpactDock(stale) {

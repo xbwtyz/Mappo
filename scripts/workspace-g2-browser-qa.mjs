@@ -85,24 +85,10 @@ async function exercise(browser, engine, name, width, height) {
     assert.ok(dockBounds.y >= dockMap.y + dockMap.height);
     assert.ok(dockMap.width > beforeMap.width);
     assert.ok(dockMap.height >= 240);
-    assert.ok(await impacts.count() > 1);
     await dockDivider.press('ArrowDown');
     assert.ok((await map.boundingBox()).height >= dockMap.height + 15);
     await page.waitForFunction(() => Math.abs(__buildingQA.state().camera.height -
       document.getElementById('mapCanvas').getBoundingClientRect().height) <= 1);
-    const other = impacts.filter({ hasNotText: 'Market Hall' }).first();
-    await other.press('Enter');
-    assert.equal(await hall.isVisible(), false);
-    assert.equal(await activeImpact.innerText(), await other.innerText());
-    const key = await other.getAttribute('data-impact-key');
-    assert.equal(await page.evaluate(() => __buildingQA.state().roadWorkspace.session.focusKey), key);
-    await dock.click();
-    assert.equal(await divider.isVisible(), true);
-    assert.equal(await offset.inputValue(), '18');
-    assert.equal(await accepted(), baseline);
-    await dock.click();
-    assert.equal(await activeImpact.getAttribute('data-impact-key'), key);
-
     await page.locator('#roadResolveConflictC6').click();
     assert.equal(await page.evaluate(() => document.activeElement.closest('article')?.id), 'roadConflictC6-BLD-00061');
     await choice('Keep it here').click();
@@ -116,6 +102,20 @@ async function exercise(browser, engine, name, width, height) {
     assert.equal(await accepted(), baseline);
     assert.equal(await activeImpact.innerText(), 'Market Hall');
     await screenshot('dock-ready');
+    assert.ok(await impacts.count() > 1);
+    const other = impacts.filter({ hasNotText: 'Market Hall' }).first();
+    await other.press('Enter');
+    assert.equal(await hall.isVisible(), false);
+    assert.equal(await activeImpact.innerText(), await other.innerText());
+    const key = await other.getAttribute('data-impact-key');
+    assert.equal(await page.evaluate(() => __buildingQA.state().roadWorkspace.session.focusKey), key);
+    await dock.click();
+    assert.equal(await divider.isVisible(), true);
+    assert.equal(await offset.inputValue(), '18');
+    assert.equal(await accepted(), baseline);
+    await dock.click();
+    assert.equal(await activeImpact.getAttribute('data-impact-key'), key);
+
     await dock.click();
     // A later numeric edit immediately invalidates the earlier Apply state.
     await offset.fill('');
