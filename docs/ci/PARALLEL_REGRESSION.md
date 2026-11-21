@@ -44,6 +44,12 @@ Playwright 1.56.1 stays test-only and is pinned; browsers and npm downloads are 
 - C7 desktop browser performance checks remain manual, opt-in via `run_c7_benchmark`, and run only in the integration shard.
 - The lightweight branch-fast workflow, GitHub Pages and release workflows are unchanged.
 
+## Measured result: first parallel PR run
+
+The first [parallel CI validation #44948061967](https://github.com/xbwtyz/Mappo/actions/runs/44948061967) succeeded on November 21, 2026, with every regression job and the unchanged required combined gate passing. Total workflow elapsed time was **3m 36s**, versus **8m 37s** for the baseline run: **5m 01s saved (58.2% less wall time)**. This first sample included cold Playwright caches. Browser evidence was uploaded for each suite, and the tracked standalone HTML artifact remained available.
+
+This is one measured before/after comparison, not a guarantee for future executions. Cache-warmed confirmation and additional samples should be considered before treating it as a steady-state estimate.
+
 ## Acceptance and benchmark
 
 1. Verify the YAML and `package.json` are valid, and all 15 original browser scripts remain reachable.
