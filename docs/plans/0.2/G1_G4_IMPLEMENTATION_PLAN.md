@@ -146,6 +146,22 @@ own the edit, validation, and history. The review branch holds layout
 iterations and the offline HTML. Open a PR for CI once the layout review
 is complete.
 
+## G3D remaining workflows and parity
+
+Use the existing domain controls and histories. The desktop Inspector puts
+district and landscape controls before record details. **Project** and
+**Layers** keep their existing entry points. Verify the workflows below in
+the standalone build before the desktop default switch in G4.
+
+| Workflow | Entry and next action | Commit, history, and persistence to verify |
+| --- | --- | --- |
+| City generation | **City** groups the outline, square, street pattern, density, and seed. The Tools footer has **Rebuild city**, the pending summary, and rebuild effects. | Confirm a rebuild still checks outstanding identities. Reverting outline and street settings restores only that draft. Download and reopen a project with unfinished generation settings. |
+| Districts | Select a neighborhood from **Districts** or an open block on the map. Name, color, and block move controls appear before **District details**. Rebuild and Undo stay together on the Districts tab. | Apply identity changes or move a block through the existing connectivity checks. Rebuild districts independently of city generation and verify Undo. Reopen a saved selection and district draft. |
+| Water and terrain | Select or add a feature from **Landscape**. Shape and crossing actions appear before generation settings. **Review city rebuild** reveals the existing rebuild controls and effects. | Test the river, coast, lake, and mountains. Keep water and terrain draft histories and revert actions scoped. Switching sections preserves completed drafts. Confirm Review alone leaves the accepted city intact and that a valid **Rebuild city** applies the draft. |
+| Fortifications | **Defenses** shows enabled state, gates and towers, pending effects, **Update defenses**, and **Undo defense edit**. | Test validation, a defense-only update, and Undo. Turning off saved walls keeps their geometry. The Layers checkbox affects visibility. |
+| Layers | Open **Layers** from the map header, including during a desktop edit. | Apply a preset and an individual visibility change. Verify draft geometry and history are unaffected, view state round-trips, and Escape returns focus to the menu button. |
+| Files, recovery, and exports | Open **Project** from the header. Download/open a portable project, restore recovery, or download the visible map. | Check JSON with unfinished landscape work, exact accepted city on reopen, current and previous recovery, and PNG export. Verify menu focus and Escape, and that typing in forms leaves map shortcuts inactive. |
+
 ## Integration rules
 
 - **Workspace responsibilities.** Own panel layout, focus, selection

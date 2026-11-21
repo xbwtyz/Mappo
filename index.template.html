@@ -51,6 +51,11 @@
           <div class="city-control-section"><h2>Streets</h2>
             <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
             <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div></div>
+            <details id="cityGenerationSettings" class="workspace-settings"><summary>Street seed</summary>
+              <div class="control-group"><label for="seedInput">Street seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"></div>
+              <button id="newSeedButton" class="minor-button full-width">Rebuild with a new seed</button>
+            </details>
+            <button id="cancelButton" class="minor-button full-width city-revert" title="Restore the last accepted outline and street settings.">Revert outline &amp; street settings</button>
           </div>
           <button id="propertyCreateStartE1" type="button" class="tool-button full-width actions" aria-pressed="false" aria-controls="propertyCreatePanelE1">+ Create property</button>
           <div class="road-history-actions-b4" role="group" aria-label="Property creation history">
@@ -72,12 +77,6 @@
           </div>
           <p id="roadHistoryStatusB4" class="hint" role="status" aria-live="polite">Road history is empty.</p>
           <p id="roadModeNotice" class="hint" role="status"></p>
-          <details id="cityGenerationSettings" class="workspace-settings"><summary>Generation settings</summary>
-            <div class="control-group"><label for="seedInput">Street seed</label><input id="seedInput" maxlength="64" autocomplete="off" spellcheck="false" value="mappo-001"></div>
-            <button id="newSeedButton" class="minor-button full-width">New street seed</button>
-            <p class="hint">The same outline, square, street settings and seed reproduce the city.</p>
-          </details>
-          <button id="cancelButton" class="minor-button full-width city-revert" title="Restore the last accepted outline and street settings. This does not undo district, water, mountain or defense edits.">Revert outline &amp; street settings</button>
         </section>
         <section id="workspaceSection-landscape" class="workspace-section landscape-list-panel" role="tabpanel" aria-labelledby="workspaceTab-landscape" hidden>
           <div class="landscape-list-heading"><h2>Landscape</h2><span id="landscapeFeatureCount"></span></div>
@@ -92,23 +91,24 @@
         <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>
           <details id="districtPanel" class="district-panel" aria-label="Neighborhood generation" open>
             <summary>NEIGHBORHOODS · <span id="districtCount">0</span></summary>
+            <ul id="districtList" class="district-feature-list" aria-label="Neighborhoods"></ul>
+            <p id="districtEmpty" class="hint">Rebuild districts to create selectable neighborhoods.</p>
+            <div hidden><label for="districtSelect">Selected district</label><select id="districtSelect"><option value="">Choose a neighborhood</option></select></div>
+            <div class="sidebar-rule"></div>
+            <h3 class="workspace-tool-heading">District generation</h3>
             <div class="control-group"><label for="districtNumberInput">Number of districts</label><select id="districtNumberInput"><option value="auto">Automatic · Suggested for this city</option><option value="1">1 district</option><option value="2">2 districts</option><option value="3">3 districts</option><option value="4">4 districts</option><option value="5">5 districts</option><option value="6">6 districts</option><option value="7">7 districts</option><option value="8">8 districts</option><option value="9">9 districts</option><option value="10">10 districts</option><option value="11">11 districts</option><option value="12">12 districts</option></select></div>
             <details id="districtGenerationSettings" class="workspace-settings feature-generation-settings"><summary>Generation settings</summary><div class="control-group"><label for="districtSeedInput">District seed</label><input id="districtSeedInput" maxlength="64" value="districts" spellcheck="false"></div></details>
-            <button id="generateDistrictButton" class="tool-button full-width">Rebuild districts</button>
-            <p class="hint">Replaces neighborhood names and membership, but preserves streets, properties and buildings. Undo restores the prior assignment.</p>
-            <button id="undoDistrictButton" class="minor-button full-width actions" disabled>Undo district edit</button>
             <p id="districtGenerationMessage" class="file-status" role="status" aria-live="polite"></p>
-            <div class="district-list-heading"><h2>Neighborhoods</h2><span>SELECT TO EDIT</span></div>
-            <ul id="districtList" class="district-feature-list" aria-label="Neighborhoods"></ul>
-            <p id="districtEmpty" class="hint">Generate districts to create selectable neighborhoods.</p>
-            <div hidden><label for="districtSelect">Selected district</label><select id="districtSelect"><option value="">Choose a neighborhood</option></select></div>
-            <p class="hint">Select a neighborhood here or click a city block. Name, color and connected block editing open in the inspector. Visibility controls are under Layers.</p>
+            <p class="hint">Rebuild replaces district names and block assignments. Streets, properties and buildings are preserved.</p>
+            <div class="workspace-tool-actions">
+              <button id="generateDistrictButton" class="tool-button">Rebuild districts</button>
+              <button id="undoDistrictButton" class="minor-button" disabled>Undo district edit</button>
+            </div>
           </details>
         </section>
         <section id="workspaceSection-defenses" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-defenses" hidden>
           <details id="fortificationPanel" class="fortification-panel defense-workflow" open>
             <summary>PERIMETER DEFENSES</summary>
-            <p class="hint defense-intro">Update walls, road-connected gates and defensive towers independently of the city layout.</p>
             <p id="fortificationStats" class="defense-stats">No perimeter defenses built yet.</p>
             <div class="defense-control-group">
               <label class="fortification-check"><input type="checkbox" id="wallsEnabledInput" checked> <span>Walls enabled <small>Disable without deleting saved defenses</small></span></label>
@@ -124,9 +124,11 @@
               <p class="hint">Changing the seed regenerates defenses only when walls are enabled.</p>
             </details>
             <p id="defensePendingMessage" class="defense-pending" role="status" aria-live="polite">No defense changes pending.</p>
-            <button id="applyFortificationButton" class="tool-button full-width defense-apply">Update defenses</button>
-            <button id="undoFortificationButton" class="minor-button full-width actions" disabled>Undo defense edit</button>
-            <p id="fortificationMessage" class="file-status" role="status" aria-live="polite">Defenses can be updated without rebuilding the city.</p>
+            <div class="workspace-tool-actions">
+              <button id="applyFortificationButton" class="tool-button defense-apply">Update defenses</button>
+              <button id="undoFortificationButton" class="minor-button" disabled>Undo defense edit</button>
+            </div>
+            <p id="fortificationMessage" class="file-status" role="status" aria-live="polite"></p>
             <p class="hint defense-layer-hint">Layers controls display only. Walls enabled controls whether saved defenses are active.</p>
           </details>
         </section>
@@ -593,81 +595,94 @@
             <summary>More actions</summary>
             <div id="workspaceInspectorMoreButtons"></div>
           </details>
+          <div id="workspaceInspectorTools"></div>
           <details id="workspaceInspectorDetails" class="workspace-inspector-fold" hidden>
             <summary id="workspaceInspectorDetailsTitle">Details</summary>
           </details>
           <div id="workspaceInspectorSectionsHost"><div id="workspaceSelectionSections"></div></div>
           <button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+        <div id="workspaceInspectorToolsFallback">
+        <div id="workspaceInspectorLocalControls">
         <div id="districtInspectorControls" class="district-inspector-controls" hidden>
-          <p id="districtStats" class="hint"></p>
+          <p id="districtMessage" class="file-status" role="status" aria-live="polite"></p>
+          <h3 class="workspace-tool-heading">Name &amp; color</h3>
           <div class="district-name-row"><label class="sr-only" for="districtNameInput">District name</label><input id="districtNameInput" maxlength="64" placeholder="District name" disabled><label class="sr-only" for="districtColorInput">District color</label><input id="districtColorInput" type="color" value="#cba480" disabled></div>
           <button id="applyDistrictButton" class="tool-button full-width" disabled>Apply district changes</button>
           <div class="sidebar-rule"></div>
+          <h3 class="workspace-tool-heading">Move a block</h3>
           <p id="selectedDistrictBlock" class="hint">Click open ground outside properties in Select / Pan to change its district. Hide Buildings, Properties and Plots to target entire blocks.</p>
           <div class="control-group"><label for="districtTargetInput">Receiving neighborhood</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select></div>
           <button id="moveDistrictButton" class="minor-button full-width" disabled>Move selected block</button>
           <p class="hint">Blocks can move only to an adjacent district. Neither neighborhood may become empty or disconnected.</p>
-          <p id="districtMessage" class="file-status" role="status" aria-live="polite">Select a neighborhood to edit its name, color or connected blocks.</p>
+          <p id="districtStats" class="hint" hidden></p>
         </div>
         <div id="landscapeInspectorControls" class="landscape-inspector-controls" hidden>
+          <div class="workspace-landscape-draft">
+            <p id="landscapeDraftStatus" class="hint" role="status" aria-live="polite">Changes here create a draft. Rebuild city to apply it.</p>
+            <button id="landscapeReviewRebuild" class="minor-button full-width" type="button" hidden>Review city rebuild</button>
+          </div>
           <div id="landscapeCreationType" class="control-group" hidden><label for="landscapeTypeInput">Feature type</label><select id="landscapeTypeInput"><option value="river">River</option><option value="coast">Coastline</option><option value="lake">Lake</option><option value="terrain">Mountain range</option></select><p id="landscapeCreationHelp" class="hint"></p></div>
-<details id="waterPanel" class="water-panel" open>
+        <details id="waterPanel" class="water-panel" open>
           <summary hidden>Water controls</summary>
           <p id="waterStats" class="hint">Generate lakes, a river and a coastline independently, then edit each preview.</p>
+          <p id="waterMessage" class="file-status" role="status" aria-live="polite"></p>
           <fieldset id="landscapeRiverControls" class="water-feature"><legend>RIVER</legend>
+          <div class="workspace-tool-actions"><button id="editRiverButton" class="tool-button" aria-pressed="false">Edit river points</button><button id="editBridgesButton" class="tool-button" aria-pressed="false">Move bridges</button><button id="addBridgeButton" class="minor-button" aria-pressed="false">Add bridge</button></div>
           <details id="riverGenerationSettings" class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
           <div class="control-group"><label for="waterSeedInput">River seed</label><input id="waterSeedInput" maxlength="64" value="river" spellcheck="false"></div>
           <button id="rerollRiverButton" class="minor-button full-width">New river seed</button>
           </details>
           <div class="control-group"><label for="riverWidthInput">River width · survey units</label><input id="riverWidthInput" type="number" min="10" max="90" step="1" value="28"></div>
-          <div class="tool-grid"><button id="generateRiverButton" class="tool-button">Generate river</button><button id="editRiverButton" class="tool-button" aria-pressed="false">Edit river points</button><button id="removeRiverButton" class="minor-button">Remove river</button></div>
+          <div class="tool-grid"><button id="generateRiverButton" class="tool-button">Generate river</button><button id="removeRiverButton" class="minor-button">Remove river</button></div>
           <button id="tidyRiverButton" class="minor-button full-width actions">Tidy river bends</button>
-          <p class="hint">River handles stay in order and nearby handles adjust to ease tight bends as you drag. Tidy repairs older drafts; Generate city also tidies them before applying.</p>
-          <div class="tool-grid actions"><button id="editBridgesButton" class="tool-button" aria-pressed="false">Move bridges</button><button id="addBridgeButton" class="minor-button" aria-pressed="false">Add bridge</button></div>
+          <p class="hint">River handles stay in order and nearby handles adjust to ease tight bends as you drag. Use Tidy river bends to repair tight bends in an older draft.</p>
           </fieldset>
           <fieldset id="landscapeCoastControls" class="water-feature"><legend>COASTLINE</legend>
+          <div class="workspace-tool-actions"><button id="editCoastButton" class="tool-button" aria-pressed="false">Edit shoreline</button><button id="flipCoastButton" class="minor-button">Swap land / water</button></div>
           <details id="coastGenerationSettings" class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
           <div class="control-group"><label for="coastSeedInput">Coast seed</label><input id="coastSeedInput" maxlength="64" value="coast" spellcheck="false"></div>
           <button id="rerollCoastButton" class="minor-button full-width">New coast seed</button>
           </details>
           <div class="control-group"><label for="coastDirectionInput">Ocean direction · new coastline</label><select id="coastDirectionInput"><option value="north">North</option><option value="east" selected>East</option><option value="south">South</option><option value="west">West</option></select></div>
-          <div class="tool-grid"><button id="generateCoastButton" class="tool-button">Generate coastline</button><button id="editCoastButton" class="tool-button" aria-pressed="false">Edit shoreline</button><button id="flipCoastButton" class="minor-button">Swap land / water</button></div>
+          <div class="tool-grid"><button id="generateCoastButton" class="tool-button">Generate coastline</button></div>
           <button id="tidyCoastButton" class="minor-button full-width actions">Tidy shoreline bends</button>
-          <p class="hint">Shoreline handles self-adjust like river handles. Tidy repairs older drafts; Generate city tidies both water features before applying.</p>
+          <p class="hint">Shoreline handles self-adjust like river handles. Use Tidy shoreline bends to repair an older draft.</p>
           <button id="removeCoastButton" class="minor-button full-width actions">Remove coastline</button>
           </fieldset>
           <fieldset id="landscapeLakeControls" class="water-feature"><legend>LAKES</legend>
           <div class="control-group" hidden><label for="lakeSelect">Selected lake</label><select id="lakeSelect"><option value="">No lakes yet</option></select></div>
+          <div class="workspace-tool-actions"><button id="editLakeButton" class="tool-button" aria-pressed="false">Edit lake shape</button><button id="moveLakeButton" class="tool-button" aria-pressed="false">Move lake</button></div>
           <details id="lakeGenerationSettings" class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
           <div class="control-group"><label for="lakeSeedInput">Lake seed</label><input id="lakeSeedInput" maxlength="64" value="lake" spellcheck="false"></div>
           </details>
           <div class="control-group"><label for="lakeRadiusInput">Lake size · new / regenerated lake</label><input id="lakeRadiusInput" type="number" min="18" max="100" value="28"></div>
-          <div class="tool-grid"><button id="addLakeButton" class="tool-button">Add lake</button><button id="regenerateLakeButton" class="minor-button">Regenerate selected</button><button id="editLakeButton" class="tool-button" aria-pressed="false">Edit lake shape</button><button id="moveLakeButton" class="tool-button" aria-pressed="false">Move lake</button></div>
+          <div class="tool-grid"><button id="addLakeButton" class="tool-button">Add lake</button><button id="regenerateLakeButton" class="minor-button">Regenerate selected</button></div>
           <button id="removeLakeButton" class="minor-button full-width actions">Remove selected lake</button>
-          <p class="hint">Up to eight independent lakes. Drag shoreline points to reshape; double-click a shore edge to add a point. Move lake uses its center marker. Guided handles keep banks from tangling. Generate city applies the draft.</p>
+          <p class="hint">Up to eight independent lakes. Drag shoreline points to reshape; double-click a shore edge to add a point. Move lake uses its center marker.</p>
           </fieldset>
           <div id="landscapeWaterShared">
-          <p class="hint">Other landscape features are retained. Generate city applies the draft.</p>
           <button id="removeWaterItemButton" class="minor-button full-width">Remove selected point / bridge</button>
           <div class="tool-grid actions"><button id="undoWaterButton" class="minor-button">Undo water edit</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
           </div>
-          <p id="waterMessage" class="file-status" role="status" aria-live="polite">Water edits are previews. Generate city below to rebuild streets, buildings, districts and defenses around them. The last valid city stays open if a crossing cannot connect.</p>
         </details>
         <details id="terrainPanel" class="water-panel" open>
           <summary hidden>Mountain controls</summary>
           <p id="terrainStats" class="hint">Generate editable mountain ranges around or inside the city.</p>
+          <p id="terrainMessage" class="file-status" role="status" aria-live="polite"></p>
           <div class="control-group" hidden><label for="terrainSelect">Selected mountain range</label><select id="terrainSelect"><option value="">No mountain ranges yet</option></select></div>
+          <div class="workspace-tool-actions"><button id="editTerrainButton" class="tool-button" aria-pressed="false">Edit foothills</button><button id="moveTerrainButton" class="tool-button" aria-pressed="false">Move range</button><button id="editRidgeButton" class="tool-button" aria-pressed="false">Edit ridge / peaks</button><button id="editPassButton" class="tool-button" aria-pressed="false">Move passes</button><button id="addPassButton" class="minor-button" aria-pressed="false">Add road pass</button></div>
           <details id="terrainGenerationSettings" class="workspace-settings feature-generation-settings"><summary>Generation settings</summary>
           <div class="control-group"><label for="terrainSeedInput">Mountain seed</label><input id="terrainSeedInput" maxlength="64" value="mountains" spellcheck="false"></div>
           </details>
           <div class="control-group"><label for="terrainPlacementInput">Placement · new / regenerated range</label><select id="terrainPlacementInput"><option value="surrounding">Surrounding landscape</option><option value="inside">Inside the city</option><option value="crossing">Across the city edge</option></select></div>
           <div class="tool-grid"><div class="control-group"><label for="terrainSizeInput">Range size</label><input id="terrainSizeInput" type="number" min="40" max="220" value="70"></div><div class="control-group"><label for="terrainHeightInput">Peak height · selected / new</label><input id="terrainHeightInput" type="number" min="50" max="3000" value="900"></div></div>
-          <div class="tool-grid"><button id="addTerrainButton" class="tool-button">Add mountain range</button><button id="regenerateTerrainButton" class="minor-button">Regenerate selected</button><button id="editTerrainButton" class="tool-button" aria-pressed="false">Edit foothills</button><button id="moveTerrainButton" class="tool-button" aria-pressed="false">Move range</button><button id="editRidgeButton" class="tool-button" aria-pressed="false">Edit ridge / peaks</button><button id="removeTerrainButton" class="minor-button">Remove selected range</button><button id="editPassButton" class="tool-button" aria-pressed="false">Move passes</button><button id="addPassButton" class="minor-button" aria-pressed="false">Add road pass</button></div>
+          <div class="tool-grid"><button id="addTerrainButton" class="tool-button">Add mountain range</button><button id="regenerateTerrainButton" class="minor-button">Regenerate selected</button><button id="removeTerrainButton" class="minor-button">Remove selected range</button></div>
           <button id="removeTerrainItemButton" class="minor-button full-width actions">Remove selected foothill point / pass</button>
           <div class="tool-grid actions"><button id="undoTerrainButton" class="minor-button">Undo terrain edit</button><button id="revertTerrainButton" class="minor-button">Revert terrain draft</button></div>
           <p class="hint">Up to six ranges, inside or outside the outline. Footprint and ridge handles self-adjust. Buildings avoid steep ground; roads cross through designated passes. Keep mountains and water separated. Heights control map contours and peak symbols.</p>
-          <p id="terrainMessage" class="file-status" role="status" aria-live="polite">Terrain edits are previews. Generate city applies the draft and rebuilds streets, buildings, districts and defenses.</p>
         </details>
+        </div>
+        </div>
         </div>
         <details id="workspaceCityReport" class="workspace-city-report"><summary>City report &amp; workspace guide</summary>
 

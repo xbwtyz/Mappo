@@ -18,7 +18,8 @@ export function registerWorkspaceInspectors(shell, {
       return {
         type: 'Neighborhood',
         title: district.name,
-        description: 'A connected group of city blocks.',
+        description: 'Apply name and color here, or select a block to move it.',
+        inlineControls: { factsTitle: 'District details' },
         section: 'districts',
         controlLabel: 'Open district controls',
         sections: [{
@@ -47,7 +48,7 @@ export function registerWorkspaceInspectors(shell, {
           id,
           feature
         }).name,
-        description: editor.dirty ? 'Water draft pending city generation.' : 'Geometry from the current city.',
+        inlineControls: { factsTitle: 'Water feature details' },
         section: 'landscape',
         controlLabel: 'Open water controls',
         sections: [{
@@ -76,7 +77,7 @@ export function registerWorkspaceInspectors(shell, {
           id,
           feature
         }).name,
-        description: editor.dirty ? 'Terrain draft pending city generation.' : 'Geometry from the current city.',
+        inlineControls: { factsTitle: 'Mountain range details' },
         section: 'landscape',
         controlLabel: 'Open mountain controls',
         sections: [{

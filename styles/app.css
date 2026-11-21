@@ -896,3 +896,18 @@
   max-height:160px;overflow:auto;overscroll-behavior:contain;padding:2px;
 }
 .workspace-inspector-action-first .workspace-inspector-title h2{min-width:0;overflow-wrap:anywhere}
+
+.workspace-tool-heading{margin:12px 0 8px;color:#e5e9d6;font-size:13px}
+.workspace-tool-actions{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
+.workspace-tool-actions:has(> button:only-child)>button,
+.workspace-tool-actions>.tool-button{flex:1 0 100%}
+.workspace-tool-actions>.minor-button{flex:1 1 auto}
+.workspace-tool-actions:not(:has(> button:not([hidden]))){display:none}
+.workspace-landscape-draft{margin:12px 0;border:1px solid #536b5c;border-radius:5px;padding:9px 10px;background:#23372e}
+.workspace-landscape-draft .hint{margin:0}
+.workspace-landscape-draft button{margin-top:7px}
+#workspaceInspectorTools .district-inspector-controls{margin-top:12px}
+#workspaceInspectorTools .district-inspector-controls .district-name-row{margin-top:0}
+.workspace-shell .district-inspector-controls>.file-status:empty,
+.workspace-shell .landscape-inspector-controls .file-status:empty,
+.workspace-shell .defense-workflow>.file-status:empty{display:none}

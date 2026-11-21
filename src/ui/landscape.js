@@ -52,7 +52,6 @@ export class LandscapeWorkspace {
       resolve: id => LANDSCAPE_FIELDS[id] ? {
         type: 'Add landscape feature',
         title: 'New feature',
-        description: 'Create a landscape preview, then Generate city to build around it.',
         sections: []
       } : null
     });
@@ -313,6 +312,13 @@ export class LandscapeWorkspace {
       this.contextType = type;
     }
     this.$('workspaceShowControls').hidden = true;
+    const pending = [this.water.editor.dirty && 'water', this.terrain.editor.dirty && 'terrain'].filter(Boolean);
+    const draftStatus = this.$('landscapeDraftStatus');
+    const message = pending.length
+      ? `Draft changes to ${pending.join(' and ')}. Rebuild city to apply.`
+      : 'Changes here create a draft. Rebuild city to apply it.';
+    if (draftStatus.textContent !== message) draftStatus.textContent = message;
+    this.$('landscapeReviewRebuild').hidden = !pending.length;
     this.$('landscapeCreationType').hidden = !creating;
     this.$('landscapeTypeInput').value = creating ? type : 'lake';
     for (const option of Array.from(this.$('landscapeTypeInput').options ?? [])) option.disabled = !this.available(option.value);
@@ -338,6 +344,13 @@ export class LandscapeWorkspace {
     this.$('waterMessage').hidden = false;
   }
   bind() {
+    this.$('landscapeReviewRebuild').addEventListener('click', () => {
+      if (globalThis.window?.matchMedia?.('(max-width: 900px)').matches)
+        this.shell.dispatch({ type: 'inspector', collapsed: true });
+      if (this.shell.state.toolsCollapsed) this.shell.dispatch({ type: 'tools', collapsed: false });
+      this.$('workspaceRebuildGuide').open = true;
+      this.$('generateButton').focus();
+    });
     for (const filter of ['all', 'water', 'mountains']) this.$(`landscapeFilter-${filter}`).addEventListener('click', () => {
       this.filter = filter;
       this.renderList();
