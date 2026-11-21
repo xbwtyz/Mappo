@@ -26,9 +26,13 @@ concurrency:
 jobs:
   node:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    name: Build and Node regression tests
+    name: Node regression (shard ${{ matrix.shard }}/2)
     runs-on: ubuntu-24.04
     timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -46,8 +50,13 @@ jobs:
           test -n "$version"
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
-      - name: Build and run full Node regression suite
-        run: npm run check
+      # Every shard builds its own standalone artifact before running its
+      # native Node --test-shard file partition. No tests are removed.
+      - name: Build standalone HTML
+        run: npm run build
+
+      - name: Run native Node test shard ${{ matrix.shard }}/2
+        run: npm run test:node:shard:${{ matrix.shard }}
 
       - name: Verify checked-in compiled distribution
         run: |
@@ -57,8 +66,9 @@ jobs:
           cmp index.html "dist/mappo-$VERSION.html"
           git diff --exit-code -- index.html "dist/mappo-$VERSION.html"
 
+      # Keep exactly one versioned standalone download per workflow.
       - name: Upload standalone HTML artifacts
-        if: ${{ always() && env.VERSION != '' }}
+        if: ${{ always() && matrix.shard == 1 && env.VERSION != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: mappo-${{ env.VERSION }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -76,7 +86,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [workspace, property, integration]
+        suite: [desktop, roads, property, integration]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -121,7 +131,7 @@ jobs:
           retention-days: 14
 
   # Keep this exact job name stable for required-status-check configuration.
-  # A failed/skipped shard must never yield a green aggregate gate.
+  # A failed/skipped Node shard or browser suite must never yield a green gate.
   validate:
     if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
     name: Build, Node tests and browser QA
