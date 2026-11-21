@@ -167,8 +167,7 @@ export class WorkspaceShell {
   inspectorSection(section, includeActions) {
     const element = this.document.createElement('section');
     element.className = 'workspace-inspector-section';
-    element.textContent = [section.title ?? '', ...(section.rows ?? []).map(([label, value]) => `${label}: ${value}`)].filter(Boolean).join('
-');
+    element.textContent = [section.title ?? '', ...(section.rows ?? []).map(([label, value]) => `${label}: ${value}`)].filter(Boolean).join('\n');
     if (includeActions && section.actions?.length) {
       const summary = this.document.createElement('div');
       summary.textContent = element.textContent;
