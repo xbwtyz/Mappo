@@ -552,19 +552,27 @@ function syncBuildingStructureUI3H() {
   $('buildingStructureHistoryPanel').hidden=!historyShown;
   const idle=Boolean(session?.isActive);
   const canHistory=historyShown && !idle;
+  const blockedStructureHistory = [];
   for(const [direction,id] of [['undo','structureUndo'],['redo','structureRedo']]) {
-    const available=canHistory&&buildingStructureHistory.can(direction,project,propertyId);
-    const action=describeStructureChange4E(buildingStructureHistory.entry(direction,propertyId),direction);
-    $(id).disabled=!available;
-    $(id).textContent=action?.label??(direction==='undo'?'Undo structure':'Redo structure');
-    $(id).title=action?.description??'No structural edit to '+direction+'.';
+    const entry = buildingStructureHistory.entry(direction, propertyId);
+    const available = canHistory && buildingStructureHistory.can(direction, project, propertyId);
+    const action = describeStructureChange4E(entry, direction);
+    const blocked = canHistory && entry && !available;
+    const label = direction === 'undo' ? 'Undo' : 'Redo';
+    if (blocked) blockedStructureHistory.push(label);
+    $(id).disabled = !available;
+    $(id).textContent = action?.label ?? label + ' structure';
+    $(id).title = blocked ? 'A later edit changed this property or its buildings.'
+      : action?.description ?? 'No structural edit to '+direction+'.';
   }
   const next=describeStructureChange4E(buildingStructureHistory.entry('undo',propertyId),'undo')
     ??describeStructureChange4E(buildingStructureHistory.entry('redo',propertyId),'redo');
   $('structureHistoryStatus').textContent=historyShown
     ? 'Property structure history · '+buildingStructureHistory.count('undo',propertyId)+' undo / '
       +buildingStructureHistory.count('redo',propertyId)+' redo (session only).'
-      +(next?' Next: '+next.description:'')
+      +(blockedStructureHistory.length
+        ? ' '+blockedStructureHistory.join(' and ')+' blocked because a later edit changed this property or its buildings.'
+        : next?' Next: '+next.description:'')
     : '';
   if(!shown)return;
   const spec=session.spec;
