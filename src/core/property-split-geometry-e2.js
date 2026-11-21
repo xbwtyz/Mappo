@@ -12,7 +12,8 @@ export const splitStripE2 = (boundary,a,b) => [
   splitLerpE2(boundary[3],boundary[2],a)
 ];
 
-export function propertySplitGeometryE2(city,propertyId,t) {
+// Draw and hit-test the draft even when the parcels cannot be applied.
+export function propertySplitDraftE2(city,propertyId,t) {
   if(!Number.isFinite(t)||t<=0||t>=1)throw Error('Place the split strictly between the two frontage corners.');
   const source=city?.properties?.find(p=>p.id===propertyId);
   if(!source||source.boundary?.length!==4||!shapeWellFormed(source.boundary))
@@ -25,6 +26,13 @@ export function propertySplitGeometryE2(city,propertyId,t) {
     if((c.x-a.x)*(d.y-c.y)-(c.y-a.y)*(d.x-c.x)<=1e-7)
       throw Error('The selected property needs a convex frontage-to-rear boundary.');
   }
+  const left=splitStripE2(b,0,t),right=splitStripE2(b,t,1);
+  return {propertyId,t,boundary:b,left,right,cut:[left[1],left[2]],source};
+}
+
+export function propertySplitGeometryE2(city,propertyId,t) {
+  const draft=propertySplitDraftE2(city,propertyId,t);
+  const {source,boundary:b,left,right}=draft;
   const fractions=propertyDividerFractions3I(city,source);
   const accepted=propertyGeometryPreview3I(city,propertyId,b,fractions);
   const stored=new Map(city.plots.map(p=>[p.id,p]));
@@ -34,7 +42,6 @@ export function propertySplitGeometryE2(city,propertyId,t) {
       existing.boundary.some((p,i)=>Math.hypot(p.x-segment.boundary[i].x,p.y-segment.boundary[i].y)>1e-4))
       throw Error('Existing plot geometry is not an unambiguous frontage-to-rear subdivision.');
   }
-  const left=splitStripE2(b,0,t),right=splitStripE2(b,t,1);
   if(!shapeWellFormed(left)||!shapeWellFormed(right))
     throw Error('The split would produce a reversed or degenerate parcel.');
   const frontageLength=points=>Math.hypot(points[1].x-points[0].x,points[1].y-points[0].y);
@@ -60,8 +67,7 @@ export function propertySplitGeometryE2(city,propertyId,t) {
   if(!fleft.length||!fright.length||Math.abs(fragmentsArea(fleft)-areaLeft)>.02||
       Math.abs(fragmentsArea(fright)-areaRight)>.02)
     throw Error('The split cannot tile both new properties with valid plots.');
-  return {propertyId,t,boundary:b,left,right,areaLeft,areaRight,
+  return {...draft,areaLeft,areaRight,
     frontageLengthLeft:frontageLength(left),frontageLengthRight:frontageLength(right),
-    cut:[splitLerpE2(b[0],b[1],t),splitLerpE2(b[3],b[2],t)],
-    fragments,source};
+    fragments};
 }

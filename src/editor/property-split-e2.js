@@ -6,7 +6,7 @@ import { clearance, segmentCuts } from '../core/boundary.js';
 import { deriveOccupiedPlots } from './building-application.js';
 import { classifyRoadProvenance } from '../core/road-provenance.js';
 import { propertyLocalBounds3I } from '../core/property-geometry.js';
-import { propertySplitGeometryE2 } from '../core/property-split-geometry-e2.js';
+import { propertySplitDraftE2, propertySplitGeometryE2 } from '../core/property-split-geometry-e2.js';
 import { PropertyCreationHistoryE1 } from './property-creation-e1.js';
 
 // Structural history is the e2Same complete before/after transaction mechanism
@@ -64,7 +64,7 @@ export class PropertySplitSessionE2 {
   }
   reset(){if(!this.active)return false;this.t=.5;this.approved.clear();this.drag=null;this.validation=null;this.changed();return true;}
   stop(){if(!this.active)return false;this.propertyId=null;this.t=.5;this.drag=null;this.approved.clear();this.validation=null;this.changed();return true;}
-  geometry(city){try{return this.active?propertySplitGeometryE2(city,this.propertyId,this.t):null;}catch{return null;}}
+  geometry(city){try{return this.active?propertySplitDraftE2(city,this.propertyId,this.t):null;}catch{return null;}}
 }
 
 // Fast inspect: produces shapes, ownership summary and blockers without writing

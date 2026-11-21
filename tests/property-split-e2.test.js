@@ -69,9 +69,15 @@ test('E2 rejects invalid fractions, undersized remnants, crossing buildings and 
   const {project,property,session}=fixture;
   const original=JSON.stringify(project.city);
   session.setT(.01);
-  assert.equal(inspectPropertySplitE2(project,session).ok,false);
+  const blocked=inspectPropertySplitE2(project,session);
+  assert.equal(blocked.ok,false);
+  assert.match(blocked.issues[0].message,/at least 7 units of street frontage/);
+  const draft=session.geometry(project.city);
+  assert.deepEqual(draft.cut,[draft.left[1],draft.left[2]]);
+  assert.equal(draft.t,.01);
   assert.equal(preparePropertySplitE2(project,defaultWorkspace(project),session).candidate,null);
   session.setT(.5);
+  assert.equal(inspectPropertySplitE2(project,session).ok,true);
   const oldPlot=project.city.plots.find(p=>p.id===property.plotIds[0]);
   oldPlot.customAnnotation='protected';
   assert.equal(inspectPropertySplitE2(project,session).ok,false);
