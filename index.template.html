@@ -153,9 +153,10 @@
             <fieldset><legend>Districts</legend><label><input type="checkbox" id="districtColorsLayer" checked> District colors</label><label><input type="checkbox" id="districtBordersLayer" checked> District borders</label><label><input type="checkbox" id="districtLabelsLayer" checked> District labels</label></fieldset>
             <fieldset><legend>Defenses</legend><label><input type="checkbox" id="fortificationsLayer" checked> Fortifications</label></fieldset>
             <p class="hint">Preset changes are view-only. Customize any checkbox manually; current layer visibility saves with the project.</p>
-          </section></div><span id="draftBadge" class="map-draft">● CITY PLAN</span></div>
+          </section></div><button id="roadDesktopPreviewG2" type="button" class="workspace-map-button road-desktop-preview-g2" aria-controls="roadPreviewPanel" aria-pressed="false">Road workspace preview</button><span id="draftBadge" class="map-draft">● CITY PLAN</span></div>
       <div id="mapViewport" class="map-viewport">
         <canvas id="mapCanvas" tabindex="0" aria-label="City buildings, properties and outline editor. Choose a drawing tool, then draw or click on the map. Scroll to zoom."></canvas>
+        <div id="desktopEditDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize edit panel" aria-orientation="vertical" aria-controls="roadPreviewPanel" aria-valuemin="300" aria-valuemax="520" aria-valuenow="360" hidden></div>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div id="mapEditDiagnostic4D" class="map-edit-diagnostic-4d" role="status" aria-live="polite" hidden></div>
         <section id="roadPreviewPanel" class="road-preview-panel" aria-labelledby="roadPreviewHeading" hidden>

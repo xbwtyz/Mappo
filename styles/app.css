@@ -590,3 +590,51 @@
   #buildingDirectControls button,#buildingDirectControls select,
   .building-transform-panel[data-direct=true] .building-transform-modes button{min-height:40px}
 }
+
+/* G2 desktop preview. Tool panels and the map share the viewport; map
+   overlays retain their existing anchors inside the map column. */
+.road-desktop-preview-g2,.desktop-edit-divider{display:none}
+@media(min-width:1000px){
+  .workspace-shell .road-desktop-preview-g2{display:inline-flex;align-items:center;white-space:nowrap}
+  .map-viewport.desktop-edit-layout{
+    --desktop-edit-track:clamp(300px,var(--desktop-edit-width,360px),min(520px,42%));
+    display:grid;grid-template-columns:minmax(0,1fr) 7px var(--desktop-edit-track);
+    grid-template-rows:minmax(0,1fr);
+  }
+  .desktop-edit-layout>canvas{grid-area:1/1;min-width:0;min-height:0}
+  .desktop-edit-layout>.desktop-edit-divider:not([hidden]){
+    display:block;grid-area:1/2;background:#4d6556;cursor:ew-resize;touch-action:none;
+  }
+  .desktop-edit-layout>.desktop-edit-divider:hover{background:#8da697}
+  .desktop-edit-layout>.workspace-map-controls{right:calc(var(--desktop-edit-track) + 22px)}
+  .workspace-shell .desktop-edit-layout>.tool-hint{max-width:calc(100% - var(--desktop-edit-track) - 160px)}
+  .desktop-edit-layout>.map-legend{max-width:calc(100% - var(--desktop-edit-track) - 36px)}
+  .desktop-edit-layout>.desktop-edit-panel:not([hidden]){
+    grid-area:1/3;position:relative;inset:auto;width:auto;max-width:none;max-height:none;
+    min-width:0;min-height:0;padding:16px;border:0;border-radius:0;box-shadow:none;
+    background:#26362e;color:#f0f4e9;font-size:13px;z-index:auto;
+  }
+  .desktop-edit-panel .road-preview-heading strong{font-size:17px;text-transform:none;letter-spacing:0}
+  .desktop-edit-panel .road-preview-heading{padding-bottom:10px;border-bottom:1px solid #4b6052;margin-bottom:6px}
+  .desktop-edit-panel :is(.road-preview-header,.road-apply-footer,.road-preview-actions){background:transparent}
+  .desktop-edit-panel :is(.hint,.road-apply-status-b4,.road-step-label,.road-preview-selectors label){color:#c6d4c9}
+  .desktop-edit-panel :is(.minor-button,.road-disclosure-d1>summary,input,select){
+    background:#1e2b25;color:#edf3e9;border-color:#587062;
+  }
+  .desktop-edit-panel :is(.minor-button,.road-disclosure-d1>summary):hover{background:#3a5243}
+  .desktop-edit-panel :is(.road-building-decisions-d2,.road-building-choice-d2,.road-reconciliation-b3,.road-recovery-d3){
+    background:#1e2c25;color:#edf3e9;border-color:#587062;
+  }
+  .desktop-edit-panel :is(.validation-error,.road-recovery-d3 h4){color:#f2c392}
+  .desktop-edit-panel #roadPreviewBody:not([hidden]){display:flex;flex-direction:column}
+  .desktop-edit-panel .road-preview-disclosures-d1:not(:has(> details[open])),
+  .desktop-edit-panel .road-preview-disclosures-d1{display:contents}
+  .desktop-edit-panel #roadEditControlsD1{order:1}
+  .desktop-edit-panel #roadRecoveryD3{order:2}
+  .desktop-edit-panel #roadBuildingDecisionsD2{order:3}
+  .desktop-edit-panel #roadDetailsD1{order:4}
+  .desktop-edit-panel .road-apply-footer{border-color:#587062;padding-top:10px}
+  .desktop-edit-panel .road-apply-footer #roadApplyB4:not(:disabled){
+    background:#d0edb9;color:#193024;border-color:#d0edb9;
+  }
+}

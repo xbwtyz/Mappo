@@ -60,6 +60,21 @@ GitHub Actions runs the full applicable suite at review. Use targeted local
 tests for failure diagnosis. Implementation and merge approvals follow the
 existing project workflow.
 
+## G2 road workspace preview
+
+In the development build, choose **Road workspace preview** above the map in
+City. The map and resizable right-side edit panel sit alongside each other.
+Select a road or junction, inspect a real preview, resolve a building
+placement, and apply through the existing road transaction. Escape or
+Cancel restores the previous workspace. The **Undo road** map action
+replays the accepted road history after Apply.
+
+The shared layout positions a tool's panel and keeps map coordinates aligned
+when panels resize. The road editor supplies its existing controls and owns
+validation, impact decisions, and history. The current workspace remains the
+default. The impact dock and split comparison arrive in later passes.
+Property and building UI design has a separate draft and review before G3C.
+
 ## Integration rules
 
 - **Workspace responsibilities.** Own panel layout, focus, selection
