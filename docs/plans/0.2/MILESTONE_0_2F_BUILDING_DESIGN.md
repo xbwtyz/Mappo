@@ -3,7 +3,7 @@
 **Status.** F1 ([#68](https://github.com/xbwtyz/Mappo/pull/68)),
 F2 ([#69](https://github.com/xbwtyz/Mappo/pull/69)), and
 F3 ([#70](https://github.com/xbwtyz/Mappo/pull/70)) are merged.
-F4 is the [integration and acceptance pass](F4_ACCEPTANCE_REPORT.md).
+F4 ([#71](https://github.com/xbwtyz/Mappo/pull/71)) closed the milestone. See the [F4 acceptance report](F4_ACCEPTANCE_REPORT.md).
 0.2E completed in [PR #66](https://github.com/xbwtyz/Mappo/pull/66).
 
 ## 1. Product goal and boundaries
@@ -103,7 +103,7 @@ open map edit before committing or undoing a classification change.
 - **No new global history promise:** use the existing geometry-history and structural-history owners, and define how metadata-only changes interact; block incompatible cross-editor replay.
 - **Version and merge:** plan F1–F4 as reviewable sequential cycles on fresh branches from updated `main`, each with tests, compiled standalone and PR; seek explicit approval before each merge. Design approval alone does not approve implementation or merging.
 - **No mandatory onboarding or owner testing:** replace weak UI flows with ordinary in-app explanations and automated tests. Optional manual visual checks are informative, not required to accept a passing build.
-- **Release sequencing:** F completion is **not** Mappo 0.2. Optional civic editing (0.2G) and release hardening (0.2H) remain independently decided. 3D, Minecraft export and any new renderer are deferred.
+- **Release sequencing:** The [0.2G desktop workspace rebuild](MILESTONE_0_2G_DESKTOP_UI.md) follows F, then 0.2H release hardening. Civic places, 3D, and Minecraft export remain deferred.
 
 ## 6. Decisions to approve before F1 implementation
 

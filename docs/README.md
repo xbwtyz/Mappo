@@ -10,11 +10,12 @@
 | [Architecture Atlas](architecture/Mappo_Repository_Atlas.md) | Complete repository hierarchy, visual system diagrams, and a purpose description for every tracked file |
 | [Unified CI Guide](CI.md) | Branch and PR tests, browser matrices, artifacts and local commands |
 | [Current Roadmap](ROADMAP.md) | Completed milestones and separately proposed future work |
-| [0.2 Master Roadmap](plans/0.2/README.md) | Approved post-D4 order: property restructuring, advanced buildings, optional civic places, release hardening |
+| [0.2 Master Roadmap](plans/0.2/README.md) | Milestone order, current status, and the desktop workspace rebuild |
 | [0.2E Property Design](plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md) | E1 and E2 merged; E3 adjacent merge design proposed; E4/E5 planned |
 | [E2 Straight-Split Design](plans/0.2/E2_PROPERTY_SPLIT_DESIGN.md) | Frontage-to-rear geometry, identity lineage, plot/building ownership and five implementation/QA gates |
 | [E2 Acceptance](plans/0.2/E2_ACCEPTANCE_REPORT.md) | E2 implemented and merged via PR #60; historical acceptance evidence |\n| [E3 Adjacent Merge Design](plans/0.2/E3_PROPERTY_MERGE_DESIGN.md) | Approved design for conservative adjacent property merging |\n| [E4 Plot Count Design](plans/0.2/E4_PLOT_COUNT_DESIGN.md) | Approved plot-count specification, extending existing 3I property geometry editor |\n| [E4 Acceptance Report](plans/0.2/E4_ACCEPTANCE_REPORT.md) | Historical E4 acceptance evidence; E4 merged via PR #64 |\n| [E5 Integrated Acceptance Plan](plans/0.2/E5_INTEGRATED_ACCEPTANCE_PLAN.md) | Approved final 0.2E cross-editor QA and performance scope |\n| [E5 Acceptance Report](plans/0.2/E5_ACCEPTANCE_REPORT.md) | Current integration evidence, measured latency and remaining acceptance gates |\n| [E3 Acceptance Report](plans/0.2/E3_ACCEPTANCE_REPORT.md) | Unmerged PR #62 implementation scope, safeguards and CI gates |
-| [0.2F Building Design](plans/0.2/MILESTONE_0_2F_BUILDING_DESIGN.md) | Proposed advanced footprints, direct editing and categories without duplicating existing tools |
+| [0.2F Building Design](plans/0.2/MILESTONE_0_2F_BUILDING_DESIGN.md) | Merged footprint tools, classification, and integration acceptance |
+| [0.2G Desktop Workspace](plans/0.2/MILESTONE_0_2G_DESKTOP_UI.md) | Desktop-only scope, modular UI architecture, and G1–G4 acceptance gates |
 | [3G-A Checkpoint](history/3g/MILESTONE_3GA_QA.md) | Visual building edit mode design and verification |
 | [3G-B Checkpoint](history/3g/MILESTONE_3GB_QA.md) | Non-destructive building transformation previews, controls and QA |
 | [3G-C Checkpoint](history/3g/MILESTONE_3GC_QA.md) | Validated building changes, road access and schema-9 application |
