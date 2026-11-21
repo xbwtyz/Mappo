@@ -1,10 +1,10 @@
 # Mappo 0.2 — 2D City Designer roadmap
 
-> **Current sequencing.** 0.2A–F and 0.2G through G3G are merged. **G4 desktop acceptance is underway**, followed by **0.2H release hardening**. Civic places are deferred.
+> **Current sequencing.** 0.2A–G, including [G4 PR #87](https://github.com/xbwtyz/Mappo/pull/87), are merged. **0.2H release hardening** is active. H1/H2 prepare a safe, manual release and verify legacy saves; H3 performance, H4 QA and H5 the approved 0.2.0 release follow. Civic places remain deferred.
 >
 > Primary objective: a dependable, fully editable **2D** city designer before 3D. Users deliberately reshape roads; generated neighborhoods adapt where verifiably safe; then users fine-tune land and buildings.
 
-[0.2E property plan](MILESTONE_0_2E_PROPERTY_DESIGN.md) · [E2 straight-split design](E2_PROPERTY_SPLIT_DESIGN.md) · [E3 approved merge design](E3_PROPERTY_MERGE_DESIGN.md) · [E4 approved plot-count design](E4_PLOT_COUNT_DESIGN.md) · [E4 acceptance report](E4_ACCEPTANCE_REPORT.md) · [E5 approved acceptance plan](E5_INTEGRATED_ACCEPTANCE_PLAN.md) · [E5 acceptance report](E5_ACCEPTANCE_REPORT.md) · [E3 acceptance report](E3_ACCEPTANCE_REPORT.md) · [0.2F building plan](MILESTONE_0_2F_BUILDING_DESIGN.md) · [0.2G desktop workspace plan](MILESTONE_0_2G_DESKTOP_UI.md) · [G1–G4 implementation](G1_G4_IMPLEMENTATION_PLAN.md) · [0.2G mockups](assets/Mappo_0.2G_UI_Mockups.pdf) · [G4 acceptance report](G4_ACCEPTANCE_REPORT.md) · [0.2D closeout](MILESTONE_0_2D_ROAD_UX_PLAN.md) · [0.2C road-first design](MILESTONE_0_2C_DESIGN.md) · [Road preservation contract](ROAD_EDIT_CONTRACT.md) · [Repository roadmap](../../ROADMAP.md)
+[0.2E property plan](MILESTONE_0_2E_PROPERTY_DESIGN.md) · [E2 straight-split design](E2_PROPERTY_SPLIT_DESIGN.md) · [E3 approved merge design](E3_PROPERTY_MERGE_DESIGN.md) · [E4 approved plot-count design](E4_PLOT_COUNT_DESIGN.md) · [E4 acceptance report](E4_ACCEPTANCE_REPORT.md) · [E5 approved acceptance plan](E5_INTEGRATED_ACCEPTANCE_PLAN.md) · [E5 acceptance report](E5_ACCEPTANCE_REPORT.md) · [E3 acceptance report](E3_ACCEPTANCE_REPORT.md) · [0.2F building plan](MILESTONE_0_2F_BUILDING_DESIGN.md) · [0.2G desktop workspace plan](MILESTONE_0_2G_DESKTOP_UI.md) · [G1–G4 implementation](G1_G4_IMPLEMENTATION_PLAN.md) · [0.2G mockups](assets/Mappo_0.2G_UI_Mockups.pdf) · [0.2H release plan](MILESTONE_0_2H_RELEASE_PLAN.md) · [G4 acceptance report](G4_ACCEPTANCE_REPORT.md) · [0.2D closeout](MILESTONE_0_2D_ROAD_UX_PLAN.md) · [0.2C road-first design](MILESTONE_0_2C_DESIGN.md) · [Road preservation contract](ROAD_EDIT_CONTRACT.md) · [Repository roadmap](../../ROADMAP.md)
 
 ## Release thesis
 
@@ -31,8 +31,8 @@ flowchart TD
 | **0.2D — road editing experience** | Readable map preview, contextual building decisions, blocked recovery and acceptance | D1–D4 **merged** in PRs #51–#53, #56 | Understand/rescue edits without technical reports |
 | **0.2E — manual property restructuring** | Create/split/merge parcels, adjust plot counts and reconcile dependent references | **E1** create (merged #58); **E2** split (merged #60); **E3** merge (merged #62); **E4** plot-count editing (merged #64); **E5** integrated QA (merged #66) | No orphaned buildings or unapproved identity loss |
 | **0.2F — advanced building design** | Extended 2D footprints, direct vertex/wing/hole editing, meaningful categories, QA | **F1** shapes (merged #68); **F2** direct geometry (merged #69); **F3** uses (merged #70); [**F4** integrated QA](F4_ACCEPTANCE_REPORT.md) (merged #71) | True new capabilities, no duplication of 3G/3H |
-| **0.2G — desktop workspace rebuild** | Desktop and laptop UI with shared selection, Inspector, preview, and edit controls | **G1–G3G merged**; **G4** desktop acceptance and documentation in progress | Feature parity and a clear path from selection to decision to Apply |
-| **0.2H — release hardening** | Cross-editor integration, migration audit, performance, browsers, release candidate | **H1** release workflows; **H2** save/migrate; **H3** performance; **H4** QA; **H5** RC | Stable offline standalone with tested old saves |
+| **0.2G — desktop workspace rebuild** | Desktop and laptop UI with shared selection, Inspector, preview, and edit controls | **G1–G4 merged**; G4 acceptance [PR #87](https://github.com/xbwtyz/Mappo/pull/87) | Feature parity and a clear path from selection to decision to Apply |
+| **0.2H — release hardening** | Cross-editor integration, migration audit, performance, browsers, release candidate | [**H1–H5 detailed plan**](MILESTONE_0_2H_RELEASE_PLAN.md); H1/H2 under review | Stable offline standalone with tested old saves |
 
 The new milestone identifiers replace **older active roadmap labels**; they do not rename or invalidate already merged 0.2C/0.2D commits, earlier planning branches, historical QA records or compiled distributions. Old proposals with conflicting labels remain archived context, not the current implementation authority.
 
@@ -59,8 +59,8 @@ The new milestone identifiers replace **older active roadmap labels**; they do n
 - **0.2A–D:** merged on `main`, with D4 closeout in [PR #56](https://github.com/xbwtyz/Mappo/pull/56).
 - **0.2E:** merged through [E5 #66](https://github.com/xbwtyz/Mappo/pull/66).
 - **0.2F:** Complete through [F4 #71](https://github.com/xbwtyz/Mappo/pull/71). [F4 acceptance](F4_ACCEPTANCE_REPORT.md) covers cross-editor behavior and performance.
-- **0.2G:** G1–G3G merged; [G4 desktop acceptance](G4_ACCEPTANCE_REPORT.md) in review. Generation/Add/Roads is already the default desktop workspace.
-- **0.2H:** final 0.2 release integration and stabilization after the new workspace is accepted.
+- **0.2G:** [G4 accepted and merged in PR #87](G4_ACCEPTANCE_REPORT.md). Generation/Add/Roads is the canonical desktop workspace.
+- **0.2H:** active [H1–H5 final release integration and stabilization](MILESTONE_0_2H_RELEASE_PLAN.md). No tag, release or Pages publication before separate owner approval.
 - **3D:** later, after 2D is capable and stable.
 
 Historical design plans under `docs/history/`, old planning branches and `dist/` remain unchanged.

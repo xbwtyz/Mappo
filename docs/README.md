@@ -10,6 +10,7 @@
 | [Architecture Atlas](architecture/Mappo_Repository_Atlas.md) | Complete repository hierarchy, visual system diagrams, and a purpose description for every tracked file |
 | [Unified CI Guide](CI.md) | Branch and PR tests, browser matrices, artifacts and local commands |
 | [Current Roadmap](ROADMAP.md) | Completed milestones and separately proposed future work |
+| [0.2H Release Hardening](plans/0.2/MILESTONE_0_2H_RELEASE_PLAN.md) | H1 manual release safety, H2 save compatibility, H3 performance, H4 validation and H5 explicit publication gate |
 | [0.2 Master Roadmap](plans/0.2/README.md) | Milestone order, current status, and the desktop workspace rebuild |
 | [0.2E Property Design](plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md) | E1 and E2 merged; E3 adjacent merge design proposed; E4/E5 planned |
 | [E2 Straight-Split Design](plans/0.2/E2_PROPERTY_SPLIT_DESIGN.md) | Frontage-to-rear geometry, identity lineage, plot/building ownership and five implementation/QA gates |
