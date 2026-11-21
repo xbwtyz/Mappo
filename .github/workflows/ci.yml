@@ -4,7 +4,7 @@ name: Mappo CI
 # for release workflow_run compatibility and existing required status checks.
 on:
   push:
-    branches: [main]
+    branches: [main, feature/mappo-0.2h-h3-performance-audit]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   merge_group:
@@ -120,7 +120,7 @@ jobs:
       # Temporary one-branch H3 measurement; remove after collecting baseline.
       # This must not burden ordinary PR CI or a merged main branch.
       - name: H3 benchmark Large Organic on the current app
-        if: ${{ matrix.suite == 'integration' && github.event_name == 'pull_request' && github.head_ref == 'feature/mappo-0.2h-h3-performance-audit' }}
+        if: ${{ matrix.suite == 'integration' && github.event_name == 'push' && github.ref == 'refs/heads/feature/mappo-0.2h-h3-performance-audit' }}
         run: node scripts/c7-browser-performance.mjs
 
       - name: C7 desktop browser performance and stale-draft checks
