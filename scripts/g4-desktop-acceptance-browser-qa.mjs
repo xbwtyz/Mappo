@@ -191,7 +191,10 @@ async function runCase(browser, engine, viewport) {
       assert.deepEqual(migrated.nodes, oldSave.project.city.nodes.map(n => [n.id, n.x, n.y]),
         'Loading an older save may not regenerate street geometry');
       assert.deepEqual(migrated.roads, oldSave.project.city.roads.map(r => r.id));
-      await el('projectMenuButton').click();
+      // Opening a project may leave the nonmodal Project menu open; don't
+      // toggle it closed before requesting the current-project download.
+      if (!await el('projectMenu').isVisible()) await el('projectMenuButton').click();
+      assert.equal(await el('saveProjectButton').isVisible(), true);
       const downloadEvent = page.waitForEvent('download', { timeout: 12000 }).catch(() => null);
       await el('saveProjectButton').click();
       const download = await downloadEvent;
