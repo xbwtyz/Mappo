@@ -1,10 +1,14 @@
 // Phase 7C browser smoke checks. Only a test-time Playwright dependency;
 // the distributed HTML remains free of external scripts and styles.
 import assert from 'node:assert/strict';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
+import { observeBuildingApp } from '../tests/helpers/building-app.js';
 import { chromium, firefox } from 'playwright';
 
-const url = new URL('../index.html?workspace=legacy', import.meta.url).href;
+// Historical compact smoke checks use the same test-only harness as the other
+// specialist suites. The production standalone does not have a legacy URL switch.
+const html = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'));
+const url = 'http://mappo-phase7-compact.test/';
 const output = new URL('../artifacts/browser-qa/', import.meta.url);
 await mkdir(output, { recursive: true });
 const viewports = [
@@ -27,6 +31,8 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
     const page = await browser.newPage({ viewport, deviceScaleFactor: 1 });
     page.on('pageerror', error => errors.push(error.message));
     try {
+      await page.route('**/*', route => route.request().url().startsWith(url)
+        ? route.fulfill({ contentType:'text/html', body:html }) : route.abort());
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await page.locator('#mapCanvas').waitFor({ state: 'visible', timeout: 30000 });
       const mapBefore = await page.locator('#mapCanvas').boundingBox();

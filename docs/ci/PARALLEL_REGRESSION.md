@@ -20,11 +20,11 @@ Other successful full-CI runs took approximately 8–11 minutes. The former brow
 
 ## Implementation
 
-`.github/workflows/ci.yml` starts the Node build/regression check and three independent browser QA matrix jobs at the same time. Each browser job builds the standalone HTML locally, installs pinned Playwright Chromium and Firefox, and uploads failure evidence separately. The exact same 15 scripts from the old `test:browser` command are present, once each:
+`.github/workflows/ci.yml` starts the Node build/regression check and three independent browser QA matrix jobs at the same time. Each browser job builds the standalone HTML locally, installs pinned Playwright Chromium and Firefox, and uploads failure evidence separately. The full 16-script browser regression command on the updated `main` branch (including the new G3G desktop parity QA) is preserved, with each script assigned exactly once:
 
 | Matrix suite | Scripts |
 | --- | --- |
-| `workspace` | `desktop-three-tabs-browser-qa.mjs`, `workspace-g2-browser-qa.mjs`, `road-browser-qa.mjs`, `c7-p2-browser-qa.mjs`, `c7-p3-offline-qa.mjs` |
+| `workspace` | `g3g-desktop-parity-browser-qa.mjs`, `desktop-three-tabs-browser-qa.mjs`, `workspace-g2-browser-qa.mjs`, `road-browser-qa.mjs`, `c7-p2-browser-qa.mjs`, `c7-p3-offline-qa.mjs` |
 | `property` | `building-footprint-f2-browser-qa.mjs`, `property-integration-e5-browser-qa.mjs`, `property-count-e4-browser-qa.mjs`, `property-merge-e3-browser-qa.mjs`, `property-split-e2-browser-qa.mjs`, `property-creation-e1-browser-qa.mjs`, `building-browser-qa.mjs` |
 | `integration` | `browser-qa.mjs`, `d4-browser-acceptance.mjs`, `building-performance-f4.mjs` |
 
@@ -50,9 +50,15 @@ The first [parallel CI validation #44948061967](https://github.com/xbwtyz/Mappo/
 
 This is one measured before/after comparison, not a guarantee for future executions. Cache-warmed confirmation and additional samples should be considered before treating it as a steady-state estimate.
 
+## Confirming run and G3G integration
+
+The second [parallel CI validation #44948457217](https://github.com/xbwtyz/Mappo/actions/runs/44948457217), with the warmed cache, also passed all suites and the aggregate required gate. It finished in **5m 13s** (39.5% faster than the 8m 37s G2F baseline). Variation came from the longer Node regression workload; browser shards again finished independently.
+
+While the first two CI runs were executing, Mappo G3G merged into `main`, updating the version to `0.2.0-dev.g3g` and adding `g3g-desktop-parity-browser-qa.mjs`. This CI branch integrates that new test into the workspace shard instead of replacing or dropping the newest main-branch changes. Revalidate against the merged G3G baseline before approving this PR.
+
 ## Acceptance and benchmark
 
-1. Verify the YAML and `package.json` are valid, and all 15 original browser scripts remain reachable.
+1. Verify the YAML and `package.json` are valid, and all 16 current browser scripts (including G3G) remain reachable.
 2. On the PR, check that the four independent jobs start and complete and the existing named gate reflects their combined result.
 3. Confirm browser screenshots, F4 measurements and standalone HTML artifact remain available.
 4. Record elapsed time from multiple successful full-CI runs and compare with the 8m 37s baseline. Aim for roughly 4–5 minutes, but treat this as a target, not a guaranteed result.

@@ -11,8 +11,12 @@ globalThis.__buildingQA = {
 `;
 
 export function observeBuildingApp(html, extraObservation = '', { legacy = true } = {}) {
-  if (legacy) html = html.replace('const url = new URL(window.location.href);',
-    "const url = new URL(window.location.href); url.searchParams.set('workspace', 'legacy');");
+  // Old compact UI regression tests use this test-only seam. No public desktop override.
+  if (legacy) {
+    const desktopCtor = 'redraw: requestDraw,\n  enabled: true,';
+    if (!html.includes(desktopCtor)) throw new Error('Desktop QA seam missing');
+    html = html.replace(desktopCtor, 'redraw: requestDraw,\n  enabled: false,');
+  }
   return html.replace(/\n\}\)\(\);\s*<\/script>/, `${buildingObservation}\n${extraObservation}\n})();\n</script>`);
 }
 
