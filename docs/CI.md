@@ -15,6 +15,8 @@ The required `Mappo CI` runs full validation on review-ready PRs, main pushes, m
 
 All six jobs must pass for the unchanged required `Build, Node tests and browser QA` check to succeed. Browser runners install test-only Playwright 1.56.1 with Chromium and Firefox. Existing 16 scripts remain; G4 adds two modern-desktop scripts: viewport, road-dock/comparison, old-save migration and `file://` startup across 1366×768, 1440×900 and 5120×1440; plus a 1440×900 cross-editor split/merge/wing/courtyard/Undo/Redo and portable reopen acceptance check.
 
+H2 adds frozen 3A.2–3E.5 historical save migration and nonmutation tests to the Node matrix, plus real Chromium/Firefox Project-menu import, rejection and re-export for representative schemas in the desktop browser group. `npm run test:browser:h2` runs that focused browser suite.
+
 Node and build do not need npm installation. For local testing:
 
 ```bash
@@ -34,6 +36,6 @@ Browser setup: `npm install --no-save --no-package-lock playwright@1.56.1`; `npx
 
 CI's Node shard uploads the compiled `index.html` and matching `dist/mappo-<APP_VERSION>.html`; each browser suite uploads independent screenshots and QA evidence, retained 14 days. G4 stores machine context and Small/Large draw and road preview results in `artifacts/g4/desktop-acceptance.json` / `.md`. Wall-clock results on shared CI hardware are comparative diagnostics, not physical-device measurements.
 
-CI uses `contents: read`; it never commits, tags or publishes. The separate `pages.yml` uses **manual dispatch on main only**; merging a PR doesn't publish Pages. The optional heavy C7 browser benchmark is only run by selecting `run_c7_benchmark` on a manual Mappo CI dispatch.
+CI uses `contents: read`; it never commits, tags or publishes. The separate `release.yml` is manual-only on `main` and rejects development versions, missing release notes, absent green CI for the exact commit, and existing immutable tags. Passing CI never publishes a release. The separate `pages.yml` uses **manual dispatch on main only**; merging a PR doesn't publish Pages. The optional heavy C7 browser benchmark is only run by selecting `run_c7_benchmark` on a manual Mappo CI dispatch.
 
 See [G4 acceptance](plans/0.2/G4_ACCEPTANCE_REPORT.md), [current roadmap](ROADMAP.md) and [desktop implementation plan](plans/0.2/G1_G4_IMPLEMENTATION_PLAN.md).

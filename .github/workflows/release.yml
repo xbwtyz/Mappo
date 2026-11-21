@@ -1,65 +1,101 @@
-name: Publish stable Mappo 0.1.0 GitHub Release
+name: Publish Mappo 0.2.0 GitHub Release (manual)
 
-# A release is created only when the existing main-branch CI has succeeded.
-# It tags exactly the commit that was tested. No untrusted CI artifacts.
+# H1: Release is an explicit owner action; neither merging nor passing CI
+# starts publishing. The existing published v0.1.0 release is never modified.
 on:
-  workflow_run:
-    workflows: ['Mappo CI']
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      release_version:
+        description: Version to publish (must match app and package, without v prefix)
+        type: choice
+        required: true
+        options: ['0.2.0']
+      confirmation:
+        description: Type PUBLISH-0.2.0 to authorize a stable GitHub Release
+        type: string
+        required: true
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
-  group: mappo-stable-v0.1.0
+  group: mappo-release-v0.2.0
   cancel-in-progress: false
 
 jobs:
-  release:
-    if: github.repository == 'xbwtyz/Mappo' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
-    name: Tag and publish v0.1.0 only after verification
+  publish:
+    # Feature-branch dispatches cannot produce tags or releases.
+    if: github.repository == 'xbwtyz/Mappo' && github.ref == 'refs/heads/main'
+    name: Verify exact main commit and publish v0.2.0
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
-      - name: Check out the exact CI-tested commit
+      - name: Require explicit stable-release confirmation
+        env:
+          RELEASE_VERSION: ${{ inputs.release_version }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          test "$RELEASE_VERSION" = '0.2.0'
+          test "$CONFIRMATION" = 'PUBLISH-0.2.0'
+
+      - name: Check out the explicitly selected main commit
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || 'main' }}
+          ref: ${{ github.sha }}
           persist-credentials: false
+          fetch-depth: 0
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      # Successful CI for 0.2 development must not attempt to republish 0.1.
-      - name: Check if the tested commit is a stable 0.1.0 build
-        id: stable
-        shell: bash
+
+      - name: Confirm stable app version and approved release notes
         run: |
           app_version="$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")"
           package_version="$(node -p "require('./package.json').version")"
-          if [[ "$app_version" == '0.1.0' && "$package_version" == '0.1.0' ]]; then
-            echo 'eligible=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'eligible=false' >> "$GITHUB_OUTPUT"
-            echo "Skipping old v0.1.0 publisher for app=$app_version package=$package_version."
-          fi
-      - name: Confirm stable version and reproducible build
-        if: steps.stable.outputs.eligible == 'true'
-        run: |
-          test "$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")" = '0.1.0'
-          test "$(node -p "require('./package.json').version")" = '0.1.0'
-          npm run check
-          cmp index.html dist/mappo-0.1.0.html
-          git diff --exit-code -- index.html dist/mappo-0.1.0.html
-          test -f docs/releases/v0.1.0.md
-      - name: Tag and publish GitHub Release with offline HTML
-        if: steps.stable.outputs.eligible == 'true'
+          test "$app_version" = '0.2.0'
+          test "$package_version" = '0.2.0'
+          test -s docs/releases/v0.2.0.md
+          test -f dist/mappo-0.2.0.html
+
+      - name: Require successful main-branch CI for this exact commit
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view v0.1.0 >/dev/null 2>&1; then
-            echo 'Stable release v0.1.0 already exists; not re-tagging.'
-          else
-            gh release create v0.1.0               dist/mappo-0.1.0.html#'Mappo 0.1.0 offline standalone HTML'               --repo "$GITHUB_REPOSITORY"               --target "$(git rev-parse HEAD)"               --title 'Mappo 0.1.0 — First Stable Release'               --notes-file docs/releases/v0.1.0.md               --latest
+          set -euo pipefail
+          actual_main="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          test "$actual_main" = "$GITHUB_SHA"
+          successful="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$GITHUB_SHA&event=push&per_page=100" --jq '[.workflow_runs[] | select(.name == "Mappo CI" and .conclusion == "success")] | length')"
+          test "$successful" -ge 1
+
+      - name: Rebuild and retest the exact committed standalone
+        run: |
+          set -euo pipefail
+          npm run check
+          cmp index.html dist/mappo-0.2.0.html
+          git diff --exit-code -- index.html dist/mappo-0.2.0.html
+
+      - name: Publish new stable release without overwriting a tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          actual_main="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          test "$actual_main" = "$GITHUB_SHA"
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v0.2.0" >/dev/null 2>&1; then
+            echo 'v0.2.0 tag already exists: refusing to move or overwrite it.' >&2
+            exit 1
           fi
+          if gh release view v0.2.0 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'v0.2.0 release already exists: refusing to overwrite it.' >&2
+            exit 1
+          fi
+          gh release create v0.2.0 \
+            "dist/mappo-0.2.0.html#Mappo 0.2.0 offline HTML" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title 'Mappo 0.2.0 — 2D City Designer' \
+            --notes-file docs/releases/v0.2.0.md \
+            --latest

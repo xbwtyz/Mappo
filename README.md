@@ -1,6 +1,6 @@
 # Mappo
 
-> **Development track: Mappo 0.2G G4 desktop acceptance.** 0.2A–F and G3G are merged; Generation/Add/Roads is the canonical desktop workspace. G4 verifies the desktop integration before 0.2H release hardening. The published stable release remains **0.1.0**. See the [0.2 roadmap](docs/plans/0.2/README.md).
+> **Development track: Mappo 0.2H release hardening.** 0.2A–G are merged; the desktop Generation/Add/Roads workspace has passed G4. H1 prepares a manual stable release and H2 audits historical saves before H3 performance and H4/H5 release acceptance. The published stable release remains **0.1.0**. See the [0.2 roadmap](docs/plans/0.2/README.md).
 
 **Mappo 0.1.0** is an offline-first medieval and fantasy city generator and 2D editor, built from modular JavaScript and shipped as **one standalone HTML file**.
 
@@ -22,7 +22,7 @@
 
 ## 0.2 development candidate (unreleased)
 
-The current `main` branch contains the 0.2 city designer: road editing with local neighborhood adaptation, property creation/splitting/merging, plot-count changes, detailed building footprints and the **Generation / Add / Roads** desktop workspace. The Pages site is manually published and **may not match `main`**. The current development standalone is [`dist/mappo-0.2-dev.g3g.html`](dist/mappo-0.2-dev.g3g.html). G4 is an acceptance review of this existing runtime; no new application version/schema is needed unless product code changes.
+The current `main` branch contains the 0.2 city designer: road editing with local neighborhood adaptation, property creation/splitting/merging, plot-count changes, detailed building footprints and the **Generation / Add / Roads** desktop workspace. The Pages site is manually published and **may not match `main`**. The current development standalone is [`dist/mappo-0.2-dev.g3g.html`](dist/mappo-0.2-dev.g3g.html). H1/H2 are release and compatibility verification only; the active development build and schema 9 are unchanged.
 
 **Generation** hosts city, districts and defenses. **Add** begins property/building placement and landscape drafts. **Roads** exposes road changes, impact review and comparison. The property-first Inspector edits existing land, plots, buildings, names and uses. Desktop/laptop Firefox and Chromium are the current support targets; phone/touch acceptance is deferred.
 
@@ -58,6 +58,6 @@ Node 20.11+ is needed for development, **not to run** the distributed HTML. CI r
 
 The 0.1 editor does not yet support manual road-network restructuring, property split/merge, unrestricted concave parcel editing or 3D rendering. PNG export captures the **currently visible canvas**, not an automatic full-city tiled image. Accepted project edits survive saving; Undo histories and uncommitted previews generally do not.
 
-**Next on the 0.2 development track:** [G4 desktop acceptance](docs/plans/0.2/G4_ACCEPTANCE_REPORT.md), then [0.2H release hardening](docs/plans/0.2/README.md). The stable 0.1.0 release remains separate.
+**Next on the 0.2 development track:** [0.2H release hardening](docs/plans/0.2/MILESTONE_0_2H_RELEASE_PLAN.md): H1/H2 preparation, H3 performance disposition, H4 final QA, H5 explicit release approval. The stable 0.1.0 release remains separate.
 
 [Development guide](docs/development.md) · [Project format](docs/reference/PROJECT_FORMAT.md) · [Release notes](docs/releases/v0.1.0.md) · [Docs index](docs/README.md)

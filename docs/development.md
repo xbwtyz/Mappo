@@ -1,6 +1,6 @@
 # Mappo Developer Guide
 
-**Stable release:** `0.1.0` · **G4 acceptance candidate:** `0.2-dev.g3g` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
+**Stable release:** `0.1.0` · **0.2H acceptance candidate:** `0.2-dev.g3g` (no version bump in H1/H2) · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
 
 ## Source organization
 
@@ -66,7 +66,7 @@ npm run test:browser:desktop       # modern three-tab + G4 acceptance
 npm run test:browser:g4            # focused G4 browser matrix
 ```
 
-G4's desktop suite records `artifacts/g4/desktop-acceptance.json` and `.md` with browser/viewport, historical-save and offline status, Small/Large draw measurements, and road preview timing. Its separate cross-editor test verifies a real canonical desktop split/merge, wing and courtyard changes, accepted history and portable reopen. These are diagnostics, not guaranteed user-device timings.
+H2 adds complete archived schema 1–8 Node migration checks and native browser open/export/reopen for representative historical files. Run `npm run test:browser:h2` for focused H2 compatibility acceptance. G4's desktop suite records `artifacts/g4/desktop-acceptance.json` and `.md` with browser/viewport, historical-save and offline status, Small/Large draw measurements, and road preview timing. Its separate cross-editor test verifies a real canonical desktop split/merge, wing and courtyard changes, accepted history and portable reopen. These are diagnostics, not guaranteed user-device timings.
 
 Dev 4f passed the complete Node, compilation and Chromium/Firefox browser matrices: [CI run #341](https://github.com/xbwtyz/Mappo/actions/runs/44428124074). The 0.1.0 release candidate must pass equivalent CI on its own commit; this does not replace hands-on testing.
 
@@ -80,6 +80,8 @@ Dev 4f passed the complete Node, compilation and Chromium/Firefox browser matric
 4. Keep historical distribution files intact unless a separate archival plan is approved.
 5. Run Node tests, source-to-compiled parity, persistence compatibility and relevant graphical browser QA.
 6. Present a pull request for explicit approval before merging.
+
+**Release workflow:** [`.github/workflows/release.yml`](../.github/workflows/release.yml) is manual-only on `main`, with an explicit 0.2.0 confirmation and guards for exactly matching stable versions, approved release notes, passing main CI on the exact commit, full Node/build parity, immutable release tags and no overwriting v0.1.0. It cannot publish the current development build. The actual 0.2.0 version change, release notes, approval and dispatch belong to H5.
 
 **Pages behavior:** [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) is manual-only on `main`. A PR merge does **not** deploy the site. The owner can explicitly run the Pages workflow when ready.
 
