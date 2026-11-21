@@ -2703,8 +2703,7 @@ desktopWorkspace = new DesktopWorkspace({
   generationKey: desktopGenerationKey,
   acceptedProject: () => project,
   redraw: requestDraw,
-  enabled: url.searchParams.get('workspace') !== 'legacy',
-
+  enabled: true,
 });
 desktopWorkspace.bind();
 window.addEventListener('beforeunload', event => {
