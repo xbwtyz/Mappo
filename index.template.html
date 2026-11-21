@@ -494,8 +494,9 @@
         <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a landscape feature or city block, or use Add feature in Landscape. Pin this panel to keep the city report available.</p></div>
         <div id="workspaceSelectionInspector" hidden><p id="workspaceSelectionType" class="eyebrow"></p><h2 id="workspaceSelectionName"></h2><p id="workspaceSelectionDescription" class="intro"></p><details id="identityInspector" class="identity-inspector" hidden>
           <summary id="identityEditorTitle">Property identity</summary>
-          <p class="hint">Name and use apply only to this selected record. Blank fields restore its generated label. Undo identity keeps the last 20 applied edits in this session.</p>
+          <p class="hint">Apply identity saves changes to this selection. Undo identity keeps the last 20 applied edits in this session.</p>
           <div class="control-group"><label for="identityNameInput">Custom name</label><input id="identityNameInput" maxlength="80" placeholder="Use generated label" autocomplete="off"></div>
+          <div id="identityBuildingTypeGroup" class="control-group" hidden><label for="identityBuildingType">Building use</label><select id="identityBuildingType"></select></div>
           <div class="control-group"><label for="identityUseInput">Descriptive use</label><select id="identityUseInput"><option value="">No override</option><option>Residence</option><option>Inn / Tavern</option><option>Shop</option><option>Workshop</option><option>Guildhall</option><option>Temple</option><option>Warehouse</option><option value="other">Other…</option></select></div>
           <div id="identityOtherUseGroup" class="control-group" hidden><label for="identityOtherUseInput">Other descriptive use</label><input id="identityOtherUseInput" maxlength="80" placeholder="Describe this place" autocomplete="off"></div>
           <p id="identityDraftState" class="hint">Up to date</p>

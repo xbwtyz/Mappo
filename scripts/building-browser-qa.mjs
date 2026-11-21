@@ -297,11 +297,28 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         const building = __buildingQA.state().project.city.buildings.find(b => b.id === id);
         return { plots: building.plotIds, frontage: building.frontageRoadId };
       }, buildingId);
-      for (const text of ['Generated type:', 'Footprint shape:', 'Footprint area:',
+      for (const text of ['Building use:', 'Footprint shape:', 'Footprint area:',
         `Occupied plots: ${childContext.plots.length}`, 'square survey units', childContext.frontage, id, ...childContext.plots])
         assert.ok(informationText.includes(text), `Building information contains ${text}`);
       assert.deepEqual(await page.evaluate(() => __buildingQA.state().files.captureDocument().workspace.ui.selection), { kind: 'building', id: buildingId });
       await page.screenshot({ path: new URL(`${label}-child.png`, output).pathname });
+      // F3: classify through the Inspector, capture the save, then undo metadata only.
+      if (viewport.name === 'desktop' || viewport.name === 'phone') {
+        if (await page.locator('#identityInspector').getAttribute('open') === null)
+          await page.locator('#identityEditorTitle').click();
+        const acceptedBuilding = id => page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id), id);
+        const original = await acceptedBuilding(buildingId);
+        const type = original.type === 'inn' ? 'shop' : 'inn';
+        await page.locator('#identityBuildingType').selectOption(type);
+        assert.equal((await acceptedBuilding(buildingId)).type, original.type);
+        await page.locator('#identityApplyButton').click();
+        assert.deepEqual(await acceptedBuilding(buildingId), { ...original, type });
+        assert.match(await page.locator('#workspaceSelectionSections').innerText(), /Building use: (Inn|Shop)/);
+        const accepted = await page.evaluate(() => __buildingQA.state().files.captureDocument());
+        assert.equal(accepted.project.city.buildings.find(b => b.id === buildingId).type, type);
+        await page.locator('#identityUndoButton').click();
+        assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
+      }
       // 3G-A: use the real Inspector action and verify a visual-only mode in every viewport.
       await page.getByRole('button', { name: 'Edit building footprint' }).click();
       assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isEditing(__buildingQA.buildingId)), true);

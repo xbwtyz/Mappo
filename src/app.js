@@ -7,6 +7,7 @@ import { BuildingWorkspace } from './ui/building-workspace.js';
 import { BuildingFootprintControls } from './ui/building-footprint-controls.js';
 import { polygonSignedArea } from './core/geometry.js';
 import { PropertyWorkspace } from './ui/property-workspace.js';
+import { renderBuildingUseOptions } from './ui/building-use.js';
 import { IdentityWorkspace } from './ui/identity-workspace.js';
 import { BuildingEditSession, BUILDING_EDIT_TOOLS, buildingDirectHandles } from './editor/building.js';
 import { buildingFrame } from './core/building-transform.js';
@@ -578,6 +579,8 @@ function syncBuildingStructureUI3H() {
   $('structureReplaceGeometry').checked = Boolean(session.active.replaceGeometry);
   $('structureReplaceGeometry').disabled = Boolean(session.drag);
   $('structurePropertyLabel').textContent=session.propertyId;
+  const currentType = replacing ? project.city.buildings.find(b => b.id === session.buildingId)?.type : undefined;
+  renderBuildingUseOptions($('structureType'), currentType);
   for(const [id,value] of Object.entries({
     structureU:spec.u,structureV:spec.v,structureWidth:spec.width,
     structureDepth:spec.depth,structureAngle:spec.angle,
@@ -1708,6 +1711,11 @@ propertyWorkspace = new PropertyWorkspace({
 });
 identityWorkspace = new IdentityWorkspace({
   getElement: $, shell: workspaceShell, getCity: () => project?.city,
+  canChangeBuildingUse: () => !(
+    roadWorkspace?.active || buildingEditSession?.isActive || buildingPlacementSession?.isActive
+    || propertyEditSession?.isActive || propertyCreationSessionE1?.active
+    || propertySplitE2?.active || propertyMergeE3?.active
+  ),
   commit: city => {
     project = { ...project, city };
     updateDetails(); workspaceShell.refresh(); requestDraw();

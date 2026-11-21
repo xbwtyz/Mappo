@@ -2,8 +2,8 @@
 
 ## Policy
 
-Test early with focused checks during development; run the full automated suite
-at review and release gates. An incremental pass is **not** accepted for merge
+GitHub Actions runs the full automated suite at review and release gates.
+Use focused local tests when reproducing or diagnosing a failure. An incremental pass is **not** accepted for merge
 until the full validation passes for the exact review-ready revision.
 
 | Event | Checks |
@@ -32,18 +32,11 @@ branch has been retired. The script and benchmark data format remain intact.
 
 ## Local development
 
-Use targeted Node tests while changing the corresponding subsystem, for
-example:
-
-    node --test tests/road-preview.test.js tests/c7-junction-preview-worker.test.js
-
-Then run the appropriate complete pass when a development cycle is finished:
-
-    npm run check
-    npm run test:full
-
-The latter requires the Playwright test-only browsers installed locally.
-Full GitHub CI is the authoritative pre-merge acceptance check.
+Run `npm run build` when preparing checked-in standalone HTML. Open or
+update the review PR to run the full build, Node, and browser checks in GitHub
+Actions. Use targeted local tests for failure diagnosis, such as
+`node --test tests/road-preview.test.js`. Full GitHub CI is the authoritative
+pre-merge acceptance check.
 
 ## Resource and safety safeguards
 

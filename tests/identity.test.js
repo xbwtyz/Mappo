@@ -69,3 +69,37 @@ test('optional identities round-trip in schema 9 and malformed imports are rejec
   assert.equal(JSON.stringify(document), JSON.stringify(JSON.parse(text)));
   for (const bad of [null, '', ' ', 'x'.repeat(81), 4]) assert.throws(() => validateIdentity({ customName: bad }));
 });
+
+test('F3 classifies a legacy building through identity, preserving exact accepted data and schema 9', () => {
+  const project = createProject({ seed: 'building-use-storage', size: 'small', morphology: 'organic' });
+  const building = project.city.buildings[0];
+  building.type = 'bakehouse';
+  building.customName = '  Hearth   House  ';
+  building.customUse = '  Community oven  ';
+  building.customDescription = 'A long-standing ward landmark.';
+  const ref = { kind: 'building', id: building.id };
+  const editor = new IdentityEditor();
+  const before = JSON.stringify(project);
+  assert.equal(editor.apply(project.city, ref, {
+    buildingType: '', customName: 'Hearth House', customUse: 'Community oven'
+  }), project.city);
+  assert.throws(() => editor.apply(project.city, ref, { buildingType: 'arbitrary' }), /supported building use/);
+  assert.throws(() => editor.apply(project.city, ref, {
+    buildingType: 'inn', previousBuildingType: 'temple'
+  }), /changed since this draft/);
+  assert.throws(() => editor.apply(project.city, {
+    kind: 'property', id: building.propertyId
+  }, { buildingType: 'inn' }), /supported building use/);
+  const city = editor.apply(project.city, ref, { buildingType: 'inn', previousBuildingType: 'bakehouse' });
+  assert.equal(city.buildings[0].type, 'inn');
+  assert.deepEqual(city.buildings[0], { ...building, type: 'inn' });
+  assert.equal(city.buildings[1], project.city.buildings[1]);
+  assert.equal(city.properties, project.city.properties);
+  assert.equal(city.roads, project.city.roads);
+  assert.equal(JSON.stringify(project), before);
+  const accepted = { ...project, city };
+  const saved = decodeProjectDocument(encodeProjectDocument(createProjectDocument(accepted)));
+  assert.equal(saved.project.schemaVersion, 9);
+  assert.equal(JSON.stringify(saved.project), JSON.stringify(accepted));
+  assert.deepEqual(editor.undo(city), project.city);
+});
