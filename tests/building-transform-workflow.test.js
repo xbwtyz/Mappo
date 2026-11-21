@@ -1,8 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildingAppHarness } from './helpers/building-app.js';
-import { buildingPreviewHandles } from '../src/core/building-transform.js';
-import { hitBuilding } from '../src/core/building-selection.js';
+import { buildingPreviewHandles, buildingPreviewPivot } from '../src/core/building-transform.js';
 import { createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../src/data/project-format.js';
 
 const copy=value=>JSON.parse(JSON.stringify(value));
@@ -19,32 +18,34 @@ function open(app) {
   assert.ok(edit);edit.handlers.click();
   return { property, building:state.project.city.buildings.find(b=>b.id===property.buildingIds[0]) };
 }
-function roofPoint(app,building) {
-  const {project,camera}=app.state(),c=building.footprint.reduce((p,v)=>({x:p.x+v.x/building.footprint.length,y:p.y+v.y/building.footprint.length}),{x:0,y:0});
-  for(let i=0;i<building.footprint.length;i++){
-    const a=building.footprint[i],b=building.footprint[(i+1)%building.footprint.length];
-    const point={x:.45*(a.x+b.x)+.1*c.x,y:.45*(a.y+b.y)+.1*c.y};
-    if(hitBuilding(point,project.city.buildings,camera.zoom)?.id===building.id)return camera.worldToScreen(point);
-  }
-  assert.fail('Expected a roof point');
-}
 test('3G-B compiled numeric controls preview move/rotate/resize without changing portable city',async()=>{
   const app=await buildingAppHarness(), state=app.state(), before=JSON.stringify(state.project.city);
   const {building}=open(app),session=state.buildingEditSession;
   assert.equal(app.el('buildingTransformPanel').hidden,false);
   assert.equal(session.isActive,true);
-  app.el('buildingOffsetX').value='9.5';app.el('buildingOffsetX').handlers.change();
+  assert.equal(app.el('buildingToolTransform')['aria-pressed'], 'true');
+  app.el('buildingOffsetX').value='9.5';app.el('buildingOffsetX').handlers.input();
   assert.equal(session.transform.dx,9.5);
   assert.equal(session.isPending,true);
   assert.notDeepEqual(copy(session.previewFor(state.project.city).footprint),copy(building.footprint));
-  app.el('buildingToolRotate').handlers.click();
-  app.el('buildingAngle').value='30';app.el('buildingAngle').handlers.change();
+  app.el('buildingAngle').value='30';app.el('buildingAngle').handlers.input();
   assert.ok(Math.abs(session.transform.angle-Math.PI/6)<1e-9);
-  app.el('buildingToolResize').handlers.click();
   const base=building.footprint.map(p=>p.x),width=Math.max(...base)-Math.min(...base);
   app.el('buildingWidth').value=String(width*1.25);
   app.el('buildingWidth').handlers.change();
   assert.ok(Math.abs(session.transform.scaleX-1.25)<1e-8);
+  assert.ok(Math.abs(session.transform.scaleY-1.25)<1e-8);
+  app.el('buildingLockRatio').checked=false;
+  app.el('buildingLockRatio').handlers.change();
+  app.el('buildingWidth').value=String(width*1.5);
+  app.el('buildingWidth').handlers.input();
+  assert.ok(Math.abs(session.transform.scaleX-1.5)<1e-8);
+  assert.ok(Math.abs(session.transform.scaleY-1.25)<1e-8);
+  app.el('buildingWidth').value='';
+  app.el('buildingWidth').handlers.input();
+  assert.equal(app.el('buildingPreviewApply').disabled,true);
+  assert.match(app.el('buildingPreviewStatus').textContent,/20–400%/);
+  assert.ok(Math.abs(session.transform.scaleX-1.5)<1e-8);
   assert.equal(JSON.stringify(state.project.city),before);
   const captured=app.capture();
   const doc=decodeProjectDocument(encodeProjectDocument(createProjectDocument(captured.project,captured.workspace)));
@@ -62,20 +63,23 @@ test('3G-B compiled numeric controls preview move/rotate/resize without changing
 test('3G-B compiled Canvas gestures translate, rotate and scale previews while leaving panning intact',async()=>{
   const app=await buildingAppHarness(),state=app.state(),before=JSON.stringify(state.project.city);
   const {building}=open(app), session=state.buildingEditSession;
-  const point=roofPoint(app,building), shifted={x:point.x+17,y:point.y+11};
+  const point=state.camera.worldToScreen(buildingPreviewPivot(building,session.transform));
+  const shifted={x:point.x+17,y:point.y+11};
   app.fire('pointerdown',point);app.fire('pointermove',shifted);app.fire('pointerup',shifted);
   assert.ok(Math.abs(session.transform.dx)>0.01);
   assert.equal(JSON.stringify(state.project.city),before);
-  session.reset();session.setTool('rotate');
   const rotate=buildingPreviewHandles(building,session.transform,state.camera.zoom).find(h=>h.kind==='rotate');
   const handle=state.camera.worldToScreen(rotate), next={x:handle.x+15,y:handle.y+18};
   app.fire('pointerdown',handle);app.fire('pointermove',next);app.fire('pointerup',next);
   assert.ok(Math.abs(session.transform.angle)>0.01);
-  session.reset();session.setTool('resize');
   const corner=buildingPreviewHandles(building,session.transform,state.camera.zoom).find(h=>h.sx===1&&h.sy===1);
-  const cornerPoint=state.camera.worldToScreen(corner),target={x:cornerPoint.x+13,y:cornerPoint.y+9};
+  const cornerPoint=state.camera.worldToScreen(corner);
+  const pivot=state.camera.worldToScreen(buildingPreviewPivot(building,session.transform));
+  const target={x:pivot.x+2*(cornerPoint.x-pivot.x),y:pivot.y+2*(cornerPoint.y-pivot.y)};
   app.fire('pointerdown',cornerPoint);app.fire('pointermove',target);app.fire('pointerup',target);
-  assert.ok(session.transform.scaleX>1||session.transform.scaleY>1);
+  assert.ok(session.transform.scaleX>1);
+  assert.equal(session.transform.scaleX,session.transform.scaleY);
+  assert.ok(Math.abs(session.transform.dx)>0.01&&Math.abs(session.transform.angle)>0.01);
   const checkpoint=copy(session.transform);
   app.fire('pointerdown',point,{button:1});
   app.fire('pointermove',{x:point.x+22,y:point.y});

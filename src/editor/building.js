@@ -1,6 +1,7 @@
 import {
   EMPTY_BUILDING_TRANSFORM, normalizeBuildingTransform, buildingTransformDirty,
-  previewBuildingGeometry, buildingFrame, buildingPreviewHit, buildingPreviewPivot
+  previewBuildingGeometry, buildingFrame, buildingPreviewHit, buildingPreviewPivot,
+  BUILDING_TRANSFORM_LIMITS, lockedBuildingScale
 } from '../core/building-transform.js';
 
 import {
@@ -8,7 +9,7 @@ import {
   addRectangularCourtyardF1, removeBuildingCourtyardF1, rectangularCourtyardFrame
 } from '../core/building-footprint-f1.js';
 
-export const BUILDING_EDIT_TOOLS = Object.freeze(['Move', 'Rotate', 'Resize', 'Vertices', 'Edges', 'Courtyard']);
+export const BUILDING_EDIT_TOOLS = Object.freeze(['Transform', 'Vertices', 'Edges', 'Courtyard']);
 
 export function buildingDirectHandles(preview, tool, holeIndex) {
   const ring = holeIndex === null ? preview?.footprint : preview?.holes[holeIndex];
@@ -25,7 +26,8 @@ export class BuildingEditSession {
   constructor(changed = () => {}) {
     this.active = null;
     this.changed = changed;
-    this.tool = 'move';
+    this.tool = 'transform';
+    this.lockRatio = true;
     this.clearDraft();
   }
   get isActive() { return this.active !== null; }
@@ -64,7 +66,7 @@ export class BuildingEditSession {
     if (this.isEditing(id)) return true;
     this.active = target;
     this.acceptedCity = city;
-    this.tool = 'move';
+    this.tool = 'transform';
     this.clearDraft();
     this.changed();
     return true;
@@ -78,7 +80,7 @@ export class BuildingEditSession {
     this.active = this.resolve(city, layers, id, this.active.propertyId);
     this.acceptedCity = city;
     this.clearDraft();
-    this.tool = 'move';
+    this.tool = 'transform';
     this.changed();
     return true;
   }
@@ -87,6 +89,8 @@ export class BuildingEditSession {
     if (this.drag) this.endGesture(true);
     if (this.tool === tool) return true;
     this.tool = tool;
+    if (tool === 'courtyard' && this.holeIndex === null &&
+        this.previewFor(this.acceptedCity)?.holes.length === 1) this.holeIndex = 0;
     this.operationError = '';
     this.changed();
     return true;
@@ -101,10 +105,12 @@ export class BuildingEditSession {
     this.changed();
     return true;
   }
-  reset(city = this.acceptedCity) {
+  reset(city = this.acceptedCity, { keepCourtyard = false } = {}) {
     if (!this.isActive) return false;
+    const index = keepCourtyard && this.tool === 'courtyard' ? this.holeIndex : null;
     this.acceptedCity = city;
     this.clearDraft();
+    if (index !== null && this.source(city)?.holes?.[index]) this.holeIndex = index;
     this.changed();
     return true;
   }
@@ -113,7 +119,7 @@ export class BuildingEditSession {
     this.active = null;
     this.acceptedCity = null;
     this.clearDraft();
-    this.tool = 'move';
+    this.tool = 'transform';
     this.changed();
     return true;
   }
@@ -208,12 +214,13 @@ export class BuildingEditSession {
       return true;
     }
     const source = this.draft ?? this.source(city);
-    const handle = buildingPreviewHit(source, this.transform, point, this.tool, zoom);
+    const handle = buildingPreviewHit(source, this.transform, point, zoom, pointerType === 'touch' ? 22 : 13);
     if (!handle) return false;
     const initial = { ...this.transform };
     const pivot = buildingPreviewPivot(source, initial);
-    this.drag = { handle, start: { ...point }, initial, pivot,
+    this.drag = { handle, start: { ...point }, initial, pivot, lockRatio: this.lockRatio,
       frame: buildingFrame(source), startAngle: Math.atan2(point.y-pivot.y,point.x-pivot.x) };
+    this.changed();
     return true;
   }
   moveGesture(point) {
@@ -243,8 +250,19 @@ export class BuildingEditSession {
     }
     const c = Math.cos(initial.angle), s = Math.sin(initial.angle);
     const localDX = dx*c + dy*s, localDY = -dx*s + dy*c;
-    const scaleX = handle.sx ? Math.min(4,Math.max(.2,initial.scaleX + localDX*2*handle.sx/frame.width)) : initial.scaleX;
-    const scaleY = handle.sy ? Math.min(4,Math.max(.2,initial.scaleY + localDY*2*handle.sy/frame.height)) : initial.scaleY;
+    const { minimumScale, maximumScale } = BUILDING_TRANSFORM_LIMITS;
+    const clampScale = scale => Math.min(maximumScale, Math.max(minimumScale, scale));
+    if (this.drag.lockRatio) {
+      const halfWidth = frame.width * initial.scaleX / 2 * handle.sx;
+      const halfDepth = frame.height * initial.scaleY / 2 * handle.sy;
+      const factor = 1 + (localDX * halfWidth + localDY * halfDepth) / (halfWidth ** 2 + halfDepth ** 2);
+      const min = minimumScale / Math.min(initial.scaleX, initial.scaleY);
+      const max = maximumScale / Math.max(initial.scaleX, initial.scaleY);
+      const { scaleX, scaleY } = lockedBuildingScale(initial, Math.min(max, Math.max(min, factor)));
+      return this.setTransform({ scaleX: clampScale(scaleX), scaleY: clampScale(scaleY) });
+    }
+    const scaleX = clampScale(initial.scaleX + localDX * 2 * handle.sx / frame.width);
+    const scaleY = clampScale(initial.scaleY + localDY * 2 * handle.sy / frame.height);
     return this.setTransform({ scaleX, scaleY });
   }
   endGesture(cancelled = false) {

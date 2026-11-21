@@ -68,23 +68,36 @@ export function buildingPreviewHandles(building, input = {}, zoom = 1) {
     y: center.y + sx * halfW * s + (sy * halfH + outside) * c
   });
   const points = [];
-  for (const [sx, sy] of [[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]])
+  for (const [sx, sy] of [[-1,-1],[1,-1],[1,1],[-1,1]])
     points.push({ ...localPoint(sx, sy), kind: 'resize', sx, sy });
-  points.push({ ...localPoint(0, -1, -28 / Math.max(0.18, zoom)), kind: 'rotate', sx: 0, sy: -1 });
+  points.push({ ...localPoint(0, -1, -28 / zoom), kind: 'rotate', anchor: localPoint(0, -1) });
   return points;
 }
 
-export function buildingPreviewHit(building, transform, point, tool, zoom = 1) {
+export function buildingPreviewHit(building, transform, point, zoom = 1, radius = 13) {
+  const pivot = buildingPreviewPivot(building, transform);
   const handles = buildingPreviewHandles(building, transform, zoom);
-  if (tool === 'rotate' || tool === 'resize') {
-    const hits = handles.filter(h => h.kind === tool)
-      .map(handle => ({ handle, d: Math.hypot(handle.x - point.x, handle.y - point.y) * zoom }))
-      .filter(x => x.d <= 13).sort((a,b) => a.d - b.d);
-    return hits[0]?.handle ?? null;
+  let hit = null;
+  let nearest = Infinity;
+  for (const handle of handles) {
+    const distance = Math.hypot(handle.x - point.x, handle.y - point.y) * zoom;
+    // Leave the center draggable even when the corners are close together on screen.
+    const limit = handle.kind === 'resize'
+      ? Math.min(radius, Math.hypot(handle.x - pivot.x, handle.y - pivot.y) * zoom / 2)
+      : radius;
+    if (distance <= limit && distance < nearest) {
+      hit = handle;
+      nearest = distance;
+    }
   }
-  if (tool !== 'move') return null;
+  if (hit) return hit;
+  if (Math.hypot(point.x - pivot.x, point.y - pivot.y) * zoom <= 8) return { kind: 'move' };
   const preview = previewBuildingGeometry(building, transform);
   if (!pointInPolygon(point, preview.footprint) ||
     preview.holes.some(hole => pointInPolygon(point, hole))) return null;
   return { kind: 'move' };
+}
+
+export function lockedBuildingScale(transform, factor) {
+  return { scaleX: transform.scaleX * factor, scaleY: transform.scaleY * factor };
 }

@@ -39,13 +39,22 @@ export class BuildingFootprintControls {
       end: this.number('buildingWingEnd') / 100,
       depth: this.number('buildingWingDepth')
     }));
-    el('buildingSetCourtyard').addEventListener('click', () => {
+    const previewCourtyard = () => {
       const { session } = this.getContext();
-      edit(session.holeIndex === null ? 'add courtyard' : 'adjust courtyard', {
-        center: { x: this.number('buildingCourtyardX'), y: this.number('buildingCourtyardY') },
-        width: this.number('buildingCourtyardWidth'), depth: this.number('buildingCourtyardDepth')
-      });
-    });
+      if (session?.tool !== 'courtyard' || el('buildingCourtyardWidth').disabled) return;
+      this.updatingCourtyard = true;
+      try {
+        edit(session.holeIndex === null ? 'add courtyard' : 'adjust courtyard', {
+          center: { x: this.number('buildingCourtyardX'), y: this.number('buildingCourtyardY') },
+          width: this.number('buildingCourtyardWidth'), depth: this.number('buildingCourtyardDepth')
+        });
+      } finally {
+        this.updatingCourtyard = false;
+      }
+    };
+    for (const suffix of ['X', 'Y', 'Width', 'Depth'])
+      el('buildingCourtyard' + suffix).addEventListener('input', previewCourtyard);
+    el('buildingSetCourtyard').addEventListener('click', previewCourtyard);
     el('buildingRemoveCourtyard').addEventListener('click', () => edit('remove courtyard'));
   }
   number(id) {
@@ -70,8 +79,6 @@ export class BuildingFootprintControls {
     const direct = Boolean(session?.isActive && session.isDirect);
     el('buildingDirectControls').hidden = !direct;
     el('buildingTransformValues').hidden = direct;
-    el('buildingNudgeControls').hidden = direct;
-    el('buildingTransformHint').hidden = direct;
     el('buildingTransformPanel').setAttribute('data-direct', String(direct));
     if (!direct) {
       this.courtyardKey = '';
@@ -109,25 +116,29 @@ export class BuildingFootprintControls {
     el('buildingCourtyardControls').hidden = tool !== 'courtyard';
     const frame = rectangularCourtyardFrame(hole);
     const adjustable = !hole || Boolean(frame);
+    const canAdjust = adjustable && !drag && (Boolean(hole) || !topologyChanged);
     if (tool === 'courtyard') {
       const outer = buildingFrame(preview);
       const values = frame ?? {
         center: outer, width: outer.width * .25, depth: outer.height * .25
       };
-      const key = JSON.stringify([session.buildingId, holeIndex, adjustable, values]);
+      const key = JSON.stringify([session.buildingId, holeIndex, adjustable, values, session.operationError]);
       for (const [suffix, value] of Object.entries({
         X: values.center.x, Y: values.center.y, Width: values.width, Depth: values.depth
       })) {
         const input = el('buildingCourtyard' + suffix);
-        if (this.courtyardKey !== key) input.value = String(Number(value.toFixed(4)));
-        input.disabled = !adjustable || Boolean(drag);
+        if (!this.updatingCourtyard && this.courtyardKey !== key)
+          input.value = String(Number(value.toFixed(4)));
+        input.disabled = !canAdjust;
       }
       this.courtyardKey = key;
     } else this.courtyardKey = '';
-    el('buildingSetCourtyard').textContent = hole ? 'Adjust courtyard' : 'Add courtyard';
-    el('buildingSetCourtyard').disabled = !adjustable || Boolean(drag) || (!hole && topologyChanged);
+    el('buildingSetCourtyard').hidden = Boolean(hole);
+    el('buildingSetCourtyard').disabled = !canAdjust;
     el('buildingRemoveCourtyard').disabled = !hole || blocked;
-    el('buildingDirectHint').textContent = topologyChanged
+    el('buildingDirectHint').textContent = tool === 'courtyard' && hole && adjustable
+      ? 'Changes to the center, width, and depth update the preview as you type.'
+      : topologyChanged
       ? 'Apply or reset before inserting or removing another vertex, wing, or courtyard.'
       : vertices ? 'Drag a map handle or enter the selected vertex coordinates.'
       : edges ? 'Choose an edge on the map or from the list.'

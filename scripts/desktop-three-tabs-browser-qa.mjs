@@ -42,12 +42,41 @@ for (const name of engineNames) {
     assert.match(await el('desktopGenerationImpactText').innerText(), /4 districts/);
     await el('desktopGenerationApply').click();
     assert.equal(await el('districtCount').innerText(), '4');
+    assert.equal(await el('desktopDistrictEdit').isVisible(), true);
+    assert.equal(await el('workspaceInspector').isHidden(), true);
+    assert.equal(await page.locator('#desktopGenerationHistory #undoDistrictButton').isEnabled(), true);
+    const districtName = await el('districtNameInput').inputValue();
+    await el('districtNameInput').fill(districtName + ' test');
+    await el('applyDistrictButton').click();
+    assert.equal(await el('desktopDistrictName').innerText(), districtName + ' test');
+    await el('undoDistrictButton').click();
+    assert.equal(await el('desktopDistrictName').innerText(), districtName);
+    await el('desktopDistrictBack').click();
+    assert.equal(await el('districtList').isVisible(), true);
 
     await tab('Add');
+    for (const [type, createButton] of [
+      ['river', 'generateRiverButton'], ['coast', 'generateCoastButton'], ['terrain', 'addTerrainButton'],
+    ]) {
+      await page.locator('[data-add=' + type + ']').click();
+      assert.equal(await page.locator('#desktopLandscapeActions #' + createButton).isVisible(), true);
+      await el('desktopLandscapeReview').click();
+      assert.match(await el('desktopLandscapeImpactText').innerText(), /Create a draft/);
+      assert.equal(await el(createButton).isHidden(), true);
+    }
     await page.locator('[data-add=lake]').click();
     await el('lakeRadiusInput').fill('18');
+    assert.equal(await page.locator('#desktopLandscapeActions #addLakeButton').isVisible(), true);
     await el('addLakeButton').click();
     assert.match(await el('landscapeDraftStatus').innerText(), /Draft changes to water/);
+    const beforeReview = await city();
+    await el('desktopLandscapeReview').click();
+    assert.match(await el('desktopLandscapeImpactText').innerText(), /accepted city has not changed/);
+    assert.equal(await el('desktopAddFeatureControls').isHidden(), true);
+    assert.equal(await page.locator('#desktopLandscapeHistory #undoWaterButton').isEnabled(), true);
+    assert.equal(await city(), beforeReview);
+    await el('desktopLandscapeEdit').click();
+    assert.equal(await el('editLakeButton').isVisible(), true);
     await el('landscapeReviewRebuild').click();
     assert.equal(await el('desktopWorkspaceHeading').innerText(), 'Generation');
     const beforeRebuild = await city();
@@ -85,6 +114,7 @@ for (const name of engineNames) {
     assert.equal(await el('roadPreviewPanel').isHidden(), true);
     assert.equal(await page.evaluate(() => document.activeElement.dataset.workspace), 'roads');
     await tab('Generation');
+    assert.equal(await page.locator('#desktopCityReport #workspaceCityReport').count(), 1);
     await page.setViewportSize({ width: 768, height: 850 });
     assert.equal(await el('desktopWorkspaceTabs').isHidden(), true);
     assert.equal(await el('workspaceTab-city').isVisible(), true);

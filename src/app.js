@@ -10,7 +10,7 @@ import { PropertyWorkspace } from './ui/property-workspace.js';
 import { renderBuildingUseOptions } from './ui/building-use.js';
 import { IdentityWorkspace } from './ui/identity-workspace.js';
 import { BuildingEditSession, BUILDING_EDIT_TOOLS, buildingDirectHandles } from './editor/building.js';
-import { buildingFrame } from './core/building-transform.js';
+import { buildingFrame, lockedBuildingScale } from './core/building-transform.js';
 import {
   WorkspaceShell
 } from './ui/workspace.js';
@@ -372,12 +372,16 @@ function syncBuildingHistoryUI() {
   const redo = ready && buildingHistory.can('redo',project,id);
   $('buildingHistoryUndo').disabled = !undo;
   $('buildingHistoryRedo').disabled = !redo;
-  $('buildingHistoryStatus').textContent = !id ? '' : session.isPending
-    ? 'Apply or reset your draft before using accepted-edit history.'
-    : 'Session history · '+buildingHistory.count('undo',id)+' undo / '+buildingHistory.count('redo',id)+' redo available. Saved geometry survives reopening; history does not.';
+  const status = $('buildingHistoryStatus');
+  status.hidden = !ready;
+  status.textContent = ready
+    ? 'Session history · '+buildingHistory.count('undo',id)+' undo / '+buildingHistory.count('redo',id)+' redo available.'
+    : '';
   updateUndoFeedback();
 }
 
+let editingBuildingTransformField = null;
+let invalidBuildingTransformField = null;
 // Preview controls show transient geometry; never write into project or its save envelope.
 function syncBuildingTransformUI() {
   const session = buildingEditSession;
@@ -388,6 +392,7 @@ function syncBuildingTransformUI() {
   if (!shown) return;
   const frame = buildingFrame(session.draft ?? session.source(project.city));
   const t = session.transform;
+  if (!session.operationError) invalidBuildingTransformField = null;
   $('buildingPreviewTarget').textContent = session.buildingId;
   const measured=buildingMeasurements4C(project.city,session);
   if(measured) $('buildingPreviewMeasurements4C').textContent=
@@ -399,7 +404,14 @@ function syncBuildingTransformUI() {
     buildingOffsetX: t.dx, buildingOffsetY: t.dy,
     buildingAngle: t.angle*180/Math.PI, buildingWidth: frame.width*t.scaleX,
     buildingDepth: frame.height*t.scaleY
-  })) $(id).value = Number(value.toFixed(2)).toString();
+  })) {
+    $(id).readOnly = Boolean(session.drag);
+    $(id).setAttribute('aria-invalid', String(id === invalidBuildingTransformField));
+    if (id !== editingBuildingTransformField && id !== invalidBuildingTransformField)
+      $(id).value = Number(value.toFixed(2)).toString();
+  }
+  $('buildingLockRatio').checked = session.lockRatio;
+  $('buildingLockRatio').disabled = Boolean(session.drag);
   for (const tool of BUILDING_EDIT_TOOLS)
     $('buildingTool'+tool).setAttribute('aria-pressed',String(session.tool===tool.toLowerCase()));
   const result = session.isPending
@@ -432,16 +444,16 @@ function syncBuildingTransformUI() {
     });
     return li;
   }));
-  $('buildingPreviewStatus').textContent = session.operationError ? 'Resolve the footprint tool error before applying.'
-    : !session.isPending ? 'Make a footprint change to preview its placement.'
+  $('buildingPreviewStatus').textContent = session.operationError || (
+    !session.isPending ? 'Make a footprint change to preview its placement.'
     : result.status==='checking'
       ? 'CHECKING · Fast geometry check complete; road access is verified when the drag ends.'
       : result.ok
-        ? 'VALID PLACEMENT · Ready to Apply to City. Project compatibility will be rechecked.'
+        ? 'VALID PLACEMENT · Ready to apply footprint. Project compatibility will be rechecked.'
         : 'INVALID PLACEMENT · Apply disabled. '+formatEditIssue4D(result.issues?.[0],{
           buildingId:session.buildingId,propertyId:session.propertyId,
           frontageRoadId:session.source(project.city)?.frontageRoadId
-        });
+        }));
 }
 function confirmBuildingPreviewDiscard() {
   if (!buildingEditSession?.isPending) return true;
@@ -488,7 +500,7 @@ function applyBuildingTransform() {
     propertyHistory.clear();
     propertyDeletionHistory4A.clear();
     project=received.candidate;
-    session.reset(project.city);
+    session.reset(project.city, { keepCourtyard: true });
     updateDetails();
     workspaceShell.refresh();
     requestDraw();
@@ -1262,10 +1274,12 @@ window.addEventListener('keydown', e => {
       && (e.target===canvas || document.activeElement===canvas)) {
     const direction=e.key.slice(5), target=propertyEditSession?.isActive?'property'
       :buildingEditSession?.isActive?'building':buildingPlacementSession?.isActive?'structure':null;
-    const stepId=target==='property'?'propertyNudgeStep4C'
-      :target==='building'?'buildingNudgeStep4C':'structureNudgeStep4C';
-    if(target && precisionNudge4C(target,direction,Number($(stepId).value)))e.preventDefault();
-    if(target)return;
+    if(target){
+      const step = target === 'building' ? .5
+        : Number($(target === 'property' ? 'propertyNudgeStep4C' : 'structureNudgeStep4C').value);
+      if (precisionNudge4C(target,direction,step)) e.preventDefault();
+      return;
+    }
   }
   if (e.key === 'Enter' && workspaceShell?.state.section === 'city' && editor.mode === 'points') {
     e.preventDefault();
@@ -1958,21 +1972,44 @@ buildingFootprintControls.bind();
 for (const tool of BUILDING_EDIT_TOOLS)
   $('buildingTool'+tool).addEventListener('click',()=>buildingEditSession.setTool(tool.toLowerCase()));
 const buildingPreviewInputs = {
-  buildingOffsetX: (v,frame) => ({dx:v}),
-  buildingOffsetY: (v,frame) => ({dy:v}),
-  buildingAngle: (v,frame) => ({angle:v*Math.PI/180}),
-  buildingWidth: (v,frame) => ({scaleX:v/frame.width}),
-  buildingDepth: (v,frame) => ({scaleY:v/frame.height})
+  buildingOffsetX: { key: 'dx', units: () => 1 },
+  buildingOffsetY: { key: 'dy', units: () => 1 },
+  buildingAngle: { key: 'angle', units: () => 180 / Math.PI },
+  buildingWidth: { key: 'scaleX', units: frame => frame.width, dimension: true },
+  buildingDepth: { key: 'scaleY', units: frame => frame.height, dimension: true }
 };
-for (const [id,convert] of Object.entries(buildingPreviewInputs))
-  $(id).addEventListener('change',()=>{
-    if (!buildingEditSession?.isActive || !project) return;
-    const n=Number($(id).value), frame=buildingFrame(buildingEditSession.draft ?? buildingEditSession.source(project.city));
-    if ($(id).value==='' || !Number.isFinite(n) || !buildingEditSession.setTransform(convert(n,frame))) {
-      $('buildingPreviewStatus').textContent='Invalid preview value. Width and depth must stay within 20–400% of the original.';
-      $(id).value='';
+for (const [id, { key, units, dimension }] of Object.entries(buildingPreviewInputs)) {
+  const input = $(id);
+  const previewInput = () => {
+    const session = buildingEditSession;
+    if (!session?.isActive || session.isDirect || session.drag || !project) return;
+    const frame = buildingFrame(session.draft ?? session.source(project.city));
+    const value = input.value === '' ? NaN : Number(input.value) / units(frame);
+    if (value === session.transform[key] && !session.operationError) return;
+    const values = dimension && session.lockRatio
+      ? lockedBuildingScale(session.transform, value / session.transform[key])
+      : { [key]: value };
+    // Keep the text being typed while the dependent dimensions and map update.
+    editingBuildingTransformField = id;
+    try {
+      if (!session.setTransform(values)) {
+        invalidBuildingTransformField = id;
+        session.operationError = dimension
+          ? 'Enter a size that keeps width and depth within 20–400% of the base footprint.'
+          : 'Enter a valid position or angle.';
+        syncBuildingTransformUI();
+      }
+    } finally {
+      editingBuildingTransformField = null;
     }
-  });
+  };
+  input.addEventListener('input', previewInput);
+  input.addEventListener('change', previewInput);
+}
+$('buildingLockRatio').addEventListener('change', () => {
+  if (buildingEditSession?.isActive && !buildingEditSession.drag)
+    buildingEditSession.lockRatio = $('buildingLockRatio').checked;
+});
 // Dev 4c: buttons and numeric/drag inputs share the exact same preview APIs.
 const precisionDirections4C = Object.freeze({
   Left:['x',-1],Right:['x',1],Up:['y',-1],Down:['y',1]
@@ -1994,7 +2031,6 @@ function precisionNudge4C(target,direction,step) {
   return false;
 }
 for(const [target,idPrefix,stepId] of [
-  ['building','buildingNudge','buildingNudgeStep4C'],
   ['property','propertyNudge','propertyNudgeStep4C'],
   ['structure','structureNudge','structureNudgeStep4C']
 ]) for(const direction of Object.keys(precisionDirections4C))

@@ -75,6 +75,7 @@ export class DesktopPlaceEditor {
     };
     move(panel.querySelector('[data-place-status]'), this.$('desktopPlaceStatus'));
     move(panel.querySelector('[data-place-actions]'), this.$('desktopPlaceActions'));
+    move(this.$('mapEditDiagnostic4D'), this.scroll);
     move(panel, this.scroll);
     this.$('workspaceApp').classList.add('place-editor-active');
     this.host.hidden = false;
