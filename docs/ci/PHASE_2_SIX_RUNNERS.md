@@ -38,7 +38,11 @@ The first full [Phase 2 PR run #44950879528](https://github.com/xbwtyz/Mappo/act
 
 Native Node shard 1 executed **227/227** tests in **1m 36s**, and shard 2 executed **220/220** in **1m 19s**: exactly **447/447** tests combined, with no loss in test count. All 16 browser QA scripts remain assigned exactly once across the desktop, roads, property and integration suites. The standalone `mappo-0.2-dev.g3g` HTML artifact and four independent browser evidence artifacts were uploaded.
 
-These timings are measured first-run observations, not guaranteed future durations. A separate confirmation run is required to check repeatability and runner variability.
+A second independent [Phase 2 CI run #44951150419](https://github.com/xbwtyz/Mappo/actions/runs/44951150419), triggered by this documentation-only update, also **passed all six jobs and the aggregate required gate**. Its end-to-end duration was **3m 00s**. Node shards again completed all **227 + 220 = 447** tests (98s and 83s of Node test execution respectively). All four browser suites, standalone HTML artifact and four QA artifacts were present.
+
+Across both Phase 2 runs, the elapsed times were **2m 36s and 3m 00s**, averaging **2m 48s**. Compared with the prior **4m 11s** main-branch run, that's **1m 23s / 33.1% less wall time**. Against the earlier fast **3m 24s** G3G Phase 1 PR run, it's **36s / 17.6% less wall time**. These are observed comparisons across different runs, not a guaranteed benchmark or proof of a fixed percentage speedup.
+
+The slowest runner is now generally one of the longer property or road browser suites rather than the full Node regression. Further improvement would require additional browser QA profiling and careful balancing; it is outside the scope of this Phase 2 change.
 
 ## Validation gates
 
@@ -47,7 +51,7 @@ These timings are measured first-run observations, not guaranteed future duratio
 - [x] All 16 original browser scripts execute exactly once across the four CI suites.
 - [x] Combined required status is green after all six jobs passed (failure-gating behavior preserved by the aggregate result check).
 - [x] Standalone HTML and four browser evidence artifacts are available.
-- [ ] Record multiple Phase 2 wall-clock timings against G3G 3m 24s–4m 11s baseline.
+- [x] Record multiple Phase 2 wall-clock timings against G3G 3m 24s–4m 11s baseline.
 - [ ] Owner explicitly approves merge. No tag, release, or publication.
 
 ## What changes for users?
