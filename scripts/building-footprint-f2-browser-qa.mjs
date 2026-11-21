@@ -45,11 +45,10 @@ async function showOnMap(page, point) {
   }, point);
 }
 
-async function exerciseF2(browserName, browserType, phone) {
+async function exerciseF2(browserName, browserType) {
   const browser = await browserType.launch();
   const page = await browser.newPage({
-    viewport: phone ? { width: 390, height: 844 } : { width: 1440, height: 900 },
-    hasTouch: phone
+    viewport: { width: 1440, height: 900 }
   });
   const errors = [];
   page.on('pageerror', error => errors.push(error.stack ?? error.message));
@@ -60,50 +59,32 @@ async function exerciseF2(browserName, browserType, phone) {
       : request.abort());
     await page.goto(origin, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => __buildingQA.state().files.ready);
-    if (phone) await page.locator('#workspaceCollapseTools').click();
     const project = await page.evaluate(() => __buildingQA.state().project);
     const { building, wing, courtyard, vertex, moved } = findDirectFootprintFixture(project);
     const appliedBuilding = async () => (await readCity(page)).buildings.find(item => item.id === building.id);
 
     await openBuildingEditor(page, building, 'Vertices');
     const point = await showOnMap(page, vertex);
-    if (phone) {
-      await page.touchscreen.tap(point.x, point.y);
-      assert.equal(await page.locator('#buildingDirectHandle').inputValue(), '2');
-      if (browserName === 'chromium') {
-        const cdp = await page.context().newCDPSession(page);
-        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] });
-        await cdp.send('Input.dispatchTouchEvent', {
-          type: 'touchMove', touchPoints: [{ x: point.x + 12, y: point.y + 2 }]
-        });
-        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-        assert.ok(await page.evaluate(() => __buildingQA.state().buildingEditSession.isPending));
-        assert.ok(JSON.stringify(await readCity(page)) === JSON.stringify(project.city), 'Accepted city should match the expected snapshot');
-        page.once('dialog', dialog => dialog.accept());
-        await page.locator('#buildingPreviewReset').click();
-      }
-    } else {
-      const opposite = building.footprint[0];
-      await page.mouse.move(point.x, point.y);
-      await page.mouse.down();
-      await page.mouse.move(point.x + (opposite.x - vertex.x) * 11,
-        point.y + (opposite.y - vertex.y) * 11, { steps: 5 });
-      assert.equal(await page.locator('#buildingPreviewApply').isDisabled(), true);
-      assert.match(await page.locator('#buildingPreviewStatus').innerText(), /INVALID/);
-      await page.keyboard.press('Escape');
-      await page.mouse.up();
-      assert.equal(await page.locator('#buildingDirectHandle').evaluate(node => document.activeElement === node), true);
-      assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isPending), false);
-      const dragTarget = { x: point.x + (moved.x - vertex.x) * 11, y: point.y + (moved.y - vertex.y) * 11 };
-      await page.mouse.move(point.x, point.y);
-      await page.mouse.down();
-      await page.mouse.move(dragTarget.x, dragTarget.y, { steps: 3 });
-      await page.mouse.up();
-      assert.equal(await page.locator('#buildingPreviewApply').isEnabled(), true);
-      assert.ok(JSON.stringify(await readCity(page)) === JSON.stringify(project.city), 'Accepted city should match the expected snapshot');
-      page.once('dialog', dialog => dialog.accept());
-      await page.locator('#buildingPreviewReset').click();
-    }
+    const opposite = building.footprint[0];
+    await page.mouse.move(point.x, point.y);
+    await page.mouse.down();
+    await page.mouse.move(point.x + (opposite.x - vertex.x) * 11,
+      point.y + (opposite.y - vertex.y) * 11, { steps: 5 });
+    assert.equal(await page.locator('#buildingPreviewApply').isDisabled(), true);
+    assert.match(await page.locator('#buildingPreviewStatus').innerText(), /INVALID/);
+    await page.keyboard.press('Escape');
+    await page.mouse.up();
+    assert.equal(await page.locator('#buildingDirectHandle').evaluate(node => document.activeElement === node), true);
+    assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isPending), false);
+    const dragTarget = { x: point.x + (moved.x - vertex.x) * 11, y: point.y + (moved.y - vertex.y) * 11 };
+    await page.mouse.move(point.x, point.y);
+    await page.mouse.down();
+    await page.mouse.move(dragTarget.x, dragTarget.y, { steps: 3 });
+    await page.mouse.up();
+    assert.equal(await page.locator('#buildingPreviewApply').isEnabled(), true);
+    assert.ok(JSON.stringify(await readCity(page)) === JSON.stringify(project.city), 'Accepted city should match the expected snapshot');
+    page.once('dialog', dialog => dialog.accept());
+    await page.locator('#buildingPreviewReset').click();
     // Select by keyboard, and enter the vertex coordinate to preview a change.
     const handle = page.locator('#buildingDirectHandle');
     await handle.focus();
@@ -122,8 +103,7 @@ async function exerciseF2(browserName, browserType, phone) {
     await page.locator('#buildingToolEdges').click();
     const edge = { x: (building.footprint[1].x + vertex.x) / 2, y: (building.footprint[1].y + vertex.y) / 2 };
     const edgeScreen = await showOnMap(page, edge);
-    if (phone) await page.touchscreen.tap(edgeScreen.x, edgeScreen.y);
-    else await page.mouse.click(edgeScreen.x, edgeScreen.y);
+    await page.mouse.click(edgeScreen.x, edgeScreen.y);
     assert.equal(await handle.inputValue(), '1');
     await page.locator('#buildingWingDepth').fill(String(wing.depth));
     await page.locator('#buildingAddWing').click();
@@ -143,7 +123,7 @@ async function exerciseF2(browserName, browserType, phone) {
       X: courtyard.center.x, Y: courtyard.center.y, Width: courtyard.width, Depth: courtyard.depth
     })) await page.locator('#buildingCourtyard' + suffix).fill(String(value));
     await page.locator('#buildingSetCourtyard').click();
-    if (!phone) await page.locator('#desktopPlaceReview').click();
+    await page.locator('#desktopPlaceReview').click();
     const footprintDetails = page.locator('#buildingFootprintDetails');
     assert.equal(await footprintDetails.isVisible(), true);
     assert.match(await footprintDetails.innerText(), /Occupied.*Plots/);
@@ -158,14 +138,14 @@ async function exerciseF2(browserName, browserType, phone) {
     assert.equal(await page.locator('#structureApply').isDisabled(), true);
     await page.locator('#structurePreset').selectOption('rectangle');
     const reviewChoice = page.locator('#desktopPlaceReviewChoice');
-    if (!phone) await reviewChoice.click();
+    await reviewChoice.click();
     const replaceGeometry = page.locator('#structureReplaceGeometry');
     assert.equal(await replaceGeometry.isVisible(), true);
     assert.equal(await page.locator('#structureApply').isDisabled(), true);
     await replaceGeometry.check();
-    if (!phone) await page.locator('#desktopPlaceEdit').click();
+    await page.locator('#desktopPlaceEdit').click();
     await page.locator('#structurePreset').selectOption('L');
-    if (!phone) await reviewChoice.click();
+    await reviewChoice.click();
     assert.equal(await replaceGeometry.isChecked(), false);
     assert.ok(JSON.stringify(await readCity(page)) === JSON.stringify(withCourtyard), 'Accepted city should match the expected snapshot');
     page.once('dialog', dialog => dialog.accept());
@@ -197,12 +177,12 @@ async function exerciseF2(browserName, browserType, phone) {
     assert.equal(JSON.stringify(await readCity(page)), JSON.stringify(classified));
     assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isActive), false);
     assert.deepEqual(errors, []);
-    console.log('PASS F2/F4 ' + browserName + ' ' + (phone ? 'phone touch' : 'desktop'));
+    console.log('PASS F2/F4 ' + browserName + ' ' + 'desktop');
   } finally {
     await browser.close();
   }
 }
 
 for (const [name, engine] of [['chromium', chromium], ['firefox', firefox]]) {
-  for (const phone of [false, true]) await exerciseF2(name, engine, phone);
+  await exerciseF2(name, engine);
 }

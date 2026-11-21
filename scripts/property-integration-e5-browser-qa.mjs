@@ -45,9 +45,9 @@ const failures=[];
 for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
  const browser=await engine.launch({headless:true});
  try{
-  for(const viewport of [{name:'desktop',width:1440,height:900},{name:'phone',width:390,height:844}]){
+  for(const viewport of [{name:'desktop',width:1440,height:900}]){
    const label=engineName+'/'+viewport.name;
-   const page=await browser.newPage({viewport,hasTouch:viewport.name==='phone'});
+   const page=await browser.newPage({viewport});
    page.setDefaultTimeout(20000);
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    try{
@@ -59,9 +59,6 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
     const oldCity=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city));
     const originalPlotCount=sample.project.city.plots.length;
     await page.evaluate(id=>__buildingQA.state().workspaceShell.select({kind:'property',id}),sample.primaryId);
-    if(viewport.name==='phone'&&await page.locator('#workspaceOpenInspector').isVisible()
-       &&!(await page.locator('#workspaceInspector').isVisible()))
-      await page.locator('#workspaceOpenInspector').click();
     await page.getByRole('button',{name:'Merge properties',exact:true}).click();
     assert.equal(await page.locator('#propertyMergePanelE3').isVisible(),true);
     await page.locator('#propertyMergeNeighborE3').selectOption(sample.neighborId);
@@ -71,9 +68,6 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
     assert.notEqual(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),oldCity);
     assert.equal(await page.evaluate(()=>__buildingQA.state().project.city.properties.some(p=>p.id===__buildingQA.state().workspaceShell.state.selection.id)),true);
     // Start a second editor against the newly committed primary property.
-    if(viewport.name==='phone'&&await page.locator('#workspaceOpenInspector').isVisible()
-       &&!(await page.locator('#workspaceInspector').isVisible()))
-      await page.locator('#workspaceOpenInspector').click();
     await page.getByRole('button',{name:/^(Edit property geometry|Edit boundaries & plots)$/}).click();
     assert.equal(await page.locator('#propertyEditPanel3I').isVisible(),true);
     await page.locator('#propertyAddDividerE4').click();

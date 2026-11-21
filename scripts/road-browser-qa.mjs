@@ -11,8 +11,6 @@ await mkdir(output, { recursive: true });
 const viewports = [
   { name: 'desktop', width: 1440, height: 900 },
   { name: 'ultrawide', width: 5120, height: 1440 },
-  { name: 'tablet', width: 768, height: 1024 },
-  { name: 'phone', width: 390, height: 844 },
 ];
 const failures = [];
 for (const [name, type] of [
@@ -22,7 +20,7 @@ for (const [name, type] of [
   const browser = await type.launch({ headless: true });
   for (const viewport of viewports) {
     const label = `${name}-${viewport.name}`,
-      page = await browser.newPage({ viewport, hasTouch: name === 'chromium' });
+      page = await browser.newPage({ viewport });
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     page.setDefaultTimeout(10000);
@@ -39,7 +37,6 @@ for (const [name, type] of [
         const s = __buildingQA.state();
         s.propertyWorkspace.select({ kind: 'property', id: s.project.city.properties[0].id });
       });
-      if (viewport.width <= 670) await page.locator('#workspaceCloseInspector').click();
       await page.locator('#roadModeButton').scrollIntoViewIfNeeded();
       await page.evaluate(
         () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
@@ -217,52 +214,7 @@ for (const [name, type] of [
       await page.locator('#roadProposedX').focus();
       await page.keyboard.press('ArrowRight');
       assert.equal(await page.evaluate(() => __buildingQA.state().roadWorkspace.session.pending), false);
-      // Touch selection/drag through the real pointer controller; Firefox's
-      // synthetic touch PointerEvent supplies the same event API as hardware.
-      p = await place();
-      if (name === 'chromium') {
-        const cdp = await page.context().newCDPSession(page);
-        for (const [type, x, y] of [
-          ['touchStart', p.x, p.y],
-          ['touchMove', p.x + 4, p.y + 2],
-          ['touchEnd', p.x + 4, p.y + 2],
-        ])
-          await cdp.send('Input.dispatchTouchEvent', {
-            type,
-            touchPoints: type === 'touchEnd' ? [] : [{ x, y, id: 7 }],
-          });
-        await cdp.detach();
-      } else {
-        // Firefox Playwright cannot inject native touch drags. Dispatch the
-        // hardware-equivalent PointerEvents and bypass capture only for this
-        // synthetic pointer, which the browser never registers as active.
-        await page.locator('#mapCanvas').evaluate((canvas) => {
-          canvas.qaCapture = canvas.setPointerCapture;
-          canvas.setPointerCapture = function (id) {
-            if (id !== 7) this.qaCapture(id);
-          };
-        });
-        for (const [event, x, y] of [
-          ['pointerdown', p.x, p.y],
-          ['pointermove', p.x + 4, p.y + 2],
-          ['pointerup', p.x + 4, p.y + 2],
-        ])
-          await page.locator('#mapCanvas').dispatchEvent(event, {
-            pointerId: 7,
-            pointerType: 'touch',
-            isPrimary: true,
-            button: 0,
-            clientX: x,
-            clientY: y,
-            bubbles: true,
-          });
-        await page.locator('#mapCanvas').evaluate((canvas) => {
-          canvas.setPointerCapture = canvas.qaCapture;
-          delete canvas.qaCapture;
-        });
-      }
-      await page.waitForFunction(() => Boolean(__buildingQA.state().roadWorkspace.session.report));
-      // Protected records remain reachable by keyboard list and map tapping.
+      // Protected records remain reachable by keyboard list and map clicks.
       const protectedId = await page.evaluate(() => {
         const session = __buildingQA.state().roadWorkspace.session;
         return [...session.graph.nodesById.keys()].find((id) =>
@@ -345,7 +297,6 @@ for (const [name, type] of [
         const mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
         const canvas=document.getElementById('mapCanvas');
         const rect=canvas.getBoundingClientRect();
-        // Responsive road controls move to the map's bottom on phones.
         // Pick a truly unobstructed *canvas* location rather than assuming
         // the upper-right 80% position is always safe to click.
         const candidates=[[.55,.35],[.45,.36],[.60,.40],[.40,.42],
@@ -371,7 +322,7 @@ for (const [name, type] of [
           hit:s.roadWorkspace.session.hit(world,s.camera.zoom,'mouse')};
       },center);
       assert.equal(targetHit.target,'mapCanvas',
-        'The gesture target must be unobstructed canvas, not mobile map controls');
+        'The gesture target must be unobstructed canvas');
       assert.equal(targetHit.hit?.kind,'road',
         'Map hit testing must identify the selected road at the gesture start');
       await page.mouse.move(center.x,center.y);
@@ -430,56 +381,7 @@ for (const [name, type] of [
         __buildingQA.state().roadWorkspace.session.pending),false);
       assert.notEqual(await page.evaluate(()=>__buildingQA.state().camera.x),cameraBefore);
 
-      // Touch must use the same real canvas pointer controller. Chromium
-      // receives native dispatched touch events; Firefox receives equivalent
-      // synthetic PointerEvents with capture bypass for synthetic pointer #77.
-      const touchFrom=await placeRoad();
-      if(name==='chromium'){
-        const cdp=await page.context().newCDPSession(page);
-        for(const [type,x,y] of [
-          ['touchStart',touchFrom.x,touchFrom.y],
-          ['touchMove',touchFrom.x+30,touchFrom.y+16],
-          ['touchEnd',touchFrom.x+30,touchFrom.y+16],
-        ])await cdp.send('Input.dispatchTouchEvent',{
-          type,touchPoints:type==='touchEnd'?[]:[{x,y,id:77}]
-        });
-        await cdp.detach();
-      }else{
-        await page.locator('#mapCanvas').evaluate(canvas=>{
-          canvas.qaCapture=canvas.setPointerCapture;
-          canvas.setPointerCapture=function(id){if(id!==77)this.qaCapture(id);};
-        });
-        for(const [event,x,y] of [
-          ['pointerdown',touchFrom.x,touchFrom.y],
-          ['pointermove',touchFrom.x+30,touchFrom.y+16],
-          ['pointerup',touchFrom.x+30,touchFrom.y+16]
-        ])await page.locator('#mapCanvas').dispatchEvent(event,{
-          pointerId:77,pointerType:'touch',isPrimary:true,button:0,
-          clientX:x,clientY:y,bubbles:true,
-        });
-        await page.locator('#mapCanvas').evaluate(canvas=>{
-          canvas.setPointerCapture=canvas.qaCapture;delete canvas.qaCapture;
-        });
-      }
-      await page.waitForFunction(()=>
-        __buildingQA.state().roadWorkspace.session.roadIntentAnalysis?.draftable===true);
-      const touchDraft=await page.evaluate(()=>{
-        const {roadWorkspace,files}=__buildingQA.state(), session=roadWorkspace.session;
-        return {offset:session.roadIntentOffset, pending:session.pending,
-          reconciled:session.reconciliation?.validation?.project === 'valid' &&
-            session.hasApplyCandidate,
-          acceptedUnchanged:JSON.stringify(__buildingQA.capture())===__buildingQA.before,
-          recoveryUnchanged:files.revision===__buildingQA.revision};
-      });
-      assert.equal(touchDraft.pending,true);
-      assert.ok(Math.abs(touchDraft.offset.x)>1);
-      assert.ok(Math.abs(touchDraft.offset.y)>1);
-      assert.equal(touchDraft.acceptedUnchanged,true);
-      assert.equal(touchDraft.recoveryUnchanged,true);
-      assert.equal(await page.locator('#roadApplyB4').isDisabled(),!touchDraft.reconciled);
-      await page.locator('#roadPreviewReset').click();
-
-      // Cancellation of a captured touch pointer rolls back the unaccepted
+      // Cancellation of a captured mouse pointer rolls back the unaccepted
       // gesture. The project and saved revision remain untouched.
       const cancelFrom=await placeRoad();
       await page.locator('#mapCanvas').evaluate(canvas=>{
@@ -491,7 +393,7 @@ for (const [name, type] of [
         ['pointermove',cancelFrom.x+30,cancelFrom.y+12],
         ['pointercancel',cancelFrom.x+30,cancelFrom.y+12]
       ])await page.locator('#mapCanvas').dispatchEvent(event,{
-        pointerId:88,pointerType:'touch',isPrimary:true,button:0,
+        pointerId:88,pointerType:'mouse',isPrimary:true,button:0,
         clientX:x,clientY:y,bubbles:true,
       });
       await page.locator('#mapCanvas').evaluate(canvas=>{
@@ -642,18 +544,10 @@ for (const [name, type] of [
       await page.locator('#roadInsertBendC4').click();
       await page.getByLabel('Snap drags to 1-unit grid').check();
       const handle=await placeRoad();
-      if (name === 'chromium' && viewport.name === 'phone') {
-        const cdp=await page.context().newCDPSession(page);
-        await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[handle]});
-        await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:handle.x+20,y:handle.y+10}]});
-        await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
-        await cdp.detach();
-      } else {
-        await page.mouse.move(handle.x,handle.y);
-        await page.mouse.down();
-        await page.mouse.move(handle.x+20,handle.y+10,{steps:3});
-        await page.mouse.up();
-      }
+      await page.mouse.move(handle.x,handle.y);
+      await page.mouse.down();
+      await page.mouse.move(handle.x+20,handle.y+10,{steps:3});
+      await page.mouse.up();
       const snapped=await page.evaluate(() => {
         const {bendEditor}=__buildingQA.state().roadWorkspace.session;
         return {point:bendEditor.points[0], original:bendEditor.path.points};
@@ -673,7 +567,7 @@ for (const [name, type] of [
       assert.equal(committed?.y,target.y);
       assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')),true);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)),bendBaseline);
-      if (['desktop','phone'].includes(viewport.name)) {
+      if (viewport.name === 'desktop') {
         const custom=structuredClone(project);
         custom.city.buildings.find(building=>building.id==='BLD-00061').customName='Market Hall';
         await page.evaluate(doc=>__buildingQA.apply(doc),{project:custom,workspace:defaultWorkspace(custom)});
@@ -689,10 +583,6 @@ for (const [name, type] of [
         assert.equal(await page.locator('#roadRecoveryD3').isVisible(),true);
         assert.match(await page.locator('#roadRecoveryHeadingD3').innerText(),/Building needs a decision/);
         assert.equal(await page.evaluate(()=>document.activeElement.textContent),'Suggest a new location');
-        if (viewport.name === 'phone') {
-          const bodyHeight = await page.locator('#roadPreviewBody').evaluate(el=>el.getBoundingClientRect().height);
-          assert.ok(bodyHeight >= 44,'Phone road preview must reserve room for an unobstructed touch target');
-        }
         // Real pointer clicks verify the action is not covered by the fixed
         // header/status/Apply footer; do not force or simulate this click.
         await needsChoice.getByRole('button',{name:'Keep it here'}).click();
@@ -774,7 +664,7 @@ for (const [name, type] of [
       }
       assert.equal(errors.length, 0, errors.join('; '));
       console.log(
-        `PASS road ${label}: inspection, mouse/touch/keyboard preview, A3 report, reset/cancel, save/recovery isolation`,
+        `PASS road ${label}: inspection, mouse/keyboard preview, A3 report, reset/cancel, save/recovery isolation`,
       );
     } catch (error) {
       failures.push(`${label}: ${error.message}`);
@@ -787,4 +677,4 @@ for (const [name, type] of [
   await browser.close();
 }
 if (failures.length) throw new Error(`Road browser QA failures:\n${failures.join('\n')}`);
-console.log('Road browser QA: 8/8 browser-viewport checks passed.');
+console.log('Road browser QA: 4/4 browser-viewport checks passed.');

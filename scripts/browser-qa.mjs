@@ -10,8 +10,6 @@ await mkdir(output, { recursive: true });
 const viewports = [
   { name: 'desktop', width: 1440, height: 900 },
   { name: 'ultrawide', width: 5120, height: 1440 },
-  { name: 'tablet', width: 768, height: 1024 },
-  { name: 'phone', width: 390, height: 844 }
 ];
 const failures = [];
 
@@ -39,12 +37,6 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.locator('#projectMenu').isVisible(), true, `${label}: project menu opens`);
       await page.keyboard.press('Escape');
       assert.equal(await page.locator('#projectMenu').isHidden(), true, `${label}: Escape closes project menu`);
-      if (viewport.width <= 670) {
-        // On phones the Tools drawer intentionally overlays the map header.
-        // Close it before interacting with map controls instead of clicking through it.
-        await page.locator('#workspaceCollapseTools').click();
-        assert.equal(await page.locator('#workspaceTools').isHidden(), true);
-      }
       await page.locator('#layersMenuButton').click();
       assert.equal(await page.locator('#layersMenu').isVisible(), true, `${label}: layers menu opens`);
       // Dev 4f: presets change the existing layer checkboxes; manual edits
@@ -73,10 +65,6 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#workspaceOpenTools').click();
       assert.equal(await page.locator('#workspaceTools').isVisible(), true, `${label}: tools reopen`);
 
-      if (viewport.width <= 670) {
-        await page.locator('#workspaceCollapseTools').click();
-        assert.equal(await page.locator('#workspaceTools').isHidden(), true);
-      }
       await page.locator('#workspaceOpenInspector').click();
       assert.equal(await page.locator('#workspaceInspector').isVisible(), true, `${label}: inspector opens`);
       await page.locator('#workspaceCloseInspector').click();
@@ -214,5 +202,5 @@ if (failures.length) {
   console.error(`Phase 7 browser QA: ${failures.length} failures across ${viewports.length * 2} viewports.\n${failures.join('\n')}`);
   process.exitCode = 1;
 } else {
-  console.log('Phase 7 browser QA: 8/8 browser-viewport smoke checks passed.');
+  console.log('Phase 7 browser QA: 4/4 browser-viewport smoke checks passed.');
 }

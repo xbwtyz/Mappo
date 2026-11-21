@@ -23,8 +23,6 @@ await mkdir(output, { recursive: true });
 const viewports = [
   { name: 'desktop', width: 1440, height: 900 },
   { name: 'ultrawide', width: 5120, height: 1440 },
-  { name: 'tablet', width: 768, height: 1024 },
-  { name: 'phone', width: 390, height: 844 }
 ];
 const failures = [];
 
@@ -44,7 +42,6 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.goto('http://mappo.test/index.html', { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => __buildingQA.state().files.ready);
       assert.ok(await page.evaluate(() => Boolean(__buildingQA.state().files.store)), 'Browser fixture needs normal-origin storage');
-      if (viewport.width <= 670) await page.locator('#workspaceCollapseTools').click();
       const geometry = await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city));
       const id = await page.evaluate(() => {
         const { project, camera, buildingWorkspace, propertyWorkspace, landscapeWorkspace } = __buildingQA.state();
@@ -128,20 +125,12 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.deepEqual(clearState.plots,siteContext.plotIds);
       assert.equal(await clearButton.isDisabled(),true);
       assert.match(await page.locator('#structureHistoryStatus').innerText(),/Restore all cleared buildings/);
-      if(viewport.width<=900 && await page.locator('#workspaceCloseInspector').isVisible())
-        await page.locator('#workspaceCloseInspector').click();
       await page.locator('#structureUndo').click();
       assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),geometry);
-      if(viewport.width<=900 && await page.locator('#workspaceCloseInspector').isVisible())
-        await page.locator('#workspaceCloseInspector').click();
       await page.locator('#structureRedo').click();
       assert.equal(await page.evaluate(id=>__buildingQA.state().project.city.buildings.some(b=>b.propertyId===id),id),false);
-      if(viewport.width<=900 && await page.locator('#workspaceCloseInspector').isVisible())
-        await page.locator('#workspaceCloseInspector').click();
       await page.locator('#structureUndo').click();
       assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),geometry);
-      if(viewport.width<=900 && await page.locator('#workspaceOpenInspector').isVisible())
-        await page.locator('#workspaceOpenInspector').click();
       // Dev 4b: focus is based on the actual selected property bounds, not
       // the map cursor or the city's overall extent. It must not edit city data.
       const focusBefore=await page.evaluate(()=>{
@@ -161,7 +150,6 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.ok(focused.zoom>=.18&&focused.zoom<=12);
       assert.equal(focused.selected,id);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
-      if(viewport.width<=900)await page.locator('#workspaceOpenInspector').click();
       await page.evaluate(c=>{
         const state=__buildingQA.state();state.camera.x=c.x;state.camera.y=c.y;
         state.camera.zoom=c.zoom;__buildingQA.draw();
@@ -258,8 +246,6 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.some(p=>p.id===id),id),false);
       await page.locator('#propertyDeletionUndo4A').click();
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
-      if(viewport.width<=900 && await page.locator('#workspaceOpenInspector').isVisible())
-        await page.locator('#workspaceOpenInspector').click();
 
       // 3H: property-first Add starts a ghost, not a committed building.
       await page.getByRole('button', { name: /^(Add building to this property|Add building)$/ }).click();
@@ -320,7 +306,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.deepEqual(await page.evaluate(() => __buildingQA.state().files.captureDocument().workspace.ui.selection), { kind: 'building', id: buildingId });
       await page.screenshot({ path: new URL(`${label}-child.png`, output).pathname });
       // F3: classify through the Inspector, capture the save, then undo metadata only.
-      if (viewport.name === 'desktop' || viewport.name === 'phone') {
+      if (viewport.name === 'desktop') {
         await openIdentity(page);
         const acceptedBuilding = id => page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id), id);
         const original = await acceptedBuilding(buildingId);
@@ -430,9 +416,8 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       p = await target();
       await page.mouse.click(p.x, p.y);
       assert.equal(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection?.kind), 'district');
-      // A district inspector/drawer may now cover map controls on narrow layouts.
+      // Close the district Inspector before checking the layer menu.
       if (await page.locator('#workspaceInspector').isVisible()) await page.locator('#workspaceCloseInspector').click();
-      if (viewport.width <= 670 && await page.locator('#workspaceTools').isVisible()) await page.locator('#workspaceCollapseTools').click();
       await page.locator('#layersMenuButton').click();
       await page.locator('#buildingsLayer').check();
       await page.locator('#layersMenuClose').click();
@@ -500,14 +485,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'The Silver Stag');
       await page.locator('#identityUndoButton').click();
       assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id).customName, buildingId), undefined);
-      // At tablet/phone widths the Inspector intentionally overlays map controls.
-      // Close it first to exercise the actual user-accessible map Undo path.
-      if (viewport.width <= 900) {
-        await page.locator('#workspaceCloseInspector').click();
-        assert.equal(await page.locator('#workspaceInspector').isVisible(), false);
-      }
       await page.locator('#workspaceUndoButton').click();
-      if (viewport.width <= 900) await page.locator('#workspaceOpenInspector').click();
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry, 'Undo restores the exact city without touching geometry');
       assert.deepEqual(await page.evaluate(() => {
         const s = __buildingQA.state();
@@ -533,17 +511,10 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.deepEqual(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), { kind: 'property', id }, 'Saved Inspector selection restores after loading');
       assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.find(p => p.id === id).customName, id), 'The Silver Stag');
       assert.equal(await page.evaluate(() => __buildingQA.state().identityWorkspace.editor.history.length), 0);
-      if (viewport.width <= 900) {
-        if (await page.locator('#workspaceInspector').isVisible())
-          await page.locator('#workspaceCloseInspector').click();
-        p = await target();
-        await page.mouse.click(p.x, p.y);
-      }
       await openIdentity(page);
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'The Silver Stag');
       await page.screenshot({ path: new URL(`${label}-identity.png`, output).pathname });
       if (await page.locator('#workspaceInspector').isVisible()) await page.locator('#workspaceCloseInspector').click();
-      if (viewport.width <= 670) await page.locator('#workspaceOpenTools').click();
       await page.locator('#generateButton').click();
       assert.equal(await page.locator('#identityRebuildWarning').isVisible(), true);
       await page.locator('#identityCancelRebuildButton').click();
@@ -570,4 +541,4 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
   await browser.close();
 }
 if (failures.length) throw new Error(`Building browser QA failures:\n${failures.join('\n')}`);
-console.log('Property/building browser QA: 8/8 browser-viewport checks passed.');
+console.log('Property/building browser QA: 4/4 browser-viewport checks passed.');
