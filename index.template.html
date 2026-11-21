@@ -80,11 +80,11 @@
             <button id="propertyMergeUndoE3" type="button" class="minor-button" disabled>Undo property merge</button>
             <button id="propertyMergeRedoE3" type="button" class="minor-button" disabled>Redo property merge</button>
           </div>
-          <div class="road-history-actions-b4" id="acceptedRoadHistoryControls" role="group" aria-label="Accepted road edit history">
+          <div id="roadHistoryHome"><div class="road-history-actions-b4" id="acceptedRoadHistoryControls" role="group" aria-label="Accepted road edit history">
             <button type="button" id="roadHistoryUndoB4" class="minor-button" disabled>Undo road</button>
             <button type="button" id="roadHistoryRedoB4" class="minor-button" disabled>Redo road</button>
           </div>
-          <p id="roadHistoryStatusB4" class="hint" role="status" aria-live="polite">Road history is empty.</p>
+          <p id="roadHistoryStatusB4" class="hint" role="status" aria-live="polite">Road history is empty.</p></div>
           <p id="roadModeNotice" class="hint" role="status"></p>
         </section>
         <section id="workspaceSection-landscape" class="workspace-section landscape-list-panel" role="tabpanel" aria-labelledby="workspaceTab-landscape" hidden>
@@ -159,7 +159,7 @@
       </div>
     </aside>
     <main class="map-shell" aria-label="City map workspace">
-      <div class="map-topline"><div class="workspace-panel-restores"><button id="workspaceOpenTools" class="workspace-map-button" aria-label="Show tools" hidden>Tools</button><button id="workspaceOpenInspector" class="workspace-map-button" aria-label="Show inspector">Inspector</button><button id="propertyDeletionUndo4A" class="workspace-map-button" title="Undo last property deletion" hidden>Undo Delete</button><button id="propertyDeletionRedo4A" class="workspace-map-button" title="Redo last property deletion" hidden>Redo Delete</button></div><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><div class="workspace-menu-anchor layers-menu-anchor"><button id="layersMenuButton" class="workspace-map-button" aria-expanded="false" aria-controls="layersMenu">Layers <span aria-hidden="true">⌄</span></button>
+      <div class="map-topline"><div class="workspace-panel-restores"><button id="workspaceOpenTools" class="workspace-map-button" aria-label="Show tools" hidden>Tools</button><button id="workspaceOpenInspector" class="workspace-map-button" aria-label="Show inspector">Inspector</button><span id="propertyDeletionHistoryHome"><span id="propertyDeletionHistoryControls"><button id="propertyDeletionUndo4A" class="workspace-map-button" title="Undo last property deletion" hidden>Undo Delete</button><button id="propertyDeletionRedo4A" class="workspace-map-button" title="Redo last property deletion" hidden>Redo Delete</button></span></span></div><div class="map-breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><strong id="cityName">—</strong></div><div class="workspace-menu-anchor layers-menu-anchor"><button id="layersMenuButton" class="workspace-map-button" aria-expanded="false" aria-controls="layersMenu">Layers <span aria-hidden="true">⌄</span></button>
           <section id="layersMenu" class="workspace-menu layer-panel" aria-labelledby="layersMenuButton" hidden>
             <div class="workspace-menu-heading"><h2>Layers</h2><button id="layersMenuClose" class="workspace-icon-button" aria-label="Close Layers menu">×</button></div>
             <div class="layer-preset-4f"><label for="layerPreset4F">View preset</label><select id="layerPreset4F" aria-label="Layer visibility preset">
@@ -187,6 +187,10 @@
               <button id="desktopGenerationEdit" class="minor-button" type="button" aria-pressed="true">Edit</button>
               <button id="desktopGenerationReview" class="minor-button" type="button" aria-pressed="false">Review impacts</button>
             </div>
+            <div id="desktopLandscapeViews" class="road-menu-views" role="group" aria-label="Landscape view" hidden>
+              <button id="desktopLandscapeEdit" class="minor-button" type="button" aria-pressed="true">Edit</button>
+              <button id="desktopLandscapeReview" class="minor-button" type="button" aria-pressed="false">Review impacts</button>
+            </div>
           </header>
           <div class="desktop-home-scroll">
             <div id="desktopHomeGeneration">
@@ -195,7 +199,16 @@
                 <button type="button" data-generation="districts" class="minor-button" aria-pressed="false">Districts</button>
                 <button type="button" data-generation="defenses" class="minor-button" aria-pressed="false">Defenses</button>
               </div>
-              <div id="desktopGenerationControls"></div>
+              <div id="desktopGenerationControls">
+                <div id="desktopGenerationForms"></div>
+                <div id="desktopDistrictEdit" hidden>
+                  <h3 id="desktopDistrictName"></h3>
+                  <div id="desktopDistrictControls"></div>
+                  <details id="desktopDistrictDetails" class="workspace-settings"><summary>District details</summary><p id="desktopDistrictFacts" class="hint"></p></details>
+                  <button id="desktopDistrictBack" class="minor-button full-width" type="button">Back to district list</button>
+                </div>
+              </div>
+              <div id="desktopCityReport"></div>
               <section id="desktopGenerationImpact" aria-label="Generation impact" hidden>
                 <p id="desktopGenerationImpactText" class="hint"></p>
                 <div id="desktopGenerationComparison" class="road-menu-views" role="group" aria-label="Map comparison" hidden>
@@ -219,8 +232,14 @@
               </div>
               <h3 id="desktopAddFeatureHeading" hidden></h3>
               <div id="desktopAddFeatureControls"></div>
+              <section id="desktopLandscapeImpact" aria-label="Landscape impacts" hidden>
+                <h3>Changes in this draft</h3>
+                <p id="desktopLandscapeImpactText" class="hint"></p>
+                <ul id="desktopLandscapeFacts" class="desktop-impact-facts"></ul>
+                <p class="hint">Rebuild city previews how the draft affects streets, properties, and buildings before you apply it.</p>
+              </section>
               <details class="workspace-settings"><summary>Property history</summary><div id="desktopAddPropertyHistory"></div></details>
-              <details class="workspace-settings"><summary>Landscape features &amp; draft history</summary><div id="desktopAddLandscapeTools"></div></details>
+              <details class="workspace-settings"><summary>Landscape features</summary><div id="desktopAddLandscapeTools"></div></details>
             </div>
             <div id="desktopHomeRoads" hidden>
               <button id="desktopReopenRoads" type="button" class="tool-button full-width">Edit roads</button>
@@ -235,6 +254,13 @@
               <button id="desktopGenerationApply" type="button" class="tool-button" disabled>Rebuild city</button>
             </div>
             <div id="desktopCityRebuildControls"></div>
+            <div id="desktopGenerationHistory"></div>
+            <div id="desktopLandscapeFooter" hidden>
+              <div id="desktopLandscapeStatus"></div>
+              <div id="desktopLandscapeActions" class="road-preview-actions"></div>
+              <div id="desktopLandscapeHistory"></div>
+            </div>
+            <div id="desktopDeletionHistory"></div>
           </footer>
         </section>
         <section id="roadPreviewPanel" class="road-preview-panel" aria-labelledby="roadPreviewHeading" hidden>
@@ -635,7 +661,7 @@
     <aside id="workspaceInspector" class="sidebar sidebar-right" aria-label="Selection inspector" hidden>
       <div class="sidebar-heading workspace-panel-heading"><span>INSPECTOR</span><div class="workspace-panel-actions"><button id="workspacePinInspector" class="workspace-pin-button" aria-label="Pin inspector open" aria-pressed="false">Pin</button><button id="workspaceCloseInspector" class="workspace-icon-button" aria-label="Collapse inspector" title="Collapse inspector">›</button></div></div>
       <div id="workspaceInspectorScroll" class="sidebar-content">
-        <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Click a landscape feature or city block, or use Add feature in Landscape. Pin this panel to keep the city report available.</p></div>
+        <div id="workspaceEmptyInspector" class="workspace-inspector-empty"><strong>Select a place on the map.</strong><p>Select a property, building, district, or landscape feature on the map.</p></div>
         <div id="workspaceSelectionInspector" hidden>
           <div id="workspaceSelectionParent" class="workspace-inspector-parent" hidden></div>
           <p id="workspaceSelectionType" class="eyebrow"></p>
@@ -670,6 +696,7 @@
           <details id="workspaceInspectorDetails" class="workspace-inspector-fold" hidden>
             <summary id="workspaceInspectorDetailsTitle">Details</summary>
           </details>
+          <div id="desktopInspectorHistory"></div>
           <div id="workspaceInspectorSectionsHost"><div id="workspaceSelectionSections"></div></div>
           <button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
         <div id="workspaceInspectorToolsFallback">
@@ -752,9 +779,8 @@
         </div>
         </div>
         </div>
-        <details id="workspaceCityReport" class="workspace-city-report"><summary>City report &amp; workspace guide</summary>
+        <div id="cityReportHome"><details id="workspaceCityReport" class="workspace-city-report"><summary>City report &amp; workspace guide</summary>
 
-        <p class="eyebrow">CURRENT GENERATED CITY</p><h2>City report<span class="gold-dot">.</span></h2><p class="intro">Buildings and varied properties shaped by your streets. Green space remains for yards, gardens and gaps.</p>
         <div class="report-label">SETTLEMENT</div><div class="report-primary" id="reportCityName"></div>
         <div class="stat-row featured-stat"><span>Buildings</span><strong id="buildingCount">—</strong></div><div class="stat-row"><span>Properties</span><strong id="propertyCount">—</strong></div><div class="stat-row"><span>Combined-plot properties</span><strong id="mergedCount">—</strong></div><div class="stat-row"><span>Base plots</span><strong id="plotCount">—</strong></div>
         <div class="stat-row"><span>Seed</span><strong id="citySeed">—</strong></div><div class="stat-row"><span>Density</span><strong id="citySize">—</strong></div>
@@ -764,8 +790,7 @@
         <div class="sidebar-rule"></div><p class="eyebrow">WORKSPACE GUIDE</p>
         <div class="shortcut"><span>Pan in any tool</span><kbd>Space + drag</kbd></div><div class="shortcut"><span>Zoom</span><kbd>Scroll / + −</kbd></div><div class="shortcut"><span>Fit outline</span><kbd>0</kbd></div>
         <div class="shortcut"><span>Close clicked outline</span><kbd>Enter</kbd></div><div class="shortcut"><span>Add point in edit mode</span><kbd>Double-click edge</kbd></div><div class="shortcut"><span>Remove selected point</span><kbd>Delete</kbd></div>
-        <div class="note"><strong>ABOUT THIS BUILD</strong><p>One continuous outline, including concave and branching shapes. No holes in the outer outline; inland lakes reserve their own water areas. Buildings now occupy varied street-facing properties. Districts group whole blocks. Moving a block keeps both neighborhoods connected. Generate editable lakes, a river and a coastline in Water &amp; Bridges. Water drafts apply when you generate the city. Perimeter walls stay clear of water. Draft edits apply when you generate. Download a project file to keep your city. Browser recovery also keeps the current and previous snapshot when storage is available.</p></div>
-        </details>
+        </details></div>
       </div>
     </aside>
   </div>

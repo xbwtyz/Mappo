@@ -1,4 +1,11 @@
 // Desktop navigation reuses the existing edit forms and their transaction owners.
+const landscapeActions = {
+  river: 'generateRiverButton', coast: 'generateCoastButton',
+  lake: 'addLakeButton', terrain: 'addTerrainButton',
+};
+
+const landscapeRegeneration = { lake: 'regenerateLakeButton', terrain: 'regenerateTerrainButton' };
+
 export class DesktopWorkspace {
   constructor({ getElement, layout, shell, road, landscape, leaveTools, addProperty,
     addBuilding, prepareGeneration, generationKey, acceptedProject, redraw, enabled = true }) {
@@ -8,6 +15,7 @@ export class DesktopWorkspace {
     this.tool = 'city';
     this.reviewing = false;
     this.proposed = true;
+    this.landscapeReviewing = false;
     this.message = '';
     this.panel = this.$('desktopWorkspaceHome');
     this.media = enabled ? globalThis.window?.matchMedia?.('(min-width: 1000px)') : null;
@@ -43,6 +51,12 @@ export class DesktopWorkspace {
       this.cancelPreview();
     });
     $('desktopGenerationApply').addEventListener('click', () => this.apply());
+    $('desktopLandscapeEdit').addEventListener('click', () => this.setLandscapeReview(false));
+    $('desktopLandscapeReview').addEventListener('click', () => this.setLandscapeReview(true));
+    $('desktopDistrictBack').addEventListener('click', () => {
+      this.shell.clear();
+      this.tools.find(button => button.dataset.generation === 'districts').focus();
+    });
     for (const [id, proposed] of [['desktopGenerationBefore', false], ['desktopGenerationProposed', true]])
       $(id).addEventListener('click', () => {
         this.proposed = proposed;
@@ -52,7 +66,10 @@ export class DesktopWorkspace {
     this.origins = new Map();
     for (const id of ['cityGenerationControls', 'cityRebuildControls', 'workspaceSection-districts',
       'workspaceSection-defenses', 'workspaceSection-landscape', 'landscapeInspectorControls',
-      'acceptedRoadHistoryControls', 'propertyCreationHistoryControls',
+      'roadHistoryHome', 'propertyCreationHistoryControls', 'propertyDeletionHistoryControls',
+      'buildingStructureHistoryPanel', 'undoDistrictButton', 'undoFortificationButton',
+      'districtInspectorControls', 'workspaceCityReport', 'landscapeHistoryTools', 'landscapeDraftStatus',
+      'landscapeReviewRebuild', ...Object.values(landscapeActions), ...Object.values(landscapeRegeneration),
       'propertySplitHistoryControls', 'propertyMergeHistoryControls']) {
       const node = $(id);
       this.origins.set(id, [node.parentNode, node.nextSibling]);
@@ -145,6 +162,66 @@ export class DesktopWorkspace {
     return true;
   }
 
+  setLandscapeReview(reviewing) {
+    this.landscapeReviewing = reviewing;
+    this.sync();
+  }
+
+  syncLandscape(add, selection, landscapeSelection) {
+    const $ = this.$;
+    const creating = add && selection?.kind === 'landscape-add';
+    const showFeature = add && landscapeSelection;
+    const reviewing = showFeature && this.landscapeReviewing;
+    const pending = add && (this.landscape.water.editor.dirty || this.landscape.terrain.editor.dirty);
+    this.move('landscapeHistoryTools', add ? 'desktopLandscapeHistory' : null);
+    this.move('landscapeDraftStatus', showFeature ? 'desktopLandscapeStatus' : null);
+    this.move('landscapeReviewRebuild', add ? 'desktopLandscapeActions' : null);
+    const type = showFeature ? this.landscape.type(selection) : null;
+    const primaryAction = !showFeature ? null : !creating && landscapeRegeneration[type]
+      ? landscapeRegeneration[type] : landscapeActions[type];
+    for (const id of [...Object.values(landscapeActions), ...Object.values(landscapeRegeneration)])
+      this.move(id, id === primaryAction ? 'desktopLandscapeActions' : null);
+    $('desktopLandscapeActions').dataset.reviewing = String(Boolean(reviewing));
+    if (add) $('landscapeReviewRebuild').hidden = !pending;
+    $('desktopLandscapeFooter').hidden = !add;
+    $('desktopLandscapeViews').hidden = !showFeature;
+    $('desktopLandscapeEdit').setAttribute('aria-pressed', String(!reviewing));
+    $('desktopLandscapeReview').setAttribute('aria-pressed', String(Boolean(reviewing)));
+    $('desktopAddFeatureControls').hidden = !showFeature || reviewing;
+    $('desktopLandscapeImpact').hidden = !reviewing;
+    if (!reviewing) return;
+
+    const city = this.acceptedProject()?.city;
+    const record = this.landscape.record(selection);
+    const original = record && (record.kind === 'terrain' ? city?.terrainFeatures : city?.waterFeatures)
+      ?.find(feature => feature.id === record.id);
+    $('desktopLandscapeImpactText').textContent = creating
+      ? 'Create a draft to review the feature on the map.'
+      : !original ? 'This new feature is in the landscape draft. The accepted city has not changed.'
+        : JSON.stringify(original) === JSON.stringify(record.feature)
+          ? 'The feature geometry matches the accepted city.'
+          : 'The map shows draft geometry for this feature. Rebuild city to apply it.';
+    const rows = this.shell.descriptor()?.sections?.flatMap(section => section.rows ?? []) ?? [];
+    const facts = $('desktopLandscapeFacts');
+    facts.replaceChildren(...rows.map(([label, value]) => {
+      const item = facts.ownerDocument.createElement('li');
+      item.textContent = label + ': ' + value;
+      return item;
+    }));
+  }
+
+  syncDistrict(active) {
+    const $ = this.$;
+    const descriptor = active ? this.shell.descriptor() : null;
+    this.move('districtInspectorControls', active ? 'desktopDistrictControls' : null);
+    $('desktopDistrictEdit').hidden = !active;
+    $('desktopGenerationForms').hidden = active;
+    if (!active) return;
+    $('desktopDistrictName').textContent = descriptor?.title ?? 'District';
+    $('desktopDistrictFacts').textContent = (descriptor?.sections ?? [])
+      .flatMap(section => section.rows ?? []).map(([label, value]) => label + ': ' + value).join(' · ');
+  }
+
   setReview(reviewing) {
     this.reviewing = reviewing;
     this.sync();
@@ -213,8 +290,25 @@ export class DesktopWorkspace {
     app.classList.toggle('three-tab-workspace', enabled);
     const selection = this.shell.state.selection;
     const landscapeSelection = ['landscape-add', 'water', 'terrain'].includes(selection?.kind);
+    const districtSelection = selection?.kind === 'district';
+    const selectionKey = selection ? selection.kind + ':' + selection.id : '';
+    if (selectionKey !== this.selectionKey) {
+      this.selectionKey = selectionKey;
+      this.landscapeReviewing = false;
+      if (enabled && !this.switching && !this.road.active) {
+        if (landscapeSelection) this.mode = 'add';
+        if (districtSelection) {
+          this.mode = 'generation';
+          this.tool = 'districts';
+          this.reviewing = false;
+        }
+      }
+    }
+    const generation = enabled && this.mode === 'generation';
+    const add = enabled && this.mode === 'add';
+    const districtEdit = generation && this.tool === 'districts' && districtSelection && !this.road.active;
     const contextualInspector = selection && !this.shell.state.inspectorCollapsed
-      && !(this.mode === 'add' && landscapeSelection);
+      && !districtEdit && !(add && landscapeSelection);
     const available = enabled && !this.road.active
       && (!this.layout.panel || this.layout.panel === this.panel) && !contextualInspector;
     this.panel.hidden = !available;
@@ -226,9 +320,7 @@ export class DesktopWorkspace {
       $('desktopOutlineSettings').open = !enabled;
       this.outlineMode = enabled;
     }
-    const generation = enabled && this.mode === 'generation';
-    const add = enabled && this.mode === 'add';
-    const host = generation ? 'desktopGenerationControls' : null;
+    const host = generation ? 'desktopGenerationForms' : null;
     this.move('cityGenerationControls', host && this.tool === 'city' ? host : null);
     this.move('workspaceSection-districts', host && this.tool === 'districts' ? host : null);
     this.move('workspaceSection-defenses', host && this.tool === 'defenses' ? host : null);
@@ -238,7 +330,16 @@ export class DesktopWorkspace {
     landscapeTools.hidden = !add && this.shell.state.section !== 'landscape';
     landscapeTools.inert = landscapeTools.hidden;
     this.move('landscapeInspectorControls', add && landscapeSelection ? 'desktopAddFeatureControls' : null);
-    this.move('acceptedRoadHistoryControls', enabled && this.mode === 'roads' ? 'desktopRoadHistory' : null);
+    this.move('roadHistoryHome', enabled && this.mode === 'roads' ? 'desktopRoadHistory' : null);
+    this.move('workspaceCityReport', host && this.tool === 'city' ? 'desktopCityReport' : null);
+    this.move('undoDistrictButton', generation && this.tool === 'districts' ? 'desktopGenerationHistory' : null);
+    this.move('undoFortificationButton', generation && this.tool === 'defenses' ? 'desktopGenerationHistory' : null);
+    const placeSelection = ['property', 'building'].includes(selection?.kind);
+    this.move('buildingStructureHistoryPanel', enabled && placeSelection && contextualInspector ? 'desktopInspectorHistory' : null);
+    this.move('propertyDeletionHistoryControls', available ? 'desktopDeletionHistory'
+      : enabled && placeSelection && contextualInspector ? 'desktopInspectorHistory' : null);
+    this.syncDistrict(districtEdit);
+    this.syncLandscape(add, selection, landscapeSelection);
     for (const id of ['propertyCreationHistoryControls', 'propertySplitHistoryControls', 'propertyMergeHistoryControls'])
       this.move(id, add ? 'desktopAddPropertyHistory' : null);
     $('newSeedButton').textContent = generation ? 'New street seed' : 'Rebuild with a new seed';
@@ -251,8 +352,9 @@ export class DesktopWorkspace {
     }
     $('desktopWorkspaceHeading').textContent = generation ? 'Generation' : add ? 'Add to the map' : 'Roads';
     $('desktopHomeGeneration').hidden = !generation;
-    $('desktopGenerationViews').hidden = !generation;
-    $('desktopGenerationActions').hidden = !generation;
+    $('desktopGenerationViews').hidden = !generation || districtEdit;
+    $('desktopGenerationActions').hidden = !generation || districtEdit;
+    $('desktopCityReport').hidden = !generation || this.tool !== 'city' || this.reviewing;
     $('desktopHomeAdd').hidden = !add;
     $('desktopHomeRoads').hidden = this.mode !== 'roads';
     const featureHeading = $('desktopAddFeatureHeading');
@@ -299,7 +401,7 @@ export class DesktopWorkspace {
     }[this.tool] : '';
     $('desktopGenerationImpactText').textContent = [impacts[this.tool], counts].filter(Boolean).join(' ');
     $('desktopWorkspaceStatus').textContent = this.message || (generation
-      ? ready ? 'Preview ready. Review and apply when ready.' : 'Set up your changes, then preview.'
-      : add ? 'Choose a feature to add.' : '');
+      ? districtEdit ? '' : ready ? 'Preview ready. Review and apply when ready.' : 'Set up your changes, then preview.'
+      : add && !landscapeSelection ? 'Choose a feature to add.' : '');
   }
 }

@@ -954,7 +954,7 @@
   #desktopAddFeatureControls #landscapeCreationType{display:none}
 }
 @media(min-width:1000px){
-  #desktopGenerationControls>#cityGenerationControls{display:flex;flex-direction:column}
+  #desktopGenerationForms>#cityGenerationControls{display:flex;flex-direction:column}
   #desktopGenerationControls .desktop-street-settings{order:-1}
   #desktopGenerationControls .desktop-street-settings>h2{display:none}
   #desktopGenerationControls #desktopOutlineSettings{margin-top:12px}
@@ -965,3 +965,30 @@
 }
 #workspaceTools #desktopOutlineSettings{margin:0;padding:0;border:0;background:transparent}
 #workspaceTools #desktopOutlineSettings>summary{display:none}
+
+@media(min-width:1000px){
+  .three-tab-workspace .workspace-menu{
+    background:#26362e;color:#eff3e6;border-color:#587062;
+  }
+  .three-tab-workspace .workspace-menu-heading{
+    padding-bottom:10px;border-bottom:1px solid #4b6052;
+  }
+  #desktopWorkspaceHome .district-inspector-controls{margin-top:0}
+  #desktopWorkspaceHome .desktop-home-footer .landscape-history-tools{margin-top:9px;padding-top:8px}
+  #desktopWorkspaceHome .desktop-home-footer .landscape-history-tools h3{margin:0 0 6px}
+  #desktopWorkspaceHome .desktop-home-footer .landscape-history-tools button{min-height:32px}
+  #desktopGenerationHistory:not(:empty){margin-top:8px}
+  #desktopLandscapeActions{flex-wrap:wrap}
+  #desktopLandscapeActions button{flex:1 1 135px}
+  #desktopLandscapeActions[data-reviewing=true]>button:not(#landscapeReviewRebuild){display:none}
+  #desktopLandscapeStatus p{margin:0 0 6px}
+  .desktop-impact-facts{padding-left:17px;font-size:12px;color:#d6e3d5;line-height:1.65}
+  #desktopAddFeatureControls .workspace-tool-actions button[aria-pressed=true]{
+    background:#405b49;border-color:#adc897;color:#fff;
+  }
+  #desktopInspectorHistory .building-structure-history{
+    position:static;max-width:none;margin:10px 0;background:#213128;
+  }
+  #desktopDeletionHistory button,#desktopInspectorHistory button.workspace-map-button{margin:6px 5px 0 0}
+  #desktopCityReport .workspace-city-report{margin-top:12px}
+}

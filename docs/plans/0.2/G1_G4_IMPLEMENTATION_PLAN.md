@@ -53,11 +53,11 @@ session, whichever view is open. Project commands have a stable location.
 | **G3C — Property, plot, and building tools** | Move E1–E4 and F1–F4 workflows into the default single-map workspace. Bring over property-first building selection, identity, numeric geometry controls, replacement confirmation, and scoped history. | Complete a parcel split and a courtyard edit from the same workspace. Check applied edits and blockers, Cancel and Reset, metadata preservation, and geometry Undo/Redo. Use the shared edit panel and keep domain-specific controls in their tool modules. |
 | **G3D — Remaining tools and project workflows** | Migrate generation settings, districts, water and terrain, fortifications, layers, and project files. Build a parity checklist from the current UI and track each workflow as it moves. | Verify generation, visibility controls, save/open, recovery, exports, and shortcuts. Close any parity gaps while the old workspace is still available for review. |
 | **G3E — Three-tab desktop navigation** | Bring over the approved Generation, Add, and Roads mockup. Mount live city, district, defense, and landscape controls in the resizable panel. Route parcel and building placement to their existing map editors. | Verify previews render a detached candidate, changing inputs invalidates it, and Apply uses the existing transaction. Verify all three tabs, map interaction, history, and compact fallback. |
-| **G3F — Contextual editing and panel cleanup** | Normalize the remaining form layouts inside the new workspaces. Prioritize selected-record actions, and reconcile map status, Review impacts, and scoped Undo across Generation and Add. | Walk every create/edit path with the new tabs and identify any remaining actions that still require an old panel. |
+| **G2F — Contextual editing and panel cleanup** | Normalize the remaining form layouts inside the new workspaces. Prioritize selected-record actions, and reconcile map status, Review impacts, and scoped Undo across Generation and Add. | Walk every create/edit path with the new tabs and identify any remaining actions that still require an old panel. |
 | **G3G — Desktop parity and legacy retirement** | Migrate the remaining desktop checks and remove superseded desktop launchers and redundant controls after parity. | Exercise project files, recovery and export, current and old saves, road review and comparison, and tool handoffs entirely through the three-tab workspace. |
 | **G4 — Desktop acceptance and switch** | Make the new workspace the default after parity. Retire superseded UI entry points and document the new workflows. Produce byte-identical root and versioned standalone HTML. | Pass GitHub CI on the review commit. Exercise the end-to-end desktop matrix, old saves, offline use, and representative Small and Large cities. Record remaining limitations, the user-experience changes, and the evidence for the switch. |
 
-G3A through G3G are separate reviewable passes within G3. Each implementation
+The workspace migration uses separate review passes. G2F follows G3E and precedes G3G. Each implementation
 pass starts from updated `main` on a fresh branch and opens a review PR.
 GitHub Actions runs the full applicable suite at review. Use targeted local
 tests for failure diagnosis. Implementation and merge approvals follow the
@@ -189,6 +189,20 @@ The standalone G3E review build opens the new workspace at 1000 CSS pixels
 and above. The compact workspace remains available below that threshold.
 Use `?workspace=legacy` for desktop parity comparisons until G3G removes
 the separate desktop fallback. Project and Layers keep their entry points.
+
+## G2F contextual editing and panel cleanup
+
+Add keeps river, coastline, lake, and mountain editing in its resizable dock.
+**Review impacts** shows the selected feature and whether its geometry has
+changed. **Review city rebuild** opens Generation for the city-wide preview.
+Create, regenerate, and scoped draft history controls stay in the footer.
+
+District selection opens the selected neighborhood inside Generation, with
+district Undo available while editing names, colors, and block assignments.
+Defense Undo stays in the Generation footer. Property and building structure
+history follows the Inspector. Road history feedback stays with its controls,
+and City report and shortcuts sit under City layout. Project and Layers
+retain their header entry points and share the dock styling.
 
 ## Integration rules
 
