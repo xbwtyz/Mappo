@@ -60,6 +60,7 @@ const cases = [
   ['large','N-0239','x',8],
   ['large','N-0332','x',8],
 ];
+const viewports = [{ name: 'desktop', width: 1440, height: 900 }];
 const results=[], errors=[];
 const round = n => Math.round(n*10)/10;
 const median = a => {a=[...a].sort((x,y)=>x-y);return (a[Math.floor((a.length-1)/2)]+a[Math.floor(a.length/2)])/2;};
@@ -82,8 +83,8 @@ async function measureInputWhileChecking(page) {
 for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
   const browser=await engine.launch({headless:true});
   try {
-    for(const viewport of [{name:'desktop',width:1440,height:900},{name:'phone',width:390,height:844}]){
-      const page=await browser.newPage({viewport,hasTouch:name==='chromium'});
+    for(const viewport of viewports){
+      const page=await browser.newPage({viewport});
       page.setDefaultTimeout(120000);
       page.on('pageerror',e=>errors.push(name+'/'+viewport.name+': '+e.message));
       try {

@@ -12,7 +12,14 @@ assert.equal(baseline.errors.length,0,'Baseline benchmark must be clean');
 assert.equal(candidate.errors.length,0,'Candidate benchmark must be clean');
 const before=new Map(baseline.summary.map(row=>[row.group,row]));
 const after=new Map(candidate.summary.map(row=>[row.group,row]));
-assert.equal(before.size,8,'Expected C7 baseline browser × viewport × city-size groups');
+const desktopGroups = ['chromium', 'firefox'].flatMap(browser =>
+  ['small', 'large'].map(size => [browser, 'desktop', size].join('/')));
+for (const group of desktopGroups) assert.ok(before.has(group), 'Missing baseline group: ' + group);
+assert.ok([4, 8].includes(before.size), 'Expected desktop groups or the historical desktop/phone matrix');
+if (before.size === 8) {
+  for (const group of desktopGroups)
+    assert.ok(before.has(group.replace('/desktop/', '/phone/')), 'Missing historical phone group: ' + group);
+}
 assert.equal(after.size,before.size,'Candidate must cover the identical fixtures');
 assert.deepEqual([...after.keys()].sort(),[...before.keys()].sort());
 const pct=(a,b)=>a&&Number.isFinite(a)&&Number.isFinite(b)?

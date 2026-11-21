@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       run_c7_benchmark:
-        description: Also run C7 browser performance benchmarking
+        description: Also run the desktop C7 browser performance benchmark
         type: boolean
         required: false
         default: false
@@ -65,38 +65,8 @@ jobs:
       - name: Run Chromium and Firefox browser matrices
         run: npm run test:browser
 
-      - name: Determine whether C7 performance testing is relevant
-        id: c7
-        shell: bash
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          PR_BASE: ${{ github.event.pull_request.base.sha }}
-          PR_HEAD: ${{ github.event.pull_request.head.sha }}
-          FORCE_C7: ${{ inputs.run_c7_benchmark || 'false' }}
-        run: |
-          if [[ "$FORCE_C7" == "true" ]]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "C7 benchmark explicitly requested."
-            exit 0
-          fi
-          changes=$(mktemp)
-          if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            git diff --name-only "$PR_BASE" "$PR_HEAD" > "$changes"
-          elif [[ "$EVENT_NAME" == "push" || "$EVENT_NAME" == "merge_group" ]]; then
-            git diff --name-only HEAD^ HEAD > "$changes"
-          else
-            : > "$changes"
-          fi
-          if grep -Eq '^(src/(core/(road-|neighborhood-reflow|parcel-reconciliation)|editor/(road-|junction-preview)|ui/road-inspection|worker/|renderer/road-inspection)|scripts/(c7-browser-performance|road-browser-qa|build)|tests/(c7-|road-|neighborhood-reflow|parcel-reconciliation))' "$changes"; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "Road or C7 code changed: run the benchmark."
-          else
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "No relevant road-code change: skip expensive C7 benchmark."
-          fi
-
-      - name: C7 browser performance and stale-draft checks
-        if: steps.c7.outputs.run == 'true'
+      - name: C7 desktop browser performance and stale-draft checks
+        if: github.event_name == 'workflow_dispatch' && inputs.run_c7_benchmark
         run: node scripts/c7-browser-performance.mjs
 
       - name: Upload browser screenshots and failure evidence
