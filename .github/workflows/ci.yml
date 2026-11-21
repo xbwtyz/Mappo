@@ -1,7 +1,7 @@
 name: Mappo CI
 
-# Full review-ready validation. Keep the workflow and job names for release
-# workflow_run compatibility and existing status-check configuration.
+# Parallel review-ready validation. Keep the workflow and final gate job names
+# for release workflow_run compatibility and existing required status checks.
 on:
   push:
     branches: [main]
@@ -24,9 +24,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
-    name: Build, Node tests and browser QA
+  node:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    name: Build and Node regression tests
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
@@ -57,29 +57,8 @@ jobs:
           cmp index.html "dist/mappo-$VERSION.html"
           git diff --exit-code -- index.html "dist/mappo-$VERSION.html"
 
-      - name: Install test-only Playwright browsers
-        run: |
-          npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium firefox
-
-      - name: Run Chromium and Firefox browser matrices
-        run: npm run test:browser
-
-      - name: C7 desktop browser performance and stale-draft checks
-        if: github.event_name == 'workflow_dispatch' && inputs.run_c7_benchmark
-        run: node scripts/c7-browser-performance.mjs
-
-      - name: Upload browser screenshots and failure evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mappo-browser-${{ github.run_id }}-${{ github.run_attempt }}
-          path: artifacts/
-          if-no-files-found: ignore
-          retention-days: 14
-
       - name: Upload standalone HTML artifacts
-        if: always() && env.VERSION != ''
+        if: ${{ always() && env.VERSION != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: mappo-${{ env.VERSION }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -88,3 +67,74 @@ jobs:
             dist/mappo-${{ env.VERSION }}.html
           if-no-files-found: warn
           retention-days: 14
+
+  browser:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    name: Browser QA (${{ matrix.suite }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [workspace, property, integration]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Each independent runner builds its own offline HTML: no cross-job
+      # artifacts are needed and browser tests see the same compiled sources.
+      - name: Build standalone HTML for browser QA
+        run: npm run build
+
+      - name: Cache test-only Playwright downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-node22-1.56.1
+
+      - name: Install test-only Playwright browsers
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium firefox
+
+      - name: Run ${{ matrix.suite }} browser regression suite
+        run: npm run test:browser:${{ matrix.suite }}
+
+      - name: C7 desktop browser performance and stale-draft checks
+        if: ${{ matrix.suite == 'integration' && github.event_name == 'workflow_dispatch' && inputs.run_c7_benchmark }}
+        run: node scripts/c7-browser-performance.mjs
+
+      - name: Upload browser screenshots and failure evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: mappo-browser-${{ matrix.suite }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # Keep this exact job name stable for required-status-check configuration.
+  # A failed/skipped shard must never yield a green aggregate gate.
+  validate:
+    if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    name: Build, Node tests and browser QA
+    needs: [node, browser]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every independent suite to pass
+        env:
+          NODE_RESULT: ${{ needs.node.result }}
+          BROWSER_RESULT: ${{ needs.browser.result }}
+        run: |
+          echo "Node regression: $NODE_RESULT"
+          echo "Browser regression matrix: $BROWSER_RESULT"
+          test "$NODE_RESULT" = success
+          test "$BROWSER_RESULT" = success
