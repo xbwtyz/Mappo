@@ -117,6 +117,12 @@ jobs:
       - name: Run ${{ matrix.suite }} browser regression suite
         run: npm run test:browser:${{ matrix.suite }}
 
+      # Temporary one-branch H3 measurement; remove after collecting baseline.
+      # This must not burden ordinary PR CI or a merged main branch.
+      - name: H3 benchmark Large Organic on the current app
+        if: ${{ matrix.suite == 'integration' && github.event_name == 'pull_request' && github.head_ref == 'feature/mappo-0.2h-h3-performance-audit' }}
+        run: node scripts/c7-browser-performance.mjs
+
       - name: C7 desktop browser performance and stale-draft checks
         if: ${{ matrix.suite == 'integration' && github.event_name == 'workflow_dispatch' && inputs.run_c7_benchmark }}
         run: node scripts/c7-browser-performance.mjs
