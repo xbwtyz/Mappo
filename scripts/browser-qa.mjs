@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
 
-const url = new URL('../index.html', import.meta.url).href;
+const url = new URL('../index.html?workspace=legacy', import.meta.url).href;
 const output = new URL('../artifacts/browser-qa/', import.meta.url);
 await mkdir(output, { recursive: true });
 const viewports = [

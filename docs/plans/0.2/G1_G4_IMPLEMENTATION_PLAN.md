@@ -52,9 +52,12 @@ session, whichever view is open. Project commands have a stable location.
 | **G3B — Before/proposed comparison** | Implement the page 3 comparison using the accepted city on the left, the active road preview on the right, and the right-side review panel. Link the cameras and reuse the active edit actions. Render the second map only while comparison is open. | Compare the road move and Market Hall placement on an ultrawide viewport. Change the decision, see it reflected in the proposal, and close the comparison without resetting the draft. Verify stale or missing proposals have a clear state and resizing to a compact layout returns the user to a usable single map. |
 | **G3C — Property, plot, and building tools** | Move E1–E4 and F1–F4 workflows into the default single-map workspace. Bring over property-first building selection, identity, numeric geometry controls, replacement confirmation, and scoped history. | Complete a parcel split and a courtyard edit from the same workspace. Check applied edits and blockers, Cancel and Reset, metadata preservation, and geometry Undo/Redo. Use the shared edit panel and keep domain-specific controls in their tool modules. |
 | **G3D — Remaining tools and project workflows** | Migrate generation settings, districts, water and terrain, fortifications, layers, and project files. Build a parity checklist from the current UI and track each workflow as it moves. | Verify generation, visibility controls, save/open, recovery, exports, and shortcuts. Close any parity gaps while the old workspace is still available for review. |
+| **G3E — Three-tab desktop navigation** | Bring over the approved Generation, Add, and Roads mockup. Mount live city, district, defense, and landscape controls in the resizable panel. Route parcel and building placement to their existing map editors. | Verify previews render a detached candidate, changing inputs invalidates it, and Apply uses the existing transaction. Verify all three tabs, map interaction, history, and compact fallback. |
+| **G3F — Contextual editing and panel cleanup** | Normalize the remaining form layouts inside the new workspaces. Prioritize selected-record actions, and reconcile map status, Review impacts, and scoped Undo across Generation and Add. | Walk every create/edit path with the new tabs and identify any remaining actions that still require an old panel. |
+| **G3G — Desktop parity and legacy retirement** | Migrate the remaining desktop checks and remove superseded desktop launchers and redundant controls after parity. | Exercise project files, recovery and export, current and old saves, road review and comparison, and tool handoffs entirely through the three-tab workspace. |
 | **G4 — Desktop acceptance and switch** | Make the new workspace the default after parity. Retire superseded UI entry points and document the new workflows. Produce byte-identical root and versioned standalone HTML. | Pass GitHub CI on the review commit. Exercise the end-to-end desktop matrix, old saves, offline use, and representative Small and Large cities. Record remaining limitations, the user-experience changes, and the evidence for the switch. |
 
-G3A through G3D are separate reviewable passes within G3. Each implementation
+G3A through G3G are separate reviewable passes within G3. Each implementation
 pass starts from updated `main` on a fresh branch and opens a review PR.
 GitHub Actions runs the full applicable suite at review. Use targeted local
 tests for failure diagnosis. Implementation and merge approvals follow the
@@ -151,14 +154,14 @@ is complete.
 Use the existing domain controls and histories. The desktop Inspector puts
 district and landscape controls before record details. **Project** and
 **Layers** keep their existing entry points. Verify the workflows below in
-the standalone build before the desktop default switch in G4.
+the standalone build before final desktop acceptance in G4.
 
 Remove superseded controls as part of this migration. District facts have
 one Inspector presentation. The landscape list provides a single home for
 water and terrain draft history and revert, even when the last feature was
 removed. The obsolete Inspector command for opening inline controls is
-retired. G4 switches the desktop entry point to the new road workspace
-and retires the separate legacy road entry after acceptance.
+retired. G3E connects the Roads tab to the desktop road workspace. G3G
+retires the fallback desktop entry after parity.
 
 | Workflow | Entry and next action | Commit, history, and persistence to verify |
 | --- | --- | --- |
@@ -168,6 +171,24 @@ and retires the separate legacy road entry after acceptance.
 | Fortifications | **Defenses** shows enabled state, gates and towers, pending effects, **Update defenses**, and **Undo defense edit**. | Test validation, a defense-only update, and Undo. Turning off saved walls keeps their geometry. The Layers checkbox affects visibility. |
 | Layers | Open **Layers** from the map header. Active road review uses its own overlay controls. | Apply a preset and an individual visibility change during a landscape draft. Verify draft geometry and history are unaffected, view state round-trips, and Escape returns focus to the menu button. |
 | Files, recovery, and exports | Open **Project** from the header. Download/open a portable project, restore recovery, or download the visible map. | Check JSON with unfinished landscape work, exact accepted city on reopen, current and previous recovery, and PNG export. Verify menu focus and Escape, and that typing in forms leaves map shortcuts inactive. |
+
+## G3E three-tab layout
+
+**Generation** groups City layout, Districts, and Defenses. Review impacts
+shows Before and Proposed on the same map. A change to generation settings
+or the accepted city invalidates the preview. Apply uses the existing
+city rebuild or domain transaction, including identity confirmation.
+
+**Add** opens existing property creation, building placement, and landscape
+editors. A new building needs a property selected on the map. Water and
+terrain have their own draft histories and apply through Generation. The
+Inspector remains the contextual editor for existing places. **Roads**
+opens the existing road workspace and its impact review.
+
+The standalone G3E review build opens the new workspace at 1000 CSS pixels
+and above. The compact workspace remains available below that threshold.
+Use `?workspace=legacy` for desktop parity comparisons until G3G removes
+the separate desktop fallback. Project and Layers keep their entry points.
 
 ## Integration rules
 

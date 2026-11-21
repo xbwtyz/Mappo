@@ -28,7 +28,12 @@
           <p class="hint">Downloads keep the city and unfinished edits. Browser recovery keeps the latest and previous snapshot on this device.</p>
         </section>
     </div>
-    <nav class="workspace-tabs" role="tablist" aria-label="Editor sections"><button id="workspaceTab-city" role="tab" aria-controls="workspaceSection-city" aria-selected="true" tabindex="0">City</button><button id="workspaceTab-landscape" role="tab" aria-controls="workspaceSection-landscape" aria-selected="false" tabindex="-1">Landscape</button><button id="workspaceTab-districts" role="tab" aria-controls="workspaceSection-districts" aria-selected="false" tabindex="-1">Districts</button><button id="workspaceTab-defenses" role="tab" aria-controls="workspaceSection-defenses" aria-selected="false" tabindex="-1">Defenses</button></nav>
+    <nav id="desktopWorkspaceTabs" class="workspace-tabs desktop-workspace-tabs" role="tablist" aria-label="Map workspace">
+      <button type="button" role="tab" data-workspace="generation" aria-controls="desktopWorkspaceHome" aria-selected="true">Generation</button>
+      <button type="button" role="tab" data-workspace="add" aria-controls="desktopWorkspaceHome" aria-selected="false" tabindex="-1">Add</button>
+      <button type="button" role="tab" data-workspace="roads" aria-controls="roadPreviewPanel desktopWorkspaceHome" aria-selected="false" tabindex="-1">Roads</button>
+    </nav>
+    <nav class="workspace-tabs legacy-workspace-tabs" role="tablist" aria-label="Editor sections"><button id="workspaceTab-city" role="tab" aria-controls="workspaceSection-city" aria-selected="true" tabindex="0">City</button><button id="workspaceTab-landscape" role="tab" aria-controls="workspaceSection-landscape" aria-selected="false" tabindex="-1">Landscape</button><button id="workspaceTab-districts" role="tab" aria-controls="workspaceSection-districts" aria-selected="false" tabindex="-1">Districts</button><button id="workspaceTab-defenses" role="tab" aria-controls="workspaceSection-defenses" aria-selected="false" tabindex="-1">Defenses</button></nav>
     <div class="topbar-right"><span class="topbar-dot"></span><span>SINGLE-FILE · OFFLINE READY</span><span class="header-divider"></span><span id="workspacePendingCount" class="workspace-pending-indicator" aria-live="polite">Up to date</span></div>
   </header>
   <div class="workspace">
@@ -36,6 +41,8 @@
       <div class="sidebar-heading workspace-panel-heading"><span id="workspaceSectionTitle">City layout</span><button id="workspaceCollapseTools" class="workspace-icon-button" aria-label="Collapse tools" title="Collapse tools">‹</button></div>
       <div id="workspaceToolScroll" class="sidebar-content">
         <section id="workspaceSection-city" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-city">
+          <div id="cityGenerationHome"><div id="cityGenerationControls">
+          <details id="desktopOutlineSettings" class="workspace-settings" open><summary>Outline &amp; main square</summary>
           <div class="city-control-section">
             <h2>Outline</h2>
             <div class="tool-grid" role="group" aria-label="Draw outline">
@@ -48,7 +55,8 @@
             </details>
           </div>
           <div class="city-control-section"><h2>Main square</h2><button id="centerButton" class="tool-button full-width" aria-pressed="false">Place main square</button></div>
-          <div class="city-control-section"><h2>Streets</h2>
+          </details>
+          <div class="city-control-section desktop-street-settings"><h2>Streets</h2>
             <div class="control-group"><label for="morphologyInput">Street pattern</label><div class="select-wrap"><select id="morphologyInput"><option value="organic" selected>Organic · Winding streets</option><option value="planned">Planned · Ordered grid</option><option value="radial">Radial · Ring &amp; spoke</option><option value="linear">Linear · Long corridors</option></select><span aria-hidden="true">⌄</span></div><p class="hint" id="shapeDescription"></p></div>
             <div class="control-group"><label for="sizeInput">Street density</label><div class="select-wrap"><select id="sizeInput"><option value="small">Low · Spacious blocks</option><option value="medium" selected>Medium · Town</option><option value="large">High · Dense city</option></select><span aria-hidden="true">⌄</span></div></div>
             <details id="cityGenerationSettings" class="workspace-settings"><summary>Street seed</summary>
@@ -57,21 +65,22 @@
             </details>
             <button id="cancelButton" class="minor-button full-width city-revert" title="Restore the last accepted outline and street settings.">Revert outline &amp; street settings</button>
           </div>
+          </div></div>
           <button id="propertyCreateStartE1" type="button" class="tool-button full-width actions" aria-pressed="false" aria-controls="propertyCreatePanelE1">+ Create property</button>
-          <div class="road-history-actions-b4" role="group" aria-label="Property creation history">
+          <div class="road-history-actions-b4" id="propertyCreationHistoryControls" role="group" aria-label="Property creation history">
             <button id="propertyCreateUndoE1" type="button" class="minor-button" disabled>Undo property creation</button>
             <button id="propertyCreateRedoE1" type="button" class="minor-button" disabled>Redo property creation</button>
           </div>
-          <div class="road-history-actions-b4" role="group" aria-label="Property split history">
+          <div class="road-history-actions-b4" id="propertySplitHistoryControls" role="group" aria-label="Property split history">
             <button id="propertySplitUndoE2" type="button" class="minor-button" disabled>Undo property split</button>
             <button id="propertySplitRedoE2" type="button" class="minor-button" disabled>Redo property split</button>
           </div>
           <button id="roadModeButton" class="tool-button full-width" aria-pressed="false" aria-controls="roadPreviewPanel">Inspect / edit roads</button>
-          <div class="road-history-actions-b4" role="group" aria-label="Property merge history">
+          <div class="road-history-actions-b4" id="propertyMergeHistoryControls" role="group" aria-label="Property merge history">
             <button id="propertyMergeUndoE3" type="button" class="minor-button" disabled>Undo property merge</button>
             <button id="propertyMergeRedoE3" type="button" class="minor-button" disabled>Redo property merge</button>
           </div>
-          <div class="road-history-actions-b4" role="group" aria-label="Accepted road edit history">
+          <div class="road-history-actions-b4" id="acceptedRoadHistoryControls" role="group" aria-label="Accepted road edit history">
             <button type="button" id="roadHistoryUndoB4" class="minor-button" disabled>Undo road</button>
             <button type="button" id="roadHistoryRedoB4" class="minor-button" disabled>Redo road</button>
           </div>
@@ -137,7 +146,7 @@
           </details>
         </section>
       </div>
-      <div class="workspace-apply">
+      <div id="cityRebuildHome"><div class="workspace-apply" id="cityRebuildControls">
         <section id="identityRebuildWarning" class="identity-rebuild-warning" hidden aria-label="Confirm identity loss">
           <p id="identityRebuildMessage" role="status"></p>
           <button id="identityConfirmRebuildButton" class="tool-button full-width">Rebuild and discard identities</button>
@@ -146,6 +155,7 @@
         <p id="workspacePendingDetails" class="workspace-pending-details" role="status" aria-live="polite">No unapplied city or local changes.</p>
         <details id="workspaceRebuildGuide" class="workspace-rebuild-guide"><summary>What rebuilding changes</summary><p id="workspaceRebuildImpact"></p></details>
         <p id="draftMessage" class="draft-message" role="status" aria-live="polite"></p>
+      </div>
       </div>
     </aside>
     <main class="map-shell" aria-label="City map workspace">
@@ -166,10 +176,67 @@
         <div class="road-comparison-label road-comparison-before">Before</div>
         <div class="road-comparison-label road-comparison-after">Proposed</div>
         <p id="roadComparisonMapStatus" class="road-comparison-map-status" role="status" hidden></p>
-        <div id="desktopEditDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize edit panel" aria-orientation="vertical" aria-controls="roadPreviewPanel desktopPlaceEditor" aria-valuemin="300" aria-valuemax="520" aria-valuenow="360" hidden></div>
+        <div id="desktopEditDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize edit panel" aria-orientation="vertical" aria-controls="roadPreviewPanel desktopPlaceEditor desktopWorkspaceHome" aria-valuemin="300" aria-valuemax="520" aria-valuenow="360" hidden></div>
         <div id="desktopImpactDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize impact dock" aria-orientation="horizontal" aria-controls="roadPreviewPanel" aria-valuemin="240" aria-valuemax="480" aria-valuenow="320" hidden></div>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div id="mapEditDiagnostic4D" class="map-edit-diagnostic-4d" role="status" aria-live="polite" hidden></div>
+        <section id="desktopWorkspaceHome" class="desktop-workspace-home" role="tabpanel" aria-labelledby="desktopWorkspaceHeading" hidden>
+          <header class="desktop-home-header">
+            <h2 id="desktopWorkspaceHeading" tabindex="-1">Generation</h2>
+            <div id="desktopGenerationViews" class="road-menu-views" role="group" aria-label="Generation view">
+              <button id="desktopGenerationEdit" class="minor-button" type="button" aria-pressed="true">Edit</button>
+              <button id="desktopGenerationReview" class="minor-button" type="button" aria-pressed="false">Review impacts</button>
+            </div>
+          </header>
+          <div class="desktop-home-scroll">
+            <div id="desktopHomeGeneration">
+              <div id="desktopGenerationTools" class="road-menu-views" role="group" aria-label="Generation tools">
+                <button type="button" data-generation="city" class="minor-button" aria-pressed="true">City layout</button>
+                <button type="button" data-generation="districts" class="minor-button" aria-pressed="false">Districts</button>
+                <button type="button" data-generation="defenses" class="minor-button" aria-pressed="false">Defenses</button>
+              </div>
+              <div id="desktopGenerationControls"></div>
+              <section id="desktopGenerationImpact" aria-label="Generation impact" hidden>
+                <p id="desktopGenerationImpactText" class="hint"></p>
+                <div id="desktopGenerationComparison" class="road-menu-views" role="group" aria-label="Map comparison" hidden>
+                  <button id="desktopGenerationBefore" class="minor-button" type="button" aria-pressed="false">Before</button>
+                  <button id="desktopGenerationProposed" class="minor-button" type="button" aria-pressed="true">Proposed</button>
+                </div>
+              </section>
+            </div>
+            <div id="desktopHomeAdd" hidden>
+              <h3>Properties &amp; buildings</h3>
+              <div class="desktop-add-grid">
+                <button type="button" class="tool-button" data-add="property">Property</button>
+                <button type="button" class="tool-button" data-add="building">Building</button>
+              </div>
+              <h3>Landscape</h3>
+              <div class="desktop-add-grid">
+                <button type="button" class="tool-button" data-add="river">River</button>
+                <button type="button" class="tool-button" data-add="coast">Coastline</button>
+                <button type="button" class="tool-button" data-add="lake">Lake</button>
+                <button type="button" class="tool-button" data-add="terrain">Mountain range</button>
+              </div>
+              <h3 id="desktopAddFeatureHeading" hidden></h3>
+              <div id="desktopAddFeatureControls"></div>
+              <details class="workspace-settings"><summary>Property history</summary><div id="desktopAddPropertyHistory"></div></details>
+              <details class="workspace-settings"><summary>Landscape features &amp; draft history</summary><div id="desktopAddLandscapeTools"></div></details>
+            </div>
+            <div id="desktopHomeRoads" hidden>
+              <button id="desktopReopenRoads" type="button" class="tool-button full-width">Edit roads</button>
+              <div id="desktopRoadHistory"></div>
+            </div>
+          </div>
+          <footer class="desktop-home-footer">
+            <p id="desktopWorkspaceStatus" class="hint" role="status" aria-live="polite"></p>
+            <div id="desktopGenerationActions" class="road-preview-actions">
+              <button id="desktopGenerationPreview" type="button" class="tool-button">Preview</button>
+              <button id="desktopGenerationCancel" type="button" class="minor-button" disabled>Cancel preview</button>
+              <button id="desktopGenerationApply" type="button" class="tool-button" disabled>Rebuild city</button>
+            </div>
+            <div id="desktopCityRebuildControls"></div>
+          </footer>
+        </section>
         <section id="roadPreviewPanel" class="road-preview-panel" aria-labelledby="roadPreviewHeading" hidden>
           <div class="road-preview-header">
             <p id="roadMenuRecord" class="road-menu-record" hidden></p>

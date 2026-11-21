@@ -26,7 +26,8 @@ export class LandscapeWorkspace {
     stopTools,
     onSelect = () => {},
     changed = () => {},
-    draw = () => {}
+    draw = () => {},
+    revealGeneration = () => false,
   }) {
     this.$ = getElement;
     this.document = document;
@@ -37,6 +38,7 @@ export class LandscapeWorkspace {
     this.onSelect = onSelect;
     this.changed = changed;
     this.draw = draw;
+    this.revealGeneration = revealGeneration;
     this.filter = 'all';
     this.hover = null;
     this.rows = new Map();
@@ -342,6 +344,7 @@ export class LandscapeWorkspace {
   }
   bind() {
     this.$('landscapeReviewRebuild').addEventListener('click', () => {
+      if (this.revealGeneration()) return;
       if (globalThis.window?.matchMedia?.('(max-width: 900px)').matches)
         this.shell.dispatch({ type: 'inspector', collapsed: true });
       if (this.shell.state.toolsCollapsed) this.shell.dispatch({ type: 'tools', collapsed: false });

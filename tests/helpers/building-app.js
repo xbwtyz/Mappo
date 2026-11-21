@@ -10,7 +10,9 @@ globalThis.__buildingQA = {
 };
 `;
 
-export function observeBuildingApp(html, extraObservation = '') {
+export function observeBuildingApp(html, extraObservation = '', { legacy = true } = {}) {
+  if (legacy) html = html.replace('const url = new URL(window.location.href);',
+    "const url = new URL(window.location.href); url.searchParams.set('workspace', 'legacy');");
   return html.replace(/\n\}\)\(\);\s*<\/script>/, `${buildingObservation}\n${extraObservation}\n})();\n</script>`);
 }
 
