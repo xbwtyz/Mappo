@@ -10,6 +10,7 @@
 | [Architecture Atlas](architecture/Mappo_Repository_Atlas.md) | Complete repository hierarchy, visual system diagrams, and a purpose description for every tracked file |
 | [Unified CI Guide](CI.md) | Branch and PR tests, browser matrices, artifacts and local commands |
 | [Current Roadmap](ROADMAP.md) | Completed milestones and separately proposed future work |
+| [H4 Release QA](plans/0.2/H4_RELEASE_QA_REPORT.md) | Final desktop acceptance, genuine browser recovery, old saves, offline builds and release limitations |
 | [H3 Large-city Performance Audit](plans/0.2/H3_PERFORMANCE_AUDIT.md) | Current Chromium/Firefox Large Organic preview/Apply timings, issue #44/#46 review and limitations |
 | [0.2H Release Hardening](plans/0.2/MILESTONE_0_2H_RELEASE_PLAN.md) | H1 manual release safety, H2 save compatibility, H3 performance, H4 validation and H5 explicit publication gate |
 | [0.2 Master Roadmap](plans/0.2/README.md) | Milestone order, current status, and the desktop workspace rebuild |

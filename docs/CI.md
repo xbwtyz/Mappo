@@ -17,6 +17,8 @@ All six jobs must pass for the unchanged required `Build, Node tests and browser
 
 H2 adds frozen 3A.2–3E.5 historical save migration and nonmutation tests to the Node matrix, plus real Chromium/Firefox Project-menu import, rejection and re-export for representative schemas in the desktop browser group. `npm run test:browser:h2` runs that focused browser suite.
 
+H4 adds real IndexedDB-backed browser recovery acceptance in both desktop browsers: two distinct Project-menu imports, successive saved snapshots, actual reload, explicit latest/previous restoration, preserved authored geometry, and portable download/reopen. Run `npm run test:browser:h4` for this focused test. Existing G4 and H2 tests provide cross-editor and historical-save gates, rather than duplicating them.
+
 Node and build do not need npm installation. For local testing:
 
 ```bash
@@ -28,6 +30,7 @@ npm run test:node:shard:2
 npm run test:browser                 # after Playwright browser setup
 npm run test:browser:desktop
 npm run test:browser:g4
+npm run test:browser:h4                 # recovery across browser reloads
 ```
 
 Browser setup: `npm install --no-save --no-package-lock playwright@1.56.1`; `npx playwright install chromium firefox` (with dependencies on Linux).
