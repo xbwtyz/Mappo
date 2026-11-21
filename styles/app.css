@@ -708,3 +708,76 @@
   .road-comparison-review h3{font-size:16px;margin:5px 0}
   .road-comparison-review p{margin:4px 0 12px}
 }
+
+/* The desktop road panel keeps editing and review on the same draft. */
+.road-menu-edit :is(#roadRecoveryD3,#roadBuildingDecisionsD2,#roadDetailsD1),
+.road-menu-review :is(#roadEditControlsD1,.road-preview-legend),
+:is(.road-menu-edit,.road-menu-review) :is(#roadLocate,#roadRemoveC3){
+  display:none;
+}
+.road-menu-record{margin:0 0 4px;color:#c6d4c9;font-size:12px}
+.road-menu-views:not([hidden]),.road-menu-review-actions:not([hidden]){
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:0 0 8px;
+}
+.road-menu-views .minor-button{min-height:35px}
+.road-menu-views .minor-button[aria-pressed=true]{
+  border-color:#b2ca9d;background:#3c5546;color:#f4faed;
+}
+.road-menu-count{
+  margin-left:3px;padding:1px 5px;border-radius:4px;
+  color:#f6d896;background:#5c452b;font-size:11px;font-weight:700;
+}
+.road-menu-review-actions .road-comparison-availability{flex-basis:100%;margin:0}
+.road-menu-review .road-impact-list{
+  min-height:0;max-height:31%;overflow:auto;overscroll-behavior:contain;
+  padding:0 4px 6px 0;border-bottom:1px solid #587062;
+}
+.road-menu-review .road-impact-list h3{margin:0 0 4px;font-size:14px}
+.road-menu-review .road-impact-list table{width:100%;table-layout:fixed;border-collapse:collapse;text-align:left}
+.road-menu-review .road-impact-list :is(th,td){
+  padding:5px 6px;border-bottom:1px solid #4b6052;overflow-wrap:anywhere;
+}
+.road-menu-review .road-impact-list th{position:sticky;top:0;background:#26362e;color:#dce5dc}
+.road-menu-review .road-impact-list tr:has(button[aria-pressed=true]){background:#3a5243}
+.road-menu-review .road-impact-list td button{max-width:100%;white-space:normal;text-align:left}
+.road-menu-review .road-impact-detail h3{margin:8px 0 2px;font-size:15px}
+.road-menu-review .road-impact-detail p{margin:0 0 6px}
+.road-menu-review #roadBuildingDecisionsD2{order:0}
+.road-menu-review #roadDecisionIntroD2{display:none}
+.road-menu-review .road-building-choice-d2 h4{display:none}
+.road-menu-edit #roadEditControlsD1{order:0}
+.road-menu-edit .road-menu-disclosure{
+  margin:10px 0;padding:7px 0 3px;border-top:1px solid #587062;
+}
+.road-menu-edit .road-menu-disclosure>summary{font-weight:650;cursor:pointer}
+.road-menu-edit #roadMenuRecordDetails{border-top:0;margin-top:0}
+.road-menu-edit .road-menu-delete:not([hidden]){
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:10px 0;margin-top:10px;border-top:1px solid #587062;
+}
+.road-menu-delete h3,.road-menu-delete .hint{margin:0}
+.road-menu-edit #roadMenuDeletePreview{color:#ffd1c3;border-color:#a27669}
+.road-menu-edit #roadIntentStatusC1,.road-menu-edit #roadPreviewEligibility:has(+ #roadIntentPanelC1:not([hidden])){
+  display:none;
+}
+.road-menu-edit #roadIntentPanelC1>h3{margin:2px 0;font-size:16px}
+.road-menu-edit :focus-visible,.road-menu-review :focus-visible{outline-color:#e1b78a}
+.desktop-impact-layout .road-menu-review .road-impact-list{max-height:none;border-bottom:0}
+.desktop-edit-panel.road-menu-review .road-impact-list{flex:0 1 auto}
+.desktop-edit-panel :is(#roadResolveConflictC6,#roadMenuReviewBlocker){margin-bottom:4px}
+@media(max-width:999px){
+  .road-menu-review .road-impact-list th{background:#f9f6ed;color:#315c69}
+  .road-menu-review .road-impact-list tr:has(button[aria-pressed=true]){background:#e1ebe1}
+  .road-menu-record{color:#425b5a}
+}
+.desktop-impact-layout .road-menu-review .road-preview-header{
+  display:grid;grid-template-columns:minmax(190px,1fr) auto auto;grid-template-rows:auto auto;
+  align-items:center;column-gap:14px;border-bottom:1px solid #4b6052;
+}
+.desktop-impact-layout .road-menu-review .road-menu-record{grid-area:1/1;margin:0}
+.desktop-impact-layout .road-menu-review .road-preview-heading{grid-area:2/1;border:0;padding:0 0 6px}
+.desktop-impact-layout .road-menu-review .road-menu-views{grid-area:1/2/3/3;padding:0}
+.desktop-impact-layout .road-menu-review .road-menu-review-actions{grid-area:1/3/3/4;padding:0}
+.desktop-impact-layout .road-menu-review .road-comparison-availability{
+  position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);
+}

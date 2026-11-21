@@ -618,7 +618,7 @@ for (const [name, type] of [
           if (delta === 1) {
             await page.locator('#roadIntentDyC1').fill('15');
           } else {
-            await page.locator('#roadIntentPanelC1 summary').click();
+            await page.locator('#roadMenuConnections > summary').click();
             await page.locator('#roadRemoveC3').click();
           }
           await page.waitForFunction(() => !document.querySelector('#roadApplyB4').disabled);

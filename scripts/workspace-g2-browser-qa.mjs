@@ -29,6 +29,16 @@ async function exercise(browser, engine, name, width, height) {
   const impacts = page.locator('#roadImpactRows').getByRole('button');
   const dock = page.locator('#roadImpactToggle');
   const dockDivider = page.locator('#desktopImpactDivider');
+  const edit = page.locator('#roadMenuEdit');
+  const review = page.locator('#roadMenuReview');
+  const resolve = page.locator('#roadResolveConflictC6');
+  const selectRoad = async id => {
+    const details = page.locator('#roadMenuRecordDetails');
+    if (!await details.evaluate(el => el.open)) await details.locator('summary').click();
+    await page.locator('#roadSelectionKind').selectOption('road');
+    await page.locator('#roadSelectionId').selectOption(id);
+    await details.locator('summary').click();
+  };
   const compare = page.locator('#roadComparisonToggle');
   const proposed = page.locator('#roadComparisonProposed');
   const candidateDrawn = () => page.waitForFunction(() => document.getElementById('roadComparisonProposed').width > 1);
@@ -50,12 +60,13 @@ async function exercise(browser, engine, name, width, height) {
   const openConflict = async () => {
     await entry.click();
     assert.equal(await focus(), 'roadPreviewHeading');
-    await page.locator('#roadSelectionKind').selectOption('road');
-    await page.locator('#roadSelectionId').selectOption('RD-0113');
+    await selectRoad('RD-0113');
     await offset.fill('18');
     await awaitPreview();
     assert.equal(await apply.isDisabled(), true);
-    assert.equal(await hall.isVisible(), true);
+    assert.equal(await hall.isVisible(), false);
+    assert.equal(await edit.getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('#roadMenuDeletePreview').isVisible(), true);
   };
 
   try {
@@ -73,7 +84,7 @@ async function exercise(browser, engine, name, width, height) {
     await page.locator('#roadPreviewCancel').click();
 
     await openConflict();
-    assert.equal(await compare.isDisabled(), true);
+    assert.equal(await compare.isVisible(), false);
     assert.equal(await proposed.isVisible(), false);
     const beforeSize = await panel.boundingBox();
     const beforeMap = await map.boundingBox();
@@ -86,6 +97,11 @@ async function exercise(browser, engine, name, width, height) {
       document.getElementById('mapCanvas').getBoundingClientRect().width) <= 1);
     assert.equal(await focus(), 'desktopEditDivider');
 
+    await resolve.click();
+    assert.equal(await review.getAttribute('aria-pressed'), 'true');
+    assert.equal(await offset.isVisible(), false);
+    assert.equal(await compare.isDisabled(), true);
+    assert.equal(await page.evaluate(() => document.activeElement.closest('article')?.id), 'roadConflictC6-BLD-00061');
     await dock.press('Enter');
     assert.equal(await focus(), 'roadImpactToggle');
     assert.equal(await divider.isVisible(), false);
@@ -98,8 +114,6 @@ async function exercise(browser, engine, name, width, height) {
     assert.ok((await map.boundingBox()).height >= dockMap.height + 15);
     await page.waitForFunction(() => Math.abs(__buildingQA.state().camera.height -
       document.getElementById('mapCanvas').getBoundingClientRect().height) <= 1);
-    await page.locator('#roadResolveConflictC6').click();
-    assert.equal(await page.evaluate(() => document.activeElement.closest('article')?.id), 'roadConflictC6-BLD-00061');
     await choice('Keep it here').click();
     await awaitPreview();
     assert.equal(await apply.isDisabled(), true);
@@ -181,13 +195,15 @@ async function exercise(browser, engine, name, width, height) {
     await dock.click();
     assert.equal(await activeImpact.getAttribute('data-impact-key'), key);
 
-    await dock.click();
+    await edit.click();
+    assert.equal(await offset.isVisible(), true);
     // A later numeric edit immediately invalidates the earlier Apply state.
     await offset.fill('');
     assert.equal(await apply.isDisabled(), true);
     await offset.fill('18');
     await awaitPreview();
     assert.equal(await apply.isDisabled(), true);
+    await resolve.click();
     await choice('Suggest a new location').click();
     await page.waitForFunction(() => !document.getElementById('roadApplyB4').disabled);
     await page.keyboard.press('Escape');
@@ -196,12 +212,13 @@ async function exercise(browser, engine, name, width, height) {
     assert.equal(await accepted(), baseline);
 
     await openConflict();
+    await resolve.click();
     await choice('Suggest a new location').click();
     await page.waitForFunction(() => !document.getElementById('roadApplyB4').disabled);
     await dock.click();
     await page.setViewportSize({ width, height: 600 });
     await dockDivider.waitFor({ state: 'hidden' });
-    assert.equal(await focus(), 'roadPreviewHeading');
+    assert.equal(await focus(), 'roadMenuReview');
     assert.equal(await apply.isEnabled(), true);
     await page.setViewportSize({ width, height });
     await dock.click();
@@ -219,8 +236,37 @@ async function exercise(browser, engine, name, width, height) {
     assert.equal(await page.locator('#workspaceUndoButton').innerText(), 'Undo road');
     await page.locator('#workspaceUndoButton').click();
     assert.equal(await accepted(), baseline);
+    if (name === 'desktop') {
+      const radial = createProject({seed:'c2-radial',size:'small',morphology:'radial'});
+      await page.evaluate(doc => __buildingQA.apply(doc), createProjectDocument(radial));
+      const beforeDelete = await accepted();
+      const deleting = async () => {
+        await entry.click();
+        await selectRoad('RD-0099');
+        const preview = page.getByRole('button', {name:'Preview deletion',exact:true});
+        assert.equal(await page.locator('#roadMenuConnections').evaluate(node => node.open), false);
+        await preview.click();
+        await awaitPreview();
+        await page.waitForFunction(() => !document.getElementById('roadApplyB4').disabled);
+        assert.equal(await review.getAttribute('aria-pressed'), 'true');
+        assert.equal(await apply.innerText(), 'Apply deletion');
+        assert.ok(await impacts.count() > 0);
+        assert.equal(await accepted(),beforeDelete);
+      };
+      await deleting();
+      await page.locator('#roadPreviewCancel').click();
+      assert.equal(await accepted(),beforeDelete);
+      await deleting();
+      await screenshot('deletion');
+      await apply.click();
+      await page.waitForFunction(() => !__buildingQA.state().roadWorkspace.active);
+      const remainingRoads = JSON.parse(await accepted()).roads;
+      assert.ok(!remainingRoads.some(road => road.id === 'RD-0099'));
+      await page.locator('#workspaceUndoButton').click();
+      assert.equal(await accepted(),beforeDelete);
+    }
     assert.deepEqual(errors, []);
-    console.log('PASS G2/G3A/G3B ' + engine + ' ' + name);
+    console.log('PASS G2/G3A/G3B2 ' + engine + ' ' + name);
   } catch (error) {
     await screenshot('failure').catch(() => {});
     throw error;

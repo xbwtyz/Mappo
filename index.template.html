@@ -165,11 +165,24 @@
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div id="mapEditDiagnostic4D" class="map-edit-diagnostic-4d" role="status" aria-live="polite" hidden></div>
         <section id="roadPreviewPanel" class="road-preview-panel" aria-labelledby="roadPreviewHeading" hidden>
-          <div class="road-preview-header"><div class="road-preview-heading"><strong id="roadPreviewHeading" tabindex="-1">ROAD EDIT</strong><div class="road-preview-view-actions"><button id="roadComparisonToggle" type="button" class="minor-button" aria-expanded="false" aria-controls="roadComparisonProposed" aria-describedby="roadComparisonAvailability" hidden>Compare</button><button id="roadImpactToggle" type="button" class="minor-button" aria-expanded="false" aria-controls="roadImpactList" hidden>Review impacts</button><button id="roadPreviewMinimize" class="minor-button" aria-expanded="true" aria-controls="roadPreviewBody">Minimize</button></div></div>
-            <p id="roadComparisonAvailability" class="road-comparison-availability hint" hidden></p>
+          <div class="road-preview-header">
+            <p id="roadMenuRecord" class="road-menu-record" hidden></p>
+            <div class="road-preview-heading"><strong id="roadPreviewHeading" tabindex="-1">ROAD EDIT</strong><div class="road-preview-view-actions">
+              <button id="roadMenuLocate" type="button" class="minor-button" hidden>Locate on map</button>
+              <button id="roadPreviewMinimize" class="minor-button" aria-expanded="true" aria-controls="roadPreviewBody">Minimize</button>
+            </div></div>
+            <div id="roadMenuViews" class="road-menu-views" role="group" aria-label="Road workspace view" hidden>
+              <button id="roadMenuEdit" type="button" class="minor-button" aria-pressed="true" aria-controls="roadEditControlsD1">Edit</button>
+              <button id="roadMenuReview" type="button" class="minor-button" aria-pressed="false" aria-controls="roadImpactList roadImpactDetail">Review impacts <span id="roadMenuReviewCount" class="road-menu-count" hidden></span></button>
+            </div>
+            <div id="roadMenuReviewActions" class="road-menu-review-actions" hidden>
+              <button id="roadImpactToggle" type="button" class="minor-button" aria-expanded="false" aria-controls="roadImpactList" hidden>Open wide review</button>
+              <button id="roadComparisonToggle" type="button" class="minor-button" aria-expanded="false" aria-controls="roadComparisonProposed" aria-describedby="roadComparisonAvailability" hidden>Compare before / after</button>
+              <p id="roadComparisonAvailability" class="road-comparison-availability hint" hidden></p>
+            </div>
           </div>
           <section id="roadImpactList" class="road-impact-list" aria-label="Affected records" hidden>
-            <p id="roadImpactEmpty" class="hint"></p>
+            <h3 id="roadMenuImpactHeading">What changes</h3><p id="roadImpactEmpty" class="hint"></p>
             <table id="roadImpactTable" hidden>
               <thead><tr><th scope="col">Affected record</th><th scope="col">Change</th></tr></thead>
               <tbody id="roadImpactRows"></tbody>
@@ -201,19 +214,28 @@
             </section>
             <div class="road-preview-disclosures-d1">
             <details id="roadEditControlsD1" class="road-disclosure-d1">
-              <summary>Edit controls</summary>
+              <summary id="roadMenuLegacyEditSummary">Edit controls</summary>
+              <details id="roadMenuRecordDetails" class="road-menu-disclosure" open>
+                <summary id="roadMenuRecordSummary" hidden>Road and junction details</summary>
             <div class="road-preview-selectors"><label>Record type<select id="roadSelectionKind"><option value="junction">Junctions</option><option value="road">Roads</option></select></label><label>Record ID<select id="roadSelectionId"></select></label></div>
             <p id="roadRecordDetails"></p><p id="roadAcceptedPoint" class="hint"></p>
             <button id="roadLocate" class="minor-button">Locate on map</button>
             <div id="roadEndpointList" class="road-endpoint-list" aria-label="Connected junctions"></div>
+              </details>
             <p id="roadPreviewEligibility" class="hint"></p>
             <section id="roadIntentPanelC1" aria-label="Road-first placement draft" hidden>
-              <h3>STREET PLACEMENT</h3>
-              <p class="hint">Drag an ordinary street or enter its offset. The preview shows nearby parcel changes or explains what blocks Apply.</p>
+              <h3>Move road</h3>
+              <p class="hint road-menu-move-hint">Drag the road on the map or enter an offset.</p>
               <div class="road-preview-selectors">
-                <label>Street offset X<input id="roadIntentDxC1" type="number" step="any" value="0"></label>
-                <label>Street offset Y<input id="roadIntentDyC1" type="number" step="any" value="0"></label>
+                <label>Horizontal offset<input id="roadIntentDxC1" type="number" step="any" value="0"></label>
+                <label>Vertical offset<input id="roadIntentDyC1" type="number" step="any" value="0"></label>
               </div>
+              <div id="roadMenuDelete" class="road-menu-delete" hidden>
+                <div><h3>Delete road</h3><p id="roadMenuDeleteHint" class="hint"></p></div>
+                <button id="roadMenuDeletePreview" type="button" class="minor-button">Preview deletion</button>
+              </div>
+              <details id="roadMenuBends" class="road-menu-disclosure" open>
+                <summary id="roadMenuBendsSummary" hidden>Bends</summary>
               <button id="roadStartBendsC4" type="button" class="minor-button">Edit bends</button>
               <section id="roadBendEditorC4" aria-label="Street bends" hidden>
                 <p class="hint">Add a bend, then drag its handle or enter exact coordinates. Street endpoints stay fixed.</p>
@@ -229,7 +251,8 @@
                 </div>
                 <label class="road-bend-snap"><input id="roadSnapBendsC4" type="checkbox"> Snap drags to 1-unit grid</label>
               </section>
-              <details>
+              </details>
+              <details id="roadMenuConnections" class="road-menu-disclosure">
                 <summary>Change street connections</summary>
                 <div class="road-preview-selectors">
                   <label>Endpoint to replace or branch from<select id="roadConnectionEndpointC3"></select></label>
@@ -243,12 +266,15 @@
               </details>
               <p id="roadIntentStatusC1" class="hint">Select an ordinary street to draft its new placement.</p>
             </section>
-            <div class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
+            <div id="roadMenuJunctionCoordinates" class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
+            <details id="roadMenuPrecision" class="road-menu-disclosure" open>
+              <summary id="roadMenuPrecisionSummary" hidden>Nudge and precision</summary>
             <label class="road-step-label">Nudge units<input id="roadNudgeStep" type="number" min="0.001" step="0.5" value="0.5"></label>
             <div class="road-nudge-buttons" role="group" aria-label="Nudge proposed junction"><button id="roadNudgeLeft" aria-label="Nudge left">←</button><button id="roadNudgeUp" aria-label="Nudge up">↑</button><button id="roadNudgeDown" aria-label="Nudge down">↓</button><button id="roadNudgeRight" aria-label="Nudge right">→</button></div>
             </details>
+            </details>
             <details id="roadDetailsD1" class="road-disclosure-d1">
-              <summary>Details</summary>
+              <summary id="roadMenuValidationSummary">Details</summary>
             <section id="roadReconciliationB3" class="road-reconciliation-b3" aria-label="Road and property reconciliation" hidden>
               <h3>NEIGHBORHOOD ADAPTATION</h3>
               <p id="roadReconciliationStatusB3">Accepted city unchanged.</p>
@@ -272,6 +298,7 @@
             </div>
 
             <button id="roadResolveConflictC6" type="button" class="minor-button" hidden>Resolve conflict</button>
+            <button id="roadMenuReviewBlocker" type="button" class="minor-button" hidden>Review blocker</button>
             <div class="road-preview-actions">
               <button id="roadApplyB4" type="button" class="tool-button" aria-describedby="roadReportStatus roadApplyStatusB4 roadChangeSummaryD1" disabled>Apply road edit</button>
               <button id="roadPreviewReset" class="minor-button" disabled>Reset</button>
