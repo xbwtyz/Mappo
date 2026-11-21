@@ -13,8 +13,9 @@ globalThis.__buildingQA = {
 export function observeBuildingApp(html, extraObservation = '', { legacy = true } = {}) {
   // Old compact UI regression tests use this test-only seam. No public desktop override.
   if (legacy) {
-    if (!html.includes('enabled: true,')) throw new Error('Desktop QA seam missing');
-    html = html.replace('enabled: true,', 'enabled: false,');
+    const desktopCtor = 'redraw: requestDraw,\n  enabled: true,';
+    if (!html.includes(desktopCtor)) throw new Error('Desktop QA seam missing');
+    html = html.replace(desktopCtor, 'redraw: requestDraw,\n  enabled: false,');
   }
   return html.replace(/\n\}\)\(\);\s*<\/script>/, `${buildingObservation}\n${extraObservation}\n})();\n</script>`);
 }
