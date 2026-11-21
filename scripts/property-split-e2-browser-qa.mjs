@@ -67,6 +67,13 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         await page.locator('#propertySplitPercentE2').fill('1');
         await page.locator('#propertySplitPercentE2').press('Tab');
         assert.equal(await page.locator('#propertySplitApplyE2').isDisabled(),true);
+        assert.match(await page.locator('#propertySplitStatusE2').innerText(),/BLOCKED/);
+        assert.equal(await page.locator('#propertySplitPercentE2').isEditable(),true);
+        const divider = await page.evaluate(() => {
+          const { project, propertySplitE2 } = __buildingQA.state();
+          return propertySplitE2.session.geometry(project.city)?.cut;
+        });
+        assert.equal(divider?.length,2,'A blocked split keeps the map divider available');
         await page.locator('#propertySplitResetE2').click();
         assert.equal(await page.locator('#propertySplitApplyE2').isEnabled(),true);
         await page.locator('#propertySplitCancelE2').click();

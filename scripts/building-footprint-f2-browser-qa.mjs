@@ -143,7 +143,10 @@ async function exerciseF2(browserName, browserType, phone) {
       X: courtyard.center.x, Y: courtyard.center.y, Width: courtyard.width, Depth: courtyard.depth
     })) await page.locator('#buildingCourtyard' + suffix).fill(String(value));
     await page.locator('#buildingSetCourtyard').click();
-    assert.match(await page.locator('#buildingFootprintDetails').innerText(), /Occupied.*Plots/);
+    if (!phone) await page.locator('#desktopPlaceReview').click();
+    const footprintDetails = page.locator('#buildingFootprintDetails');
+    assert.equal(await footprintDetails.isVisible(), true);
+    assert.match(await footprintDetails.innerText(), /Occupied.*Plots/);
     await page.locator('#buildingPreviewApply').click();
     const withCourtyard = await readCity(page);
     assert.equal((await appliedBuilding()).holes.length, 1);
@@ -154,11 +157,16 @@ async function exerciseF2(browserName, browserType, phone) {
     assert.equal(await page.locator('#structurePreset').inputValue(), '');
     assert.equal(await page.locator('#structureApply').isDisabled(), true);
     await page.locator('#structurePreset').selectOption('rectangle');
-    assert.equal(await page.locator('#structureReplaceGeometry').isVisible(), true);
+    const reviewChoice = page.locator('#desktopPlaceReviewChoice');
+    if (!phone) await reviewChoice.click();
+    const replaceGeometry = page.locator('#structureReplaceGeometry');
+    assert.equal(await replaceGeometry.isVisible(), true);
     assert.equal(await page.locator('#structureApply').isDisabled(), true);
-    await page.locator('#structureReplaceGeometry').check();
+    await replaceGeometry.check();
+    if (!phone) await page.locator('#desktopPlaceEdit').click();
     await page.locator('#structurePreset').selectOption('L');
-    assert.equal(await page.locator('#structureReplaceGeometry').isChecked(), false);
+    if (!phone) await reviewChoice.click();
+    assert.equal(await replaceGeometry.isChecked(), false);
     assert.ok(JSON.stringify(await readCity(page)) === JSON.stringify(withCourtyard), 'Accepted city should match the expected snapshot');
     page.once('dialog', dialog => dialog.accept());
     await page.locator('#structureCancel').click();
