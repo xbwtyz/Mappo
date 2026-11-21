@@ -1,5 +1,8 @@
 # Mappo 0.2G desktop workspace rebuild
 
+[Detailed G1–G4 implementation plan](G1_G4_IMPLEMENTATION_PLAN.md) ·
+[Desktop mockups and rationale](assets/Mappo_0.2G_UI_Mockups.pdf)
+
 ## Direction
 
 0.2G rebuilds how users interact with Mappo's existing city editor. The map,
@@ -31,6 +34,11 @@ of scope. Civic places are deferred to a future milestone.
   monitors. Evaluate docking and resizing in G1. Provide keyboard access,
   predictable focus, and usable controls at browser zoom.
 
+The mockups set the direction for a single workspace. **A** is the default
+map and edit panel. **B** is a collapsible impact dock. **C** is a synchronized
+before/proposed comparison for wide screens. Opening either optional view
+keeps the current draft, edit target, and decisions active.
+
 ## Module boundaries
 
 The workspace owns layout, selection presentation, focus, shortcuts, shared
@@ -56,7 +64,7 @@ the same workspace panels and shortcut handling as the existing tools.
 | --- | --- | --- |
 | **G1 — Prototype** | Design the desktop layouts and prototype moving a street with a building conflict, splitting a parcel, and adding a courtyard. | Select an affected building, resolve the conflict, and return to the same street draft. Verify controls, focus, and map space at compact and ultrawide sizes. Review the prototype before wiring every editor. |
 | **G2 — Workspace foundation** | Implement the map, toolbar, Inspector, active edit panel, and small interface for domain tools. Wire representative workflows through the existing sessions. | Selection, draft entry and exit, shortcut scope, Apply, blocked states, and scoped history use the same workspace conventions. |
-| **G3 — Tool migration** | Bring road, parcel, plot, building, district, landscape, fortification, layer, and project file workflows into the workspace. | Use a feature-parity checklist that includes safe previews, impact decisions, keyboard and numeric editing, recovery, and file operations. Retire superseded UI paths after their replacement passes parity. |
+| **G3 — Tool migration** | Add the road impact dock and comparison, then migrate parcel, plot, building, district, landscape, fortification, layer, and project file workflows in separate reviewable passes. | Use a feature-parity checklist that includes safe previews, impact decisions, keyboard and numeric editing, recovery, and file operations. Retire superseded UI paths after their replacement passes parity. |
 | **G4 — Acceptance and switch** | Make the new workspace the default after parity. Update the user and developer guides and prepare the versioned standalone build. | Run desktop Chromium and Firefox coverage at laptop, desktop, and ultrawide sizes. Exercise mouse, trackpad-style pan and zoom, keyboard, old saves, offline operation, and representative Small and Large cities. Compare responsiveness using repeatable fixtures and keep issue #44 tracked separately. |
 
 Use a fresh branch and review PR for each implementation pass. GitHub Actions
