@@ -488,7 +488,7 @@ function applyBuildingTransform() {
     propertyHistory.clear();
     propertyDeletionHistory4A.clear();
     project=received.candidate;
-    session.reset(project.city);
+    session.reset(project.city, { keepCourtyard: true });
     updateDetails();
     workspaceShell.refresh();
     requestDraw();

@@ -87,6 +87,8 @@ export class BuildingEditSession {
     if (this.drag) this.endGesture(true);
     if (this.tool === tool) return true;
     this.tool = tool;
+    if (tool === 'courtyard' && this.holeIndex === null &&
+        this.previewFor(this.acceptedCity)?.holes.length === 1) this.holeIndex = 0;
     this.operationError = '';
     this.changed();
     return true;
@@ -101,10 +103,12 @@ export class BuildingEditSession {
     this.changed();
     return true;
   }
-  reset(city = this.acceptedCity) {
+  reset(city = this.acceptedCity, { keepCourtyard = false } = {}) {
     if (!this.isActive) return false;
+    const index = keepCourtyard && this.tool === 'courtyard' ? this.holeIndex : null;
     this.acceptedCity = city;
     this.clearDraft();
+    if (index !== null && this.source(city)?.holes?.[index]) this.holeIndex = index;
     this.changed();
     return true;
   }

@@ -122,7 +122,19 @@ async function exerciseF2(browserName, browserType) {
     for (const [suffix, value] of Object.entries({
       X: courtyard.center.x, Y: courtyard.center.y, Width: courtyard.width, Depth: courtyard.depth
     })) await page.locator('#buildingCourtyard' + suffix).fill(String(value));
-    await page.locator('#buildingSetCourtyard').click();
+    const draftHole = () => page.evaluate(() => {
+      const { buildingEditSession, project } = __buildingQA.state();
+      return buildingEditSession.previewFor(project.city).holes[0];
+    });
+    const initialHole = await draftHole();
+    const depth = page.locator('#buildingCourtyardDepth');
+    await depth.fill('0.12');
+    assert.notDeepEqual(await draftHole(), initialHole);
+    assert.equal((await appliedBuilding()).holes.length, 0);
+    await depth.fill('10000');
+    assert.equal(await page.locator('#buildingPreviewApply').isDisabled(), true);
+    await depth.fill(String(courtyard.depth));
+    assert.equal(await page.locator('#buildingPreviewApply').isEnabled(), true);
     await page.locator('#desktopPlaceReview').click();
     const footprintDetails = page.locator('#buildingFootprintDetails');
     assert.equal(await footprintDetails.isVisible(), true);
@@ -130,6 +142,7 @@ async function exerciseF2(browserName, browserType) {
     await page.locator('#buildingPreviewApply').click();
     const withCourtyard = await readCity(page);
     assert.equal((await appliedBuilding()).holes.length, 1);
+    assert.equal(await page.locator('#buildingDirectRing').inputValue(), '0');
 
     await page.locator('#buildingPreviewCancel').click();
     await openInspectorFold(page, 'workspaceInspectorMore');
