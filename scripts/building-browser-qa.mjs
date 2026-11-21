@@ -480,6 +480,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#identityApplyButton').click();
       assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes('The Silver Stag'));
       await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).click();
+      await openIdentity(page);
       assert.equal(await page.locator('#identityNameInput').inputValue(), '');
       await page.locator('#identityNameInput').fill('West Wing');
       await page.locator('#identityUseInput').selectOption('other');
@@ -487,10 +488,13 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       await page.locator('#identityApplyButton').click();
       assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes('West Wing'));
       await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
+      await openIdentity(page);
       await page.locator('#identityNameInput').fill('Pending property name');
       await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).click();
+      await openIdentity(page);
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'West Wing');
       await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
+      await openIdentity(page);
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'Pending property name');
       await page.locator('#identityDiscardButton').click();
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'The Silver Stag');
@@ -529,10 +533,12 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.deepEqual(await page.evaluate(() => __buildingQA.state().workspaceShell.state.selection), { kind: 'property', id }, 'Saved Inspector selection restores after loading');
       assert.equal(await page.evaluate(id => __buildingQA.state().project.city.properties.find(p => p.id === id).customName, id), 'The Silver Stag');
       assert.equal(await page.evaluate(() => __buildingQA.state().identityWorkspace.editor.history.length), 0);
-      if (viewport.width <= 900 && await page.locator('#workspaceInspector').isVisible())
-        await page.locator('#workspaceCloseInspector').click();
-      p = await target();
-      await page.mouse.click(p.x, p.y);
+      if (viewport.width <= 900) {
+        if (await page.locator('#workspaceInspector').isVisible())
+          await page.locator('#workspaceCloseInspector').click();
+        p = await target();
+        await page.mouse.click(p.x, p.y);
+      }
       await openIdentity(page);
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'The Silver Stag');
       await page.screenshot({ path: new URL(`${label}-identity.png`, output).pathname });
