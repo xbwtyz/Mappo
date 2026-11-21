@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import { buildingAppHarness } from './helpers/building-app.js';
 
 const copyInspection = value => JSON.parse(JSON.stringify(value));
-const inspectorFacts = app => Object.fromEntries(app.state().workspaceShell.descriptor().sections.flatMap(section => section.rows));
+function inspectorFacts(app) {
+  const { facts } = app.state().workspaceShell.descriptor().quickInspector;
+  return Object.fromEntries(facts.flatMap(section => section.rows ?? []));
+}
 function expectedDistrict(app, record) {
   const district = app.state().project.city.districts.find(d => d.id === record.districtId);
   return district ? `${district.name} (${district.id})` : 'Unassigned';
@@ -34,7 +37,8 @@ test('compiled property/child Inspectors show accepted references and individual
     assert.equal(details.District, expectedDistrict(app, building));
     assert.ok(details['Frontage street'].includes(building.frontageRoadId));
     assert.ok(details['Footprint area'].endsWith(' square survey units'));
-    const back = app.state().workspaceShell.descriptor().sections.find(section => section.title === 'Parent property').actions[0];
+    const back = app.state().workspaceShell.descriptor().quickInspector.parent;
+    assert.deepEqual(copyInspection(back.selection), { kind: 'property', id: property.id });
     back.run();
     assert.equal(app.state().workspaceShell.state.selection.id, property.id);
   }
