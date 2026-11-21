@@ -160,7 +160,7 @@
         <div class="road-comparison-label road-comparison-before">Before</div>
         <div class="road-comparison-label road-comparison-after">Proposed</div>
         <p id="roadComparisonMapStatus" class="road-comparison-map-status" role="status" hidden></p>
-        <div id="desktopEditDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize edit panel" aria-orientation="vertical" aria-controls="roadPreviewPanel" aria-valuemin="300" aria-valuemax="520" aria-valuenow="360" hidden></div>
+        <div id="desktopEditDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize edit panel" aria-orientation="vertical" aria-controls="roadPreviewPanel desktopPlaceEditor" aria-valuemin="300" aria-valuemax="520" aria-valuenow="360" hidden></div>
         <div id="desktopImpactDivider" class="desktop-edit-divider" role="separator" tabindex="0" aria-label="Resize impact dock" aria-orientation="horizontal" aria-controls="roadPreviewPanel" aria-valuemin="240" aria-valuemax="480" aria-valuenow="320" hidden></div>
         <div id="toolHint" class="tool-hint">Drag to pan · Click to inspect districts · Scroll to zoom</div>
         <div id="mapEditDiagnostic4D" class="map-edit-diagnostic-4d" role="status" aria-live="polite" hidden></div>
@@ -306,6 +306,22 @@
             </div>
           </div>
         </section>
+        <section id="desktopPlaceEditor" class="desktop-place-editor" aria-labelledby="desktopPlaceHeading" hidden>
+          <header class="desktop-place-header">
+            <p id="desktopPlaceContext"></p>
+            <h2 id="desktopPlaceHeading" tabindex="-1"></h2>
+            <div class="road-menu-views" role="group" aria-label="Draft view">
+              <button id="desktopPlaceEdit" type="button" class="minor-button" aria-pressed="true" aria-controls="desktopPlaceScroll">Edit</button>
+              <button id="desktopPlaceReview" type="button" class="minor-button" aria-pressed="false" aria-controls="desktopPlaceScroll">Review impacts</button>
+            </div>
+          </header>
+          <div id="desktopPlaceScroll" class="desktop-place-scroll"></div>
+          <footer class="desktop-place-footer">
+            <div id="desktopPlaceStatus"></div>
+            <button id="desktopPlaceReviewChoice" type="button" class="minor-button" hidden>Review required choice</button>
+            <div id="desktopPlaceActions"></div>
+          </footer>
+        </section>
         <section id="propertyCreatePanelE1" class="building-transform-panel property-creation-panel-e1" aria-label="Create property preview" hidden>
           <div class="building-transform-heading"><strong>NEW PROPERTY</strong><span id="propertyCreateBlockE1">Choose vacant land</span></div>
           <p class="hint">Click open land inside a street block. Mappo previews one new property with one plot and no buildings. Drag the ghost along its frontage or refine the numbers. Invalid proposals never change your city.</p>
@@ -315,29 +331,31 @@
             <label>Width (units) <input id="propertyCreateWidthE1" type="number" min="7" max="200" step="0.5" disabled></label>
             <label>Depth (units) <input id="propertyCreateDepthE1" type="number" min="9" max="200" step="0.5" disabled></label>
           </div>
-          <p id="propertyCreateStatusE1" class="building-history-status" role="status" aria-live="polite" aria-atomic="true">Choose a block to begin.</p>
-          <div class="road-preview-actions">
+          <p id="propertyCreateStatusE1" data-place-status class="building-history-status" role="status" aria-live="polite" aria-atomic="true">Choose a block to begin.</p>
+          <div class="road-preview-actions" data-place-actions>
             <button id="propertyCreateApplyE1" type="button" class="tool-button" aria-describedby="propertyCreateStatusE1" disabled>Apply new property</button>
             <button id="propertyCreateResetE1" type="button" class="minor-button" disabled>Reset</button>
             <button id="propertyCreateCancelE1" type="button" class="minor-button">Cancel</button>
           </div>
+          <p class="place-review-intro" data-place-review hidden data-place-intro>Review the new property, its frontage, and the validation status.</p>
         </section>
 
         <section id="propertySplitPanelE2" class="building-transform-panel property-split-panel-e2" aria-label="Split property preview" hidden>
           <div class="building-transform-heading"><strong>SPLIT PROPERTY</strong><span id="propertySplitTargetE2">—</span></div>
-          <p class="hint">Drag the golden divider from the street frontage to the rear, or enter its percentage. Both parcels need road frontage; buildings never move. The original name and ID stay on the frontage-start side.</p>
+          <p class="hint">Drag the divider from the street frontage to the rear, or enter its position.</p>
           <label class="property-split-percent-e2">Divider along frontage (%)
             <input id="propertySplitPercentE2" type="number" min="0.1" max="99.9" step="0.5" value="50" aria-label="Property split percentage"/>
           </label>
-          <p id="propertySplitSummaryE2" class="building-history-status" aria-live="polite"></p>
-          <div id="propertySplitTransfersE2" role="group" aria-label="Building ownership transfers"></div>
-          <ul id="propertySplitIssuesE2" class="property-split-issues-e2" aria-label="Split blockers"></ul>
-          <p id="propertySplitStatusE2" class="building-history-status" role="status" aria-live="polite" aria-atomic="true"></p>
-          <div class="road-preview-actions">
+          <p id="propertySplitSummaryE2" data-place-review class="building-history-status" aria-live="polite"></p>
+          <div id="propertySplitTransfersE2" data-place-review role="group" aria-label="Building ownership transfers"></div>
+          <ul id="propertySplitIssuesE2" data-place-review class="property-split-issues-e2" aria-label="Split blockers"></ul>
+          <p id="propertySplitStatusE2" data-place-status class="building-history-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="road-preview-actions" data-place-actions>
             <button id="propertySplitApplyE2" type="button" class="tool-button" aria-describedby="propertySplitStatusE2" disabled>Apply property split</button>
             <button id="propertySplitResetE2" type="button" class="minor-button" disabled>Reset</button>
             <button id="propertySplitCancelE2" type="button" class="minor-button">Cancel</button>
           </div>
+          <p class="place-review-intro" data-place-review hidden data-place-intro>Review the two properties, plot changes, and any building ownership transfers.</p>
         </section>
         <section id="propertyMergePanelE3" class="building-transform-panel property-merge-panel-e3" aria-label="Merge property preview" hidden>
           <div class="building-transform-heading"><strong>MERGE PROPERTIES</strong><span id="propertyMergePrimaryE3">—</span></div>
@@ -345,18 +363,19 @@
           <label>Neighbor to merge
             <select id="propertyMergeNeighborE3" aria-label="Merge neighbor property"></select>
           </label>
-          <p id="propertyMergeSummaryE3" class="building-history-status" aria-live="polite"></p>
-          <label id="propertyMergeConsentWrapE3" class="property-split-transfer-e2" hidden>
+          <p id="propertyMergeSummaryE3" data-place-review class="building-history-status" aria-live="polite"></p>
+          <label id="propertyMergeConsentWrapE3" data-place-review class="property-split-transfer-e2" hidden>
             <input id="propertyMergeConsentE3" type="checkbox" aria-label="Authorize retirement of customized property identity"/>
             <span id="propertyMergeConsentLabelE3"></span>
           </label>
-          <ul id="propertyMergeIssuesE3" class="property-split-issues-e2" aria-label="Property merge blockers"></ul>
-          <p id="propertyMergeStatusE3" class="building-history-status" role="status" aria-live="polite"></p>
-          <div class="road-preview-actions">
+          <ul id="propertyMergeIssuesE3" data-place-review class="property-split-issues-e2" aria-label="Property merge blockers"></ul>
+          <p id="propertyMergeStatusE3" data-place-status class="building-history-status" role="status" aria-live="polite"></p>
+          <div class="road-preview-actions" data-place-actions>
             <button id="propertyMergeApplyE3" type="button" class="tool-button" aria-describedby="propertyMergeStatusE3" disabled>Apply property merge</button>
             <button id="propertyMergeResetE3" type="button" class="minor-button" disabled>Reset</button>
             <button id="propertyMergeCancelE3" type="button" class="minor-button">Cancel</button>
           </div>
+          <p class="place-review-intro" data-place-review hidden data-place-intro>Review which property keeps its identity and what happens to its plots and buildings.</p>
         </section>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
           <div class="building-transform-heading"><strong>PROPERTY PREVIEW</strong><span id="propertyEditTarget3I">—</span></div>
@@ -372,12 +391,12 @@
             <button id="propertyAddDividerE4" type="button" class="minor-button">+ Split plot</button>
             <button id="propertyRemoveDividerE4" type="button" class="minor-button">− Merge plots</button>
           </div>
-          <p id="propertyCountSummaryE4" class="building-history-status" aria-live="polite"></p>
-          <label id="propertyCountConsentWrapE4" class="property-split-transfer-e2" hidden>
+          <p id="propertyCountSummaryE4" data-place-review class="building-history-status" aria-live="polite"></p>
+          <label id="propertyCountConsentWrapE4" data-place-review class="property-split-transfer-e2" hidden>
             <input id="propertyCountConsentE4" type="checkbox" aria-label="Authorize preservation of authored plot metadata"/>
             <span id="propertyCountConsentTextE4">Preserve the original authored plot record in history.</span>
           </label>
-          <p id="propertyPreviewMeasurements4C" class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
+          <p id="propertyPreviewMeasurements4C" data-place-review class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
           <div class="precision-nudge-4c" role="group" aria-label="Selected property corner precision movement">
             <label>Move increment <select id="propertyNudgeStep4C" aria-label="Selected property corner move increment">
               <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
@@ -390,7 +409,7 @@
             </div>
           </div>
           <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
-          <div class="building-transform-actions">
+          <div class="building-transform-actions" data-place-actions>
             <button type="button" id="propertyEditApply3I" disabled title="Available after geometry validation in 3I-C">Apply to City</button>
             <button type="button" id="propertyEditReset3I">Reset preview</button>
             <button type="button" id="propertyEditCancel3I">Cancel preview</button>
@@ -400,8 +419,9 @@
             <button type="button" id="propertyHistoryRedo3I" disabled>Redo property</button>
           </div>
           <p id="propertyHistoryStatus3I" class="building-history-status" role="status" aria-live="polite">Session-only property history</p>
-          <p id="propertyEditStatus3I" role="status" aria-live="polite">Move a corner or divider to preview a validated property change.</p>
-          <ul id="propertyEditIssues3I" class="building-preview-issues" aria-label="Property validation problems" hidden></ul>
+          <p id="propertyEditStatus3I" data-place-status role="status" aria-live="polite">Move a corner or divider to preview a validated property change.</p>
+          <ul id="propertyEditIssues3I" data-place-review class="building-preview-issues" aria-label="Property validation problems" hidden></ul>
+          <p class="place-review-intro" data-place-review hidden data-place-intro>Review geometry, plot changes, and any ownership decisions.</p>
         </section>
         <section id="buildingTransformPanel" class="building-transform-panel" aria-label="Building footprint preview tools" hidden>
           <div class="building-transform-heading"><strong>BUILDING PREVIEW</strong><span id="buildingPreviewTarget">—</span></div>
@@ -450,8 +470,8 @@
             <p id="buildingDirectHint"></p>
             <p id="buildingDirectError" role="alert" hidden></p>
           </div>
-          <p id="buildingPreviewMeasurements4C" class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
-          <p id="buildingFootprintDetails" aria-live="polite" hidden></p>
+          <p id="buildingPreviewMeasurements4C" data-place-review class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
+          <p id="buildingFootprintDetails" data-place-review aria-live="polite" hidden></p>
           <div id="buildingNudgeControls" class="precision-nudge-4c" role="group" aria-label="Building precision movement">
             <label>Move increment <select id="buildingNudgeStep4C" aria-label="Building move increment">
               <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
@@ -464,7 +484,7 @@
             </div>
           </div>
           <p id="buildingTransformHint" class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
-          <div class="building-transform-actions">
+          <div class="building-transform-actions" data-place-actions>
             <button type="button" id="buildingPreviewApply" disabled>Apply to City</button>
             <button type="button" id="buildingPreviewReset">Reset preview</button>
             <button type="button" id="buildingPreviewCancel">Cancel preview</button>
@@ -474,8 +494,9 @@
             <button type="button" id="buildingHistoryRedo" disabled title="Redo a previously undone footprint edit for this building">Redo building</button>
           </div>
           <p id="buildingHistoryStatus" class="building-history-status" role="status" aria-live="polite"></p>
-          <p id="buildingPreviewStatus" role="status" aria-live="polite">Change a building to check its placement.</p>
-          <ul id="buildingPreviewIssues" class="building-preview-issues" aria-label="Building validation problems" hidden></ul>
+          <p id="buildingPreviewStatus" data-place-status role="status" aria-live="polite">Change a building to check its placement.</p>
+          <ul id="buildingPreviewIssues" data-place-review class="building-preview-issues" aria-label="Building validation problems" hidden></ul>
+          <p class="place-review-intro" data-place-review hidden data-place-intro>Review the footprint measurements and any placement blockers.</p>
         </section>
         <section id="buildingStructurePanel" class="building-transform-panel building-structure-panel" aria-label="Add or replace a building" hidden>
           <div class="building-transform-heading"><strong id="structureModeTitle">PLACE BUILDING</strong><span id="structurePropertyLabel">—</span></div>
@@ -497,7 +518,7 @@
             <label>Depth <input id="structureDepth" type="number" min="2" max="250" step="0.5"></label>
             <label>Angle ° <input id="structureAngle" type="number" min="-360" max="360" step="1"></label>
           </div>
-          <p id="structurePreviewMeasurements4C" class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
+          <p id="structurePreviewMeasurements4C" data-place-review class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
           <div class="precision-nudge-4c" role="group" aria-label="Placement precision movement">
             <label>Move increment <select id="structureNudgeStep4C" aria-label="Placement move increment">
               <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
@@ -510,15 +531,16 @@
             </div>
           </div>
           <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
-          <div class="building-transform-actions">
+          <div class="building-transform-actions" data-place-actions>
             <button type="button" id="structureApply" disabled>Apply to City</button>
             <button type="button" id="structureCancel">Cancel preview</button>
           </div>
-          <label id="structureReplaceConsent" class="building-replace-consent" hidden>
+          <label id="structureReplaceConsent" data-place-review class="building-replace-consent" hidden>
             <input id="structureReplaceGeometry" type="checkbox"> Replace the existing outline and courtyards with the preview
           </label>
-          <p id="structureStatus" role="status" aria-live="polite">Choose a location to place the footprint.</p>
-          <ul id="structureIssues" class="building-preview-issues" aria-label="Building placement problems" hidden></ul>
+          <p id="structureStatus" data-place-status role="status" aria-live="polite">Choose a location to place the footprint.</p>
+          <ul id="structureIssues" data-place-review class="building-preview-issues" aria-label="Building placement problems" hidden></ul>
+          <p class="place-review-intro" data-place-review hidden data-place-intro>Review placement, measurements, and any replacement confirmation.</p>
         </section>
         <section id="buildingStructureHistoryPanel" class="building-structure-history" aria-label="Property building change history" hidden>
           <p id="structureHistoryStatus">Structural changes to this property · session-only history</p>

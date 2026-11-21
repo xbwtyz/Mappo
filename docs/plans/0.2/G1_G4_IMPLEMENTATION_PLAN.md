@@ -120,6 +120,26 @@ in either view. Switching views preserves the draft and decisions. This
 pass uses the existing road removal rules, including the limitation tracked
 in [issue #79](https://github.com/xbwtyz/Mappo/issues/79).
 
+## G3C property and building layout review
+
+Open the standalone G3C HTML on desktop. Select an existing property in the
+map, then choose **Split property** in its Inspector. Move the divider with
+the map handle or numeric field. **Review impacts** shows parcel and plot
+outcomes and any required building ownership transfers. The current
+validation state and transaction controls are always in the footer.
+
+Select a building from its property or click its footprint while that
+property is selected. **Edit courtyard** opens the existing building
+footprint editor with Courtyard selected. Preview an opening, review the
+measured occupied area and any blockers, then Apply or Cancel. The parent
+property remains available through the building Inspector.
+
+The same desktop panel hosts property creation, merge, property and plot
+geometry, and building placement or replacement. Existing domain tools
+own the edit, validation, and history. The review branch holds layout
+iterations and the offline HTML. Open a PR for CI once the layout review
+is complete.
+
 ## Integration rules
 
 - **Workspace responsibilities.** Own panel layout, focus, selection

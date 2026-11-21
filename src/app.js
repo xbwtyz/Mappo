@@ -119,6 +119,7 @@ import { extractRoadFaces, matchExistingFaces } from './core/road-faces.js';
 import { analyzeRoadImpact, inspectJunctionImpact } from './core/road-impact.js';
 
 import { DesktopEditLayout } from './ui/desktop-edit-layout.js';
+import { DesktopPlaceEditor } from './ui/desktop-place-editor.js';
 import { RoadInspectionWorkspace } from './ui/road-inspection.js';
 import { createJunctionPreviewWorkerP1 } from './editor/junction-preview-worker-client.js';
 import { drawRoadComparison } from './renderer/road-comparison.js';
@@ -175,6 +176,7 @@ let propertyMergeE3;
 let propertyWorkspace;
 let identityWorkspace;
 let roadWorkspace;
+let desktopPlaceEditor;
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -868,6 +870,7 @@ function updateMapIndicators() {
   propertyMergeE3?.refresh();
   syncMapEditDiagnostic4D();
   syncPropertyDeletionControls4A();
+  desktopPlaceEditor?.sync();
   const creationActive = Boolean(propertyCreationSessionE1?.active);
   const splitActive=Boolean(propertySplitE2?.active);
   const mergeActive=Boolean(propertyMergeE3?.active);
@@ -1159,6 +1162,11 @@ window.addEventListener('keydown', e => {
     e.preventDefault();
     return;
   }
+  if (e.key === 'Escape' && desktopPlaceEditor?.current) {
+    if (!exitPropertyEditing3I() || !exitBuildingEditing() || !exitStructurePlacement3H()) return;
+    stopWorkspaceTools();
+    e.preventDefault();return;
+  }
   if (!isMapShortcutEvent(e, document.activeElement)) return;
   if(roadWorkspace?.active){
     if((e.ctrlKey||e.metaKey)&&['z','y'].includes(e.key.toLowerCase())){
@@ -1403,7 +1411,7 @@ function syncWorkspaceDistrictSelection() {
 
 function stopWorkspaceTools(targetSection = null) {
   roadWorkspace?.exit();
-  if (targetSection !== 'city') {buildingEditSession?.stop();buildingPlacementSession?.stop();propertyEditSession?.stop();propertyCreationSessionE1?.stop();propertySplitE2?.stop();}
+  if (targetSection !== 'city') {buildingEditSession?.stop();buildingPlacementSession?.stop();propertyEditSession?.stop();propertyCreationSessionE1?.stop();propertySplitE2?.stop();propertyMergeE3?.stop();}
   clearMapHover();
   // Cancel only a tool whose controls are leaving the visible section.
   // Completed drafts and their histories stay with the original editors.
@@ -1666,13 +1674,14 @@ function enterPropertyEditing3I(propertyId) {
   }
   return started;
 }
-function enterBuildingEditing(id) {
+function enterBuildingEditing(id, tool) {
   if(propertyCreationSessionE1?.active||propertySplitE2?.active||propertyMergeE3?.active)return false;
   if (!project || !exitPropertyEditing3I() || !exitStructurePlacement3H()) return false;
   if (workspaceShell.state.section !== 'city') workspaceShell.navigate('city');
   stopWorkspaceTools('city');
   if (editor.mode !== 'pan') editor.setMode('pan');
   const started = buildingEditSession.start(project.city, layers, id);
+  if (started && tool) buildingEditSession.setTool(tool);
   // On narrow screens the Inspector is a map-covering drawer. Clear the map
   // before showing draggable controls, then reopen the Inspector on exit.
   if (started && Number.isFinite(window.innerWidth) && window.innerWidth <= 900) {
@@ -1688,6 +1697,7 @@ buildingWorkspace = new BuildingWorkspace({
   getProperties: () => propertyWorkspace,
   getEditSession: () => buildingEditSession,
   enterEditing: enterBuildingEditing,
+  showCourtyardShortcut: () => Boolean(desktopPlaceEditor?.media?.matches),
   exitEditing: exitBuildingEditing,
   startReplacement: (propertyId,id) => startStructurePlacement3H(propertyId,id),
   deleteBuilding: (propertyId,id) => deleteStructureBuilding3H(propertyId,id),
@@ -1751,9 +1761,37 @@ identityWorkspace = new IdentityWorkspace({
   changed: workspaceChanged
 });
 identityWorkspace.bind();
+const desktopEditLayout = new DesktopEditLayout({
+  viewport, divider: $('desktopEditDivider'), dockDivider: $('desktopImpactDivider'), onLayout: resize,
+});
+desktopPlaceEditor = new DesktopPlaceEditor({
+  getElement: $, layout: desktopEditLayout,
+  getContext: panelId => {
+    const ref = workspaceShell.state.selection;
+    if (panelId === 'propertyCreatePanelE1' || !ref) return '';
+    if (ref.kind === 'building') {
+      const building = buildingWorkspace.record(ref);
+      const parent = propertyWorkspace.propertyForBuilding(building);
+      if (building && parent)
+        return (parent.customName || parent.id) + ' / ' + (building.customName || building.id);
+    }
+    if (ref.kind === 'property') {
+      const property = propertyWorkspace.record(ref);
+      if (property) return property.customName ? property.customName + ' · ' + property.id : property.id;
+    }
+    return '';
+  },
+  getTitle: (panelId, fallback) => {
+    if (panelId === 'buildingTransformPanel' && buildingEditSession.tool === 'courtyard')
+      return 'Edit courtyard';
+    if (panelId === 'buildingStructurePanel' && buildingPlacementSession.operation === 'replace')
+      return 'Replace building';
+    return fallback;
+  },
+});
 roadWorkspace = new RoadInspectionWorkspace({
   getElement:$,getProject:()=>project,camera,shell:workspaceShell,capture:captureWorkspace,
-  desktopLayout: new DesktopEditLayout({ viewport, divider: $('desktopEditDivider'), dockDivider: $('desktopImpactDivider'), onLayout: resize }),
+  desktopLayout: desktopEditLayout,
   reconcile:prepareJunctionReflowC7,reconcileRoad:prepareRoadReconciliationB1,
   computeJunctionAsync:createJunctionPreviewWorkerP1(),
   getRevision:()=>files?.revision??0,applyEdit:applyRoadEditB4,
@@ -2134,6 +2172,12 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     return; // Other properties and non-roof land do not steal the active edit context.
   }
   const hit = landscapeWorkspace.hit(point, camera.zoom);
+  const selected = workspaceShell.state.selection;
+  if (!hit && desktopPlaceEditor?.media?.matches && workspaceShell.state.section === 'city'
+    && selected?.kind === 'property') {
+    const building = buildingWorkspace.hit(point, camera.zoom);
+    if (building && propertyWorkspace.selectBuilding(selected.id, building.id)) return;
+  }
   if (hit) {
     landscapeWorkspace.select(hit, {
       fromMap: true
