@@ -395,16 +395,18 @@ test('existing district, water and terrain inspector adapters read source record
     id: 'D1'
   });
   assert.equal(shell.descriptor().title, 'Old Ward');
+  assert.equal(shell.descriptor().inlineControls.factsTitle, 'District details');
   shell.select({
     kind: 'water',
     id: 'L1'
   });
-  assert.match(shell.descriptor().description, /draft/);
+  assert.equal(shell.descriptor().inlineControls.factsTitle, 'Water feature details');
   shell.select({
     kind: 'terrain',
     id: 'T1'
   });
   assert.equal(shell.descriptor().title, 'High Ridge');
+  assert.equal(shell.descriptor().inlineControls.factsTitle, 'Mountain range details');
   assert.equal(JSON.stringify({
     city,
     district,
