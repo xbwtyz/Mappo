@@ -32,13 +32,21 @@ The final job name remains **Build, Node tests and browser QA**. It requires `ne
 
 The slow C7 desktop browser performance benchmark remains opt-in and is only run in the integration suite when manually dispatched. The fast branch workflow, GitHub Pages, and release workflows are unchanged.
 
+## Initial measured result
+
+The first full [Phase 2 PR run #44950879528](https://github.com/xbwtyz/Mappo/actions/runs/44950879528) **passed** with all six independent test jobs and the unchanged required aggregate gate. Wall-clock elapsed time was **2m 36s**, versus **4m 11s** for the prior main-branch Phase 1 run (a **37.8%** improvement, **1m 35s** saved), and versus **3m 24s** for the earlier fast G3G PR run (**23.5%** improvement).
+
+Native Node shard 1 executed **227/227** tests in **1m 36s**, and shard 2 executed **220/220** in **1m 19s**: exactly **447/447** tests combined, with no loss in test count. All 16 browser QA scripts remain assigned exactly once across the desktop, roads, property and integration suites. The standalone `mappo-0.2-dev.g3g` HTML artifact and four independent browser evidence artifacts were uploaded.
+
+These timings are measured first-run observations, not guaranteed future durations. A separate confirmation run is required to check repeatability and runner variability.
+
 ## Validation gates
 
-- [ ] Node 22 native sharding parses and executes 2 distinct test partitions successfully.
-- [ ] Combined Node test count matches the unsharded baseline (447 in G3G).
-- [ ] All 16 original browser scripts execute exactly once across the four CI suites.
-- [ ] Combined required status is green only when all six jobs pass.
-- [ ] Standalone HTML and four browser evidence artifacts are available.
+- [x] Node 22 native sharding parses and executes 2 distinct test partitions successfully.
+- [x] Combined Node test count matches the unsharded baseline (447 in G3G).
+- [x] All 16 original browser scripts execute exactly once across the four CI suites.
+- [x] Combined required status is green after all six jobs passed (failure-gating behavior preserved by the aggregate result check).
+- [x] Standalone HTML and four browser evidence artifacts are available.
 - [ ] Record multiple Phase 2 wall-clock timings against G3G 3m 24s–4m 11s baseline.
 - [ ] Owner explicitly approves merge. No tag, release, or publication.
 
