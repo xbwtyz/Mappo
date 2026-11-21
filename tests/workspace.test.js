@@ -245,7 +245,7 @@ test('selection opens the inspector; pin, close, reopen, clear and automatic dis
   assert.equal(el('workspaceInspector').hidden, true);
   assert.ok(counts().layouts >= 5);
 });
-test('future inspector providers render text safely and navigate through the shared shell', () => {
+test('future inspector providers render text safely through the shared shell', () => {
   const source = Object.freeze({
       id: 'BLD-1',
       name: '<img src=x onerror=alert(1)>'
@@ -258,7 +258,6 @@ test('future inspector providers render text safely and navigate through the sha
         resolve: id => id === source.id ? {
           title: source.name,
           type: 'Building',
-          section: 'city',
           sections: [{
             title: 'Notes',
             rows: [
@@ -274,8 +273,6 @@ test('future inspector providers render text safely and navigate through the sha
   });
   assert.equal(el('workspaceSelectionName').textContent, source.name);
   assert.equal(el('workspaceSelectionName').innerHTML, undefined);
-  el('workspaceShowControls').handlers.click();
-  assert.equal(shell.state.section, 'city');
   assert.equal(source.name, '<img src=x onerror=alert(1)>');
   assert.throws(() => shell.select({
     kind: 'unknown',

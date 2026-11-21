@@ -86,7 +86,11 @@
           <p id="landscapeEmpty" class="hint">Add a river, coastline, lake or mountain range.</p>
           <p class="hint">Select a feature here or click it on the map. Its editing controls open in the inspector.</p>
           <details id="landscapeHelpSettings" class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a roof, yard or courtyard to inspect its property. Choose an individual building in the Property Inspector. Open ground outside properties selects its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
-          <div id="landscapeHistoryTools" class="landscape-history-tools"><p class="hint">Draft histories</p><div class="tool-grid"><button id="landscapeUndoWater" class="minor-button">Undo water</button><button id="landscapeUndoTerrain" class="minor-button">Undo mountains</button></div></div>
+          <div id="landscapeHistoryTools" class="landscape-history-tools" role="group" aria-labelledby="landscapeHistoryTitle">
+            <h3 id="landscapeHistoryTitle" class="workspace-tool-heading">Draft history</h3>
+            <div class="tool-grid"><button id="undoWaterButton" class="minor-button" disabled>Undo water</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
+            <div class="tool-grid actions"><button id="undoTerrainButton" class="minor-button" disabled>Undo terrain</button><button id="revertTerrainButton" class="minor-button">Revert terrain draft</button></div>
+          </div>
         </section>
         <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>
           <details id="districtPanel" class="district-panel" aria-label="Neighborhood generation" open>
@@ -600,7 +604,7 @@
             <summary id="workspaceInspectorDetailsTitle">Details</summary>
           </details>
           <div id="workspaceInspectorSectionsHost"><div id="workspaceSelectionSections"></div></div>
-          <button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+          <button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
         <div id="workspaceInspectorToolsFallback">
         <div id="workspaceInspectorLocalControls">
         <div id="districtInspectorControls" class="district-inspector-controls" hidden>
@@ -614,7 +618,6 @@
           <div class="control-group"><label for="districtTargetInput">Receiving neighborhood</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select></div>
           <button id="moveDistrictButton" class="minor-button full-width" disabled>Move selected block</button>
           <p class="hint">Blocks can move only to an adjacent district. Neither neighborhood may become empty or disconnected.</p>
-          <p id="districtStats" class="hint" hidden></p>
         </div>
         <div id="landscapeInspectorControls" class="landscape-inspector-controls" hidden>
           <div class="workspace-landscape-draft">
@@ -662,7 +665,6 @@
           </fieldset>
           <div id="landscapeWaterShared">
           <button id="removeWaterItemButton" class="minor-button full-width">Remove selected point / bridge</button>
-          <div class="tool-grid actions"><button id="undoWaterButton" class="minor-button">Undo water edit</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
           </div>
         </details>
         <details id="terrainPanel" class="water-panel" open>
@@ -678,7 +680,6 @@
           <div class="tool-grid"><div class="control-group"><label for="terrainSizeInput">Range size</label><input id="terrainSizeInput" type="number" min="40" max="220" value="70"></div><div class="control-group"><label for="terrainHeightInput">Peak height · selected / new</label><input id="terrainHeightInput" type="number" min="50" max="3000" value="900"></div></div>
           <div class="tool-grid"><button id="addTerrainButton" class="tool-button">Add mountain range</button><button id="regenerateTerrainButton" class="minor-button">Regenerate selected</button><button id="removeTerrainButton" class="minor-button">Remove selected range</button></div>
           <button id="removeTerrainItemButton" class="minor-button full-width actions">Remove selected foothill point / pass</button>
-          <div class="tool-grid actions"><button id="undoTerrainButton" class="minor-button">Undo terrain edit</button><button id="revertTerrainButton" class="minor-button">Revert terrain draft</button></div>
           <p class="hint">Up to six ranges, inside or outside the outline. Footprint and ridge handles self-adjust. Buildings avoid steep ground; roads cross through designated passes. Keep mountains and water separated. Heights control map contours and peak symbols.</p>
         </details>
         </div>

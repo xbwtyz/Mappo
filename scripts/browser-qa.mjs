@@ -181,6 +181,15 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         await page.locator('#generateButton').click();
         assert.equal(await page.locator('#landscapeReviewRebuild').isHidden(), true);
         assert.doesNotMatch(await page.locator('#workspacePendingDetails').innerText(), /Rebuild pending:.*water/i);
+        const landscapeRows = page.locator('#landscapeFeatureList button');
+        await landscapeRows.first().click();
+        await page.locator('#removeLakeButton').click();
+        assert.equal(await landscapeRows.count(), 0);
+        const history = page.locator('#landscapeHistoryTools');
+        await history.locator('#undoWaterButton').click();
+        assert.equal(await landscapeRows.count(), 1, 'Undo is available when the feature list is empty');
+        await history.locator('#revertWaterButton').click();
+        assert.equal(await landscapeRows.count(), 1, 'Revert keeps the accepted lake');
       }
       const metrics = await page.evaluate(() => ({
         width: document.documentElement.scrollWidth,

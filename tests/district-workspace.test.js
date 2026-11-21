@@ -54,7 +54,6 @@ test('district list is keyed, shows accepted names/colors, and selects through t
   assert.equal(panel.editor.selectedDistrictId, 'D1');
   assert.equal(shell.state.selection.id, 'D1');
   assert.equal(el('districtInspectorControls').hidden, false);
-  assert.equal(el('workspaceShowControls').hidden, true);
   assert.deepEqual(counts(), { refreshed: 1, changed: 1 });
   assert.equal(first.button.revealed, true);
   city.districts[0].name = 'Renamed Quarter';

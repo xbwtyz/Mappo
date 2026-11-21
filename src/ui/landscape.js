@@ -285,8 +285,6 @@ export class LandscapeWorkspace {
     this.$('landscapeEmpty').textContent = records.length ? 'No features match this filter.' : 'Add a river, coastline, lake or mountain range.';
     for (const filter of ['all', 'water', 'mountains']) this.$(`landscapeFilter-${filter}`).setAttribute('aria-pressed', String(this.filter === filter));
     this.$('landscapeAddButton').disabled = !Object.keys(LANDSCAPE_FIELDS).some(t => this.available(t));
-    this.$('landscapeUndoWater').disabled = !this.water.editor.history.length;
-    this.$('landscapeUndoTerrain').disabled = !this.terrain.editor.history.length;
   }
   render() {
     if (this.restoring) return;
@@ -311,7 +309,6 @@ export class LandscapeWorkspace {
       this.context = selection;
       this.contextType = type;
     }
-    this.$('workspaceShowControls').hidden = true;
     const pending = [this.water.editor.dirty && 'water', this.terrain.editor.dirty && 'terrain'].filter(Boolean);
     const draftStatus = this.$('landscapeDraftStatus');
     const message = pending.length
@@ -332,7 +329,7 @@ export class LandscapeWorkspace {
         ['coast', 'landscapeCoastControls'],
         ['lake', 'landscapeLakeControls']
       ]) this.$(id).hidden = type !== kind;
-    for (const id of ['editRiverButton', 'tidyRiverButton', 'removeRiverButton', 'editBridgesButton', 'addBridgeButton', 'editCoastButton', 'flipCoastButton', 'tidyCoastButton', 'removeCoastButton', 'editLakeButton', 'moveLakeButton', 'removeLakeButton', 'regenerateLakeButton', 'editTerrainButton', 'moveTerrainButton', 'editRidgeButton', 'removeTerrainButton', 'editPassButton', 'addPassButton', 'regenerateTerrainButton', 'removeTerrainItemButton', 'undoTerrainButton', 'revertTerrainButton']) this.$(id).hidden = creating;
+    for (const id of ['editRiverButton', 'tidyRiverButton', 'removeRiverButton', 'editBridgesButton', 'addBridgeButton', 'editCoastButton', 'flipCoastButton', 'tidyCoastButton', 'removeCoastButton', 'editLakeButton', 'moveLakeButton', 'removeLakeButton', 'regenerateLakeButton', 'editTerrainButton', 'moveTerrainButton', 'editRidgeButton', 'removeTerrainButton', 'editPassButton', 'addPassButton', 'regenerateTerrainButton', 'removeTerrainItemButton']) this.$(id).hidden = creating;
     this.$('landscapeWaterShared').hidden = creating;
     this.$('addLakeButton').hidden = !creating;
     this.$('addTerrainButton').hidden = !creating;
@@ -357,8 +354,6 @@ export class LandscapeWorkspace {
     });
     this.$('landscapeAddButton').addEventListener('click', () => this.beginAdd());
     this.$('landscapeTypeInput').addEventListener('change', () => this.beginAdd(this.$('landscapeTypeInput').value));
-    this.$('landscapeUndoWater').addEventListener('click', () => this.$('undoWaterButton').click());
-    this.$('landscapeUndoTerrain').addEventListener('click', () => this.$('undoTerrainButton').click());
     this.render();
   }
 }

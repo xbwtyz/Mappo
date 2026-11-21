@@ -1,10 +1,7 @@
 import {
   DistrictEditor
 } from '../editor/districts.js';
-import {
-  buildDistrictTopology,
-  districtSummary
-} from '../core/district-topology.js';
+import { buildDistrictTopology } from '../core/district-topology.js';
 import {
   pointInPolygon
 } from '../core/geometry.js';
@@ -97,10 +94,6 @@ export class DistrictPanel {
     }
     const topology = buildDistrictTopology(city),
       block = topology.blocks.get(this.editor.selectedBlockId);
-    if (district) {
-      const stats = districtSummary(city, district, topology);
-      this.$('districtStats').textContent = `${stats.blocks} blocks · ${stats.properties} properties · ${stats.buildings} buildings`;
-    } else this.$('districtStats').textContent = active ? 'Select a district or click a block on the map.' : 'Add neighborhoods without changing this city’s geometry.';
     this.$('selectedDistrictBlock').textContent = block ? `Selected block: ${block.id}` : 'Click a block in Pan map mode to move it.';
     const targets = active && block ? [...new Set([...topology.neighbors.get(block.id)].map(id => topology.blocks.get(id).districtId).filter(id => id !== block.districtId))] : [];
     const priorTarget = !resetControls && !selectionChanged && this.formBlockId === (block?.id ?? null)

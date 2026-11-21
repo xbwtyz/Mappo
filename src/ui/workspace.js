@@ -259,8 +259,6 @@ export class WorkspaceShell {
     this.$('workspaceSelectionSections').replaceChildren(
       ...(quick?.facts ?? descriptor.sections ?? []).map(section => this.inspectorSection(section, !quick)),
     );
-    this.$('workspaceShowControls').hidden = !descriptor.section;
-    this.$('workspaceShowControls').textContent = descriptor.controlLabel ?? 'Open editing controls';
     this.onInspect(this.state.selection);
   }
   render() {
@@ -337,10 +335,6 @@ export class WorkspaceShell {
       type: 'pin'
     }));
     this.$('workspaceClearSelection').addEventListener('click', () => this.clear());
-    this.$('workspaceShowControls').addEventListener('click', () => {
-      const descriptor = this.descriptor();
-      if (descriptor?.section) this.navigate(descriptor.section);
-    });
     this.render();
   }
 }

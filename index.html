@@ -1001,7 +1001,11 @@
           <p id="landscapeEmpty" class="hint">Add a river, coastline, lake or mountain range.</p>
           <p class="hint">Select a feature here or click it on the map. Its editing controls open in the inspector.</p>
           <details id="landscapeHelpSettings" class="workspace-settings landscape-help"><summary>Selection guide</summary><p class="hint">In Select / Pan, nearby edges take priority over interiors; smaller interiors win overlaps. Click a roof, yard or courtyard to inspect its property. Choose an individual building in the Property Inspector. Open ground outside properties selects its district. Click empty land to clear selection. Drag to pan. Shape and crossing tools edit only the selected feature.</p></details>
-          <div id="landscapeHistoryTools" class="landscape-history-tools"><p class="hint">Draft histories</p><div class="tool-grid"><button id="landscapeUndoWater" class="minor-button">Undo water</button><button id="landscapeUndoTerrain" class="minor-button">Undo mountains</button></div></div>
+          <div id="landscapeHistoryTools" class="landscape-history-tools" role="group" aria-labelledby="landscapeHistoryTitle">
+            <h3 id="landscapeHistoryTitle" class="workspace-tool-heading">Draft history</h3>
+            <div class="tool-grid"><button id="undoWaterButton" class="minor-button" disabled>Undo water</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
+            <div class="tool-grid actions"><button id="undoTerrainButton" class="minor-button" disabled>Undo terrain</button><button id="revertTerrainButton" class="minor-button">Revert terrain draft</button></div>
+          </div>
         </section>
         <section id="workspaceSection-districts" class="workspace-section" role="tabpanel" aria-labelledby="workspaceTab-districts" hidden>
           <details id="districtPanel" class="district-panel" aria-label="Neighborhood generation" open>
@@ -1515,7 +1519,7 @@
             <summary id="workspaceInspectorDetailsTitle">Details</summary>
           </details>
           <div id="workspaceInspectorSectionsHost"><div id="workspaceSelectionSections"></div></div>
-          <button id="workspaceShowControls" class="minor-button full-width">Open editing controls</button><button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
+          <button id="workspaceClearSelection" class="minor-button full-width actions">Clear selection</button></div>
         <div id="workspaceInspectorToolsFallback">
         <div id="workspaceInspectorLocalControls">
         <div id="districtInspectorControls" class="district-inspector-controls" hidden>
@@ -1529,7 +1533,6 @@
           <div class="control-group"><label for="districtTargetInput">Receiving neighborhood</label><select id="districtTargetInput"><option value="">Move to neighboring district</option></select></div>
           <button id="moveDistrictButton" class="minor-button full-width" disabled>Move selected block</button>
           <p class="hint">Blocks can move only to an adjacent district. Neither neighborhood may become empty or disconnected.</p>
-          <p id="districtStats" class="hint" hidden></p>
         </div>
         <div id="landscapeInspectorControls" class="landscape-inspector-controls" hidden>
           <div class="workspace-landscape-draft">
@@ -1577,7 +1580,6 @@
           </fieldset>
           <div id="landscapeWaterShared">
           <button id="removeWaterItemButton" class="minor-button full-width">Remove selected point / bridge</button>
-          <div class="tool-grid actions"><button id="undoWaterButton" class="minor-button">Undo water edit</button><button id="revertWaterButton" class="minor-button">Revert water draft</button></div>
           </div>
         </details>
         <details id="terrainPanel" class="water-panel" open>
@@ -1593,7 +1595,6 @@
           <div class="tool-grid"><div class="control-group"><label for="terrainSizeInput">Range size</label><input id="terrainSizeInput" type="number" min="40" max="220" value="70"></div><div class="control-group"><label for="terrainHeightInput">Peak height · selected / new</label><input id="terrainHeightInput" type="number" min="50" max="3000" value="900"></div></div>
           <div class="tool-grid"><button id="addTerrainButton" class="tool-button">Add mountain range</button><button id="regenerateTerrainButton" class="minor-button">Regenerate selected</button><button id="removeTerrainButton" class="minor-button">Remove selected range</button></div>
           <button id="removeTerrainItemButton" class="minor-button full-width actions">Remove selected foothill point / pass</button>
-          <div class="tool-grid actions"><button id="undoTerrainButton" class="minor-button">Undo terrain edit</button><button id="revertTerrainButton" class="minor-button">Revert terrain draft</button></div>
           <p class="hint">Up to six ranges, inside or outside the outline. Footprint and ridge handles self-adjust. Buildings avoid steep ground; roads cross through designated passes. Keep mountains and water separated. Heights control map contours and peak symbols.</p>
         </details>
         </div>
@@ -2978,8 +2979,6 @@ class LandscapeWorkspace {
     this.$('landscapeEmpty').textContent = records.length ? 'No features match this filter.' : 'Add a river, coastline, lake or mountain range.';
     for (const filter of ['all', 'water', 'mountains']) this.$(`landscapeFilter-${filter}`).setAttribute('aria-pressed', String(this.filter === filter));
     this.$('landscapeAddButton').disabled = !Object.keys(LANDSCAPE_FIELDS).some(t => this.available(t));
-    this.$('landscapeUndoWater').disabled = !this.water.editor.history.length;
-    this.$('landscapeUndoTerrain').disabled = !this.terrain.editor.history.length;
   }
   render() {
     if (this.restoring) return;
@@ -3004,7 +3003,6 @@ class LandscapeWorkspace {
       this.context = selection;
       this.contextType = type;
     }
-    this.$('workspaceShowControls').hidden = true;
     const pending = [this.water.editor.dirty && 'water', this.terrain.editor.dirty && 'terrain'].filter(Boolean);
     const draftStatus = this.$('landscapeDraftStatus');
     const message = pending.length
@@ -3025,7 +3023,7 @@ class LandscapeWorkspace {
         ['coast', 'landscapeCoastControls'],
         ['lake', 'landscapeLakeControls']
       ]) this.$(id).hidden = type !== kind;
-    for (const id of ['editRiverButton', 'tidyRiverButton', 'removeRiverButton', 'editBridgesButton', 'addBridgeButton', 'editCoastButton', 'flipCoastButton', 'tidyCoastButton', 'removeCoastButton', 'editLakeButton', 'moveLakeButton', 'removeLakeButton', 'regenerateLakeButton', 'editTerrainButton', 'moveTerrainButton', 'editRidgeButton', 'removeTerrainButton', 'editPassButton', 'addPassButton', 'regenerateTerrainButton', 'removeTerrainItemButton', 'undoTerrainButton', 'revertTerrainButton']) this.$(id).hidden = creating;
+    for (const id of ['editRiverButton', 'tidyRiverButton', 'removeRiverButton', 'editBridgesButton', 'addBridgeButton', 'editCoastButton', 'flipCoastButton', 'tidyCoastButton', 'removeCoastButton', 'editLakeButton', 'moveLakeButton', 'removeLakeButton', 'regenerateLakeButton', 'editTerrainButton', 'moveTerrainButton', 'editRidgeButton', 'removeTerrainButton', 'editPassButton', 'addPassButton', 'regenerateTerrainButton', 'removeTerrainItemButton']) this.$(id).hidden = creating;
     this.$('landscapeWaterShared').hidden = creating;
     this.$('addLakeButton').hidden = !creating;
     this.$('addTerrainButton').hidden = !creating;
@@ -3050,8 +3048,6 @@ class LandscapeWorkspace {
     });
     this.$('landscapeAddButton').addEventListener('click', () => this.beginAdd());
     this.$('landscapeTypeInput').addEventListener('change', () => this.beginAdd(this.$('landscapeTypeInput').value));
-    this.$('landscapeUndoWater').addEventListener('click', () => this.$('undoWaterButton').click());
-    this.$('landscapeUndoTerrain').addEventListener('click', () => this.$('undoTerrainButton').click());
     this.render();
   }
 }
@@ -4856,8 +4852,6 @@ class WorkspaceShell {
     this.$('workspaceSelectionSections').replaceChildren(
       ...(quick?.facts ?? descriptor.sections ?? []).map(section => this.inspectorSection(section, !quick)),
     );
-    this.$('workspaceShowControls').hidden = !descriptor.section;
-    this.$('workspaceShowControls').textContent = descriptor.controlLabel ?? 'Open editing controls';
     this.onInspect(this.state.selection);
   }
   render() {
@@ -4934,10 +4928,6 @@ class WorkspaceShell {
       type: 'pin'
     }));
     this.$('workspaceClearSelection').addEventListener('click', () => this.clear());
-    this.$('workspaceShowControls').addEventListener('click', () => {
-      const descriptor = this.descriptor();
-      if (descriptor?.section) this.navigate(descriptor.section);
-    });
     this.render();
   }
 }
@@ -5070,8 +5060,6 @@ function registerWorkspaceInspectors(shell, {
         title: district.name,
         description: 'Apply name and color here, or select a block to move it.',
         inlineControls: { factsTitle: 'District details' },
-        section: 'districts',
-        controlLabel: 'Open district controls',
         sections: [{
           title: 'District summary',
           rows: [
@@ -5099,8 +5087,6 @@ function registerWorkspaceInspectors(shell, {
           feature
         }).name,
         inlineControls: { factsTitle: 'Water feature details' },
-        section: 'landscape',
-        controlLabel: 'Open water controls',
         sections: [{
           title: 'Water feature',
           rows: [
@@ -5128,8 +5114,6 @@ function registerWorkspaceInspectors(shell, {
           feature
         }).name,
         inlineControls: { factsTitle: 'Mountain range details' },
-        section: 'landscape',
-        controlLabel: 'Open mountain controls',
         sections: [{
           title: 'Range summary',
           rows: [
@@ -9328,10 +9312,6 @@ class DistrictPanel {
     }
     const topology = buildDistrictTopology(city),
       block = topology.blocks.get(this.editor.selectedBlockId);
-    if (district) {
-      const stats = districtSummary(city, district, topology);
-      this.$('districtStats').textContent = `${stats.blocks} blocks · ${stats.properties} properties · ${stats.buildings} buildings`;
-    } else this.$('districtStats').textContent = active ? 'Select a district or click a block on the map.' : 'Add neighborhoods without changing this city’s geometry.';
     this.$('selectedDistrictBlock').textContent = block ? `Selected block: ${block.id}` : 'Click a block in Pan map mode to move it.';
     const targets = active && block ? [...new Set([...topology.neighbors.get(block.id)].map(id => topology.blocks.get(id).districtId).filter(id => id !== block.districtId))] : [];
     const priorTarget = !resetControls && !selectionChanged && this.formBlockId === (block?.id ?? null)
@@ -9486,7 +9466,6 @@ class DistrictWorkspace {
       : null;
     const visible = Boolean(district && district.id === this.panel.editor.selectedDistrictId);
     this.$('districtInspectorControls').hidden = !visible;
-    if (visible) this.$('workspaceShowControls').hidden = true;
   }
 }
 

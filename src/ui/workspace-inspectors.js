@@ -20,8 +20,6 @@ export function registerWorkspaceInspectors(shell, {
         title: district.name,
         description: 'Apply name and color here, or select a block to move it.',
         inlineControls: { factsTitle: 'District details' },
-        section: 'districts',
-        controlLabel: 'Open district controls',
         sections: [{
           title: 'District summary',
           rows: [
@@ -49,8 +47,6 @@ export function registerWorkspaceInspectors(shell, {
           feature
         }).name,
         inlineControls: { factsTitle: 'Water feature details' },
-        section: 'landscape',
-        controlLabel: 'Open water controls',
         sections: [{
           title: 'Water feature',
           rows: [
@@ -78,8 +74,6 @@ export function registerWorkspaceInspectors(shell, {
           feature
         }).name,
         inlineControls: { factsTitle: 'Mountain range details' },
-        section: 'landscape',
-        controlLabel: 'Open mountain controls',
         sections: [{
           title: 'Range summary',
           rows: [

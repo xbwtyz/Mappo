@@ -153,13 +153,20 @@ district and landscape controls before record details. **Project** and
 **Layers** keep their existing entry points. Verify the workflows below in
 the standalone build before the desktop default switch in G4.
 
+Remove superseded controls as part of this migration. District facts have
+one Inspector presentation. The landscape list provides a single home for
+water and terrain draft history and revert, even when the last feature was
+removed. The obsolete Inspector command for opening inline controls is
+retired. G4 switches the desktop entry point to the new road workspace
+and retires the separate legacy road entry after acceptance.
+
 | Workflow | Entry and next action | Commit, history, and persistence to verify |
 | --- | --- | --- |
 | City generation | **City** groups the outline, square, street pattern, density, and seed. The Tools footer has **Rebuild city**, the pending summary, and rebuild effects. | Confirm a rebuild still checks outstanding identities. Reverting outline and street settings restores only that draft. Download and reopen a project with unfinished generation settings. |
 | Districts | Select a neighborhood from **Districts** or an open block on the map. Name, color, and block move controls appear before **District details**. Rebuild and Undo stay together on the Districts tab. | Apply identity changes or move a block through the existing connectivity checks. Rebuild districts independently of city generation and verify Undo. Reopen a saved selection and district draft. |
 | Water and terrain | Select or add a feature from **Landscape**. Shape and crossing actions appear before generation settings. **Review city rebuild** reveals the existing rebuild controls and effects. | Test the river, coast, lake, and mountains. Keep water and terrain draft histories and revert actions scoped. Switching sections preserves completed drafts. Confirm Review alone leaves the accepted city intact and that a valid **Rebuild city** applies the draft. |
 | Fortifications | **Defenses** shows enabled state, gates and towers, pending effects, **Update defenses**, and **Undo defense edit**. | Test validation, a defense-only update, and Undo. Turning off saved walls keeps their geometry. The Layers checkbox affects visibility. |
-| Layers | Open **Layers** from the map header, including during a desktop edit. | Apply a preset and an individual visibility change. Verify draft geometry and history are unaffected, view state round-trips, and Escape returns focus to the menu button. |
+| Layers | Open **Layers** from the map header. Active road review uses its own overlay controls. | Apply a preset and an individual visibility change during a landscape draft. Verify draft geometry and history are unaffected, view state round-trips, and Escape returns focus to the menu button. |
 | Files, recovery, and exports | Open **Project** from the header. Download/open a portable project, restore recovery, or download the visible map. | Check JSON with unfinished landscape work, exact accepted city on reopen, current and previous recovery, and PNG export. Verify menu focus and Escape, and that typing in forms leaves map shortcuts inactive. |
 
 ## Integration rules
