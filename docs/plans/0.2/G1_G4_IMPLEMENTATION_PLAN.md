@@ -75,6 +75,20 @@ validation, impact decisions, and history. The current workspace remains the
 default. The impact dock and split comparison arrive in later passes.
 Property and building UI design has a separate draft and review before G3C.
 
+## G3A road impact dock
+
+In **Road workspace preview**, choose **Review impacts** to open the
+bottom dock. Its table lists affected records and their status. Select a
+record to center and highlight it on the map and see its details. A
+building needing a choice uses the same placement controls and Apply
+gate as the side panel.
+
+Drag the separator or use its Up and Down arrows to adjust the dock.
+**Collapse impact dock** returns to the side panel with the active
+draft, selected record, and placement choices. A short or narrow
+window returns to the side panel. The accepted and proposed comparison
+is a separate G3B pass.
+
 ## Integration rules
 
 - **Workspace responsibilities.** Own panel layout, focus, selection

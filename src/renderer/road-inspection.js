@@ -42,18 +42,24 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
       session.previewGeometry?.unresolved?.length ? session.previewGeometry.unresolved : session.report?.issues ?? [],
   };
   const preservedBlocks = highlights.preserved.filter(row => row.kind === 'block');
+  const preview = session.previewGeometry;
+  const showPreview = session.previewVisible !== false &&
+    (session.roadPreviewVerifiedD1 || preview?.mode === 'topology-only');
+  const previewHasFocus = session.focusKey && showPreview && preview?.rows.some(row =>
+    session.focusKey === JSON.stringify([row.kind, row.id]));
+  const acceptedFocus = session.focusKey && !previewHasFocus ? JSON.parse(session.focusKey) : null;
   const records = new Map();
-  if (highlights.affected.length || preservedBlocks.length || session.recoveryFocusD3) {
+  if (highlights.affected.length || preservedBlocks.length || session.recoveryFocusD3 || acceptedFocus) {
     for (const [collection, kind] of ROAD_IMPACT_COLLECTIONS)
       for (const record of city[collection] ?? []) records.set(JSON.stringify([kind, record.id]), record);
     if (city.plaza) records.set(JSON.stringify(['plaza', city.plaza.id]), city.plaza);
   }
-  const highlight = (row, preserved) => {
+  const highlight = (row, preserved, focused = false) => {
     const record = records.get(JSON.stringify([row.kind, row.id]));
     if (!record) return;
-    const color = preserved ? '#147d70' : rpColors[row.severity];
+    const color = focused ? '#075e52' : preserved ? '#147d70' : rpColors[row.severity];
     if (row.kind === 'road') {
-      segment(record, color, 4);
+      segment(record, color, focused ? 6 : 4);
       return;
     }
     if (row.kind === 'junction') {
@@ -70,7 +76,7 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
     if (record.vertices) points = record.vertices.map((id) => graph.nodesById.get(id));
     if (row.kind === 'district') {
       for (const block of city.blocks.filter((b) => b.districtId === row.id))
-        highlight({ kind: 'block', id: block.id, severity: row.severity }, preserved);
+        highlight({ kind: 'block', id: block.id, severity: row.severity }, preserved, focused);
       return;
     }
     if (!points && record.a && record.b)
@@ -84,7 +90,7 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
       ctx.fill();
       ctx.globalAlpha = 1;
       ctx.strokeStyle = color;
-      ctx.lineWidth = preserved ? 0.7 : 2;
+      ctx.lineWidth = focused ? 4 : preserved ? 0.7 : 2;
       ctx.stroke();
     } else if (Number.isFinite((record.center ?? record).x) && Number.isFinite((record.center ?? record).y)) {
       const p = camera.worldToScreen(record.center ?? record);
@@ -104,8 +110,11 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
   if (session.recoveryFocusD3)
     highlight({...session.recoveryFocusD3,severity:'invalid'}, false);
   // B3 overlays only geometry computed from detached B1/B2 candidates.
-  const preview = session.previewGeometry;
-  if(session.previewVisible!==false && (session.roadPreviewVerifiedD1 || preview?.mode==='topology-only')){
+  if (acceptedFocus) {
+    const [kind, id] = acceptedFocus;
+    highlight({ kind, id }, false, true);
+  }
+  if (showPreview) {
     for(const row of preview?.rows??[]){
       const color=row.kind==='property'?'#8053a5':row.kind==='plot'?'#168578':row.kind==='building'?'#b45468':row.kind==='road'?'#168f80':'#cf8731';
       const focused=session.focusKey===JSON.stringify([row.kind,row.id]);

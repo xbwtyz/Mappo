@@ -26,6 +26,10 @@ async function exercise(browser, engine, name, width, height) {
   const map = page.locator('#mapCanvas');
   const divider = page.locator('#desktopEditDivider');
   const apply = page.locator('#roadApplyB4');
+  const impacts = page.locator('#roadImpactRows').getByRole('button');
+  const dock = page.locator('#roadImpactToggle');
+  const dockDivider = page.locator('#desktopImpactDivider');
+  const activeImpact = page.locator('#roadImpactRows [aria-pressed="true"]');
   const offset = page.locator('#roadIntentDyC1');
   const hall = page.locator('#roadConflictC6-BLD-00061');
   const choice = label => hall.getByRole('button', { name: label, exact: true });
@@ -73,6 +77,18 @@ async function exercise(browser, engine, name, width, height) {
       document.getElementById('mapCanvas').getBoundingClientRect().width) <= 1);
     assert.equal(await focus(), 'desktopEditDivider');
 
+    await dock.press('Enter');
+    assert.equal(await focus(), 'roadImpactToggle');
+    assert.equal(await divider.isVisible(), false);
+    const dockMap = await map.boundingBox();
+    const dockBounds = await panel.boundingBox();
+    assert.ok(dockBounds.y >= dockMap.y + dockMap.height);
+    assert.ok(dockMap.width > beforeMap.width);
+    assert.ok(dockMap.height >= 240);
+    await dockDivider.press('ArrowDown');
+    assert.ok((await map.boundingBox()).height >= dockMap.height + 15);
+    await page.waitForFunction(() => Math.abs(__buildingQA.state().camera.height -
+      document.getElementById('mapCanvas').getBoundingClientRect().height) <= 1);
     await page.locator('#roadResolveConflictC6').click();
     assert.equal(await page.evaluate(() => document.activeElement.closest('article')?.id), 'roadConflictC6-BLD-00061');
     await choice('Keep it here').click();
@@ -84,6 +100,23 @@ async function exercise(browser, engine, name, width, height) {
     await choice('Suggest a new location').click();
     await page.waitForFunction(() => !document.getElementById('roadApplyB4').disabled);
     assert.equal(await accepted(), baseline);
+    assert.equal(await activeImpact.innerText(), 'Market Hall');
+    await screenshot('dock-ready');
+    assert.ok(await impacts.count() > 1);
+    const other = impacts.filter({ hasNotText: 'Market Hall' }).first();
+    await other.press('Enter');
+    assert.equal(await hall.isVisible(), false);
+    assert.equal(await activeImpact.innerText(), await other.innerText());
+    const key = await other.getAttribute('data-impact-key');
+    assert.equal(await page.evaluate(() => __buildingQA.state().roadWorkspace.session.focusKey), key);
+    await dock.click();
+    assert.equal(await divider.isVisible(), true);
+    assert.equal(await offset.inputValue(), '18');
+    assert.equal(await accepted(), baseline);
+    await dock.click();
+    assert.equal(await activeImpact.getAttribute('data-impact-key'), key);
+
+    await dock.click();
     // A later numeric edit immediately invalidates the earlier Apply state.
     await offset.fill('');
     assert.equal(await apply.isDisabled(), true);
@@ -100,6 +133,13 @@ async function exercise(browser, engine, name, width, height) {
     await openConflict();
     await choice('Suggest a new location').click();
     await page.waitForFunction(() => !document.getElementById('roadApplyB4').disabled);
+    await dock.click();
+    await page.setViewportSize({ width, height: 600 });
+    await dockDivider.waitFor({ state: 'hidden' });
+    assert.equal(await focus(), 'roadPreviewHeading');
+    assert.equal(await apply.isEnabled(), true);
+    await page.setViewportSize({ width, height });
+    await dock.click();
     await screenshot('ready');
     await apply.click();
     await page.waitForFunction(() => !__buildingQA.state().roadWorkspace.active);
@@ -111,7 +151,7 @@ async function exercise(browser, engine, name, width, height) {
     await page.locator('#workspaceUndoButton').click();
     assert.equal(await accepted(), baseline);
     assert.deepEqual(errors, []);
-    console.log('PASS G2 ' + engine + ' ' + name);
+    console.log('PASS G2/G3A ' + engine + ' ' + name);
   } catch (error) {
     await screenshot('failure').catch(() => {});
     throw error;
