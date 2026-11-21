@@ -34,10 +34,17 @@ of scope. Civic places are deferred to a future milestone.
   monitors. Evaluate docking and resizing in G1. Provide keyboard access,
   predictable focus, and usable controls at browser zoom.
 
-The mockups set the direction for a single workspace. **A** is the default
-map and edit panel. **B** is a collapsible impact dock. **C** is a synchronized
-before/proposed comparison for wide screens. Opening either optional view
-keeps the current draft, edit target, and decisions active.
+### The three mockups
+
+| PDF page | Layout and purpose |
+| --- | --- |
+| **1 · A · Map + edit panel** | Default desktop workspace. One large map with a right-side Inspector or active edit panel for the road offset, impacts, placement decisions, and Apply. |
+| **2 · B · Map + impact dock** | One full-width map above a collapsible bottom dock. The impact list is on the left inside the dock, and the selected item's decision and Apply controls are on the right inside the dock. |
+| **3 · C · Before + proposed** | Two maps side by side at the same position and zoom. A right-side review panel shows the proposed relocation and lets you choose it or return to the impact list. |
+
+The dock and comparison are views of the same edit. Returning to the
+default workspace keeps the current road draft, selected impact, and
+placement decision.
 
 ## Module boundaries
 
@@ -62,7 +69,7 @@ the same workspace panels and shortcut handling as the existing tools.
 
 | Pass | Deliverable | Acceptance gate |
 | --- | --- | --- |
-| **G1 — Prototype** | Design the desktop layouts and prototype moving a street with a building conflict, splitting a parcel, and adding a courtyard. | Select an affected building, resolve the conflict, and return to the same street draft. Verify controls, focus, and map space at compact and ultrawide sizes. Review the prototype before wiring every editor. |
+| **G1 — Prototype** | Build a clickable page 1 prototype. Use the Market Hall road conflict to demonstrate opening the page 2 impact dock and page 3 comparison. Sketch parcel split and courtyard editing in the page 1 layout. | Resolve the placement conflict and return to the default layout with the same draft, selected impact, and decision. Production engine integration starts in G2. Verify controls, focus, and map space at compact and ultrawide sizes. Review the prototype before wiring every editor. |
 | **G2 — Workspace foundation** | Implement the map, toolbar, Inspector, active edit panel, and small interface for domain tools. Wire representative workflows through the existing sessions. | Selection, draft entry and exit, shortcut scope, Apply, blocked states, and scoped history use the same workspace conventions. |
 | **G3 — Tool migration** | Add the road impact dock and comparison, then migrate parcel, plot, building, district, landscape, fortification, layer, and project file workflows in separate reviewable passes. | Use a feature-parity checklist that includes safe previews, impact decisions, keyboard and numeric editing, recovery, and file operations. Retire superseded UI paths after their replacement passes parity. |
 | **G4 — Acceptance and switch** | Make the new workspace the default after parity. Update the user and developer guides and prepare the versioned standalone build. | Run desktop Chromium and Firefox coverage at laptop, desktop, and ultrawide sizes. Exercise mouse, trackpad-style pan and zoom, keyboard, old saves, offline operation, and representative Small and Large cities. Compare responsiveness using repeatable fixtures and keep issue #44 tracked separately. |
