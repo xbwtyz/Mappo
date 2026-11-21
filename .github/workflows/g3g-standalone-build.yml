@@ -1,0 +1,39 @@
+name: G3G standalone build (temporary)
+on:
+  push:
+    branches:
+      - feature/mappo-0.2g-g3g-desktop-parity
+    paths:
+      - .github/workflows/g3g-standalone-build.yml
+      - src/**
+      - styles/**
+      - package.json
+      - index.template.html
+
+permissions:
+  contents: write
+
+jobs:
+  compile:
+    name: Generate and commit standalone HTML
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out G3G
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate standalone distribution
+        run: npm run build
+      - name: Commit compiled files to the review branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html dist/mappo-0.2-dev.g3g.html
+          if git diff --cached --quiet; then
+            echo "Nothing to rebuild"
+            exit 0
+          fi
+          git commit -m "build: compile G3G standalone HTML"
+          git push origin HEAD:feature/mappo-0.2g-g3g-desktop-parity
