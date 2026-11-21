@@ -354,22 +354,56 @@
           <p id="propertyEditStatus3I" role="status" aria-live="polite">Move a corner or divider to preview a validated property change.</p>
           <ul id="propertyEditIssues3I" class="building-preview-issues" aria-label="Property validation problems" hidden></ul>
         </section>
-        <section id="buildingTransformPanel" class="building-transform-panel" aria-label="Building transform preview tools" hidden>
+        <section id="buildingTransformPanel" class="building-transform-panel" aria-label="Building footprint preview tools" hidden>
           <div class="building-transform-heading"><strong>BUILDING PREVIEW</strong><span id="buildingPreviewTarget">—</span></div>
-          <div class="building-transform-modes" role="group" aria-label="Choose building transform tool">
+          <div class="building-transform-modes" role="group" aria-label="Choose building editing tool">
             <button type="button" id="buildingToolMove" aria-pressed="true">Move</button>
             <button type="button" id="buildingToolRotate" aria-pressed="false">Rotate</button>
             <button type="button" id="buildingToolResize" aria-pressed="false">Resize</button>
+            <button type="button" id="buildingToolVertices" aria-pressed="false">Vertices</button>
+            <button type="button" id="buildingToolEdges" aria-pressed="false">Edges</button>
+            <button type="button" id="buildingToolCourtyard" aria-pressed="false">Courtyard</button>
           </div>
-          <div class="building-transform-values">
+          <div id="buildingTransformValues" class="building-transform-values">
             <label>X offset <input id="buildingOffsetX" type="number" step="0.5" value="0"></label>
             <label>Y offset <input id="buildingOffsetY" type="number" step="0.5" value="0"></label>
             <label>Angle ° <input id="buildingAngle" type="number" step="1" value="0"></label>
             <label>Width <input id="buildingWidth" type="number" min="0.1" step="0.5"></label>
             <label>Depth <input id="buildingDepth" type="number" min="0.1" step="0.5"></label>
           </div>
+          <div id="buildingDirectControls" hidden>
+            <div class="building-transform-values">
+              <label>Outline <select id="buildingDirectRing"></select></label>
+              <label id="buildingDirectHandleLabel"><span id="buildingDirectHandleName">Vertex</span> <select id="buildingDirectHandle"></select></label>
+            </div>
+            <div id="buildingVertexControls" class="building-transform-values" hidden>
+              <label>Vertex X <input id="buildingVertexX" type="number" step="0.1"></label>
+              <label>Vertex Y <input id="buildingVertexY" type="number" step="0.1"></label>
+              <button type="button" id="buildingDeleteVertex">Delete vertex</button>
+            </div>
+            <div id="buildingEdgeControls" class="building-transform-values" hidden>
+              <button type="button" id="buildingInsertVertex">Insert midpoint</button>
+              <div id="buildingWingControls" class="building-transform-values" hidden>
+                <label>Edge start % <input id="buildingWingStart" type="number" min="1" max="98" value="25"></label>
+                <label>Edge end % <input id="buildingWingEnd" type="number" min="2" max="99" value="75"></label>
+                <label>Wing depth <input id="buildingWingDepth" type="number" min="0.1" step="0.1" value="0.5"></label>
+                <button type="button" id="buildingAddWing">Add wing</button>
+              </div>
+            </div>
+            <div id="buildingCourtyardControls" class="building-transform-values" hidden>
+              <label>Center X <input id="buildingCourtyardX" type="number" step="0.1"></label>
+              <label>Center Y <input id="buildingCourtyardY" type="number" step="0.1"></label>
+              <label>Width <input id="buildingCourtyardWidth" type="number" min="0.1" step="0.1"></label>
+              <label>Depth <input id="buildingCourtyardDepth" type="number" min="0.1" step="0.1"></label>
+              <button type="button" id="buildingSetCourtyard">Add courtyard</button>
+              <button type="button" id="buildingRemoveCourtyard">Remove courtyard</button>
+            </div>
+            <p id="buildingDirectHint"></p>
+            <p id="buildingDirectError" role="alert" hidden></p>
+          </div>
           <p id="buildingPreviewMeasurements4C" class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
-          <div class="precision-nudge-4c" role="group" aria-label="Building precision movement">
+          <p id="buildingFootprintDetails" aria-live="polite" hidden></p>
+          <div id="buildingNudgeControls" class="precision-nudge-4c" role="group" aria-label="Building precision movement">
             <label>Move increment <select id="buildingNudgeStep4C" aria-label="Building move increment">
               <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
             </select></label>
@@ -380,7 +414,7 @@
               <button type="button" id="buildingNudgeDown4C" aria-label="Building down">↓</button>
             </div>
           </div>
-          <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
+          <p id="buildingTransformHint" class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
           <div class="building-transform-actions">
             <button type="button" id="buildingPreviewApply" disabled>Apply to City</button>
             <button type="button" id="buildingPreviewReset">Reset preview</button>
@@ -399,7 +433,7 @@
           <p class="hint">Drag the ghost or click within the property to position it. New buildings only exist after Apply to City.</p>
           <div class="building-transform-values">
             <label>Footprint <select id="structurePreset">
-              <option value="rectangle">Rectangle</option><option value="L">L-shape</option>
+              <option value="" disabled>Choose replacement shape</option><option value="rectangle">Rectangle</option><option value="L">L-shape</option>
               <option value="courtyard">Courtyard</option><option value="T">T-shape</option>
             </select></label>
             <label>Use <select id="structureType">
@@ -431,6 +465,9 @@
             <button type="button" id="structureApply" disabled>Apply to City</button>
             <button type="button" id="structureCancel">Cancel preview</button>
           </div>
+          <label id="structureReplaceConsent" class="building-replace-consent" hidden>
+            <input id="structureReplaceGeometry" type="checkbox"> Replace the existing outline and courtyards with the preview
+          </label>
           <p id="structureStatus" role="status" aria-live="polite">Choose a location to place the footprint.</p>
           <ul id="structureIssues" class="building-preview-issues" aria-label="Building placement problems" hidden></ul>
         </section>

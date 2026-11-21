@@ -1,4 +1,6 @@
-import { buildingPreviewHandles, buildingPreviewPivot, buildingTransformDirty } from '../core/building-transform.js';
+import { buildingPreviewHandles, buildingPreviewPivot } from '../core/building-transform.js';
+
+import { buildingDirectHandles } from '../editor/building.js';
 
 // Temporary overlay: the accepted building is drawn by the normal renderer,
 // while this draft remains a separate, visibly tentative geometry preview.
@@ -24,7 +26,7 @@ export function drawBuildingEditOverlay(ctx, camera, city, layers, edit) {
   };
   ctx.save();
   ctx.lineJoin = 'round';
-  if (buildingTransformDirty(edit.transform)) {
+  if (edit.isPending) {
     trace(building);
     ctx.setLineDash([5,5]);
     ctx.strokeStyle = 'rgba(90, 76, 57, .8)';
@@ -40,10 +42,11 @@ export function drawBuildingEditOverlay(ctx, camera, city, layers, edit) {
   ctx.strokeStyle = invalid ? '#d65045' : edit.validation?.status === 'valid' ? '#218b65' : '#14788a';
   ctx.lineWidth = 2.5; ctx.setLineDash([8,3]); ctx.stroke();
   ctx.setLineDash([]);
-  const points = buildingPreviewHandles(building,edit.transform,camera.zoom)
-    .filter(h => h.kind === edit.tool);
+  const base = edit.draft ?? building;
+  const points = edit.isDirect ? buildingDirectHandles(preview, edit.tool, edit.holeIndex)
+    : buildingPreviewHandles(base,edit.transform,camera.zoom).filter(h => h.kind === edit.tool);
   if (edit.tool === 'move') {
-    const p = camera.worldToScreen(buildingPreviewPivot(building,edit.transform));
+    const p = camera.worldToScreen(buildingPreviewPivot(base,edit.transform));
     ctx.beginPath();
     ctx.moveTo(p.x-7,p.y); ctx.lineTo(p.x+7,p.y);
     ctx.moveTo(p.x,p.y-7); ctx.lineTo(p.x,p.y+7);
@@ -54,8 +57,28 @@ export function drawBuildingEditOverlay(ctx, camera, city, layers, edit) {
     ctx.beginPath();
     if (handle.kind === 'resize') ctx.rect(p.x-5,p.y-5,10,10);
     else ctx.arc(p.x,p.y,7,0,Math.PI*2);
-    ctx.fillStyle = '#fffaf0'; ctx.fill();
+    ctx.fillStyle = edit.isDirect && handle.index === edit.handleIndex ? '#f3bd58' : '#fffaf0';
+    ctx.fill();
     ctx.strokeStyle = '#14788a'; ctx.lineWidth = 2; ctx.stroke();
+  }
+  const accepted = edit.draft && edit.validation?.candidate?.city.buildings.find(item => item.id === edit.buildingId);
+  if (accepted?.accessPath && accepted.entrance) {
+    ctx.beginPath();
+    for (const [i, point] of accepted.accessPath.entries()) {
+      const p = camera.worldToScreen(point);
+      if (i) ctx.lineTo(p.x, p.y);
+      else ctx.moveTo(p.x, p.y);
+    }
+    ctx.strokeStyle = '#14788a';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    const door = camera.worldToScreen(accepted.entrance);
+    ctx.beginPath();
+    ctx.arc(door.x, door.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#f3bd58';
+    ctx.fill();
   }
   const target = edit.validation?.issues?.find(issue=>issue.targetId)?.targetId;
   const conflicting = target && (city.properties?.find(p=>p.id===target)?.boundary

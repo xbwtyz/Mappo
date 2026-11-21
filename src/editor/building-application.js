@@ -77,18 +77,33 @@ export function reattachFrontage(city, building) {
   return candidates[0]??null;
 }
 
+function retainedBuildingFrontage(city, original, candidate) {
+  const door = original.entrance;
+  const path = original.accessPath;
+  if (!door || !path || path.length < 2) return null;
+  const onWall = candidate.footprint.some((point, index, ring) =>
+    distanceToSegment(door, point, ring[(index + 1) % ring.length]) <= B3GC_ACCESS_EPS);
+  const road = city.roads.find(item => item.id === original.frontageRoadId);
+  const a = city.nodes.find(node => node.id === road?.a);
+  const b = city.nodes.find(node => node.id === road?.b);
+  if (!onWall || !a || !b ||
+      Math.hypot(path[0].x - door.x, path[0].y - door.y) > B3GC_ACCESS_EPS ||
+      distanceToSegment(path.at(-1), a, b) > B3GC_ACCESS_EPS) return null;
+  if (!path.slice(1).every((point, i) => b3gcRouteClear(city, candidate, path[i], point))) return null;
+  return { entrance: door, accessPath: path };
+}
+
 // Fast, pure preview check on every pointer frame; no whole-city cloning.
-export function inspectBuildingPreview(project, buildingId, transform, quick = false) {
-  const preliminary=inspectBuildingGeometry(project?.city,buildingId,transform);
-  if(!preliminary.ok)return {...preliminary,status:'invalid'};
-  if(quick)return {...preliminary,status:'checking'};
-  return prepareBuildingCandidate(project,buildingId,transform);
+export function inspectBuildingPreview(project, buildingId, transform, quick = false, draft = null) {
+  if (!quick) return prepareBuildingCandidate(project, buildingId, transform, draft);
+  const preliminary = inspectBuildingGeometry(project?.city, buildingId, transform, draft);
+  return { ...preliminary, status: preliminary.ok ? 'checking' : 'invalid' };
 }
 
 // Full validation happens after gesture completion, numerical changes and
 // again immediately before applying (never just from cached preview state).
-export function prepareBuildingCandidate(project, buildingId, transform) {
-  const base=inspectBuildingGeometry(project?.city,buildingId,transform);
+export function prepareBuildingCandidate(project, buildingId, transform, draft = null) {
+  const base=inspectBuildingGeometry(project?.city,buildingId,transform,draft);
   if(!base.ok)return {...base,status:'invalid',candidate:null};
   const city=project.city,original=city.buildings.find(b=>b.id===buildingId);
   const issues=[];
@@ -97,7 +112,8 @@ export function prepareBuildingCandidate(project, buildingId, transform) {
   const candidateBuilding={...base.preview,plotIds};
   // Check clearance against transformed building, not the accepted original.
   const accessCity={...city,buildings:city.buildings.map(b=>b.id===buildingId?candidateBuilding:b)};
-  const route=reattachFrontage(accessCity,candidateBuilding);
+  const existingRoute = draft && retainedBuildingFrontage(accessCity, original, candidateBuilding);
+  const route = existingRoute || reattachFrontage(accessCity,candidateBuilding);
   if(!route)issues.push({code:'access',targetId:original.frontageRoadId,message:'No unobstructed entrance can connect to the existing frontage road.'});
   else Object.assign(candidateBuilding,{entrance:route.entrance,accessPath:route.accessPath,frontageRoadId:original.frontageRoadId});
   if(issues.length)return {ok:false,status:'invalid',issues,preview:base.preview,property:base.property,candidate:null};
@@ -110,11 +126,12 @@ export function prepareBuildingCandidate(project, buildingId, transform) {
     issues.push({code:'schema',message:`Project validation: ${error.message}`});
     return {ok:false,status:'invalid',issues,preview:base.preview,property:base.property,candidate:null};
   }
-  return {ok:true,status:'valid',issues:[],preview:base.preview,property:base.property,candidate};
+  return {ok:true,status:'valid',issues:[],preview:base.preview,property:base.property,candidate,
+    accessChanged: Boolean(draft && !existingRoute)};
 }
 
-export function prepareBuildingApply(project,workspace,buildingId,transform) {
-  const result=prepareBuildingCandidate(project,buildingId,transform);
+export function prepareBuildingApply(project,workspace,buildingId,transform,draft = null) {
+  const result=prepareBuildingCandidate(project,buildingId,transform,draft);
   if(!result.ok)return result;
   try{
     const document=createProjectDocument(result.candidate,workspace);

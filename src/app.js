@@ -4,9 +4,11 @@ import {
   LandscapeWorkspace
 } from './ui/landscape.js';
 import { BuildingWorkspace } from './ui/building-workspace.js';
+import { BuildingFootprintControls } from './ui/building-footprint-controls.js';
+import { polygonSignedArea } from './core/geometry.js';
 import { PropertyWorkspace } from './ui/property-workspace.js';
 import { IdentityWorkspace } from './ui/identity-workspace.js';
-import { BuildingEditSession } from './editor/building.js';
+import { BuildingEditSession, BUILDING_EDIT_TOOLS, buildingDirectHandles } from './editor/building.js';
 import { buildingFrame } from './core/building-transform.js';
 import {
   WorkspaceShell
@@ -153,6 +155,9 @@ let workspaceShell;
 let landscapeWorkspace;
 let buildingWorkspace;
 let buildingEditSession;
+const buildingFootprintControls = new BuildingFootprintControls($, () => ({
+  city: project?.city, session: buildingEditSession
+}));
 const buildingHistory = new BuildingGeometryHistory(20);
 const buildingStructureHistory = new BuildingStructureHistory3H(20);
 const propertyHistory = new PropertyGeometryHistory3I(20);
@@ -355,8 +360,9 @@ function syncBuildingTransformUI() {
   const shown = Boolean(session?.isActive && project && session.source(project.city));
   $('buildingTransformPanel').hidden = !shown;
   syncBuildingHistoryUI();
+  buildingFootprintControls.sync(project?.city, shown ? session : null);
   if (!shown) return;
-  const frame = buildingFrame(session.source(project.city));
+  const frame = buildingFrame(session.draft ?? session.source(project.city));
   const t = session.transform;
   $('buildingPreviewTarget').textContent = session.buildingId;
   const measured=buildingMeasurements4C(project.city,session);
@@ -370,13 +376,26 @@ function syncBuildingTransformUI() {
     buildingAngle: t.angle*180/Math.PI, buildingWidth: frame.width*t.scaleX,
     buildingDepth: frame.height*t.scaleY
   })) $(id).value = Number(value.toFixed(2)).toString();
-  for (const tool of ['Move','Rotate','Resize'])
+  for (const tool of BUILDING_EDIT_TOOLS)
     $('buildingTool'+tool).setAttribute('aria-pressed',String(session.tool===tool.toLowerCase()));
   const result = session.isPending
-    ? inspectBuildingPreview(project,session.buildingId,t,Boolean(session.drag))
+    ? inspectBuildingPreview(project,session.buildingId,t,Boolean(session.drag),session.draft)
     : {ok:false,status:'idle',issues:[]};
   session.validation = result;
-  const eligible = session.isPending && !session.drag && result.status==='valid';
+  const details = $('buildingFootprintDetails');
+  details.hidden = !session.isDirect && !session.draft;
+  if (!details.hidden) {
+    const footprint = result.preview ?? session.previewFor(project.city);
+    const gross = Math.abs(polygonSignedArea(footprint.footprint));
+    const proposed = result.candidate?.city.buildings.find(b => b.id === session.buildingId);
+    details.textContent = 'Footprint '+formatPrecision4C(gross)
+      +' · Courtyards '+formatPrecision4C(gross-footprint.area)
+      +' · Occupied '+formatPrecision4C(footprint.area)
+      +(proposed ? ' · Plots '+proposed.plotIds.join(', ') : '')
+      +(result.accessChanged ? ' · Entrance and access will move to the route shown on the map.'
+        : proposed && session.draft ? ' · Entrance and access retained.' : '');
+  }
+  const eligible = session.isPending && !session.drag && !session.operationError && result.status==='valid';
   $('buildingPreviewApply').disabled = !eligible;
   $('buildingTransformPanel').setAttribute('data-validation',result.status);
   const issues = $('buildingPreviewIssues');
@@ -389,8 +408,8 @@ function syncBuildingTransformUI() {
     });
     return li;
   }));
-  $('buildingPreviewStatus').textContent = !session.isPending
-    ? 'Choose Move, Rotate or Resize. Only a validated, changed building can be applied.'
+  $('buildingPreviewStatus').textContent = session.operationError ? 'Resolve the footprint tool error before applying.'
+    : !session.isPending ? 'Make a footprint change to preview its placement.'
     : result.status==='checking'
       ? 'CHECKING · Fast geometry check complete; road access is verified when the drag ends.'
       : result.ok
@@ -406,15 +425,16 @@ function confirmBuildingPreviewDiscard() {
 }
 function applyBuildingTransform() {
   const session=buildingEditSession;
-  if (!project || !session?.isActive || !session.isPending || session.drag
+  if (!project || !session?.isActive || !session.isPending || session.drag || session.operationError
       || workspaceShell.state.selection?.kind !== 'building'
-      || workspaceShell.state.selection.id !== session.buildingId) return false;
+      || workspaceShell.state.selection.id !== session.buildingId
+      || project.city !== session.acceptedCity) return false;
   const previous=project;
   const buildingId=session.buildingId, transform={...session.transform};
   let received;
   try {
     // Fresh computation. Never trust stale status from an earlier drag frame.
-    received=prepareBuildingApply(previous,captureWorkspace().workspace,buildingId,transform);
+    received=prepareBuildingApply(previous,captureWorkspace().workspace,buildingId,transform,session.draft);
     if(!received.ok){
       const issues=received.issues??[];
       session.validation=received;
@@ -444,7 +464,7 @@ function applyBuildingTransform() {
     propertyHistory.clear();
     propertyDeletionHistory4A.clear();
     project=received.candidate;
-    session.reset();
+    session.reset(project.city);
     updateDetails();
     workspaceShell.refresh();
     requestDraw();
@@ -476,7 +496,7 @@ function moveBuildingHistory(direction) {
   propertyHistory.clear();
   propertyDeletionHistory4A.clear();
   project=receipt.candidate;
-  session.reset();
+  session.reset(project.city);
   updateDetails();
   workspaceShell.refresh();
   requestDraw();
@@ -552,17 +572,23 @@ function syncBuildingStructureUI3H() {
     ? 'Width '+formatPrecision4C(structureMeasure.width)+' · Depth '+formatPrecision4C(structureMeasure.depth)+
       ' · Area '+formatPrecision4C(structureMeasure.area)+' · Position '+formatPrecision4C(structureMeasure.u)+
       ', '+formatPrecision4C(structureMeasure.v) : 'Adjust your draft to preview its measurements.';
-  $('structureModeTitle').textContent=session.operation==='replace'?'REPLACE BUILDING':'PLACE NEW BUILDING';
+  const replacing = session.operation === 'replace';
+  $('structureModeTitle').textContent = replacing ? 'REPLACE BUILDING' : 'PLACE NEW BUILDING';
+  $('structureReplaceConsent').hidden = !replacing || !spec.preset;
+  $('structureReplaceGeometry').checked = Boolean(session.active.replaceGeometry);
+  $('structureReplaceGeometry').disabled = Boolean(session.drag);
   $('structurePropertyLabel').textContent=session.propertyId;
   for(const [id,value] of Object.entries({
     structureU:spec.u,structureV:spec.v,structureWidth:spec.width,
     structureDepth:spec.depth,structureAngle:spec.angle,
     structurePreset:spec.preset,structureType:spec.type
   })) $(id).value=typeof value==='number'?String(Number(value.toFixed(2))):value;
-  const result=session.drag ? {ok:false,status:'checking',issues:[]}
+  const result = session.drag ? {ok:false,status:'checking',issues:[]}
+    : !spec.preset ? {ok:false,status:'idle',issues:[]}
     : prepareBuildingStructure3H(project,captureWorkspace().workspace,session.active);
   session.validation=result;
-  $('structureApply').disabled=!(result.ok && result.status==='valid' && !session.drag);
+  const consentNeeded = replacing && !session.active.replaceGeometry;
+  $('structureApply').disabled = !(result.ok && result.status === 'valid' && !session.drag && !consentNeeded);
   $('buildingStructurePanel').setAttribute('data-validation',result.status);
   const issues=$('structureIssues');
   issues.hidden=!result.issues?.length;
@@ -573,9 +599,13 @@ function syncBuildingStructureUI3H() {
       frontageRoadId:session.property(project.city)?.frontageRoadId
     });return el;
   }));
-  $('structureStatus').textContent=result.status==='checking'
+  $('structureStatus').textContent = result.status === 'idle'
+    ? 'Choose a footprint preset to preview it against the existing outline.'
+    : result.status==='checking'
     ? 'CHECKING · Complete placement validation runs when movement ends.'
-    : result.ok ? 'VALID · This building can be applied to the selected property.'
+    : result.ok ? (consentNeeded
+      ? 'Review the proposed footprint on the map and confirm the replacement.'
+      : 'VALID · This building can be applied to the selected property.')
     : 'INVALID · Apply disabled. '+formatEditIssue4D(result.issues?.[0],{
       buildingId:session.buildingId,propertyId:session.propertyId,
       frontageRoadId:session.property(project.city)?.frontageRoadId
@@ -583,7 +613,8 @@ function syncBuildingStructureUI3H() {
 }
 function applyStructurePlacement3H() {
   const session=buildingPlacementSession;
-  if(!project || !session?.isActive || session.drag)return false;
+  if (!project || !session?.isActive || session.drag
+      || (session.operation === 'replace' && !session.active.replaceGeometry)) return false;
   const selection=workspaceShell?.state.selection;
   if(!selection || (selection.kind==='property' && selection.id!==session.propertyId)
     || (selection.kind==='building' && selection.id!==session.buildingId)
@@ -1099,6 +1130,12 @@ window.addEventListener('keydown', e => {
   if(roadWorkspace?.active && e.key==='Escape'){
     roadWorkspace.exit({focus:true});e.preventDefault();return;
   }
+  if (e.key === 'Escape' && buildingEditSession?.drag?.handle.kind === 'vertex') {
+    buildingEditSession.endGesture(true);
+    $('buildingDirectHandle').focus();
+    e.preventDefault();
+    return;
+  }
   if (!isMapShortcutEvent(e, document.activeElement)) return;
   if(roadWorkspace?.active){
     if((e.ctrlKey||e.metaKey)&&['z','y'].includes(e.key.toLowerCase())){
@@ -1607,8 +1644,10 @@ function enterBuildingEditing(id) {
   const started = buildingEditSession.start(project.city, layers, id);
   // On narrow screens the Inspector is a map-covering drawer. Clear the map
   // before showing draggable controls, then reopen the Inspector on exit.
-  if (started && Number.isFinite(window.innerWidth) && window.innerWidth <= 900)
+  if (started && Number.isFinite(window.innerWidth) && window.innerWidth <= 900) {
+    workspaceShell.dispatch({ type: 'tools', collapsed: true });
     workspaceShell.dispatch({ type: 'inspector', collapsed: true });
+  }
   return started;
 }
 buildingWorkspace = new BuildingWorkspace({
@@ -1777,7 +1816,8 @@ $('roadHistoryRedoB4').addEventListener('click',()=>moveRoadHistoryB4('redo'));
 
 workspaceShell.bind();
 landscapeWorkspace.bind();
-for (const tool of ['Move','Rotate','Resize'])
+buildingFootprintControls.bind();
+for (const tool of BUILDING_EDIT_TOOLS)
   $('buildingTool'+tool).addEventListener('click',()=>buildingEditSession.setTool(tool.toLowerCase()));
 const buildingPreviewInputs = {
   buildingOffsetX: (v,frame) => ({dx:v}),
@@ -1789,7 +1829,7 @@ const buildingPreviewInputs = {
 for (const [id,convert] of Object.entries(buildingPreviewInputs))
   $(id).addEventListener('change',()=>{
     if (!buildingEditSession?.isActive || !project) return;
-    const n=Number($(id).value), frame=buildingFrame(buildingEditSession.source(project.city));
+    const n=Number($(id).value), frame=buildingFrame(buildingEditSession.draft ?? buildingEditSession.source(project.city));
     if ($(id).value==='' || !Number.isFinite(n) || !buildingEditSession.setTransform(convert(n,frame))) {
       $('buildingPreviewStatus').textContent='Invalid preview value. Width and depth must stay within 20–400% of the original.';
       $(id).value='';
@@ -1802,7 +1842,15 @@ const precisionDirections4C = Object.freeze({
 function precisionNudge4C(target,direction,step) {
   const [axis,sign]=precisionDirections4C[direction]??[];
   if(!axis || !project || workspaceShell?.state.section!=='city')return false;
-  if(target==='building')return nudgeBuilding4C(buildingEditSession,axis==='x'?'dx':'dy',sign,step);
+  if (target === 'building') {
+    const session = buildingEditSession;
+    if (!session?.isDirect) return nudgeBuilding4C(session,axis==='x'?'dx':'dy',sign,step);
+    if (session.tool !== 'vertices' || ![.1,.5,1,5].includes(step)) return false;
+    const vertex = buildingDirectHandles(session.previewFor(project.city), 'vertices', session.holeIndex)[session.handleIndex];
+    return Boolean(vertex && session.editDirectGeometry(project.city, 'move', {
+      ...vertex, [axis]: vertex[axis] + sign * step
+    }));
+  }
   if(target==='property')return nudgePropertyCorner4C(propertyEditSession,axis,sign,step);
   if(target==='structure')return nudgeStructure4C(buildingPlacementSession,axis==='x'?'u':'v',sign,step);
   return false;
@@ -1832,6 +1880,11 @@ for (const [id,key] of Object.entries({structureU:'u',structureV:'v',structureWi
   });
 for(const [id,key] of Object.entries({structurePreset:'preset',structureType:'type'}))
   $(id).addEventListener('change',()=>buildingPlacementSession?.update({[key]:$(id).value}));
+$('structureReplaceGeometry').addEventListener('change', () => {
+  if (buildingPlacementSession.operation !== 'replace') return;
+  buildingPlacementSession.active.replaceGeometry = $('structureReplaceGeometry').checked;
+  syncBuildingStructureUI3H();
+});
 $('structureApply').addEventListener('click',applyStructurePlacement3H);
 $('structureCancel').addEventListener('click',exitStructurePlacement3H);
 $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
@@ -2095,7 +2148,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       }
       return false;
     }
-    return Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom));
+    return Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom,event?.pointerType));
   },
   move: point => {
     if(propertyMergeE3?.active)return;

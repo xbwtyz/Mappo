@@ -35,8 +35,8 @@ export class BuildingWorkspace {
         information.sections.push({
           title: 'Building footprint editing',
           rows: editing ? [
-            ['Mode', '3G-B preview · ' + this.getEditSession().tool],
-            ['Controls', 'Drag with Move, Rotate or Resize; numeric adjustments appear on the map.'],
+            ['Mode', 'Preview · ' + this.getEditSession().tool],
+            ['Controls', 'Move, rotate, resize, edit vertices and edges, or add courtyards.'],
             ['Geometry', this.getEditSession().isPending ? 'Unsaved preview · not applied' : 'Original geometry unchanged']
           ] : [
             ['Mode', 'Inspection only'],

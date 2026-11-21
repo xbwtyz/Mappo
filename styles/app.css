@@ -580,3 +580,13 @@
  .property-merge-panel-e3{left:8px;right:auto;top:auto;bottom:56px;width:min(245px,calc(100% - 16px));max-height:39%;padding:9px}
  .property-merge-panel-e3 .road-preview-actions button{min-height:44px}
 }
+
+#buildingDirectControls select{width:100%;min-width:0;min-height:34px;background:#10282d;border:1px solid #547077;border-radius:4px;color:#e4eee8}
+#buildingDirectControls .building-transform-values{margin-top:7px}
+#buildingEdgeControls>button,#buildingWingControls{grid-column:1/-1}
+#buildingDirectError{color:#ffc0a8}
+.building-replace-consent{display:flex;align-items:flex-start;gap:7px;margin-top:9px;line-height:1.4}
+@media(max-width:670px){
+  #buildingDirectControls button,#buildingDirectControls select,
+  .building-transform-panel[data-direct=true] .building-transform-modes button{min-height:40px}
+}

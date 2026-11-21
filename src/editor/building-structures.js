@@ -78,6 +78,7 @@ export class BuildingPlacementSession3H {
     if(!property || (buildingId && !source))return false;
     this.active={operation:buildingId?'replace':'add',propertyId,
       buildingId:buildingId??newBuildingId3H(city),spec:defaultBuildingSpec3H(property,source)};
+    if (source) this.active.spec.preset = '';
     this.drag=null;this.validation=null;this.changed();return true;
   }
   update(changes) {
@@ -86,7 +87,9 @@ export class BuildingPlacementSession3H {
     // Invalid extents may be entered temporarily; validation is handled by the
     // safe preview gate. Never admit NaN, Infinity or malformed numeric input.
     if(!['u','v','width','depth','angle'].every(k=>h3Finite(next[k])))return false;
-    this.active.spec=next;this.changed();return true;
+    this.active.spec=next;
+    this.active.replaceGeometry = false;
+    this.changed();return true;
   }
   property(city){return city?.properties.find(p=>p.id===this.propertyId)??null;}
   previewFor(city) {
