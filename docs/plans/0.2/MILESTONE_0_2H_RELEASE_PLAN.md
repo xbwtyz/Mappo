@@ -27,7 +27,11 @@
 
 Do not delete or rewrite frozen fixture files. Preserve unsupported newer saves rather than attempting destructive migration; browser recovery is an additional backup, not a replacement for portable downloads.
 
-## H3 — Responsiveness and issue disposition (next, separately scoped)
+## H3 — Responsiveness and issue disposition (active: [PR #89](https://github.com/xbwtyz/Mappo/pull/89))
+
+The [H3 performance audit](H3_PERFORMANCE_AUDIT.md) uses the original C7 P7 harness and the merged H1/H2 build, with Firefox/Chromium desktop only. It compares Large Organic preview readiness and independent Apply completion **separately** from main-thread input/frame gaps. Routine CI benchmarking remains manual-only after the one-off baseline capture. Performance issue closure requires current comparable evidence, not a passing functional test alone.
+
+
 
 - [ ] Reproduce Large Organic `c2-organic` junction changes in Firefox and Chromium and record preview median/p95, main-thread frame/input gaps and Apply click/finish time.
 - [ ] Compare issue [#44](https://github.com/xbwtyz/Mappo/issues/44) and [#46](https://github.com/xbwtyz/Mappo/issues/46) against current worker-supported code and prior C7 P7 data; distinguish nonblocking computation from UI stalls, and synchronous fallback from primary worker path.
