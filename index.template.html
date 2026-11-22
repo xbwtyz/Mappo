@@ -454,10 +454,19 @@
 
         <section id="propertySplitPanelE2" class="building-transform-panel property-split-panel-e2" aria-label="Split property preview" hidden>
           <div class="building-transform-heading"><strong>SPLIT PROPERTY</strong><span id="propertySplitTargetE2">—</span></div>
-          <p class="hint">Drag the divider from the street frontage to the rear, or enter its position.</p>
+          <p class="hint">Drag the divider or its endpoints; adjust positions precisely below.</p>
           <label class="property-split-percent-e2">Divider along frontage (%)
             <input id="propertySplitPercentE2" type="number" min="0.1" max="99.9" step="0.5" value="50" aria-label="Property split percentage"/>
           </label>
+          <label class="property-split-mode-025"><input id="propertySplitFlexible025" type="checkbox"/> Flexible straight divider</label>
+          <div id="propertySplitExit025" class="property-split-exit-025" hidden>
+            <label>Exit boundary edge
+              <select id="propertySplitExitEdge025" aria-label="Split exit boundary edge"></select>
+            </label>
+            <label>Exit position (%)
+              <input id="propertySplitExitPercent025" type="number" min="0.1" max="99.9" step="0.5" value="50" aria-label="Split exit position percentage"/>
+            </label>
+          </div>
           <p id="propertySplitSummaryE2" data-place-review class="building-history-status" aria-live="polite"></p>
           <div id="propertySplitTransfersE2" data-place-review role="group" aria-label="Building ownership transfers"></div>
           <ul id="propertySplitIssuesE2" data-place-review class="property-split-issues-e2" aria-label="Split blockers"></ul>

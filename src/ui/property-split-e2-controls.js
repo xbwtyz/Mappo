@@ -35,7 +35,11 @@ export class PropertySplitControlsE2 {
     const $=this.getElement,session=this.session,active=session.active;
     $('propertySplitPanelE2').hidden=!active;
     $('propertySplitPercentE2').disabled=!active;
-    $('propertySplitResetE2').disabled=!active||Math.abs(session.t-.5)<1e-9;
+    $('propertySplitFlexible025').disabled=!active||session.vertexCount!==4;
+    $('propertySplitFlexible025').checked=active&&session.flexible;
+    $('propertySplitExit025').hidden=!active||!session.flexible;
+    $('propertySplitResetE2').disabled=!active||(Math.abs(session.t-.5)<1e-9&&
+      (!session.flexible||(Math.abs(session.exitT-.5)<1e-9&&session.exitEdge===Math.max(1,Math.floor(session.vertexCount/2)))));
     const busy=active;
     for(const [dir,id] of [['undo','propertySplitUndoE2'],['redo','propertySplitRedoE2']]){
       const available=!busy&&this.history.can(dir,this.getProject());
@@ -46,12 +50,23 @@ export class PropertySplitControlsE2 {
     const result=this.candidate(),info=result.preview;
     $('propertySplitTargetE2').textContent=session.propertyId;
     if(document.activeElement!==$('propertySplitPercentE2'))$('propertySplitPercentE2').value=String(Number((session.t*100).toFixed(2)));
+    const exitSelect=$('propertySplitExitEdge025');
+    const currentExit=exitSelect.value;
+    exitSelect.replaceChildren();
+    for(let i=1;i<session.vertexCount;i++){
+      const option=document.createElement('option');
+      option.value=String(i);option.textContent='Edge '+(i+1)+' (vertex '+(i+1)+' → '+((i+1)%session.vertexCount+1)+')';
+      exitSelect.append(option);
+    }
+    exitSelect.value=String(session.exitEdge);
+    if(document.activeElement!==$('propertySplitExitPercent025'))
+      $('propertySplitExitPercent025').value=String(Number((session.exitT*100).toFixed(2)));
     $('propertySplitSummaryE2').textContent=info
       ?'Left: '+info.areaLeft.toFixed(1)+' sq units / '+info.frontageLengthLeft.toFixed(1)+' frontage. Right: '+
         info.areaRight.toFixed(1)+' sq units / '+info.frontageLengthRight.toFixed(1)+' frontage. '+
         info.plotFragmentCount+' resulting plot fragments; '+info.buildingsLeft+' buildings left, '+
         info.buildingsRight+' right. Original ID stays on the frontage-start side.'
-      :'Adjust the dividing line inside a valid four-corner property.';
+      :'Adjust the divider until both successor properties are valid.';
     const status=$('propertySplitStatusE2');
     status.textContent=this.boundProject!==this.getProject()
       ?'BLOCKED · Accepted city changed. Cancel and start a new split.'
@@ -82,7 +97,9 @@ export class PropertySplitControlsE2 {
   apply(){
     if(!this.active||this.session.drag)return false;
     const previous=this.getProject(),revision=this.getRevision(),
-      signature=JSON.stringify({id:this.session.propertyId,t:this.session.t,approved:[...this.session.approved].sort()});
+      signature=JSON.stringify({id:this.session.propertyId,t:this.session.t,
+        flexible:this.session.flexible,exitEdge:this.session.exitEdge,exitT:this.session.exitT,
+        approved:[...this.session.approved].sort()});
     if(previous!==this.boundProject)return false;
     const result=preparePropertySplitE2(previous,this.getWorkspace(),this.session);
     if(!result.ok){
@@ -91,7 +108,9 @@ export class PropertySplitControlsE2 {
       return false;
     }
     if(previous!==this.getProject()||revision!==this.getRevision()||
-      signature!==JSON.stringify({id:this.session.propertyId,t:this.session.t,approved:[...this.session.approved].sort()}))
+      signature!==JSON.stringify({id:this.session.propertyId,t:this.session.t,
+        flexible:this.session.flexible,exitEdge:this.session.exitEdge,exitT:this.session.exitT,
+        approved:[...this.session.approved].sort()}))
       return false;
     if(!this.history.record(previous,result.candidate,result.sourcePropertyId))return false;
     this.onCommit(result.candidate,result.sourcePropertyId,'apply',result);
@@ -111,22 +130,37 @@ export class PropertySplitControlsE2 {
   begin(point,zoom){
     const geometry=this.session.geometry(this.getProject()?.city);
     if(!geometry||!point)return false;
-    const distance=distanceToSegment(point,...geometry.cut);
-    if(distance>10/Math.max(.18,zoom))return false;
-    this.session.drag={startT:this.session.t};return true;
+    const tolerance=12/Math.max(.18,zoom);
+    if(this.session.flexible){
+      const from=geometry.cut[0],to=geometry.cut[1];
+      const first=Math.hypot(point.x-from.x,point.y-from.y),last=Math.hypot(point.x-to.x,point.y-to.y);
+      if(Math.min(first,last)<=tolerance){
+        this.session.drag={part:first<=last?'front':'exit',startT:this.session.t,
+          startExitT:this.session.exitT};return true;
+      }
+    }
+    if(distanceToSegment(point,...geometry.cut)>10/Math.max(.18,zoom))return false;
+    this.session.drag={part:'front',startT:this.session.t,startExitT:this.session.exitT};return true;
   }
   move(point){
     if(!this.session.drag||!point)return false;
     const geometry=this.session.geometry(this.getProject()?.city);
     if(!geometry)return false;
-    const a=geometry.boundary[0],b=geometry.boundary[1],dx=b.x-a.x,dy=b.y-a.y;
+    const edge=this.session.drag.part==='exit'?this.session.exitEdge:0;
+    const a=geometry.boundary[edge],b=geometry.boundary[(edge+1)%geometry.boundary.length];
+    const dx=b.x-a.x,dy=b.y-a.y;
     const t=((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1);
-    return this.session.setT(Math.max(.001,Math.min(.999,t)));
+    return this.session.drag.part==='exit'
+      ?this.session.setExitT(Math.max(.001,Math.min(.999,t)))
+      :this.session.setT(Math.max(.001,Math.min(.999,t)));
   }
   end(cancelled){
     const drag=this.session.drag;if(!drag)return false;
     this.session.drag=null;
-    if(cancelled)this.session.setT(drag.startT);
+    if(cancelled){
+      this.session.setT(drag.startT);
+      if(this.session.flexible)this.session.setExitT(drag.startExitT);
+    }
     this.refresh();return true;
   }
   bind(){
@@ -134,6 +168,17 @@ export class PropertySplitControlsE2 {
     $('propertySplitPercentE2').addEventListener('change',()=>{
       const raw=$('propertySplitPercentE2').value,t=Number(raw)/100;
       if(raw!==''&&Number.isFinite(t)&&t>0&&t<1)this.session.setT(t);
+      else this.refresh();
+    });
+    $('propertySplitFlexible025').addEventListener('change',()=>{
+      this.session.setFlexible($('propertySplitFlexible025').checked);this.refresh();
+    });
+    $('propertySplitExitEdge025').addEventListener('change',()=>{
+      this.session.setExitEdge(Number($('propertySplitExitEdge025').value));this.refresh();
+    });
+    $('propertySplitExitPercent025').addEventListener('change',()=>{
+      const input=$('propertySplitExitPercent025'),value=Number(input.value)/100;
+      if(input.value!==''&&Number.isFinite(value)&&value>0&&value<1)this.session.setExitT(value);
       else this.refresh();
     });
     $('propertySplitResetE2').addEventListener('click',()=>this.reset());

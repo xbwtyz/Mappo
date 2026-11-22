@@ -228,7 +228,9 @@ function currentUndoContext() {
     label:'Reset merge preview',available:Boolean(propertyMergeE3.session.secondaryId),
     description:'Clear the uncommitted neighboring property selection.'};
   if(propertySplitE2?.active)return {kind:'property-split-preview',controlId:'propertySplitResetE2',
-    label:'Reset split line',available:Math.abs(propertySplitE2.session.t-.5)>1e-9,
+    label:'Reset split line',available:Math.abs(propertySplitE2.session.t-.5)>1e-9||
+      (propertySplitE2.session.flexible&&(Math.abs(propertySplitE2.session.exitT-.5)>1e-9||
+      propertySplitE2.session.exitEdge!==Math.max(1,Math.floor(propertySplitE2.session.vertexCount/2)))),
     description:'Reset the uncommitted split line without changing accepted land.'};
   if(propertyCreationSessionE1?.active)return {kind:'property-create-preview',controlId:'propertyCreateResetE1',
     label:'Reset property preview',available:Boolean(propertyCreationSessionE1.draft),
