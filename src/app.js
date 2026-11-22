@@ -1938,6 +1938,7 @@ function applyRoadEditB4(session,baselineRevision){
     operation: 'apply', projectJson, junctionId, workspace,
     point: { ...session.point }, targetJunctionId: session.targetJunctionId,
     decisions: [...session.buildingDecisions], ownershipChoices:[...session.ownershipChoices],
+    parcelChoices:[...session.parcelChoices],
     inspected: { candidateJson, ledger },
   }).then(receipt => {
     if (project !== previous || JSON.stringify(project) !== projectJson)

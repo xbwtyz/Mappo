@@ -70,6 +70,7 @@ export class RoadPreviewSession {
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.buildingDecisions = new Map();
     this.ownershipChoices = new Map();
+    this.parcelChoices = new Map();
     this.ownershipFocusKey023 = null;
     this.roadConnectionEdit = null;
     this.bendEditor = null;
@@ -120,6 +121,7 @@ export class RoadPreviewSession {
     this.invalidate();
     this.buildingDecisions = new Map();
     this.ownershipChoices = new Map();
+    this.parcelChoices = new Map();
     this.ownershipFocusKey023 = null;
     this.roadConnectionEdit = null;
     this.bendEditor = null;
@@ -197,6 +199,7 @@ export class RoadPreviewSession {
     this.invalidate();
     this.buildingDecisions.clear();
     this.ownershipChoices.clear();
+    this.parcelChoices.clear();
     this.ownershipFocusKey023 = null;
     const state = this.bendEditor;
     state.points = points;
@@ -233,6 +236,28 @@ export class RoadPreviewSession {
     this.ownershipChoices.set(candidateKey,{...(this.ownershipChoices.get(candidateKey)??{}),[field]:value});
     this.checking=true;
     this.changed();
+    if(this.selection.kind==='junction')this.evaluateJunctionDraft(true);
+    else this.evaluateRoadDraft(true);
+    return true;
+  }
+  decideParcel(id,choice) {
+    if(!this.current()||!this.pending||this.drag||this.checking ||
+       this.settledRevision!==this.revision)return false;
+    const row=this.reconciliation?.parcelReview?.find(p=>p.id===id);
+    const allowed=row?.options?.some(o=>o.kind===choice?.kind && (o.targetId??null)===(choice.targetId??null));
+    if(!allowed && !(this.parcelChoices.has(id) &&
+       this.reconciliation?.unresolved.some(p=>p.kind==='property'&&p.id===id)))return false;
+    this.invalidate();
+    this.parcelChoices.set(id,{kind:choice.kind,targetId:choice.targetId??null});
+    this.checking=true;this.changed();
+    if(this.selection.kind==='junction')this.evaluateJunctionDraft(true);
+    else this.evaluateRoadDraft(true);
+    return true;
+  }
+  clearParcelDecision(id) {
+    if(!this.current()||!this.pending||this.drag||this.checking||!this.parcelChoices.has(id))return false;
+    this.invalidate();this.parcelChoices.delete(id);
+    this.checking=true;this.changed();
     if(this.selection.kind==='junction')this.evaluateJunctionDraft(true);
     else this.evaluateRoadDraft(true);
     return true;
@@ -279,12 +304,12 @@ export class RoadPreviewSession {
       try {
         if (this.roadConnectionEdit) {
           this.reconciliation = prepareRoadTopologyReflowC3(this.project, this.selection.id, null,
-            this.roadConnectionEdit,this.buildingDecisions,{ownershipChoices:this.ownershipChoices});
+            this.roadConnectionEdit,this.buildingDecisions,{ownershipChoices:this.ownershipChoices,parcelChoices:this.parcelChoices});
         } else {
           this.roadIntentAnalysis = prepareRoadIntentC1(this.project, this.selection.id, this.roadIntentOffset);
           this.reconciliation = prepareNeighborhoodReflowC3(
             this.project, this.selection.id, this.roadIntentOffset, this.roadIntentAnalysis,
-            this.buildingDecisions,{ownershipChoices:this.ownershipChoices});
+            this.buildingDecisions,{ownershipChoices:this.ownershipChoices,parcelChoices:this.parcelChoices});
         }
         this.settledRevision = revision;
         this.acceptedFingerprint = JSON.stringify(this.project);
@@ -311,6 +336,7 @@ export class RoadPreviewSession {
     this.mergeSourceId = this.mergeTargetId = this.mergeHoverId = null;
     this.buildingDecisions = new Map();
     this.ownershipChoices = new Map();
+    this.parcelChoices = new Map();
     this.ownershipFocusKey023 = null;
     this.roadConnectionEdit = null;
     this.bendEditor = null;
@@ -332,6 +358,7 @@ export class RoadPreviewSession {
     this.invalidate();
     this.buildingDecisions.clear();
     this.ownershipChoices.clear();
+    this.parcelChoices.clear();
     this.ownershipFocusKey023 = null;
     this.point = { x: point.x, y: point.y };
     this.targetJunctionId = targetId;
@@ -365,6 +392,7 @@ export class RoadPreviewSession {
           targetJunctionId: this.targetJunctionId,
           decisions: [...this.buildingDecisions].map(([id, choice]) => [id, { ...choice }]),
           ownershipChoices: [...this.ownershipChoices].map(([key, choice])=>[key,{...choice}]),
+          parcelChoices: [...this.parcelChoices].map(([key,choice])=>[key,{...choice}]),
         };
         const current = () => this.current() && revision === this.revision;
         const settle = () => {
@@ -409,7 +437,7 @@ export class RoadPreviewSession {
         if(this.reconcile){
           try {
             this.reconciliation = this.reconcile(this.project, this.selection.id, this.point,this.buildingDecisions,
-              {targetJunctionId: this.targetJunctionId,ownershipChoices:this.ownershipChoices});
+              {targetJunctionId: this.targetJunctionId,ownershipChoices:this.ownershipChoices,parcelChoices:this.parcelChoices});
             this.settledRevision = revision;
             this.acceptedFingerprint = JSON.stringify(this.project);
             if(!this.reconciliation.candidateProject && this.reconcileRoad && this.proposal.graphValid)

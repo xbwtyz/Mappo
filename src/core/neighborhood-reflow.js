@@ -87,19 +87,31 @@ function reconcileRoadIntent(project,roadId,draft,decisions,options = {}) {
   // analysis within this call, including when Apply runs a fresh rebuild.
   let analysis;
   const analyze = () => analysis ??= analyzeNeighborhoodDraft(project, draft);
-  const preserved = prepareNeighborhoodReflow(project, roadId, draft, false, analyze);
-  if (preserved.candidateProject || !preserved.unresolved.some(row => rebuildableLandIssues.has(row.code)))
+  const preserved = prepareNeighborhoodReflow(project, roadId, draft, false, analyze, options);
+  if (preserved.candidateProject || !preserved.unresolved.some(row =>
+      rebuildableLandIssues.has(row.code) || row.code==='parcel-decision-required' || row.code==='parcel-decision-invalid'))
     return preserved;
-  const adapted = prepareNeighborhoodReflow(project, roadId, draft, true, analyze);
+  const adapted = prepareNeighborhoodReflow(project, roadId, draft, true, analyze, options);
   if (adapted.candidateProject || !draft.facesResolved) return adapted;
   // If a fixed parcel layout cannot be repaired, try filling the same affected
   // blocks again. Topology reflow independently verifies provenance, protects
   // authored work, retains compatible geometry, and validates the whole result.
-  if (!adapted.unresolved.length || adapted.unresolved.some(row => !rebuildableLandIssues.has(row.code)))
+  if (!adapted.unresolved.length || (adapted.unresolved.some(row => !rebuildableLandIssues.has(row.code)) &&
+      !adapted.unresolved.some(row=>row.code==='parcel-decision-required' || row.code==='parcel-decision-invalid')))
     return adapted;
+  // Prefer preserving an authored property in its existing block through the
+  // local C2 shape solver before offering more disruptive topology replacement.
+  if(adapted.unresolved.some(row=>row.code==='parcel-decision-required') &&
+     adapted.parcelReview?.some(row=>row.options?.length))return adapted;
   const rebuilt = prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions,options);
+  if(!rebuilt.candidateProject && rebuilt.unresolved.some(row=>row.code==='parcel-decision-required') &&
+     !rebuilt.parcelReview?.some(row=>row.options.length)) {
+    if(adapted.parcelReview?.some(row=>row.options.length))return adapted;
+    if(preserved.parcelReview?.some(row=>row.options.length))return preserved;
+  }
   return rebuilt.candidateProject || rebuilt.unresolved.some(row =>
-    ['parcel-decision-required', 'building-decision-required'].includes(row.code)) ? rebuilt : adapted;
+    ['parcel-decision-required','parcel-decision-invalid','building-decision-required'].includes(row.code))
+    ? rebuilt : adapted;
 }
 
 function analyzeNeighborhoodDraft(project, draft) {
@@ -114,12 +126,14 @@ function analyzeNeighborhoodDraft(project, draft) {
 }
 
 function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
-  analyze = () => analyzeNeighborhoodDraft(project, draft)) {
-  const changed = [], ledger = [];
+  analyze = () => analyzeNeighborhoodDraft(project, draft), options = {}) {
+  const changed = [], ledger = [], parcelReview=[];
+  const parcelChoices = options.parcelChoices instanceof Map ? options.parcelChoices
+    : new Map(options.parcelChoices ?? []);
   const phase = adaptBuildings ? 'C3' : 'C2';
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
   const blocked = unresolved => ({
-    phase, status: 'needs-review', candidateProject: null, changed: [], ledger, unresolved, validation,
+    phase, status: 'needs-review', candidateProject: null, changed: [], ledger, unresolved, validation,parcelReview,
   });
   const kind = draft.junctionId ? 'junction' : 'road';
   const fail = (code, message) => blocked([c2Issue(kind, roadId, code, message)]);
@@ -180,10 +194,30 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
     const plots = riIndex(city.plots), buildings = riIndex(city.buildings);
     const reservedIds = new Set(buildings.keys());
     const affected = city.properties.filter(p => changedBlocks.has(p.blockId));
+    const affectedIds=new Set(affected.map(p=>p.id));
+    for(const id of parcelChoices.keys())
+      if(!affectedIds.has(id))
+        unresolved.push(c2Issue('property',id,'parcel-decision-invalid',
+          'The selected property is not affected by this road draft. Clear the stale choice.'));
+    if(unresolved.length)return blocked(unresolved);
 
     function record(kind, id, disposition, fields, provenance = 'derived') {
       ledger.push({ kind, oldId: id, newId: id, disposition, provenance });
       if (fields.length) changed.push({ kind, id, fields });
+    }
+    function archiveParcelChoice028(propertyId,kind) {
+      const history=city.roadParcelDecisionHistory028??[];
+      if(!Array.isArray(history)||history.length>=24)
+        throw Error('The authored parcel decision archive cannot preserve another original record.');
+      const original=accepted.properties.find(p=>p.id===propertyId);
+      if(!original)throw Error('The original authored property no longer exists.');
+      const source={property:structuredClone(original),
+        plots:original.plotIds.map(id=>structuredClone(accepted.plots.find(p=>p.id===id))),
+        buildings:original.buildingIds.map(id=>structuredClone(accepted.buildings.find(b=>b.id===id)))};
+      if([...source.plots,...source.buildings].some(x=>!x))
+        throw Error('The original parcel dependency snapshot is incomplete.');
+      history.push({kind,sourceId:propertyId,targetId:null,source});
+      city.roadParcelDecisionHistory028=history;
     }
 
     city.blocks = city.blocks.map(block => changedBlocks.get(block.id) ?? block);
@@ -207,10 +241,37 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
         for (const plot of ownPlots) record('plot', plot.id, 'preserved', [], provenance);
         continue;
       }
-      if (provenance !== 'generated') {
+      const choice = parcelChoices.get(property.id);
+      if (provenance !== 'generated' && !choice) {
+        const road=graph.roadsById.get(property.frontageRoadId);
+        const edges=blockEdges.get(property.blockId);
+        const ownBuildings=property.buildingIds.map(id=>buildings.get(id));
+        const options=[];
+        if(road && edges?.length && edges.some(row=>row.road?.id===road.id)){
+          if(propertyFits(property.boundary,edges.map(row=>row.a),edges))
+            options.push({kind:'keep',targetId:null,label:'Keep existing property footprint'});
+          try{
+            // This is an eligibility preflight, never an Apply authorization.
+            c2Parcel(city,property,road,edges,ownBuildings.flatMap(b=>b.footprint));
+            options.push({kind:'reshape',targetId:null,label:'Reshape property around fixed buildings'});
+          }catch{}
+        }
+        parcelReview.push({id:property.id,provenance,options,selected:null});
         unresolved.push(c2Issue('property', property.id, 'parcel-decision-required',
-          'This parcel has custom or unknown provenance. Its geometry is held fixed pending a decision.'));
+          'This parcel has custom or unknown provenance. Choose a compatible preservation option.'));
         continue;
+      }
+      if (choice && (provenance === 'generated' || !['keep','reshape'].includes(choice.kind) ||
+           (choice.targetId != null || Object.keys(choice).some(key=>!['kind','targetId'].includes(key))))) {
+        unresolved.push(c2Issue('property', property.id, 'parcel-decision-invalid',
+          'This parcel decision is invalid for the current road edit.'));
+        continue;
+      }
+      if (choice?.kind === 'keep') {
+        archiveParcelChoice028(property.id,'keep');
+        record('property',property.id,'authorized-keep',[],provenance);
+        for (const plot of ownPlots) record('plot',plot.id,'preserved',[],provenance);
+        continue; // Full-project validation determines whether this is safe.
       }
       const road = graph.roadsById.get(property.frontageRoadId);
       try {
@@ -254,8 +315,9 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           plot.boundary = update.boundary;
           record('plot', plot.id, modified ? 'reshaped' : 'preserved', modified ? ['boundary'] : [], provenance);
         }
-        stampRoadGenerated(property, ownPlots);
-        record('property', property.id, 'reshaped', ['boundary', 'frontage', 'frame', 'local', 'area'], provenance);
+        if (provenance === 'generated') stampRoadGenerated(property, ownPlots);
+        else if(choice)archiveParcelChoice028(property.id,'reshape');
+        record('property', property.id, choice ? 'authorized-reshape' : 'reshaped', ['boundary', 'frontage', 'frame', 'local', 'area'], provenance);
       } catch (error) {
         unresolved.push(c2Issue('property', property.id, 'parcel-reflow-blocked', error.message));
       }
@@ -348,7 +410,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
     validateStoredProject(candidateProject);
     validation.parcels = 'pass';
     validation.project = 'valid';
-    return { phase, status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation };
+    return { phase, status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation,parcelReview };
   } catch (error) {
     return fail('candidate-validation', 'The reflow cannot be accepted: ' + error.message);
   }
