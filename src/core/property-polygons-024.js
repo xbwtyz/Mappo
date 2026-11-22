@@ -4,20 +4,20 @@ import { shapeWellFormed } from './building-validation.js';
 // Canonical bounded geometry used by authoring and generation. Polygon
 // storage retains CCW winding, one frontage edge and schema-9 coordinates.
 export const PROPERTY_VERTEX_LIMIT_024 = 12;
-const EPS = 1e-7;
-const cross = (a,b,c) => (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
-const clone = poly => poly.map(p => ({x:p.x,y:p.y}));
+const P24_EPS = 1e-7;
+const p24Cross = (a,b,c) => (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
+const p24Clone = poly => poly.map(p => ({x:p.x,y:p.y}));
 export function convexPropertyPolygon024(poly) {
   if (!shapeWellFormed(poly)) return false;
-  return poly.every((p,i) => cross(p,poly[(i+1)%poly.length],poly[(i+2)%poly.length]) >= -EPS);
+  return poly.every((p,i) => p24Cross(p,poly[(i+1)%poly.length],poly[(i+2)%poly.length]) >= -P24_EPS);
 }
-const inTriangle = (p,a,b,c) => cross(a,b,p)>=-EPS && cross(b,c,p)>=-EPS && cross(c,a,p)>=-EPS;
+const p24InTriangle = (p,a,b,c) => p24Cross(a,b,p)>=-P24_EPS && p24Cross(b,c,p)>=-P24_EPS && p24Cross(c,a,p)>=-P24_EPS;
 
 export function partitionPropertyPolygon024(boundary) {
   if (!shapeWellFormed(boundary) || boundary.length>PROPERTY_VERTEX_LIMIT_024)
     throw Error('Property needs a valid, hole-free polygon of 3–12 corners.');
   // Convex polygons need no internal subdivision and retain a single cell.
-  if (convexPropertyPolygon024(boundary)) return [clone(boundary)];
+  if (convexPropertyPolygon024(boundary)) return [p24Clone(boundary)];
   // Deterministic ear clipping, with collinear boundary points omitted only
   // from the partition (not from the saved property polygon).
   const indices=boundary.map((_,i)=>i);
@@ -28,7 +28,7 @@ export function partitionPropertyPolygon024(boundary) {
       const a=boundary[indices[(i+indices.length-1)%indices.length]];
       const b=boundary[indices[i]];
       const c=boundary[indices[(i+1)%indices.length]];
-      if(Math.abs(cross(a,b,c))>EPS)continue;
+      if(Math.abs(p24Cross(a,b,c))>P24_EPS)continue;
       indices.splice(i,1);trimmed=true;break;
     }
   }
@@ -38,8 +38,8 @@ export function partitionPropertyPolygon024(boundary) {
     for(let i=0;i<indices.length;i++){
       const pa=indices[(i+indices.length-1)%indices.length],pb=indices[i],pc=indices[(i+1)%indices.length];
       const a=boundary[pa],b=boundary[pb],c=boundary[pc];
-      if(cross(a,b,c)<=EPS)continue;
-      if(indices.some(id=>id!==pa&&id!==pb&&id!==pc&&inTriangle(boundary[id],a,b,c)))continue;
+      if(p24Cross(a,b,c)<=P24_EPS)continue;
+      if(indices.some(id=>id!==pa&&id!==pb&&id!==pc&&p24InTriangle(boundary[id],a,b,c)))continue;
       selected=i;
       cells.push([a,b,c].map(p=>({x:p.x,y:p.y})));
       break;
@@ -64,8 +64,8 @@ export function propertyPolygonPreview024(city,propertyId,boundary) {
   if(JSON.stringify(boundary)===JSON.stringify(property.boundary)){
     const original=property.plotIds.map(id=>city.plots.find(plot=>plot.id===id&&plot.propertyId===propertyId));
     if(original.some(plot=>!plot))throw Error('Original plot records are incomplete.');
-    return {propertyId,boundary:clone(boundary),
-      plots:original.map(plot=>({id:plot.id,boundary:clone(plot.boundary)})),
+    return {propertyId,boundary:p24Clone(boundary),
+      plots:original.map(plot=>({id:plot.id,boundary:p24Clone(plot.boundary)})),
       plotIds:[...property.plotIds],retiredPlotIds:[],area:polygonSignedArea(boundary),
       total:original.reduce((s,plot)=>s+polygonSignedArea(plot.boundary),0)};
   }
@@ -82,7 +82,7 @@ export function propertyPolygonPreview024(city,propertyId,boundary) {
     return {id,boundary:cell};
   });
   return {
-    propertyId,boundary:clone(boundary),plots,
+    propertyId,boundary:p24Clone(boundary),plots,
     plotIds:plots.map(p=>p.id),
     retiredPlotIds:property.plotIds.filter(id=>!plots.some(p=>p.id===id)),
     area:polygonSignedArea(boundary),
