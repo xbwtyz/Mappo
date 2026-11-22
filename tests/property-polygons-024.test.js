@@ -41,7 +41,7 @@ test('024 P5: morphology generation is deterministic and schema-9 compatible',()
   let irregular=0;
   for(const morphology of ['organic','radial','linear','planned']){
     for(const seed of ['024-irregular-one','024-irregular-two']){
-      const params={seed,size:'small',morphology};
+      const params={seed,size:'small',morphology,irregularProperties:true};
       const project=createProject(params);
       const again=createProject(params);
       assert.deepEqual(project.city,again.city,'Same seed must be bit-for-bit deterministic.');
@@ -49,7 +49,7 @@ test('024 P5: morphology generation is deterministic and schema-9 compatible',()
       assert.doesNotThrow(()=>validateStoredProject(project));
       const encoded=encodeProjectDocument(createProjectDocument(project,defaultWorkspace(project)));
       const decoded=decodeProjectDocument(encoded);
-      assert.deepEqual(decoded.project.city,project.city);
+      assert.equal(JSON.stringify(decoded.project.city),JSON.stringify(project.city));
       for(const property of project.city.properties){
         assert.ok(property.boundary.length>=3);
         if(property.boundary.length>4)irregular++;

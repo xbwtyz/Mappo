@@ -1020,7 +1020,7 @@ function prepareDesktopGeneration(tool) {
   water.restore(waterPanel.editor.definition());
   if (water.features.some(feature => feature.kind === 'river')) water.width($('riverWidthInput').value);
   water.tidyWater(outline.boundary);
-  return createProject(cityGenerationOptions(outline, water.definition()));
+  return createProject({...cityGenerationOptions(outline, water.definition()),irregularProperties:true});
 }
 
 function desktopGenerationKey(tool) {
@@ -1037,7 +1037,7 @@ function generate({ discardIdentities = false } = {}) {
     editor.validate();
     if (waterPanel?.editor.features.some(f => f.kind === 'river')) waterPanel.editor.width($('riverWidthInput').value);
     const tidiedWater = waterPanel?.editor.tidyWater(editor.boundary) ?? [];
-    const next = createProject(cityGenerationOptions());
+    const next = createProject({...cityGenerationOptions(),irregularProperties:true});
     buildingEditSession?.stop();
     buildingPlacementSession?.stop();
     propertyEditSession?.stop();

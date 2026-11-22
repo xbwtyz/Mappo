@@ -30,13 +30,13 @@ export class PropertyEditSession3I {
     const property=city?.properties?.find(item=>item.id===propertyId);
     if(!property || !Array.isArray(property.boundary) ||
        property.boundary.length<3 || property.boundary.length>PROPERTY_VERTEX_LIMIT_024)return false;
-    let dividers=[];
+    let dividers=[],polygonEdited=property.boundary.length!==4;
     if(property.boundary.length===4){
       try{dividers=propertyDividerFractions3I(city,property);}
-      catch{return false;}
+      catch{polygonEdited=true;}
     }
     const boundary=copyJson(property.boundary);
-    this.active={propertyId,boundary,dividers,plotIds:[...property.plotIds],countChange:null,approved:false,polygonEdited:false,
+    this.active={propertyId,boundary,dividers,plotIds:[...property.plotIds],countChange:null,approved:false,polygonEdited,
       originalBoundary:copyJson(boundary),originalDividers:[...dividers],originalPlotIds:[...property.plotIds]};
     this.selectedCorner=null;this.selectedDivider=0;this.drag=null;this.validation=null;
     this.changed();return true;

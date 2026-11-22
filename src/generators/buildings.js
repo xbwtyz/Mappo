@@ -96,7 +96,7 @@ export function generateBuildings(seed, layout, morphology = null) {
       // Only generated, single-plot sites can be retiled here. Other property
       // types retain their established geometry and building placement.
       if (!morphology || propertyPlots.length !== 1) return false;
-      const likelihood = {organic:.5, radial:.38, linear:.12, planned:.035}[morphology] ?? 0;
+      const likelihood = {organic:.5, radial:.38, linear:.12, planned:0}[morphology] ?? 0;
       if (!likelihood || property.local.width<9 || property.local.depth<10) return false;
       const choice = createRng(seed+':parcel-shapes:v024:'+block.id+':'+property.id);
       if (choice() >= likelihood) return false;
@@ -153,7 +153,9 @@ export function generateBuildings(seed, layout, morphology = null) {
       let envelope, depth = preferredDepth;
       for (; depth >= 9; depth -= 3) {
         envelope = rectangleInFrame(front.frame, start, front.distance, width, depth);
-        if (propertyFits(envelope, polygon, edges) && !accepted.some(p => shapesOverlapInterior(envelope, p.boundary))) break;
+        if (propertyFits(envelope, polygon, edges) && !accepted.some(p =>
+          p.boundary.length===4 ? rectanglesOverlap(envelope, p.boundary, .9)
+            : shapesOverlapInterior(envelope, p.boundary))) break;
       }
       if (depth < 9) return false;
       const propertyId = `PROP-${String(properties.length+1).padStart(5,'0')}`;
