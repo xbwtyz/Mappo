@@ -1,5 +1,6 @@
 // C01: drawing-only overlay of a detached all-member transform candidate.
-export function drawCompoundPreviewC01(ctx,camera,preview) {
+export function drawCompoundPreviewC01(ctx,camera,result) {
+  const preview=result?.preview;
   if(!preview?.project?.city||!preview.buildingIds?.length)return;
   ctx.save();
   ctx.lineWidth=2;
@@ -13,8 +14,8 @@ export function drawCompoundPreviewC01(ctx,camera,preview) {
       if(i===0)ctx.moveTo(q.x,q.y);else ctx.lineTo(q.x,q.y);
     }
     ctx.closePath();
-    ctx.fillStyle='rgba(36,153,115,0.17)';
-    ctx.strokeStyle='#21a57f';
+    ctx.fillStyle=result.ok?'rgba(36,153,115,0.17)':'rgba(210,116,40,0.15)';
+    ctx.strokeStyle=result.ok?'#21a57f':'#d27428';
     ctx.fill();
     ctx.stroke();
     for(const hole of b.holes??[]){

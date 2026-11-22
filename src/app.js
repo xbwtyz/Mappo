@@ -178,7 +178,7 @@ let buildingPlacementSession;
 // C01 panel state is transient and never serialized into accepted city geometry.
 let compoundPanelPropertyId=null,compoundGroupId='',compoundMemberIds=[],compoundName='';
 let compoundTransform={dx:0,dy:0,angle:0,scaleX:1,scaleY:1};
-let compoundResult=null;
+let compoundResult=null,compoundDrag=null;
 let propertyEditSession;
 let propertyCreationSessionE1;
 let propertySplitE2;
@@ -367,7 +367,7 @@ function requestDraw() {
       drawPropertyCreationE1(canvas.getContext('2d'),camera,project.city,propertyCreationSessionE1);
       drawPropertySplitE2(canvas.getContext('2d'),camera,project.city,propertySplitE2?.session);
       drawPropertyMergeE3(canvas.getContext('2d'),camera,project.city,propertyMergeE3?.session);
-      drawCompoundPreviewC01(canvas.getContext('2d'),camera,compoundResult?.preview);
+      drawCompoundPreviewC01(canvas.getContext('2d'),camera,compoundResult);
     }
   });
 }
@@ -563,12 +563,15 @@ function c01SelectedGroup() {
   return c01ActiveProperty()?.buildingCompounds?.find(g=>g.id===compoundGroupId)??null;
 }
 function c01SelectGroup(id) {
+  compoundDrag=null;
   const property=c01ActiveProperty();
   compoundGroupId=id;
   const group=property?.buildingCompounds?.find(g=>g.id===id);
   compoundMemberIds=group?.memberBuildingIds.slice()??[];
   compoundName=group?.name??'';
   compoundTransform={dx:0,dy:0,angle:0,scaleX:1,scaleY:1};
+  for(const [input,value] of [['compoundDx',0],['compoundDy',0],['compoundAngle',0],
+      ['compoundScaleX',100],['compoundScaleY',100]])$(input).value=String(value);
   compoundResult=null;
   c01SyncPanel(true);
   requestDraw();
@@ -2273,7 +2276,7 @@ $('compoundReset').addEventListener('click',()=>{
   c01SyncPanel();requestDraw();
 });
 $('compoundCancel').addEventListener('click',()=>{
-  compoundPanelPropertyId=null;compoundResult=null;c01SyncPanel();requestDraw();
+  compoundPanelPropertyId=null;compoundResult=null;compoundDrag=null;c01SyncPanel();requestDraw();
 });
 // Dev 4a: deleting a parcel removes its dependent records, never neighboring land.
 function deleteProperty4A(propertyId) {
@@ -2594,6 +2597,14 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
   canvas.classList.toggle('feature-hover', Boolean(hit || propertyHit));
 }, {
   begin: (point,zoom,event) => {
+    const group=c01SelectedGroup();
+    if(group&&!buildingEditSession?.isActive&&!buildingPlacementSession?.isActive&&
+        !propertyEditSession?.isActive&&!propertyMergeE3?.active&&!propertySplitE2?.active&&
+        project?.city.buildings.some(b=>group.memberBuildingIds.includes(b.id)&&
+          pointInPolygon(point,b.footprint))) {
+      compoundDrag={start:{...point},transform:{...compoundTransform}};
+      return true;
+    }
     if(propertyMergeE3?.active)return false;
     if(propertySplitE2?.active)return propertySplitE2.begin(point,zoom);
     if(propertyCreationSessionE1?.active){
@@ -2639,6 +2650,13 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     return Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom,event?.pointerType));
   },
   move: (point,event) => {
+    if(compoundDrag){
+      compoundTransform.dx=compoundDrag.transform.dx+point.x-compoundDrag.start.x;
+      compoundTransform.dy=compoundDrag.transform.dy+point.y-compoundDrag.start.y;
+      $('compoundDx').value=String(Number(compoundTransform.dx.toFixed(4)));
+      $('compoundDy').value=String(Number(compoundTransform.dy.toFixed(4)));
+      c01SyncPanel();requestDraw();return;
+    }
     if(propertyMergeE3?.active)return;
     if(propertySplitE2?.session.drag){propertySplitE2.move(point);return;}
     if(propertyCreationSessionE1?.drag){
@@ -2670,6 +2688,13 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     }else buildingEditSession?.moveGesture(point);
   },
   end: (cancelled,event) => {
+    if(compoundDrag){
+      if(cancelled)compoundTransform={...compoundDrag.transform};
+      compoundDrag=null;
+      $('compoundDx').value=String(Number(compoundTransform.dx.toFixed(4)));
+      $('compoundDy').value=String(Number(compoundTransform.dy.toFixed(4)));
+      c01SyncPanel();requestDraw();return;
+    }
     if(propertySplitE2?.session.drag){propertySplitE2.end(cancelled);return;}
     if(propertyCreationSessionE1?.drag){
       const state=propertyCreationSessionE1,drag=state.drag;state.drag=null;
