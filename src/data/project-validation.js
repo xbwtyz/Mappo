@@ -56,6 +56,7 @@ import {
 import {
   validateLayout
 } from '../core/validate-layout.js';
+import { terminalCorridors, polygonIntrudesTerminalCorridor } from '../core/road-terminal-corridors.js';
 
 export const MAX_PROJECT_BYTES = 20 * 1024 * 1024;
 export const MAX_VALIDATION_WORK = 6000000;
@@ -338,6 +339,16 @@ export function validateStoredProject(project) {
     facePolygons.set(face.id, points);
   }
   validateLayout(city, boundary);
+  const terminal = terminalCorridors(city);
+  const terminalIds = new Set(terminal.map(row => row.id));
+  for (const corridor of terminal) {
+    const road = corridor.road;
+    if (road.boundary || road.plaza || road.bank || road.waterBoundary ||
+        road.foothill || road.terrainBoundary || road.bridgeId || road.passId)
+      throw new Error('A terminal corridor may not include protected road infrastructure.');
+    if (!corridor.a || !corridor.b)
+      throw new Error('A terminal corridor has an invalid road endpoint.');
+  }
   if (plaza.center && (!pointInPolygon(plaza.center, facePolygons.get(plaza.id)) || Math.hypot(plaza.center.x - project.options.center.x, plaza.center.y - project.options.center.y) > 1e-6)) throw new Error('The square’s saved center is inconsistent.');
   if (!pointInPolygon(project.options.center, facePolygons.get(plaza.id))) throw new Error('The saved town center is not inside the main square.');
   const grouped = new Map(),
@@ -346,6 +357,12 @@ export function validateStoredProject(project) {
   for (const property of city.properties) {
     reference(maps.blocks, property.blockId, 'Property block');
     reference(maps.roads, property.frontageRoadId, 'Property frontage');
+    if (terminalIds.has(property.frontageRoadId))
+      throw new Error('A terminal corridor cannot grant new property frontage.');
+    const terminalCollision = polygonIntrudesTerminalCorridor(property.boundary, terminal);
+    if (terminalCollision)
+      throw new Error(`Property ${property.id} encroaches on dead-end road ${terminalCollision}.`);
+    spend(terminal.length * property.boundary.length);
     validatePolygon(property.boundary, 'Property boundary', spend);
     const block = facePolygons.get(property.blockId);
     polygonContained(property.boundary, block, 'Property', spend);
@@ -402,6 +419,8 @@ export function validateStoredProject(project) {
       requireText(building.shape, 'Building shape');
       if (!Number.isFinite(building.orientation) || !Number.isInteger(building.roofTone) || building.roofTone < 0 || building.roofTone > 255) throw new Error('Building rendering data is invalid.');
       reference(maps.roads, building.frontageRoadId, 'Building frontage');
+      if (terminalIds.has(building.frontageRoadId))
+        throw new Error('A terminal corridor cannot grant new building frontage.');
       const buildingPlots = references(building.plotIds, maps.plots, 'Building plots');
       if (buildingPlots.some(p => p.propertyId !== property.id)) throw new Error('A building refers to another property’s plot.');
       let area = polygonSignedArea(building.footprint);

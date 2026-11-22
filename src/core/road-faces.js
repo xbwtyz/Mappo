@@ -72,13 +72,18 @@ const rfObjects = (city) => [
 function rfWalk(graph, spend) {
   const next = new Map(),
     roads = new Map();
+  // Leaf-chain roads occupy real corridors but do not define closed faces.
+  // Traverse only the cycle-bearing core; the full graph is kept for
+  // clearance, rendering, connectivity, persistence and independent Apply.
+  const terminal = new Set(graph.terminalRoadIds ?? []);
   for (const road of graph.roadsById.values()) {
+    if (terminal.has(road.id)) continue;
     roads.set(rfPair(road.a, road.b), road.id);
     roads.set(rfPair(road.b, road.a), road.id);
   }
   for (const [id, neighbors] of graph.adjacency) {
     const node = graph.nodesById.get(id);
-    const sorted = [...neighbors].sort((a, b) => {
+    const sorted = [...neighbors].filter(neighbor => roads.has(rfPair(id, neighbor))).sort((a, b) => {
       const p = graph.nodesById.get(a),
         q = graph.nodesById.get(b);
       return (
@@ -123,7 +128,7 @@ function rfWalk(graph, spend) {
       area: polygonSignedArea(polygon),
     });
   }
-  if (visited.size !== graph.roadsById.size * 2)
+  if (visited.size !== (graph.roadsById.size - terminal.size) * 2)
     throw new Error('Not every directed road edge belongs to one face.');
   return walks;
 }

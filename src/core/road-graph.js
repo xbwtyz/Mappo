@@ -1,4 +1,5 @@
 import { segmentCuts, insideOrOn } from './boundary.js';
+import { terminalRoadIds } from './road-terminal-corridors.js';
 
 // Transient graph API. No accepted city records, persistence or editor history
 // are shared with these snapshots. Graph validity alone is NOT city safety:
@@ -157,9 +158,15 @@ export function buildRoadGraph(city) {
     }
     components.push(queue.sort(roadGraphCompare));
   }
+  const terminal = terminalRoadIds(roads.values());
+  for (const roadId of terminal)
+    if (classes.get(roadId)?.protected)
+      add('protected-terminal-corridor', 'A terminal corridor cannot contain protected infrastructure.', [], [roadId]);
   for (const [id, neighbors] of adjacency) {
     if (!neighbors.size) add('orphan-junction', `Junction ${id} is not connected to a road.`, [id]);
-    else if (neighbors.size === 1) add('dangling-junction', `Junction ${id} ends without a closed city face.`, [id], incident.get(id));
+    else if (neighbors.size === 1 && (components.length !== 1 ||
+      classes.get(incident.get(id)[0])?.protected))
+      add('dangling-junction', `Junction ${id} ends without a closed city face.`, [id], incident.get(id));
     adjacency.set(id, Object.freeze([...neighbors].sort(roadGraphCompare)));
     incident.set(id, Object.freeze(incident.get(id).sort(roadGraphCompare)));
   }
@@ -168,6 +175,7 @@ export function buildRoadGraph(city) {
     nodesById: roadGraphReadonlyIndex(nodes), roadsById: roadGraphReadonlyIndex(roads),
     adjacency: roadGraphReadonlyIndex(adjacency), incidentRoads: roadGraphReadonlyIndex(incident),
     roadClasses: roadGraphReadonlyIndex(classes), components: roadGraphFreeze(components),
+    terminalRoadIds: Object.freeze([...terminal].sort(roadGraphCompare)),
     issues: roadGraphFreeze(roadGraphSortIssues(issues)), valid: issues.length === 0,
     work
   });
