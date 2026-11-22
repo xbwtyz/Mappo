@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Living dependency roadmap, reconciled November 22, 2026.** Published stable baseline is v0.2.0. Development PRs for 0.2.1–0.2.6 are merged; 0.2.7 B04 is implemented in [PR #117](https://github.com/xbwtyz/Mappo/pull/117), **unmerged**, pending separate owner approval. Issue descriptions and initial planning waves below retain historical dependency context; they are not blanket feature authorization. No stable release, tag, schema change or Pages publication is implied.
+> **Living dependency roadmap, reconciled November 22, 2026.** Published stable baseline is v0.2.0. Development milestones 0.2.1–0.2.7 have merged into `main`; 0.2.8 B05 is in **open, unmerged [PR #118](https://github.com/xbwtyz/Mappo/pull/118)** pending a separate owner merge approval. Proposal waves below retain historical dependency context, not blanket authorization. No stable release, tag, schema change or Pages publication is implied.
 
 ## Problem and intended outcome
 
@@ -16,8 +16,9 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | 0.2.4 B01 irregular properties | [#99](https://github.com/xbwtyz/Mappo/issues/99) | Merged [PR #114](https://github.com/xbwtyz/Mappo/pull/114) |
 | 0.2.5 B02 flexible property splitting | [#100](https://github.com/xbwtyz/Mappo/issues/100) | Merged [PR #115](https://github.com/xbwtyz/Mappo/pull/115) |
 | 0.2.6 B03 partial-edge property merging | [#101](https://github.com/xbwtyz/Mappo/issues/101) | Merged [PR #116](https://github.com/xbwtyz/Mappo/pull/116); main CI passed |
-| **0.2.7 B04 flexible plot partitions** | [#102](https://github.com/xbwtyz/Mappo/issues/102) | **Review-ready PR [#117](https://github.com/xbwtyz/Mappo/pull/117)**; [full feature-code CI passed](https://github.com/xbwtyz/Mappo/actions/runs/44999067928); not merged |
-| Following candidates | B05, C02, C01, D01 etc. | Unassigned / owner review required |
+| 0.2.7 B04 flexible plot partitions | [#102](https://github.com/xbwtyz/Mappo/issues/102) | Merged [PR #117](https://github.com/xbwtyz/Mappo/pull/117); [post-merge CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45000385031); issue closed |
+| **0.2.8 B05 authored parcel choices** | [#103](https://github.com/xbwtyz/Mappo/issues/103) | **Review-ready, not merged [PR #118](https://github.com/xbwtyz/Mappo/pull/118)**; [523 Node / 4 browser suites passed](https://github.com/xbwtyz/Mappo/actions/runs/45003249346) |
+| Following candidates | C02, C01, D01 etc. | Unassigned / owner architecture review required |
 
 ## Progress and intended delivery waves
 
@@ -26,7 +27,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **1 — First confirmed issue** | [A01 connected interior stubs after road deletion](MILESTONE_0_2_1_DEAD_END_ROADS.md), [Issue #79](https://github.com/xbwtyz/Mappo/issues/79); corridor only, proven-generated reflow | First, prior to other changes | **Merged as 0.2.1** | **High** — graph/faces/development reflow |
 | **2 — Road-topology expansion** | A03 intersection normalization, A06 wider face/ownership reflow | A03 → A06 or staged co-design | **Merged as 0.2.2 and 0.2.3** | High to very high |
 | **3 — Flexible parcel foundation** | B01 general polygon properties | After road contract and with new exact polygon validators | **Merged as 0.2.4** | Very high |
-| **4 — Parcel operations** | B02 splits, B03 merges, B04 plot partitions, B05 custom-parcel decisions | B01 → B02/B03/B04 → B05 | **B02/B03 merged as 0.2.5/0.2.6; B04 PR #117 review-ready; B05 unassigned** | High per issue |
+| **4 — Parcel operations** | B02 splits, B03 merges, B04 plot partitions, B05 custom-parcel decisions | B01 → B02/B03/B04 → B05 | **B02–B04 merged as 0.2.5–0.2.7; B05 in PR #118 as 0.2.8-dev (unmerged)** | High per issue |
 | **5 — Structural edits** | C02 multi-step building drafts, C01 compound structures | C02 can be standalone; C01 after parcel constraints stabilize | Unassigned | Medium / high |
 | **6 — Editing history** | D01 coherent and perhaps persistent undo | After transaction semantics settle | Unassigned | High if persisted |
 | **7 — Evidence-triggered improvements** | D02 frame hitches, D03 capacity, E01a import cap, E01b whole-city PNG | Only when reproducible need/support target is agreed | Unassigned | Small audit → high implementation |
