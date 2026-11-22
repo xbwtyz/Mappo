@@ -1,14 +1,14 @@
 # Mappo
 
-> **Release candidate: Mappo 0.2.0 (H5).** 0.2A–G and H1–H4 are merged, and 0.2.0 is prepared on an unmerged review branch. **The currently published GitHub Release remains v0.1.0** until separate approval of H5 merge and manual publication. See the [0.2 roadmap](docs/plans/0.2/README.md).
+> **Current stable release: [Mappo v0.2.0](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0).** The 2D City Designer milestone is complete. v0.1.0 remains available as an archived release. The hosted Pages site is deployed separately and may be a different version.
 
-**Mappo 0.1.0** is an offline-first medieval and fantasy city generator and 2D editor, built from modular JavaScript and shipped as **one standalone HTML file**.
+**Mappo** is an offline-first medieval and fantasy city generator and 2D editor, shipped as **one standalone HTML file**.
 
-**[Open the published website](https://xbwtyz.github.io/Mappo/)** · **[Download the standalone HTML](dist/mappo-0.1.0.html)** · **[Release notes](docs/releases/v0.1.0.md)** · **[User guide](docs/user-guide.md)** · **[Development roadmap](docs/ROADMAP.md)**
+**[Download the official v0.2.0 HTML](https://github.com/xbwtyz/Mappo/releases/download/v0.2.0/mappo-0.2.0.html)** · **[0.2.0 release notes](docs/releases/v0.2.0.md)** · **[Hosted Pages site](https://xbwtyz.github.io/Mappo/)** · **[User guide](docs/user-guide.md)** · **[Development roadmap](docs/ROADMAP.md)**
 
-**Stable release:** `0.1.0` · Project data schema **9** · Offline browser runtime · No installation required.
+**Stable release:** `0.2.0` · Project schema **9** · Portable format **1** · Offline browser runtime.
 
-## Features in 0.1
+## Foundation introduced in 0.1.0
 
 - Create a city with one of eight starting boundary shapes or a user-drawn outline. Generate radial, organic, linear, or planned street patterns with repeatable seeds.
 - Shape rivers, coastlines, lakes, mountains, and related terrain/water features. Work with districts, perimeter defenses and a civic square.
@@ -20,18 +20,18 @@
 - Download the **currently visible map as PNG**, with optional filenames shared with `.mappo.json` project downloads.
 - Save/load portable validated project files. Browser-local recovery snapshots provide additional safety; downloaded files are the recommended backup.
 
-## 0.2.0 release candidate (not yet published)
+## New in published 0.2.0
 
-The merged H4 `main` branch contains the 0.2 city designer; this H5 branch freezes it as a versioned candidate: road editing with local neighborhood adaptation, property creation/splitting/merging, plot-count changes, detailed building footprints and the **Generation / Add / Roads** desktop workspace. The Pages site is manually published and **may not match `main`**. The proposed stable standalone is [`dist/mappo-0.2.0.html`](dist/mappo-0.2.0.html), available on this candidate branch only until merged. [0.2.0 release notes](docs/releases/v0.2.0.md) describe its features and limits. Project schema 9 and portable format 1 are unchanged. The older 0.2 development HTML and published v0.1.0 stay archived.
+The [v0.2.0 City Designer](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0) adds road editing and validated neighborhood adaptation, property creation/split/merge, adjustable plots, advanced building footprints, and the **Generation / Add / Roads** workspace. The [versioned offline HTML](dist/mappo-0.2.0.html) is tracked in the repository. Schema 9 and file format 1 remain unchanged. Historical v0.1.0 and development distributions are preserved.
 
 **Generation** hosts city, districts and defenses. **Add** begins property/building placement and landscape drafts. **Roads** exposes road changes, impact review and comparison. The property-first Inspector edits existing land, plots, buildings, names and uses. Desktop/laptop Firefox and Chromium are the current support targets; phone/touch acceptance is deferred.
 
 ## Launch and create a city
 
-1. Open the [web app](https://xbwtyz.github.io/Mappo/) or save [`mappo-0.1.0.html`](dist/mappo-0.1.0.html) and open the HTML in a modern browser. The standalone works without a server or online services.
-2. In **City**, choose or draw a boundary, set the main square, select a morphology and a seed, then generate.
-3. Use **Landscape**, **Districts**, **Defenses**, **Layers**, the map and the **Inspector** to refine your city.
-4. Under **Project**, download the `.mappo.json` backup and optionally a PNG of your visible map.
+1. Download the [official v0.2.0 standalone HTML](https://github.com/xbwtyz/Mappo/releases/download/v0.2.0/mappo-0.2.0.html) and open it in a desktop browser. No server or installation is required. [GitHub Pages](https://xbwtyz.github.io/Mappo/) is published separately and may not match this version.
+2. In **Generation**, draw or select a city outline, choose a street pattern and seed, then generate.
+3. Use **Add** for new properties/buildings/landscape, **Roads** for road edits, and the **Inspector** for modifying existing sites.
+4. Under **Project**, download the `.mappo.json` backup and optionally export the visible map as PNG.
 
 See the [User Guide](docs/user-guide.md) for detailed editing and save/recovery behavior.
 
@@ -54,10 +54,12 @@ npm run test:browser  # requires test-only Playwright browsers
 
 Node 20.11+ is needed for development, **not to run** the distributed HTML. CI runs Node regression tests plus Chromium and Firefox QA before a production release. Historical `dist/` snapshots remain available.
 
-## What 0.1 does not do
+## Current limitations and compatibility policy
 
-The 0.1 editor does not yet support manual road-network restructuring, property split/merge, unrestricted concave parcel editing or 3D rendering. PNG export captures the **currently visible canvas**, not an automatic full-city tiled image. Accepted project edits survive saving; Undo histories and uncommitted previews generally do not.
+Connected dead-end roads remain limited ([issue #79](https://github.com/xbwtyz/Mappo/issues/79)). Full 3D editing and high-resolution full-city tiled PNG export are not included; PNG export captures the current canvas. Undo histories and unfinished previews are generally session-scoped.
 
-**Next:** [H5 release candidate review](docs/plans/0.2/H5_RELEASE_CANDIDATE_REPORT.md), complete CI, separate approval to merge, successful CI on final `main`, and **a second approval to publish v0.2.0**. [0.2H release policy](docs/plans/0.2/MILESTONE_0_2H_RELEASE_PLAN.md). The stable v0.1.0 release remains available.
+v0.2.0 **currently supports** migrations from old schemas 1–8. **Future releases are not required to support every older save**, but a breaking format, migration policy or CI change requires separate approval. See [AGENTS.md](AGENTS.md) and [Development Rules](docs/DEVELOPMENT_RULES.md).
 
-[Development guide](docs/development.md) · [Project format](docs/reference/PROJECT_FORMAT.md) · [0.2.0 candidate notes](docs/releases/v0.2.0.md) · [0.1.0 release notes](docs/releases/v0.1.0.md) · [Docs index](docs/README.md)
+**Next:** separately plan future milestones; this policy PR does not authorize code changes, merges, releases or Pages deployment. The [0.2 acceptance history](docs/plans/0.2/H5_RELEASE_CANDIDATE_REPORT.md) remains preserved.
+
+[Development guide](docs/development.md) · [Project format](docs/reference/PROJECT_FORMAT.md) · [0.2.0 release notes](docs/releases/v0.2.0.md) · [0.1.0 release notes](docs/releases/v0.1.0.md) · [Docs index](docs/README.md)

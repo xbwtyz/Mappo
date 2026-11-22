@@ -1,6 +1,6 @@
 # Mappo Developer Guide
 
-**Currently published GitHub Release:** `0.1.0` · **H5 unmerged release candidate:** `0.2.0` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
+**Published GitHub Release:** [v0.2.0](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0) · [Agent instructions](../AGENTS.md) · [Development rules](DEVELOPMENT_RULES.md) · [Project format](reference/PROJECT_FORMAT.md)
 
 ## Source organization
 
@@ -49,7 +49,7 @@ npm test
 npm run check
 ```
 
-The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. H5 reviewed output: `dist/mappo-0.2.0.html` (candidate), with `dist/mappo-0.2-dev.g3g.html` and `dist/mappo-0.1.0.html` archived. External runtime imports are rejected. H5 is a version freeze; there is no schema change.
+The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Published v0.2.0 output: `dist/mappo-0.2.0.html`, with `dist/mappo-0.2-dev.g3g.html` and `dist/mappo-0.1.0.html` archived. External runtime imports are rejected. H5 is a version freeze; there is no schema change.
 
 ```bash
 cmp index.html dist/mappo-0.2.0.html
@@ -68,9 +68,9 @@ npm run test:browser:g4            # focused G4 browser matrix
 
 H2 adds complete archived schema 1–8 Node migration checks and native browser open/export/reopen for representative historical files. Run `npm run test:browser:h2` for focused H2 compatibility acceptance. G4's desktop suite records `artifacts/g4/desktop-acceptance.json` and `.md` with browser/viewport, historical-save and offline status, Small/Large draw measurements, and road preview timing. Its separate cross-editor test verifies a real canonical desktop split/merge, wing and courtyard changes, accepted history and portable reopen. These are diagnostics, not guaranteed user-device timings.
 
-Dev 4f passed the complete Node, compilation and Chromium/Firefox browser matrices: [CI run #341](https://github.com/xbwtyz/Mappo/actions/runs/44428124074). The 0.1.0 release candidate must pass equivalent CI on its own commit; this does not replace hands-on testing.
+The published v0.2.0 merge passed [exact-main CI](https://github.com/xbwtyz/Mappo/actions/runs/44960254289): **459/459 Node tests** and the Chromium/Firefox browser suites. Automated QA does not replace owner-run visual testing.
 
-**Never discard `tests/fixtures/`:** older frozen JSON projects are important compatibility tests. Changes to city/workspace schemas need explicit migration/validation and must follow [the persistence contract](reference/PROJECT_FORMAT.md).
+**Legacy-save compatibility:** v0.2.0 ships migrations for schemas 1–8 and current CI tests that functionality. The owner has switched **mandatory compatibility with every older save OFF for future releases**. This does not authorize deleting current migration code, frozen fixtures or tests. A change to supported versions needs a separately approved schema/format plan, safe rejection, backups and test policy. Preserve `tests/fixtures/` under the [archival policy](maintenance/BUILD_RETENTION_POLICY.md). See [Project Format](reference/PROJECT_FORMAT.md) and [Development Rules](DEVELOPMENT_RULES.md).
 
 ## Feature and release workflow
 
@@ -78,10 +78,10 @@ Dev 4f passed the complete Node, compilation and Chromium/Firefox browser matric
 2. Update modular source in manageable checkpoints.
 3. For a release checkpoint, update the source/package versions together, compile, and commit matching `index.html` and `dist/mappo-<version>.html`.
 4. Keep historical distribution files intact unless a separate archival plan is approved.
-5. Run Node tests, source-to-compiled parity, persistence compatibility and relevant graphical browser QA.
+5. Run Node tests, source-to-compiled parity, compatibility checks for **supported** project formats and relevant browser QA. Do not silently modify historical-test expectations.
 6. Present a pull request for explicit approval before merging.
 
-**Release workflow:** [`.github/workflows/release.yml`](../.github/workflows/release.yml) is manual-only on `main`, with an explicit 0.2.0 confirmation and guards for exactly matching stable versions, approved release notes, passing main CI on the exact commit, full Node/build parity, immutable release tags and no overwriting v0.1.0. It cannot publish the current development build. The actual 0.2.0 version change, release notes, approval and dispatch belong to H5.
+**Release workflow:** [`.github/workflows/release.yml`](../.github/workflows/release.yml) is a **manual, version-specific publisher for v0.2.0**, which already [published successfully](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0). Its checks include explicit confirmation, stable app/package versions, release notes and asset, exact-main CI, build parity, and refusal to overwrite a tag. A **future version requires a separately approved workflow update and separate release authorization**. Merging a PR never authorizes publication.
 
 **Pages behavior:** [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) is manual-only on `main`. A PR merge does **not** deploy the site. The owner can explicitly run the Pages workflow when ready.
 

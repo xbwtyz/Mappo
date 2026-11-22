@@ -4,9 +4,11 @@
 
 | Destination | What you'll find |
 | --- | --- |
-| [0.2.0 Release Candidate Notes](releases/v0.2.0.md) | Changes since 0.1, upgrade instructions, known limitations and manual publication policy |
-| [H5 Release Candidate Acceptance](plans/0.2/H5_RELEASE_CANDIDATE_REPORT.md) | Version freeze, deterministic standalone, CI and owner approval gates |
-| [0.1.0 Release Notes](releases/v0.1.0.md) | Stable launch, distribution, shipped features, compatibility and limitations |
+| [Development & AI Communication Policy](DEVELOPMENT_RULES.md) | Complete owner-approved rule catalog and Adaptive reporting contract |
+| [Root Agent Instructions](../AGENTS.md) | Short entry point for future AI coding agents |
+| [Published 0.2.0 Release Notes](releases/v0.2.0.md) | Current stable City Designer changes and known limitations |
+| [H5 Release Candidate Acceptance](plans/0.2/H5_RELEASE_CANDIDATE_REPORT.md) | Preserved historical review and pre-publication CI evidence |
+| [0.1.0 Release Notes](releases/v0.1.0.md) | Archived first stable release and historical compatibility |
 | [User Guide](user-guide.md) | City generation, tools, Inspector, navigation and saved projects |
 | [Developer Guide](development.md) | Modules, testing, build pipeline and release process |
 | [Architecture Atlas](architecture/Mappo_Repository_Atlas.md) | Complete repository hierarchy, visual system diagrams, and a purpose description for every tracked file |
@@ -34,4 +36,4 @@
 | [Historical Archives](history/README.md) | Prior plans, QA reports and original detailed README |
 | [Pass A Cleanup QA](PASS_A_QA.md) | Link validation, protected files, archiving and merge scope |
 
-Historical reports preserve their original status at the time written. The [roadmap](ROADMAP.md) describes current completion status.
+Historical reports preserve their original status at the time written. The [roadmap](ROADMAP.md) describes current completion status; the [owner-approved rules](DEVELOPMENT_RULES.md) govern future work. The current official GitHub Release is [v0.2.0](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0).

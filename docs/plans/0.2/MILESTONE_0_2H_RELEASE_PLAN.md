@@ -1,6 +1,6 @@
 # Mappo 0.2H — Release hardening implementation plan
 
-**Status:** H1/H2 merged in PR #88; H3 merged in PR #89 with issues #44/#46 closed; H4 merged in PR #90 after successful [final CI](https://github.com/xbwtyz/Mappo/actions/runs/44958430396); H5 release candidate is under review and publication requires a further explicit approval. **Baseline:** merged 0.2G G4 PR #87, runtime `0.2-dev.g3g`, package `0.2.0-dev.g3g`, project schema 9, portable format 1. Current stable GitHub Release: **v0.1.0**.
+**Current outcome:** H1–H5 completed; [PR #91](https://github.com/xbwtyz/Mappo/pull/91) merged; [exact-main CI](https://github.com/xbwtyz/Mappo/actions/runs/44960254289) passed; [v0.2.0](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0) published. **Historical baseline:** G4, runtime `0.2-dev.g3g`, package `0.2.0-dev.g3g`, project schema 9 and format 1. The original checklists below retain their pre-publication chronology.
 
 **Goal:** Finish the existing 2D designer as a dependable offline 0.2.0 release without weakening preservation rules, forcing onboarding, adding phone support, or silently publishing on a merge. All work remains modular. Any production or schema change is individually justified and verified.
 

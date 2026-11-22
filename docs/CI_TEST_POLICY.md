@@ -19,6 +19,8 @@ The full CI workflow's name **Mappo CI** and check name
 **Build, Node tests and browser QA** are deliberately retained to avoid
 breaking release-workflow compatibility or existing required status checks.
 
+**Future legacy-save policy:** v0.2.0's historical schema 1–8 migrations and tests remain active. The owner has disabled a **standing obligation to support every older save in future versions**, not authorized deletion of existing code, tests or fixtures. Any future change to save support must have a separately approved data-policy/CI proposal, explicit safe rejection and appropriate new tests. See [Development Rules](DEVELOPMENT_RULES.md) and [Project Format](reference/PROJECT_FORMAT.md).
+
 ## Desktop browser acceptance from 0.2G
 
 The [desktop workspace plan](plans/0.2/MILESTONE_0_2G_DESKTOP_UI.md)

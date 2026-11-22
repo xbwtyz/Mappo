@@ -4,7 +4,7 @@
 
 `src/core/version.js` owns the app and project-data schema versions. The standalone builder checks the app version against `package.json`, fills the HTML version placeholders and derives the distribution filename. Save-container versions and migration rules live in `src/data/migrations.js`.
 
-The Phase 7 review build is **0.1-dev.ui7d**. Its container format is **1**, project-data schema is **9**, and workspace schema is **1**. These numbers are independent of the generator version that originally produced a city.
+The published **v0.2.0** build uses container format **1**, project-data schema **9** and workspace schema **1**. These are independent of the original generator version. The `0.1-dev.ui7d` Phase 7 build cited in historical sections was an earlier snapshot.
 
 A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
 
@@ -15,7 +15,7 @@ A native file ends in `.mappo.json` and is UTF-8 JSON with this envelope:
   "documentId": "persistent-document-identity",
   "createdAt": "2026-11-17T09:00:00.000Z",
   "savedAt": "2026-11-17T09:00:00.000Z",
-  "appVersion": "0.1-dev.ui7d",
+  "appVersion": "0.2.0",
   "project": {},
   "workspace": {},
   "extensions": {}
@@ -62,14 +62,15 @@ Viewport dimensions and active pointer capture are transient. New native saves r
 
 Unknown envelope, record, extension and workspace fields are preserved as JSON. Reserved district/wall records are retained even before the current renderer understands their presentation. References to district IDs, when present, must resolve.
 
-Future developers should:
+**Current release behavior:** v0.2.0 migrates historical project schemas **1–8** into schema 9. The owner has turned **mandatory compatibility with every old save OFF for future releases**. That does not remove current migrations, fixtures or tests. A future breaking change needs separate approval of supported versions, safe rejection/backup guidance, validation and CI changes; see [Development Rules](../DEVELOPMENT_RULES.md).
 
-1. Add fields without dropping unknown fields during serialization.
-2. Increment the project schema when changing a core invariant or incompatible representation.
-3. Add an explicit pure migration from each supported older schema.
-4. Keep migrations independent of the generator. Never regenerate an imported city as a migration shortcut.
-5. Retain frozen historical fixtures and add a fixture for each newly shipped format.
-6. Extend validators and readers alongside the new schema; update the workspace or container version only when their respective contracts change.
+Future developers should:
+1. Preserve compatible unknown fields during supported saves and loads.
+2. Increment the relevant schema/format when an approved incompatible representation changes.
+3. Provide pure, tested migrations **for the older schemas the new release chooses to support**, not necessarily every historical version.
+4. Never regenerate an imported authored city as an unapproved migration shortcut.
+5. Retain frozen fixtures under the archive policy; review any proposed test-policy changes separately.
+6. Extend validators and safe rejection for the new supported contract, including clear upgrade/backup instructions.
 
 A newer unsupported container, project schema or workspace schema is rejected with a compatible-build message. The reader does not guess how to downgrade it. Compatible unknown fields are preserved; arbitrary future formats are not promised to be readable by old apps.
 
