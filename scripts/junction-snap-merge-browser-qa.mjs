@@ -37,16 +37,19 @@ for (const [name,engine] of [['chromium',chromium],['firefox',firefox]]) {
       const box=await page.locator('#mapCanvas').boundingBox();
       return {x:box.x+coords.x,y:box.y+coords.y};
     };
-    await page.evaluate(()=>{
+    const recenter=async()=>page.evaluate(()=>{
       const app=__buildingQA.state(),cam=app.camera;
       const dest=app.project.city.nodes.find(n=>n.id==='N-0139');
       cam.zoom=3;
-      cam.x=dest.x-cam.width*0.6/cam.zoom;
-      cam.y=dest.y+cam.height*0.40/cam.zoom;
-      app.roadWorkspace.session.select({kind:'junction',id:'N-0140'});
+      // Camera X/Y is the world-space center: place target at 60% width,
+      // 40% height rather than pushing it outside the canvas.
+      cam.x=dest.x-cam.width*0.1/cam.zoom;
+      cam.y=dest.y+cam.height*0.1/cam.zoom;
       __buildingQA.draw();
     });
-    const source=await pixel('N-0140'),target=await pixel('N-0139');
+    await page.evaluate(()=>__buildingQA.state().roadWorkspace.session.select({kind:'junction',id:'N-0140'}));
+    await recenter();
+    let source=await pixel('N-0140'),target=await pixel('N-0139');
     const canvas=await page.locator('#mapCanvas').boundingBox();
     for(const p of [source,target]){
       assert.ok(p.x>=canvas.x && p.x<canvas.x+canvas.width,'Point must be visible in map');
@@ -61,6 +64,10 @@ for (const [name,engine] of [['chromium',chromium],['firefox',firefox]]) {
     assert.equal(await page.evaluate(()=>__buildingQA.state().roadWorkspace.session.targetJunctionId),'N-0139');
     await page.locator('#roadPreviewReset').click();
     assert.equal(await page.evaluate(()=>__buildingQA.state().roadWorkspace.session.targetJunctionId),null);
+    // Reset restores baseline camera too: recompute both real click positions.
+    await recenter();
+    source=await pixel('N-0140');
+    target=await pixel('N-0139');
 
     await page.mouse.move(source.x,source.y);
     await page.mouse.down();
@@ -70,6 +77,9 @@ for (const [name,engine] of [['chromium',chromium],['firefox',firefox]]) {
     await page.mouse.up();
     await page.keyboard.up('Alt');
     await page.locator('#roadPreviewReset').click();
+    await recenter();
+    source=await pixel('N-0140');
+    target=await pixel('N-0139');
 
     // No extra "merge" commit path: select two map points then normal Review/Apply.
     await page.locator('#roadStartMergeJunctions').click();
