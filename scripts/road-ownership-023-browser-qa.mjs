@@ -70,8 +70,6 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox']]){
       assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),before);
       assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('redo')),true);
       assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),after);
-      if(__buildingQA?.state?.()?.roadWorkspace?.active)
-        await page.locator('#roadPreviewCancel').click();
     }
     assert.deepEqual(errors,[]);
     console.log('PASS 0.2.3 ownership UI, preview, Apply and history '+name);
