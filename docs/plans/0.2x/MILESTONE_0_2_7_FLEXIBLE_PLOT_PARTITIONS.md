@@ -36,10 +36,20 @@ The original E4 controls remain for rectangular strip editing. Properties may be
 - [x] One atomic accepted Apply and one scoped Undo/Redo through existing history.
 
 ## P5 — Acceptance and review
-- [ ] Full targeted Node, complete regression and Firefox/Chromium browser QA on the exact final head.
-- [ ] Reproducible source build; root index.html byte-identical to dist/mappo-0.2.7-dev.html.
-- [ ] PR opened for owner review with actual CI evidence.
-- [ ] Separate merge authorization and post-merge main CI.
+- [x] Reviewed implementation commit `ec9224c72f9fb4eb64b561d19490d36ab7851a8d`: full two-shard Node and Firefox/Chromium browser QA PASSED, [Mappo CI #44999067928](https://github.com/xbwtyz/Mappo/actions/runs/44999067928), 519/519 Node (260 + 259), four browser suites, aggregate gate, **3m44s**, zero failures.
+- [x] Deterministic build and `index.html` / `dist/mappo-0.2.7-dev.html` byte-identical, verified by [Fast Checks #44999063332](https://github.com/xbwtyz/Mappo/actions/runs/44999063332) on the same feature-code commit.
+- [x] [PR #117](https://github.com/xbwtyz/Mappo/pull/117) opened for owner review with before/after, actual CI evidence, limitations and separate merge gate.
+- [ ] Full CI to reconfirm this final documentation-only PR head (feature-code candidate above already passed).
+- [ ] Owner separately authorizes PR merge; verify exact post-merge `main` CI after merging.
+- [ ] Any stable tag, GitHub Release or Pages publication requires its own explicit approval.
+
+## Review-stage acceptance notes
+- Intermediate development attempts initially failed build parity because compiled HTML did not match source; official source build parity was restored and verified in green Fast Checks.
+- The first integrated CI caught a second plot split that appeared locally possible but violated whole-property tiling. The draft engine now validates the complete resulting partition **before** recording each split/merge; invalid attempts leave the draft and accepted city unchanged.
+- Flexible mode now locks ordinary property-boundary and legacy-divider controls until the draft exits; this prevents a stale outer boundary while editing plots.
+- Browser QA is automated Firefox/Chromium coverage, **not** a claim of manual owner Firefox verification.
+- Schema 9 continues to store a required plot road reference. For interior plots, this remains a parent ownership/reference association; it does not grant new physical access. No new physical entrance, road, property frontage or building access is generated.
+- No controlled performance benchmark or speedup is claimed; C7 remains opt-in.
 
 ## Deliberate limits
 - Convex individual plots only, no holes or concave plot interiors.

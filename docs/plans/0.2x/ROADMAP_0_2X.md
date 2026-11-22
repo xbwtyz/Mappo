@@ -1,19 +1,32 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Working planning proposal — not implementation approval.** v0.2.0 is the published baseline. **0.2.1 → Issue #79 and D-021-1–4 (A/A/A/A)** are owner-approved planning decisions. All other versions and scopes below remain **unordered candidates within dependency waves**, to be assigned after issue-by-issue implementation scope review. No code, schema, CI, release or Pages changes are authorized here.
+> **Living dependency roadmap, reconciled November 22, 2026.** Published stable baseline is v0.2.0. Development PRs for 0.2.1–0.2.6 are merged; 0.2.7 B04 is implemented in [PR #117](https://github.com/xbwtyz/Mappo/pull/117), **unmerged**, pending separate owner approval. Issue descriptions and initial planning waves below retain historical dependency context; they are not blanket feature authorization. No stable release, tag, schema change or Pages publication is implied.
 
 ## Problem and intended outcome
 
 Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints mostly arise from narrow but safe topology/parcel contracts, conservative ownership preservation, session-scoped history and bounded performance/file/export behavior. The **0.2.x goal** is to enlarge the range of valid user edits while retaining safe, deterministic, reproducible cities; it is **not** an excuse to relax validation blindly.
 
+## Current 0.2.x development status
+
+| Milestone | Issue | Status |
+| --- | --- | --- |
+| 0.2.1 A01 connected dead ends | [#79](https://github.com/xbwtyz/Mappo/issues/79) | Merged [PR #111](https://github.com/xbwtyz/Mappo/pull/111) |
+| 0.2.2 A03 intersection normalization | [#95](https://github.com/xbwtyz/Mappo/issues/95) | Merged [PR #112](https://github.com/xbwtyz/Mappo/pull/112) |
+| 0.2.3 A06 reflow/lineage | [#98](https://github.com/xbwtyz/Mappo/issues/98) | Merged [PR #113](https://github.com/xbwtyz/Mappo/pull/113) |
+| 0.2.4 B01 irregular properties | [#99](https://github.com/xbwtyz/Mappo/issues/99) | Merged [PR #114](https://github.com/xbwtyz/Mappo/pull/114) |
+| 0.2.5 B02 flexible property splitting | [#100](https://github.com/xbwtyz/Mappo/issues/100) | Merged [PR #115](https://github.com/xbwtyz/Mappo/pull/115) |
+| 0.2.6 B03 partial-edge property merging | [#101](https://github.com/xbwtyz/Mappo/issues/101) | Merged [PR #116](https://github.com/xbwtyz/Mappo/pull/116); main CI passed |
+| **0.2.7 B04 flexible plot partitions** | [#102](https://github.com/xbwtyz/Mappo/issues/102) | **Review-ready PR [#117](https://github.com/xbwtyz/Mappo/pull/117)**; [full feature-code CI passed](https://github.com/xbwtyz/Mappo/actions/runs/44999067928); not merged |
+| Following candidates | B05, C02, C01, D01 etc. | Unassigned / owner review required |
+
 ## Progress and intended delivery waves
 
 | Wave | Candidate scope | Suggested order | Version status | Relative complexity |
 |---|---|---|---|---|
-| **1 — First confirmed issue** | [A01 connected interior stubs after road deletion](MILESTONE_0_2_1_DEAD_END_ROADS.md), [Issue #79](https://github.com/xbwtyz/Mappo/issues/79); corridor only, proven-generated reflow | First, prior to other changes | **0.2.1 scope/architecture approved**; no coding authorization | **High** — graph/faces/development reflow |
-| **2 — Road-topology expansion** | A03 intersection normalization, A06 wider face/ownership reflow | A03 → A06 or staged co-design | Unassigned | High to very high |
-| **3 — Flexible parcel foundation** | B01 general polygon properties | After road contract and with new exact polygon validators | Unassigned | Very high |
-| **4 — Parcel operations** | B02 splits, B03 merges, B04 plot partitions, B05 custom-parcel decisions | B01 → B02/B03/B04 → B05 | Unassigned | High per issue |
+| **1 — First confirmed issue** | [A01 connected interior stubs after road deletion](MILESTONE_0_2_1_DEAD_END_ROADS.md), [Issue #79](https://github.com/xbwtyz/Mappo/issues/79); corridor only, proven-generated reflow | First, prior to other changes | **Merged as 0.2.1** | **High** — graph/faces/development reflow |
+| **2 — Road-topology expansion** | A03 intersection normalization, A06 wider face/ownership reflow | A03 → A06 or staged co-design | **Merged as 0.2.2 and 0.2.3** | High to very high |
+| **3 — Flexible parcel foundation** | B01 general polygon properties | After road contract and with new exact polygon validators | **Merged as 0.2.4** | Very high |
+| **4 — Parcel operations** | B02 splits, B03 merges, B04 plot partitions, B05 custom-parcel decisions | B01 → B02/B03/B04 → B05 | **B02/B03 merged as 0.2.5/0.2.6; B04 PR #117 review-ready; B05 unassigned** | High per issue |
 | **5 — Structural edits** | C02 multi-step building drafts, C01 compound structures | C02 can be standalone; C01 after parcel constraints stabilize | Unassigned | Medium / high |
 | **6 — Editing history** | D01 coherent and perhaps persistent undo | After transaction semantics settle | Unassigned | High if persisted |
 | **7 — Evidence-triggered improvements** | D02 frame hitches, D03 capacity, E01a import cap, E01b whole-city PNG | Only when reproducible need/support target is agreed | Unassigned | Small audit → high implementation |
@@ -21,7 +34,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 
 Prioritization is a dependency guide, **not** a commitment to 0.2.2, 0.2.3, etc. We may split high-risk items across multiple 0.2.x releases or defer them if the cost exceeds user value. Preserve a stable, usable editor at each release gate.
 
-## Confirmed 0.2.1 architecture decisions
+## Historical 0.2.1 architecture decisions
 
 **D-021-1=A:** interior connected ordinary stubs from otherwise-supported deletion only. **D-021-2=A:** clearance, **no new frontage**. **D-021-3=A:** only proven generated untouched content may adapt; authored/unknown data remains protected. **D-021-4=A:** one implementation PR with four internal checkpoints, after separate coding approval. [Decision log](DECISION_LOG.md) · [Issue #79 replacement draft](ISSUE_79_UPDATE_DRAFT.md).
 
@@ -79,7 +92,7 @@ flowchart TD
 [Issue register](ENGINE_LIMITATIONS_REGISTER.md) · [0.2.1 detailed plan](MILESTONE_0_2_1_DEAD_END_ROADS.md) · [Issue review guide](ISSUE_REVIEW_GUIDE.md) · [Decision log](DECISION_LOG.md) · [All issue drafts](issues/)
 ## Published GitHub issue tracker
 
-All 17 additional limitation/capability proposals are recorded on GitHub. These are **tracking entries, not implementation authorization or assigned releases**. A01 is the existing 0.2.1 Issue #79.
+All 17 additional limitation/capability issues are recorded on GitHub. Several have since been implemented in individually approved milestones as shown above. Remaining proposals do **not** authorize implementation, merging or publishing.
 
 | Group | Tracked issues |
 |---|---|
