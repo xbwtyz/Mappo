@@ -22,6 +22,17 @@ export function drawPropertyMergeE3(ctx,camera,city,session){
     ctx.closePath();ctx.fillStyle='rgba(43,164,130,.20)';ctx.fill();
     outline(g.union,'#28b08b',3,[]);
     outline(g.secondary.boundary,'#e3b25b',2,[6,4]);
+    for(const change of session.validation?.preview?.buildingAdaptations??[]){
+      outline(change.before.footprint,'#dc8f49',2,[4,4]);
+      outline(change.after.footprint,'#28b08b',2,[]);
+      if(change.after.accessPath?.length>1){
+        ctx.beginPath();change.after.accessPath.forEach((world,i)=>{
+          const p=camera.worldToScreen(world);
+          if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);
+        });
+        ctx.strokeStyle='#28b08b';ctx.lineWidth=2;ctx.setLineDash([3,3]);ctx.stroke();
+      }
+    }
   }
   ctx.restore();
 }

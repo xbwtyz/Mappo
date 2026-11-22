@@ -50,8 +50,10 @@ export class PropertyMergeControlsE3 {
     const result=this.candidate(),g=result.preview;
     $('propertyMergeSummaryE3').textContent=g
       ?'Keep '+g.primary.id+'; retire '+g.secondary.id+'. Combined '+g.area.toFixed(1)+
-       ' sq units / '+g.frontageLength.toFixed(1)+' frontage; '+g.plotIds.length+
-       ' unchanged plot IDs and '+g.buildingIds.length+' unchanged building footprints.'
+       ' sq units / '+g.frontageLength.toFixed(1)+' primary frontage; '+g.plotIds.length+
+       ' unchanged plot IDs; '+g.buildingIds.length+' retained building IDs; '+
+       (g.frontageRoadIds?.length??1)+' road frontage(s); '+
+       (g.buildingAdaptations?.length??0)+' proposed building/access adaptations.'
       :'Select a compatible neighbor (or click it on the map). Eligible neighbors: '+neighbors.length+'.';
     const consent=$('propertyMergeConsentWrapE3');
     consent.hidden=!g?.protectedSecondary;
@@ -64,20 +66,36 @@ export class PropertyMergeControlsE3 {
       ?'BLOCKED · Accepted city changed; cancel and restart the merge.'
       :result.ok?'READY · Apply revalidates the entire city, plot ownership and portable save.'
        :result.issues[0]?.message??'Choose a second property.';
-    $('propertyMergeIssuesE3').replaceChildren(...result.issues.map(item=>{
+    const entries=result.issues.map(item=>{
       const li=document.createElement('li');li.textContent=item.message;return li;
-    }));
+    });
+    for(const change of g?.buildingAdaptations??[]){
+      const li=document.createElement('li');
+      if(change.protected){
+        const label=document.createElement('label'),checkbox=document.createElement('input');
+        checkbox.type='checkbox';checkbox.checked=session.approvedBuildings.has(change.buildingId);
+        checkbox.addEventListener('change',()=>{
+          session.approveBuilding(change.buildingId,checkbox.checked);this.refresh();
+        });
+        label.append(checkbox,document.createTextNode(' Authorize '+change.kind+
+          ' for protected building '+change.buildingId));li.append(label);
+      }else li.textContent='Automatic '+change.kind+' proposed for generated building '+change.buildingId+'.';
+      entries.push(li);
+    }
+    $('propertyMergeIssuesE3').replaceChildren(...entries);
     $('propertyMergeApplyE3').disabled=stale||!result.ok;
   }
   apply(){
     if(!this.active||!this.session.secondaryId)return false;
     const before=this.getProject(),rev=this.getRevision(),
-      signature=JSON.stringify([this.session.primaryId,this.session.secondaryId,this.session.approved]);
+      signature=JSON.stringify([this.session.primaryId,this.session.secondaryId,this.session.approved,
+        [...this.session.approvedBuildings].sort()]);
     if(before!==this.boundProject)return false;
     const receipt=preparePropertyMergeE3(before,this.getWorkspace(),this.session);
     if(!receipt.ok){this.getElement('propertyMergeStatusE3').textContent=receipt.issues[0]?.message??'Merge rejected.';return false;}
     if(before!==this.getProject()||rev!==this.getRevision()||
-      signature!==JSON.stringify([this.session.primaryId,this.session.secondaryId,this.session.approved]))return false;
+      signature!==JSON.stringify([this.session.primaryId,this.session.secondaryId,this.session.approved,
+        [...this.session.approvedBuildings].sort()]))return false;
     if(!this.history.record(before,receipt.candidate,receipt.retainedId))return false;
     this.onCommit(receipt.candidate,receipt.retainedId,'apply',receipt);
     this.stop();this.changed();return true;

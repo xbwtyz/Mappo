@@ -1,3 +1,4 @@
+import { inspectPropertyMerge026, preparePropertyMerge026 } from './property-merge-026.js';
 import { copyJson,createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { shapeContained } from '../core/building-validation.js';
@@ -16,20 +17,21 @@ function e3MergeRequiresAuthorization(source){
 }
 
 export class PropertyMergeSessionE3{
-  constructor(changed=()=>{}){this.changed=changed;this.primaryId=null;this.secondaryId=null;this.approved=false;this.validation=null;}
+  constructor(changed=()=>{}){this.changed=changed;this.primaryId=null;this.secondaryId=null;this.approved=false;this.approvedBuildings=new Set();this.validation=null;}
   get active(){return Boolean(this.primaryId);}
   start(city,id){
     if(!city?.properties.some(p=>p.id===id))return false;
-    this.primaryId=id;this.secondaryId=null;this.approved=false;this.validation=null;
+    this.primaryId=id;this.secondaryId=null;this.approved=false;this.approvedBuildings.clear();this.validation=null;
     this.changed();return true;
   }
   choose(city,id){
     if(!this.active||id===this.primaryId||!city?.properties.some(p=>p.id===id))return false;
-    this.secondaryId=id;this.approved=false;this.validation=null;this.changed();return true;
+    this.secondaryId=id;this.approved=false;this.approvedBuildings.clear();this.validation=null;this.changed();return true;
   }
   approve(value){this.approved=Boolean(value);this.validation=null;this.changed();}
-  reset(){if(!this.active)return false;this.secondaryId=null;this.approved=false;this.validation=null;this.changed();return true;}
-  stop(){if(!this.active)return false;this.primaryId=null;this.secondaryId=null;this.approved=false;this.validation=null;this.changed();return true;}
+  approveBuilding(id,value){if(value)this.approvedBuildings.add(id);else this.approvedBuildings.delete(id);this.validation=null;this.changed();}
+  reset(){if(!this.active)return false;this.secondaryId=null;this.approved=false;this.approvedBuildings.clear();this.validation=null;this.changed();return true;}
+  stop(){if(!this.active)return false;this.primaryId=null;this.secondaryId=null;this.approved=false;this.approvedBuildings.clear();this.validation=null;this.changed();return true;}
   geometry(city){try{return this.secondaryId?propertyMergeGeometryE3(city,this.primaryId,this.secondaryId):null;}catch{return null;}}
   neighbors(city){return propertyMergeNeighborsE3(city,this.primaryId);}
 }
@@ -47,6 +49,7 @@ export function inspectPropertyMergeE3(project,session){
   if(protectedSecondary&&!session.approved)
     issues.push(e3MergeIssue('authorization','Authorize retirement of '+(secondary.customName||secondary.id)+
       ' with its complete identity preserved in merge lineage.',secondary.id));
+  if(geometry.flexible)return inspectPropertyMerge026(project,session,geometry,issues);
   const members=new Set(geometry.buildingIds),plotIds=new Set(geometry.plotIds);
   if(members.size!==geometry.buildingIds.length)
     issues.push(e3MergeIssue('building','The source building lists overlap.'));
@@ -66,6 +69,7 @@ export function inspectPropertyMergeE3(project,session){
 export function preparePropertyMergeE3(project,workspace,session){
   const inspected=inspectPropertyMergeE3(project,session);
   if(!inspected.ok)return {...inspected,candidate:null};
+  if(inspected.preview?.flexible)return preparePropertyMerge026(project,workspace,session,inspected);
   try{
     const candidate=copyJson(project),city=candidate.city,geometry=inspected.preview;
     const primary=city.properties.find(p=>p.id===session.primaryId);
