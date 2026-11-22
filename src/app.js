@@ -294,6 +294,14 @@ function d01MoveHistory(direction) {
     propertyCreationHistoryE1.clear();buildingHistory.clear();buildingStructureHistory.clear();
     propertySplitE2?.history.clear();propertyMergeE3?.history.clear();
     identityWorkspace?.editor.reset();
+    // The accepted identity can change while the Inspector still displays
+    // its previous accepted value. Refresh its mounted baseline before the
+    // draft detector mistakes that stale value for an unsaved edit.
+    // Actual pending identity drafts are blocked before replay begins.
+    if(identityWorkspace) {
+      identityWorkspace.mounted=null;
+      identityWorkspace.render({reload:true});
+    }
     if(receipt.entry.family==='road')refreshRoadDistrictWorkspace(receipt.workspace);
     // Road/parcel ownership replacement can invalidate a selected property.
     // A building add/delete does not replace its parent property, so retain
