@@ -1,27 +1,30 @@
-## What changed?
+## Summary and approval boundary
 
-Describe the scope and intent of this pull request.
+Describe approved scope, desired outcome and PR status. Approval to implement does not authorize merging, releasing or deploying Pages.
 
-## Checklist
+## Scope and change review
 
-- [ ] Changes are limited to the approved scope; unrelated edits are excluded.
-- [ ] Modular source changed where applicable; generated HTML was not edited by hand.
-- [ ] `npm run check` passes (or explain why it was not run).
-- [ ] The compiled `index.html` and versioned standalone `dist/` HTML match byte-for-byte.
-- [ ] Real Chromium and Firefox browser QA passes, or any unrun checks are clearly noted.
-- [ ] Existing `.mappo.json` saves and schema/version compatibility remain supported.
-- [ ] Any affected documentation, release notes and screenshots are updated.
-- [ ] A downloadable standalone HTML checkpoint is included when a new app version is released.
-- [ ] I reviewed whether merging into `main` will trigger automatic GitHub Pages publication (changes to `index.html`, `dist/**`, or the Pages workflow).
+- [ ] Changes remain within the specifically approved scope.
+- [ ] For implementation work, edit modular source rather than hand-editing compiled HTML.
+- [ ] For runtime/version changes, ensure `src/core/version.js` and `package.json` agree and that rebuilt `index.html` equals `dist/mappo-<version>.html`.
+- [ ] Preserve authored IDs, project integrity, safe loading, portable saves and appropriately scoped Undo/Redo.
+- [ ] Update relevant documentation and acceptance records without rewriting historical evidence.
 
 ## Verification
 
-List commands, test counts, screenshots/CI run links, and any limitations.
+- [ ] Report targeted checks and full **Mappo CI / Build, Node tests and browser QA** status for the exact review-ready commit, or explain pending/unrun checks.
+- [ ] Link GitHub Actions runs when available; separate automated browser QA from hands-on verification.
+- [ ] Give verified test counts, failures/resolutions and measured CI duration when available.
+- [ ] Show performance comparisons only if relevant and measured; screenshots are optional unless requested.
+- [ ] For runtime changes, verify the offline `file://` build and compiled parity.
+- [ ] Maintain currently shipped schema-9 migrations and regression fixtures absent a separately approved data/CI policy change.
 
-## User-visible impact
+## User experience: before and after
 
-Summarize behavior changes, or state **No application behavior changes**.
+Describe changed behavior and practical benefit. If the work is documentation or infrastructure only, say **No user-facing application changes**.
 
-## Merge / release notes
+## Risks, limitations and next action
 
-Note any approvals, dependencies on other PRs, or deployment restrictions.
+List relevant limitations, links to affected issues and one recommended next action. Merging needs separate explicit approval; a merge does not authorize tagging, publishing a release or deploying Pages. Release and Pages workflows are independent and manual/guarded.
+
+[Agent instructions](../AGENTS.md) · [Development rules](../docs/DEVELOPMENT_RULES.md) · [CI policy](../docs/CI_TEST_POLICY.md)

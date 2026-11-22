@@ -1,5 +1,7 @@
 # Pass C — Completed Branch Review and Manual Cleanup
 
+> **Branch-listing observation, November 21, 2026:** `chore/ci-housekeeping`, `chore/repo-housekeeping` and `feature/building-inspector-3f` are still listed. The four `feature/ui-phase-4` through `feature/ui-phase-7` names were **not present** in the current branch listing. This does not establish who deleted them or change the seven-name **historical** C9 audit below. No branch deletion or other ref update is authorized by this documentation cleanup; re-verify ancestry and references before any future action.
+
 **C8 approved. C9 approved with GitHub UI deletion to be performed by the repository owner.**
 
 Comparison baseline: [`main` at `92c54cc7c03ad8a4ea4a560f0f58bc1e79d911d2`](https://github.com/xbwtyz/Mappo/commit/92c54cc7c03ad8a4ea4a560f0f58bc1e79d911d2). Each of the **seven** legacy branches below is an ancestor of `main` with **zero branch-only commits**. No deletion was performed.

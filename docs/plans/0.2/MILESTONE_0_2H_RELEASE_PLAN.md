@@ -1,6 +1,6 @@
 # Mappo 0.2H — Release hardening implementation plan
 
-**Status:** H1/H2 merged in PR #88; H3 merged in PR #89 with issues #44/#46 closed; H4 merged in PR #90 after successful [final CI](https://github.com/xbwtyz/Mappo/actions/runs/44958430396); H5 release candidate is under review and publication requires a further explicit approval. **Baseline:** merged 0.2G G4 PR #87, runtime `0.2-dev.g3g`, package `0.2.0-dev.g3g`, project schema 9, portable format 1. Current stable GitHub Release: **v0.1.0**.
+**Current outcome:** H1–H5 completed; [PR #91](https://github.com/xbwtyz/Mappo/pull/91) merged; [exact-main CI](https://github.com/xbwtyz/Mappo/actions/runs/44960254289) passed; [v0.2.0](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0) published. **Historical baseline:** G4, runtime `0.2-dev.g3g`, package `0.2.0-dev.g3g`, project schema 9 and format 1. The original checklists below retain their pre-publication chronology.
 
 **Goal:** Finish the existing 2D designer as a dependable offline 0.2.0 release without weakening preservation rules, forcing onboarding, adding phone support, or silently publishing on a merge. All work remains modular. Any production or schema change is individually justified and verified.
 
@@ -38,11 +38,11 @@ The [H3 desktop performance audit](H3_PERFORMANCE_AUDIT.md) reproduces Large Org
 - [x] PR #89 passed [full final six-runner CI](https://github.com/xbwtyz/Mappo/actions/runs/44957313588) and received separate owner merge approval.
 - [x] [#79](https://github.com/xbwtyz/Mappo/issues/79) dead-end deletion remains separate, unmodified engine work.
 
-## H4 — Final integrated release QA (current cycle)
+## H4 — Final integrated release QA (completed pre-release cycle)
 
 The [H4 release acceptance report](H4_RELEASE_QA_REPORT.md) is the authoritative final test matrix on the existing `0.2-dev.g3g` app. H4 does **not** promote it to the stable `0.2.0` version; that remains a separately approved H5 commit. Full existing Node and browser suites remain required.
 
-- [x] All **459 Node tests** and all four browser QA suites passed the H4 implementation run [#44958095092](https://github.com/xbwtyz/Mappo/actions/runs/44958095092), with the combined gate green. Final docs-only commit to be rechecked.
+- [x] All **459 Node tests** and all four browser QA suites passed the H4 implementation run [#44958095092](https://github.com/xbwtyz/Mappo/actions/runs/44958095092), with the combined gate green. This sentence records H4-era evidence; H5 subsequently passed and published v0.2.0.
 - [x] G4 desktop matrix (1366×768 / 1440×900 / 5120×1440) and cross-editor accepted/draft, scoped history and failed Apply regression passed in both browsers.
 - [x] H2 frozen schema **1–8** and schema-9 compatibility, unchanged geometry/IDs and actual Project-menu export/reopen passed both browsers.
 - [x] H4 native browser database recovery passed **Chromium and Firefox**: current/backup after reload, explicit latest/previous restore, authored identities and exported portable file reopening.
@@ -55,11 +55,11 @@ The [H4 release acceptance report](H4_RELEASE_QA_REPORT.md) is the authoritative
 
 [H5 candidate checklist and final CI evidence](H5_RELEASE_CANDIDATE_REPORT.md). This phase freezes the already-tested 2D editor; no new feature work or schema migration.
 
-- [x] H5 branch opened with app/package versions set to `0.2.0` and compiled `index.html`/`dist/mappo-0.2.0.html`; older distributions retained. **Merge still needs separate owner approval.**
-- [x] Draft candidate [0.2.0 release notes](../../releases/v0.2.0.md) with changes, compatibility and known limitations; awaiting final review.
-- [ ] CI green on exact final `main` SHA; explicit separate approval for merge and **another explicit approval for publication**.
-- [ ] Only after approval, manually dispatch the guarded `release.yml` workflow with `PUBLISH-0.2.0`. GitHub Pages is a **different**, manual workflow and is not published by the GitHub Release action.
-- [ ] Verify GitHub Release tag/assets, `main`, workflow logs, archived v0.1.0 preservation and optional Pages publication only if authorized.
+- [x] H5 committed aligned `0.2.0` versions and compiled `index.html`/`dist/mappo-0.2.0.html`; older distributions retained. [PR #91](https://github.com/xbwtyz/Mappo/pull/91) was explicitly approved and merged.
+- [x] Final [0.2.0 release notes](../../releases/v0.2.0.md) document changes, compatibility and known limitations.
+- [x] [Exact-main CI](https://github.com/xbwtyz/Mappo/actions/runs/44960254289) passed; merge and publication received separate explicit owner approvals.
+- [x] After approval, guarded `release.yml` published [v0.2.0](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0). GitHub Pages remains a **different**, manual workflow.
+- [x] Published v0.2.0 release/standalone asset and final-main CI are linked above; v0.1.0 remains archived. Pages deployment must not be inferred from this release and requires its own authorization.
 
 ## Phase acceptance and user experience
 

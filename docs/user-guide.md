@@ -1,12 +1,12 @@
 # Mappo User Guide
 
-**Stable release:** `0.1.0` · [Launch web app](https://xbwtyz.github.io/Mappo/) · [Standalone HTML](../dist/mappo-0.1.0.html) · [Docs index](README.md)
+**Stable release:** [v0.2.0](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0) · [Standalone HTML](../dist/mappo-0.2.0.html) · [Hosted Pages (separate deployment)](https://xbwtyz.github.io/Mappo/) · [Docs index](README.md)
 
 Mappo opens directly from its HTML file with no server. Portable project downloads are the recommended backup.
 
-## 0.2.0 desktop workspace (H5 release candidate)
+## 0.2.0 desktop workspace (published)
 
-The detailed sections below retain **stable 0.1.0** control names in places. In the newer **0.2.0 release candidate** on its H5 review branch, desktop and laptop browsers use the three-tab **Generation / Add / Roads** workspace at widths of 1000 CSS pixels and above.
+Some detailed sections below retain historical v0.1.0 control names. The **published v0.2.0** desktop/laptop build uses the three-tab **Generation / Add / Roads** workspace at widths of 1000 CSS pixels and above.
 
 - **Generation:** City outline, main square, street pattern, districts and defenses. Preview a changed city and review the proposal before Apply. Preview alone does not change accepted geometry.
 - **Add:** Create a property, place a building after selecting its property, or work with rivers, coastline, lakes and mountain ranges. Landscape changes use their own draft/Undo and a separate city rebuild.
@@ -16,7 +16,7 @@ The detailed sections below retain **stable 0.1.0** control names in places. In 
 
 The separate `?workspace=legacy` desktop entrypoint is retired. Narrow-window compact controls are retained for compatibility but phone/touch acceptance is **not** a 0.2G release target. Drafts never silently replace the accepted city; supported historical project files migrate without regenerating roads or building geometry. The [G4 acceptance report](plans/0.2/G4_ACCEPTANCE_REPORT.md), [H4 release QA](plans/0.2/H4_RELEASE_QA_REPORT.md) and [0.2.0 release notes](releases/v0.2.0.md) record the browser, backup and offline release evidence.
 
-**Note:** The historical reference instructions below may describe 0.1 behavior or limitations superseded by the 0.2 development candidate. The public Pages site is published manually and might not be the latest `main` build.
+**Note:** Some historical reference instructions below may describe v0.1 behavior or limitations superseded by the published v0.2.0 release. The public Pages site is published manually and might not be the latest `main` build.
 
 ## 1. Create a city
 
@@ -46,9 +46,9 @@ Expand **Edit property identity** or **Edit building identity**. Enter a name, c
 
 Properties and buildings have independent identities, including separate compound wings. Applied names/uses survive save/load, but identity drafts and the 20-step **Undo identity** history are **session-only**. Full city regeneration may replace building IDs and discard identities; Mappo warns before this happens. Local district/defense updates retain them.
 
-### Splitting a property — 0.2 development feature (unreleased)
+### Splitting a property — included in v0.2.0
 
-> E2 is merged on `main` in the 0.2 development candidate but is **not** in stable 0.1.0. Later 0.2E passes added adjacent property merging and plot-count editing.
+> Property splitting, adjacent merging and plot-count editing are available in published v0.2.0; they were not in historical v0.1.0.
 
 In City / Select, select a property and choose **Split property** in the Inspector. An editable line runs straight from the street frontage to the rear. Drag the highlighted divider on the map or enter **Divider along frontage (%)** for precision. Two shaded resulting parcels and their areas, frontage lengths, plot count and building ownership appear in the preview.
 

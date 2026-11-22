@@ -1,43 +1,35 @@
 # Mappo Developer Guide
 
-**Currently published GitHub Release:** `0.1.0` · **H5 unmerged release candidate:** `0.2.0` · [Project README](../README.md) · [Docs index](README.md) · [Project format](reference/PROJECT_FORMAT.md)
+**Published GitHub Release:** [v0.2.0](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0) · [Agent instructions](../AGENTS.md) · [Development rules](DEVELOPMENT_RULES.md) · [Project format](reference/PROJECT_FORMAT.md)
 
-## Source organization
+## Current source organization (v0.2.0)
 
-Mappo's runtime is dependency-free. Write changes in ES modules and CSS; **do not hand-edit generated `index.html` or `dist/` files** in place of source. The build embeds modules and CSS into one portable HTML file.
+Mappo's runtime is dependency-free and the accepted 2D city is the single source of truth. The canonical desktop workspaces are **Generation / Add / Roads** with a property-first Inspector. The older four-section shell remains an internal compact/fallback, with domain controllers reused rather than reimplemented.
 
-```text
-src/core/          Geometry, shared model, validation and version
-src/generators/    City, streets, buildings, districts, water, terrain and defense generation
-src/data/          Project persistence, migration, validation and browser recovery
-src/editor/        Gesture controllers, drafts and scoped Undo histories
-src/editor/building.js  Transient 3G-B building edit session / gestures (not serialized)
-src/core/building-transform.js  Pure transform geometry and preview handles
-src/core/building-validation.js  Exact polygon/containment/collision checks
-src/editor/building-application.js  Reconciliation, complete project checks and atomic candidate preparation
-src/editor/building-history.js  Bounded session history, geometry-only Undo/Redo and atomic validation
-src/editor/building-structures.js  Property-local footprint presets and validated add/replace/delete transactions
-src/editor/building-structure-history.js  Session-only structural Undo/Redo
-src/renderer/building-structure-preview.js  Non-destructive structure placement overlay
-src/core/property-geometry.js  Convex parcel/plot reflow and local coordinate bounds
-src/editor/property-edit.js  Transient property geometry/plot divider session
-src/editor/property-application.js  Exact land geometry validation and atomic schema-9 Apply
-src/editor/property-history.js  Bounded linked property/plot history
-src/renderer/property-edit-preview.js  Editable parcel and plot overlay
-src/renderer/      Canvas layers and camera
-src/renderer/building-editing.js  Transformed footprint overlay and handles
-src/ui/            Controls, Inspector, selection and project-file workflow
-src/app.js         Application integration and accepted workspace
-styles/app.css     CSS embedded in output
-index.template.html   HTML build template
-scripts/build.mjs     Deterministic standalone compilation
-scripts/browser-qa.mjs, scripts/building-browser-qa.mjs  Native browser testing
-tests/            Node regression tests and historical saved-project fixtures
-index.html        Generated GitHub Pages entrypoint
-dist/             Versioned standalone HTML snapshots
-```
+| Area | Responsibility |
+| --- | --- |
+| `src/core/` | Models, deterministic geometry/topology, validators and version |
+| `src/generators/` | Seeded generation of cities, buildings, water, terrain and fortifications |
+| `src/data/` | Schema-9 persistence, supported migrations, safe loading and browser recovery |
+| `src/editor/` | Non-destructive drafts/previews, independently validated Apply, scoped histories |
+| `src/renderer/` | Canvas layers, camera, selection and editing overlays |
+| `src/ui/` | Desktop workspace, Inspector, Project/Layers controls and legacy fallback |
+| `src/worker/` | Bundled background computation for junction previews |
+| `src/app.js` | Application and accepted-city orchestration |
+| `styles/app.css`, `index.template.html` | Styling and HTML template sources |
+| `scripts/build.mjs` | Deterministic standalone HTML compilation |
+| `tests/`, `scripts/*qa*.mjs` | Node, Firefox and Chromium verification |
+
+**Modify modular source, never compiled HTML directly.** The build embeds modules and CSS into byte-identical `index.html` and `dist/mappo-<APP_VERSION>.html`. Preserve shipped save migrations, historical distributions, protected data and scoped Undo/Redo. Validate targeted changes before full six-runner CI on the review-ready PR.
+
+For an accurate individual-file listing, consult the [architecture atlas](architecture/Mappo_Repository_Atlas.md). For the modern desktop workspace, consult the [G3G parity review](plans/0.2/G3G_PARITY_REVIEW.md) and [G4 acceptance](plans/0.2/G4_ACCEPTANCE_REPORT.md).
+
+<details>
+<summary>Historical 3G–3I implementation notes (retained for original design context)</summary>
 
 Properties are primary selected sites; individual buildings are child records with independent identity. 3G-C extends the transient preview with exact polygon and ownership validation, plot/entrance/access-path reconciliation, and a guarded atomic replacement of the accepted project only after schema-9 saved-project validation and portable round trip. Failed candidates never mutate existing data; after Apply, files.changed() marks the new city for recovery. 3G-D adds a separate, 20-step session-only per-building geometry history. The redo/undo preflight preserves unrelated building identity fields, validates the full candidate and performs a portable document round trip before committing. Rebuild, project load and recovery reset the history; accepted building geometry remains part of schema 9. 3H adds independently validated structural transactions within existing properties, with no new schema fields. Add/replace/delete modify property building membership and building records atomically; structural Undo/Redo history is session-only, reset on load/rebuild. Keep accepted geometry distinct from drafts. Validate restored selections against record existence, parent relationships and layer visibility. 3I adds property-scoped preview and plot reflow, validating convexity, street margins, neighboring property overlap and building containment. Apply reconciles parcel/plot/occupied-plot/open-space facts, checks schema 9 and portable encoding, and commits atomically. Session-only property Undo/Redo is invalidated by accepted building/structural actions and cleared on load/regeneration. Do not reattach identities to potentially reused IDs after regeneration.
+
+</details>
 
 ## Build and automated checks
 
@@ -49,7 +41,7 @@ npm test
 npm run check
 ```
 
-The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. H5 reviewed output: `dist/mappo-0.2.0.html` (candidate), with `dist/mappo-0.2-dev.g3g.html` and `dist/mappo-0.1.0.html` archived. External runtime imports are rejected. H5 is a version freeze; there is no schema change.
+The build compares `APP_VERSION` in `src/core/version.js` with `package.json`, embeds locally imported JavaScript and styles, and generates identical files `index.html` and `dist/mappo-<APP_VERSION>.html`. Published v0.2.0 output: `dist/mappo-0.2.0.html`, with `dist/mappo-0.2-dev.g3g.html` and `dist/mappo-0.1.0.html` archived. External runtime imports are rejected. H5 is a version freeze; there is no schema change.
 
 ```bash
 cmp index.html dist/mappo-0.2.0.html
@@ -68,9 +60,9 @@ npm run test:browser:g4            # focused G4 browser matrix
 
 H2 adds complete archived schema 1–8 Node migration checks and native browser open/export/reopen for representative historical files. Run `npm run test:browser:h2` for focused H2 compatibility acceptance. G4's desktop suite records `artifacts/g4/desktop-acceptance.json` and `.md` with browser/viewport, historical-save and offline status, Small/Large draw measurements, and road preview timing. Its separate cross-editor test verifies a real canonical desktop split/merge, wing and courtyard changes, accepted history and portable reopen. These are diagnostics, not guaranteed user-device timings.
 
-Dev 4f passed the complete Node, compilation and Chromium/Firefox browser matrices: [CI run #341](https://github.com/xbwtyz/Mappo/actions/runs/44428124074). The 0.1.0 release candidate must pass equivalent CI on its own commit; this does not replace hands-on testing.
+The published v0.2.0 merge passed [exact-main CI](https://github.com/xbwtyz/Mappo/actions/runs/44960254289): **459/459 Node tests** and the Chromium/Firefox browser suites. Automated QA does not replace owner-run visual testing.
 
-**Never discard `tests/fixtures/`:** older frozen JSON projects are important compatibility tests. Changes to city/workspace schemas need explicit migration/validation and must follow [the persistence contract](reference/PROJECT_FORMAT.md).
+**Legacy-save compatibility:** v0.2.0 ships migrations for schemas 1–8 and current CI tests that functionality. The owner has switched **mandatory compatibility with every older save OFF for future releases**. This does not authorize deleting current migration code, frozen fixtures or tests. A change to supported versions needs a separately approved schema/format plan, safe rejection, backups and test policy. Preserve `tests/fixtures/` under the [archival policy](maintenance/BUILD_RETENTION_POLICY.md). See [Project Format](reference/PROJECT_FORMAT.md) and [Development Rules](DEVELOPMENT_RULES.md).
 
 ## Feature and release workflow
 
@@ -78,10 +70,10 @@ Dev 4f passed the complete Node, compilation and Chromium/Firefox browser matric
 2. Update modular source in manageable checkpoints.
 3. For a release checkpoint, update the source/package versions together, compile, and commit matching `index.html` and `dist/mappo-<version>.html`.
 4. Keep historical distribution files intact unless a separate archival plan is approved.
-5. Run Node tests, source-to-compiled parity, persistence compatibility and relevant graphical browser QA.
+5. Run Node tests, source-to-compiled parity, compatibility checks for **supported** project formats and relevant browser QA. Do not silently modify historical-test expectations.
 6. Present a pull request for explicit approval before merging.
 
-**Release workflow:** [`.github/workflows/release.yml`](../.github/workflows/release.yml) is manual-only on `main`, with an explicit 0.2.0 confirmation and guards for exactly matching stable versions, approved release notes, passing main CI on the exact commit, full Node/build parity, immutable release tags and no overwriting v0.1.0. It cannot publish the current development build. The actual 0.2.0 version change, release notes, approval and dispatch belong to H5.
+**Release workflow:** [`.github/workflows/release.yml`](../.github/workflows/release.yml) is a **manual, version-specific publisher for v0.2.0**, which already [published successfully](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0). Its checks include explicit confirmation, stable app/package versions, release notes and asset, exact-main CI, build parity, and refusal to overwrite a tag. A **future version requires a separately approved workflow update and separate release authorization**. Merging a PR never authorizes publication.
 
 **Pages behavior:** [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) is manual-only on `main`. A PR merge does **not** deploy the site. The owner can explicitly run the Pages workflow when ready.
 

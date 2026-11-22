@@ -4,21 +4,29 @@
 
 | Destination | What you'll find |
 | --- | --- |
-| [0.2.0 Release Candidate Notes](releases/v0.2.0.md) | Changes since 0.1, upgrade instructions, known limitations and manual publication policy |
-| [H5 Release Candidate Acceptance](plans/0.2/H5_RELEASE_CANDIDATE_REPORT.md) | Version freeze, deterministic standalone, CI and owner approval gates |
-| [0.1.0 Release Notes](releases/v0.1.0.md) | Stable launch, distribution, shipped features, compatibility and limitations |
+| [Development & AI Communication Policy](DEVELOPMENT_RULES.md) | Complete owner-approved rule catalog and Adaptive reporting contract |
+| [Root Agent Instructions](../AGENTS.md) | Short entry point for future AI coding agents |
+| [Published 0.2.0 Release Notes](releases/v0.2.0.md) | Current stable City Designer changes and known limitations |
+| [H5 Release Candidate Acceptance](plans/0.2/H5_RELEASE_CANDIDATE_REPORT.md) | Preserved historical review and pre-publication CI evidence |
+| [0.1.0 Release Notes](releases/v0.1.0.md) | Archived first stable release and historical compatibility |
 | [User Guide](user-guide.md) | City generation, tools, Inspector, navigation and saved projects |
 | [Developer Guide](development.md) | Modules, testing, build pipeline and release process |
-| [Architecture Atlas](architecture/Mappo_Repository_Atlas.md) | Complete repository hierarchy, visual system diagrams, and a purpose description for every tracked file |
+| [Architecture Atlas](architecture/Mappo_Repository_Atlas.md) | Updated 508-file inventory, linked SVG hierarchy and file-purpose descriptions |
 | [Unified CI Guide](CI.md) | Branch and PR tests, browser matrices, artifacts and local commands |
 | [Current Roadmap](ROADMAP.md) | Completed milestones and separately proposed future work |
 | [H4 Release QA](plans/0.2/H4_RELEASE_QA_REPORT.md) | Final desktop acceptance, genuine browser recovery, old saves, offline builds and release limitations |
 | [H3 Large-city Performance Audit](plans/0.2/H3_PERFORMANCE_AUDIT.md) | Current Chromium/Firefox Large Organic preview/Apply timings, issue #44/#46 review and limitations |
 | [0.2H Release Hardening](plans/0.2/MILESTONE_0_2H_RELEASE_PLAN.md) | H1 manual release safety, H2 save compatibility, H3 performance, H4 validation and H5 explicit publication gate |
-| [0.2 Master Roadmap](plans/0.2/README.md) | Milestone order, current status, and the desktop workspace rebuild |
-| [0.2E Property Design](plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md) | E1 and E2 merged; E3 adjacent merge design proposed; E4/E5 planned |
+| [0.2 Master Roadmap](plans/0.2/README.md) | Completed 0.2A–H milestone sequence and published status |
+| [0.2E Property Design](plans/0.2/MILESTONE_0_2E_PROPERTY_DESIGN.md) | E1–E5 completed and merged; original milestone design preserved |
 | [E2 Straight-Split Design](plans/0.2/E2_PROPERTY_SPLIT_DESIGN.md) | Frontage-to-rear geometry, identity lineage, plot/building ownership and five implementation/QA gates |
-| [E2 Acceptance](plans/0.2/E2_ACCEPTANCE_REPORT.md) | E2 implemented and merged via PR #60; historical acceptance evidence |\n| [E3 Adjacent Merge Design](plans/0.2/E3_PROPERTY_MERGE_DESIGN.md) | Approved design for conservative adjacent property merging |\n| [E4 Plot Count Design](plans/0.2/E4_PLOT_COUNT_DESIGN.md) | Approved plot-count specification, extending existing 3I property geometry editor |\n| [E4 Acceptance Report](plans/0.2/E4_ACCEPTANCE_REPORT.md) | Historical E4 acceptance evidence; E4 merged via PR #64 |\n| [E5 Integrated Acceptance Plan](plans/0.2/E5_INTEGRATED_ACCEPTANCE_PLAN.md) | Approved final 0.2E cross-editor QA and performance scope |\n| [E5 Acceptance Report](plans/0.2/E5_ACCEPTANCE_REPORT.md) | Current integration evidence, measured latency and remaining acceptance gates |\n| [E3 Acceptance Report](plans/0.2/E3_ACCEPTANCE_REPORT.md) | Unmerged PR #62 implementation scope, safeguards and CI gates |
+| [E2 Acceptance](plans/0.2/E2_ACCEPTANCE_REPORT.md) | E2 implemented and merged via PR #60; historical acceptance evidence |
+| [E3 Adjacent Merge Design](plans/0.2/E3_PROPERTY_MERGE_DESIGN.md) | Approved design for conservative adjacent property merging |
+| [E4 Plot Count Design](plans/0.2/E4_PLOT_COUNT_DESIGN.md) | Approved plot-count specification, extending existing 3I property geometry editor |
+| [E4 Acceptance Report](plans/0.2/E4_ACCEPTANCE_REPORT.md) | Historical E4 acceptance evidence; E4 merged via PR #64 |
+| [E5 Integrated Acceptance Plan](plans/0.2/E5_INTEGRATED_ACCEPTANCE_PLAN.md) | Historical E5 cross-editor QA and performance acceptance plan |
+| [E5 Acceptance Report](plans/0.2/E5_ACCEPTANCE_REPORT.md) | Completed E5 integration evidence, measured latency and historical acceptance gates |
+| [E3 Acceptance Report](plans/0.2/E3_ACCEPTANCE_REPORT.md) | Merged PR #62 implementation and historical acceptance safeguards |
 | [0.2F Building Design](plans/0.2/MILESTONE_0_2F_BUILDING_DESIGN.md) | Merged footprint tools, classification, and integration acceptance |
 | [0.2G Desktop Workspace](plans/0.2/MILESTONE_0_2G_DESKTOP_UI.md) | Desktop-only scope and modular workspace architecture |
 | [0.2G Implementation Passes](plans/0.2/G1_G4_IMPLEMENTATION_PLAN.md) | G1–G4 implementation sequence, tool migration, and desktop acceptance gates |
@@ -34,4 +42,4 @@
 | [Historical Archives](history/README.md) | Prior plans, QA reports and original detailed README |
 | [Pass A Cleanup QA](PASS_A_QA.md) | Link validation, protected files, archiving and merge scope |
 
-Historical reports preserve their original status at the time written. The [roadmap](ROADMAP.md) describes current completion status.
+Historical reports preserve their original status at the time written. The [roadmap](ROADMAP.md) describes current completion status; the [owner-approved rules](DEVELOPMENT_RULES.md) govern future work. The current official GitHub Release is [v0.2.0](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0).

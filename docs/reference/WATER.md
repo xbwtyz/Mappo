@@ -1,6 +1,6 @@
 # Water and bridge architecture
 
-Milestone 3E implements generated/editable rivers and connected bridges. The 3E.1 expansion adds generated/editable coastlines, an explicit ocean side and connected coastal land. The 3E.2 expansion supports one river and one coast together, with independent controls and an exposed-shore union at river mouths. The 3E.5 expansion adds up to eight independent lakes with closed shore handles, whole-lake movement and inland access streets. Additional rivers/coasts remain extensions. Building inspection remains planned for 3F.
+Milestone 3E implements generated/editable rivers and connected bridges. The 3E.1 expansion adds generated/editable coastlines, an explicit ocean side and connected coastal land. The 3E.2 expansion supports one river and one coast together, with independent controls and an exposed-shore union at river mouths. The 3E.5 expansion adds up to eight independent lakes with closed shore handles, whole-lake movement and inland access streets. Additional rivers/coasts remain extensions. Building inspection was completed in 3F; the current desktop workflow is described by [G4 acceptance](../plans/0.2/G4_ACCEPTANCE_REPORT.md).
 
 ## Module boundaries
 

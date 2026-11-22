@@ -1,6 +1,6 @@
-# Mappo 0.2E — Manual Property Restructuring (planning draft)
+# Mappo 0.2E — Manual Property Restructuring (completed design history)
 
-> **Status (2026-11-20):** E1 property creation merged via [PR #58](https://github.com/xbwtyz/Mappo/pull/58) and E2 frontage-to-rear splitting merged via [PR #60](https://github.com/xbwtyz/Mappo/pull/60). E3 adjacent-property merging has an **approved** [conservative E3 contract](E3_PROPERTY_MERGE_DESIGN.md) and an **unmerged** [feature PR #62](https://github.com/xbwtyz/Mappo/pull/62), pending full validation and separate merge approval. E4–E5 remain planned. Preserve schema 9 and separate code, merge and release gates. See the [master roadmap](README.md) and [0.2F building design](MILESTONE_0_2F_BUILDING_DESIGN.md).
+> **Current status:** E1–E5 completed and merged through [PR #66](https://github.com/xbwtyz/Mappo/pull/66), and the City Designer was published as [v0.2.0](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0). The original planning checkboxes below remain unchecked as **historical design criteria**, not outstanding work. For final completion, see the [master roadmap](README.md) and [E5 acceptance report](E5_ACCEPTANCE_REPORT.md).
 
 ## Purpose
 
@@ -26,9 +26,9 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 4. **Geometry is validated as a coupled whole.** Block coverage, property adjacency and non-overlap, legal geometry, plot tiling, building containment, entrances, frontage and protected civic/landscape infrastructure remain authoritative. Roads are not silently moved by land edits.
 5. **Identity and lineage are auditable.** Retain IDs for unchanged records; for split/merge, record source→successor mappings and make the policy for conflicting identities explicit before implementation. Never claim one-to-one mapping where none is provable.
 6. **One independent Apply.** Revalidate current accepted revision, full project and schema-9 encode/decode; accept the entire connected edit as one revision and one Undo/Redo step or leave it unchanged. Do not copy uncommitted drafts into a portable project.
-7. **Compatibility first.** Keep schema 9 unless a separate reviewed migration is strictly necessary. Keep old files readable, property-first interaction, modular JavaScript, and reproducible standalone builds.
+7. **Shipped 0.2.0 compatibility.** The milestone retained schema 9, existing supported migrations, property-first interaction, modular JavaScript, and reproducible standalone builds. Future blanket legacy-save compatibility is optional; any change to shipped behavior needs separate approval.
 
-## Proposed development sequence
+## Historical development sequence (completed E1–E5)
 
 ### E1 — Create a property in eligible land (merged PR #58)
 
@@ -46,27 +46,27 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 - [ ] Retain buildings in the verified parcel when possible. A building spanning the split line or an unassignable plot must block Apply until the user adjusts the draft or authorizes a supported resolution.
 - [ ] **Gate:** legal and illegal cuts, property at road edge, named buildings, preserved external references, one-step Undo/Redo, round-trip save, and no unresolved ownership.
 
-### E3 — Merge adjacent compatible properties (implementation PR #62 pending acceptance)
+### E3 — Merge adjacent compatible properties (merged PR #62)
 
-**Detailed proposed contract:** [E3 property merging design](E3_PROPERTY_MERGE_DESIGN.md). The primary/secondary identity policy, metadata retirement consent, exact adjacency geometry, and schema-9 lineage must be approved before implementation. The design has been approved in merged PR #61; PR #62 implementation still requires full CI and separate merge permission.
+**Completed contract:** [E3 property merging design](E3_PROPERTY_MERGE_DESIGN.md). The reviewed primary/secondary identity policy, metadata retirement consent, exact adjacency geometry and schema-9 lineage were implemented in merged [PR #62](https://github.com/xbwtyz/Mappo/pull/62).
 
 - [ ] Require verified geometric adjacency, compatible block/frontage and a valid combined parcel. No cross-block or road-crossing merge without separately authorized design.
 - [ ] Show the identity/metadata conflict policy before Apply. Prefer a clear resulting identity and an auditable merge ledger; never silently discard either customized property identity.
 - [ ] Validate dependent plots, buildings and protected relationships; keep an invalid or contested merge draft editable.
 - [ ] **Gate:** merge generated lots, merge customized lots with explicit decisions, reject nonadjacent/ambiguous cases and prove exact Undo/Redo.
 
-### E4 — Plot division and dependency reconciliation (feature PR #64 unmerged)
+### E4 — Plot division and dependency reconciliation (merged PR #64)
 
-**Detailed proposed contract:** [E4 plot-count and dependency design](E4_PLOT_COUNT_DESIGN.md). The approved identity, metadata retirement consent, lineage and building membership rules are implemented in feature PR #64; final CI and separate merge authorization remain required.
+**Detailed proposed contract:** [E4 plot-count and dependency design](E4_PLOT_COUNT_DESIGN.md). The approved identity, metadata retirement consent, lineage and building membership rules were implemented in merged [PR #64](https://github.com/xbwtyz/Mappo/pull/64).
 
 - [ ] Extend the **existing** plot-divider tooling to support deliberate plot-count changes (split/merge plots) where schema and geometry allow; avoid a second competing plot editor.
 - [ ] Reconcile plot IDs, property ownership, building plot memberships, entrance/frontage paths and necessary connected records using only verified geometry and recorded lineage.
 - [ ] Display grouped consequences with Details available; focus and recover from affected authored buildings without forcing global redevelopment.
 - [ ] **Gate:** multiple buildings/plots, old custom metadata, ambiguous ownership, cancelled authorizations, and no orphaned reference after Apply/Undo/Redo/save.
 
-### E5 — Integrated stabilization and milestone acceptance (implementation under review)
+### E5 — Integrated stabilization and milestone acceptance (merged PR #66)
 
-**Detailed acceptance plan:** [E5 integrated acceptance](E5_INTEGRATED_ACCEPTANCE_PLAN.md). E1–E4 are merged, including E4 in [PR #64](https://github.com/xbwtyz/Mappo/pull/64). E5 is **integration/QA**, not new property editing functionality; the approved plan is now being implemented on a separate branch. Its merge still requires final CI and separate approval. See the [E5 acceptance report](E5_ACCEPTANCE_REPORT.md).
+**Detailed acceptance plan:** [E5 integrated acceptance](E5_INTEGRATED_ACCEPTANCE_PLAN.md). E1–E4 are merged, including E4 in [PR #64](https://github.com/xbwtyz/Mappo/pull/64). E5 was **integration/QA**, not new property editing functionality, and was accepted in merged [PR #66](https://github.com/xbwtyz/Mappo/pull/66). The checklist below documents the original acceptance proposal, including historical phone coverage; current routine acceptance targets desktop browsers. See the [E5 acceptance report](E5_ACCEPTANCE_REPORT.md).
 
 - [ ] End-to-end browser cases: **road edit → inspect adapted neighborhood → create/split/merge parcel → adjust plot division → Apply/Undo/Redo → portable save/reopen**, on Chromium and Firefox at desktop and phone sizes.
 - [ ] Test all four morphologies, developed Small/Large fixtures, legacy schema-9 datasets, access/landscape/civic protections, stale drafts, and repeated edits.
@@ -74,10 +74,10 @@ This milestone fills the **structural** gaps. It must not recreate the property 
 - [ ] Run full Node and browser regression, verify root HTML is byte-identical to the versioned offline distribution, document coverage and limitations.
 - [ ] Merge only with explicit separate approval. Do not tag or publish a 0.2 release from E alone.
 
-## Design authority and remaining decisions
+## Design authority and completed outcome
 
-E1–E4 designs were approved and implemented in merged PRs #58, #60, #62 and #64. The remaining 0.2E decision is E5 integrated stabilization, detailed in the [proposed E5 acceptance plan](E5_INTEGRATED_ACCEPTANCE_PLAN.md). Do not broaden E5 into new geometry or schema changes. The milestone remains unreleased.
+E1–E5 were completed in merged PRs #58, #60, #62, #64 and #66, respectively. [E5 acceptance](E5_ACCEPTANCE_REPORT.md) documents integrated verification. The completed functionality is included in published v0.2.0; its original design decisions remain preserved.
 
 ## Explicitly deferred
 
-Complex free-form building vertex/wing editing belongs to [0.2F](MILESTONE_0_2F_BUILDING_DESIGN.md). Civic-place/landmark editors belong to optional 0.2G. Release migration/hardening belongs to 0.2H. 3D is later than a stable 2D designer.
+Complex free-form building vertex/wing editing belongs to [0.2F](MILESTONE_0_2F_BUILDING_DESIGN.md). Civic-place/landmark editors remain deferred beyond v0.2.0; 0.2G became the desktop workspace rebuild, while 0.2H release hardening is complete. 3D is later than a stable 2D designer.
