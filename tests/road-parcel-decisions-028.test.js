@@ -38,6 +38,9 @@ test('B05 customized local parcel stays blocked until a genuine reshape choice',
  validateStoredProject(result.candidateProject);
  const modified=result.candidateProject.city.properties.find(p=>p.id===id);
  assert.equal(modified.customName,'B05 named yard');
+ const archive=result.candidateProject.city.roadParcelDecisionHistory028;
+ assert.ok(Array.isArray(archive)&&archive.length,'Accepted authored decision needs a durable original-record audit');
+ assert.equal(archive.at(-1).source.property.customName,'B05 named yard');
  assert.equal(modified.id,id);
  assert.deepEqual(modified.plotIds,parcel.plotIds);
  assert.deepEqual(modified.buildingIds,parcel.buildingIds);

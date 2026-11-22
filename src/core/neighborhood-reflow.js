@@ -99,6 +99,10 @@ function reconcileRoadIntent(project,roadId,draft,decisions,options = {}) {
   if (!adapted.unresolved.length || (adapted.unresolved.some(row => !rebuildableLandIssues.has(row.code)) &&
       !adapted.unresolved.some(row=>row.code==='parcel-decision-required' || row.code==='parcel-decision-invalid')))
     return adapted;
+  // Prefer preserving an authored property in its existing block through the
+  // local C2 shape solver before offering more disruptive topology replacement.
+  if(adapted.unresolved.some(row=>row.code==='parcel-decision-required') &&
+     adapted.parcelReview?.some(row=>row.options?.length))return adapted;
   const rebuilt = prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions,options);
   if(!rebuilt.candidateProject && rebuilt.unresolved.some(row=>row.code==='parcel-decision-required') &&
      !rebuilt.parcelReview?.some(row=>row.options.length)) {

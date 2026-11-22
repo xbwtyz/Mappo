@@ -57,8 +57,14 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
    await options.filter({hasText:'Reshape'}).first().click();
    await page.waitForFunction(id=>{
      const s=__buildingQA.state().roadWorkspace.session;
-     return !s.checking&&s.settledRevision===s.revision&&s.parcelChoices.has(id)&&s.hasApplyCandidate;
-   },id,{timeout:60000});
+     return !s.checking&&s.settledRevision===s.revision&&s.parcelChoices.has(id);
+   },id,{timeout:30000});
+   const preview=await page.evaluate(()=>{
+     const s=__buildingQA.state().roadWorkspace.session;
+     return {ready:s.hasApplyCandidate,status:s.reconciliation?.status,
+       unresolved:s.reconciliation?.unresolved?.slice(0,3),selected:[...s.parcelChoices]};
+   });
+   assert.equal(preview.ready,true,JSON.stringify(preview));
    assert.equal(await page.locator('#roadApplyB4').isEnabled(),true,
      await page.locator('#roadApplyStatusB4').innerText());
    assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),before);
