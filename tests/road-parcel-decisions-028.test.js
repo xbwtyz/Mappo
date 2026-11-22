@@ -64,6 +64,13 @@ test('B05 customized local parcel stays blocked until a genuine reshape choice',
  const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,ws)));
  assert.deepEqual(portable.project,JSON.parse(JSON.stringify(candidate)));
 });
+test('B05 local decision accepts UI payload with null successor target',()=>{
+ const {project,parcel}=b05LocalFixture();
+ const result=local(project,new Map([[parcel.id,{kind:'reshape',targetId:null}]]));
+ assert.ok(result.candidateProject,result.unresolved[0]?.message);
+ const preserved=result.candidateProject.city.properties.find(p=>p.id===parcel.id);
+ assert.equal(preserved.customName,'B05 named yard');
+});
 test('B05 unknown provenance remains unknown; incorrect and stale choices reject atomically',()=>{
  const {project,parcel}=b05LocalFixture();
  delete project.city.properties.find(p=>p.id===parcel.id).roadProvenance;

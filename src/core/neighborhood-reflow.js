@@ -262,7 +262,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
         continue;
       }
       if (choice && (provenance === 'generated' || !['keep','reshape'].includes(choice.kind) ||
-           Object.keys(choice).some(key=>key!=='kind'))) {
+           (choice.targetId != null || Object.keys(choice).some(key=>!['kind','targetId'].includes(key))))) {
         unresolved.push(c2Issue('property', property.id, 'parcel-decision-invalid',
           'This parcel decision is invalid for the current road edit.'));
         continue;
