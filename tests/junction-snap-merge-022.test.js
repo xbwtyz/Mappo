@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
-import { buildRoadGraph } from '../src/core/road-graph.js';
+import { buildRoadGraph } from '../src/core/road-graph.js';\nimport { normalizeRoadCrossingsC3 } from '../src/core/road-crossings.js';
 import { roadInspectionDetails } from '../src/core/road-inspection.js';
 import { JUNCTION_SNAP_CAPTURE_PX, JUNCTION_SNAP_RELEASE_PX,
   findEligibleJunctionTarget } from '../src/core/junction-targeting.js';
@@ -12,7 +12,7 @@ import { buildingAppHarness } from './helpers/building-app.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
 
 const projectFixture = () => createProject({seed:'c2-planned',size:'small',morphology:'planned'});
-const sourceId = 'N-0139', targetId = 'N-0140';
+// Reverse of the original A03 fixture: the accepted 0.2.2 reflow can safely\n// retain N-0139 as the explicitly chosen destination. The opposite direction\n// crosses mixed district/land-use ownership and must remain safely blocked.\nconst sourceId = 'N-0140', targetId = 'N-0139';
 const node = (project,id) => project.city.nodes.find(record => record.id === id);
 
 test('J1 deterministic zoom-relative snap targets: 12px capture, 18px release and protected exclusion',()=>{
@@ -91,6 +91,33 @@ test('J1/J3 chosen target ID survives a verified merge; bad identity request blo
     new Map(),{targetJunctionId:sourceId});
   assert.equal(self.candidateProject,null);
   assert.equal(self.unresolved[0].code,'target-junction-invalid');
+});
+
+test('J3 explicit target preference overrides lexicographic node choice in a safe ordinary graph',()=>{
+  const city={
+    nodes:[['A',0,0],['B',10,0],['C',10,10],['D',0,10],['X',5,5],['Y',5,5]]
+      .map(([id,x,y])=>({id,x,y})),
+    roads:[['A','B'],['B','C'],['C','D'],['D','A'],
+      ['A','X'],['X','C'],['B','Y'],['Y','D']]
+      .map(([a,b],i)=>({id:'R-'+i,a,b,kind:'lane'})),
+  };
+  const before=structuredClone(city);
+  const result=normalizeRoadCrossingsC3(city,{preferredNodeId:'Y'});
+  assert.equal(result.graph.valid,true);
+  assert.deepEqual(result.consolidatedNodeIds,['X']);
+  assert.equal(result.city.nodes.some(n=>n.id==='Y'),true);
+  assert.equal(result.city.nodes.some(n=>n.id==='X'),false);
+  assert.deepEqual(city,before);
+});
+
+test('J3 target identity cannot bypass ownership safeguards when direction is unsafe',()=>{
+  const project=projectFixture(),dest=node(project,'N-0140');
+  const before=structuredClone(project);
+  const result=prepareJunctionReflowC7(project,'N-0139',{x:dest.x,y:dest.y},
+    new Map(),{targetJunctionId:'N-0140'});
+  assert.equal(result.candidateProject,null);
+  assert.equal(result.unresolved[0]?.code,'district-decision-required');
+  assert.deepEqual(project,before);
 });
 
 test('J3/J4 UI chooses source then target by map clicks, uses verified Apply, Undo/Redo and cancel',async()=>{
