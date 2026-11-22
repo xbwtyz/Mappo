@@ -821,14 +821,18 @@ function syncPropertyEditUI3I() {
   dividerIndex.value=String(session.selectedDivider);
   dividerInput.disabled=dividers.length===0;
   dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
-  $('propertyAddDividerE4').disabled=Boolean(session.countChange||session.drag);
-  $('propertyRemoveDividerE4').disabled=Boolean(session.countChange||session.drag||!dividers.length);
+  $('propertyAddVertex024').disabled=Boolean(session.drag||session.countChange||session.boundary.length>=12);
+  $('propertyRemoveVertex024').disabled=Boolean(session.drag||session.countChange||session.boundary.length<=3
+    ||session.selectedCorner===null||session.selectedCorner<2);
+  $('propertyAddDividerE4').disabled=Boolean(session.polygonMode||session.countChange||session.drag);
+  $('propertyRemoveDividerE4').disabled=Boolean(session.polygonMode||session.countChange||session.drag||!dividers.length);
   const countChange=session.countChange;
   $('propertyCountSummaryE4').textContent=countChange
     ? (countChange.kind==='split'
       ?'Split plot '+countChange.sourceId+' · keep original ID; new plot '+countChange.newId+'.'
       :'Merge two plots · retain '+countChange.retainedId+'; retire '+countChange.retiredId+'.')+
       ' Building memberships will be recalculated; geometry never moves.'
+    :session.polygonMode?'Polygon boundaries · convex plot cells are reviewed on Apply. Existing custom plots are protected.'
     :'Plots: '+session.plotIds.length+'. Select a divider to merge neighboring plots, or split the plot after it.';
   const protectedPlot=countChange&&project.city.plots.find(p=>p.id===
     (countChange.kind==='split'?countChange.sourceId:countChange.retiredId));
@@ -2156,6 +2160,14 @@ function applyPropertyEdit3I() {
 $('propertyEditReset3I').addEventListener('click',()=>propertyEditSession?.reset());
 $('propertyEditCancel3I').addEventListener('click',exitPropertyEditing3I);
 $('propertyEditApply3I').addEventListener('click',applyPropertyEdit3I);
+$('propertyAddVertex024').addEventListener('click',()=>{
+  if(!propertyEditSession?.addVertex())
+    $('statusMessage').textContent='Choose a side or rear corner; property frontage cannot be subdivided.';
+});
+$('propertyRemoveVertex024').addEventListener('click',()=>{
+  if(!propertyEditSession?.removeVertex())
+    $('statusMessage').textContent='Choose a removable side or rear corner (at least three must remain).';
+});
 $('propertyAddDividerE4').addEventListener('click',()=>{
   const session=propertyEditSession;
   if(!session?.isActive||!session.addDivider(project?.city,

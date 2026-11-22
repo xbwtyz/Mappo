@@ -61,6 +61,14 @@ export function partitionPropertyPolygon024(boundary) {
 export function propertyPolygonPreview024(city,propertyId,boundary) {
   const property=city?.properties?.find(p=>p.id===propertyId);
   if(!property)throw Error('The selected property was not found.');
+  if(JSON.stringify(boundary)===JSON.stringify(property.boundary)){
+    const original=property.plotIds.map(id=>city.plots.find(plot=>plot.id===id&&plot.propertyId===propertyId));
+    if(original.some(plot=>!plot))throw Error('Original plot records are incomplete.');
+    return {propertyId,boundary:clone(boundary),
+      plots:original.map(plot=>({id:plot.id,boundary:clone(plot.boundary)})),
+      plotIds:[...property.plotIds],retiredPlotIds:[],area:polygonSignedArea(boundary),
+      total:original.reduce((s,plot)=>s+polygonSignedArea(plot.boundary),0)};
+  }
   const cells=partitionPropertyPolygon024(boundary);
   const used=new Set(city.plots.map(p=>p.id));
   let serial=1;
