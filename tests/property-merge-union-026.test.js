@@ -15,6 +15,7 @@ test('026 full shared-edge union keeps original frontage and conserves area',()=
   assert.equal(r.union.length,4);
   assert.equal(r.frontageLength,20);
   assert.equal(r.area,240);
+  assert.equal(r.sourceCount,2);
   assert.deepEqual(r.frontageRoadIds,['ROAD-A']);
 });
 test('026 partial-edge union yields connected concave exterior without moving land',()=>{

@@ -28,6 +28,7 @@ test('026 access changes require per-building authorization when provenance is u
   const allowed=reconcileMergeBuildings026(city,property,['ROAD-A'],originals,new Set(['BLD-1']));
   assert.deepEqual(allowed.issues,[]);
   assert.equal(allowed.changes.length,1);
+  assert.equal(allowed.changes[0].kind,'entrance-or-route');
   assert.notDeepEqual(city.buildings[0].accessPath,originals.get('BLD-1').accessPath);
   assert.deepEqual(city.buildings[0].footprint,originals.get('BLD-1').footprint);
   assert.equal(city.buildings[0].id,'BLD-1');

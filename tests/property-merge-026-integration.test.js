@@ -42,6 +42,11 @@ test('026: B02 irregular sibling merger preserves every plot ID and property dat
   assert.equal(merged.candidate.city.plots.length,project.city.plots.length);
   assert.deepEqual(new Set(merged.candidate.city.plots.map(p=>p.id)),
     new Set(project.city.plots.map(p=>p.id)));
+  for(const plot of project.city.plots){
+    const after=merged.candidate.city.plots.find(p=>p.id===plot.id);
+    assert.ok(after);
+    assert.deepEqual(after.boundary,plot.boundary);
+  }
   assert.equal(JSON.stringify(project.city),original);
   validateStoredProject(merged.candidate);
 });
