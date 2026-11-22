@@ -700,6 +700,35 @@
           <ul id="structureIssues" data-place-review class="building-preview-issues" aria-label="Building placement problems" hidden></ul>
           <p class="place-review-intro" data-place-review hidden data-place-intro>Review placement, measurements, and any replacement confirmation.</p>
         </section>
+        <section id="buildingCompoundPanel" class="building-transform-panel" aria-label="Building compounds" hidden>
+          <div class="building-transform-heading"><strong>BUILDING COMPOUNDS</strong><span>0.2.10 C01</span></div>
+          <p class="hint">Link two or more buildings on this property. Their individual footprints, entrances and IDs stay intact.</p>
+          <div class="building-transform-values">
+            <label>Compound <select id="compoundGroupSelect" aria-label="Select compound"></select></label>
+            <label>Compound name <input id="compoundNameInput" maxlength="80" autocomplete="off" placeholder="Castle complex"></label>
+          </div>
+          <div id="compoundMemberList" class="building-transform-values" role="group" aria-label="Choose member buildings"></div>
+          <div class="building-transform-actions">
+            <button id="compoundSaveGroup" type="button">Create compound</button>
+            <button id="compoundDissolve" type="button">Dissolve group</button>
+          </div>
+          <div id="compoundTransformControls">
+            <p class="hint">Preview all members together. Apply only when every footprint, plot and access route is valid.</p>
+            <div class="building-transform-values">
+              <label>X offset <input id="compoundDx" type="number" value="0" step="0.1"></label>
+              <label>Y offset <input id="compoundDy" type="number" value="0" step="0.1"></label>
+              <label>Rotation ° <input id="compoundAngle" type="number" value="0" step="1"></label>
+              <label>Width % <input id="compoundScaleX" type="number" min="20" max="400" value="100" step="1"></label>
+              <label>Depth % <input id="compoundScaleY" type="number" min="20" max="400" value="100" step="1"></label>
+            </div>
+            <div class="building-transform-actions">
+              <button id="compoundApply" type="button" disabled>Apply group transform</button>
+              <button id="compoundReset" type="button">Reset transform</button>
+              <button id="compoundCancel" type="button">Close compounds</button>
+            </div>
+          </div>
+          <p id="compoundStatus" role="status" aria-live="polite" class="building-history-status"></p>
+        </section>
         <section id="buildingStructureHistoryPanel" class="building-structure-history" aria-label="Property building change history" hidden>
           <p id="structureHistoryStatus">Structural changes to this property · session-only history</p>
           <div class="building-history-actions">

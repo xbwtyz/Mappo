@@ -236,3 +236,16 @@ Contextual Undo labels, validation error indicators and per-section scroll posit
 ## Phase 7: no save-format migration
 
 The `0.1-dev.ui7d` review candidate retains container format 1, project schema 9 and workspace schema 1. Version bumps to the application, its compiled HTML and metadata do not transform a loaded city. Automated Phase 7B project/recovery round trips compare exact serialized city geometry; Phase 7D adds a real-browser portable project download, staged file selection and reopen check. Existing files without the optional `workspace.ui` remain compatible; unsupported newer schemas still reject atomically. Full browser checks and manual limitations are reported in `PHASE7_QA.md`.
+
+
+## C01 compound-building groups (optional project schema 9 extension)
+
+Each existing building remains one independent simple exterior polygon plus valid courtyard holes, owned by one property. A property may optionally have `buildingCompounds`, a list of property-owned group records:
+
+```json
+{"id":"CMP-MAN-0001","name":"Castle complex","memberBuildingIds":["BLD-00001","BLD-00002"]}
+```
+
+The list is absent on ungrouped properties. The validator requires a unique `CMP-MAN-`-prefixed group ID, name of 1–80 characters, 2–32 distinct member IDs, each member on the owning property and not in another group. Up to 128 groups per property may be stored. No secondary `building.compoundId` field is introduced. Individual building identity, metadata, footprint, holes, actual plots, entrance and frontage remain authoritative; grouped move/rotation/scale must validate and save atomically.
+
+This additive schema-9 extension does **not** guarantee that older Mappo versions respect group semantics while editing. For safe compound edits use Mappo 0.2.10 or later. Unsupported cross-property transfer or member deletion must fail validation rather than silently breaking a group; explicit unlink/dissolve first. Unknown compatible fields are copied on group edits and project round-trips. No 3D meshes, arbitrary unions, island holes or through-building access are promised.

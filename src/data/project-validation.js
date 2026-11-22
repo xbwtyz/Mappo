@@ -353,7 +353,9 @@ export function validateStoredProject(project) {
   if (!pointInPolygon(project.options.center, facePolygons.get(plaza.id))) throw new Error('The saved town center is not inside the main square.');
   const grouped = new Map(),
     usedPlots = new Set(),
-    usedBuildings = new Set();
+    usedBuildings = new Set(),
+    usedCompoundIds = new Set(),
+    usedCompoundMembers = new Set();
   for (const property of city.properties) {
     reference(maps.blocks, property.blockId, 'Property block');
     reference(maps.roads, property.frontageRoadId, 'Property frontage');
@@ -390,6 +392,34 @@ export function validateStoredProject(project) {
     }
     neighbors.push({ boundary: property.boundary, bounds });
     grouped.set(property.blockId, neighbors);
+    // C01: optional schema-9 grouping metadata; building geometry remains the
+    // authoritative independent per-building record. Invalid stale group
+    // references are never auto-dissolved during another editor's Apply.
+    if (property.buildingCompounds !== undefined) {
+      const compounds = requireList(property.buildingCompounds, 'Building compounds', 128);
+      for (const compound of compounds) {
+        requireRecord(compound, 'Building compound');
+        requireText(compound.id, 'Compound ID', 128);
+        if (!/^CMP-MAN-[A-Za-z0-9_-]+$/.test(compound.id) || usedCompoundIds.has(compound.id))
+          throw new Error('Building compound ID must be unique and stable.');
+        usedCompoundIds.add(compound.id);
+        requireText(compound.name, 'Compound name', 80);
+        const members = requireList(compound.memberBuildingIds, 'Compound members', 32);
+        if (members.length < 2) throw new Error('A building compound needs at least two members.');
+        const unique = new Set();
+        for (const memberId of members) {
+          requireText(memberId, 'Compound member ID', 128);
+          if (unique.has(memberId) || usedCompoundMembers.has(memberId))
+            throw new Error('A building may belong to only one compound.');
+          unique.add(memberId);
+          usedCompoundMembers.add(memberId);
+          const member = reference(maps.buildings, memberId, 'Compound building');
+          if (member.propertyId !== property.id || member.blockId !== property.blockId ||
+              !property.buildingIds.includes(memberId))
+            throw new Error('A compound member must belong to its owning property.');
+        }
+      }
+    }
     const ownPlots = references(property.plotIds, maps.plots, 'Property plots');
     let plotArea = 0;
     for (const plot of ownPlots) {

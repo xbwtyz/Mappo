@@ -17,7 +17,25 @@ async function openIdentity(page) {
   else await page.locator('#identityEditorTitle').click();
 }
 
-const html = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'));
+const html = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'), `
+globalThis.__c01QA = {
+  ensureSite: () => {
+    let property = project.city.properties.find(p=>p.buildingIds.length>=2);
+    if(property)return property.id;
+    for(const seed of ['c01-compounds','c01-castle','c01-estate']){
+      const candidate=createProject({seed,size:'medium',morphology:'organic'});
+      property=candidate.city.properties.find(p=>p.buildingIds.length>=2);
+      if(property) {
+        project=candidate;
+        workspaceShell.refresh();
+        requestDraw();
+        return property.id;
+      }
+    }
+    throw Error('No property with two buildings for C01 browser test.');
+  }
+};
+`);
 const origin = 'http://mappo-f2.test/';
 const readCity = page => page.evaluate(() => __buildingQA.state().project.city);
 const editorPanel = '#buildingTransformPanel';
@@ -251,4 +269,55 @@ async function exerciseC02(name, engine) {
 for (const [name, engine] of [['chromium', chromium], ['firefox', firefox]]) {
   await exerciseF2(name, engine);
   await exerciseC02(name, engine);
+}
+
+async function exerciseC01(name,engine) {
+  const browser=await engine.launch();
+  const page=await browser.newPage({viewport:{width:1440,height:900}});
+  page.setDefaultTimeout(15000);
+  const errors=[];
+  page.on('pageerror',err=>errors.push(err.message));
+  try {
+    await page.route('**/*',request=>request.request().url()===origin
+      ?request.fulfill({contentType:'text/html',body:html}):request.abort());
+    await page.goto(origin,{waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>__buildingQA.state().files.ready);
+    const propertyId=await page.evaluate(()=>__c01QA.ensureSite());
+    await page.evaluate(id=>__buildingQA.state().propertyWorkspace.select({kind:'property',id}),propertyId);
+    const original=JSON.stringify(await readCity(page));
+    await page.getByRole('button',{name:/building compounds/i}).first().click();
+    assert.equal(await page.locator('#buildingCompoundPanel').isVisible(),true);
+    await page.locator('#compoundNameInput').fill('Abbey complex');
+    const members=page.locator('#compoundMemberList input[type="checkbox"]');
+    assert.ok(await members.count()>=2);
+    await members.nth(0).check();
+    await members.nth(1).check();
+    await page.locator('#compoundSaveGroup').click();
+    assert.equal(await page.locator('#compoundGroupSelect').inputValue()==='',false);
+    const groups=await page.evaluate(id=>__buildingQA.state().project.city.properties
+      .find(p=>p.id===id).buildingCompounds,propertyId);
+    assert.equal(groups.length,1);
+    assert.equal(groups[0].memberBuildingIds.length,2);
+    assert.equal((await readCity(page)).buildings.find(b=>b.id===groups[0].memberBuildingIds[0]).id,
+      groups[0].memberBuildingIds[0]);
+    await page.locator('#structureUndo').click();
+    assert.equal(await page.evaluate(id=>
+      __buildingQA.state().project.city.properties.find(p=>p.id===id).buildingCompounds??null,propertyId),null);
+    assert.equal(JSON.stringify(await readCity(page)),original);
+    await page.locator('#structureRedo').click();
+    assert.equal((await page.evaluate(id=>__buildingQA.state().project.city.properties
+      .find(p=>p.id===id).buildingCompounds,propertyId)).length,1);
+    await page.locator('#compoundDx').fill('0.01');
+    assert.match(await page.locator('#compoundStatus').innerText(),/VALID|CANNOT APPLY/);
+    assert.equal(await page.locator('#compoundReset').isEnabled(),true);
+    await page.locator('#compoundReset').click();
+    assert.equal(await page.locator('#compoundDx').inputValue(),'0');
+    await page.locator('#compoundCancel').click();
+    assert.equal(await page.locator('#buildingCompoundPanel').isVisible(),false);
+    assert.deepEqual(errors,[]);
+    console.log('PASS C01 '+name+' compound membership and preview controls');
+  } finally{await browser.close();}
+}
+for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]) {
+  await exerciseC01(name,engine);
 }

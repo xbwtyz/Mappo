@@ -1,6 +1,6 @@
 # Group C — Building and Structural Geometry
 
-**Status:** Planning only. **Priority:** Medium; the existing editor already supports valid concave footprints, vertex edits, connected wings and courtyard holes.
+**Status:** C02 merged; C01 in owner-approved implementation on feature branch (merge/release separately gated). **Priority:** Medium; the existing editor already supports valid concave footprints, vertex edits, connected wings and courtyard holes.
 
 | ID | Restriction | Proposed direction |
 |---|---|---|
@@ -11,7 +11,7 @@
 
 **C02 first:** Smaller, independently testable improvement to a current editor workflow. Protect handle/vertex identity after each operation, and ensure Cancel discards all draft changes and a single Undo reverses the entire Apply.
 
-**C01 after parcel model decisions:** A building with disconnected pieces may be better modeled as **multiple related building records** rather than one invalid disjoint polygon. Determine future 3D implications, selection, ownership, access and save semantics before introducing polygon boolean operations.
+**C01 0.2.10:** Owner approved property-owned **linked building records** with an optional validated compound list, group selection and coordinated transforms. Keep each member individually valid and independently accessible, and keep arbitrary unions and nested courtyard islands as separate backlog. Determine future 3D implications, selection, ownership, access and save semantics before introducing polygon boolean operations.
 
 ## Safeguards
 

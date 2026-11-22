@@ -3,8 +3,8 @@ import { workspaceSelectionEqual } from '../core/workspace-state.js';
 import { propertyInformation, inspectionValue } from '../core/selection-information.js';
 
 export class PropertyWorkspace {
-  constructor({ shell, getCity, getLayers, buildings, exitEditing = () => {}, startBuilding = () => false, startPropertyEdit = () => false, startPropertySplit = () => false, startPropertyMerge = () => false, deleteProperty = () => false, clearBuildings = () => false, focusSelection = () => false, onSelect = () => {}, draw = () => {} }) {
-    Object.assign(this, { shell, getCity, getLayers, buildings, exitEditing, startBuilding, startPropertyEdit, startPropertySplit, startPropertyMerge, deleteProperty, clearBuildings, focusSelection, onSelect, draw });
+  constructor({ shell, getCity, getLayers, buildings, openCompounds = () => false, exitEditing = () => {}, startBuilding = () => false, startPropertyEdit = () => false, startPropertySplit = () => false, startPropertyMerge = () => false, deleteProperty = () => false, clearBuildings = () => false, focusSelection = () => false, onSelect = () => {}, draw = () => {} }) {
+    Object.assign(this, { shell, getCity, getLayers, buildings, openCompounds, exitEditing, startBuilding, startPropertyEdit, startPropertySplit, startPropertyMerge, deleteProperty, clearBuildings, focusSelection, onSelect, draw });
     this.hover = null;
     shell.registerInspector('property', { resolve: id => this.descriptor(id) });
   }
@@ -36,6 +36,9 @@ export class PropertyWorkspace {
       run: () => this.startBuilding(property.id) };
     const clear = { label: 'Clear all buildings…', danger: true, disabled: !structures.length || !buildingsVisible,
       run: () => this.clearBuildings(property.id) };
+    const compounds = {label:'Manage building compounds',shortLabel:'Building compounds',
+      disabled:!buildingsVisible||structures.length<2,
+      run:()=>this.openCompounds(property.id)};
     const geometry = { label: 'Edit property geometry', shortLabel: 'Edit boundaries & plots', primary: true,
       run: () => this.startPropertyEdit(property.id) };
     const split = { label: 'Split property', run: () => this.startPropertySplit(property.id) };
@@ -45,6 +48,10 @@ export class PropertyWorkspace {
       run: () => this.focusSelection({ kind: 'property', id: property.id }) };
     buildingSection.actions = [...buildingActions, add, clear];
     information.sections.push(
+      { title: 'Building compounds (C01)',
+        rows: (property.buildingCompounds??[]).map(g=>[
+          g.name+' · '+g.id,g.memberBuildingIds.length+' linked buildings']),
+        actions:[compounds] },
       { title: 'Property geometry (3I)', actions: [geometry] },
       { title: 'Property splitting (E2)', actions: [split] },
       { title: 'Property merging (E3)', actions: [merge] },
@@ -58,7 +65,7 @@ export class PropertyWorkspace {
       description: 'The site containing these plots and buildings. ' + description,
       sections: information.sections,
       quickInspector: {
-        subtitle: property.id, actions: [geometry, split, merge, add], more: [clear, remove], locate,
+        subtitle: property.id, actions: [geometry, split, merge, add, compounds], more: [clear, remove], locate,
         related: { title: 'Buildings', actions: buildingActions, hint: !buildingsVisible ? description
           : structures.length ? '' : 'This property has no buildings.' },
         detailsTitle: 'Property details & plot IDs', facts,
