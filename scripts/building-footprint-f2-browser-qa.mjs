@@ -35,6 +35,16 @@ globalThis.__c01QA = {
     throw Error('No property with two buildings for C01 browser test.');
   }
 };
+
+globalThis.__d01QA = {
+  reset: () => { acceptedHistoryD01.clear(project,'QA fixture baseline'); updateUndoFeedback(); },
+  summaries: () => acceptedHistoryD01.summaries(),
+  length: () => acceptedHistoryD01.length,
+  move: direction => d01MoveHistory(direction),
+  can: direction => acceptedHistoryD01.can(direction,project),
+  blocked: () => d01DraftBlocked(),
+  notice: () => acceptedHistoryD01.notice
+};
 `);
 const origin = 'http://mappo-f2.test/';
 const readCity = page => page.evaluate(() => __buildingQA.state().project.city);
@@ -320,4 +330,66 @@ async function exerciseC01(name,engine) {
 }
 for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]) {
   await exerciseC01(name,engine);
+}
+
+async function exerciseD01(name,engine) {
+  const browser=await engine.launch();
+  const page=await browser.newPage({viewport:{width:1440,height:900}});
+  const errors=[];
+  page.setDefaultTimeout(15000);
+  page.on('pageerror',e=>errors.push(e.message));
+  try{
+    await page.route('**/*',request=>request.request().url()===origin
+      ?request.fulfill({contentType:'text/html',body:html}):request.abort());
+    await page.goto(origin,{waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>__buildingQA.state().files.ready);
+    const propertyId=await page.evaluate(()=>{
+      const id=__c01QA.ensureSite();
+      __d01QA.reset();
+      __buildingQA.state().propertyWorkspace.select({kind:'property',id});
+      return id;
+    });
+    const original=JSON.stringify(await readCity(page));
+    await openIdentity(page);
+    await page.locator('#identityNameInput').fill('Briar Estate');
+    await page.locator('#identityApplyButton').click();
+    assert.equal(await page.evaluate(id=>__buildingQA.state().project.city.properties
+      .find(p=>p.id===id).customName,propertyId),'Briar Estate');
+    assert.deepEqual(await page.evaluate(()=>__d01QA.summaries().map(x=>x.family)),['identity']);
+    await page.getByRole('button',{name:/building compounds/i}).first().click();
+    await page.locator('#compoundNameInput').fill('Briar Court');
+    const members=page.locator('#compoundMemberList input[type="checkbox"]');
+    assert.ok(await members.count()>=2);
+    await members.nth(0).check();
+    await members.nth(1).check();
+    await page.locator('#compoundSaveGroup').click();
+    const accepted=JSON.stringify(await readCity(page));
+    assert.equal(await page.evaluate(()=>__d01QA.length()),2);
+    assert.deepEqual(await page.evaluate(()=>__d01QA.summaries().map(x=>x.family)),['identity','compound']);
+    assert.equal(await page.locator('#workspaceHistoryListD01 li').count(),2);
+    assert.match(await page.locator('#workspaceUndoButton').innerText(),/compound/i);
+    await page.locator('#workspaceUndoButton').click();
+    assert.equal(await page.evaluate(()=>__d01QA.length()),2);
+    assert.equal(await page.evaluate(id=>__buildingQA.state().project.city.properties
+      .find(p=>p.id===id).buildingCompounds??null,propertyId),null);
+    await page.locator('#workspaceUndoButton').click();
+    assert.equal(JSON.stringify(await readCity(page)),original);
+    await page.locator('#workspaceRedoButtonD01').click();
+    assert.equal(await page.evaluate(id=>__buildingQA.state().project.city.properties
+      .find(p=>p.id===id).customName,propertyId),'Briar Estate');
+    await page.locator('#workspaceRedoButtonD01').click();
+    assert.equal(JSON.stringify(await readCity(page)),accepted);
+    await page.locator('#compoundDx').fill('3');
+    const blocked=await page.evaluate(()=>__d01QA.move('undo'));
+    assert.equal(blocked,false,'A pending compound preview must block accepted global Undo');
+    assert.equal(JSON.stringify(await readCity(page)),accepted);
+    await page.locator('#compoundReset').click();
+    assert.equal(await page.evaluate(()=>__d01QA.blocked()),false);
+    assert.ok(await page.evaluate(()=>__d01QA.can('undo')));
+    assert.deepEqual(errors,[]);
+    console.log('PASS D01 '+name+' unified identity/compound Undo, Redo, draft gate');
+  }finally{await browser.close();}
+}
+for(const [name,engine] of [['chromium',chromium],['firefox',firefox']]){
+  await exerciseD01(name,engine);
 }
