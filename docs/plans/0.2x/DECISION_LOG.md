@@ -50,3 +50,19 @@ Review the [B05 PR #118](https://github.com/xbwtyz/Mappo/pull/118) CI and scope,
 - **D-029-7=A:** Use the existing compact building editor
 
 P1–P5 implementation separately authorized; PR merge, stable release, schema change and Pages remain gated.
+
+
+## Mappo 0.2.10 C01 — Owner-approved compound-building architecture
+
+| Decision | Approved A contract |
+|---|---|
+| D-030-1 | Linked, independently validated building records in one logical compound |
+| D-030-2 | Detached/shared-wall group members; no arbitrary boolean unions or nested islands |
+| D-030-3 | All members on the same property and block |
+| D-030-4 | Group selection, explicit link/unlink and coordinated move/rotate/resize as one transaction |
+| D-030-5 | Independent valid frontage/entrance for each member |
+| D-030-6 | Strictly validated optional property-owned metadata, schema 9 / envelope 1 retained |
+| D-030-7 | Preserve valid groups; block unsafe road/property reflows and transfers rather than silently unlink |
+| D-030-8 | Reuse Property Inspector/building controls; no new workspace or forced onboarding |
+
+The owner separately approved P1–P5 implementation on a fresh branch. Merge, release and Pages still require separate authorization.
