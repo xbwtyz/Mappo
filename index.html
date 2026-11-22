@@ -26040,6 +26040,11 @@ function d01MoveHistory(direction) {
     acceptedHistoryD01.notice=receipt.reason;
     updateUndoFeedback();return false;
   }
+  // A retired property may return during Undo. Capture it before replacing
+  // the accepted city so the existing Inspector can recover a useful target
+  // when no other live selection survives.
+  const returningProperties=receipt.candidate.city.properties.filter(p=>
+    !project.city.properties.some(old=>old.id===p.id)).map(p=>p.id);
   d01ReplayingHistory=true;
   try{
     project=receipt.candidate;
@@ -26071,7 +26076,17 @@ function d01MoveHistory(direction) {
     propertyWorkspace.refresh(resetProperty?{replaced:true}:{});
     buildingWorkspace.refresh(resetBuilding?{replaced:true}:{});
     clearMapHover();
-    updateDetails();workspaceShell.refresh();requestDraw();
+    updateDetails();workspaceShell.refresh();
+    if(receipt.entry.operation==='property-structure'&&returningProperties.length===1){
+      const selected=workspaceShell?.state.selection;
+      const live=selected?.kind==='property'
+        ?project.city.properties.some(p=>p.id===selected.id)
+        :selected?.kind==='building'
+          ?project.city.buildings.some(b=>b.id===selected.id)
+          :false;
+      if(!live)workspaceShell.select({kind:'property',id:returningProperties[0]},{reveal:false});
+    }
+    requestDraw();
     workspaceChanged();
     $('statusMessage').textContent=acceptedHistoryD01.notice;
     return true;
