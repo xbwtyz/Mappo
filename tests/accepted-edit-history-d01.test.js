@@ -122,3 +122,17 @@ test('D01 accepted road topology owns coupled district reconciliation without tr
   onlyDistrict.city.districtState={...onlyDistrict.city.districtState,status:'pending'};
   assert.equal(describeAcceptedEditD01(a,onlyDistrict).barrier,true);
 });
+
+test('D01 explicit district history boundary is mandatory even when district records touch road metadata',()=>{
+  const a=cityFixture(),h=new AcceptedEditHistoryD01();
+  h.observe(a);
+  const b=renamed(a,a.city.buildings[0].id,'Kept identity');
+  assert.equal(h.observe(b).status,'recorded');
+  const c=structuredClone(b);
+  c.city.roads[0].districtId='DIST-CHANGED';
+  h.clear(c,'District assignment cleared session history.');
+  assert.equal(h.length,0);
+  assert.equal(h.observe(c).status,'unchanged');
+  assert.equal(h.can('undo',c),false);
+  assert.equal(c.city.buildings[0].customName,'Kept identity');
+});

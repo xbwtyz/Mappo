@@ -201,10 +201,17 @@ async function exerciseF2(browserName, browserType) {
     assert.deepEqual(await appliedBuilding(), { ...beforeUse, type });
     const classified = await readCity(page);
     await page.getByRole('button', { name: /^(Edit building footprint|Edit footprint)$/ }).click();
-    await page.locator('#buildingHistoryUndo').click();
-    assert.equal((await appliedBuilding()).type, type);
-    assert.equal((await appliedBuilding()).holes.length, 0);
-    await page.locator('#buildingHistoryRedo').click();
+    // D01 is chronological: the later accepted building-use change must be
+    // reversed before the earlier courtyard edit, even when editing a building.
+    assert.equal(await page.locator('#buildingHistoryUndo').isDisabled(),true);
+    await page.locator('#workspaceUndoButton').click();
+    assert.equal((await appliedBuilding()).type,beforeUse.type);
+    assert.equal((await appliedBuilding()).holes.length,1);
+    await page.locator('#workspaceUndoButton').click();
+    assert.equal((await appliedBuilding()).holes.length,0);
+    await page.locator('#workspaceRedoButtonD01').click();
+    assert.equal((await appliedBuilding()).holes.length,1);
+    await page.locator('#workspaceRedoButtonD01').click();
     assert.equal(JSON.stringify(await readCity(page)), JSON.stringify(classified));
     await page.locator('#buildingPreviewCancel').click();
 

@@ -26047,16 +26047,17 @@ function d01MoveHistory(direction) {
     propertySplitE2?.history.clear();propertyMergeE3?.history.clear();
     identityWorkspace?.editor.reset();
     if(receipt.entry.family==='road')refreshRoadDistrictWorkspace(receipt.workspace);
-    const structural=['road','property-structure','building-structure'].includes(receipt.entry.operation)
-      ||receipt.entry.family==='road';
-    // Synchronize live editor baselines BEFORE workspace refresh/reconcile.
-    // Reconcile deliberately closes an editor if the accepted city identity
-    // changed; Undo/Redo must not accidentally close clean editing sessions.
-    if(buildingEditSession?.isActive && !structural)buildingEditSession.reset(project.city);
-    if(propertyEditSession?.isActive && !structural)
+    // Road/parcel ownership replacement can invalidate a selected property.
+    // A building add/delete does not replace its parent property, so retain
+    // that Inspector and its scoped structural Undo/Redo controls.
+    const resetProperty=receipt.entry.family==='road'||receipt.entry.operation==='property-structure';
+    const resetBuilding=resetProperty||receipt.entry.operation==='building-structure';
+    // Synchronize live editor baselines before workspace reconciliation.
+    if(buildingEditSession?.isActive&&!resetBuilding)buildingEditSession.reset(project.city);
+    if(propertyEditSession?.isActive&&!resetProperty)
       propertyEditSession.start(project.city,propertyEditSession.propertyId);
-    propertyWorkspace.refresh(structural?{replaced:true}:{});
-    buildingWorkspace.refresh(structural?{replaced:true}:{});
+    propertyWorkspace.refresh(resetProperty?{replaced:true}:{});
+    buildingWorkspace.refresh(resetBuilding?{replaced:true}:{});
     clearMapHover();
     updateDetails();workspaceShell.refresh();requestDraw();
     workspaceChanged();
@@ -27397,6 +27398,11 @@ districtPanel = new DistrictPanel({
     workspaceChanged();
   },
   commit: city => {
+    // District generation/Undo can also rewrite road or block metadata.
+    // This is outside the approved D01 history scope: clear the accepted
+    // journal explicitly rather than misclassifying it as road topology.
+    acceptedHistoryD01.clear({...project,city},
+      'District editing cleared accepted session Undo/Redo.');
     // Rebuilding/undoing districts is a local update. Keep a valid property or
     // building in the Inspector rather than adopting the editor's default ward.
     if (['property', 'building'].includes(workspaceShell?.state.selection?.kind)) {
