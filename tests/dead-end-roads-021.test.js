@@ -85,7 +85,7 @@ let selected=null;
 function supportedRemoval() {
   if (selected) return selected;
   // Locked regression fixture from 0.2.0: this deletion was formerly
-  // rejected as two dangling junctions. Avoid silently switching roads if
+  // rejected at dangling junction N-0140. Avoid silently switching roads if
   // a future change accidentally loses support.
   const morphology='radial', roadId='RD-0153';
   const project=createProject({seed:'c2-radial',size:'small',morphology});
