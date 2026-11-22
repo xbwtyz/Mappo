@@ -24,6 +24,25 @@ export function drawPropertyEditPreview3I(ctx, camera, city, session) {
     ctx.setLineDash([4,4]);
     ctx.stroke();
   }
+  if(session.flexibleMode){
+    const f=session.flexible,ring=f.selected?.boundary;
+    if(ring){
+      trace(ring);
+      ctx.fillStyle='rgba(230,174,88,.10)';ctx.fill();
+      try{
+        const cut=f.cut().cut.map(p=>camera.worldToScreen(p));
+        ctx.beginPath();ctx.moveTo(cut[0].x,cut[0].y);ctx.lineTo(cut[1].x,cut[1].y);
+        ctx.strokeStyle='#b96c37';ctx.lineWidth=3;ctx.setLineDash([]);ctx.stroke();
+      }catch{}
+      for(const [which,edge,t] of [['A',f.edgeA,f.ratioA],['B',f.edgeB,f.ratioB]]){
+        const a=ring[edge],b=ring[(edge+1)%ring.length];if(!a||!b)continue;
+        const p=camera.worldToScreen({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
+        ctx.beginPath();ctx.arc(p.x,p.y,which===(f.endpoint??'A')?8:6,0,2*Math.PI);
+        ctx.fillStyle=which==='A'?'#f0b763':'#d9987a';ctx.fill();
+        ctx.strokeStyle='#8f5938';ctx.lineWidth=2;ctx.stroke();
+      }
+    }
+  }
   trace(boundary);
   ctx.fillStyle = 'rgba(45,127,114,.12)';
   ctx.fill();
@@ -32,7 +51,7 @@ export function drawPropertyEditPreview3I(ctx, camera, city, session) {
   ctx.strokeStyle = session.validation?.status === 'invalid' ? '#c54e49' : '#167f7d';
   ctx.stroke();
   ctx.setLineDash([]);
-  boundary.forEach((point, index) => {
+  if(!session.flexibleMode)boundary.forEach((point, index) => {
     const p = camera.worldToScreen(point);
     const chosen = session.selectedCorner === index;
     ctx.beginPath();

@@ -500,7 +500,7 @@
         </section>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
           <div class="building-transform-heading"><strong>PROPERTY PREVIEW</strong><span id="propertyEditTarget3I">—</span></div>
-          <p class="hint">Drag vertices or edit their coordinates. Add/remove rear and side vertices for irregular shapes. Four-corner plots still support divider edits; irregular properties use validated convex partitions. Buildings stay in place until a safe Apply.</p>
+          <p class="hint">Drag vertices or edit their coordinates. Add/remove rear and side vertices for irregular shapes. Use flexible plots for angled cuts and multiple plot operations; standard four-corner dividers remain available. Buildings stay in place until a safe Apply.</p>
           <p id="propertyEditCorner3I" class="building-history-status" role="status" aria-live="polite">Select a highlighted property corner.</p>
           <div class="road-preview-actions" role="group" aria-label="Edit property vertices">
             <button id="propertyAddVertex024" type="button" class="minor-button">+ Add vertex</button>
@@ -521,6 +521,38 @@
             <input id="propertyCountConsentE4" type="checkbox" aria-label="Authorize preservation of authored plot metadata"/>
             <span id="propertyCountConsentTextE4">Preserve the original authored plot record in history.</span>
           </label>
+          <div id="plot027Panel" class="property-flexible-027">
+            <div class="road-preview-actions" role="group" aria-label="Flexible plot partitioning">
+              <button type="button" id="plot027Start" class="minor-button">Edit flexible plots</button>
+            </div>
+            <div id="plot027Controls" hidden>
+              <p class="hint">Select an existing plot, position two cut points on different edges, and Split. Or choose a second adjoining plot to Merge. Repeat operations before Apply.</p>
+              <div class="building-transform-values">
+                <label>Plot <select id="plot027Selected" aria-label="Selected plot"></select></label>
+                <label>Merge with <select id="plot027Other" aria-label="Other plot"></select></label>
+                <label>Cut edge A <select id="plot027EdgeA" aria-label="First cut edge"></select></label>
+                <label>Edge A % <input id="plot027RatioA" type="number" min="1" max="99" step="0.5" value="50"></label>
+                <label>Cut edge B <select id="plot027EdgeB" aria-label="Second cut edge"></select></label>
+                <label>Edge B % <input id="plot027RatioB" type="number" min="1" max="99" step="0.5" value="50"></label>
+                <label>Map endpoint <select id="plot027Endpoint" aria-label="Endpoint selected on map">
+                  <option value="A">A</option><option value="B">B</option>
+                </select></label>
+                <label>Retain ID on <select id="plot027Retain" aria-label="Identity to retain">
+                  <option value="first">Plot / first portion</option><option value="second">Other / second portion</option>
+                </select></label>
+              </div>
+              <div class="road-preview-actions" role="group" aria-label="Flexible plot operations">
+                <button type="button" id="plot027Split" class="minor-button">Split selected</button>
+                <button type="button" id="plot027Merge" class="minor-button">Merge selected</button>
+                <button type="button" id="plot027Undo" class="minor-button">Undo draft step</button>
+              </div>
+              <label id="plot027ConsentWrap" class="property-split-transfer-e2" hidden>
+                <input id="plot027Consent" type="checkbox" aria-label="Approve authored plot change">
+                <span id="plot027ConsentText">Authorize the stated scope changes; preserve original records in plot history.</span>
+              </label>
+              <p id="plot027Summary" class="building-history-status" role="status" aria-live="polite"></p>
+            </div>
+          </div>
           <p id="propertyPreviewMeasurements4C" data-place-review class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
           <div class="precision-nudge-4c" role="group" aria-label="Selected property corner precision movement">
             <label>Move increment <select id="propertyNudgeStep4C" aria-label="Selected property corner move increment">

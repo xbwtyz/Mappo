@@ -823,13 +823,13 @@ function syncPropertyEditUI3I() {
   dividerIndex.value=String(session.selectedDivider);
   dividerInput.disabled=dividers.length===0;
   dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
-  $('propertyAddVertex024').disabled=Boolean(session.drag||session.countChange||session.boundary.length>=12);
-  $('propertyRemoveVertex024').disabled=Boolean(session.drag||session.countChange||session.boundary.length<=3
+  $('propertyAddVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length>=12);
+  $('propertyRemoveVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length<=3
     ||session.selectedCorner===null||session.selectedCorner<2);
-  $('propertyAddDividerE4').disabled=Boolean(session.polygonMode||session.countChange||session.drag);
-  $('propertyRemoveDividerE4').disabled=Boolean(session.polygonMode||session.countChange||session.drag||!dividers.length);
+  $('propertyAddDividerE4').disabled=Boolean(session.flexibleMode||session.polygonMode||session.countChange||session.drag);
+  $('propertyRemoveDividerE4').disabled=Boolean(session.flexibleMode||session.polygonMode||session.countChange||session.drag||!dividers.length);
   const countChange=session.countChange;
-  $('propertyCountSummaryE4').textContent=countChange
+  $('propertyCountSummaryE4').textContent=session.flexibleMode?'Flexible plot operations are drafted below. Existing property geometry is unchanged.':countChange
     ? (countChange.kind==='split'
       ?'Split plot '+countChange.sourceId+' · keep original ID; new plot '+countChange.newId+'.'
       :'Merge two plots · retain '+countChange.retainedId+'; retire '+countChange.retiredId+'.')+
@@ -845,6 +845,38 @@ function syncPropertyEditUI3I() {
   $('propertyCountConsentTextE4').textContent=countChange?.kind==='split'
     ?'I authorize the original plot metadata to remain on the retained plot only; the full source record is saved in plot history.'
     :'I authorize retiring the second plot; its full authored record is saved in plot history.';
+  const f=session.flexible;
+  $('plot027Controls').hidden=!f;
+  $('plot027Start').disabled=Boolean(f||session.isPending||session.drag);
+  if(f){
+    const choices=(id,values,selected)=>{
+      const element=$(id),sig=JSON.stringify(values);
+      if(element.dataset.items!==sig){
+        element.replaceChildren(...values.map(({id,label})=>{
+          const o=document.createElement('option');o.value=String(id);o.textContent=label;return o;
+        }));
+        element.dataset.items=sig;
+      }
+      element.value=selected??'';
+    };
+    choices('plot027Selected',f.plots.map(p=>({id:p.id,label:p.id+' · '+p.boundary.length+' edges'})),f.selectedId);
+    choices('plot027Other',[{id:'',label:'Choose adjacent plot'},...f.plots.filter(p=>p.id!==f.selectedId).map(p=>({id:p.id,label:p.id}))],f.otherId);
+    choices('plot027EdgeA',(f.selected?.boundary??[]).map((_,i)=>({id:i,label:'Edge '+(i+1)})),String(f.edgeA));
+    choices('plot027EdgeB',(f.selected?.boundary??[]).map((_,i)=>({id:i,label:'Edge '+(i+1)})),String(f.edgeB));
+    $('plot027RatioA').value=String(Number((f.ratioA*100).toFixed(2)));
+    $('plot027RatioB').value=String(Number((f.ratioB*100).toFixed(2)));
+    $('plot027Endpoint').value=f.endpoint??'A';
+    $('plot027Retain').value=f.retain;
+    $('plot027Undo').disabled=!f.pending;
+    $('plot027Split').disabled=Boolean(session.drag||f.operations.length>=12);
+    $('plot027Merge').disabled=Boolean(session.drag||!f.otherId||f.operations.length>=12);
+    const protectedIds=f.authorizations(project.city);
+    $('plot027ConsentWrap').hidden=!protectedIds.length;
+    $('plot027Consent').checked=f.approved;
+    $('plot027ConsentText').textContent='Approve authored metadata scope/retirement for '+protectedIds.join(', ')+'. Original records will be retained in plot history.';
+    $('plot027Summary').textContent=f.operations.length+' pending operation(s) · '+f.plots.length+
+      ' resulting plots. One Apply and one accepted Undo. '+(f.error||'Choose a plot and edit cut endpoints on the map or numerically.');
+  }
   const canHistory=!session.isPending&&!session.drag;
   $('propertyHistoryUndo3I').disabled=!(canHistory&&propertyHistory.can('undo',project,session.propertyId));
   $('propertyHistoryRedo3I').disabled=!(canHistory&&propertyHistory.can('redo',project,session.propertyId));
@@ -2183,6 +2215,56 @@ $('propertyRemoveDividerE4').addEventListener('click',()=>{
 });
 $('propertyCountConsentE4').addEventListener('change',()=>propertyEditSession?.approvePlotCount(
   $('propertyCountConsentE4').checked));
+$('plot027Start').addEventListener('click',()=>{
+  if(!propertyEditSession?.beginFlexible(project?.city))
+    $('statusMessage').textContent='Apply or reset the existing edit before starting flexible plots.';
+});
+for(const [id,key,convert] of [
+  ['plot027Selected','selectedId',String],['plot027Other','otherId',String],
+  ['plot027EdgeA','edgeA',Number],['plot027EdgeB','edgeB',Number],
+  ['plot027RatioA','ratioA',v=>Number(v)/100],['plot027RatioB','ratioB',v=>Number(v)/100],
+  ['plot027Endpoint','endpoint',String],['plot027Retain','retain',String]
+]){
+  $(id).addEventListener('change',()=>{
+    const s=propertyEditSession,f=s?.flexible;if(!f)return;
+    const value=convert($(id).value);
+    if(key.startsWith('ratio')&&(!Number.isFinite(value)||value<=.0001||value>=.9999)){
+      syncPropertyEditUI3I();return;
+    }
+    if(key==='selectedId'){
+      const chosen=f.plots.find(p=>p.id===value);
+      if(!chosen)return;
+      s.updateFlexible({selectedId:value,otherId:'',edgeA:0,edgeB:Math.min(2,chosen.boundary.length-1)});
+    }else s.updateFlexible({[key]:value});
+  });
+}
+$('plot027Split').addEventListener('click',()=>{
+  if(!propertyEditSession?.splitFlexible(project?.city))
+    $('statusMessage').textContent='Flexible plot split blocked: '+(propertyEditSession?.flexible?.error??'Invalid divider.');
+});
+$('plot027Merge').addEventListener('click',()=>{
+  if(!propertyEditSession?.mergeFlexible())
+    $('statusMessage').textContent='Flexible plot merge blocked: '+(propertyEditSession?.flexible?.error??'Invalid neighbors.');
+});
+$('plot027Undo').addEventListener('click',()=>propertyEditSession?.undoFlexible());
+$('plot027Consent').addEventListener('change',()=>propertyEditSession?.approveFlexible($('plot027Consent').checked));
+function plot027NearestEdge(f,point,zoom){
+  const ring=f?.selected?.boundary;if(!ring)return null;
+  let nearest=null,best=12/Math.max(.18,zoom);
+  for(let i=0;i<ring.length;i++){
+    const a=ring[i],b=ring[(i+1)%ring.length],dx=b.x-a.x,dy=b.y-a.y;
+    const t=Math.max(.01,Math.min(.99,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1)));
+    const x=a.x+dx*t,y=a.y+dy*t,dist=Math.hypot(point.x-x,point.y-y);
+    if(dist<best){best=dist;nearest={edge:i,ratio:t};}
+  }
+  return nearest;
+}
+function plot027EndpointPosition(f,which){
+  const ring=f?.selected?.boundary;if(!ring)return null;
+  const edge=which==='A'?f.edgeA:f.edgeB,t=which==='A'?f.ratioA:f.ratioB;
+  const a=ring[edge],b=ring[(edge+1)%ring.length];
+  return a&&b?{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t}:null;
+}
 function movePropertyHistory3I(direction){
   const session=propertyEditSession;
   if(!project||!session?.isActive||session.isPending||session.drag)return false;
@@ -2268,6 +2350,19 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     if(hit)roadWorkspace.session.select(hit);
     return;
   }
+  if (propertyEditSession?.flexibleMode) {
+    const f=propertyEditSession.flexible,near=plot027NearestEdge(f,point,camera.zoom);
+    if(near){
+      const which=f.endpoint==='B'?'B':'A';
+      propertyEditSession.updateFlexible({[which==='A'?'edgeA':'edgeB']:near.edge,
+        [which==='A'?'ratioA':'ratioB']:near.ratio});
+    }else{
+      const hit=f.plots.find(p=>pointInPolygon(point,p.boundary));
+      if(hit)propertyEditSession.updateFlexible({selectedId:hit.id,otherId:'',
+        edgeA:0,edgeB:Math.min(2,hit.boundary.length-1)});
+    }
+    return;
+  }
   if (propertyEditSession?.isActive) {
     const corner=propertyEditSession.hitCorner(project?.city,point,camera.zoom);
     if(corner!==null)propertyEditSession.selectCorner(corner);
@@ -2340,6 +2435,19 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       propertyCreationSessionE1.drag={startU:u,originalU:draft.u};return true;
     }
     if(roadWorkspace?.active)return !roadWorkspace.comparisonOpen && roadWorkspace.session.begin(point,zoom,event?.pointerType);
+    if(propertyEditSession?.flexibleMode){
+      const f=propertyEditSession.flexible;
+      for(const which of ['A','B']){
+        const p=plot027EndpointPosition(f,which);
+        if(p&&Math.hypot(point.x-p.x,point.y-p.y)<12/Math.max(.18,zoom)){
+          propertyEditSession.drag={kind:'plot027',which,original:{edgeA:f.edgeA,edgeB:f.edgeB,
+            ratioA:f.ratioA,ratioB:f.ratioB}};
+          propertyEditSession.updateFlexible({endpoint:which});
+          return true;
+        }
+      }
+      return false;
+    }
     if(propertyEditSession?.isActive){
       const index=propertyEditSession.hitCorner(project?.city,point,zoom);
       if(index===null)return false;
@@ -2372,7 +2480,14 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       return;
     }
     if(roadWorkspace?.active){roadWorkspace.session.move(point,event);return;}
-    if(propertyEditSession?.drag){
+    if(propertyEditSession?.drag?.kind==='plot027'){
+      const f=propertyEditSession.flexible,near=plot027NearestEdge(f,point,camera.zoom);
+      if(near){
+        const which=propertyEditSession.drag.which;
+        propertyEditSession.updateFlexible({[which==='A'?'edgeA':'edgeB']:near.edge,
+          [which==='A'?'ratioA':'ratioB']:near.ratio});
+      }
+    }else if(propertyEditSession?.drag){
       propertyEditSession.setCorner(propertyEditSession.drag.index,point);
     }else if(buildingPlacementSession?.drag){
       const property=buildingPlacementSession.property(project.city);
@@ -2393,7 +2508,10 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     if(propertyEditSession?.drag){
       const drag=propertyEditSession.drag;
       propertyEditSession.drag=null;
-      if(cancelled)propertyEditSession.setCorner(drag.index,drag.original);
+      if(cancelled){
+        if(drag.kind==='plot027')propertyEditSession.updateFlexible(drag.original);
+        else propertyEditSession.setCorner(drag.index,drag.original);
+      }
       syncPropertyEditUI3I();
     }else if(buildingPlacementSession?.drag){
       const drag=buildingPlacementSession.drag;
