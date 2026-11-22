@@ -6,6 +6,7 @@ import { analyzeRoadImpact } from '../core/road-impact.js';
 import { hitRoadInspection, roadInspectionDetails } from '../core/road-inspection.js';
 import { prepareRoadIntentC1 } from '../core/road-intent-c1.js';
 import { distanceToSegment } from '../core/boundary.js';
+import { findEligibleJunctionTarget } from '../core/junction-targeting.js';
 
 // No commit, history or serialization interface. Revisions invalidate every
 // deferred callback, including callbacks already queued when cancellation occurs.
@@ -22,6 +23,7 @@ export class RoadPreviewSession {
   }) {
     Object.assign(this, { getProject, changed, schedule, unschedule, analyze, reconcile, reconcileRoad, computeJunctionAsync });
     this.active = false;
+    this.snapEnabled = true;
     this.revision = 0;
     this.previewVisible = true;
     this.focusKey = null;
@@ -62,6 +64,9 @@ export class RoadPreviewSession {
     this.computeJunctionAsync?.suspend?.();
     this.active = false;
     this.selection = this.point = this.proposal = this.report = this.drag = null;
+    this.mergeMode = false;
+    this.mergeSourceId = this.mergeTargetId = this.mergeHoverId = null;
+    this.targetJunctionId = this.snapTargetId = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.buildingDecisions = new Map();
     this.roadConnectionEdit = null;
@@ -277,6 +282,9 @@ export class RoadPreviewSession {
     this.invalidate();
     const d = this.details;
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
+    this.targetJunctionId = this.snapTargetId = null;
+    this.mergeMode = false;
+    this.mergeSourceId = this.mergeTargetId = this.mergeHoverId = null;
     this.buildingDecisions = new Map();
     this.roadConnectionEdit = null;
     this.bendEditor = null;
@@ -293,11 +301,14 @@ export class RoadPreviewSession {
     this.error = '';
     this.changed();
   }
-  update(point, { defer = true, dragging = false } = {}) {
+  update(point, { defer = true, dragging = false, targetId = null } = {}) {
     if (!this.current() || !this.details?.movable) return false;
     this.invalidate();
     this.buildingDecisions.clear();
     this.point = { x: point.x, y: point.y };
+    this.targetJunctionId = targetId;
+    this.snapTargetId = targetId;
+    if (!targetId) this.mergeTargetId = null;
     this.report = this.proposal = null;
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.reconciliationError = '';
@@ -323,6 +334,7 @@ export class RoadPreviewSession {
         const project = this.project, fingerprint = JSON.stringify(project);
         const input = {
           projectJson: fingerprint, junctionId: this.selection.id, point: { ...this.point },
+          targetJunctionId: this.targetJunctionId,
           decisions: [...this.buildingDecisions].map(([id, choice]) => [id, { ...choice }]),
         };
         const current = () => this.current() && revision === this.revision;
@@ -367,7 +379,8 @@ export class RoadPreviewSession {
         this.report = this.analyze(this.project, this.proposal);
         if(this.reconcile){
           try {
-            this.reconciliation = this.reconcile(this.project, this.selection.id, this.point,this.buildingDecisions);
+            this.reconciliation = this.reconcile(this.project, this.selection.id, this.point,this.buildingDecisions,
+              {targetJunctionId: this.targetJunctionId});
             this.settledRevision = revision;
             this.acceptedFingerprint = JSON.stringify(this.project);
             if(!this.reconciliation.candidateProject && this.reconcileRoad && this.proposal.graphValid)
@@ -397,6 +410,57 @@ export class RoadPreviewSession {
     }
     return this.point && this.update({ x: this.point.x + dx, y: this.point.y + dy });
   }
+  setSnapEnabled(enabled) {
+    this.snapEnabled = Boolean(enabled);
+    if (!this.snapEnabled && this.snapTargetId && !this.drag) this.snapTargetId = null;
+    this.changed();
+  }
+  startMergeMode() {
+    if (!this.current() || this.drag) return false;
+    this.reset();
+    this.mergeMode = true;
+    this.changed();
+    return true;
+  }
+  cancelMergeMode() {
+    if (!this.mergeMode) return false;
+    this.reset();
+    return true;
+  }
+  mergeHit(point, zoom, pointerType = 'mouse') {
+    if (!this.current() || !Number.isFinite(zoom) || zoom <= 0) return null;
+    const hit = hitRoadInspection(this.graph,point,zoom,pointerType);
+    if (hit?.kind !== 'junction' || !roadInspectionDetails(this.graph,hit)?.movable) return null;
+    return hit;
+  }
+  hoverMerge(point, zoom) {
+    if (!this.mergeMode) return false;
+    const id = point ? this.mergeHit(point,zoom)?.id ?? null : null;
+    const next = id === this.mergeSourceId ? null : id;
+    if (next === this.mergeHoverId) return false;
+    this.mergeHoverId = next;
+    this.changed();
+    return true;
+  }
+  pickMerge(point,zoom,pointerType) {
+    if (!this.mergeMode || !this.current()) return false;
+    const hit = this.mergeHit(point,zoom,pointerType);
+    if (!hit) return false;
+    if (!this.mergeSourceId) {
+      this.select(hit);
+      this.mergeMode = true;
+      this.mergeSourceId = hit.id;
+      this.changed();
+      return true;
+    }
+    if (hit.id === this.mergeSourceId) return false;
+    const node = this.graph.nodesById.get(hit.id);
+    // The selected target is a *specific accepted ID*, not a mere coordinate.
+    this.mergeTargetId = hit.id;
+    this.mergeHoverId = hit.id;
+    this.update({x:node.x,y:node.y},{defer:false,targetId:hit.id});
+    return true;
+  }
   hit(point, zoom, pointerType) {
     // A displaced road should remain draggable at its *proposed* position.
     // The legacy hit test uses accepted nodes only; relying on it would make
@@ -421,6 +485,11 @@ export class RoadPreviewSession {
       : null;
   }
   begin(point, zoom, pointerType) {
+    if (this.mergeMode && this.current()) {
+      this.drag = {kind:'merge-click',movable:true,start:{...point},last:{...point},
+        travelPx:0,zoom,pointerType};
+      return true;
+    }
     if (this.bendEditor && !this.drag) {
       const radius = (pointerType === 'touch' ? 20 : 10) / zoom;
       const nearest = this.bendEditor.points.reduce((best,bend,index)=>{
@@ -444,34 +513,58 @@ export class RoadPreviewSession {
       kind: this.details.kind,
       start: { ...point },
       movable: this.details.movable || this.roadIntentEligible,
+      zoom, snapTargetId:null, lastRaw:null, lastAlt:false,
     };
     this.invalidate();
     return true;
   }
-  move(point) {
+  move(point, event = {}) {
     const drag = this.drag;
+    if (drag?.kind === 'merge-click') {
+      drag.last = {...point};
+      drag.travelPx = Math.max(drag.travelPx,
+        Math.hypot(point.x-drag.start.x,point.y-drag.start.y)*drag.zoom);
+      return;
+    }
     if (!drag?.movable) return;
+    drag.last = {...point};
     if (drag.kind === 'bend') {
       const x = drag.point.x + point.x - drag.start.x, y = drag.point.y + point.y - drag.start.y;
       this.moveBend(this.snapBends ? {x:Math.round(x),y:Math.round(y)} : {x,y}, true);
-    } else if(drag.kind==='road'){
+    } else if (drag.kind === 'road') {
       this.updateRoadIntent({
         x:drag.offset.x+point.x-drag.start.x,
         y:drag.offset.y+point.y-drag.start.y,
       },{dragging:true});
-    }else this.update(
-      { x: drag.point.x + point.x - drag.start.x, y: drag.point.y + point.y - drag.start.y },
-      { dragging: true },
-    );
+    } else {
+      const raw = {x:drag.point.x+point.x-drag.start.x,y:drag.point.y+point.y-drag.start.y};
+      drag.lastRaw = raw;
+      drag.lastAlt = Boolean(event?.altKey);
+      const snap = this.snapEnabled && !drag.lastAlt
+        ? findEligibleJunctionTarget(this.graph,this.selection.id,raw,drag.zoom,drag.snapTargetId)
+        : null;
+      drag.snapTargetId = snap?.id ?? null;
+      this.update(snap ? {x:snap.x,y:snap.y} : raw,
+        {dragging:true,targetId:drag.snapTargetId});
+    }
   }
-  end(cancelled) {
+  end(cancelled, event = {}) {
     const drag = this.drag;
+    if (drag?.kind === 'junction' && !cancelled && drag.lastRaw &&
+        Boolean(event?.altKey) !== drag.lastAlt)
+      this.move(drag.last,{altKey:Boolean(event?.altKey)});
     this.drag = null;
-    if (!drag?.movable) return;
+    if (!drag) return;
+    if (drag.kind === 'merge-click') {
+      if (!cancelled && drag.travelPx <= 4) this.pickMerge(drag.last,drag.zoom,drag.pointerType);
+      return;
+    }
+    if (!drag.movable) return;
     if (drag.kind === 'bend')
       this.updateBends(cancelled ? drag.original : this.bendEditor.points);
-    else if(drag.kind==='road')
-      this.updateRoadIntent(cancelled?drag.offset:this.roadIntentOffset);
-    else this.update(cancelled ? drag.point : this.point);
+    else if (drag.kind === 'road')
+      this.updateRoadIntent(cancelled ? drag.offset : this.roadIntentOffset);
+    else this.update(cancelled ? drag.point : this.point,
+      {targetId:cancelled ? null : drag.snapTargetId});
   }
 }

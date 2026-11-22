@@ -144,10 +144,10 @@ export function checkRoadApplyC2(project, session, expectedRevision, currentRevi
 
 // The standalone worker and synchronous fallback run the same fresh validation.
 export function validateRoadApplyC2(project, workspace, draft, inspected) {
-  const { selection, point, roadConnectionEdit, roadIntentOffset, buildingDecisions } = draft;
+  const { selection, point, roadConnectionEdit, roadIntentOffset, buildingDecisions, targetJunctionId } = draft;
   try {
     const fresh = selection.kind === 'junction'
-      ? prepareJunctionReflowC7(project, selection.id, point, buildingDecisions)
+      ? prepareJunctionReflowC7(project, selection.id, point, buildingDecisions, {targetJunctionId})
       : roadConnectionEdit
       ? prepareRoadTopologyReflowC3(project, selection.id, null, roadConnectionEdit, buildingDecisions)
       : prepareNeighborhoodReflowC3(project, selection.id, roadIntentOffset, undefined, buildingDecisions);

@@ -115,3 +115,34 @@ This proposal is read-only design work. Owner approved D-022-1 through D-022-4 a
 ## P1 verified fixture (implementation)
 
 Baseline `0.2.1-dev` from merged PR #111: Small Planned `c2-planned`, move existing junction `N-0139` precisely to `N-0140` coordinates. Baseline returns `topology-reflow-blocked`: “Two existing corners coincide. Offset the street to create a distinct junction.” The candidate junction normalizer produces a valid graph, with nodes 157 → 156 and 35 change-ledger entries. This is a source/VM engine-level reproduction; end-to-end CI verification is tracked by the feature PR.
+
+
+## J1–J4 — Junction targeting and mouse-driven merge (owner-approved extension)
+
+**Owner decision:** On the existing PR #112 and branch; snap enabled by default; 12px capture / 18px sticky-release hysteresis; Alt disables snap during drag; select source by map click, select target by map click, then Review and Apply. For explicit source→target merges preserve the selected **target ID** when safe. No version increment beyond `0.2.2-dev`, new schema or separate PR.
+
+### User experience
+- Dragging an ordinary junction close to another eligible ordinary junction snaps its proposed X/Y exactly to the accepted target coordinates, independent of map zoom; the target gets a visible marker/label.
+- Hold **Alt** during dragging to bypass snapping. The checkbox defaults ON and can disable it entirely. Numeric X/Y input and road/bend operations remain manual.
+- **Connect / Merge Junctions** enters a two-click map-selection mode: click source, then destination. An on-map highlight and panel status show selection and expected target; preview is still non-destructive, and normal **Review impacts → Apply road edit** commits if independently validated.
+- **Cancel connection** or Escape abandons the two-click mode before exiting the Roads workspace. Zoom, pan, and editor selection retain existing behavior.
+- For explicit snap/pair selection, the *target* junction survives by ID. A redundant/zero-length road, ambiguous authored reference, protected target, disconnected network or unsafe district/development adaptation continues to block Apply.
+
+### Implementation
+- `src/core/junction-targeting.js`: pure world-to-screen-distance hit calculation (12px capture, 18px release, stable deterministic ties), guarded by existing ordinary junction eligibility.
+- `src/editor/road-preview.js`: transient snap state, Alt bypass, bounded click-to-pick state and existing reflow invocation. No new mutation path.
+- `src/ui/road-inspection.js` and `index.template.html`: compact checkbox, Connect/Merge button, cancel action, and source/target instructions.
+- `src/ui/controllers.js` and `src/app.js`: pass live pointer modifier state to snap handler; reserve map clicks for the merge tool; Escape cancels selection; worker Apply includes the selected target identity.
+- `src/renderer/road-inspection.js`: preview-only markers for snap, source, hover, destination.
+- `src/core/road-crossings.js`, `road-topology-reflow.js`, `neighborhood-reflow.js`, `src/worker/junction-preview-worker.js` and `src/editor/road-application.js`: preserve target identity by explicit validated preference across preview and authoritative Apply. Standard non-merge normalization retains the previous deterministic identity behavior.
+
+### Review acceptance — must pass before merge
+- [ ] J1: zoom-aware capture, hysteresis and deterministic targeting, exclude protected/self.
+- [ ] J2: normal drag, snap, Alt bypass, snap disabled and drag cancellation.
+- [ ] J3: two-click selection without accidental movement, visible labels, target identity through sync and worker reflow, authored conflicts guarded.
+- [ ] J4: editor preview, independent Apply, Undo/Redo, Cancel/Escape, schema-9 portable save, offline Firefox/Chromium.
+- [ ] Official generated standalone `index.html` equals versioned `dist/mappo-0.2.2-dev.html`; historical builds retained.
+- [ ] All six CI runners and required aggregate check green on the final head; provide exact run link and duration.
+- [ ] Separate explicit owner approval before PR merge; no release or Pages publication.
+
+**Scope not added:** automatic nearby junction movement outside dragging, near-coincident merging without exact snap, arbitrary collinear overlaps, freehand line drawing, protected-road reparenting, or Issue #98 large reflow.

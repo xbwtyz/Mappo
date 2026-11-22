@@ -17,7 +17,7 @@ export function roadTopologyId(prefix, key, used) {
 // Remove only *exactly* coincident ordinary endpoint identities from a detached
 // candidate. A protected road, opaque metadata, or protected face reference is
 // an explicit conflict: never guess which accepted identity should survive.
-function consolidateCoincidentEndpointsC3(city, draft) {
+function consolidateCoincidentEndpointsC3(city, draft, preferredNodeId = null) {
   if (draft.valid || draft.issues.some(issue => issue.code !== 'unnormalized-crossing'))
     return { city, replaced: [] };
   const byPosition = new Map();
@@ -44,7 +44,8 @@ function consolidateCoincidentEndpointsC3(city, draft) {
       throw new Error('Coincident junction metadata requires an explicit identity decision.');
     if (ids.some(id => protectedFaceIds.has(id)))
       throw new Error('Coincident junctions would rewrite protected face ownership.');
-    for (const id of ids.slice(1)) replacement.set(id, ids[0]);
+    const survivor = preferredNodeId && ids.includes(preferredNodeId) ? preferredNodeId : ids[0];
+    for (const id of ids) if (id !== survivor) replacement.set(id, survivor);
   }
   if (!replacement.size) return { city, replaced: [] };
   const roads = city.roads.map(road => ({
@@ -65,11 +66,11 @@ function consolidateCoincidentEndpointsC3(city, draft) {
   };
 }
 
-export function normalizeRoadCrossingsC3(city) {
+export function normalizeRoadCrossingsC3(city, { preferredNodeId = null } = {}) {
   const before = buildRoadGraph(city);
   if (before.valid) return { city, graph: before, splitRoadIds: [], junctionIds: [], consolidatedNodeIds: [] };
   // Never rescue disconnected/invalid networks by merging unrelated endpoints.
-  const consolidated = consolidateCoincidentEndpointsC3(city, before);
+  const consolidated = consolidateCoincidentEndpointsC3(city, before, preferredNodeId);
   const candidate = consolidated.city;
   const draft = buildRoadGraph(candidate);
   const consolidatedNodeIds = consolidated.replaced.map(([id]) => id);

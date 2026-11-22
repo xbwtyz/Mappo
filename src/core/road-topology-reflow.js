@@ -14,6 +14,11 @@ import { draftRoadConnectionC3, normalizeRoadCrossingsC3, roadTopologyId } from 
 import { validateStoredProject } from '../data/project-validation.js';
 
 const TOPOLOGY_BLOCK_LIMIT = 32;
+function roadInspectionTargetAllowed(graph,id) {
+  return graph.valid && graph.nodesById.has(id) &&
+    (graph.incidentRoads.get(id) ?? []).length > 0 &&
+    graph.incidentRoads.get(id).every(edge => !graph.roadClasses.get(edge)?.protected);
+}
 const ROAD_RECORDS = [
   ['nodes', 'junction'], ['roads', 'road'], ['blocks', 'block'], ['properties', 'property'],
   ['plots', 'plot'], ['buildings', 'building'], ['openSpaces', 'open-space'],
@@ -161,7 +166,7 @@ function c4MatchBentFaces(old, extraction, draft) {
   return { valid:true,preserved,changed,added:[],removed:[],split:[],merged:[],ambiguous:[] };
 }
 
-export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null, decisions = new Map()) {
+export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null, decisions = new Map(), options = {}) {
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
   const fail = (code, message, kind = draft?.junctionId ? 'junction' : 'road', id = roadId) => ({
     phase: 'C3', status: 'needs-review', candidateProject: null, changed: [], ledger: [],
@@ -172,11 +177,24 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     const old = project.city;
     if (edit?.kind === 'shape') draft = draftRoadShape(old, buildRoadGraph(old), roadId, edit.points);
     else if (edit) draft = draftRoadConnectionC3(old, roadId, edit);
+    const preferred = options?.targetJunctionId ?? null;
+    if (preferred !== null) {
+      const source = old.nodes.find(node => node.id === roadId);
+      const destination = old.nodes.find(node => node.id === preferred);
+      const moved = draft?.proposedCity?.nodes?.find(node => node.id === roadId);
+      const accepted = buildRoadGraph(old);
+      if (edit || draft?.junctionId !== roadId || !source || !destination ||
+          source.id === preferred || !moved ||
+          moved.x !== destination.x || moved.y !== destination.y ||
+          !roadInspectionTargetAllowed(accepted, preferred))
+        return fail('target-junction-invalid',
+          'The selected destination is no longer an ordinary junction at the proposed position.', 'junction', preferred);
+    }
     const oldTerminals = new Set(buildRoadGraph(old).terminalRoadIds);
     if (oldTerminals.has(roadId) && edit?.kind !== 'remove')
       return fail('terminal-edit-out-of-scope',
         'Editing an existing dead-end road requires a separately scoped operation.', 'road', roadId);
-    const { city, graph, splitRoadIds } = normalizeRoadCrossingsC3(structuredClone(draft.proposedCity));
+    const { city, graph, splitRoadIds } = normalizeRoadCrossingsC3(structuredClone(draft.proposedCity), {preferredNodeId: preferred});
     const introduced = graph.terminalRoadIds.filter(id => !oldTerminals.has(id));
     if (introduced.length && edit?.kind !== 'remove')
       return fail('terminal-edit-out-of-scope',

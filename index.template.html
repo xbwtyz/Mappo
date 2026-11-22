@@ -365,6 +365,14 @@
               </details>
               <p id="roadIntentStatusC1" class="hint">Select an ordinary street to draft its new placement.</p>
             </section>
+            <section id="roadJunctionTools" class="road-junction-tools" aria-label="Junction snapping and connecting">
+              <label><input id="roadSnapJunctions" type="checkbox" checked> Snap to junctions while dragging</label>
+              <div class="road-preview-actions">
+                <button id="roadStartMergeJunctions" type="button" class="minor-button">Connect / Merge Junctions</button>
+                <button id="roadCancelMergeJunctions" type="button" class="minor-button" hidden>Cancel connection</button>
+              </div>
+              <p id="roadJunctionToolsStatus" class="hint" role="status" aria-live="polite"></p>
+            </section>
             <div id="roadMenuJunctionCoordinates" class="road-preview-selectors"><label>Proposed X<input id="roadProposedX" type="number" step="any" disabled></label><label>Proposed Y<input id="roadProposedY" type="number" step="any" disabled></label></div>
             <details id="roadMenuPrecision" class="road-menu-disclosure" open>
               <summary id="roadMenuPrecisionSummary" hidden>Nudge and precision</summary>

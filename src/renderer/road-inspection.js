@@ -193,6 +193,35 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
     ctx.lineWidth = 2;
     ctx.stroke();
   }
+  if (session.mergeMode) {
+    const marks = [
+      {id:session.mergeSourceId,color:'#2563eb',label:'Source'},
+      {id:session.mergeTargetId,color:'#059669',label:'Target'},
+      {id:session.mergeHoverId,color:'#f59e0b',label:'Click'},
+    ];
+    const seen = new Set();
+    for (const mark of marks) {
+      if (!mark.id || seen.has(mark.id)) continue;
+      seen.add(mark.id);
+      const node = graph.nodesById.get(mark.id);
+      if (!node) continue;
+      const p = camera.worldToScreen(node);
+      ctx.beginPath();ctx.arc(p.x,p.y,12,0,Math.PI*2);
+      ctx.strokeStyle = mark.color;ctx.lineWidth=3;ctx.stroke();
+      ctx.fillStyle=mark.color;ctx.font='12px sans-serif';
+      ctx.fillText(mark.label+' '+mark.id,p.x+15,p.y-10);
+    }
+  }
+  if (session.snapTargetId && session.drag?.kind === 'junction') {
+    const node = graph.nodesById.get(session.snapTargetId);
+    if (node) {
+      const p = camera.worldToScreen(node);
+      ctx.beginPath();ctx.arc(p.x,p.y,12,0,Math.PI*2);
+      ctx.strokeStyle='#059669';ctx.lineWidth=3;ctx.stroke();
+      ctx.fillStyle='#059669';ctx.font='12px sans-serif';
+      ctx.fillText('Snap '+node.id,p.x+15,p.y-11);
+    }
+  }
   if (session.pending && d?.kind==='junction') {
     const color = session.roadPreviewVerifiedD1 ? rpColors.safe : rpColors[session.report?.status] ?? rpColors.checking;
     ctx.setLineDash([7, 5]);
