@@ -282,8 +282,11 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
       for(const {id} of sources) replacements.set(id,records);
     }
     if(pending.length) return {...fail(pending[0].code,pending[0].message),unresolved:pending};
-    const successorIdsByOld = new Map(proof?.reverse.map(row=>
-      [row.oldId,row.candidateKeys.map(key=>candidateIds.get(key)).filter(Boolean)])??[]);
+    // The proof also records unchanged/reshaped one-to-one faces, but those
+    // retain their IDs and must not receive an empty successor list.
+    const successorIdsByOld = new Map((proof?.reverse.map(row=>
+      [row.oldId,row.candidateKeys.map(key=>candidateIds.get(key)).filter(Boolean)])??[])
+      .filter(([,ids])=>ids.length));
     for (const match of matching.changed) {
       if (match.kind !== 'block') return fail('protected-face-change', 'A protected face would change.');
       replacements.set(match.id, [match.record]);
