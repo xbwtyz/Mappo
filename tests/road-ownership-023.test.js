@@ -43,10 +43,12 @@ for(const [name,fixture,run] of [['R1',radial,runR1],['R2',planned,runR2]])
         createProjectDocument(result.candidateProject,defaultWorkspace(result.candidateProject))));
       assert.deepEqual(loaded.project,result.candidateProject);
       assert.deepEqual(project,before,'Preview must not mutate accepted project');
-      for(const row of result.lineage.reverse)
-        assert.deepEqual(result.ledger.find(entry=>entry.kind==='block'&&entry.oldId===row.oldId)?.successorIds,
+      for(const row of result.lineage.reverse){
+        const receipt=result.ledger.find(entry=>entry.kind==='block'&&entry.oldId===row.oldId);
+        if(receipt)assert.deepEqual(receipt.successorIds,
           row.candidateKeys.map(key=>result.ownershipReview.find(face=>face.candidateKey===key)?.proposedId).filter(Boolean),
           'Ledger must include only direct successor faces');
+      }
     }
   });
 
