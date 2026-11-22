@@ -3,7 +3,7 @@
 > **Owner-approved P1–P5 implementation in PR [#116](https://github.com/xbwtyz/Mappo/pull/116).**
 > **Development-only:** not merged, released, tagged or deployed. Project schema 9 and portable envelope 1 retained.
 
-**Target issue:** [#101](https://github.com/xbwtyz/Mappo/issues/101) · **Version:** \`0.2.6-dev\` · **Baseline:** main \`62626d298d3e38a225409d98077ed8c8fe5e8d49\`
+**Target issue:** [#101](https://github.com/xbwtyz/Mappo/issues/101) · **Version:** `0.2.6-dev` · **Baseline:** main `62626d298d3e38a225409d98077ed8c8fe5e8d49`
 
 ## Approved architecture decisions
 
@@ -26,10 +26,10 @@ After 0.2.6, the user can select eligible concave or partial-edge neighbors, ins
 ## P1 — Topological union and multi-road compatibility
 
 **Implementation:**
-- \`src/core/property-merge-union-026.js\` subdivides source boundary edges at shared vertices, cancels only exactly opposite shared subsegments, proves one straight connected shared seam, traces one exterior cycle and simplifies only redundant collinear corners.
+- `src/core/property-merge-union-026.js` subdivides source boundary edges at shared vertices, cancels only exactly opposite shared subsegments, proves one straight connected shared seam, traces one exterior cycle and simplifies only redundant collinear corners.
 - Rejects gaps, corner contact, crossing/overlapping interiors, disjoint/non-manifold seams, holes, area loss, invalid winding, excess vertices and missing exposed source frontages.
-- \`propertyMergeFlexibleGeometry026\` extends E3 eligibility without changing accepted legacy full-edge E3 geometry behavior.
-- Retains the selected primary source's authoritative \`frontageRoadId\` and frontage frame; reports all distinct, independently verified source road IDs as derived frontage exposure. Source building/plot road associations survive.
+- `propertyMergeFlexibleGeometry026` extends E3 eligibility without changing accepted legacy full-edge E3 geometry behavior.
+- Retains the selected primary source's authoritative `frontageRoadId` and frontage frame; reports all distinct, independently verified source road IDs as derived frontage exposure. Source building/plot road associations survive.
 
 **Gate:** Mappo schema 9 does not natively persist a frontage-edge array. Only the primary road remains authoritative; secondary exposed frontages are derived from the source records and merge lineage. The existing independent validator permits buildings to retain their separately referenced road IDs. Do not represent this as support for arbitrary multi-frontage property authoring, automatic multi-road road-reflow or new per-edge road metadata. If a specific downstream edit cannot safely reconcile those dependencies, fail closed. Schema 10 remains unauthorized.
 
@@ -39,7 +39,7 @@ After 0.2.6, the user can select eligible concave or partial-edge neighbors, ins
 
 **Implementation:**
 - Existing convex plot boundaries/IDs/annotations are unchanged; only secondary plot ownership references change.
-- \`src/editor/property-merge-adaptation-026.js\` checks current routes, including valid accepted *setback-frontage* endpoints, preserving an existing route if valid.
+- `src/editor/property-merge-adaptation-026.js` checks current routes, including valid accepted *setback-frontage* endpoints, preserving an existing route if valid.
 - If necessary, tries existing and alternate verified road access, new entrance/route candidates, then deterministic bounded rigid translation/rotation within the merged property's existing plot tiling.
 - Never silently deletes or regenerates buildings, edits plot geometry, scales footprints or changes any building ID.
 - A building with authored/custom/unknown provenance cannot be changed without its own affirmative authorization; all proposals appear in the preview and lineage.
@@ -50,10 +50,10 @@ After 0.2.6, the user can select eligible concave or partial-edge neighbors, ins
 ## P3 — Atomic E3 transaction and preservation
 
 **Implementation:**
-- E3's flexible path delegates to \`src/editor/property-merge-026.js\`; the canonical rectangular E3 path remains as-is.
+- E3's flexible path delegates to `src/editor/property-merge-026.js`; the canonical rectangular E3 path remains as-is.
 - A detached project clone receives merged boundary, combined plot/building memberships, verified ownership references, and any authorized access/building adjustment.
-- Primary ID and compatible custom fields survive; full retired secondary record and original changed-building records enter \`propertyMergeHistoryE3\` lineage.
-- Independent \`validateStoredProject\`, schema-9 portable encode/decode, revalidation at Apply, stale-revision guards and E3-scoped Undo/Redo remain mandatory.
+- Primary ID and compatible custom fields survive; full retired secondary record and original changed-building records enter `propertyMergeHistoryE3` lineage.
+- Independent `validateStoredProject`, schema-9 portable encode/decode, revalidation at Apply, stale-revision guards and E3-scoped Undo/Redo remain mandatory.
 
 **P3 acceptance:** exact Undo/Redo, one property retired, exact plot/building identities, no mutation on invalid inspection, portable save/reopen and full validation.
 
@@ -70,12 +70,12 @@ After 0.2.6, the user can select eligible concave or partial-edge neighbors, ins
 ## P5 — Verification, artifacts and owner review
 
 **Implementation:**
-- Node geometry/unit/integration coverage: \`tests/property-merge-union-026.test.js\`, \`tests/property-merge-adaptation-026.test.js\`, \`tests/property-merge-026-integration.test.js\`.
-- Compiled desktop QA: \`scripts/property-merge-026-browser-qa.mjs\` added to the existing property suite without dropping previous tests.
-- \`0.2.6-dev\` package/source versions in sync; source-built \`index.html\` and \`dist/mappo-0.2.6-dev.html\` remain byte-identical and reproduce deterministically.
+- Node geometry/unit/integration coverage: `tests/property-merge-union-026.test.js`, `tests/property-merge-adaptation-026.test.js`, `tests/property-merge-026-integration.test.js`.
+- Compiled desktop QA: `scripts/property-merge-026-browser-qa.mjs` added to the existing property suite without dropping previous tests.
+- `0.2.6-dev` package/source versions in sync; source-built `index.html` and `dist/mappo-0.2.6-dev.html` remain byte-identical and reproduce deterministically.
 - Full two-shard Node and four-suite desktop Firefox/Chromium CI plus aggregate gate on exact PR head; heavy C7 opt-in unchanged.
 
-**Review evidence (superseded when a newer head is pushed):** [full CI run 44995391370](https://github.com/xbwtyz/Mappo/actions/runs/44995391370), **511/511 Node tests**, four browser suites and aggregate gate succeeded on \`77d4f38db9f9d01fdaeb4b50bc8abe5eb03f276c\`. This latest development pass adds a bounded relocation fixture, so final exact-head CI is still required.
+**Verified completion evidence:** [full CI run 44995726698](https://github.com/xbwtyz/Mappo/actions/runs/44995726698), **512/512 Node tests**, four browser suites and the aggregate gate passed on commit `53c77b8beadc3a0d522631691acee2dd862235c9`; duration **3m03s**. This documentation-only closure commit requires the final exact-head CI to pass as well.
 
 ## Scope exclusions and risks
 
@@ -91,7 +91,7 @@ After 0.2.6, the user can select eligible concave or partial-edge neighbors, ins
 - [x] Owner approved architecture and P1–P5 development.
 - [x] Isolated feature branch from verified main, one PR, modular source and versioned compiled HTML.
 - [x] P1–P4 functionality implemented with compatibility guards and positive/negative fixtures.
-- [ ] P5 **final** complete six-runner CI and aggregate gate on exact final head.
+- [x] P5 implementation and six-suite CI plus aggregate gate passed on reviewed candidate `53c77b8`; final documentation-only head must repeat CI successfully.
 - [ ] Owner independently authorizes merging PR #116.
 - [ ] Exact post-merge main CI succeeds.
 - [ ] Owner separately authorizes tag, stable release or Pages deployment if desired.
