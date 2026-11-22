@@ -390,6 +390,6 @@ async function exerciseD01(name,engine) {
     console.log('PASS D01 '+name+' unified identity/compound Undo, Redo, draft gate');
   }finally{await browser.close();}
 }
-for(const [name,engine] of [['chromium',chromium],['firefox',firefox']]){
+for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
   await exerciseD01(name,engine);
 }
