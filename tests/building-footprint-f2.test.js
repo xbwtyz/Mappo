@@ -24,7 +24,7 @@ test('F2 wing and courtyard use one atomic Apply each, preserve identity, and ro
   assert.ok(session.selectDirectHandle(project.city, 1));
   assert.ok(session.editDirectGeometry(project.city, 'wing', wing));
   assert.equal(session.previewFor(project.city).footprint.length, 8);
-  assert.equal(session.editDirectGeometry(project.city, 'insert'), false);
+  assert.equal(session.structuralOperationCount, 1);
   assert.equal(JSON.stringify(project.city), accepted);
   const apply = () => {
     const result = prepareBuildingApply(project, defaultWorkspace(project), building.id, session.transform, session.draft);
@@ -124,4 +124,92 @@ test('F2 replacement starts without a preset and clears consent when the draft c
   placement.active.replaceGeometry = true;
   placement.update({ depth: placement.spec.depth + .1 });
   assert.equal(placement.active.replaceGeometry, false);
+});
+
+test('C02: wing, courtyard, and vertex insertion form one reversible accepted edit', () => {
+  const project = createProject({seed:'c02-multi-operation',size:'small',morphology:'organic'});
+  const {building,wing,courtyard}=findDirectFootprintFixture(project);
+  const original=JSON.stringify(project.city);
+  const session=new BuildingEditSession();
+  const history=new BuildingGeometryHistory();
+  assert.equal(session.start(project.city,layers,building.id),true);
+  assert.equal(session.setTool('edges'),true);
+  assert.equal(session.selectDirectHandle(project.city,1),true);
+  assert.equal(session.editDirectGeometry(project.city,'wing',wing),true);
+  assert.equal(session.structuralOperationCount,1);
+  assert.equal(session.setTool('courtyard'),true);
+  assert.equal(session.editDirectGeometry(project.city,'add courtyard',courtyard),true);
+  assert.equal(session.structuralOperationCount,2);
+  assert.equal(session.holeIndex,0);
+  assert.equal(session.setTool('vertices'),true);
+  assert.equal(session.selectDirectRing(project.city,null),true);
+  assert.equal(session.selectDirectHandle(project.city,0),true);
+  assert.equal(session.editDirectGeometry(project.city,'insert'),true);
+  assert.equal(session.structuralOperationCount,3);
+  assert.equal(session.handleIndex,1);
+  assert.equal(session.previewFor(project.city).footprint.length,9);
+  assert.equal(session.previewFor(project.city).holes.length,1);
+  assert.equal(JSON.stringify(project.city),original);
+  const receipt=prepareBuildingApply(project,defaultWorkspace(project),building.id,session.transform,session.draft);
+  assert.equal(receipt.ok,true,JSON.stringify(receipt.issues));
+  assert.equal(history.record(project,receipt.candidate,building.id),true);
+  assert.equal(history.count('undo',building.id),1);
+  const accepted=JSON.stringify(receipt.candidate.city);
+  const undo=history.prepare(receipt.candidate,defaultWorkspace(receipt.candidate),building.id,'undo');
+  assert.equal(undo.ok,true,undo.reason);
+  assert.equal(JSON.stringify(undo.candidate.city),original);
+  history.accept(undo.entry,'undo');
+  const redo=history.prepare(undo.candidate,defaultWorkspace(undo.candidate),building.id,'redo');
+  assert.equal(redo.ok,true,redo.reason);
+  assert.equal(JSON.stringify(redo.candidate.city),accepted);
+});
+
+test('C02: 16 operations are permitted; invalid steps and limit overflow preserve last draft', () => {
+  const project=createProject({seed:'c02-cap',size:'small',morphology:'organic'});
+  const {building}=findDirectFootprintFixture(project);
+  const accepted=JSON.stringify(project.city);
+  const session=new BuildingEditSession();
+  assert.ok(session.start(project.city,layers,building.id));
+  assert.ok(session.setTool('vertices'));
+  assert.ok(session.selectDirectHandle(project.city,0));
+  assert.equal(session.editDirectGeometry(project.city,'wing',{depth:-4}),false);
+  assert.equal(session.structuralOperationCount,0);
+  for(let step=1;step<=16;step++){
+    assert.ok(session.selectDirectHandle(project.city,0));
+    assert.equal(session.editDirectGeometry(project.city,'insert'),true,'insert '+step);
+    assert.equal(session.structuralOperationCount,step);
+  }
+  const draft=JSON.stringify(session.draft),selection=session.handleIndex;
+  assert.equal(session.editDirectGeometry(project.city,'insert'),false);
+  assert.match(session.operationError,/16 structural edits/);
+  assert.equal(session.structuralOperationCount,16);
+  assert.equal(JSON.stringify(session.draft),draft);
+  assert.equal(session.handleIndex,selection);
+  assert.equal(JSON.stringify(project.city),accepted);
+  assert.ok(session.reset(project.city));
+  assert.equal(session.structuralOperationCount,0);
+  assert.equal(session.isPending,false);
+});
+
+test('C02: transform and structural edits interleave without applying rotation twice', () => {
+  const project=createProject({seed:'c02-transforms',size:'small',morphology:'organic'});
+  const {building}=findDirectFootprintFixture(project);
+  const session=new BuildingEditSession();
+  assert.ok(session.start(project.city,layers,building.id));
+  assert.ok(session.setTransform({dx:0.1,dy:0.05,angle:0.03,scaleX:1.03,scaleY:1.02}));
+  const first=session.previewFor(project.city);
+  assert.ok(session.setTool('vertices'));
+  assert.ok(session.selectDirectHandle(project.city,0));
+  assert.ok(session.editDirectGeometry(project.city,'insert'));
+  assert.equal(session.transform.angle,0);
+  assert.ok(Math.abs(session.previewFor(project.city).orientation-first.orientation)<1e-8);
+  assert.ok(session.setTransform({dx:0.02,dy:-0.01,angle:0.02}));
+  assert.ok(session.selectDirectHandle(project.city,0));
+  assert.ok(session.editDirectGeometry(project.city,'insert'));
+  assert.equal(session.structuralOperationCount,2);
+  assert.ok(Math.abs(session.previewFor(project.city).orientation-(first.orientation+0.02))<1e-8);
+  const stale=structuredClone(project.city);
+  assert.equal(session.editDirectGeometry(stale,'insert'),false);
+  assert.equal(session.reconcile(stale,layers,{kind:'building',id:building.id}),false);
+  assert.equal(session.isActive,false);
 });

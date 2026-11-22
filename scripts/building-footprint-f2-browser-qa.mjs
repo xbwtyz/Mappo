@@ -107,7 +107,7 @@ async function exerciseF2(browserName, browserType) {
     assert.equal(await handle.inputValue(), '1');
     await page.locator('#buildingWingDepth').fill(String(wing.depth));
     await page.locator('#buildingAddWing').click();
-    assert.equal(await page.locator('#buildingInsertVertex').isDisabled(), true);
+    assert.equal(await page.locator('#buildingInsertVertex').isDisabled(), false);
     assert.equal(await page.locator('#buildingPreviewApply').isEnabled(), true);
     assert.ok(JSON.stringify(await readCity(page)) === JSON.stringify(project.city), 'Accepted city should match the expected snapshot');
     await page.locator('#buildingPreviewApply').click();

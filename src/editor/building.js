@@ -6,7 +6,7 @@ import {
 
 import {
   insertFootprintVertexF1, moveFootprintVertexF1, deleteFootprintVertexF1, attachBuildingWingF1,
-  addRectangularCourtyardF1, removeBuildingCourtyardF1, rectangularCourtyardFrame
+  addRectangularCourtyardF1, removeBuildingCourtyardF1, rectangularCourtyardFrame, validateFootprintF1
 } from '../core/building-footprint-f1.js';
 
 export const BUILDING_EDIT_TOOLS = Object.freeze(['Transform', 'Vertices', 'Edges', 'Courtyard']);
@@ -39,6 +39,7 @@ export class BuildingEditSession {
     this.transform = { ...EMPTY_BUILDING_TRANSFORM };
     this.draft = null;
     this.topologyChanged = false;
+    this.structuralOperationCount = 0;
     this.holeIndex = null;
     this.handleIndex = 0;
     this.operationError = '';
@@ -150,12 +151,19 @@ export class BuildingEditSession {
   editDirectGeometry(city, operation, values = {}) {
     if (!this.isActive || !this.isDirect || this.drag || city !== this.acceptedCity) return false;
     const topology = !['move', 'adjust courtyard'].includes(operation);
-    if (topology && this.topologyChanged) return false;
+    if (topology && this.structuralOperationCount >= 16) {
+      this.operationError = 'This draft has reached 16 structural edits. Apply or Reset to continue.';
+      this.changed();
+      return false;
+    }
     const preview = this.previewFor(city);
     const index = this.handleIndex;
     const target = { holeIndex: this.holeIndex };
     let next;
     try {
+      // Discrete structural steps require locally sound geometry, even when
+      // broader property or access conflicts remain to be resolved in the draft.
+      if (topology) validateFootprintF1(preview);
       switch (operation) {
         case 'move': next = moveFootprintVertexF1(preview, index, values, target); break;
         case 'insert': next = insertFootprintVertexF1(preview, index, .5, target); break;
@@ -178,12 +186,45 @@ export class BuildingEditSession {
       this.changed();
       return false;
     }
-    if (operation === 'add courtyard') this.holeIndex = next.holes.length - 1;
-    if (operation === 'remove courtyard') this.holeIndex = null;
-    const ring = this.holeIndex === null ? next.footprint : next.holes[this.holeIndex];
-    this.handleIndex = Math.min(this.handleIndex, ring.length - 1);
+    // A true no-op does not consume the structural-edit budget.
+    if (JSON.stringify([preview.footprint, preview.holes]) ===
+        JSON.stringify([next.footprint, next.holes])) {
+      this.operationError = '';
+      this.changed();
+      return true;
+    }
+    // Indices belong to the current polygon and hole rings, not persistent
+    // vertex identities. Map known operations, clear removed rings and never
+    // leave a handle referring to an out-of-range vertex.
+    let nextHole = this.holeIndex, nextHandle = index;
+    if (operation === 'add courtyard') {
+      nextHole = next.holes.length - 1;
+      nextHandle = 0;
+    } else if (operation === 'remove courtyard') {
+      nextHole = null;
+      nextHandle = 0;
+    } else if (operation === 'insert') {
+      nextHandle = index + 1;
+    } else if (operation === 'wing') {
+      nextHandle = index + 2;
+    }
+    const ring = nextHole === null ? next.footprint : next.holes[nextHole];
+    if (!ring?.length) {
+      nextHole = null;
+      nextHandle = 0;
+    } else if (operation === 'delete' && index >= ring.length) {
+      nextHandle = 0;
+    } else {
+      nextHandle = Math.min(nextHandle, ring.length - 1);
+    }
+    this.holeIndex = nextHole;
+    this.handleIndex = nextHandle;
     this.operationError = '';
-    this.topologyChanged ||= topology;
+    if (topology) {
+      this.structuralOperationCount++;
+      this.topologyChanged = true;
+    }
+    // Fold the transformed preview into the detached draft exactly once.
     this.setGeometryDraft(preview, next);
     return true;
   }
