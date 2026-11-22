@@ -32,7 +32,7 @@ function worldPoint(frame, u, v) {
   };
 }
 
-export function generateBuildings(seed, layout, morphology = null) {
+export function generateBuildings(seed, layout, morphology = null, irregularMetrics = null) {
   const nodes = new Map(layout.nodes.map(n => [n.id, n]));
   const roadByPair = new Map(layout.roads.map(r => [keyedPair(r.a, r.b), r]));
   const plots = [],
@@ -98,8 +98,15 @@ export function generateBuildings(seed, layout, morphology = null) {
       if (!morphology || propertyPlots.length !== 1) return false;
       const likelihood = {organic:.5, radial:.38, linear:.12, planned:0}[morphology] ?? 0;
       if (!likelihood || property.local.width<9 || property.local.depth<10) return false;
+      // Optional acceptance diagnostics do not become part of saved city data.
+      if (irregularMetrics) irregularMetrics.eligibleCandidates=(irregularMetrics.eligibleCandidates??0)+1;
       const choice = createRng(seed+':parcel-shapes:v024:'+block.id+':'+property.id);
       if (choice() >= likelihood) return false;
+      if (irregularMetrics) irregularMetrics.attemptedCandidates=(irregularMetrics.attemptedCandidates??0)+1;
+      const fallback=()=>{
+        if (irregularMetrics) irregularMetrics.rejectedCandidates=(irregularMetrics.rejectedCandidates??0)+1;
+        return false;
+      };
       const [a,b,c,d]=property.boundary, frame=property.frame;
       const inward = morphology==='organic' && choice()<.46;
       // A single recessed/extended rear corner derives its geometry from the
@@ -111,13 +118,13 @@ export function generateBuildings(seed, layout, morphology = null) {
       if (!shapeWellFormed(candidate) || !shapeContained(candidate,polygon) ||
           !propertyFits(candidate,polygon,edges) ||
           accepted.some(other=>other.id!==property.id &&
-            shapesOverlapInterior(candidate,other.boundary))) return false;
+            shapesOverlapInterior(candidate,other.boundary))) return fallback();
       let cells;
       try { cells=partitionPropertyPolygon024(candidate); }
-      catch { return false; }
-      if(cells.some(cell=>polygonSignedArea(cell)<2))return false;
+      catch { return fallback(); }
+      if(cells.some(cell=>polygonSignedArea(cell)<2))return fallback();
       const owned=buildings.filter(b=>b.propertyId===property.id);
-      if(owned.some(building=>!shapeContained(building.footprint,candidate)))return false;
+      if(owned.some(building=>!shapeContained(building.footprint,candidate)))return fallback();
       const revised= cells.map((cell,i)=>({
         ...propertyPlots[0],
         id: i===0 ? propertyPlots[0].id : 'PLOT-'+String(plots.length+i).padStart(5,'0'),
@@ -129,7 +136,7 @@ export function generateBuildings(seed, layout, morphology = null) {
           sum+polygonSignedArea(clipToConvexPolygon(hole,plot.boundary)),0);
         return clipped-holes>1e-5;
       }).map(plot=>plot.id));
-      if(occupied.some(ids=>!ids.length))return false;
+      if(occupied.some(ids=>!ids.length))return fallback();
       // Commit the new generated geometry only after every candidate passes.
       propertyPlots[0].boundary=cells[0];
       for(const extra of revised.slice(1)){plots.push(extra);propertyPlots.push(extra);}
@@ -140,6 +147,7 @@ export function generateBuildings(seed, layout, morphology = null) {
         (p.x-frame.origin.x)*frame.inward.x+
         (p.y-frame.origin.y)*frame.inward.y))-property.local.y;
       owned.forEach((building,i)=>{building.plotIds=occupied[i];});
+      if (irregularMetrics) irregularMetrics.acceptedCandidates=(irregularMetrics.acceptedCandidates??0)+1;
       return true;
     }
 
