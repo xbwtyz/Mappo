@@ -1,4 +1,5 @@
 import { placeRoadConflictBuilding } from './road-building-decisions.js';
+import { terminalCorridors, polygonIntrudesTerminalCorridor } from './road-terminal-corridors.js';
 import { buildRoadGraph } from './road-graph.js';
 import { draftRoadShape } from './road-shape.js';
 import { distanceToSegment, insideOrOn } from './boundary.js';
@@ -77,15 +78,17 @@ function c3RetainDevelopment(old, city, replacements, graph) {
   return kept;
 }
 
-function c3Development(seed, city, blocks, old, kept) {
+function c3Development(seed, city, blocks, old, kept, corridors = []) {
   const generated = generateBuildings(seed, { ...city, blocks });
   const keptByBlock = new Map();
   for (const property of kept.properties) {
     if (!keptByBlock.has(property.blockId)) keptByBlock.set(property.blockId, []);
     keptByBlock.get(property.blockId).push(property);
   }
-  generated.properties = generated.properties.filter(property => !(keptByBlock.get(property.blockId) ?? [])
-    .some(existing => shapesOverlapInterior(property.boundary, existing.boundary)));
+  generated.properties = generated.properties.filter(property =>
+    !polygonIntrudesTerminalCorridor(property.boundary, corridors) &&
+    !(keptByBlock.get(property.blockId) ?? []).some(existing =>
+      shapesOverlapInterior(property.boundary, existing.boundary)));
   const propertyIds = new Set(generated.properties.map(property => property.id));
   generated.plots = generated.plots.filter(plot => propertyIds.has(plot.propertyId));
   generated.buildings = generated.buildings.filter(building => propertyIds.has(building.propertyId));
@@ -169,7 +172,16 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     const old = project.city;
     if (edit?.kind === 'shape') draft = draftRoadShape(old, buildRoadGraph(old), roadId, edit.points);
     else if (edit) draft = draftRoadConnectionC3(old, roadId, edit);
+    const oldTerminals = new Set(buildRoadGraph(old).terminalRoadIds);
+    if (oldTerminals.has(roadId) && edit?.kind !== 'remove')
+      return fail('terminal-edit-out-of-scope',
+        'Editing an existing dead-end road requires a separately scoped operation.', 'road', roadId);
     const { city, graph, splitRoadIds } = normalizeRoadCrossingsC3(structuredClone(draft.proposedCity));
+    const introduced = graph.terminalRoadIds.filter(id => !oldTerminals.has(id));
+    if (introduced.length && edit?.kind !== 'remove')
+      return fail('terminal-edit-out-of-scope',
+        'Creating new dead ends is supported only through ordinary road deletion in 0.2.1.',
+        'road', introduced[0]);
     validation.graph = 'pass';
     const { emit, items } = riReporter(), spend = riBudget();
     inspectOpaqueRoadDependencies(project, graph, emit, spend);
@@ -222,7 +234,23 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     const nextBlocks = riIndex(rebuilt);
     city.blocks = uniqueBlocks(old.blocks.map(block => block.id)).map(id => nextBlocks.get(id) ?? oldBlocks.get(id));
     city.districts = city.districts.map(district => ({ ...district, blockIds: uniqueBlocks(district.blockIds) }));
-    const kept = c3RetainDevelopment(old, city, replacements, graph);
+    const corridors = terminalCorridors(city);
+    const retained = c3RetainDevelopment(old, city, replacements, graph);
+    const colliding = new Set(retained.properties.filter(property =>
+      polygonIntrudesTerminalCorridor(property.boundary, corridors)).map(property => property.id));
+    const oldBuildingIndex = riIndex(old.buildings);
+    const keptPlotIndex = riIndex(retained.plots);
+    for (const property of retained.properties.filter(row => colliding.has(row.id))) {
+      const childBuildings = property.buildingIds.map(id => oldBuildingIndex.get(id));
+      if (classifyRoadProvenance(property, property.plotIds.map(id => keptPlotIndex.get(id))) !== 'generated' ||
+          childBuildings.some(building => !building || classifyRoadProvenance(building) !== 'generated'))
+        return fail('parcel-corridor-conflict', 'An authored property or building occupies the retained dead-end street corridor.', 'property', property.id);
+    }
+    const kept = {
+      properties: retained.properties.filter(property => !colliding.has(property.id)),
+      plots: retained.plots.filter(plot => !colliding.has(plot.propertyId)),
+      buildings: retained.buildings.filter(building => !colliding.has(building.propertyId)),
+    };
     const keptIds = new Set(Object.values(kept).flat().map(record=>record.id));
     const oldPlots = riIndex(old.plots);
     const customized = old.properties.find(property => replacements.has(property.blockId) && !keptIds.has(property.id) &&
@@ -237,7 +265,7 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
       unresolved: required.map(building=>({kind:'building', id:building.id, code:'building-decision-required',
         message:'This building needs your approval before its parcel or placement can change.',severity:'needs-review'})),
     };
-    const regenerated = c3Development(project.seed, city, rebuilt, old, kept);
+    const regenerated = c3Development(project.seed, city, rebuilt, old, kept, corridors);
     const decided = new Map();
     for (const building of conflicts) {
       const choice = decisions.get(building.id);
