@@ -60,6 +60,30 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
     await page.locator('#propertySplitPercentE2').press('Tab');
     assert.equal(await page.locator('#propertySplitApplyE2').isEnabled(),true,
       await page.locator('#propertySplitStatusE2').innerText());
+    // Exercise both map drag handles in the real browser controller. Cancel
+    // must restore each independently without changing accepted geometry.
+    const dragged=await page.evaluate(()=>{
+      const st=__buildingQA.state(),controls=st.propertySplitE2,session=controls.session;
+      const firstT=session.t,firstExit=session.exitT;
+      const g=session.geometry(st.project.city);
+      const exitStart=g.boundary[session.exitEdge],exitEnd=g.boundary[(session.exitEdge+1)%g.boundary.length];
+      if(!controls.begin(g.cut[1],2))return {ok:false,reason:'exit handle not hit'};
+      const proposedExit=firstExit<.55?.58:.42;
+      controls.move({x:exitStart.x+(exitEnd.x-exitStart.x)*proposedExit,
+        y:exitStart.y+(exitEnd.y-exitStart.y)*proposedExit});
+      const exitMoved=Math.abs(session.exitT-firstExit)>.01;
+      controls.end(true);
+      const frontStart=g.boundary[0],frontEnd=g.boundary[1];
+      if(!controls.begin(g.cut[0],2))return {ok:false,reason:'front handle not hit'};
+      const proposedFront=firstT<.55?.58:.42;
+      controls.move({x:frontStart.x+(frontEnd.x-frontStart.x)*proposedFront,
+        y:frontStart.y+(frontEnd.y-frontStart.y)*proposedFront});
+      const frontMoved=Math.abs(session.t-firstT)>.01;
+      controls.end(true);
+      return {ok:exitMoved&&frontMoved&&Math.abs(session.t-firstT)<1e-9&&
+        Math.abs(session.exitT-firstExit)<1e-9,exitMoved,frontMoved};
+    });
+    assert.equal(dragged.ok,true,JSON.stringify(dragged));
     assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),before);
     await page.locator('#propertySplitPercentE2').fill('1');
     await page.locator('#propertySplitPercentE2').press('Tab');
