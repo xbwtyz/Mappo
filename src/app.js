@@ -90,6 +90,8 @@ import { inspectBuildingPreview, prepareBuildingApply } from './editor/building-
 import { BuildingGeometryHistory } from './editor/building-history.js';
 import { BuildingPlacementSession3H, buildingLocalPoint3H, prepareBuildingStructure3H } from './editor/building-structures.js';
 import { BuildingStructureHistory3H } from './editor/building-structure-history.js';
+import {prepareCompoundMembership,prepareCompoundTransform,previewCompoundTransform} from './editor/building-compounds-c01.js';
+import {drawCompoundPreviewC01} from './renderer/building-compounds-c01.js';
 import { PropertyEditSession3I } from './editor/property-edit.js';
 import { inspectPropertyEdit3I, preparePropertyApply3I } from './editor/property-application.js';
 import { PropertyGeometryHistory3I } from './editor/property-history.js';
@@ -173,6 +175,10 @@ const propertyDeletionHistory4A = new PropertyDeletionHistory4A(20);
 const propertyCreationHistoryE1 = new PropertyCreationHistoryE1(20);
 const roadHistory = new RoadGeometryHistoryB4(6);
 let buildingPlacementSession;
+// C01 panel state is transient and never serialized into accepted city geometry.
+let compoundPanelPropertyId=null,compoundGroupId='',compoundMemberIds=[],compoundName='';
+let compoundTransform={dx:0,dy:0,angle:0,scaleX:1,scaleY:1};
+let compoundResult=null;
 let propertyEditSession;
 let propertyCreationSessionE1;
 let propertySplitE2;
@@ -361,6 +367,7 @@ function requestDraw() {
       drawPropertyCreationE1(canvas.getContext('2d'),camera,project.city,propertyCreationSessionE1);
       drawPropertySplitE2(canvas.getContext('2d'),camera,project.city,propertySplitE2?.session);
       drawPropertyMergeE3(canvas.getContext('2d'),camera,project.city,propertyMergeE3?.session);
+      drawCompoundPreviewC01(canvas.getContext('2d'),camera,compoundResult?.preview);
     }
   });
 }
@@ -540,6 +547,139 @@ function moveBuildingHistory(direction) {
   requestDraw();
   workspaceChanged();
   $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' accepted footprint edit for '+id+'. Download a project copy to keep it.';
+  return true;
+}
+
+
+// C01 shares the existing property Inspector and property-scoped structure
+// history. Draft membership and group transforms never mutate the accepted
+// project until the common independent validation and portable save gate.
+function c01ActiveProperty() {
+  const sel=workspaceShell?.state.selection;
+  return sel?.kind==='property'&&sel.id===compoundPanelPropertyId
+    ? project?.city.properties.find(p=>p.id===sel.id) : null;
+}
+function c01Group() {
+  return c01ActiveProperty()?.buildingCompounds?.find(g=>g.id===compoundGroupId)??null;
+}
+function c01SelectGroup(id) {
+  const property=c01ActiveProperty();
+  compoundGroupId=id;
+  const group=property?.buildingCompounds?.find(g=>g.id===id);
+  compoundMemberIds=group?.memberBuildingIds.slice()??[];
+  compoundName=group?.name??'';
+  compoundTransform={dx:0,dy:0,angle:0,scaleX:1,scaleY:1};
+  compoundResult=null;
+  c01SyncPanel(true);
+  requestDraw();
+}
+function c01Open(propertyId) {
+  const property=project?.city.properties.find(p=>p.id===propertyId);
+  if(!property||layers.buildings===false||roadWorkspace?.active||
+      buildingEditSession?.isActive||buildingPlacementSession?.isActive||
+      propertyEditSession?.isActive||propertySplitE2?.active||propertyMergeE3?.active)return false;
+  compoundPanelPropertyId=propertyId;
+  compoundGroupId='';
+  c01SelectGroup(property.buildingCompounds?.[0]?.id??'');
+  $('buildingCompoundPanel').scrollIntoView?.({block:'nearest'});
+  return true;
+}
+function c01SyncPanel(rebuild=false) {
+  const property=c01ActiveProperty();
+  const panel=$('buildingCompoundPanel');
+  panel.hidden=!property||layers.buildings===false;
+  if(!property){compoundResult=null;return;}
+  const groups=property.buildingCompounds??[];
+  const select=$('compoundGroupSelect');
+  const ids=['',...groups.map(g=>g.id)];
+  const current=Array.from(select.options??[]).map(o=>o.value);
+  if(rebuild||JSON.stringify(ids)!==JSON.stringify(current)){
+    const options=ids.map(id=>{
+      const o=document.createElement('option');o.value=id;
+      const g=groups.find(c=>c.id===id);
+      o.textContent=g ? g.name+' · '+g.memberBuildingIds.length+' buildings' : 'New compound';
+      return o;
+    });
+    select.replaceChildren(...options);
+  }
+  select.value=compoundGroupId;
+  const group=c01Group();
+  const name=$('compoundNameInput');
+  if(document.activeElement!==name||rebuild)name.value=compoundName;
+  if(rebuild){
+    const rows=property.buildingIds.map(id=>{
+      const building=project.city.buildings.find(b=>b.id===id);
+      const label=document.createElement('label');label.className='compound-member-choice';
+      const input=document.createElement('input');
+      input.type='checkbox';input.value=id;input.checked=compoundMemberIds.includes(id);
+      input.addEventListener('change',()=>{
+        compoundMemberIds=input.checked
+          ? [...compoundMemberIds,id] : compoundMemberIds.filter(x=>x!==id);
+        $('compoundStatus').textContent='Membership preview only · Save compound to accept changes.';
+      });
+      label.append(input,document.createTextNode(' '+(building?.customName||building?.type||'Building')+' · '+id));
+      return label;
+    });
+    $('compoundMemberList').replaceChildren(...rows);
+  }
+  $('compoundSaveGroup').textContent=group?'Save compound changes':'Create compound';
+  $('compoundDissolve').disabled=!group;
+  $('compoundTransformControls').hidden=!group;
+  if(group){
+    try{
+      compoundResult=prepareCompoundTransform(project,captureWorkspace().workspace,
+        property.id,group.id,compoundTransform);
+    }catch(error){compoundResult={ok:false,issues:[{message:error.message}],preview:null};}
+  }else compoundResult=null;
+  $('compoundApply').disabled=!group||!compoundResult?.ok;
+  const msg=compoundResult?.ok?'VALID · All compound members can be applied together.'
+    :compoundResult?.issues?.length
+      ? 'CANNOT APPLY · '+(compoundResult.issues[0].buildingId?compoundResult.issues[0].buildingId+': ':'')
+        +compoundResult.issues[0].message
+      : 'Select 2 or more property buildings to create a compound.';
+  $('compoundStatus').textContent=msg;
+  $('buildingCompoundPanel').setAttribute('data-validation',compoundResult?.ok?'valid':'idle');
+}
+function c01SaveMembership(action) {
+  const property=c01ActiveProperty();
+  if(!property||!project)return false;
+  const previous=project;
+  const receipt=prepareCompoundMembership(previous,captureWorkspace().workspace,{
+    action,propertyId:property.id,groupId:compoundGroupId||null,
+    name:compoundName,memberBuildingIds:compoundMemberIds
+  });
+  if(!receipt.ok){
+    $('compoundStatus').textContent='CANNOT SAVE · '+receipt.issues[0].message;
+    return false;
+  }
+  if(project!==previous||c01ActiveProperty()?.id!==property.id)return false;
+  if(!buildingStructureHistory.record(previous,receipt.candidate,property.id,'compound-'+action))return false;
+  project=receipt.candidate;
+  buildingHistory.clear();
+  propertyWorkspace.refresh();buildingWorkspace.refresh();
+  workspaceShell.refresh();updateDetails();workspaceChanged();
+  compoundGroupId=action==='dissolve'?'':receipt.groupId;
+  c01SelectGroup(compoundGroupId);
+  $('statusMessage').textContent=action==='dissolve'?'Dissolved compound without deleting its buildings.'
+    :'Saved validated compound group. Structure Undo restores the previous membership.';
+  return true;
+}
+function c01ApplyTransform() {
+  const property=c01ActiveProperty(),group=c01Group();
+  if(!property||!group||!project)return false;
+  const previous=project;
+  const receipt=prepareCompoundTransform(previous,captureWorkspace().workspace,
+    property.id,group.id,compoundTransform);
+  if(!receipt.ok){compoundResult=receipt;c01SyncPanel();return false;}
+  if(project!==previous||c01ActiveProperty()?.id!==property.id)return false;
+  if(!buildingStructureHistory.record(previous,receipt.candidate,property.id,'compound-transform'))
+    return false;
+  project=receipt.candidate;
+  buildingHistory.clear();
+  propertyWorkspace.refresh();buildingWorkspace.refresh();
+  workspaceShell.refresh();updateDetails();workspaceChanged();
+  c01SelectGroup(group.id);
+  $('statusMessage').textContent='Applied all compound members in one verified transaction. Structure Undo is available.';
   return true;
 }
 
@@ -925,6 +1065,7 @@ function updateMapIndicators() {
   clearMapHover();
   syncBuildingTransformUI();
   syncBuildingStructureUI3H();
+  c01SyncPanel();
   syncPropertyEditUI3I();
   syncPropertyCreationE1();
   propertySplitE2?.refresh();
@@ -1517,7 +1658,7 @@ function syncWorkspaceDistrictSelection() {
 
 function stopWorkspaceTools(targetSection = null) {
   roadWorkspace?.exit();
-  if (targetSection !== 'city') {buildingEditSession?.stop();buildingPlacementSession?.stop();propertyEditSession?.stop();propertyCreationSessionE1?.stop();propertySplitE2?.stop();propertyMergeE3?.stop();}
+  if (targetSection !== 'city') {buildingEditSession?.stop();buildingPlacementSession?.stop();propertyEditSession?.stop();propertyCreationSessionE1?.stop();propertySplitE2?.stop();propertyMergeE3?.stop();compoundPanelPropertyId=null;compoundResult=null;}
   clearMapHover();
   // Cancel only a tool whose controls are leaving the visible section.
   // Completed drafts and their histories stay with the original editors.
@@ -1543,6 +1684,7 @@ workspaceShell = registerWorkspaceInspectors(new WorkspaceShell({
   },
   onInspect: () => {
     syncBuildingStructureUI3H();
+    c01SyncPanel();
     syncPropertyEditUI3I();
     clearMapHover();
     landscapeWorkspace?.render();
@@ -1824,6 +1966,7 @@ propertyWorkspace = new PropertyWorkspace({
   getCity: () => project?.city,
   getLayers: () => layers,
   buildings: buildingWorkspace,
+  openCompounds: c01Open,
   exitEditing: () => !propertyMergeE3?.active&&!propertySplitE2?.active&&exitBuildingEditing() && exitStructurePlacement3H() && exitPropertyEditing3I(),
   startBuilding: propertyId => startStructurePlacement3H(propertyId),
   startPropertyEdit: enterPropertyEditing3I,
@@ -2104,6 +2247,34 @@ $('structureApply').addEventListener('click',applyStructurePlacement3H);
 $('structureCancel').addEventListener('click',exitStructurePlacement3H);
 $('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
 $('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
+// C01 controls sit beside existing property/building tools; no modal workflow.
+$('compoundGroupSelect').addEventListener('change',()=>c01SelectGroup($('compoundGroupSelect').value));
+$('compoundNameInput').addEventListener('input',()=>{compoundName=$('compoundNameInput').value;});
+$('compoundSaveGroup').addEventListener('click',()=>c01SaveMembership(compoundGroupId?'update':'create'));
+$('compoundDissolve').addEventListener('click',()=>{
+  if(typeof window.confirm==='function'&&!window.confirm('Dissolve this compound? Buildings and their geometry will be preserved.'))return;
+  c01SaveMembership('dissolve');
+});
+for(const [id,key,scale] of [
+  ['compoundDx','dx',1],['compoundDy','dy',1],['compoundAngle','angle',Math.PI/180],
+  ['compoundScaleX','scaleX',.01],['compoundScaleY','scaleY',.01]]) {
+  $(id).addEventListener('input',()=>{
+    const value=Number($(id).value);
+    if(!Number.isFinite(value))return;
+    compoundTransform[key]=value*scale;
+    c01SyncPanel();requestDraw();
+  });
+}
+$('compoundApply').addEventListener('click',c01ApplyTransform);
+$('compoundReset').addEventListener('click',()=>{
+  compoundTransform={dx:0,dy:0,angle:0,scaleX:1,scaleY:1};
+  for(const [id,value] of [['compoundDx',0],['compoundDy',0],['compoundAngle',0],
+       ['compoundScaleX',100],['compoundScaleY',100]])$(id).value=String(value);
+  c01SyncPanel();requestDraw();
+});
+$('compoundCancel').addEventListener('click',()=>{
+  compoundPanelPropertyId=null;compoundResult=null;c01SyncPanel();requestDraw();
+});
 // Dev 4a: deleting a parcel removes its dependent records, never neighboring land.
 function deleteProperty4A(propertyId) {
   if(propertyCreationSessionE1?.active||propertySplitE2?.active||propertyMergeE3?.active)return false;
