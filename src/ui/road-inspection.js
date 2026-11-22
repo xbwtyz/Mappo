@@ -781,6 +781,7 @@ export class RoadInspectionWorkspace {
     this.renderImpacts(stale);
     this.renderComparison(stale);
     this.renderOwnershipDecisions023();
+    this.renderParcelDecisions028();
     this.renderBuildingDecisionsD2();
     this.renderRoadRecoveryD3({ready, applying, status});
     this.$('roadMenuReviewBlocker').hidden = !(this.usesDesktopPanel && !this.desktopReview &&
@@ -971,6 +972,10 @@ export class RoadInspectionWorkspace {
         add(row, hasRoadBuildingChoice(row) ? 'Placement needs review' : 'Blocks this edit', row.message);
       for (const id of s.buildingDecisions.keys())
         add({kind:'building', id}, 'Placement choice recorded', 'Review the placement choice for this draft.');
+      for(const id of s.parcelChoices.keys())
+        add({kind:'property',id},'Property choice recorded','Review the property decision for this draft.');
+      for(const p of s.reconciliation?.parcelReview??[])
+        add({kind:'property',id:p.id},'Preservation needs review','Review the authored property choices.');
       for (const row of s.previewGeometry?.rows ?? [])
         add(row, 'Geometry preview', 'Review the highlighted geometry on the map.');
       for (const row of s.report?.affected ?? [])
@@ -1113,6 +1118,17 @@ export class RoadInspectionWorkspace {
         locate.textContent = 'Locate successor ' + id;
         locate.addEventListener('click', () => this.locateReconciliationB3(successor));
         item.append(locate);
+      }
+      if (row.entryType==='unresolved' && row.kind==='property' &&
+          ['parcel-decision-required','parcel-decision-invalid'].includes(row.code)) {
+        const jump=document.createElement('button');jump.type='button';jump.className='minor-button';
+        jump.textContent='Review property choice';
+        jump.addEventListener('click',()=>{
+          if(this.desktopReview&&!this.comparisonOpen)this.selectImpact(roadRecordKeyD1(row.kind,row.id));
+          const target=document.getElementById('roadParcelConflict028-'+row.id);
+          if(target){target.scrollIntoView({block:'center'});target.querySelector('button')?.focus({preventScroll:true});}
+        });
+        item.append(jump);
       }
       if (row.entryType==='unresolved' && hasRoadBuildingChoice(row)) {
         const jump = document.createElement('button');
@@ -1322,6 +1338,60 @@ export class RoadInspectionWorkspace {
         ' buildings retired, '+buildings.created+' created. All changes remain preview-only.';
       list.append(effect);
     }
+  }
+  renderParcelDecisions028() {
+    const s=this.session,section=this.$('roadParcelDecisions028'),list=this.$('roadParcelDecisionList028');
+    const fresh=s.current()&&s.pending&&!s.drag&&!s.checking&&s.settledRevision===s.revision;
+    const review=new Map((s.reconciliation?.parcelReview??[]).map(row=>[row.id,row]));
+    const problems=(s.reconciliation?.unresolved??[]).filter(row=>row.kind==='property'&&
+      ['parcel-decision-required','parcel-decision-invalid','parcel-corridor-conflict'].includes(row.code));
+    const ids=[...new Set([...review.keys(),...problems.map(x=>x.id),...s.parcelChoices.keys()])];
+    const focused=this.comparisonOpen?this.comparisonRecord:this.selectedImpact;
+    const visible=this.desktopReview?ids.filter(id=>focused?.kind==='property'&&focused.id===id):ids;
+    if(!fresh||!visible.length){section.hidden=true;list.replaceChildren();return;}
+    section.hidden=false;
+    list.replaceChildren(...visible.map(id=>{
+      const property=s.city.properties.find(p=>p.id===id),info=review.get(id);
+      const chosen=s.parcelChoices.get(id),problem=problems.find(p=>p.id===id);
+      const article=document.createElement('article');
+      article.id='roadParcelConflict028-'+id;
+      article.className='road-building-choices road-building-choice-d2';
+      article.setAttribute('role','group');article.setAttribute('aria-label','Property '+id+' decision');
+      const heading=document.createElement('h4');heading.textContent=property?.customName||'Property '+id;
+      const status=document.createElement('p');status.className='hint';
+      status.textContent=problem?.message??(chosen
+        ?'The selected option is in the road preview; Apply has not changed the city.'
+        :'Choose one safe option, then inspect the full preview.');
+      const actions=document.createElement('div');actions.className='road-building-actions-d2';
+      for(const option of info?.options??[]){
+        const button=document.createElement('button');
+        button.type='button';button.className='minor-button';
+        button.textContent=option.label+(option.targetId?' · '+option.targetId:'');
+        button.disabled=s.checking||Boolean(s.drag);
+        button.setAttribute('aria-pressed',String(chosen?.kind===option.kind &&
+          (chosen?.targetId??null)===(option.targetId??null)));
+        button.addEventListener('click',()=>s.decideParcel(id,{
+          kind:option.kind,targetId:option.targetId??null
+        }));
+        actions.append(button);
+      }
+      const locate=document.createElement('button');locate.type='button';locate.className='minor-button';
+      locate.textContent='Locate property';
+      locate.addEventListener('click',()=>this.locateReconciliationB3({kind:'property',id}));
+      actions.append(locate);
+      if(chosen){
+        const clear=document.createElement('button');clear.type='button';clear.className='minor-button';
+        clear.textContent='Clear choice';clear.disabled=s.checking||Boolean(s.drag);
+        clear.addEventListener('click',()=>s.clearParcelDecision(id));actions.append(clear);
+      }
+      article.append(heading,status,actions);
+      if(!info?.options?.length && problem){
+        const warning=document.createElement('p');warning.className='hint';
+        warning.textContent='No validated compatible option is available for this road position. Adjust the road.';
+        article.append(warning);
+      }
+      return article;
+    }));
   }
   renderBuildingDecisionsD2() {
     const s = this.session, section = this.$('roadBuildingDecisionsD2');
