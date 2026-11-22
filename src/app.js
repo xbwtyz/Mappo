@@ -264,7 +264,7 @@ function d01SyncHistoryView() {
       return li;
     }));
     if(!rows.length){
-      const li=document.createElement('li');li.textContent='No accepted edits in this session.';list.append(li);
+      const li=document.createElement('li');li.textContent='No accepted edits in this session.';list.replaceChildren(li);
     }
   }
   const status=$('workspaceHistoryStatusD01');
