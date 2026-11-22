@@ -73,16 +73,16 @@ export function prepareNeighborhoodReflowC3(project, roadId, offset,
   return reconcileRoadIntent(project,roadId,draft,decisions);
 }
 
-export function prepareJunctionReflowC7(project,junctionId,point,decisions = new Map()) {
-  return { ...reconcileRoadIntent(project,junctionId,prepareJunctionIntentC7(project,junctionId,point),decisions), applyReady:false };
+export function prepareJunctionReflowC7(project,junctionId,point,decisions = new Map(), options = {}) {
+  return { ...reconcileRoadIntent(project,junctionId,prepareJunctionIntentC7(project,junctionId,point),decisions,options), applyReady:false };
 }
 
-function reconcileRoadIntent(project,roadId,draft,decisions) {
+function reconcileRoadIntent(project,roadId,draft,decisions,options = {}) {
   if (draft.draftable && !draft.issues.some(row => row.code === 'boundary-escape') &&
       draft.issues.some(row => row.code === 'unnormalized-crossing'))
-    return prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions);
+    return prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions,options);
   if (decisions.size && draft.facesResolved && !draft.issues.some(row=>row.code==='boundary-escape'))
-    return prepareRoadTopologyReflowC3(project,roadId,draft,null,decisions);
+    return prepareRoadTopologyReflowC3(project,roadId,draft,null,decisions,options);
   // Both attempts start from the same detached draft. Reuse its read-only
   // analysis within this call, including when Apply runs a fresh rebuild.
   let analysis;
@@ -97,7 +97,7 @@ function reconcileRoadIntent(project,roadId,draft,decisions) {
   // authored work, retains compatible geometry, and validates the whole result.
   if (!adapted.unresolved.length || adapted.unresolved.some(row => !rebuildableLandIssues.has(row.code)))
     return adapted;
-  const rebuilt = prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions);
+  const rebuilt = prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions,options);
   return rebuilt.candidateProject || rebuilt.unresolved.some(row =>
     ['parcel-decision-required', 'building-decision-required'].includes(row.code)) ? rebuilt : adapted;
 }

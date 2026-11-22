@@ -1213,6 +1213,7 @@ window.addEventListener('keydown', e => {
   }
   if(roadWorkspace?.active && e.key==='Escape'){
     if (roadWorkspace.comparisonOpen) roadWorkspace.setComparison(false);
+    else if (roadWorkspace.session.cancelMergeMode()) { /* Escape cancels the two-click tool first. */ }
     else roadWorkspace.exit({focus:true});
     e.preventDefault();return;
   }
@@ -1897,7 +1898,8 @@ function applyRoadEditB4(session,baselineRevision){
   const { candidateJson, ledger } = session.reconciliation;
   return session.computeJunctionAsync({
     operation: 'apply', projectJson, junctionId, workspace,
-    point: { ...session.point }, decisions: [...session.buildingDecisions],
+    point: { ...session.point }, targetJunctionId: session.targetJunctionId,
+    decisions: [...session.buildingDecisions],
     inspected: { candidateJson, ledger },
   }).then(receipt => {
     if (project !== previous || JSON.stringify(project) !== projectJson)
@@ -2246,7 +2248,12 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       $('statusMessage').textContent='Choose ground inside a street block, then move or resize the preview to find a valid vacant site.';
     return;
   }
-  if(roadWorkspace?.active){const hit=roadWorkspace.session.hit(point,camera.zoom);if(hit)roadWorkspace.session.select(hit);return;}
+  if(roadWorkspace?.active){
+    if (roadWorkspace.session.mergeMode) return; // Two-click selection is owned by pointer begin/end.
+    const hit=roadWorkspace.session.hit(point,camera.zoom);
+    if(hit)roadWorkspace.session.select(hit);
+    return;
+  }
   if (propertyEditSession?.isActive) {
     const corner=propertyEditSession.hitCorner(project?.city,point,camera.zoom);
     if(corner!==null)propertyEditSession.selectCorner(corner);
@@ -2284,7 +2291,10 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
   if(propertyMergeE3?.active){clearMapHover();return;}
   if(propertySplitE2?.active){clearMapHover();return;}
   if(propertyCreationSessionE1?.active){clearMapHover();return;}
-  if(roadWorkspace?.active){clearMapHover();return;}
+  if(roadWorkspace?.active){
+    roadWorkspace.session.hoverMerge(point,camera.zoom);
+    clearMapHover();return;
+  }
   if (propertyEditSession?.isActive) {clearMapHover();return;}
   if (buildingPlacementSession?.isActive) {clearMapHover();return;}
   if (buildingEditSession?.isActive) {
@@ -2334,7 +2344,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     }
     return Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom,event?.pointerType));
   },
-  move: point => {
+  move: (point,event) => {
     if(propertyMergeE3?.active)return;
     if(propertySplitE2?.session.drag){propertySplitE2.move(point);return;}
     if(propertyCreationSessionE1?.drag){
@@ -2347,7 +2357,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       }
       return;
     }
-    if(roadWorkspace?.active){roadWorkspace.session.move(point);return;}
+    if(roadWorkspace?.active){roadWorkspace.session.move(point,event);return;}
     if(propertyEditSession?.drag){
       propertyEditSession.setCorner(propertyEditSession.drag.index,point);
     }else if(buildingPlacementSession?.drag){
@@ -2358,14 +2368,14 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       });
     }else buildingEditSession?.moveGesture(point);
   },
-  end: cancelled => {
+  end: (cancelled,event) => {
     if(propertySplitE2?.session.drag){propertySplitE2.end(cancelled);return;}
     if(propertyCreationSessionE1?.drag){
       const state=propertyCreationSessionE1,drag=state.drag;state.drag=null;
       if(cancelled)state.update({u:drag.originalU});
       syncPropertyCreationE1();return;
     }
-    if(roadWorkspace?.active){roadWorkspace.session.end(cancelled);return;}
+    if(roadWorkspace?.active){roadWorkspace.session.end(cancelled,event);return;}
     if(propertyEditSession?.drag){
       const drag=propertyEditSession.drag;
       propertyEditSession.drag=null;

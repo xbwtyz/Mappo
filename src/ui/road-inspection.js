@@ -413,6 +413,12 @@ export class RoadInspectionWorkspace {
       if (button) this.selectImpact(button.dataset.impactKey);
     });
     this.$('roadPreviewReset').addEventListener('click', () => this.reset());
+    this.$('roadSnapJunctions').addEventListener('change', () =>
+      this.session.setSnapEnabled(this.$('roadSnapJunctions').checked));
+    this.$('roadStartMergeJunctions').addEventListener('click', () => {
+      if (this.session.startMergeMode()) this.setDesktopReview(false);
+    });
+    this.$('roadCancelMergeJunctions').addEventListener('click', () => this.session.cancelMergeMode());
     this.$('roadRecoveryPrimaryD3').addEventListener('click', () => this.openRoadRecoveryD3());
     this.$('roadRecoveryLocateD3').addEventListener('click', () => {
       const target = this.roadRecoveryTargetD3(this.recoveryIssueD3);
@@ -600,6 +606,17 @@ export class RoadInspectionWorkspace {
           ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
           : '';
     this.$('roadIntentPanelC1').hidden=kind!=='road';
+    this.$('roadJunctionTools').hidden = kind === 'road' && !s.mergeMode;
+    this.$('roadSnapJunctions').checked = s.snapEnabled;
+    this.$('roadStartMergeJunctions').hidden = s.mergeMode;
+    this.$('roadCancelMergeJunctions').hidden = !s.mergeMode;
+    this.$('roadJunctionToolsStatus').textContent = s.mergeMode
+      ? !s.mergeSourceId ? 'Click an ordinary source junction on the map.'
+        : !s.mergeTargetId ? 'Source '+s.mergeSourceId+' selected. Click a target junction.'
+        : 'Source '+s.mergeSourceId+' → target '+s.mergeTargetId+'. Review impacts, then Apply.'
+      : s.snapTargetId && s.drag?.kind === 'junction' ? 'Snapping to '+s.snapTargetId+'. Release to preview.'
+      : s.snapTargetId ? 'Junction target '+s.snapTargetId+' selected; review the proposed connection.'
+      : 'Drag a junction close to another to snap, or choose Connect / Merge Junctions.';
     const bends = s.bendEditor, bend = bends?.points[bends.selected];
     this.$('roadStartBendsC4').hidden = Boolean(bends);
     this.$('roadStartBendsC4').disabled = !s.roadIntentEligible || Boolean(s.drag);
@@ -659,6 +676,7 @@ export class RoadInspectionWorkspace {
           'The neighborhood could not be reconciled.') :
         bends ? 'Add or move a bend to preview the street shape.' :
         'Drag a road on the map or enter a displacement to preview your chosen street position.');
+    this.$('roadStartMergeJunctions').disabled = !s.current() || Boolean(s.drag);
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
       : d?.protected

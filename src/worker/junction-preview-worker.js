@@ -6,7 +6,7 @@ import { roadReconciliationPreviewB3 } from '../core/road-inspection.js';
 import { validateRoadApplyC2 } from '../editor/road-application.js';
 
 // Worker computations operate on detached snapshots.
-export function calculateJunctionPreviewP1({ project, junctionId, point, decisions = [] }) {
+export function calculateJunctionPreviewP1({ project, junctionId, point, decisions = [], targetJunctionId = null }) {
   const start = performance.now();
   const proposal = proposeJunctionMove(project.city, junctionId, point);
   const report = analyzeRoadImpact(project, proposal);
@@ -14,7 +14,7 @@ export function calculateJunctionPreviewP1({ project, junctionId, point, decisio
   let reconciliation = null, topology = null, reconciliationError = '';
   const reflowStart = performance.now();
   try {
-    reconciliation = prepareJunctionReflowC7(project, junctionId, point, new Map(decisions));
+    reconciliation = prepareJunctionReflowC7(project, junctionId, point, new Map(decisions), {targetJunctionId});
     if (!reconciliation.candidateProject && proposal.graphValid)
       topology = prepareRoadReconciliationB1(project, junctionId, point);
   } catch (error) {
@@ -46,14 +46,14 @@ export function junctionPreviewMessage(result) {
 if (typeof self !== 'undefined' && typeof self.addEventListener === 'function' &&
     typeof self.postMessage === 'function') {
   self.addEventListener('message', event => {
-    const { requestId, operation, projectJson, junctionId, point, decisions, workspace, inspected } = event.data ?? {};
+    const { requestId, operation, projectJson, junctionId, point, decisions, workspace, inspected, targetJunctionId } = event.data ?? {};
     try {
       const project = JSON.parse(projectJson);
       const result = operation === 'apply'
         ? validateRoadApplyC2(project, workspace, {
-          selection: { kind: 'junction', id: junctionId }, point, buildingDecisions: new Map(decisions),
+          selection: { kind: 'junction', id: junctionId }, point, buildingDecisions: new Map(decisions), targetJunctionId,
         }, inspected)
-        : junctionPreviewMessage(calculateJunctionPreviewP1({ project, junctionId, point, decisions }));
+        : junctionPreviewMessage(calculateJunctionPreviewP1({ project, junctionId, point, decisions, targetJunctionId }));
       if (result.timings) result.timings.sentAt = performance.timeOrigin + performance.now();
       self.postMessage({ requestId, result });
     } catch (error) {

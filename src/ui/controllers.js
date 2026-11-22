@@ -31,12 +31,12 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     });
   };
 
-  function finish(cancelled = false) {
+  function finish(cancelled = false, event = null) {
     if (!active) return;
     active = false;
     activePointer = null;
     if (transforming) {
-      transform.end?.(cancelled);
+      transform.end?.(cancelled, event);
       transforming = false;
     } else if (!panning) editor.up(camera.zoom, cancelled);
     else if (!cancelled && tapEligible && travel <= 4) onTap(tapPoint);
@@ -73,7 +73,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
       return;
     }
     if (transforming) {
-      transform.move?.(world(event));
+      transform.move?.(world(event),event);
       requestDraw();
     } else if (panning) {
       travel += Math.hypot(event.clientX - lastX, event.clientY - lastY);
@@ -85,7 +85,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     } else editor.move(world(event), camera.zoom);
   });
   canvas.addEventListener('pointerup', event => {
-    if (active && activePointer === event.pointerId) finish();
+    if (active && activePointer === event.pointerId) finish(false,event);
   });
   canvas.addEventListener('pointerleave', () => onHover(null));
   canvas.addEventListener('pointercancel', event => {
