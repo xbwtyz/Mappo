@@ -297,10 +297,14 @@ function d01MoveHistory(direction) {
     if(receipt.entry.family==='road')refreshRoadDistrictWorkspace(receipt.workspace);
     const structural=['road','property-structure','building-structure'].includes(receipt.entry.operation)
       ||receipt.entry.family==='road';
+    // Synchronize live editor baselines BEFORE workspace refresh/reconcile.
+    // Reconcile deliberately closes an editor if the accepted city identity
+    // changed; Undo/Redo must not accidentally close clean editing sessions.
+    if(buildingEditSession?.isActive && !structural)buildingEditSession.reset(project.city);
+    if(propertyEditSession?.isActive && !structural)
+      propertyEditSession.start(project.city,propertyEditSession.propertyId);
     propertyWorkspace.refresh(structural?{replaced:true}:{});
     buildingWorkspace.refresh(structural?{replaced:true}:{});
-    if(buildingEditSession?.isActive && !structural)buildingEditSession.reset(project.city);
-    if(propertyEditSession?.isActive && !structural)propertyEditSession.reset(project.city);
     clearMapHover();
     updateDetails();workspaceShell.refresh();requestDraw();
     workspaceChanged();

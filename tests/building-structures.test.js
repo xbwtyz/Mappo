@@ -125,7 +125,14 @@ test('3H-A/D UI inspector adds a preview, protects invalid state and structural 
   remove.handlers.click();
   assert.ok(!app.state().project.city.buildings.some(b=>b.id===building.id));
   assert.equal(state.buildingStructureHistory.count('undo',propertyId),1);
-  assert.equal(app.el('structureUndo').disabled,false);
+  assert.equal(app.el('structureUndo').disabled,false,
+    'D01 history '+JSON.stringify({
+      last:app.state().acceptedHistoryD01.entry('undo')?.family,
+      operation:app.state().acceptedHistoryD01.entry('undo')?.operation,
+      notice:app.state().acceptedHistoryD01.notice,
+      can:app.state().acceptedHistoryD01.can('undo',app.state().project),
+      selected:app.state().workspaceShell.state.selection
+    }));
   assert.equal(app.el('structureUndo').handlers.click(),true);
   assert.ok(app.state().project.city.buildings.some(b=>b.id===building.id));
   assert.equal(app.el('structureRedo').disabled,false);

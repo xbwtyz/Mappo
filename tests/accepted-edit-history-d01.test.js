@@ -110,3 +110,15 @@ test('D01 classification distinguishes property, compound and unsupported distri
     assert.equal(describeAcceptedEditD01(a,d).family,'compound');
   }
 });
+
+test('D01 accepted road topology owns coupled district reconciliation without treating it as a barrier',()=> {
+  const a=cityFixture(),b=structuredClone(a);
+  b.city.roads=b.city.roads.slice(1); // classification only; full application still validates.
+  b.city.districtState={...b.city.districtState,status:'pending'};
+  const cls=describeAcceptedEditD01(a,b);
+  assert.equal(cls.family,'road');
+  assert.equal(cls.barrier,undefined);
+  const onlyDistrict=structuredClone(a);
+  onlyDistrict.city.districtState={...onlyDistrict.city.districtState,status:'pending'};
+  assert.equal(describeAcceptedEditD01(a,onlyDistrict).barrier,true);
+});

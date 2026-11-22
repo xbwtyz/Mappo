@@ -49,6 +49,12 @@ export function describeAcceptedEditD01(before,after) {
   const modified=d01ChangedKeys(before.city,after.city);
   const outOfScope=['districtState','districts','fortifications','walls','waterFeatures',
     'terrainFeatures','terrainFaces','waterFaces','survey'];
+  // A validated road reflow owns all dependent neighborhood records, including
+  // district assignments and face records. Detect the road graph first; a
+  // district-only change remains an explicit unsupported history boundary.
+  const structuralRoad=modified.some(k=>['nodes','roads','blocks','plaza'].includes(k));
+  if(structuralRoad)return {family:'road',operation:'road-reflow',targetIds:d01RecordChanges(before,after,'roads'),
+    label:'Edit road and neighborhood'};
   if(modified.some(k=>outOfScope.includes(k)))return {
     barrier:true,label:'An edit outside unified city history cleared session Undo/Redo.'
   };
@@ -60,9 +66,6 @@ export function describeAcceptedEditD01(before,after) {
       row.keys.includes('customName')?'Rename '+row.kind:'Edit '+row.kind+' identity';
     return {family:'identity',operation:'identity-change',targetIds:identity.map(x=>x.id),label};
   }
-  const structuralRoad=modified.some(k=>['nodes','roads','blocks','plaza'].includes(k));
-  if(structuralRoad)return {family:'road',operation:'road-reflow',targetIds:d01RecordChanges(before,after,'roads'),
-    label:'Edit road and neighborhood'};
   if(modified.some(k=>!['properties','plots','buildings','openSpaces'].includes(k)))return {
     barrier:true,label:'An unsupported accepted change cleared session history.'
   };
