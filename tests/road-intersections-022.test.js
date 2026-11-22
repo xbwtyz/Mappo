@@ -66,6 +66,26 @@ test('0.2.2 P2 supports ordinary multi-contact on an established junction',()=>{
   assert.deepEqual(city,old);
 });
 
+test('0.2.2 P2 resolves simultaneous interior crossings plus an existing ordinary endpoint',()=>{
+  // The first crossing creates a temporary junction; later contacts reach an
+  // existing endpoint at the same coordinate. Older C3 threw instead of
+  // consolidating all cuts onto the real accepted endpoint.
+  const nodes=[
+    ['A',0,0],['B',10,0],['C',10,10],['D',0,10],['E',5,8],['T',5,5],
+  ].map(([id,x,y])=>({id,x,y}));
+  const roads=[
+    ['A','B'],['B','C'],['C','D'],['D','A'],
+    ['A','C'],['B','D'],['D','E'],['E','T'],
+  ].map(([a,b],i)=>({id:'R-'+i,a,b,kind:'lane'}));
+  const city={nodes,roads}, before=structuredClone(city);
+  assert.equal(buildRoadGraph(city).issues.filter(issue=>issue.code==='unnormalized-crossing').length,3);
+  const result=normalizeRoadCrossingsC3(city);
+  assert.equal(result.graph.valid,true,JSON.stringify(result.graph.issues));
+  assert.deepEqual(result.splitRoadIds,['R-4','R-5']);
+  assert.deepEqual(result.junctionIds,[],'All contacts use accepted junction T');
+  assert.deepEqual(city,before);
+});
+
 test('0.2.2 P2 refuses protected or authored identities, duplicate edges and collinear interior overlaps',()=>{
   const protectedRoad=coincidentCrossing();
   protectedRoad.roads.find(road=>road.b==='X').bridgeId='BR-EXISTING';
@@ -78,7 +98,7 @@ test('0.2.2 P2 refuses protected or authored identities, duplicate edges and col
   assert.throws(()=>normalizeRoadCrossingsC3(protectedFace),/protected face ownership/);
   const duplicates=coincidentCrossing();
   duplicates.roads.push({id:'R-EXTRA',a:'A',b:'Y',kind:'lane'});
-  assert.throws(()=>normalizeRoadCrossingsC3(duplicates),/duplicate|overlap|touch/i);
+  assert.throws(()=>normalizeRoadCrossingsC3(duplicates),/duplicate a street/);
   const overlapped=coincidentCrossing();
   overlapped.nodes.find(node=>node.id==='Y').x=5;
   overlapped.nodes.find(node=>node.id==='Y').y=0;
@@ -99,7 +119,8 @@ test('0.2.2 P3 generated Planned-city fixture reconciles coincident junction wit
   assert.deepEqual(project,before,'Accepted project must be unchanged by preview');
   assert.deepEqual(prepareJunctionReflowC7(project,from,point).candidateProject,candidate);
   const document=createProjectDocument(candidate,defaultWorkspace(candidate));
-  assert.deepEqual(decodeProjectDocument(encodeProjectDocument(document)).project,candidate);
+  assert.equal(JSON.stringify(decodeProjectDocument(encodeProjectDocument(document)).project),
+    JSON.stringify(candidate),'Portable round trip must preserve JSON-equivalent project state.');
   assert.ok(result.ledger.some(row=>row.kind==='junction' && row.oldId && !row.newId));
   const unrelated=project.city.roads.filter(road=>candidate.city.roads.some(next=>
     next.id===road.id && next.a===road.a && next.b===road.b));
