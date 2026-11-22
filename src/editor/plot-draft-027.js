@@ -6,6 +6,7 @@ export const annotatedPlot027=plot=>Boolean(plot&&Object.keys(plot).some(k=>!bas
 export class FlexiblePlotDraft027 {
   constructor(city,property){
     this.propertyId=property.id;
+    this.parent=copyJson(property.boundary);
     this.baseline=JSON.stringify(city);
     this.plots=property.plotIds.map(id=>{
       const p=city.plots.find(x=>x.id===id&&x.propertyId===property.id);
@@ -32,9 +33,12 @@ export class FlexiblePlotDraft027 {
     do{id='PLOT-'+String(serial++).padStart(5,'0');}while(used.has(id)&&serial<50000);
     if(used.has(id))throw Error('No unused plot identifier available.');
     const index=this.plots.indexOf(source),keep=this.retain==='second'?1:0,before=copyJson(this.plots);
-    this.plots.splice(index,1,...part.plots.map((boundary,i)=>({id:i===keep?source.id:id,boundary})));
+    const proposed=copyJson(this.plots);
+    proposed.splice(index,1,...part.plots.map((boundary,i)=>({id:i===keep?source.id:id,boundary})));
+    validatePlotTiling027(this.parent,proposed);
+    this.plots=proposed;
     this.operations.push({kind:'split',sourceId:source.id,retainedId:source.id,createdId:id,before});
-    this.selectedId=source.id;this.edgeA=0;this.edgeB=Math.min(2,this.selected.boundary.length-1);
+    this.selectedId=source.id;this.otherId='';this.edgeA=0;this.edgeB=Math.min(2,this.selected.boundary.length-1);
     this.approved=false;this.error='';return id;
   }
   merge(){
@@ -44,8 +48,10 @@ export class FlexiblePlotDraft027 {
     const boundary=mergeConvexPlots027(a.boundary,b.boundary);
     const keep=this.retain==='second'?b:a,removed=keep===a?b:a,before=copyJson(this.plots);
     const first=Math.min(this.plots.indexOf(a),this.plots.indexOf(b));
-    this.plots=this.plots.filter(p=>p!==a&&p!==b);
-    this.plots.splice(first,0,{id:keep.id,boundary});
+    const proposed=this.plots.filter(p=>p!==a&&p!==b);
+    proposed.splice(first,0,{id:keep.id,boundary});
+    validatePlotTiling027(this.parent,proposed);
+    this.plots=proposed;
     this.operations.push({kind:'merge',sources:[a.id,b.id],retainedId:keep.id,retiredId:removed.id,before});
     this.selectedId=keep.id;this.otherId='';this.edgeA=0;this.edgeB=Math.min(2,boundary.length-1);
     this.approved=false;this.error='';return removed.id;

@@ -14,7 +14,9 @@ function fixture(){
    const s=new PropertyEditSession3I();
    if(!s.start(project.city,p.id)||!s.beginFlexible(project.city))continue;
    if(s.flexible.selected.boundary.length!==4)continue;
-   if(!s.splitFlexible(project.city)||!s.splitFlexible(project.city))continue;
+   if(!s.splitFlexible(project.city))continue;
+   s.updateFlexible({edgeA:0,edgeB:2,ratioA:.5,ratioB:.5});
+   if(!s.splitFlexible(project.city))continue;
    const trial=preparePropertyApply3I(project,defaultWorkspace(project),s);
    if(trial.ok)return {project,workspace:defaultWorkspace(project),id:p.id};
  }

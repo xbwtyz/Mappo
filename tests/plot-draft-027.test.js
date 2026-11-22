@@ -21,14 +21,37 @@ function ready(seed='b04-flexible'){
  }
  throw Error('No viable B04 plot split in generated city.');
 }
+function readyMultiple(seed='b04-flexible-multi'){
+ const project=createProject({seed,size:'small',morphology:'planned'});
+ const rejected=[];
+ for(const property of project.city.properties){
+   const session=new PropertyEditSession3I();
+   if(!session.start(project.city,property.id)||!session.beginFlexible(project.city))continue;
+   if(session.flexible.selected?.boundary.length!==4)continue;
+   session.updateFlexible({edgeA:0,ratioA:.5,edgeB:2,ratioB:.5});
+   if(!session.splitFlexible(project.city))continue;
+   for(const plot of [...session.flexible.plots]){
+     const n=plot.boundary.length;
+     if(n<4)continue;
+     for(const [edgeA,edgeB] of [[0,2],[1,3]]){
+       if(edgeA>=n||edgeB>=n)continue;
+       session.updateFlexible({selectedId:plot.id,edgeA,edgeB,ratioA:.5,ratioB:.5});
+       if(!session.splitFlexible(project.city)){
+         if(rejected.length<4)rejected.push({property:property.id,plot:plot.id,error:session.flexible.error});
+         continue;
+       }
+       const candidate=preparePropertyApply3I(project,defaultWorkspace(project),session);
+       if(candidate.ok)return {project,property,session,candidate};
+       session.undoFlexible();
+       if(rejected.length<4)rejected.push({property:property.id,plot:plot.id,issues:candidate.issues});
+     }
+   }
+ }
+ throw Error('No valid two-step generated-city draft: '+JSON.stringify(rejected));
+}
 test('B04 multi-operation draft is nonmutating and accepts one schema-9 transaction',()=>{
- const {project,property,session}=ready(),before=JSON.stringify(project.city);
- const first=session.flexible.selected;
- assert.ok(first);
- session.updateFlexible({edgeA:0,ratioA:.5,edgeB:2,ratioB:.5});
- assert.equal(session.splitFlexible(project.city),true);
+ const {project,property,session,candidate:saved}=readyMultiple(),before=JSON.stringify(project.city);
  assert.equal(session.flexible.operations.length,2);
- const saved=preparePropertyApply3I(project,defaultWorkspace(project),session);
  assert.equal(saved.ok,true,JSON.stringify(saved.issues));
  validateStoredProject(saved.candidate);
  assert.equal(saved.candidate.schemaVersion,9);
