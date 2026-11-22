@@ -2,6 +2,8 @@ import { polygonSignedArea } from '../core/geometry.js';
 import { shapeWellFormed, shapeContained, shapesOverlapInterior } from '../core/building-validation.js';
 import { segmentDistance, STREET_WIDTHS, STREET_EDGE_WIDTH, PROPERTY_SETBACK } from '../core/placement.js';
 import { propertyGeometryPreview3I, propertyLocalBounds3I } from '../core/property-geometry.js';
+import { convexPropertyPolygon024, partitionPropertyPolygon024, propertyPolygonPreview024 } from '../core/property-polygons-024.js';
+import { classifyRoadProvenance } from '../core/road-provenance.js';
 import { deriveOccupiedPlots } from './building-application.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
@@ -22,7 +24,7 @@ export function inspectPropertyEdit3I(project,session){
     return {ok:false,status:'invalid',issues,preview:null};
   }
   let preview=null;
-  try{preview=propertyGeometryPreview3I(city,property.id,session.boundary,session.dividers,session.plotIds);}
+  try{preview=session.polygonMode?propertyPolygonPreview024(city,property.id,session.boundary):propertyGeometryPreview3I(city,property.id,session.boundary,session.dividers,session.plotIds);}
   catch(error){
     giIssue(issues,'subdivision',error.message);
     return {ok:false,status:'invalid',issues,preview:null};
@@ -39,8 +41,33 @@ export function inspectPropertyEdit3I(project,session){
       giIssue(issues,'identity','The new plot ID is already in use.',change.newId);
   }
   const polygon=preview.boundary;
-  if(!shapeWellFormed(polygon)||!giConvex(polygon))
-    giIssue(issues,'shape','Property must remain a non-self-intersecting convex four-corner parcel.');
+  if(!shapeWellFormed(polygon)||(!session.polygonMode&&!giConvex(polygon)))
+    giIssue(issues,'shape',session.polygonMode
+      ?'Property must remain a simple, positively wound polygon with 3–12 corners and no holes.'
+      :'Property must remain a non-self-intersecting convex four-corner parcel.');
+  if(session.polygonMode){
+    const oldPlots=property.plotIds.map(id=>city.plots.find(p=>p.id===id&&p.propertyId===property.id));
+    if(oldPlots.some(plot=>!plot||e4Annotated(plot)))
+      giIssue(issues,'authorship','An authored or unknown plot record cannot be silently retiled. Keep its geometry or use a supported four-corner edit.',property.id);
+    else if(session.isPending){
+      let derived=false;
+      try{
+        const currentCells=partitionPropertyPolygon024(property.boundary);
+        derived=currentCells.length===oldPlots.length&&currentCells.every((cell,i)=>giSame(cell,oldPlots[i].boundary));
+      }catch{}
+      const generated=classifyRoadProvenance(property,oldPlots)==='generated';
+      if(preview.retiredPlotIds?.length && !(generated||derived))
+        giIssue(issues,'authorship','This edit would retire a plot whose generated origin cannot be verified.',property.id);
+      if(property.plotCountHistoryE4 && preview.retiredPlotIds?.length)
+        giIssue(issues,'history','Finish or preserve the accepted plot-count history before retiring a plot.',property.id);
+    }
+    const [front0,front1]=polygon,frame=property.frame;
+    if(!front0||!front1||!frame?.inward||!frame?.tangent||
+       Math.hypot(front1.x-front0.x,front1.y-front0.y)<7 ||
+       Math.abs((front1.x-front0.x)*frame.inward.x+
+         (front1.y-front0.y)*frame.inward.y)>1e-4)
+      giIssue(issues,'frontage','An irregular property must retain one straight, valid street-facing edge.',property.frontageRoadId);
+  }
   const block=city.blocks.find(b=>b.id===property.blockId);
   const nodes=new Map(city.nodes.map(n=>[n.id,n]));
   const blockBoundary=block?.vertices.map(id=>nodes.get(id));
@@ -71,7 +98,7 @@ export function inspectPropertyEdit3I(project,session){
     }
   }
   for(const plot of preview.plots){
-    if(!shapeWellFormed(plot.boundary)||!giConvex(plot.boundary)){
+    if(!shapeWellFormed(plot.boundary)||!(session.polygonMode?convexPropertyPolygon024(plot.boundary):giConvex(plot.boundary))){
       giIssue(issues,'plot','A plot subdivision is too narrow, reversed, or non-convex.',plot.id);break;
     }
   }
@@ -102,7 +129,31 @@ export function preparePropertyApply3I(project,workspace,session){
     original.area=polygonSignedArea(preview.boundary);
     original.local=propertyLocalBounds3I(original,preview.boundary);
     const change=session.countChange;
-    if(change){
+    if(session.polygonMode){
+      const retained=new Set(preview.plots.map(p=>p.id));
+      const oldPlots=original.plotIds.map(id=>city.plots.find(plot=>plot.id===id&&plot.propertyId===original.id));
+      if(oldPlots.some(p=>!p||e4Annotated(p)))throw Error('Authored or missing plots cannot be retiled.');
+      const accepted=project.city.properties.find(p=>p.id===original.id);
+      const acceptedPlots=accepted.plotIds.map(id=>project.city.plots.find(plot=>plot.id===id&&plot.propertyId===accepted.id));
+      const generated=classifyRoadProvenance(accepted,acceptedPlots)==='generated';
+      let derived=false;
+      try{
+        const cells=partitionPropertyPolygon024(accepted.boundary);
+        derived=cells.length===acceptedPlots.length&&cells.every((cell,i)=>giSame(cell,acceptedPlots[i].boundary));
+      }catch{}
+      if(original.plotIds.some(id=>!retained.has(id))&&!(generated||derived))
+        throw Error('A plot with unknown authorship would be retired.');
+      city.plots=city.plots.filter(plot=>plot.propertyId!==original.id||retained.has(plot.id));
+      for(const row of preview.plots){
+        if(city.plots.some(p=>p.id===row.id))continue;
+        if(project.city.plots.some(p=>p.id===row.id))
+          throw Error('Proposed plot ID collides with a different property.');
+        city.plots.push({id:row.id,propertyId:original.id,
+          blockId:original.blockId,frontageRoadId:original.frontageRoadId,
+          boundary:copyJson(row.boundary)});
+      }
+      original.plotIds=preview.plotIds.slice();
+    }else if(change){
       const history=original.plotCountHistoryE4;
       if(history!==undefined&&(!Array.isArray(history)||history.length>=20))
         throw new Error('Unsupported or full plot-count audit history; cannot overwrite it.');

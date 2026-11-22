@@ -5,6 +5,8 @@ import {
 import {
   polygonSignedArea
 } from '../core/geometry.js';
+import { shapeWellFormed, shapeContained, shapesOverlapInterior } from '../core/building-validation.js';
+import { partitionPropertyPolygon024 } from '../core/property-polygons-024.js';
 import {
   STREET_WIDTHS,
   STREET_EDGE_WIDTH,
@@ -30,7 +32,7 @@ function worldPoint(frame, u, v) {
   };
 }
 
-export function generateBuildings(seed, layout) {
+export function generateBuildings(seed, layout, morphology = null, irregularMetrics = null) {
   const nodes = new Map(layout.nodes.map(n => [n.id, n]));
   const roadByPair = new Map(layout.roads.map(r => [keyedPair(r.a, r.b), r]));
   const plots = [],
@@ -90,6 +92,65 @@ export function generateBuildings(seed, layout) {
     }).filter(f => f.intervals.length);
     fronts.sort((a, b) => b.intervals.length - a.intervals.length || a.priority - b.priority);
 
+    function tryIrregularProperty024(property, propertyPlots) {
+      // Only generated, single-plot sites can be retiled here. Other property
+      // types retain their established geometry and building placement.
+      if (!morphology || propertyPlots.length !== 1) return false;
+      const likelihood = {organic:.5, radial:.38, linear:.12, planned:0}[morphology] ?? 0;
+      if (!likelihood || property.local.width<9 || property.local.depth<10) return false;
+      // Optional acceptance diagnostics do not become part of saved city data.
+      if (irregularMetrics) irregularMetrics.eligibleCandidates=(irregularMetrics.eligibleCandidates??0)+1;
+      const choice = createRng(seed+':parcel-shapes:v024:'+block.id+':'+property.id);
+      if (choice() >= likelihood) return false;
+      if (irregularMetrics) irregularMetrics.attemptedCandidates=(irregularMetrics.attemptedCandidates??0)+1;
+      const fallback=()=>{
+        if (irregularMetrics) irregularMetrics.rejectedCandidates=(irregularMetrics.rejectedCandidates??0)+1;
+        return false;
+      };
+      const [a,b,c,d]=property.boundary, frame=property.frame;
+      const inward = morphology==='organic' && choice()<.46;
+      // A single recessed/extended rear corner derives its geometry from the
+      // verified original rectangle and keeps the street-facing edge stable.
+      const displacement = property.local.depth * (inward ? -.18 : .16);
+      const midpoint={x:(c.x+d.x)/2+frame.inward.x*displacement,
+        y:(c.y+d.y)/2+frame.inward.y*displacement};
+      const candidate=[a,b,c,midpoint,d].map(p=>({x:p.x,y:p.y}));
+      if (!shapeWellFormed(candidate) || !shapeContained(candidate,polygon) ||
+          !propertyFits(candidate,polygon,edges) ||
+          accepted.some(other=>other.id!==property.id &&
+            shapesOverlapInterior(candidate,other.boundary))) return fallback();
+      let cells;
+      try { cells=partitionPropertyPolygon024(candidate); }
+      catch { return fallback(); }
+      if(cells.some(cell=>polygonSignedArea(cell)<2))return fallback();
+      const owned=buildings.filter(b=>b.propertyId===property.id);
+      if(owned.some(building=>!shapeContained(building.footprint,candidate)))return fallback();
+      const revised= cells.map((cell,i)=>({
+        ...propertyPlots[0],
+        id: i===0 ? propertyPlots[0].id : 'PLOT-'+String(plots.length+i).padStart(5,'0'),
+        boundary:cell
+      }));
+      const occupied=owned.map(building=>revised.filter(plot=>{
+        const clipped=polygonSignedArea(clipToConvexPolygon(building.footprint,plot.boundary));
+        const holes=building.holes.reduce((sum,hole)=>
+          sum+polygonSignedArea(clipToConvexPolygon(hole,plot.boundary)),0);
+        return clipped-holes>1e-5;
+      }).map(plot=>plot.id));
+      if(occupied.some(ids=>!ids.length))return fallback();
+      // Commit the new generated geometry only after every candidate passes.
+      propertyPlots[0].boundary=cells[0];
+      for(const extra of revised.slice(1)){plots.push(extra);propertyPlots.push(extra);}
+      property.plotIds=propertyPlots.map(plot=>plot.id);
+      property.boundary=candidate;
+      property.area=polygonSignedArea(candidate);
+      property.local.depth=Math.max(...candidate.map(p=>
+        (p.x-frame.origin.x)*frame.inward.x+
+        (p.y-frame.origin.y)*frame.inward.y))-property.local.y;
+      owned.forEach((building,i)=>{building.plotIds=occupied[i];});
+      if (irregularMetrics) irregularMetrics.acceptedCandidates=(irregularMetrics.acceptedCandidates??0)+1;
+      return true;
+    }
+
     function allocate(front, first, count, category) {
       const group = front.intervals.slice(first, first + count);
       if (group.length !== count || group.some(p => p.occupied)) return false;
@@ -100,7 +161,9 @@ export function generateBuildings(seed, layout) {
       let envelope, depth = preferredDepth;
       for (; depth >= 9; depth -= 3) {
         envelope = rectangleInFrame(front.frame, start, front.distance, width, depth);
-        if (propertyFits(envelope, polygon, edges) && !accepted.some(p => rectanglesOverlap(envelope, p.boundary, .9))) break;
+        if (propertyFits(envelope, polygon, edges) && !accepted.some(p =>
+          p.boundary.length===4 ? rectanglesOverlap(envelope, p.boundary, .9)
+            : shapesOverlapInterior(envelope, p.boundary))) break;
       }
       if (depth < 9) return false;
       const propertyId = `PROP-${String(properties.length+1).padStart(5,'0')}`;
@@ -141,6 +204,7 @@ export function generateBuildings(seed, layout) {
       properties.push(property);
       accepted.push(property);
       populateProperty(property, propertyPlots, rng, buildings);
+      tryIrregularProperty024(property, propertyPlots);
       return true;
     }
     // Larger properties are allocated before the single-plot infill pass.

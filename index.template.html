@@ -491,8 +491,12 @@
         </section>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
           <div class="building-transform-heading"><strong>PROPERTY PREVIEW</strong><span id="propertyEditTarget3I">—</span></div>
-          <p class="hint">Drag a property corner or select it to edit precise coordinates. Move existing dividers, or split/merge one plot boundary per Apply. Existing buildings stay in place. Everything remains a preview.</p>
+          <p class="hint">Drag vertices or edit their coordinates. Add/remove rear and side vertices for irregular shapes. Four-corner plots still support divider edits; irregular properties use validated convex partitions. Buildings stay in place until a safe Apply.</p>
           <p id="propertyEditCorner3I" class="building-history-status" role="status" aria-live="polite">Select a highlighted property corner.</p>
+          <div class="road-preview-actions" role="group" aria-label="Edit property vertices">
+            <button id="propertyAddVertex024" type="button" class="minor-button">+ Add vertex</button>
+            <button id="propertyRemoveVertex024" type="button" class="minor-button">− Remove vertex</button>
+          </div>
           <div class="building-transform-values">
             <label>Corner X <input id="propertyCornerX3I" type="number" step="0.5" disabled></label>
             <label>Corner Y <input id="propertyCornerY3I" type="number" step="0.5" disabled></label>
