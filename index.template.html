@@ -738,10 +738,15 @@
         </section>
         <div class="map-controls workspace-map-controls" role="group" aria-label="Map navigation">
           <button id="panButton" title="Click a property, landscape feature or open block to inspect; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
-          <button id="workspaceUndoButton" class="workspace-context-undo" title="No outline edit to undo" disabled>Undo outline</button>
+          <button id="workspaceUndoButton" class="workspace-context-undo" title="No accepted edit to undo" disabled>Undo accepted</button>
+          <button id="workspaceRedoButtonD01" class="workspace-context-undo" type="button" title="No accepted Redo available" disabled>Redo</button>
           <button id="fitButton" title="Fit outline (0)" aria-label="Fit outline">Fit</button>
           <div class="workspace-zoom-controls"><button id="zoomInButton" title="Zoom in (+)" aria-label="Zoom in">+</button><button id="zoomOutButton" title="Zoom out (-)" aria-label="Zoom out">−</button></div>
         </div>
+        <details id="workspaceHistoryPanelD01" class="workspace-history-d01"><summary>Accepted edit history · session only</summary>
+          <p id="workspaceHistoryStatusD01" role="status" aria-live="polite">No accepted edits in this session.</p>
+          <ol id="workspaceHistoryListD01" aria-label="Chronological accepted edits"></ol>
+        </details>
         <div class="map-legend"><span class="legend-mark"></span><span>CITY BOUNDARY</span><span class="legend-sep">/</span><span class="center-mark">⊙</span><span>TOWN CENTER</span><span class="legend-sep">/</span><span class="roof-mark"></span><span>BUILDINGS</span></div>
       </div>
       <div class="map-status"><span id="statusMessage" role="status">Generating city plan…</span><span id="workspaceUndoDescription" class="workspace-undo-description">No outline edit to undo.</span><span class="status-readout">ZOOM <strong id="zoomValue">100%</strong></span></div>
@@ -761,14 +766,14 @@
           </section>
           <details id="identityInspector" class="identity-inspector" hidden>
           <summary id="identityEditorTitle">Property identity</summary>
-          <p class="hint">Apply identity saves changes to this selection. Undo identity keeps the last 20 applied edits in this session.</p>
+          <p class="hint">Identity changes join shared session history. Undo/Redo follows accepted edit order; unfinished identity drafts block it.</p>
           <div class="control-group"><label for="identityNameInput">Custom name</label><input id="identityNameInput" maxlength="80" placeholder="Use generated label" autocomplete="off"></div>
           <div id="identityBuildingTypeGroup" class="control-group" hidden><label for="identityBuildingType">Building use</label><select id="identityBuildingType"></select></div>
           <div class="control-group"><label for="identityUseInput">Descriptive use</label><select id="identityUseInput"><option value="">No override</option><option>Residence</option><option>Inn / Tavern</option><option>Shop</option><option>Workshop</option><option>Guildhall</option><option>Temple</option><option>Warehouse</option><option value="other">Other…</option></select></div>
           <div id="identityOtherUseGroup" class="control-group" hidden><label for="identityOtherUseInput">Other descriptive use</label><input id="identityOtherUseInput" maxlength="80" placeholder="Describe this place" autocomplete="off"></div>
           <p id="identityDraftState" class="hint">Up to date</p>
           <button id="identityApplyButton" class="tool-button full-width">Apply identity</button>
-          <div class="tool-grid actions"><button id="identityDiscardButton" class="minor-button">Discard draft</button><button id="identityUndoButton" class="minor-button" disabled>Undo identity</button></div>
+          <div class="tool-grid actions"><button id="identityDiscardButton" class="minor-button">Discard draft</button><button id="identityUndoButton" class="minor-button" disabled>Undo identity</button><button id="identityRedoButtonD01" class="minor-button" disabled>Redo identity</button></div>
           <p id="identityStatus" class="file-status" role="status" aria-live="polite"></p>
         </details>
           <section id="workspaceInspectorRelated" class="workspace-inspector-related" aria-labelledby="workspaceInspectorRelatedTitle" hidden>

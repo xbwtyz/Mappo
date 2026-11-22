@@ -136,6 +136,7 @@ import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
 import { prepareJunctionReflowC7 } from './core/neighborhood-reflow.js';
 import { checkRoadApplyC2, prepareRoadApplyC2 } from './editor/road-application.js';
 import { RoadGeometryHistoryB4 } from './editor/road-history.js';
+import { AcceptedEditHistoryD01 } from './core/accepted-edit-history-d01.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
@@ -174,6 +175,8 @@ const propertyHistory = new PropertyGeometryHistory3I(20);
 const propertyDeletionHistory4A = new PropertyDeletionHistory4A(20);
 const propertyCreationHistoryE1 = new PropertyCreationHistoryE1(20);
 const roadHistory = new RoadGeometryHistoryB4(6);
+const acceptedHistoryD01 = new AcceptedEditHistoryD01({maxEntries:20,maxBytes:64*1024*1024});
+let d01ReplayingHistory=false;
 let buildingPlacementSession;
 // C01 panel state is transient and never serialized into accepted city geometry.
 let compoundPanelPropertyId=null,compoundGroupId='',compoundMemberIds=[],compoundName='';
@@ -229,6 +232,79 @@ function updatePendingFeedback() {
   $('workspaceRebuildImpact').classList.toggle('pending', status.cityPending);
   updateUndoFeedback();
 }
+
+function d01DraftBlocked() {
+  if(roadWorkspace?.active||propertyEditSession?.isActive||propertyCreationSessionE1?.active||
+    propertySplitE2?.active||propertyMergeE3?.active||buildingEditSession?.isActive||
+    buildingPlacementSession?.isActive||desktopWorkspace?.mapPreview()||
+    editor?.dirty||identityWorkspace?.hasPending()) return true;
+  if(compoundPanelPropertyId && (Math.abs(compoundTransform.dx)>1e-9||
+      Math.abs(compoundTransform.dy)>1e-9||Math.abs(compoundTransform.angle)>1e-9||
+      Math.abs(compoundTransform.scaleX-1)>1e-9||Math.abs(compoundTransform.scaleY-1)>1e-9))
+    return true;
+  return false;
+}
+function d01SyncHistoryView() {
+  const blocked=d01DraftBlocked();
+  const lastUndo=acceptedHistoryD01.entry('undo'),lastRedo=acceptedHistoryD01.entry('redo');
+  const redo=$('workspaceRedoButtonD01');
+  if(redo){
+    redo.disabled=blocked||!lastRedo||!acceptedHistoryD01.can('redo',project);
+    redo.textContent=lastRedo?'Redo · '+lastRedo.label:'Redo';
+    redo.title=blocked?'Finish or cancel the current draft before redoing accepted work.'
+      :lastRedo?'Redo the last reversed transaction.':'No accepted Redo available.';
+  }
+  const list=$('workspaceHistoryListD01');
+  if(list){
+    const rows=acceptedHistoryD01.summaries();
+    list.replaceChildren(...rows.map(row=>{
+      const li=document.createElement('li');
+      li.textContent='#'+row.serial+' · '+row.label+' · '+row.family+' · '+
+        (row.direction==='undo'?'applied':'undone');
+      return li;
+    }));
+    if(!rows.length){
+      const li=document.createElement('li');li.textContent='No accepted edits in this session.';list.append(li);
+    }
+  }
+  const status=$('workspaceHistoryStatusD01');
+  if(status)status.textContent=acceptedHistoryD01.notice+
+    ' · '+acceptedHistoryD01.length+'/20 entries · '+
+    (acceptedHistoryD01.bytes/1048576).toFixed(1)+'/64 MiB estimated. Not saved in project files.';
+}
+function d01MoveHistory(direction) {
+  if(!project)return false;
+  if(d01DraftBlocked()){
+    $('statusMessage').textContent='History blocked: finish or cancel the active preview or identity draft.';
+    updateUndoFeedback();return false;
+  }
+  const receipt=acceptedHistoryD01.prepare(direction,project,captureWorkspace().workspace);
+  if(!receipt.ok){
+    $('statusMessage').textContent=receipt.reason;
+    acceptedHistoryD01.notice=receipt.reason;
+    updateUndoFeedback();return false;
+  }
+  d01ReplayingHistory=true;
+  try{
+    project=receipt.candidate;
+    acceptedHistoryD01.accept(direction,receipt.entry,project);
+    // No old per-editor accepted-history cursor may authorize restoration after
+    // the chronological ledger has advanced. Draft editor history is separate.
+    roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
+    propertyCreationHistoryE1.clear();buildingHistory.clear();buildingStructureHistory.clear();
+    propertySplitE2?.history.clear();propertyMergeE3?.history.clear();
+    identityWorkspace?.editor.reset();
+    if(receipt.entry.family==='road')refreshRoadDistrictWorkspace(receipt.workspace);
+    propertyWorkspace.refresh({replaced:true});
+    buildingWorkspace.refresh({replaced:true});
+    clearMapHover();
+    updateDetails();workspaceShell.refresh();requestDraw();
+    workspaceChanged();
+    $('statusMessage').textContent=acceptedHistoryD01.notice;
+    return true;
+  }finally{d01ReplayingHistory=false;updateUndoFeedback();}
+}
+
 function currentUndoContext() {
   if(propertyMergeE3?.active)return {kind:'property-merge-preview',controlId:'propertyMergeResetE3',
     label:'Reset merge preview',available:Boolean(propertyMergeE3.session.secondaryId),
@@ -243,6 +319,27 @@ function currentUndoContext() {
     description:'Clear the uncommitted property preview without changing accepted land.'};
   if(roadWorkspace?.active)return {kind:'road-preview',controlId:'roadPreviewReset',label:'Reset roads',
     available:roadWorkspace.session.pending,description:'Reset temporary junction coordinates; accepted roads have no edits to undo.'};
+  // Shared accepted-history commands are chronological, not selection scoped.
+  // Uncommitted previews above retain their own safe Reset/Cancel behavior.
+  if(project){
+    const blocked=d01DraftBlocked(),entry=acceptedHistoryD01.entry('undo');
+    if(blocked)return {kind:'d01-blocked',controlId:'workspaceUndoButton',
+      label:'Undo accepted',available:false,
+      description:'Finish or cancel the active editor/draft before accepted Undo.'};
+    if(entry)return {kind:'d01',controlId:'workspaceUndoButton',
+      label:'Undo · '+entry.label,
+      available:acceptedHistoryD01.can('undo',project),
+      description:'Undo the latest accepted change across all editing tools.'};
+    if(workspaceShell?.state.section==='landscape'||editor?.dirty)
+      return describeUndoContext({section:workspaceShell?.state.section??'city',
+        selection:workspaceShell?.state.selection??null,outline:editor,
+        water:waterPanel?.editor,terrain:terrainPanel?.editor,
+        district:districtPanel?.editor,defense:fortificationPanel?.editor,
+        identity:identityWorkspace?.editor});
+    return {kind:'d01-empty',controlId:'workspaceUndoButton',
+      label:'Undo accepted',available:false,
+      description:acceptedHistoryD01.notice};
+  }
   if(propertyEditSession?.isActive){
     const id=propertyEditSession.propertyId;
     const available=!propertyEditSession.isPending&&!propertyEditSession.drag&&propertyHistory.can('undo',project,id);
@@ -300,10 +397,12 @@ function updateUndoFeedback() {
   $('workspaceUndoButton').disabled = !scope.available;
   $('workspaceUndoButton').setAttribute('title', scope.description);
   $('workspaceUndoDescription').textContent = scope.description;
+  d01SyncHistoryView();
 }
 function undoCurrentScope() {
   const scope = currentUndoContext();
   if (!scope.available) return false;
+  if(scope.kind==='d01')return d01MoveHistory('undo');
   const button = $(scope.controlId);
   if (typeof button.click === 'function') button.click();
   else button.handlers?.click?.(); // test DOM shim
@@ -311,6 +410,10 @@ function undoCurrentScope() {
   return true;
 }
 function workspaceChanged() {
+  // This is the common accepted-project observation boundary. Visual-only
+  // changes do not touch the ledger. Unsupported accepted-city changes become
+  // explicit barriers, never silently replayed with a stale project.
+  if(project&&!d01ReplayingHistory)acceptedHistoryD01.observe(project);
   desktopWorkspace?.sync();
   if(roadWorkspace?.transient){syncPropertyDeletionControls4A();updateUndoFeedback();return;}
   syncPropertyDeletionControls4A();
@@ -319,13 +422,14 @@ function workspaceChanged() {
   propertyMergeE3?.refresh();
   syncRoadHistoryB4UI();
   updatePendingFeedback();
+  d01SyncHistoryView();
   files?.changed();
 }
 
 function syncRoadHistoryB4UI(){
   const active=Boolean(roadWorkspace?.active);
   for(const [direction,id] of [['undo','roadHistoryUndoB4'],['redo','roadHistoryRedoB4']]){
-    const available=Boolean(project && roadHistory.can(direction,project));
+    const available=Boolean(project && acceptedHistoryD01.entry(direction)?.family==='road' && acceptedHistoryD01.can(direction,project));
     const button=$(id);
     button.disabled=active||!available;
     button.title=available?'Restore the complete accepted road and parcel transaction.':
@@ -335,7 +439,7 @@ function syncRoadHistoryB4UI(){
 function syncPropertyDeletionControls4A() {
   const busy=Boolean(roadWorkspace?.active || propertyEditSession?.isActive || buildingPlacementSession?.isActive || buildingEditSession?.isActive);
   for(const [direction,id] of [['undo','propertyDeletionUndo4A'],['redo','propertyDeletionRedo4A']]) {
-    const available=propertyDeletionHistory4A.can(direction,project);
+    const available=acceptedHistoryD01.entry(direction)?.operation==='property-structure' && acceptedHistoryD01.can(direction,project);
     const button=$(id);
     button.hidden=!available;
     button.disabled=busy||!available;
@@ -377,8 +481,8 @@ function syncBuildingHistoryUI() {
   const session = buildingEditSession;
   const id = session?.isActive ? session.buildingId : null;
   const ready = Boolean(id && !session.isPending && !session.drag);
-  const undo = ready && buildingHistory.can('undo',project,id);
-  const redo = ready && buildingHistory.can('redo',project,id);
+  const undo = ready && acceptedHistoryD01.entry('undo')?.family==='building' && acceptedHistoryD01.can('undo',project);
+  const redo = ready && acceptedHistoryD01.entry('redo')?.family==='building' && acceptedHistoryD01.can('redo',project);
   $('buildingHistoryUndo').disabled = !undo;
   $('buildingHistoryRedo').disabled = !redo;
   const status = $('buildingHistoryStatus');
@@ -735,7 +839,7 @@ function syncBuildingStructureUI3H() {
   const blockedStructureHistory = [];
   for(const [direction,id] of [['undo','structureUndo'],['redo','structureRedo']]) {
     const entry = buildingStructureHistory.entry(direction, propertyId);
-    const available = canHistory && buildingStructureHistory.can(direction, project, propertyId);
+    const available = canHistory && ['building','compound'].includes(acceptedHistoryD01.entry(direction)?.family) && acceptedHistoryD01.can(direction,project);
     const action = describeStructureChange4E(entry, direction);
     const blocked = canHistory && entry && !available;
     const label = direction === 'undo' ? 'Undo' : 'Redo';
@@ -1021,8 +1125,8 @@ function syncPropertyEditUI3I() {
       ' resulting plots. One Apply and one accepted Undo. '+(f.error||'Choose a plot and edit cut endpoints on the map or numerically.');
   }
   const canHistory=!session.isPending&&!session.drag;
-  $('propertyHistoryUndo3I').disabled=!(canHistory&&propertyHistory.can('undo',project,session.propertyId));
-  $('propertyHistoryRedo3I').disabled=!(canHistory&&propertyHistory.can('redo',project,session.propertyId));
+  $('propertyHistoryUndo3I').disabled=!(canHistory&&acceptedHistoryD01.entry('undo')?.family==='property'&&acceptedHistoryD01.can('undo',project));
+  $('propertyHistoryRedo3I').disabled=!(canHistory&&acceptedHistoryD01.entry('redo')?.family==='property'&&acceptedHistoryD01.can('redo',project));
   $('propertyHistoryStatus3I').textContent='Property history · '+propertyHistory.count('undo',session.propertyId)
     +' undo / '+propertyHistory.count('redo',session.propertyId)+' redo (session only).';
   const result=session.drag ? {ok:false,status:'checking',issues:[]} : inspectPropertyEdit3I(project,session);
@@ -1231,6 +1335,7 @@ function generate({ discardIdentities = false } = {}) {
     buildingWorkspace?.refresh({ replaced: true });
     clearMapHover();
     project = next;
+    acceptedHistoryD01.clear(project,'City generation started a new session history.');
     buildingHistory.clear(); // Rebuilding invalidates every accepted-building history entry.
     roadHistory.clear();
     if (waterPanel) {
@@ -1339,6 +1444,7 @@ $('centerButton').addEventListener('click', () => editor.setMode('center'));
 $('finishButton').addEventListener('click', () => editor.finish());
 $('undoButton').addEventListener('click', () => editor.undo());
 $('workspaceUndoButton').addEventListener('click', undoCurrentScope);
+$('workspaceRedoButtonD01').addEventListener('click',()=>d01MoveHistory('redo'));
 $('cancelButton').addEventListener('click', () => {
   if (!project) return;
   editor.remember();
@@ -1436,15 +1542,7 @@ window.addEventListener('keydown', e => {
     }
   }
   if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
-    if (propertyEditSession?.isActive && movePropertyHistory3I('redo')) e.preventDefault();
-    else if (buildingEditSession?.isActive && moveBuildingHistory('redo')) e.preventDefault();
-    else if (!buildingPlacementSession?.isActive && propertyMergeE3?.history.can('redo',project)
-      && propertyMergeE3.moveHistory('redo'))e.preventDefault();
-    else if (!buildingPlacementSession?.isActive && propertySplitE2?.history.can('redo',project)
-      && propertySplitE2.moveHistory('redo'))e.preventDefault();
-    else if (!buildingPlacementSession?.isActive && propertyCreationHistoryE1.can('redo',project)
-      && movePropertyCreationE1('redo'))e.preventDefault();
-    else if (!buildingPlacementSession?.isActive && moveStructureHistory3H('redo')) e.preventDefault();
+    if(d01MoveHistory('redo'))e.preventDefault();
     return;
   }
   if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'z') {
@@ -1741,6 +1839,8 @@ propertySplitE2 = new PropertySplitControlsE2({
     &&!roadWorkspace?.active&&!propertyCreationSessionE1?.active&&!buildingEditSession?.isActive
     &&!buildingPlacementSession?.isActive&&!propertyEditSession?.isActive
     &&!identityWorkspace?.hasPending()&&!propertyMergeE3?.active),
+  historyMove:direction=>d01MoveHistory(direction),
+  historyCan:direction=>Boolean(!d01DraftBlocked()&&acceptedHistoryD01.can(direction,project)),
   onCommit:(candidate,propertyId,direction,receipt)=>{
     const revisionBeforeCommit=files?.revision??0;
     project=candidate;
@@ -1770,6 +1870,8 @@ propertyMergeE3 = new PropertyMergeControlsE3({
     &&!roadWorkspace?.active&&!propertyCreationSessionE1?.active&&!buildingEditSession?.isActive
     &&!buildingPlacementSession?.isActive&&!propertyEditSession?.isActive
     &&!propertySplitE2?.active&&!identityWorkspace?.hasPending()),
+  historyMove:direction=>d01MoveHistory(direction),
+  historyCan:direction=>Boolean(!d01DraftBlocked()&&acceptedHistoryD01.can(direction,project)),
   onCommit:(candidate,propertyId,direction)=>{
     const revisionBefore=files?.revision??0;
     project=candidate;
@@ -1800,8 +1902,8 @@ function syncPropertyCreationE1(){
   $('propertyCreateStartE1').setAttribute('aria-pressed',String(active));
   const busy=active||Boolean(roadWorkspace?.active||propertyEditSession?.isActive||
     buildingPlacementSession?.isActive||buildingEditSession?.isActive);
-  $('propertyCreateUndoE1').disabled=busy||!propertyCreationHistoryE1.can('undo',project);
-  $('propertyCreateRedoE1').disabled=busy||!propertyCreationHistoryE1.can('redo',project);
+  $('propertyCreateUndoE1').disabled=busy||acceptedHistoryD01.entry('undo')?.operation!=='property-structure'||!acceptedHistoryD01.can('undo',project);
+  $('propertyCreateRedoE1').disabled=busy||acceptedHistoryD01.entry('redo')?.operation!=='property-structure'||!acceptedHistoryD01.can('redo',project);
   if(!active)return;
   const draft=session.draft;
   $('propertyCreateBlockE1').textContent=draft?.blockId??'Click empty land to select a street block.';
@@ -1894,8 +1996,8 @@ $('propertyCreateStartE1').addEventListener('click',()=>propertyCreationSessionE
 $('propertyCreateResetE1').addEventListener('click',()=>propertyCreationSessionE1?.reset());
 $('propertyCreateCancelE1').addEventListener('click',()=>propertyCreationSessionE1?.stop());
 $('propertyCreateApplyE1').addEventListener('click',applyPropertyCreationE1);
-$('propertyCreateUndoE1').addEventListener('click',()=>movePropertyCreationE1('undo'));
-$('propertyCreateRedoE1').addEventListener('click',()=>movePropertyCreationE1('redo'));
+$('propertyCreateUndoE1').addEventListener('click',()=>d01MoveHistory('undo'));
+$('propertyCreateRedoE1').addEventListener('click',()=>d01MoveHistory('redo'));
 $('propertyCreateRoadE1').addEventListener('change',()=>{
   if(propertyCreationSessionE1?.draft)propertyCreationSessionE1.update({roadId:$('propertyCreateRoadE1').value});
 });
@@ -2008,6 +2110,8 @@ identityWorkspace = new IdentityWorkspace({
     || propertyEditSession?.isActive || propertyCreationSessionE1?.active
     || propertySplitE2?.active || propertyMergeE3?.active
   ),
+  historyMove: direction => d01MoveHistory(direction),
+  historyCan: direction => Boolean(!d01DraftBlocked()&&acceptedHistoryD01.can(direction,project)),
   commit: city => {
     project = { ...project, city };
     updateDetails(); workspaceShell.refresh(); requestDraw();
@@ -2150,8 +2254,8 @@ function moveRoadHistoryB4(direction){
     ' the complete road and neighborhood transaction.';
   return true;
 }
-$('roadHistoryUndoB4').addEventListener('click',()=>moveRoadHistoryB4('undo'));
-$('roadHistoryRedoB4').addEventListener('click',()=>moveRoadHistoryB4('redo'));
+$('roadHistoryUndoB4').addEventListener('click',()=>d01MoveHistory('undo'));
+$('roadHistoryRedoB4').addEventListener('click',()=>d01MoveHistory('redo'));
 
 workspaceShell.bind();
 landscapeWorkspace.bind();
@@ -2230,8 +2334,8 @@ $('buildingPreviewReset').addEventListener('click',()=>{
 });
 $('buildingPreviewCancel').addEventListener('click',exitBuildingEditing);
 $('buildingPreviewApply').addEventListener('click',applyBuildingTransform);
-$('buildingHistoryUndo').addEventListener('click',()=>moveBuildingHistory('undo'));
-$('buildingHistoryRedo').addEventListener('click',()=>moveBuildingHistory('redo'));
+$('buildingHistoryUndo').addEventListener('click',()=>d01MoveHistory('undo'));
+$('buildingHistoryRedo').addEventListener('click',()=>d01MoveHistory('redo'));
 for (const [id,key] of Object.entries({structureU:'u',structureV:'v',structureWidth:'width',structureDepth:'depth',structureAngle:'angle'}))
   $(id).addEventListener('change',()=>{
     if(!buildingPlacementSession?.isActive)return;
@@ -2248,8 +2352,8 @@ $('structureReplaceGeometry').addEventListener('change', () => {
 });
 $('structureApply').addEventListener('click',applyStructurePlacement3H);
 $('structureCancel').addEventListener('click',exitStructurePlacement3H);
-$('structureUndo').addEventListener('click',()=>moveStructureHistory3H('undo'));
-$('structureRedo').addEventListener('click',()=>moveStructureHistory3H('redo'));
+$('structureUndo').addEventListener('click',()=>d01MoveHistory('undo'));
+$('structureRedo').addEventListener('click',()=>d01MoveHistory('redo'));
 // C01 controls sit beside existing property/building tools; no modal workflow.
 $('compoundGroupSelect').addEventListener('change',()=>c01SelectGroup($('compoundGroupSelect').value));
 $('compoundNameInput').addEventListener('input',()=>{compoundName=$('compoundNameInput').value;});
@@ -2332,8 +2436,8 @@ function movePropertyDeletion4A(direction) {
     ' (property, plots and buildings).';
   return true;
 }
-$('propertyDeletionUndo4A').addEventListener('click',()=>movePropertyDeletion4A('undo'));
-$('propertyDeletionRedo4A').addEventListener('click',()=>movePropertyDeletion4A('redo'));
+$('propertyDeletionUndo4A').addEventListener('click',()=>d01MoveHistory('undo'));
+$('propertyDeletionRedo4A').addEventListener('click',()=>d01MoveHistory('redo'));
 function keepPropertyEditorVisible3I() {
   // Refreshing the selected property can reopen the narrow-screen Inspector.
   // Keep the floating edit tools accessible through Apply and Undo/Redo.
@@ -2456,8 +2560,8 @@ function movePropertyHistory3I(direction){
   $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' property and plot edit for '+id+'.';
   return true;
 }
-$('propertyHistoryUndo3I').addEventListener('click',()=>movePropertyHistory3I('undo'));
-$('propertyHistoryRedo3I').addEventListener('click',()=>movePropertyHistory3I('redo'));
+$('propertyHistoryUndo3I').addEventListener('click',()=>d01MoveHistory('undo'));
+$('propertyHistoryRedo3I').addEventListener('click',()=>d01MoveHistory('redo'));
 for(const [id,axis] of [['propertyCornerX3I','x'],['propertyCornerY3I','y']])
   $(id).addEventListener('change',()=>{
     const session=propertyEditSession;
@@ -2846,6 +2950,7 @@ function applyProjectDocument(document) {
   buildingWorkspace.refresh({ replaced: true });
   clearMapHover();
   project = next;
+  acceptedHistoryD01.clear(project,'Opening or recovering a project cleared session history.');
   buildingHistory.clear(); // History does not travel with portable or recovery files.
   editor.boundary = draft.boundary;
   editor.center = draft.center;

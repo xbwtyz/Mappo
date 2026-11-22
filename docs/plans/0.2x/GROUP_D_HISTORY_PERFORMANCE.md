@@ -1,6 +1,6 @@
 # Group D — Edit History, Responsiveness and Scale
 
-**Status:** Planning only. **Priority:** Medium for history; performance/scale **only upon evidence**.
+**Status:** D01 0.2.11 implementation authorized on a feature branch. D02/D03 remain planning/evidence-gated. **Priority:** Medium for history; performance/scale only upon evidence.
 
 | ID | Finding | Handling |
 |---|---|---|
@@ -23,3 +23,7 @@ Limits such as 20,000 nodes, 40,000 roads, a six-million-work graph budget and a
 ## Acceptance principle
 
 Performance and history changes must not weaken deterministic results, stale-draft checks, independent Apply validation, authored identity preservation or the offline build. Use measured same-runner comparisons, not speculative speedup claims.
+
+## D01 approved 0.2.11 contract
+
+Owner-approved D-031-1=A through D-031-5=A: one session-only accepted-city transaction ledger, road/property/plot/building/compound/identity coverage, reuse existing validators and Apply algorithms, strict current-project compatibility, 20 entries/64 MiB estimated storage bound, compact shared workspace Undo/Redo and read-only history. Import/rebuild or unsupported city mutation clears session history explicitly. Persistent history and schema changes are deferred. [Milestone plan](MILESTONE_0_2_11_UNIFIED_HISTORY.md) and [Issue #106](https://github.com/xbwtyz/Mappo/issues/106). Separate merge/release/Pages authorization still required.

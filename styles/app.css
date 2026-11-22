@@ -1026,3 +1026,10 @@
 .property-split-exit-025[hidden]{display:none}
 .property-split-exit-025 label{display:flex;flex-direction:column;gap:.18rem;min-width:0;font-size:.83rem}
 .property-split-exit-025 select,.property-split-exit-025 input{width:100%;min-width:0}
+
+/* D01: Compact accepted edit history in the existing desktop map workspace. */
+.workspace-history-d01{margin:5px 12px 2px;border:1px solid var(--border,#63707866);border-radius:6px;padding:5px 9px;max-height:180px;overflow:auto;font-size:12px}
+.workspace-history-d01 summary{cursor:pointer;font-weight:650}
+.workspace-history-d01 ol{margin:5px 0;padding-left:22px;line-height:1.55;max-height:100px;overflow:auto}
+.workspace-history-d01 li{white-space:normal;overflow-wrap:anywhere}
+.workspace-history-d01 p{margin:5px 0;color:var(--text-muted,#77818c);font-size:11px}
