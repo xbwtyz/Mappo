@@ -1,3 +1,5 @@
+import { propertyMergeUnion026 } from './property-merge-union-026.js';
+import { shapeContained, shapesOverlapInterior } from './building-validation.js';
 import { polygonSignedArea } from './geometry.js';
 import { shapeWellFormed } from './building-validation.js';
 import { propertyDividerFractions3I, propertyGeometryPreview3I } from './property-geometry.js';
@@ -15,12 +17,49 @@ const e3MergeEqualFrame = (a,b) => ['origin','tangent','inward'].every(key =>
   a?.[key]&&b?.[key]&&e3MergeClose(a[key],b[key]));
 const e3MergeEdgeLength = (a,b) => Math.hypot(a.x-b.x,a.y-b.y);
 
+
+function propertyMergeFlexibleGeometry026(city,primary,secondary){
+  const result=propertyMergeUnion026(primary,secondary);
+  const allPlots=[],used=new Set(),seen=[];
+  for(const source of [primary,secondary]){
+    if(!Array.isArray(source.plotIds)||!source.plotIds.length||!Array.isArray(source.buildingIds))
+      throw Error('Source property plot/building membership is missing.');
+    for(const id of source.plotIds){
+      const plot=city.plots.find(p=>p.id===id);
+      if(!plot||plot.propertyId!==source.id||plot.blockId!==source.blockId||used.has(id)||
+         !shapeWellFormed(plot.boundary)||!shapeContained(plot.boundary,result.union))
+        throw Error('Source plot identity or geometry cannot be preserved.');
+      used.add(id);seen.push(plot);allPlots.push(id);
+    }
+  }
+  const total=seen.reduce((sum,p)=>sum+polygonSignedArea(p.boundary),0);
+  if(Math.abs(total-result.area)>.02)
+    throw Error('Existing plots cannot tile the combined property without retiling.');
+  for(let i=0;i<seen.length;i++)for(let j=i+1;j<seen.length;j++)
+    if(shapesOverlapInterior(seen[i].boundary,seen[j].boundary))
+      throw Error('The source plots overlap after merging.');
+  const buildingIds=[...primary.buildingIds,...secondary.buildingIds];
+  if(new Set(buildingIds).size!==buildingIds.length)
+    throw Error('Building membership overlaps across source properties.');
+  return {primary,secondary,left:primary,right:secondary,
+    ...result,local:propertyLocalBounds3I(primary,result.union),
+    plotIds:allPlots,buildingIds,flexible:true};
+}
+
 export function propertyMergeGeometryE3(city,primaryId,secondaryId){
   if(!city||!primaryId||!secondaryId||primaryId===secondaryId)
     throw Error('Select two different accepted properties.');
   const primary=city.properties.find(p=>p.id===primaryId);
   const secondary=city.properties.find(p=>p.id===secondaryId);
   if(!primary||!secondary)throw Error('One of the chosen properties is no longer available.');
+  const a=primary.boundary,b=secondary.boundary;
+  const legacy= a?.length===4&&b?.length===4&&
+    e3MergeConvex(a)&&e3MergeConvex(b)&&
+    primary.frontageRoadId===secondary.frontageRoadId&&
+    e3MergeEqualFrame(primary.frame,secondary.frame)&&
+    ((e3MergeClose(a[1],b[0])&&e3MergeClose(a[2],b[3]))||
+     (e3MergeClose(b[1],a[0])&&e3MergeClose(b[2],a[3])));
+  if(!legacy)return propertyMergeFlexibleGeometry026(city,primary,secondary);
   if(primary.blockId!==secondary.blockId||primary.frontageRoadId!==secondary.frontageRoadId ||
     (primary.districtId??null)!==(secondary.districtId??null))
     throw Error('Properties need the same verified block, district and frontage road.');
@@ -31,7 +70,6 @@ export function propertyMergeGeometryE3(city,primaryId,secondaryId){
     throw Error('Frontage frames differ; merging would require an unsafe geometry adjustment.');
   if(!primary.local||!secondary.local||!Array.isArray(primary.plotIds)||!Array.isArray(secondary.plotIds))
     throw Error('Property frontage or owned plot records cannot be verified.');
-  const a=primary.boundary,b=secondary.boundary;
   let left,right;
   if(e3MergeClose(a[1],b[0])&&e3MergeClose(a[2],b[3]))[left,right]=[primary,secondary];
   else if(e3MergeClose(b[1],a[0])&&e3MergeClose(b[2],a[3]))[left,right]=[secondary,primary];
@@ -87,7 +125,7 @@ export function propertyMergeNeighborsE3(city,primaryId){
   if(!city?.properties?.some(p=>p.id===primaryId))return [];
   const primary=city.properties.find(p=>p.id===primaryId);
   return city.properties.filter(p=>p.id!==primaryId&&p.blockId===primary.blockId&&
-      p.frontageRoadId===primary.frontageRoadId)
+      (p.districtId??null)===(primary.districtId??null))
     .filter(p=>{try{propertyMergeGeometryE3(city,primaryId,p.id);return true;}catch{return false;}})
     .map(p=>({id:p.id,name:p.customName||p.id}));
 }
