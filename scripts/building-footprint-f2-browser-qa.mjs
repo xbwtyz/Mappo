@@ -226,7 +226,7 @@ async function exerciseC02(name, engine) {
       Width:courtyard.width,Depth:courtyard.depth
     })) await page.locator('#buildingCourtyard'+suffix).fill(String(value));
     assert.equal(await page.evaluate(()=>__buildingQA.state().buildingEditSession.structuralOperationCount),2);
-    await page.locator('#buildingToolVertices').click();
+    await page.locator('#buildingToolEdges').click();
     await page.locator('#buildingDirectRing').selectOption('exterior');
     await page.locator('#buildingDirectHandle').selectOption('0');
     await page.locator('#buildingInsertVertex').click();
