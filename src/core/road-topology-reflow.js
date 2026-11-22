@@ -8,6 +8,8 @@ import { shapesOverlapInterior } from './building-validation.js';
 import { generateBuildings } from '../generators/buildings.js';
 import { classifyRoadProvenance, stampRoadGenerated } from './road-provenance.js';
 import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
+import { buildRoadFaceLineage023 } from './road-face-lineage-023.js';
+import { validateDistricts } from './district-model.js';
 import { inspectRoadContextReferences, inspectRoadDependencies } from './road-impact-dependencies.js';
 import { inspectOpaqueRoadDependencies, riBudget, riEqual, riIndex, riReporter } from './road-impact-model.js';
 import { draftRoadConnectionC3, normalizeRoadCrossingsC3, roadTopologyId } from './road-crossings.js';
@@ -168,9 +170,11 @@ function c4MatchBentFaces(old, extraction, draft) {
 
 export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null, decisions = new Map(), options = {}) {
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
+  let ownershipReview = [], lineage = null;
   const fail = (code, message, kind = draft?.junctionId ? 'junction' : 'road', id = roadId) => ({
     phase: 'C3', status: 'needs-review', candidateProject: null, changed: [], ledger: [],
     unresolved: [{ code, message, kind, id, severity: 'needs-review' }], validation,
+    ownershipReview, lineage,
   });
   try {
     validateStoredProject(project);
@@ -218,40 +222,88 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     const oldBlocks = riIndex(old.blocks);
     const preserved = new Set(matching.preserved.filter(row => row.kind === 'block').map(row => row.id));
     const groups = [...matching.split, ...matching.merged, ...matching.ambiguous];
-    // The matcher classifies a many-to-many overlap as ambiguous. It is eligible
-    // only when every participant is an ordinary block of one accepted district.
-    const replacements = new Map();
+    // Only structural changes need the new overlap proof. In particular, the
+    // legacy bent-path one-to-one matcher retains its own proven identity.
+    const proof = groups.length ? buildRoadFaceLineage023(old, extraction, matching) : null;
+    if (proof && !proof.valid)
+      return fail('lineage-unproven', proof.issues[0]?.message ?? 'Block ancestry could not be proven.');
+    lineage = proof ? {groups:proof.groups,reverse:proof.reverse,workUnits:proof.workUnits} : null;
+    const evidence = new Map(proof?.faces.map(row=>[row.candidateKey,row]) ?? []);
+    const chosen = options.ownershipChoices instanceof Map ? options.ownershipChoices
+      : new Map(options.ownershipChoices ?? []);
+    const replacements = new Map(), pending = [], candidateIds = new Map();
     const used = new Set([old.plaza.id, ...oldBlocks.keys(), ...(old.waterFaces??[]).map(r=>r.id),
       ...(old.terrainFaces??[]).map(r=>r.id)]);
     for (const group of groups) {
       const sources = group.oldIds.map(id => oldBlocks.get(id));
       const faces = group.candidateKeys.map(key => matches.get(key));
-      if (sources.some(block => !block) || faces.some(face => face?.kind !== 'block') ||
-          new Set(sources.map(block => block.districtId)).size !== 1 ||
-          new Set(sources.map(block => block.usage)).size !== 1)
-        return fail('district-decision-required', 'The restructured blocks span different districts or land uses.');
+      if (sources.some(block => !block) || faces.some(face => face?.kind !== 'block'))
+        return fail('lineage-unproven', 'A restructured face is missing or protected.');
       if (group.overlapArea <= 1e-6)
-        return fail('unresolved-face-ownership', 'The new blocks have no provable overlap with their former district.');
-      const inherited = sources[0];
-      const records = faces.map(face => ({
-        ...inherited, vertices: face.vertices, area: face.area,
-        id: sources.length === 1 && faces.length === 1 ? inherited.id : roadTopologyId('BLK-X', face.key, used),
-      }));
-      for (const { id } of sources) replacements.set(id, records);
+        return fail('lineage-unproven', 'A restructured face has no proven overlap.');
+      const records = [];
+      for (const face of faces) {
+        const row = evidence.get(face.key);
+        if (!row?.areaVerified) return fail('lineage-unproven', 'A successor lacks complete overlap evidence.');
+        const id = sources.length === 1 && faces.length === 1
+          ? sources[0].id : roadTopologyId('BLK-X',face.key,used);
+        candidateIds.set(face.key,id);
+        const choice = chosen.get(face.key) ?? {};
+        const choose = (field, eligible, required) => {
+          if (choice[field] !== undefined && !eligible.includes(choice[field]))
+            return {invalid:true,value:null};
+          return {invalid:false,value:required ? choice[field] : eligible[0]};
+        };
+        const district = choose('districtId',row.eligibleDistrictIds,row.choiceRequired.district);
+        const usage = choose('usage',row.eligibleUsages,row.choiceRequired.usage);
+        ownershipReview.push({...row,proposedId:id,
+          points:face.polygon.map(point=>({x:point.x,y:point.y})),
+          selected:{districtId:district.value??null,usage:usage.value??null}});
+        if(district.invalid || usage.invalid)
+          pending.push({kind:'block',id,code:'ownership-invalid',
+            message:'The selected district or land use does not belong to a directly overlapping predecessor.',
+            severity:'needs-review'});
+        else if(district.value===undefined || usage.value===undefined)
+          pending.push({kind:'block',id,code:'ownership-decision-required',
+            message:'Choose the district and/or land use of this resulting block.',
+            severity:'needs-review'});
+        // Retiring an authored block must never discard unknown metadata.
+        if(row.predecessors.some(predecessor=>predecessor.hasOpaqueFields))
+          pending.push({kind:'block',id,code:'lineage-unproven',
+            message:'An authored or unknown block field cannot be transferred automatically.',
+            severity:'needs-review'});
+        const record={id,vertices:face.vertices,area:face.area,
+          districtId:district.value??null,usage:usage.value??null};
+        for(const field of ['ring','sector'])
+          if(sources.every(s=>Object.hasOwn(s,field)&&s[field]===sources[0][field]))
+            record[field]=sources[0][field];
+        records.push(record);
+      }
+      for(const {id} of sources) replacements.set(id,records);
     }
+    if(pending.length) return {...fail(pending[0].code,pending[0].message),unresolved:pending};
+    const successorIdsByOld = new Map(proof?.reverse.map(row=>
+      [row.oldId,row.candidateKeys.map(key=>candidateIds.get(key)).filter(Boolean)])??[]);
     for (const match of matching.changed) {
       if (match.kind !== 'block') return fail('protected-face-change', 'A protected face would change.');
       replacements.set(match.id, [match.record]);
     }
     const affectedBlocks = old.blocks.filter(block => !preserved.has(block.id));
-    if (!affectedBlocks.length || affectedBlocks.length > TOPOLOGY_BLOCK_LIMIT ||
-        affectedBlocks.some(block => !replacements.has(block.id)))
-      return fail('unresolved-face-ownership', 'The neighborhood is too large or its replacement blocks cannot be identified.');
+    if (!affectedBlocks.length || affectedBlocks.some(block => !replacements.has(block.id)))
+      return fail('unresolved-face-ownership', 'Replacement blocks cannot be identified.');
+    if (affectedBlocks.length > TOPOLOGY_BLOCK_LIMIT)
+      return fail('capacity-limit', 'This edit affects more than 32 blocks. Reduce its scope.');
     const rebuilt = [...new Map([...replacements.values()].flat().map(block => [block.id, block])).values()];
     const uniqueBlocks = (ids) => [...new Set(ids.flatMap(id => replacements.get(id)?.map(block => block.id) ?? [id]))];
     const nextBlocks = riIndex(rebuilt);
     city.blocks = uniqueBlocks(old.blocks.map(block => block.id)).map(id => nextBlocks.get(id) ?? oldBlocks.get(id));
-    city.districts = city.districts.map(district => ({ ...district, blockIds: uniqueBlocks(district.blockIds) }));
+    const owner = new Map(city.blocks.map(block=>[block.id,block.districtId]));
+    city.districts = city.districts.map(district => {
+      const kept = district.blockIds.filter(id=>owner.get(id)===district.id);
+      const appended = city.blocks.filter(block=>block.districtId===district.id && !kept.includes(block.id))
+        .map(block=>block.id);
+      return {...district,blockIds:[...kept,...appended]};
+    });
     const corridors = terminalCorridors(city);
     const retained = c3RetainDevelopment(old, city, replacements, graph);
     const colliding = new Set(retained.properties.filter(property =>
@@ -324,6 +376,8 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     const conflict = items().find(row => row.severity !== 'info');
     if (conflict) return fail(conflict.code, conflict.message, conflict.kind, conflict.id);
     const candidateProject = { ...structuredClone({ ...project, city: null }), city };
+    try { validateDistricts(city); }
+    catch (error) { return fail('ownership-invalid',error.message); }
     validateStoredProject(candidateProject);
     validation.parcels = 'pass';
     validation.project = 'valid';
@@ -341,11 +395,13 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
           !b ? (kind === 'road' ? 'removed-road' : 'replaced') : kind === 'building' && decided.has(id) ? (decided.get(id)==='fixed'?'access-reconnected':'authorized-relocation') : refitted.get(id) ?? (retainedIds.has(id) ? 'retained' : kind === 'road' && splitRoadIds.includes(id) ? 'split' : 'reshaped');
         ledger.push({ kind, oldId: a?.id ?? null, newId: b?.id ?? null, disposition,
           ...(refitted.has(id) ? {provenance:'generated'} : {}),
-          ...(kind === 'block' && a ? { successorIds: replacements.get(id)?.map(row => row.id) ?? [id] } : {}) });
+          ...(kind === 'block' && a ? { successorIds: successorIdsByOld.get(id) ??
+            replacements.get(id)?.map(row => row.id) ?? [id] } : {}) });
         changed.push({ kind, id, fields: ['geometry'] });
       }
     }
-    return { phase: 'C3', status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation };
+    return { phase: 'C3', status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation,
+      ownershipReview,lineage };
   } catch (error) {
     return fail('topology-reflow-blocked', error.message);
   }
