@@ -328,7 +328,7 @@ function d01MoveHistory(direction) {
         :selected?.kind==='building'
           ?project.city.buildings.some(b=>b.id===selected.id)
           :false;
-      if(!live)workspaceShell.select({kind:'property',id:returningProperties[0]},{reveal:false});
+      if(!live)workspaceShell.select({kind:'property',id:returningProperties[0]},{reveal:true});
     }
     requestDraw();
     workspaceChanged();
