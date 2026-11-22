@@ -133,11 +133,13 @@ export function preparePropertyApply3I(project,workspace,session){
       const retained=new Set(preview.plots.map(p=>p.id));
       const oldPlots=original.plotIds.map(id=>city.plots.find(plot=>plot.id===id&&plot.propertyId===original.id));
       if(oldPlots.some(p=>!p||e4Annotated(p)))throw Error('Authored or missing plots cannot be retiled.');
-      const generated=classifyRoadProvenance(original,oldPlots)==='generated';
+      const accepted=project.city.properties.find(p=>p.id===original.id);
+      const acceptedPlots=accepted.plotIds.map(id=>project.city.plots.find(plot=>plot.id===id&&plot.propertyId===accepted.id));
+      const generated=classifyRoadProvenance(accepted,acceptedPlots)==='generated';
       let derived=false;
       try{
-        const cells=partitionPropertyPolygon024(project.city.properties.find(p=>p.id===original.id).boundary);
-        derived=cells.length===oldPlots.length&&cells.every((cell,i)=>giSame(cell,oldPlots[i].boundary));
+        const cells=partitionPropertyPolygon024(accepted.boundary);
+        derived=cells.length===acceptedPlots.length&&cells.every((cell,i)=>giSame(cell,acceptedPlots[i].boundary));
       }catch{}
       if(original.plotIds.some(id=>!retained.has(id))&&!(generated||derived))
         throw Error('A plot with unknown authorship would be retired.');
