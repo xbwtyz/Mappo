@@ -16,17 +16,21 @@ function h3StructureSnapshot(project,propertyId) {
     .map(row=>({index:row.index,record:copyJson(row.record)}));
   if(!h3StructureSame(rows.map(row=>row.record.id).slice().sort(),property.buildingIds.slice().sort()))
     throw new Error('Building membership is inconsistent.');
-  return {propertyId,buildingIds:copyJson(property.buildingIds),rows};
+  return {propertyId,buildingIds:copyJson(property.buildingIds),
+    compounds: property.buildingCompounds === undefined ? null : copyJson(property.buildingCompounds),rows};
 }
 function h3StructureMatches(current,expected) {
   return current.propertyId===expected.propertyId &&
     h3StructureSame(current.buildingIds,expected.buildingIds) &&
+    h3StructureSame(current.compounds,expected.compounds) &&
     h3StructureSame(current.rows.map(r=>h3StripIdentity(r.record)),expected.rows.map(r=>h3StripIdentity(r.record)));
 }
 function h3StructureRestore(project,propertyId,snapshot) {
   const candidate=copyJson(project),site=candidate.city.properties.find(p=>p.id===propertyId);
   const current=new Map(candidate.city.buildings.map(b=>[b.id,b]));
   site.buildingIds=copyJson(snapshot.buildingIds);
+  if (snapshot.compounds === null) delete site.buildingCompounds;
+  else site.buildingCompounds=copyJson(snapshot.compounds);
   const remaining=candidate.city.buildings.filter(b=>b.propertyId!==propertyId);
   for(const row of snapshot.rows) {
     const data=copyJson(row.record),live=current.get(data.id);
