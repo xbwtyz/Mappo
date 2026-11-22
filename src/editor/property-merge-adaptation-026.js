@@ -63,7 +63,7 @@ function b03ProposeRoute(city,building,roads,sourceFrontages){
 function b03ProposeRelocation(city,property,building,roads,sourceFrontages){
   // Stable bounded search; rigid transforms preserve holes, shape and building ID.
   const offsets=[[0,0],[0,4],[4,0],[0,-4],[-4,0],
-    [6,6],[-6,6],[6,-6],[-6,-6],[0,10],[10,0],[0,-10],[-10,0]];
+    [6,6],[-6,6],[6,-6],[-6,-6],[0,8],[8,0],[0,-8],[-8,0],[0,10],[10,0],[0,-10],[-10,0]];
   for(const angle of [0,Math.PI/2,Math.PI,3*Math.PI/2]){
     for(const [dx,dy] of offsets){
       const moved=previewBuildingGeometry(building,{dx,dy,angle});

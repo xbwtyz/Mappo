@@ -45,3 +45,27 @@ test('026 preserves accepted setback-frontage access without needless building e
   assert.deepEqual(result.changes,[]);
   assert.equal(JSON.stringify(city),original);
 });
+
+test('026 deterministic last-resort relocation keeps building identity and unchanged plot geometry',()=>{
+  const {city,property,originals}=fixture();
+  const barrier={
+    id:'BLD-BARRIER',propertyId:'PROP-A',blockId:'BLOCK-A',frontageRoadId:'ROAD-A',
+    footprint:[{x:0,y:4},{x:24,y:4},{x:24,y:6},{x:0,y:6}],holes:[],area:48,
+    orientation:0,plotIds:['PLOT-1'],entrance:{x:12,y:4},
+    accessPath:[{x:12,y:4},{x:12,y:0}],roofTone:100,type:'warehouse',shape:'rect'
+  };
+  city.buildings.push(barrier);property.buildingIds.push(barrier.id);
+  originals.set(barrier.id,structuredClone(barrier));
+  const beforePlot=structuredClone(city.plots[0].boundary);
+  const beforeBuilding=structuredClone(city.buildings[0]);
+  const result=reconcileMergeBuildings026(city,property,['ROAD-A'],originals,
+    new Set(['BLD-1']));
+  assert.deepEqual(result.issues,[]);
+  assert.equal(result.changes.length,1);
+  assert.equal(result.changes[0].kind,'relocation');
+  assert.equal(result.changes[0].buildingId,'BLD-1');
+  assert.equal(city.buildings[0].id,beforeBuilding.id);
+  assert.notDeepEqual(city.buildings[0].footprint,beforeBuilding.footprint);
+  assert.deepEqual(city.plots[0].boundary,beforePlot);
+  assert.deepEqual(city.buildings[1],barrier);
+});
