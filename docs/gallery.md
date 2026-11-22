@@ -1,5 +1,7 @@
 # Mappo Screenshot Gallery
 
+> **Historical 3F screenshot gallery:** These are original milestone images, retained as development evidence. They do not represent the full published v0.2.0 Generation/Add/Roads workspace. See the [current user guide](user-guide.md).
+
 [Project home](../README.md) · [Documentation](README.md) · [3F history](history/3f/README.md)
 
 ## 3F-A: Earlier building selection

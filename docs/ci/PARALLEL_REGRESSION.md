@@ -1,5 +1,7 @@
 # Parallel CI regression coverage
 
+> **Historical Phase 1 performance report:** This records the earlier three-browser-runner CI rollout and its measured durations. Current CI uses **two Node shards and four browser suites** and release/Pages publishing is manual-only. See the [current CI guide](../CI.md) and [Phase 2 six-runner report](PHASE_2_SIX_RUNNERS.md). Retain the original measurements as dated evidence, not current workflow instructions.
+
 ## Goal
 
 Preserve the same required `Mappo CI / Build, Node tests and browser QA` check and existing full-regression coverage, while reducing the end-to-end validation time through independent runners. This is a CI-only refactor: it must not change shipped Mappo HTML, runtime behavior, or release policy.
@@ -38,7 +40,7 @@ Playwright 1.56.1 stays test-only and is pinned; browsers and npm downloads are 
 
 - All three browser jobs and the Node job must succeed. `fail-fast: false` allows independent failure evidence to finish, but never allows a partially passing PR.
 - The final `validate` job retains the previous required status-check name: **Build, Node tests and browser QA**.
-- `Mappo CI` retains its workflow name for downstream `workflow_run` consumers; only main-branch CI can trigger the existing stable-release workflow.
+- `Mappo CI` retains its workflow name and required gate. **Current release workflow clarification:** the former `workflow_run` release publisher was replaced by a manual-only guarded `release.yml`; a successful main CI never publishes automatically.
 - Compiled standalone artifacts come from the Node build, checked against tracked distribution files as before.
 - The full browser matrices remain on review-ready PRs, main pushes, merge groups and manual dispatch; draft PRs still skip full validation.
 - C7 desktop browser performance checks remain manual, opt-in via `run_c7_benchmark`, and run only in the integration shard.

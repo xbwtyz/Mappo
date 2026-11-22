@@ -1,4 +1,6 @@
-# UI control locations — Phase 7 release review
+# Historical Phase 7 UI control inventory
+
+> **Historical implementation reference, not current desktop navigation.** This records the four-section City/Landscape/Districts/Defenses shell from Phase 7. Published v0.2.0 uses **Generation / Add / Roads** on supported desktop browsers. Legacy controls are still retained for compact fallback and controller compatibility; old labels do not authorize deleting them. Consult the [user guide](../user-guide.md), [G3G parity review](../plans/0.2/G3G_PARITY_REVIEW.md), and [G4 acceptance](../plans/0.2/G4_ACCEPTANCE_REPORT.md).
 
 Build `0.1-dev.ui7d` on `feature/ui-phase-7`. This inventory records the existing controls and their new persistence boundaries. IDs and controller bindings stay stable. Project schema remains 9, workspace schema 1; the UI state is optional and additive.
 

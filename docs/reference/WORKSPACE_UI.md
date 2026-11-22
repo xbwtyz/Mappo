@@ -1,4 +1,6 @@
-# Workspace UI architecture
+# Historical Phase 7 workspace UI architecture
+
+> **Historical implementation reference, not current desktop navigation.** This records the four-section City/Landscape/Districts/Defenses shell from Phase 7. Published v0.2.0 uses **Generation / Add / Roads** on supported desktop browsers. Legacy controls are still retained for compact fallback and controller compatibility; old labels do not authorize deleting them. Consult the [user guide](../user-guide.md), [G3G parity review](../plans/0.2/G3G_PARITY_REVIEW.md), and [G4 acceptance](../plans/0.2/G4_ACCEPTANCE_REPORT.md).
 
 The `0.1-dev.ui7d` release candidate consolidates the UI overhaul Phases 1–6 and adds Phase 7 integration and browser verification on `feature/ui-phase-7`. The map still renders the live city through Canvas; generation, geometry, district and defense rules stay in their existing modules.
 

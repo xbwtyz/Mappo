@@ -35,7 +35,9 @@ The [v0.2.0 City Designer](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0) 
 
 See the [User Guide](docs/user-guide.md) for detailed editing and save/recovery behavior.
 
-## Screenshots
+## Historical interface screenshots
+
+The following images document the earlier 3F property/building Inspector, **not** the published v0.2.0 Generation/Add/Roads desktop layout. They remain useful development examples. For current controls, see the [user guide](docs/user-guide.md).
 
 | Property-first selection | Individual building details | Identity customization |
 | --- | --- | --- |

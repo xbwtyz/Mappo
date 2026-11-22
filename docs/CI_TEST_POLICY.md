@@ -27,8 +27,8 @@ The [desktop workspace plan](plans/0.2/MILESTONE_0_2G_DESKTOP_UI.md)
 sets the support target for 0.2G and subsequent updates. Cover desktop
 Chromium and Firefox at laptop, desktop, and ultrawide viewport sizes, with
 mouse, keyboard, and trackpad-style navigation. The workspace implementation
-will transition the browser matrix away from phone and tablet viewports and
-touch gestures. Historical acceptance reports record the coverage used for
+has transitioned routine acceptance toward desktop/laptop/ultrawide viewports; phone/tablet QA and
+touch gesture acceptance are not current requirements. Historical acceptance reports record the coverage used for
 their releases.
 
 ## C7 performance runs
@@ -36,7 +36,7 @@ their releases.
 The heavy C7 browser benchmark is **manual opt-in only** via `run_c7_benchmark` on the Mappo CI workflow. Ordinary PR validation still runs C7 browser correctness suites and all main regression tests.
 
 The manual Mappo CI workflow also accepts the **run_c7_benchmark** option to
-force it (once this workflow definition is available on the default branch).
+force it using the existing default-branch workflow.
 The unused previous C7 benchmark workflow tied to the old finalization
 branch has been retired. The script and benchmark data format remain intact.
 
@@ -62,9 +62,6 @@ pre-merge acceptance check.
   by this CI policy.
 - **Owner approval** remains required to merge Mappo feature work.
 
-## P1 / Issue #44 status
+## Historical P1 / performance issue status
 
-This CI change was developed alongside the background junction worker in
-[PR #45](https://github.com/xbwtyz/Mappo/pull/45). The active responsiveness
-investigation remains [Issue #44](https://github.com/xbwtyz/Mappo/issues/44).
-P1 must still receive full review-ready CI before merging.
+This CI change was originally developed alongside the junction worker in [PR #45](https://github.com/xbwtyz/Mappo/pull/45). [Issues #44 and #46](plans/0.2/H3_PERFORMANCE_AUDIT.md) were subsequently closed after the measured H3 review. Heavy C7 benchmarking remains opt-in, and connected dead-end road editing is tracked separately as [#79](https://github.com/xbwtyz/Mappo/issues/79).

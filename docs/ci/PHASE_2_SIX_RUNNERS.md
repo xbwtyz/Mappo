@@ -1,5 +1,7 @@
 # Mappo CI Phase 2: six-runner validation
 
+> **Historical optimization and acceptance report:** The six-runner topology described here is now the current CI requirement. Original G3G-era 447-test counts and pending-review statements are dated; published v0.2.0 later verified 459 Node tests. For current commands and coverage, see the [CI guide](../CI.md) and [CI test policy](../CI_TEST_POLICY.md).
+
 ## Purpose
 
 Shorten full PR feedback without removing any Node tests, browser QA coverage, C7 offline checks, or browser viewport checks. Make these changes on a separate PR, keeping the existing required aggregate status and all release protection.
