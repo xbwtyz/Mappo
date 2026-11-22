@@ -4,8 +4,8 @@
 
 | ID | Restriction | Proposed direction |
 |---|---|---|
-| [C01](issues/C01.md) | No general compound/detached geometry, nested courtyard islands or boolean unions | Decide semantic model for one building vs linked structures before geometry changes |
-| [C02](issues/C02.md) | One topology-changing operation per Apply | Support multiple compatible operations in a single validated preview transaction |
+| [C01](issues/C01.md) · [#104](https://github.com/xbwtyz/Mappo/issues/104) | No general compound/detached geometry, nested courtyard islands or boolean unions | Decide semantic model for one building vs linked structures before geometry changes |
+| [C02](issues/C02.md) · [#105](https://github.com/xbwtyz/Mappo/issues/105) | One topology-changing operation per Apply | Support multiple compatible operations in a single validated preview transaction |
 
 ## Suggested sequence
 

@@ -1,6 +1,6 @@
 # Group A — Road Network and Topology Improvements
 
-**Status:** Planning only. **0.2.1 A01 architecture approved (A/A/A/A);** issue update, GitHub edits and coding remain unapproved. **Priority:** Highest overall because downstream parcel and building geometry derives from accepted street topology.
+**Status:** Planning only. **0.2.1 A01 architecture approved (A/A/A/A);** Issue #79 updated and 17 additional tracking issues published; coding remains unapproved. **Priority:** Highest overall because downstream parcel and building geometry derives from accepted street topology.
 
 ## Scope and user value
 
@@ -8,12 +8,12 @@ Expand which ordinary road networks can be legally edited without weakening conn
 
 | ID | Capability gap | Recommended treatment |
 |---|---|---|
-| [A01](issues/A01.md) | Connected ordinary interior dead-end stub after road deletion; **clearance only**, generated-only local adaptation | **0.2.1 — approved architecture**; update existing [Issue #79](https://github.com/xbwtyz/Mappo/issues/79) only after body approval |
-| [A02](issues/A02.md) | Multiple disconnected networks | Product decision first: may remain forbidden by design |
-| [A03](issues/A03.md) | Coincident and collinear crossing normalization | After A01, start with one reproducible crossing class |
-| [A04](issues/A04.md) | Protected infrastructure restructuring | Separate protected-domain operation, never relax normal guards wholesale |
-| [A05](issues/A05.md) | True curves and >24 bends | Display-level smoothing option before schema-sensitive splines |
-| [A06](issues/A06.md) | Larger/ambiguous block lineage | Improve bounded local ancestry and decisions after A01/A03 |
+| [A01](issues/A01.md) · [#79](https://github.com/xbwtyz/Mappo/issues/79) | Connected ordinary interior dead-end stub after road deletion; **clearance only**, generated-only local adaptation | **0.2.1 — approved architecture**; existing [Issue #79](https://github.com/xbwtyz/Mappo/issues/79) updated |
+| [A02](issues/A02.md) · [#94](https://github.com/xbwtyz/Mappo/issues/94) | Multiple disconnected networks | Product decision first: may remain forbidden by design |
+| [A03](issues/A03.md) · [#95](https://github.com/xbwtyz/Mappo/issues/95) | Coincident and collinear crossing normalization | After A01, start with one reproducible crossing class |
+| [A04](issues/A04.md) · [#96](https://github.com/xbwtyz/Mappo/issues/96) | Protected infrastructure restructuring | Separate protected-domain operation, never relax normal guards wholesale |
+| [A05](issues/A05.md) · [#97](https://github.com/xbwtyz/Mappo/issues/97) | True curves and >24 bends | Display-level smoothing option before schema-sensitive splines |
+| [A06](issues/A06.md) · [#98](https://github.com/xbwtyz/Mappo/issues/98) | Larger/ambiguous block lineage | Improve bounded local ancestry and decisions after A01/A03 |
 
 ## Architecture and dependency model
 

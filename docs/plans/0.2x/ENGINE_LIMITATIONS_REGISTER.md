@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Register
 
-> **Status:** Working proposals (not all bugs). Prepared from the published 0.2.0 baseline and `main` commit `799532b6fb35`. This register has **17 assessed limitation IDs** across five groups. `E01` is split into `E01a` (import capacity) and `E01b` (whole-city PNG) for **18 separately reviewable issue drafts**. All future priorities/version targets are provisional except A01 → **0.2.1**. **A01 architectural decisions D-021-1–4 = A/A/A/A are approved; issue text and code edits are not.**
+> **Status:** Working proposals (not all bugs). Prepared from the published 0.2.0 baseline and `main` commit `799532b6fb35`. This register has **17 assessed limitation IDs** across five groups. `E01` is split into `E01a` (import capacity) and `E01b` (whole-city PNG) for **18 individually tracked GitHub issues**. All future priorities/version targets are provisional except A01 → **0.2.1**. **A01 architectural decisions D-021-1–4 = A/A/A/A are approved; Issue #79 body is published; implementation is not.**
 
 ## Classification rules
 
@@ -14,24 +14,24 @@
 
 | ID | Proposed issue | Classification | Priority | Target |
 |---|---|---|---|---|
-| [A01](issues/A01.md) | Connected interior stub after segment deletion; clearance without new frontage; generated-only reconciliation | Confirmed bug / engine gap | P0 | **0.2.1 architecture approved**; issue update pending review |
-| [A02](issues/A02.md) | Evaluate support for multiple disconnected street networks | Deliberate rule / feature expansion | P3 | Unassigned |
-| [A03](issues/A03.md) | Extend road intersection normalization for coincident and collinear contacts | Confirmed documented restriction | P1 | Unassigned — after 0.2.1 |
-| [A04](issues/A04.md) | Design controlled editing of protected road connections | Deliberate safety boundary / feature expansion | P2 | Unassigned |
-| [A05](issues/A05.md) | Assess spline or curved-street geometry beyond editable polyline bends | New capability / geometry model expansion | P3 | Unassigned |
-| [A06](issues/A06.md) | Expand bounded road topology reflow for large changes and ambiguous face ownership | Confirmed architectural limit | P1 | Unassigned — after 0.2.1 |
-| [B01](issues/B01.md) | Support irregular multi-vertex and concave property boundaries | Confirmed geometry-model restriction | P1 | Unassigned — foundational parcel wave |
-| [B02](issues/B02.md) | Extend property splits beyond straight frontage-to-rear dividers | Confirmed feature restriction | P2 | Unassigned |
-| [B03](issues/B03.md) | Support partial-edge and irregular property merging | Confirmed feature restriction | P2 | Unassigned |
-| [B04](issues/B04.md) | Add flexible plot subdivisions and multi-divider transactions | Confirmed feature restriction | P2 | Unassigned |
-| [B05](issues/B05.md) | Improve author-preserving parcel decisions after large road changes | Confirmed reconciliation limitation | P1 | Unassigned |
-| [C01](issues/C01.md) | Support compound connected and detached building components | New capability / current design restriction | P2 | Unassigned |
-| [C02](issues/C02.md) | Support multiple building-topology operations per draft transaction | Confirmed editing restriction | P2 | Unassigned |
-| [D01](issues/D01.md) | Evaluate unified and persistent edit history across Mappo workspaces | Confirmed history scope limitation | P2 | Unassigned |
-| [D02](issues/D02.md) | Investigate residual road-editor frame hitches and worker fallbacks | Known performance caveat; not proven current bug | Conditional | Unassigned — evidence gate first |
-| [D03](issues/D03.md) | Audit graph and reconciliation work budgets against real city sizes | Intentional safety caps / scale proposal | P3 | Unassigned |
-| [E01a](issues/E01a.md) | Assess larger portable project imports beyond 20 MiB | Explicit import limit / scale proposal | P3 | Unassigned |
-| [E01b](issues/E01b.md) | Add whole-city PNG export at selected resolution | New output capability / known limitation | P2 | Unassigned |
+| [A01](issues/A01.md) · [#79](https://github.com/xbwtyz/Mappo/issues/79) | Connected interior stub after segment deletion; clearance without new frontage; generated-only reconciliation | Confirmed bug / engine gap | P0 | **0.2.1 architecture approved**; Issue #79 updated; implementation pending |
+| [A02](issues/A02.md) · [#94](https://github.com/xbwtyz/Mappo/issues/94) | Evaluate support for multiple disconnected street networks | Deliberate rule / feature expansion | P3 | Unassigned |
+| [A03](issues/A03.md) · [#95](https://github.com/xbwtyz/Mappo/issues/95) | Extend road intersection normalization for coincident and collinear contacts | Confirmed documented restriction | P1 | Unassigned — after 0.2.1 |
+| [A04](issues/A04.md) · [#96](https://github.com/xbwtyz/Mappo/issues/96) | Design controlled editing of protected road connections | Deliberate safety boundary / feature expansion | P2 | Unassigned |
+| [A05](issues/A05.md) · [#97](https://github.com/xbwtyz/Mappo/issues/97) | Assess spline or curved-street geometry beyond editable polyline bends | New capability / geometry model expansion | P3 | Unassigned |
+| [A06](issues/A06.md) · [#98](https://github.com/xbwtyz/Mappo/issues/98) | Expand bounded road topology reflow for large changes and ambiguous face ownership | Confirmed architectural limit | P1 | Unassigned — after 0.2.1 |
+| [B01](issues/B01.md) · [#99](https://github.com/xbwtyz/Mappo/issues/99) | Support irregular multi-vertex and concave property boundaries | Confirmed geometry-model restriction | P1 | Unassigned — foundational parcel wave |
+| [B02](issues/B02.md) · [#100](https://github.com/xbwtyz/Mappo/issues/100) | Extend property splits beyond straight frontage-to-rear dividers | Confirmed feature restriction | P2 | Unassigned |
+| [B03](issues/B03.md) · [#101](https://github.com/xbwtyz/Mappo/issues/101) | Support partial-edge and irregular property merging | Confirmed feature restriction | P2 | Unassigned |
+| [B04](issues/B04.md) · [#102](https://github.com/xbwtyz/Mappo/issues/102) | Add flexible plot subdivisions and multi-divider transactions | Confirmed feature restriction | P2 | Unassigned |
+| [B05](issues/B05.md) · [#103](https://github.com/xbwtyz/Mappo/issues/103) | Improve author-preserving parcel decisions after large road changes | Confirmed reconciliation limitation | P1 | Unassigned |
+| [C01](issues/C01.md) · [#104](https://github.com/xbwtyz/Mappo/issues/104) | Support compound connected and detached building components | New capability / current design restriction | P2 | Unassigned |
+| [C02](issues/C02.md) · [#105](https://github.com/xbwtyz/Mappo/issues/105) | Support multiple building-topology operations per draft transaction | Confirmed editing restriction | P2 | Unassigned |
+| [D01](issues/D01.md) · [#106](https://github.com/xbwtyz/Mappo/issues/106) | Evaluate unified and persistent edit history across Mappo workspaces | Confirmed history scope limitation | P2 | Unassigned |
+| [D02](issues/D02.md) · [#107](https://github.com/xbwtyz/Mappo/issues/107) | Investigate residual road-editor frame hitches and worker fallbacks | Known performance caveat; not proven current bug | Conditional | Unassigned — evidence gate first |
+| [D03](issues/D03.md) · [#108](https://github.com/xbwtyz/Mappo/issues/108) | Audit graph and reconciliation work budgets against real city sizes | Intentional safety caps / scale proposal | P3 | Unassigned |
+| [E01a](issues/E01a.md) · [#109](https://github.com/xbwtyz/Mappo/issues/109) | Assess larger portable project imports beyond 20 MiB | Explicit import limit / scale proposal | P3 | Unassigned |
+| [E01b](issues/E01b.md) · [#110](https://github.com/xbwtyz/Mappo/issues/110) | Add whole-city PNG export at selected resolution | New output capability / known limitation | P2 | Unassigned |
 
 ## Groups and shared architecture
 
@@ -58,6 +58,6 @@
 
 ## Issue lifecycle
 
-`Draft` → `Owner-reviewed contract` → `Approved GitHub issue` → `Assigned release` → `Scoped implementation approval` → `PR + tests` → `Approved merge` → `Separately approved release` → `Closed with evidence`.
+`Planning draft` → `Published tracking issue` → `Owner-reviewed implementation scope` → `Assigned release` → `Scoped implementation approval` → `PR + tests` → `Approved merge` → `Separately approved release` → `Closed with evidence`.
 
-The first item is already [Issue #79](https://github.com/xbwtyz/Mappo/issues/79), which should be **updated, not duplicated**. Its **architectural choices are approved** and its [replacement body is drafted](ISSUE_79_UPDATE_DRAFT.md); the owner approved updating the existing GitHub issue with that text. The other issue drafts are not yet created on GitHub. For each, confirm a reproducible user story and acceptance criteria before filing.
+The first item is already [Issue #79](https://github.com/xbwtyz/Mappo/issues/79), which has been **updated, not duplicated**. Its **architectural choices are approved** and its [replacement body is drafted](ISSUE_79_UPDATE_DRAFT.md); the owner approved updating the existing GitHub issue with that text. All 17 other tracking issues (#94–#110) have been published. They are proposals, **not** confirmed bugs or authorized implementation. Confirm user stories, architecture and acceptance criteria before coding.

@@ -4,9 +4,9 @@
 
 | ID | Finding | Handling |
 |---|---|---|
-| [D01](issues/D01.md) | Scoped, session-only Undo/Redo; no universal interleaved history | Separate unified session history decision from persistent history design |
-| [D02](issues/D02.md) | Residual 100–183 ms frame hitches and potential synchronous fallbacks | Keep original issues #44/#46 closed; new reproduction required for new bug |
-| [D03](issues/D03.md) | Explicit graph/work and local block budget ceilings | Benchmark real supported cities before changing caps |
+| [D01](issues/D01.md) · [#106](https://github.com/xbwtyz/Mappo/issues/106) | Scoped, session-only Undo/Redo; no universal interleaved history | Separate unified session history decision from persistent history design |
+| [D02](issues/D02.md) · [#107](https://github.com/xbwtyz/Mappo/issues/107) | Residual 100–183 ms frame hitches and potential synchronous fallbacks | Keep original issues #44/#46 closed; new reproduction required for new bug |
+| [D03](issues/D03.md) · [#108](https://github.com/xbwtyz/Mappo/issues/108) | Explicit graph/work and local block budget ceilings | Benchmark real supported cities before changing caps |
 
 ## D01 — Important trade-off
 
@@ -14,7 +14,7 @@ Current histories deliberately avoid replaying an older edit over unrelated acce
 
 ## D02 — Performance evidence boundary
 
-H3 measured Large Organic preview readiness around 0.9–1.0 seconds and occasional ~100–183 ms main-thread frame gaps on its CI hardware. Most expensive preview computation used the worker. Original roughly one-second main-thread freezes [#44](https://github.com/xbwtyz/Mappo/issues/44) and [#46](https://github.com/xbwtyz/Mappo/issues/46) were closed after owner review. Do **not** relabel them as still-open defects. Only open a newly reproduced performance issue with a seed, exact operation, worker/fallback state, browser, device and trace. Heavy C7 performance benchmarking remains opt-in.
+H3 measured Large Organic preview readiness around 0.9–1.0 seconds and occasional ~100–183 ms main-thread frame gaps on its CI hardware. Most expensive preview computation used the worker. Original roughly one-second main-thread freezes [#44](https://github.com/xbwtyz/Mappo/issues/44) and [#46](https://github.com/xbwtyz/Mappo/issues/46) were closed after owner review. Do **not** relabel them as still-open defects. Investigation-only Issue #107 is published; do not assert a renewed regression or begin optimization without a new reproducible case with a seed, exact operation, worker/fallback state, browser, device and trace. Heavy C7 performance benchmarking remains opt-in.
 
 ## D03 — Safety caps are safeguards
 

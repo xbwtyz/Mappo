@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Working planning proposal — not implementation approval.** v0.2.0 is the published baseline. **0.2.1 → Issue #79 and D-021-1–4 (A/A/A/A)** are owner-approved planning decisions. All other versions and scopes below remain **unordered candidates within dependency waves**, to be assigned after issue-by-issue discussion. No code, schema, CI, release or Pages changes are authorized here.
+> **Working planning proposal — not implementation approval.** v0.2.0 is the published baseline. **0.2.1 → Issue #79 and D-021-1–4 (A/A/A/A)** are owner-approved planning decisions. All other versions and scopes below remain **unordered candidates within dependency waves**, to be assigned after issue-by-issue implementation scope review. No code, schema, CI, release or Pages changes are authorized here.
 
 ## Problem and intended outcome
 
@@ -77,3 +77,16 @@ flowchart TD
 ## Current collaboration and issue documents
 
 [Issue register](ENGINE_LIMITATIONS_REGISTER.md) · [0.2.1 detailed plan](MILESTONE_0_2_1_DEAD_END_ROADS.md) · [Issue review guide](ISSUE_REVIEW_GUIDE.md) · [Decision log](DECISION_LOG.md) · [All issue drafts](issues/)
+## Published GitHub issue tracker
+
+All 17 additional limitation/capability proposals are recorded on GitHub. These are **tracking entries, not implementation authorization or assigned releases**. A01 is the existing 0.2.1 Issue #79.
+
+| Group | Tracked issues |
+|---|---|
+| A — Road topology | [#79](https://github.com/xbwtyz/Mappo/issues/79) · [#94](https://github.com/xbwtyz/Mappo/issues/94) · [#95](https://github.com/xbwtyz/Mappo/issues/95) · [#96](https://github.com/xbwtyz/Mappo/issues/96) · [#97](https://github.com/xbwtyz/Mappo/issues/97) · [#98](https://github.com/xbwtyz/Mappo/issues/98) |
+| B — Properties and plots | [#99](https://github.com/xbwtyz/Mappo/issues/99) · [#100](https://github.com/xbwtyz/Mappo/issues/100) · [#101](https://github.com/xbwtyz/Mappo/issues/101) · [#102](https://github.com/xbwtyz/Mappo/issues/102) · [#103](https://github.com/xbwtyz/Mappo/issues/103) |
+| C — Buildings | [#104](https://github.com/xbwtyz/Mappo/issues/104) · [#105](https://github.com/xbwtyz/Mappo/issues/105) |
+| D — History, performance, capacity | [#106](https://github.com/xbwtyz/Mappo/issues/106) · [#107](https://github.com/xbwtyz/Mappo/issues/107) · [#108](https://github.com/xbwtyz/Mappo/issues/108) |
+| E — Project files and export | [#109](https://github.com/xbwtyz/Mappo/issues/109) · [#110](https://github.com/xbwtyz/Mappo/issues/110) |
+
+Performance item D02 (#107) is **investigation-only**, not evidence that the closed historical #44/#46 regressions have returned. No version change, runtime work, schema work, release or Pages deployment is authorized by these tracking entries.

@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Issue Review and GitHub Filing Guide
 
-> **Discussion workflow:** Review the drafts with the owner. **Do not create or update GitHub Issues until the specific text and scope are approved.** The existing [Issue #79](https://github.com/xbwtyz/Mappo/issues/79) is the one exception to the new-issue numbering: use it directly for A01, not a duplicate. Its four architecture decisions are **owner-approved** (A/A/A/A); its [updated description](ISSUE_79_UPDATE_DRAFT.md) is **owner-approved for posting** to the existing issue. Other issue drafts still require separate review and approval.
+> **Published tracking phase:** The owner authorized publishing the 17 remaining limitation issues (#94–#110) and updating #79. **Creating tracking issues is not permission to implement their proposed solutions.** The existing [Issue #79](https://github.com/xbwtyz/Mappo/issues/79) is the one exception to the new-issue numbering: use it directly for A01, not a duplicate. Its four architecture decisions are **owner-approved** (A/A/A/A); its [updated description](ISSUE_79_UPDATE_DRAFT.md) is **published** to the existing issue. The other 17 tracking issues are published; future implementation scopes still require review.
 
 ## One-issue review checklist
 
@@ -11,7 +11,7 @@
 5. **Preservation:** State exact authored data and protected features that must survive; spell out when owner consent is needed.
 6. **Tests:** Require deterministic positive/negative fixtures, no-mutation Cancel, atomic Apply, Undo/Redo, safe save/reopen and Firefox/Chromium desktop acceptance where applicable.
 7. **Dependencies:** Note previously approved issues/milestones to avoid competing engines and duplicate work.
-8. **Decision:** Owner approves the final GitHub Issue body and target only after reviewing the choices. Issue creation is **not** coding approval.
+8. **Decision:** The published tracker is a starting point. Owner approval of the **implementation scope and target version** is needed before code; issue creation alone is **not** coding approval.
 
 ## Recommended issue labels (proposal, not created)
 
@@ -23,7 +23,7 @@ Only assign existing repository labels if verified; do not silently create a new
 
 ## Issue templates
 
-All 18 individual drafts are in [`issues/`](issues/). Each includes current behavior, proposed target, evidence/reproduction, acceptance criteria, dependencies, explicit open decisions and preservation gates. A01 is an update proposal for Issue #79, with a full [replacement text draft](ISSUE_79_UPDATE_DRAFT.md); D02 is conditional and should not become a new bug without a fresh reproduction.
+All 18 issue-linked planning records are in [`issues/`](issues/). Each includes current behavior, proposed target, evidence/reproduction, acceptance criteria, dependencies, explicit open decisions and preservation gates. A01 refers to updated Issue #79, with a full [replacement text draft](ISSUE_79_UPDATE_DRAFT.md); D02 is investigation-only Issue #107 and should not be represented as a new confirmed bug without a fresh reproduction.
 
 ## Mappo implementation protocol
 

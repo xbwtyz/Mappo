@@ -6,11 +6,11 @@
 
 | ID | Current limitation | Candidate improvement |
 |---|---|---|
-| [B01](issues/B01.md) | Convex four-corner property boundaries | General simple multi-vertex polygons, eventually safe concavity |
-| [B02](issues/B02.md) | Straight frontage-to-rear splitting | Approved angled/freeform partition types |
-| [B03](issues/B03.md) | Whole-edge, convex property merge | Partial-edge and irregular polygon merges |
-| [B04](issues/B04.md) | Frontage strip plots and one count change | General plot partitions and perhaps multi-action previews |
-| [B05](issues/B05.md) | Custom parcels often block road reflow | Auditable explicit parcel preservation/relocation decisions |
+| [B01](issues/B01.md) · [#99](https://github.com/xbwtyz/Mappo/issues/99) | Convex four-corner property boundaries | General simple multi-vertex polygons, eventually safe concavity |
+| [B02](issues/B02.md) · [#100](https://github.com/xbwtyz/Mappo/issues/100) | Straight frontage-to-rear splitting | Approved angled/freeform partition types |
+| [B03](issues/B03.md) · [#101](https://github.com/xbwtyz/Mappo/issues/101) | Whole-edge, convex property merge | Partial-edge and irregular polygon merges |
+| [B04](issues/B04.md) · [#102](https://github.com/xbwtyz/Mappo/issues/102) | Frontage strip plots and one count change | General plot partitions and perhaps multi-action previews |
+| [B05](issues/B05.md) · [#103](https://github.com/xbwtyz/Mappo/issues/103) | Custom parcels often block road reflow | Auditable explicit parcel preservation/relocation decisions |
 
 ## Recommended architecture
 

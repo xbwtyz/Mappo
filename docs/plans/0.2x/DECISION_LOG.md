@@ -7,8 +7,8 @@
 | DX-001 | Use 0.2.x for current engine limitations, not unrelated feature expansion | **Owner approved** | Keep separate feature roadmap for 3D, civic sites, Minecraft, etc. |
 | DX-002 | Issue #79 is the first engine limitation to fix, as v0.2.1 | **Owner approved** | Do not duplicate Issue #79 |
 | DX-003 | Group the reviewed 17 limitations into five areas | **Owner approved for planning** | Use 18 candidate issue drafts because E01 splits into two separate domains |
-| DX-004 | Create GitHub Issues for each reviewed limitation | **Planning intent; each issue text pending approval** | Review candidate text individually first |
-| DX-005 | Create planning docs on a GitHub branch | **Owner approved** | Publish the documentation-only pack on a review branch; do not merge without separate approval |
+| DX-004 | Create GitHub Issues for each reviewed limitation | **Owner approved; 17 tracking issues #94–#110 published** | Refine scope and acceptance before implementing; #79 updated rather than duplicated |
+| DX-005 | Create planning docs on a GitHub branch | **Owner approved publication and merge of PR #93** | Retain version 0.2.0; no application, schema, release or Pages change |
 | D-021-1 | A — Ordinary connected interior terminal stubs arising from supported road deletion only | **Owner approved — A** | Do not expand to all terminal-road operations, disconnected networks, protected road edits or general branching |
 | D-021-2 | A — Reserve the dead-end street corridor and setbacks; do **not** grant newly eligible frontage/access | **Owner approved — A** | Maintain existing proven access; any new dead-end frontage/generation is a separately reviewed future scope |
 | D-021-3 | A — Only verified generated, untouched development may adapt locally; protect customized and unknown-provenance records | **Owner approved — A** | Unresolvable authored conflicts block Apply with actionable explanation; no automatic custom restructuring or loss |
@@ -22,4 +22,4 @@
 
 ## Next discussion
 
-D-021-1 through D-021-4 are **settled**. The [Issue #79 replacement](ISSUE_79_UPDATE_DRAFT.md) is approved for posting to the existing issue. Obtain a separate explicit instruction before coding. P1 retains technical investigations into face/corridor representation and deterministic reproducer, **not** a reopening of the four chosen product decisions. Then discuss A03/A06 and B01 issue candidates.
+D-021-1 through D-021-4 are **settled**. The [Issue #79 replacement](ISSUE_79_UPDATE_DRAFT.md) has been posted to the existing issue. Obtain a separate explicit instruction before coding. P1 retains technical investigations into face/corridor representation and deterministic reproducer, **not** a reopening of the four chosen product decisions. Then discuss A03/A06 and B01 issue candidates.

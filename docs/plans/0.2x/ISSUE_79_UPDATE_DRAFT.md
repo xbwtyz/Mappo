@@ -1,3 +1,4 @@
+<!-- Approved Issue #79 replacement, posted on GitHub; retained as an archival specification. -->
 # Mappo 0.2.1 — Allow road deletion to leave a connected dead end
 
 **Target:** v0.2.1  

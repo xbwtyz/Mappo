@@ -1,6 +1,6 @@
 # Mappo 0.2.1 — Connected Dead-End Streets
 
-> **Milestone:** 0.2.1 · **Issue:** [#79 — Allow road deletion to leave a connected dead end](https://github.com/xbwtyz/Mappo/issues/79) · **Status:** **Four architectural decisions approved (all A)**; technical design and implementation pending. **No source changes or GitHub edits authorized yet**. Existing issue is **not** to be duplicated. Baseline: v0.2.0 project schema 9 / envelope 1, current `main` `799532b6fb35`.
+> **Milestone:** 0.2.1 · **Issue:** [#79 — Allow road deletion to leave a connected dead end](https://github.com/xbwtyz/Mappo/issues/79) · **Status:** **Four architectural decisions approved (all A)**; technical design and implementation pending. **GitHub issue documentation published; no source changes authorized**. Existing issue is **not** to be duplicated. Baseline: v0.2.0 project schema 9 / envelope 1, current `main` `799532b6fb35`.
 
 ## 1. Problem and outcome
 
@@ -118,4 +118,4 @@ The following are **approved scope decisions**, not questions for implementation
 
 ## 7. Approval boundary
 
-The owner has selected Issue #79 as **0.2.1** and approved all four architecture choices (A/A/A/A), plus local planning/document drafting. **No coding, schema migration, GitHub issue edit, branch, PR, merge, release, Pages or CI modification is authorized by this document.** Review the [replacement Issue #79 draft](ISSUE_79_UPDATE_DRAFT.md) separately before authorizing a GitHub issue-body update; separately authorize the implementation branch and coding after review of this plan. One PR with four internal checkpoints is the approved delivery shape, but it is **not** a merge or publishing approval.
+The owner has selected Issue #79 as **0.2.1** and approved all four architecture choices (A/A/A/A), plus local planning/document drafting. **The planning docs and Issue #79 specification have been authorized for publication. No application coding, schema migration, CI changes, implementation branch/PR, release or Pages action is authorized by this document.** The [replacement Issue #79 text](ISSUE_79_UPDATE_DRAFT.md) was posted; separately authorize the implementation branch and coding after review of this plan. One PR with four internal checkpoints is the approved delivery shape, but it is **not** a merge or publishing approval.

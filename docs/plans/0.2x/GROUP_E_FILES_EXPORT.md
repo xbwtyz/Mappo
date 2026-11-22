@@ -1,11 +1,11 @@
 # Group E — Project Size and Export Output
 
-**Status:** Planning only. These are **two different future GitHub issue candidates** split from the original E01 finding.
+**Status:** Planning only. These are **two published GitHub tracking issues** split from the original E01 finding.
 
 | ID | Limitation | Suggested scope |
 |---|---|---|
-| [E01a](issues/E01a.md) | Rejects portable project files at or above 20 MiB | Capacity audit; increase only with measured memory and validation safety |
-| [E01b](issues/E01b.md) | PNG export captures visible canvas only | Whole-city high-resolution export without changing the live camera |
+| [E01a](issues/E01a.md) · [#109](https://github.com/xbwtyz/Mappo/issues/109) | Rejects portable project files at or above 20 MiB | Capacity audit; increase only with measured memory and validation safety |
+| [E01b](issues/E01b.md) · [#110](https://github.com/xbwtyz/Mappo/issues/110) | PNG export captures visible canvas only | Whole-city high-resolution export without changing the live camera |
 
 ## E01a — Project size
 
