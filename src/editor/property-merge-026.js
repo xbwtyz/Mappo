@@ -2,9 +2,9 @@ import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDo
 import { validateStoredProject } from '../data/project-validation.js';
 import { reconcileMergeBuildings026 } from './property-merge-adaptation-026.js';
 
-const issue=(code,message,targetId=null)=>({code,message,targetId});
+const b03MergeIssue=(code,message,targetId=null)=>({code,message,targetId});
 
-function assemble(project,session,geometry){
+function b03MergeAssemble(project,session,geometry){
   const candidate=copyJson(project),city=candidate.city;
   const primary=city.properties.find(p=>p.id===session.primaryId),
     secondary=city.properties.find(p=>p.id===session.secondaryId);
@@ -41,7 +41,7 @@ function assemble(project,session,geometry){
 
 export function inspectPropertyMerge026(project,session,geometry,existingIssues=[]){
   try{
-    const {adaptation}=assemble(project,session,geometry);
+    const {adaptation}=b03MergeAssemble(project,session,geometry);
     const issues=[...existingIssues,...adaptation.issues];
     const preview={...geometry,protectedSecondary:existingIssues.some(i=>i.code==='authorization'&&i.targetId===geometry.secondary.id),
       approved:session.approved,transferredBuildings:geometry.secondary.buildingIds.length,
@@ -54,14 +54,14 @@ export function inspectPropertyMerge026(project,session,geometry,existingIssues=
         'propertySplitHistoryE2','propertyMergeHistoryE3']).has(key)));
     return {ok:issues.length===0,status:issues.length?'invalid':'valid',issues,preview};
   }catch(error){
-    return {ok:false,status:'invalid',issues:[...existingIssues,issue('project',error.message)],preview:null};
+    return {ok:false,status:'invalid',issues:[...existingIssues,b03MergeIssue('project',error.message)],preview:null};
   }
 }
 
 export function preparePropertyMerge026(project,workspace,session,inspection){
   if(!inspection.ok)return {...inspection,candidate:null};
   try{
-    const {candidate,adaptation,lineage}=assemble(project,session,inspection.preview);
+    const {candidate,adaptation,lineage}=b03MergeAssemble(project,session,inspection.preview);
     if(adaptation.issues.length)
       throw Error(adaptation.issues.map(item=>item.message).join(' '));
     validateStoredProject(candidate);
@@ -72,6 +72,6 @@ export function preparePropertyMerge026(project,workspace,session,inspection){
       retainedId:session.primaryId,retiredId:session.secondaryId,lineage};
   }catch(error){
     return {...inspection,ok:false,status:'invalid',
-      issues:[issue('project','Merge Apply rejected: '+error.message)],candidate:null};
+      issues:[b03MergeIssue('project','Merge Apply rejected: '+error.message)],candidate:null};
   }
 }

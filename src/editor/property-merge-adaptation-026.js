@@ -5,58 +5,58 @@ import { previewBuildingGeometry } from '../core/building-transform.js';
 import { classifyRoadProvenance } from '../core/road-provenance.js';
 import { deriveOccupiedPlots, reattachFrontage } from './building-application.js';
 
-const EPS=1e-6;
-const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-const lerp=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
+const B03_ACCESS_EPS=1e-6;
+const b03AccessDist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const b03AccessLerp=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
 
-function segmentEntersPolygon(a,b,poly){
+function b03SegmentEntersPolygon(a,b,poly){
   const cuts=[0,1];
   for(let i=0;i<poly.length;i++)
     cuts.push(...segmentCuts(a,b,poly[i],poly[(i+1)%poly.length]));
   cuts.sort((x,y)=>x-y);
   for(let i=1;i<cuts.length;i++){
-    const m=lerp(a,b,(cuts[i-1]+cuts[i])/2);
-    if(pointInPolygon(m,poly)&&clearance(m,poly)>EPS)return true;
+    const m=b03AccessLerp(a,b,(cuts[i-1]+cuts[i])/2);
+    if(pointInPolygon(m,poly)&&clearance(m,poly)>B03_ACCESS_EPS)return true;
   }
   return false;
 }
 
-function routeVerified(city,building){
+function b03RouteVerified(city,building){
   const {entrance,accessPath:path,frontageRoadId}=building;
   if(!entrance||!Array.isArray(path)||path.length<2||
      path.some(p=>!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))||
-     dist(entrance,path[0])>EPS)return false;
+     b03AccessDist(entrance,path[0])>B03_ACCESS_EPS)return false;
   if(!building.footprint.some((p,i)=>
-    distanceToSegment(entrance,p,building.footprint[(i+1)%building.footprint.length])<=EPS))
+    distanceToSegment(entrance,p,building.footprint[(i+1)%building.footprint.length])<=B03_ACCESS_EPS))
     return false;
   const road=city.roads.find(r=>r.id===frontageRoadId),
     a=city.nodes.find(n=>n.id===road?.a),b=city.nodes.find(n=>n.id===road?.b);
-  if(!a||!b||distanceToSegment(path.at(-1),a,b)>EPS)return false;
+  if(!a||!b||distanceToSegment(path.at(-1),a,b)>B03_ACCESS_EPS)return false;
   for(let k=1;k<path.length;k++){
     const p=path[k-1],q=path[k];
-    if(dist(p,q)<EPS||segmentEntersPolygon(p,q,building.footprint))return false;
-    if(city.buildings.some(other=>other.id!==building.id&&segmentEntersPolygon(p,q,other.footprint)))
+    if(b03AccessDist(p,q)<B03_ACCESS_EPS||b03SegmentEntersPolygon(p,q,building.footprint))return false;
+    if(city.buildings.some(other=>other.id!==building.id&&b03SegmentEntersPolygon(p,q,other.footprint)))
       return false;
     if(city.properties.some(prop=>prop.id!==building.propertyId&&
-      segmentEntersPolygon(p,q,prop.boundary)))return false;
+      b03SegmentEntersPolygon(p,q,prop.boundary)))return false;
   }
   return true;
 }
 
-function proposeRoute(city,building,roads){
+function b03ProposeRoute(city,building,roads){
   for(const road of [building.frontageRoadId,...roads].filter((id,i,arr)=>arr.indexOf(id)===i)){
     if(!city.roads.some(r=>r.id===road))continue;
     const trial={...building,frontageRoadId:road};
     const route=reattachFrontage(city,trial);
     if(route){
       const candidate={...trial,entrance:route.entrance,accessPath:route.accessPath};
-      if(routeVerified(city,candidate))return candidate;
+      if(b03RouteVerified(city,candidate))return candidate;
     }
   }
   return null;
 }
 
-function proposeRelocation(city,property,building,roads){
+function b03ProposeRelocation(city,property,building,roads){
   // Stable bounded search; rigid transforms preserve holes, shape and building ID.
   const offsets=[[0,0],[0,4],[4,0],[0,-4],[-4,0],
     [6,6],[-6,6],[6,-6],[-6,-6],[0,10],[10,0],[0,-10],[-10,0]];
@@ -68,7 +68,7 @@ function proposeRelocation(city,property,building,roads){
           shapesOverlapInterior(moved.footprint,other.footprint)))continue;
       const plotIds=deriveOccupiedPlots(city,property,moved);
       if(!plotIds.length)continue;
-      const candidate=proposeRoute(city,{...moved,plotIds},roads);
+      const candidate=b03ProposeRoute(city,{...moved,plotIds},roads);
       if(candidate)return {...candidate,plotIds};
     }
   }
@@ -91,15 +91,15 @@ export function reconcileMergeBuildings026(city,property,roads,originals,approve
       issues.push({code:'building',targetId:id,message:'Building leaves the merged property.'});
       continue;
     }
-    if(routeVerified(city,building))continue;
-    let candidate=proposeRoute(city,building,roads),kind='entrance-or-route';
-    if(!candidate){kind='relocation';candidate=proposeRelocation(city,property,building,roads);}
+    if(b03RouteVerified(city,building))continue;
+    let candidate=b03ProposeRoute(city,building,roads),kind='entrance-or-route';
+    if(!candidate){kind='relocation';candidate=b03ProposeRelocation(city,property,building,roads);}
     if(!candidate){
       issues.push({code:'access',targetId:id,message:'No verified access repair or safe relocation for building '+id+'.'});
       continue;
     }
     if(!shapeContained(candidate.footprint,property.boundary)||
-       !candidate.plotIds?.length||!routeVerified(city,candidate)){
+       !candidate.plotIds?.length||!b03RouteVerified(city,candidate)){
       issues.push({code:'building',targetId:id,message:'Building adaptation failed geometry or access validation.'});
       continue;
     }
