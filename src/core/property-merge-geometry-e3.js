@@ -53,7 +53,8 @@ export function propertyMergeGeometryE3(city,primaryId,secondaryId){
   const secondary=city.properties.find(p=>p.id===secondaryId);
   if(!primary||!secondary)throw Error('One of the chosen properties is no longer available.');
   const a=primary.boundary,b=secondary.boundary;
-  const legacy= a?.length===4&&b?.length===4&&
+  const flexibleSplit=[primary,secondary].some(p=>p.propertySplitHistoryE2?.some(h=>h.operation==='straight-polygon'));
+  const legacy= !flexibleSplit && a?.length===4&&b?.length===4&&
     e3MergeConvex(a)&&e3MergeConvex(b)&&
     primary.frontageRoadId===secondary.frontageRoadId&&
     e3MergeEqualFrame(primary.frame,secondary.frame)&&
