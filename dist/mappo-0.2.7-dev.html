@@ -14941,7 +14941,7 @@ class PropertyEditSession3I {
   }
   beginFlexible(city){
     if(!this.isActive||this.isPending)return false;
-    try{this.flexible=new FlexiblePlotDraft027(city,this.source(city));this.validation=null;this.changed();return true;}
+    try{this.flexible=new FlexiblePlotDraft027(city,this.source(city));this.selectedCorner=null;this.drag=null;this.validation=null;this.changed();return true;}
     catch(error){this.validation={ok:false,status:'invalid',issues:[{message:error.message}]};return false;}
   }
   splitFlexible(city){
@@ -14958,11 +14958,11 @@ class PropertyEditSession3I {
   approveFlexible(value){if(!this.flexible)return false;this.flexible.approved=Boolean(value);this.validation=null;this.changed();return true;}
   updateFlexible(values){if(!this.flexible)return false;Object.assign(this.flexible,values);this.flexible.error='';this.validation=null;this.changed();return true;}
   selectCorner(index){
-    if(!this.isActive||!Number.isInteger(index)||index<0||index>=this.boundary.length)return false;
+    if(!this.isActive||this.flexible||!Number.isInteger(index)||index<0||index>=this.boundary.length)return false;
     this.selectedCorner=index;this.changed();return true;
   }
   setCorner(index,point){
-    if(!this.isActive || !Number.isInteger(index)||index<0||index>=this.boundary.length
+    if(!this.isActive||this.flexible || !Number.isInteger(index)||index<0||index>=this.boundary.length
       || !Number.isFinite(point?.x)||!Number.isFinite(point?.y)
       ||Math.abs(point.x)>=10000||Math.abs(point.y)>=10000)return false;
     this.active.boundary[index]={x:point.x,y:point.y};
@@ -25697,7 +25697,7 @@ function syncPropertyEditUI3I() {
     : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
   const corner = session.selectedCorner === null ? null : session.boundary[session.selectedCorner];
   for(const [id,value] of [['propertyCornerX3I',corner?.x],['propertyCornerY3I',corner?.y]]){
-    $(id).disabled = !corner;
+    $(id).disabled = !corner || session.flexibleMode;
     $(id).value = corner ? String(Number(value.toFixed(2))) : '';
   }
   const dividerIndex=$('propertyDividerIndex3I'), dividerInput=$('propertyDividerPercent3I');
@@ -25710,9 +25710,9 @@ function syncPropertyEditUI3I() {
     });
     dividerIndex.replaceChildren(...options);
   }
-  dividerIndex.disabled=dividers.length===0;
+  dividerIndex.disabled=dividers.length===0||session.flexibleMode;
   dividerIndex.value=String(session.selectedDivider);
-  dividerInput.disabled=dividers.length===0;
+  dividerInput.disabled=dividers.length===0||session.flexibleMode;
   dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
   $('propertyAddVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length>=12);
   $('propertyRemoveVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length<=3

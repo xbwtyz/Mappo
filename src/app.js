@@ -806,7 +806,7 @@ function syncPropertyEditUI3I() {
     : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
   const corner = session.selectedCorner === null ? null : session.boundary[session.selectedCorner];
   for(const [id,value] of [['propertyCornerX3I',corner?.x],['propertyCornerY3I',corner?.y]]){
-    $(id).disabled = !corner;
+    $(id).disabled = !corner || session.flexibleMode;
     $(id).value = corner ? String(Number(value.toFixed(2))) : '';
   }
   const dividerIndex=$('propertyDividerIndex3I'), dividerInput=$('propertyDividerPercent3I');
@@ -819,9 +819,9 @@ function syncPropertyEditUI3I() {
     });
     dividerIndex.replaceChildren(...options);
   }
-  dividerIndex.disabled=dividers.length===0;
+  dividerIndex.disabled=dividers.length===0||session.flexibleMode;
   dividerIndex.value=String(session.selectedDivider);
-  dividerInput.disabled=dividers.length===0;
+  dividerInput.disabled=dividers.length===0||session.flexibleMode;
   dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
   $('propertyAddVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length>=12);
   $('propertyRemoveVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length<=3

@@ -45,7 +45,7 @@ export class PropertyEditSession3I {
   }
   beginFlexible(city){
     if(!this.isActive||this.isPending)return false;
-    try{this.flexible=new FlexiblePlotDraft027(city,this.source(city));this.validation=null;this.changed();return true;}
+    try{this.flexible=new FlexiblePlotDraft027(city,this.source(city));this.selectedCorner=null;this.drag=null;this.validation=null;this.changed();return true;}
     catch(error){this.validation={ok:false,status:'invalid',issues:[{message:error.message}]};return false;}
   }
   splitFlexible(city){
@@ -62,11 +62,11 @@ export class PropertyEditSession3I {
   approveFlexible(value){if(!this.flexible)return false;this.flexible.approved=Boolean(value);this.validation=null;this.changed();return true;}
   updateFlexible(values){if(!this.flexible)return false;Object.assign(this.flexible,values);this.flexible.error='';this.validation=null;this.changed();return true;}
   selectCorner(index){
-    if(!this.isActive||!Number.isInteger(index)||index<0||index>=this.boundary.length)return false;
+    if(!this.isActive||this.flexible||!Number.isInteger(index)||index<0||index>=this.boundary.length)return false;
     this.selectedCorner=index;this.changed();return true;
   }
   setCorner(index,point){
-    if(!this.isActive || !Number.isInteger(index)||index<0||index>=this.boundary.length
+    if(!this.isActive||this.flexible || !Number.isInteger(index)||index<0||index>=this.boundary.length
       || !Number.isFinite(point?.x)||!Number.isFinite(point?.y)
       ||Math.abs(point.x)>=10000||Math.abs(point.y)>=10000)return false;
     this.active.boundary[index]={x:point.x,y:point.y};

@@ -73,6 +73,10 @@ test('B04 choice of retained identity, reverse-step and Reset retain accepted ge
  const s=new PropertyEditSession3I();
  assert.equal(s.start(project.city,property.id),true);
  assert.equal(s.beginFlexible(project.city),true);
+ const originalBoundary=JSON.stringify(s.boundary);
+ assert.equal(s.selectCorner(0),false);
+ assert.equal(s.setCorner(0,{x:s.boundary[0].x+1,y:s.boundary[0].y}),false);
+ assert.equal(JSON.stringify(s.boundary),originalBoundary);
  const original=s.flexible.selectedId;
  s.updateFlexible({edgeA:0,ratioA:.4,edgeB:2,ratioB:.6,retain:'second'});
  assert.equal(s.splitFlexible(project.city),true);
