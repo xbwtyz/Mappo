@@ -190,10 +190,30 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
     const plots = riIndex(city.plots), buildings = riIndex(city.buildings);
     const reservedIds = new Set(buildings.keys());
     const affected = city.properties.filter(p => changedBlocks.has(p.blockId));
+    const affectedIds=new Set(affected.map(p=>p.id));
+    for(const id of parcelChoices.keys())
+      if(!affectedIds.has(id))
+        unresolved.push(c2Issue('property',id,'parcel-decision-invalid',
+          'The selected property is not affected by this road draft. Clear the stale choice.'));
+    if(unresolved.length)return blocked(unresolved);
 
     function record(kind, id, disposition, fields, provenance = 'derived') {
       ledger.push({ kind, oldId: id, newId: id, disposition, provenance });
       if (fields.length) changed.push({ kind, id, fields });
+    }
+    function archiveParcelChoice028(propertyId,kind) {
+      const history=city.roadParcelDecisionHistory028??[];
+      if(!Array.isArray(history)||history.length>=24)
+        throw Error('The authored parcel decision archive cannot preserve another original record.');
+      const original=accepted.properties.find(p=>p.id===propertyId);
+      if(!original)throw Error('The original authored property no longer exists.');
+      const source={property:structuredClone(original),
+        plots:original.plotIds.map(id=>structuredClone(accepted.plots.find(p=>p.id===id))),
+        buildings:original.buildingIds.map(id=>structuredClone(accepted.buildings.find(b=>b.id===id)))};
+      if([...source.plots,...source.buildings].some(x=>!x))
+        throw Error('The original parcel dependency snapshot is incomplete.');
+      history.push({kind,sourceId:propertyId,targetId:null,source});
+      city.roadParcelDecisionHistory028=history;
     }
 
     city.blocks = city.blocks.map(block => changedBlocks.get(block.id) ?? block);
@@ -244,6 +264,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
         continue;
       }
       if (choice?.kind === 'keep') {
+        archiveParcelChoice028(property.id,'keep');
         record('property',property.id,'authorized-keep',[],provenance);
         for (const plot of ownPlots) record('plot',plot.id,'preserved',[],provenance);
         continue; // Full-project validation determines whether this is safe.
@@ -291,6 +312,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           record('plot', plot.id, modified ? 'reshaped' : 'preserved', modified ? ['boundary'] : [], provenance);
         }
         if (provenance === 'generated') stampRoadGenerated(property, ownPlots);
+        else if(choice)archiveParcelChoice028(property.id,'reshape');
         record('property', property.id, choice ? 'authorized-reshape' : 'reshaped', ['boundary', 'frontage', 'frame', 'local', 'area'], provenance);
       } catch (error) {
         unresolved.push(c2Issue('property', property.id, 'parcel-reflow-blocked', error.message));
