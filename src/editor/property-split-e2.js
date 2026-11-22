@@ -7,6 +7,7 @@ import { deriveOccupiedPlots } from './building-application.js';
 import { classifyRoadProvenance } from '../core/road-provenance.js';
 import { propertyLocalBounds3I } from '../core/property-geometry.js';
 import { propertySplitDraftE2, propertySplitGeometryE2 } from '../core/property-split-geometry-e2.js';
+import { propertySplitDraft025, propertySplitGeometry025 } from '../core/property-split-geometry-025.js';
 import { PropertyCreationHistoryE1 } from './property-creation-e1.js';
 
 // Structural history is the e2Same complete before/after transaction mechanism
@@ -45,13 +46,28 @@ function e2RouteIntersectsPolygon(path,polygon){
 }
 
 export class PropertySplitSessionE2 {
-  constructor(changed=()=>{}){this.changed=changed;this.propertyId=null;this.t=.5;this.drag=null;this.approved=new Set();this.validation=null;}
+  constructor(changed=()=>{}){this.changed=changed;this.propertyId=null;this.t=.5;this.drag=null;this.approved=new Set();this.validation=null;
+    this.flexible=false;this.exitEdge=2;this.exitT=.5;this.vertexCount=4;}
   get active(){return Boolean(this.propertyId);}
   start(city,id){
-    const source=city?.properties?.find(p=>p.id===id);
-    if(!source||source.boundary?.length!==4)return false;
-    this.propertyId=id;this.t=.5;this.drag=null;this.approved.clear();this.validation=null;
+    const source=city?.properties?.find(p=>p.id===id),count=source?.boundary?.length;
+    if(!source||!Number.isInteger(count)||count<3||count>12||!shapeWellFormed(source.boundary))return false;
+    this.propertyId=id;this.vertexCount=count;this.flexible=count!==4;
+    this.t=.5;this.exitEdge=Math.max(1,Math.floor(count/2));this.exitT=.5;
+    this.drag=null;this.approved.clear();this.validation=null;
     this.changed();return true;
+  }
+  setFlexible(value){
+    if(!this.active||this.vertexCount!==4)return false;
+    this.flexible=Boolean(value);this.approved.clear();this.validation=null;this.changed();return true;
+  }
+  setExitEdge(edge){
+    if(!this.active||!this.flexible||!Number.isInteger(edge)||edge<1||edge>=this.vertexCount)return false;
+    this.exitEdge=edge;this.approved.clear();this.validation=null;this.changed();return true;
+  }
+  setExitT(value){
+    if(!this.active||!this.flexible||!Number.isFinite(value)||value<=0||value>=1)return false;
+    this.exitT=value;this.approved.clear();this.validation=null;this.changed();return true;
   }
   setT(t){
     if(!this.active||!Number.isFinite(t)||t<=0||t>=1)return false;
@@ -62,9 +78,12 @@ export class PropertySplitSessionE2 {
     if(value)this.approved.add(id);else this.approved.delete(id);
     this.validation=null;this.changed();return true;
   }
-  reset(){if(!this.active)return false;this.t=.5;this.approved.clear();this.drag=null;this.validation=null;this.changed();return true;}
+  reset(){if(!this.active)return false;this.t=.5;this.exitT=.5;this.exitEdge=Math.max(1,Math.floor(this.vertexCount/2));
+    this.approved.clear();this.drag=null;this.validation=null;this.changed();return true;}
   stop(){if(!this.active)return false;this.propertyId=null;this.t=.5;this.drag=null;this.approved.clear();this.validation=null;this.changed();return true;}
-  geometry(city){try{return this.active?propertySplitDraftE2(city,this.propertyId,this.t):null;}catch{return null;}}
+  geometry(city){try{return !this.active?null:this.flexible
+    ?propertySplitDraft025(city,this.propertyId,this.t,this.exitEdge,this.exitT)
+    :propertySplitDraftE2(city,this.propertyId,this.t);}catch{return null;}}
 }
 
 // Fast inspect: produces shapes, ownership summary and blockers without writing
@@ -73,7 +92,9 @@ export function inspectPropertySplitE2(project,session){
   const city=project?.city;
   if(!city||!session?.active)return {ok:false,status:'choose',issues:[e2Issue('selection','Choose a property to split.')],preview:null};
   let g;
-  try{g=propertySplitGeometryE2(city,session.propertyId,session.t);}
+  try{g=session.flexible
+    ?propertySplitGeometry025(city,session.propertyId,session.t,session.exitEdge,session.exitT)
+    :propertySplitGeometryE2(city,session.propertyId,session.t);}
   catch(e){return {ok:false,status:'invalid',issues:[e2Issue('geometry',e.message)],preview:null};}
   const issues=[], transfers=[],buildings=city.buildings.filter(b=>b.propertyId===g.propertyId);
   const source=city.properties.find(p=>p.id===g.propertyId);
@@ -144,7 +165,7 @@ export function preparePropertySplitE2(project,workspace,session){
         plotMapping.push({sourceId:oldId,successorId:fragmentId,side:fragment.side});
       }
     }
-    const lineage={operation:'frontage-to-rear',sourceId:source.id,
+    const lineage={operation:g.flexible?'straight-polygon':'frontage-to-rear',sourceId:source.id,
       successors:[source.id,newPropertyId],retainedSide:'left'};
     const oldHistory=source.propertySplitHistoryE2;
     if(oldHistory!==undefined&&!Array.isArray(oldHistory))

@@ -1018,3 +1018,11 @@
 .road-ownership-card-023 select{min-width:0;width:100%}
 .road-ownership-auto-023{font-size:10px;font-weight:400;color:#536b69}
 .road-ownership-card-023 button{justify-self:start}
+
+/* B02: compact controls within the existing property Split Inspector. */
+.property-split-mode-025{display:flex;align-items:center;gap:.45rem;margin:.35rem 0;font-size:.86rem}
+.property-split-mode-025 input{width:auto;min-width:initial;margin:0}
+.property-split-exit-025{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.5rem;margin:.4rem 0}
+.property-split-exit-025[hidden]{display:none}
+.property-split-exit-025 label{display:flex;flex-direction:column;gap:.18rem;min-width:0;font-size:.83rem}
+.property-split-exit-025 select,.property-split-exit-025 input{width:100%;min-width:0}
