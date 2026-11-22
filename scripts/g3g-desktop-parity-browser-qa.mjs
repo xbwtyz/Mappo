@@ -64,6 +64,9 @@ for (const name of names) {
         assert.equal(await el('desktopWorkspaceTabs').isHidden(),true);
         assert.equal(await el('workspaceTab-city').isVisible(),true);
         await page.setViewportSize(viewport);
+        // matchMedia's change event can settle after setViewportSize resolves.
+        // Keep the original visibility requirement; do not accept a hidden tab.
+        await el('desktopWorkspaceTabs').waitFor({state:'visible',timeout:10000});
         assert.equal(await el('desktopWorkspaceTabs').isVisible(),true);
         assert.equal(await page.locator('.legacy-workspace-tabs').isVisible(),false);
         assert.deepEqual(errors,[]);

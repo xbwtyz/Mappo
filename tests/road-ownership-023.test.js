@@ -41,7 +41,9 @@ for(const [name,fixture,run] of [['R1',radial,runR1],['R2',planned,runR2]])
       assert.deepEqual(run(project,choices).candidateProject,result.candidateProject);
       const loaded=decodeProjectDocument(encodeProjectDocument(
         createProjectDocument(result.candidateProject,defaultWorkspace(result.candidateProject))));
-      assert.deepEqual(loaded.project,result.candidateProject);
+      // Portable JSON normalizes signed zero (-0) to 0; compare the saved
+      // representation, as independent Road Apply does.
+      assert.equal(JSON.stringify(loaded.project),JSON.stringify(result.candidateProject));
       assert.deepEqual(project,before,'Preview must not mutate accepted project');
       for(const row of result.lineage.reverse){
         const receipt=result.ledger.find(entry=>entry.kind==='block'&&entry.oldId===row.oldId);

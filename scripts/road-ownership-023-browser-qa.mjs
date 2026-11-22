@@ -9,7 +9,7 @@ import {observeBuildingApp} from '../tests/helpers/building-app.js';
 const html=observeBuildingApp(await readFile(new URL('../index.html',import.meta.url),'utf8'));
 const origin='http://mappo-ownership-023.test/';
 await mkdir(new URL('../artifacts/ownership-023/',import.meta.url),{recursive:true});
-for(const [name,engine] of [['chromium',chromium],['firefox',firefox']]){
+for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
   const browser=await engine.launch({headless:true});
   const page=await browser.newPage({viewport:{width:1440,height:900}});
   const errors=[];
