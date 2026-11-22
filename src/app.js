@@ -417,7 +417,13 @@ function workspaceChanged() {
   // This is the common accepted-project observation boundary. Visual-only
   // changes do not touch the ledger. Unsupported accepted-city changes become
   // explicit barriers, never silently replayed with a stale project.
-  if(project&&!d01ReplayingHistory)acceptedHistoryD01.observe(project);
+  const observed=project&&!d01ReplayingHistory ? acceptedHistoryD01.observe(project) : null;
+  // Journal observation follows other component callbacks; refresh the
+  // actionable local controls after a newly accepted transaction.
+  if(observed?.status==='recorded'||observed?.status==='barrier'){
+    syncBuildingHistoryUI();
+    syncBuildingStructureUI3H();
+  }
   desktopWorkspace?.sync();
   if(roadWorkspace?.transient){syncPropertyDeletionControls4A();updateUndoFeedback();return;}
   syncPropertyDeletionControls4A();

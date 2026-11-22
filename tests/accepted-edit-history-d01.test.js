@@ -32,13 +32,13 @@ test('D01 interleaved identities are strict chronological transactions with Redo
     assert.ok(history.can('undo',after));
     const result=history.prepare('undo',after,defaultWorkspace(after));
     assert.equal(result.ok,true,result.reason);
-    assert.deepEqual(result.candidate.city,expected.city);
+    assert.equal(JSON.stringify(result.candidate.city),JSON.stringify(expected.city));
     history.accept('undo',result.entry,result.candidate);
   }
   for(const [expected,after] of [[b,a],[c,b],[d,c]]){
     const result=history.prepare('redo',after,defaultWorkspace(after));
     assert.equal(result.ok,true,result.reason);
-    assert.deepEqual(result.candidate.city,expected.city);
+    assert.equal(JSON.stringify(result.candidate.city),JSON.stringify(expected.city));
     history.accept('redo',result.entry,result.candidate);
   }
   assert.equal(history.can('redo',d),false);

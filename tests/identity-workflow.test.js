@@ -9,7 +9,7 @@ function editIdentity(app, name, use = '') {
   app.el('identityUseInput').value = use;
   app.el('identityNameInput').handlers.input();
 }
-test('local district operations preserve identities and the identity undo stack stays independent', async () => {
+test('out-of-scope accepted district edits preserve identity but clear unified Undo safely', async () => {
   const app = await buildingAppHarness(), property = app.state().project.city.properties[0];
   app.state().propertyWorkspace.select({ kind: 'property', id: property.id });
   editIdentity(app, 'Local landmark', 'Guildhall');
@@ -18,12 +18,15 @@ test('local district operations preserve identities and the identity undo stack 
   assert.equal(app.el('generateDistrictButton').handlers.click(), true);
   const districtId = app.state().project.city.properties.find(p => p.id === property.id).districtId;
   assert.equal(app.state().project.city.properties.find(p => p.id === property.id).customName, 'Local landmark');
-  assert.equal(app.state().identityWorkspace.editor.history.length, 1);
-  assert.equal(app.el('identityUndoButton').handlers.click(), true);
+  assert.equal(app.state().identityWorkspace.editor.history.length, 0,
+    'No second actionable accepted-identity cursor is retained.');
+  assert.equal(app.state().acceptedHistoryD01.length, 0,
+    'District Apply is an explicit out-of-scope accepted history barrier.');
+  assert.equal(app.el('identityUndoButton').handlers.click(), false);
   assert.equal(app.state().project.city.properties.find(p => p.id === property.id).districtId, districtId);
   assert.equal(app.state().districtPanel.editor.history.length, 1);
   assert.equal(app.el('undoDistrictButton').handlers.click(), true);
-  assert.equal(app.state().project.city.properties.find(p => p.id === property.id).customName, undefined);
+  assert.equal(app.state().project.city.properties.find(p => p.id === property.id).customName, 'Local landmark');
 });
 test('compiled identity forms apply explicitly, keep independent property/wing drafts, and undo only identity metadata', async () => {
   const app = await buildingAppHarness(), initial = copyIdentity(app.state().project);
@@ -34,7 +37,7 @@ test('compiled identity forms apply explicitly, keep independent property/wing d
   assert.match(app.el('identityDraftState').textContent, /Unapplied/);
   assert.equal(app.el('identityApplyButton').handlers.click(), true);
   assert.match(app.el('workspaceSelectionName').textContent, /The Silver Stag/);
-  assert.equal(app.el('workspaceUndoButton').textContent, 'Undo identity');
+  assert.match(app.el('workspaceUndoButton').textContent, /Undo .*Rename property/);
   app.state().propertyWorkspace.selectBuilding(property.id, buildingId);
   assert.equal(app.el('identityNameInput').value, '', 'Parent identity is never silently copied to a wing');
   editIdentity(app, 'West Wing', 'other');
@@ -89,7 +92,9 @@ test('compiled rebuilding warns before identity loss, cancels safely, preserves 
   app.el('generateButton').handlers.click();
   app.el('identityConfirmRebuildButton').handlers.click();
   assert.deepEqual(copyIdentity(app.state().project), accepted);
-  assert.equal(app.state().identityWorkspace.editor.history.length, 1);
+  assert.equal(app.state().identityWorkspace.editor.history.length, 0);
+  assert.equal(app.state().acceptedHistoryD01.length, 1,
+    'Failed rebuild must preserve the accepted identity transaction.');
   app.state().editor.boundary = boundary;
   app.el('generateButton').handlers.click();
   assert.match(app.el('identityRebuildMessage').textContent, /customized properties \(1\)/);
@@ -98,5 +103,7 @@ test('compiled rebuilding warns before identity loss, cancels safely, preserves 
   assert.ok(reused);
   assert.equal(reused.customName, undefined);
   assert.equal(app.state().identityWorkspace.editor.history.length, 0);
+  assert.equal(app.state().acceptedHistoryD01.length, 0,
+    'Successful city rebuild must clear session history.');
   assert.equal(app.state().workspaceShell.state.selection, null);
 });

@@ -128,7 +128,8 @@ test('3G-D3 map keyboard shortcuts do not steal input focus or break preview saf
   keyboard(event('y',{target:{tagName:'BODY'}}));
   assert.equal(JSON.stringify(app.state().project.city),accepted);
   assert.equal(prevented,2);
-  session.setTransform({dx:-10000});
+  assert.equal(session.setTransform({dx:-10000}),true,'The draft transform must remain active.');
+  assert.equal(session.isPending,true,'Pending building draft blocks global accepted Undo.');
   keyboard(event('z',{target:{tagName:'BODY'}}));
   assert.equal(JSON.stringify(app.state().project.city),accepted,'Pending preview cannot affect accepted history.');
   assert.equal(app.el('buildingHistoryUndo').disabled,true);
