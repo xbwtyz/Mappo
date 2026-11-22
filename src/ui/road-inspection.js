@@ -722,6 +722,8 @@ export class RoadInspectionWorkspace {
     this.$('roadApplyB4').disabled = !ready;
     const issue = s.reconciliation?.unresolved?.find(hasRoadBuildingChoice) ?? s.reconciliation?.unresolved?.[0];
     const actionable = !s.checking && !s.drag && hasRoadBuildingChoice(issue);
+    const ownershipNeeded = !s.checking && !s.drag && s.reconciliation?.unresolved?.some(
+      row=>row.code==='ownership-decision-required' || row.code==='ownership-invalid');
     const building = actionable && s.city.buildings.find(record => record.id === issue.id);
     this.$('roadResolveConflictC6').hidden = !actionable || this.desktopReview;
     this.$('roadMenuReviewCount').hidden = !actionable;
@@ -742,7 +744,7 @@ export class RoadInspectionWorkspace {
     const status = applying ? 'Applying road edit' : this.applyError ? 'Apply failed' : problem ? 'Preview blocked' :
       s.drag ? 'Placement in progress' : s.checking ? 'Checking preview' :
       ready ? 'Preview ready' : stale ? 'Preview out of date' :
-      actionable ? 'Building choice needed' :
+      actionable ? 'Building choice needed' : ownershipNeeded ? 'Block ownership needed' :
       topologyOnly ? 'Roads and blocks only' : s.pending ? 'Preview blocked' : 'Accepted position';
     const message = applying ? 'Validating the road and neighborhood before Apply…' :
       problem || (s.drag ? 'Release the handle to check this edit.' :
@@ -760,6 +762,10 @@ export class RoadInspectionWorkspace {
         this.outcomeSummary = roadOutcomeD1(s.previewGeometry, s.reconciliation.ledger ?? []);
       }
       summary = this.outcomeSummary;
+    } else if (ownershipNeeded) {
+      const count = s.reconciliation.ownershipReview?.filter(row=>row.choiceRequired.district ||
+        row.choiceRequired.usage).length ?? 0;
+      summary = count === 1 ? '1 resulting block needs ownership review' : count + ' resulting blocks need ownership review';
     } else if (actionable) {
       const count = new Set(s.reconciliation.unresolved.filter(hasRoadBuildingChoice).map(row => row.id)).size;
       summary = this.usesDesktopPanel && count === 1 ? ''
@@ -774,6 +780,7 @@ export class RoadInspectionWorkspace {
     }
     this.renderImpacts(stale);
     this.renderComparison(stale);
+    this.renderOwnershipDecisions023();
     this.renderBuildingDecisionsD2();
     this.renderRoadRecoveryD3({ready, applying, status});
     this.$('roadMenuReviewBlocker').hidden = !(this.usesDesktopPanel && !this.desktopReview &&
@@ -1152,6 +1159,15 @@ export class RoadInspectionWorkspace {
     const s = this.session, guide = roadRecoveryGuidanceD3(this.recoveryIssueD3);
     if (!guide || !s.active || !s.pending || s.checking || s.drag) return;
     if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
+    if (guide.action === 'ownership') {
+      const target=this.$('roadOwnershipList023').querySelector?.('select');
+      if(target){
+        if(this.usesDesktopPanel&&!this.desktopReview)this.setDesktopReview(true);
+        target.scrollIntoView({block:'center'});
+        target.focus({preventScroll:true});
+        return;
+      }
+    }
     if (guide.action === 'building') {
       const issue = this.recoveryIssueD3;
       if (this.desktopReview && !this.comparisonOpen && issue?.id) this.selectImpact(roadRecordKeyD1(issue.kind, issue.id));
@@ -1193,10 +1209,119 @@ export class RoadInspectionWorkspace {
     this.$('roadRecoveryExplanationD3').textContent = guide.description;
     const primary = this.$('roadRecoveryPrimaryD3');
     primary.textContent = guide.action === 'building' ? 'Review building choice'
+      : guide.action === 'ownership' ? 'Review block ownership'
       : guide.action === 'choose' ? 'Choose another road' : 'Adjust road';
     const target = this.roadRecoveryTargetD3(issue);
     this.$('roadRecoveryLocateD3').hidden = !target;
     this.$('roadRecoveryLocateD3').disabled = !target;
+  }
+  renderOwnershipDecisions023() {
+    const s=this.session,section=this.$('roadOwnershipDecisions023');
+    const list=this.$('roadOwnershipList023');
+    const rows=s.reconciliation?.ownershipReview?.filter(row=>
+      row.choiceRequired.district || row.choiceRequired.usage)??[];
+    const settled=s.current()&&s.pending&&!s.drag&&!s.checking&&
+      s.settledRevision===s.revision;
+    if(!settled || !rows.length){
+      section.hidden=true;
+      list.replaceChildren();
+      return;
+    }
+    section.hidden=false;
+    const outstanding=s.reconciliation?.unresolved?.filter(row=>
+      ['ownership-decision-required','ownership-invalid'].includes(row.code)).length??0;
+    this.$('roadOwnershipIntro023').textContent=outstanding
+      ? 'Choose only the ownership that belongs to the predecessor blocks. Apply stays disabled until the entire city validates.'
+      : 'Ownership choices are verified for this draft. Review generated land and building changes before Apply.';
+    const active=document.activeElement;
+    const focused=active && list.contains?.(active) ? {
+      key:active.dataset.ownerKey,field:active.dataset.ownerField
+    } : this.ownershipFocus023;
+    const cards=rows.map((row,index)=>{
+      const article=document.createElement('article');
+      article.className='road-ownership-card-023';
+      article.setAttribute('role','group');
+      article.setAttribute('aria-label','Resulting block '+(index+1));
+      const heading=document.createElement('strong');
+      heading.textContent='Resulting block '+(index+1)+' · '+row.proposedId;
+      article.append(heading);
+      const sources=document.createElement('p');
+      sources.className='hint';
+      sources.textContent='From '+row.predecessors.map(p=>
+        p.blockId+' ('+Math.round(p.ratioOfSuccessor*100)+'%)').join(', ');
+      article.append(sources);
+      for(const [field,eligible,needed,label] of [
+        ['districtId',row.eligibleDistrictIds,row.choiceRequired.district,'District'],
+        ['usage',row.eligibleUsages,row.choiceRequired.usage,'Land use']
+      ]){
+        const wrapper=document.createElement('label');
+        wrapper.textContent=label;
+        if(!needed){
+          const value=document.createElement('span');
+          value.className='road-ownership-auto-023';
+          value.textContent='Retained: '+String(eligible[0]??'unassigned');
+          wrapper.append(value);
+        }else{
+          const select=document.createElement('select');
+          if(!select.dataset) select.dataset={}; // Native controls already expose dataset.
+          select.dataset.ownerKey=row.candidateKey;
+          select.dataset.ownerField=field;
+          select.setAttribute('aria-label',label+' of resulting block '+(index+1));
+          const empty=document.createElement('option');
+          empty.value='';empty.textContent='Choose '+label.toLowerCase();
+          select.append(empty);
+          for(const id of eligible){
+            const option=document.createElement('option');
+            option.value=String(id);
+            const district=field==='districtId'?s.city.districts.find(d=>d.id===id):null;
+            option.textContent=district ? district.name+' ('+id+')' : String(id);
+            select.append(option);
+          }
+          select.value=s.ownershipChoices.get(row.candidateKey)?.[field]??'';
+          select.addEventListener('change',()=>{
+            this.ownershipFocus023={key:row.candidateKey,field};
+            s.decideOwnership(row.candidateKey,field,select.value);
+          });
+          wrapper.append(select);
+        }
+        article.append(wrapper);
+      }
+      const locate=document.createElement('button');
+      locate.type='button';locate.className='minor-button';
+      locate.textContent='Locate block';
+      locate.addEventListener('click',()=>{
+        s.ownershipFocusKey023=row.candidateKey;
+        const points=row.points??[];
+        if(points.length){
+          this.camera.x=points.reduce((n,p)=>n+p.x,0)/points.length;
+          this.camera.y=points.reduce((n,p)=>n+p.y,0)/points.length;
+          this.draw();
+        }
+      });
+      article.append(locate);
+      return article;
+    });
+    list.replaceChildren(...cards);
+    if(focused?.key){
+      const matching=[...(list.querySelectorAll?.('select')??[])].find(select=>
+        select.dataset.ownerKey===focused.key && select.dataset.ownerField===focused.field);
+      if(matching)matching.focus({preventScroll:true});
+      this.ownershipFocus023=null;
+    }
+    if(s.reconciliation?.status==='candidate-only'){
+      const ledger=s.reconciliation.ledger??[];
+      const counts=kind=>({
+        retired:ledger.filter(r=>r.kind===kind&&r.oldId&&!r.newId).length,
+        created:ledger.filter(r=>r.kind===kind&&!r.oldId&&r.newId).length
+      });
+      const properties=counts('property'),buildings=counts('building');
+      const effect=document.createElement('p');
+      effect.className='hint';
+      effect.textContent='Generated neighborhood impact: '+properties.retired+
+        ' properties retired, '+properties.created+' created; '+buildings.retired+
+        ' buildings retired, '+buildings.created+' created. All changes remain preview-only.';
+      list.append(effect);
+    }
   }
   renderBuildingDecisionsD2() {
     const s = this.session, section = this.$('roadBuildingDecisionsD2');

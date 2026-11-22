@@ -142,6 +142,15 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
       }
     }
   }
+  // Highlight a choice target using detached, proven successor geometry.
+  // This overlay is not an indication that the candidate passed Apply.
+  const ownershipFace = session.reconciliation?.ownershipReview?.find(row=>
+    row.candidateKey===session.ownershipFocusKey023);
+  if (session.pending && ownershipFace && session.previewVisible!==false &&
+      path(ownershipFace.points,true)) {
+    ctx.strokeStyle='#075e52';ctx.lineWidth=4;
+    ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
+  }
   // Road-first C1 shows the user's intended position even when the current
   // parcels, face graph or buildings cannot yet adapt. Draft never reaches Apply.
   const intended=session.roadIntentNodes;

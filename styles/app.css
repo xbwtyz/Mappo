@@ -1009,3 +1009,12 @@
   #desktopDeletionHistory button,#desktopInspectorHistory button.workspace-map-button{margin:6px 5px 0 0}
   #desktopCityReport .workspace-city-report{margin-top:12px}
 }
+
+/* 0.2.3: compact draft-only successor ownership controls in Roads review. */
+.road-ownership-decisions-023 .road-ownership-card-023{display:grid;gap:6px;padding:8px 0;border-top:1px solid #c8d7cd}
+.road-ownership-card-023 strong{font-size:11px;overflow-wrap:anywhere}
+.road-ownership-card-023 .hint{margin:0;font-size:10px}
+.road-ownership-card-023 label{display:grid;gap:3px;font-size:11px}
+.road-ownership-card-023 select{min-width:0;width:100%}
+.road-ownership-auto-023{font-size:10px;font-weight:400;color:#536b69}
+.road-ownership-card-023 button{justify-self:start}

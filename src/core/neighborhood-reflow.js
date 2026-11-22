@@ -69,8 +69,8 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
 }
 
 export function prepareNeighborhoodReflowC3(project, roadId, offset,
-  draft = prepareRoadIntentC1(project, roadId, offset), decisions = new Map()) {
-  return reconcileRoadIntent(project,roadId,draft,decisions);
+  draft = prepareRoadIntentC1(project, roadId, offset), decisions = new Map(), options = {}) {
+  return reconcileRoadIntent(project,roadId,draft,decisions,options);
 }
 
 export function prepareJunctionReflowC7(project,junctionId,point,decisions = new Map(), options = {}) {

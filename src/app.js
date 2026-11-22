@@ -1899,7 +1899,7 @@ function applyRoadEditB4(session,baselineRevision){
   return session.computeJunctionAsync({
     operation: 'apply', projectJson, junctionId, workspace,
     point: { ...session.point }, targetJunctionId: session.targetJunctionId,
-    decisions: [...session.buildingDecisions],
+    decisions: [...session.buildingDecisions], ownershipChoices:[...session.ownershipChoices],
     inspected: { candidateJson, ledger },
   }).then(receipt => {
     if (project !== previous || JSON.stringify(project) !== projectJson)

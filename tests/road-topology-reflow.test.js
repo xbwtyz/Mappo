@@ -66,7 +66,7 @@ test('Topology reflow blocks custom development and cross-district merges', () =
   assert.equal(blocked.unresolved[0].code,'parcel-decision-required');
   const merge = prepareRoadTopologyReflowC3(radial(),'RD-0098',null,{kind:'remove'});
   assert.equal(merge.candidateProject,null);
-  assert.equal(merge.unresolved[0].code,'district-decision-required');
+  assert.equal(merge.unresolved[0].code,'ownership-decision-required');
 });
 
 test('The standalone applies a crossing and road removal with Undo, Redo and portable save', async () => {
