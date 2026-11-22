@@ -19354,7 +19354,16 @@ function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null, decisi
     const old = project.city;
     if (edit?.kind === 'shape') draft = draftRoadShape(old, buildRoadGraph(old), roadId, edit.points);
     else if (edit) draft = draftRoadConnectionC3(old, roadId, edit);
+    const oldTerminals = new Set(buildRoadGraph(old).terminalRoadIds);
+    if (oldTerminals.has(roadId) && edit?.kind !== 'remove')
+      return fail('terminal-edit-out-of-scope',
+        'Editing an existing dead-end road requires a separately scoped operation.', 'road', roadId);
     const { city, graph, splitRoadIds } = normalizeRoadCrossingsC3(structuredClone(draft.proposedCity));
+    const introduced = graph.terminalRoadIds.filter(id => !oldTerminals.has(id));
+    if (introduced.length && edit?.kind !== 'remove')
+      return fail('terminal-edit-out-of-scope',
+        'Creating new dead ends is supported only through ordinary road deletion in 0.2.1.',
+        'road', introduced[0]);
     validation.graph = 'pass';
     const { emit, items } = riReporter(), spend = riBudget();
     inspectOpaqueRoadDependencies(project, graph, emit, spend);

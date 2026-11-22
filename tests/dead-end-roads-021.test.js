@@ -84,24 +84,25 @@ function candidateRoads(project) {
 let selected=null;
 function supportedRemoval() {
   if (selected) return selected;
-  const diagnostics=[];
-  for(const morphology of ['radial','planned','organic','linear']) {
-    const project=createProject({seed:'c2-'+morphology,size:'small',morphology});
-    for(const road of candidateRoads(project).slice(0,40)) {
-      const draft=draftRoadConnectionC3(project.city,road.id,{kind:'remove'});
-      const graph=buildRoadGraph(draft.proposedCity);
-      if(!graph.valid||!graph.terminalRoadIds.length)continue;
-      const faces=extractRoadFaces(graph,project.city);
-      if(!faces.valid)continue;
-      const result=prepareRoadTopologyReflowC3(project,road.id,null,{kind:'remove'});
-      if(result.candidateProject) {
-        selected={project,roadId:road.id,result,morphology};
-        return selected;
-      }
-      diagnostics.push(morphology+':'+road.id+':'+result.unresolved?.[0]?.code);
-    }
-  }
-  throw new Error('No generated connected-stub deletion could pass full reconciliation: '+diagnostics.slice(0,28).join(', '));
+  // Locked regression fixture from 0.2.0: this deletion was formerly
+  // rejected as two dangling junctions. Avoid silently switching roads if
+  // a future change accidentally loses support.
+  const morphology='radial', roadId='RD-0153';
+  const project=createProject({seed:'c2-radial',size:'small',morphology});
+  const oldGraph=buildRoadGraph(project.city);
+  assert.equal(oldGraph.valid,true);
+  const road=project.city.roads.find(item=>item.id===roadId);
+  assert.ok(road && !oldGraph.roadClasses.get(roadId).protected);
+  const proposal=draftRoadConnectionC3(project.city,roadId,{kind:'remove'});
+  const graph=buildRoadGraph(proposal.proposedCity);
+  assert.equal(graph.valid,true,JSON.stringify(graph.issues));
+  assert.deepEqual(graph.terminalRoadIds,['RD-0154','RD-0155']);
+  const faces=extractRoadFaces(graph,project.city);
+  assert.equal(faces.valid,true,JSON.stringify(faces.issues));
+  const result=prepareRoadTopologyReflowC3(project,roadId,null,{kind:'remove'});
+  assert.ok(result.candidateProject,result.unresolved[0]?.message);
+  selected={project,roadId,result,morphology};
+  return selected;
 }
 
 test('0.2.1-P1/P3 deterministic road deletion preserves corridor, valid generated development and portable schema-9 round trip',()=>{
@@ -156,3 +157,41 @@ test('0.2.1-P4 editor Apply, Undo, Redo and Cancel use one validated transaction
   const decoded=decodeProjectDocument(encodeProjectDocument(createProjectDocument(app.capture().project,app.capture().workspace)));
   assert.equal(JSON.stringify(decoded.project),after);
 });
+
+test('0.2.1 preserves authored parcel edits and refuses unscoped terminal-road modification',()=>{
+  const {project,roadId,result}=supportedRemoval();
+  const custom=structuredClone(project);
+  const authored=custom.city.properties.find(property=>property.id==='PROP-00063');
+  assert.ok(authored);
+  authored.customName='Hand-edited workshop';
+  const refused=prepareRoadTopologyReflowC3(custom,roadId,null,{kind:'remove'});
+  assert.equal(refused.candidateProject,null);
+  assert.equal(refused.unresolved[0]?.code,'parcel-decision-required');
+  assert.equal(custom.city.properties.find(property=>property.id===authored.id).customName,'Hand-edited workshop');
+  const accepted=result.candidateProject;
+  const retainedId=buildRoadGraph(accepted.city).terminalRoadIds[0];
+  const unscoped=prepareRoadTopologyReflowC3(accepted,retainedId,null,{kind:'reconnect',endpoint:'a',target:'N-0184'});
+  assert.equal(unscoped.candidateProject,null);
+  assert.equal(unscoped.unresolved[0]?.code,'terminal-edit-out-of-scope');
+});
+
+for (const [morphology,size,roadId] of [
+  ['radial','large','RD-0297'],
+  ['planned','large','RD-0223'],
+  ['organic','large','RD-0266'],
+]) {
+  test(`0.2.1 permits safely reconciled connected stubs in ${size} ${morphology} cities`,()=>{
+    const project=createProject({seed:'c2-'+morphology,size,morphology});
+    const result=prepareRoadTopologyReflowC3(project,roadId,null,{kind:'remove'});
+    assert.ok(result.candidateProject,result.unresolved?.[0]?.message);
+    const candidate=result.candidateProject;
+    const graph=buildRoadGraph(candidate.city);
+    assert.equal(graph.valid,true,JSON.stringify(graph.issues));
+    assert.ok(graph.terminalRoadIds.length);
+    assert.equal(extractRoadFaces(graph,candidate.city).valid,true);
+    assert.equal(validateStoredProject(candidate),candidate);
+    const corridors=terminalCorridors(candidate.city);
+    assert.ok(candidate.city.properties.every(property=>
+      !polygonIntrudesTerminalCorridor(property.boundary,corridors)));
+  });
+}
