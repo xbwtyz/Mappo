@@ -87,15 +87,16 @@ function reconcileRoadIntent(project,roadId,draft,decisions,options = {}) {
   // analysis within this call, including when Apply runs a fresh rebuild.
   let analysis;
   const analyze = () => analysis ??= analyzeNeighborhoodDraft(project, draft);
-  const preserved = prepareNeighborhoodReflow(project, roadId, draft, false, analyze);
+  const preserved = prepareNeighborhoodReflow(project, roadId, draft, false, analyze, options);
   if (preserved.candidateProject || !preserved.unresolved.some(row => rebuildableLandIssues.has(row.code)))
     return preserved;
-  const adapted = prepareNeighborhoodReflow(project, roadId, draft, true, analyze);
+  const adapted = prepareNeighborhoodReflow(project, roadId, draft, true, analyze, options);
   if (adapted.candidateProject || !draft.facesResolved) return adapted;
   // If a fixed parcel layout cannot be repaired, try filling the same affected
   // blocks again. Topology reflow independently verifies provenance, protects
   // authored work, retains compatible geometry, and validates the whole result.
-  if (!adapted.unresolved.length || adapted.unresolved.some(row => !rebuildableLandIssues.has(row.code)))
+  if (!adapted.unresolved.length || (adapted.unresolved.some(row => !rebuildableLandIssues.has(row.code)) &&
+      !adapted.unresolved.some(row=>row.code==='parcel-decision-required' || row.code==='parcel-decision-invalid')))
     return adapted;
   const rebuilt = prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions,options);
   return rebuilt.candidateProject || rebuilt.unresolved.some(row =>
@@ -114,8 +115,10 @@ function analyzeNeighborhoodDraft(project, draft) {
 }
 
 function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
-  analyze = () => analyzeNeighborhoodDraft(project, draft)) {
+  analyze = () => analyzeNeighborhoodDraft(project, draft), options = {}) {
   const changed = [], ledger = [];
+  const parcelChoices = options.parcelChoices instanceof Map ? options.parcelChoices
+    : new Map(options.parcelChoices ?? []);
   const phase = adaptBuildings ? 'C3' : 'C2';
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
   const blocked = unresolved => ({
@@ -207,10 +210,22 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
         for (const plot of ownPlots) record('plot', plot.id, 'preserved', [], provenance);
         continue;
       }
-      if (provenance !== 'generated') {
+      const choice = parcelChoices.get(property.id);
+      if (provenance !== 'generated' && !choice) {
         unresolved.push(c2Issue('property', property.id, 'parcel-decision-required',
-          'This parcel has custom or unknown provenance. Its geometry is held fixed pending a decision.'));
+          'This parcel has custom or unknown provenance. Review whether its existing footprint can be kept or safely reshaped.'));
         continue;
+      }
+      if (choice && (provenance === 'generated' || !['keep','reshape'].includes(choice.kind) ||
+           Object.keys(choice).some(key=>key!=='kind'))) {
+        unresolved.push(c2Issue('property', property.id, 'parcel-decision-invalid',
+          'This parcel decision is invalid for the current road edit.'));
+        continue;
+      }
+      if (choice?.kind === 'keep') {
+        record('property',property.id,'authorized-keep',[],provenance);
+        for (const plot of ownPlots) record('plot',plot.id,'preserved',[],provenance);
+        continue; // Full-project validation determines whether this is safe.
       }
       const road = graph.roadsById.get(property.frontageRoadId);
       try {
@@ -254,8 +269,8 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           plot.boundary = update.boundary;
           record('plot', plot.id, modified ? 'reshaped' : 'preserved', modified ? ['boundary'] : [], provenance);
         }
-        stampRoadGenerated(property, ownPlots);
-        record('property', property.id, 'reshaped', ['boundary', 'frontage', 'frame', 'local', 'area'], provenance);
+        if (provenance === 'generated') stampRoadGenerated(property, ownPlots);
+        record('property', property.id, choice ? 'authorized-reshape' : 'reshaped', ['boundary', 'frontage', 'frame', 'local', 'area'], provenance);
       } catch (error) {
         unresolved.push(c2Issue('property', property.id, 'parcel-reflow-blocked', error.message));
       }
