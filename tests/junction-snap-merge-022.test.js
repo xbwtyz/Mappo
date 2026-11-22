@@ -120,7 +120,7 @@ test('J3 target identity cannot bypass ownership safeguards when direction is un
   const result=prepareJunctionReflowC7(project,'N-0139',{x:dest.x,y:dest.y},
     new Map(),{targetJunctionId:'N-0140'});
   assert.equal(result.candidateProject,null);
-  assert.equal(result.unresolved[0]?.code,'district-decision-required');
+  assert.equal(result.unresolved[0]?.code,'ownership-decision-required');
   assert.deepEqual(project,before);
 });
 
