@@ -28,8 +28,10 @@ function b03MergeAssemble(project,session,geometry){
     if(!building||building.propertyId!==secondary.id)throw Error('A source building changed ownership.');
     building.propertyId=primary.id;
   }
+  const sourceFrontages=[primary,secondary].map(p=>({roadId:p.frontageRoadId,
+    segment:copyJson(p.frontage??p.boundary.slice(0,2))}));
   const adaptation=reconcileMergeBuildings026(city,primary,geometry.frontageRoadIds,
-    originals,session.approvedBuildings??new Set());
+    originals,session.approvedBuildings??new Set(),sourceFrontages);
   const lineage={operation:'irregular-partial-edge-merge',sources:[primary.id,secondary.id],
     retainedId:primary.id,retiredId:secondary.id,retiredRecord,
     sourceFrontageRoadIds:[primary.frontageRoadId,secondary.frontageRoadId],

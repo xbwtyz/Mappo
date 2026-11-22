@@ -33,3 +33,15 @@ test('026 access changes require per-building authorization when provenance is u
   assert.deepEqual(city.buildings[0].footprint,originals.get('BLD-1').footprint);
   assert.equal(city.buildings[0].id,'BLD-1');
 });
+
+test('026 preserves accepted setback-frontage access without needless building edits',()=>{
+  const {city,property,originals}=fixture();
+  city.nodes[0].y=-5;city.nodes[1].y=-5;
+  city.buildings[0].accessPath=[{x:9,y:9},{x:9,y:0}];
+  const original=JSON.stringify(city);
+  const result=reconcileMergeBuildings026(city,property,['ROAD-A'],originals,new Set(),
+    [{roadId:'ROAD-A',segment:[{x:0,y:0},{x:24,y:0}]}]);
+  assert.deepEqual(result.issues,[]);
+  assert.deepEqual(result.changes,[]);
+  assert.equal(JSON.stringify(city),original);
+});

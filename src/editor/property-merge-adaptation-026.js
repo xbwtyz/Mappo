@@ -21,7 +21,7 @@ function b03SegmentEntersPolygon(a,b,poly){
   return false;
 }
 
-function b03RouteVerified(city,building){
+function b03RouteVerified(city,building,sourceFrontages=[]){
   const {entrance,accessPath:path,frontageRoadId}=building;
   if(!entrance||!Array.isArray(path)||path.length<2||
      path.some(p=>!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))||
@@ -31,7 +31,11 @@ function b03RouteVerified(city,building){
     return false;
   const road=city.roads.find(r=>r.id===frontageRoadId),
     a=city.nodes.find(n=>n.id===road?.a),b=city.nodes.find(n=>n.id===road?.b);
-  if(!a||!b||distanceToSegment(path.at(-1),a,b)>B03_ACCESS_EPS)return false;
+  if(!a||!b)return false;
+  const acceptedSetback=sourceFrontages.some(f=>f.roadId===frontageRoadId&&
+    Array.isArray(f.segment)&&f.segment.length===2&&
+    distanceToSegment(path.at(-1),f.segment[0],f.segment[1])<=B03_ACCESS_EPS);
+  if(!acceptedSetback&&distanceToSegment(path.at(-1),a,b)>B03_ACCESS_EPS)return false;
   for(let k=1;k<path.length;k++){
     const p=path[k-1],q=path[k];
     if(b03AccessDist(p,q)<B03_ACCESS_EPS||b03SegmentEntersPolygon(p,q,building.footprint))return false;
@@ -43,20 +47,20 @@ function b03RouteVerified(city,building){
   return true;
 }
 
-function b03ProposeRoute(city,building,roads){
+function b03ProposeRoute(city,building,roads,sourceFrontages){
   for(const road of [building.frontageRoadId,...roads].filter((id,i,arr)=>arr.indexOf(id)===i)){
     if(!city.roads.some(r=>r.id===road))continue;
     const trial={...building,frontageRoadId:road};
     const route=reattachFrontage(city,trial);
     if(route){
       const candidate={...trial,entrance:route.entrance,accessPath:route.accessPath};
-      if(b03RouteVerified(city,candidate))return candidate;
+      if(b03RouteVerified(city,candidate,sourceFrontages))return candidate;
     }
   }
   return null;
 }
 
-function b03ProposeRelocation(city,property,building,roads){
+function b03ProposeRelocation(city,property,building,roads,sourceFrontages){
   // Stable bounded search; rigid transforms preserve holes, shape and building ID.
   const offsets=[[0,0],[0,4],[4,0],[0,-4],[-4,0],
     [6,6],[-6,6],[6,-6],[-6,-6],[0,10],[10,0],[0,-10],[-10,0]];
@@ -68,7 +72,7 @@ function b03ProposeRelocation(city,property,building,roads){
           shapesOverlapInterior(moved.footprint,other.footprint)))continue;
       const plotIds=deriveOccupiedPlots(city,property,moved);
       if(!plotIds.length)continue;
-      const candidate=b03ProposeRoute(city,{...moved,plotIds},roads);
+      const candidate=b03ProposeRoute(city,{...moved,plotIds},roads,sourceFrontages);
       if(candidate)return {...candidate,plotIds};
     }
   }
@@ -78,7 +82,7 @@ function b03ProposeRelocation(city,property,building,roads){
 // Mutates only a detached candidate city. It never relocates or deletes a
 // building unless its proposed operation is proven and, when necessary,
 // individually approved. All existing plots remain unchanged.
-export function reconcileMergeBuildings026(city,property,roads,originals,approved=new Set()){
+export function reconcileMergeBuildings026(city,property,roads,originals,approved=new Set(),sourceFrontages=[]){
   const issues=[],changes=[];
   for(const id of property.buildingIds){
     const building=city.buildings.find(b=>b.id===id);
@@ -91,15 +95,15 @@ export function reconcileMergeBuildings026(city,property,roads,originals,approve
       issues.push({code:'building',targetId:id,message:'Building leaves the merged property.'});
       continue;
     }
-    if(b03RouteVerified(city,building))continue;
-    let candidate=b03ProposeRoute(city,building,roads),kind='entrance-or-route';
-    if(!candidate){kind='relocation';candidate=b03ProposeRelocation(city,property,building,roads);}
+    if(b03RouteVerified(city,building,sourceFrontages))continue;
+    let candidate=b03ProposeRoute(city,building,roads,sourceFrontages),kind='entrance-or-route';
+    if(!candidate){kind='relocation';candidate=b03ProposeRelocation(city,property,building,roads,sourceFrontages);}
     if(!candidate){
       issues.push({code:'access',targetId:id,message:'No verified access repair or safe relocation for building '+id+'.'});
       continue;
     }
     if(!shapeContained(candidate.footprint,property.boundary)||
-       !candidate.plotIds?.length||!b03RouteVerified(city,candidate)){
+       !candidate.plotIds?.length||!b03RouteVerified(city,candidate,sourceFrontages)){
       issues.push({code:'building',targetId:id,message:'Building adaptation failed geometry or access validation.'});
       continue;
     }
