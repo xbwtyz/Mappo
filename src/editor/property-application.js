@@ -1,4 +1,5 @@
 import { polygonSignedArea } from '../core/geometry.js';
+import { inspectFlexiblePlot027,prepareFlexiblePlot027 } from './plot-application-027.js';
 import { shapeWellFormed, shapeContained, shapesOverlapInterior } from '../core/building-validation.js';
 import { segmentDistance, STREET_WIDTHS, STREET_EDGE_WIDTH, PROPERTY_SETBACK } from '../core/placement.js';
 import { propertyGeometryPreview3I, propertyLocalBounds3I } from '../core/property-geometry.js';
@@ -18,6 +19,7 @@ const giSame=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 
 // Pure inspect-on-every-preview; no mutation or JSON save/round-trip until Apply.
 export function inspectPropertyEdit3I(project,session){
+  if(session?.flexibleMode)return inspectFlexiblePlot027(project,session);
   const issues=[], city=project?.city, property=session?.source(city);
   if(!session?.isActive||!city||!property){
     giIssue(issues,'selection','The selected property is no longer available.');
@@ -117,6 +119,7 @@ export function inspectPropertyEdit3I(project,session){
 // Apply is one transaction: entire project cloned; parent, plots, building-to-
 // plot links and open-space area reconciled; schema+portable checks gate commit.
 export function preparePropertyApply3I(project,workspace,session){
+  if(session?.flexibleMode)return prepareFlexiblePlot027(project,workspace,session);
   const inspected=inspectPropertyEdit3I(project,session);
   if(!inspected.ok)return {...inspected,candidate:null};
   if(!session.isPending)return {ok:false,status:'unchanged',issues:[{code:'unchanged',message:'The property preview has no changes to apply.'}],preview:inspected.preview,candidate:null};
