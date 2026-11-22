@@ -244,7 +244,10 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
       const records = [];
       for (const face of faces) {
         const row = evidence.get(face.key);
-        if (!row?.areaVerified) return fail('lineage-unproven', 'A successor lacks complete overlap evidence.');
+        if (!row?.predecessors?.length || (!row.areaVerified &&
+            (row.choiceRequired.district || row.choiceRequired.usage)))
+          return fail('lineage-unproven',
+            'Ambiguous district or use requires complete geometric source coverage.');
         const id = sources.length === 1 && faces.length === 1
           ? sources[0].id : roadTopologyId('BLK-X',face.key,used);
         candidateIds.set(face.key,id);

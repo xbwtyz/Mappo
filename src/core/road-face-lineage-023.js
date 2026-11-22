@@ -57,22 +57,31 @@ export function buildRoadFaceLineage023(acceptedCity, extraction, matching) {
           predecessors.push(source(b,overlap,f.area));
           covered+=overlap;total+=overlap;link(b.id,f.key);
         }
-        if(!predecessors.length||!lineage023CloseArea(covered,f.area))
-          throw new Error('A successor lacks complete, positive-area ancestry.');
+        if(!predecessors.length || covered>f.area+Math.max(0.02,f.area*1e-8))
+          throw new Error('A successor lacks positive or geometrically consistent ancestry.');
         predecessors.sort((a,b)=>lineage023Compare(a.blockId,b.blockId));
         const districts=[...new Set(predecessors.map(p=>p.districtId))].sort(lineage023Compare);
         const usages=[...new Set(predecessors.map(p=>p.usage))].sort(lineage023Compare);
         mapped.set(f.key,{candidateKey:f.key,relation,faceArea:f.area,predecessors,
           eligibleDistrictIds:districts,eligibleUsages:usages,
-          choiceRequired:{district:districts.length>1,usage:usages.length>1},areaVerified:true});
+          choiceRequired:{district:districts.length>1,usage:usages.length>1},
+          // Existing same-owner boundary reshapes may gain or lose area. Do
+          // not mistake their partial overlap for an unsafe cross-owner edit.
+          areaVerified:lineage023CloseArea(covered,f.area)});
       }
-      if(!lineage023CloseArea(total,entry.oldArea)||!lineage023CloseArea(total,entry.newArea))
-        throw new Error('A face group does not conserve accepted area.');
+      if(!lineage023CloseArea(total,entry.overlapArea))
+        throw new Error('A face group has inconsistent measured overlap.');
+      const closed=lineage023CloseArea(total,entry.oldArea)&&
+        lineage023CloseArea(total,entry.newArea);
+      // The existing matcher only labels a split/merge when closed. A
+      // many-to-many group can instead be a valid area-changing road reshape.
+      if(['split','merge'].includes(relation)&&!closed)
+        throw new Error('A split or merge has incomplete area closure.');
       if(previous.some(b=>!reverse.has(b.id)))
         throw new Error('An accepted predecessor has no surviving successor.');
       groups.push({relation,oldIds:[...entry.oldIds].sort(lineage023Compare),
         candidateKeys:[...entry.candidateKeys].sort(lineage023Compare),
-        oldArea:entry.oldArea,newArea:entry.newArea,overlapArea:total});
+        oldArea:entry.oldArea,newArea:entry.newArea,overlapArea:total,areaConserved:closed});
     }
     if(mapped.size!==fresh.size||acceptedCity.blocks.some(b=>!reverse.has(b.id)))
       throw new Error('Every accepted and proposed ordinary face must have one complete lineage.');

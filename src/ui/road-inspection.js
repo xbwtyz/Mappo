@@ -1160,7 +1160,7 @@ export class RoadInspectionWorkspace {
     if (!guide || !s.active || !s.pending || s.checking || s.drag) return;
     if (this.$('roadPreviewBody').hidden) this.$('roadPreviewMinimize').click();
     if (guide.action === 'ownership') {
-      const target=this.$('roadOwnershipList023').querySelector('select');
+      const target=this.$('roadOwnershipList023').querySelector?.('select');
       if(target){
         if(this.usesDesktopPanel&&!this.desktopReview)this.setDesktopReview(true);
         target.scrollIntoView({block:'center'});
@@ -1234,7 +1234,7 @@ export class RoadInspectionWorkspace {
       ? 'Choose only the ownership that belongs to the predecessor blocks. Apply stays disabled until the entire city validates.'
       : 'Ownership choices are verified for this draft. Review generated land and building changes before Apply.';
     const active=document.activeElement;
-    const focused=active && list.contains(active) ? {
+    const focused=active && list.contains?.(active) ? {
       key:active.dataset.ownerKey,field:active.dataset.ownerField
     } : this.ownershipFocus023;
     const cards=rows.map((row,index)=>{
@@ -1263,6 +1263,7 @@ export class RoadInspectionWorkspace {
           wrapper.append(value);
         }else{
           const select=document.createElement('select');
+          if(!select.dataset) select.dataset={}; // Native controls already expose dataset.
           select.dataset.ownerKey=row.candidateKey;
           select.dataset.ownerField=field;
           select.setAttribute('aria-label',label+' of resulting block '+(index+1));
@@ -1302,7 +1303,7 @@ export class RoadInspectionWorkspace {
     });
     list.replaceChildren(...cards);
     if(focused?.key){
-      const matching=[...list.querySelectorAll('select')].find(select=>
+      const matching=[...(list.querySelectorAll?.('select')??[])].find(select=>
         select.dataset.ownerKey===focused.key && select.dataset.ownerField===focused.field);
       if(matching)matching.focus({preventScroll:true});
       this.ownershipFocus023=null;

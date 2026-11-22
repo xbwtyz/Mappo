@@ -72,7 +72,7 @@ test('0.2.3 usage is independent of district and unknown metadata remains visibl
 
 test('0.2.3 incomplete or nonconserving lineage fails closed',()=>{
   const {project,extraction,matching}=fixture('R1');
-  const altered={...matching,merged:matching.merged.map(g=>({...g,oldArea:g.oldArea+100}))};
+  const altered={...matching,merged:matching.merged.map(g=>({...g,overlapArea:g.overlapArea+100}))};
   const r=buildRoadFaceLineage023(project.city,extraction,altered);
   assert.equal(r.valid,false);
   assert.equal(r.issues[0].code,'lineage-unproven');
