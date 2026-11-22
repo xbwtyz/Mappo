@@ -83,7 +83,7 @@ export function createProject(options = {}) {
   validateTerrainDefinition(terrain.features, terrain.passes, survey.boundary, center, water);
   const layout = generateLayout(seed, size, survey, morphology, water, terrain);
   validateLayout(layout, survey.boundary);
-  const development = generateBuildings(seed, layout);
+  const development = generateBuildings(seed, layout, morphology);
   validateDevelopment(layout, development);
   const project = {
     schemaVersion: PROJECT_SCHEMA_VERSION,

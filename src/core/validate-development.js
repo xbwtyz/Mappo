@@ -4,9 +4,7 @@ import {
 import {
   insideOrOn
 } from './boundary.js';
-import {
-  rectanglesOverlap
-} from './placement.js';
+import { shapesOverlapInterior } from './building-validation.js';
 
 export function validateDevelopment(layout, development) {
   const {
@@ -26,7 +24,7 @@ export function validateDevelopment(layout, development) {
       usedPlots.add(id);
     }
     const neighbors = groups.get(property.blockId) || [];
-    if (neighbors.some(p => rectanglesOverlap(p.boundary, property.boundary))) throw new Error('Generated properties overlap. Try another seed.');
+    if (neighbors.some(p => shapesOverlapInterior(p.boundary, property.boundary))) throw new Error('Generated properties overlap. Try another seed.');
     neighbors.push(property);
     groups.set(property.blockId, neighbors);
   }
