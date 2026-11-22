@@ -1,4 +1,5 @@
 import { placeRoadConflictBuilding } from './road-building-decisions.js';
+import { reconcileRoadParcels028 } from './road-parcel-decisions-028.js';
 import { terminalCorridors, polygonIntrudesTerminalCorridor } from './road-terminal-corridors.js';
 import { buildRoadGraph } from './road-graph.js';
 import { draftRoadShape } from './road-shape.js';
@@ -170,11 +171,11 @@ function c4MatchBentFaces(old, extraction, draft) {
 
 export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null, decisions = new Map(), options = {}) {
   const validation = { graph: 'not-run', faces: 'not-run', parcels: 'not-run', project: 'not-run' };
-  let ownershipReview = [], lineage = null;
+  let ownershipReview = [], lineage = null, parcelReview=[];
   const fail = (code, message, kind = draft?.junctionId ? 'junction' : 'road', id = roadId) => ({
     phase: 'C3', status: 'needs-review', candidateProject: null, changed: [], ledger: [],
     unresolved: [{ code, message, kind, id, severity: 'needs-review' }], validation,
-    ownershipReview, lineage,
+    ownershipReview, lineage, parcelReview,
   });
   try {
     validateStoredProject(project);
@@ -329,11 +330,17 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     };
     const keptIds = new Set(Object.values(kept).flat().map(record=>record.id));
     const oldPlots = riIndex(old.plots);
-    const customized = old.properties.find(property => replacements.has(property.blockId) && !keptIds.has(property.id) &&
-      classifyRoadProvenance(property, property.plotIds.map(id => oldPlots.get(id))) !== 'generated');
-    if (customized) return fail('parcel-decision-required', 'Changing this custom or older parcel requires a separate parcel edit.',
-      'property', customized.id);
-    const conflicts = old.buildings.filter(building => replacements.has(building.blockId) && !keptIds.has(building.id) &&
+    const regenerated = c3Development(project.seed, city, rebuilt, old, kept, corridors);
+    const parcelResolution = reconcileRoadParcels028(old,city,replacements,regenerated,graph,kept,
+      options.parcelChoices);
+    parcelReview=parcelResolution.review;
+    if(parcelResolution.unresolved.length)
+      return { ...fail(parcelResolution.unresolved[0].code,parcelResolution.unresolved[0].message,
+        'property',parcelResolution.unresolved[0].id),
+        unresolved:parcelResolution.unresolved,parcelReview };
+    const handledBuildings=parcelResolution.handledBuildings;
+    const conflicts = old.buildings.filter(building => replacements.has(building.blockId) &&
+      !keptIds.has(building.id) && !handledBuildings.has(building.id) &&
       classifyRoadProvenance(building) !== 'generated');
     const required = conflicts.filter(building=>!decisions.has(building.id));
     if (required.length) return {
@@ -341,7 +348,6 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
       unresolved: required.map(building=>({kind:'building', id:building.id, code:'building-decision-required',
         message:'This building needs your approval before its parcel or placement can change.',severity:'needs-review'})),
     };
-    const regenerated = c3Development(project.seed, city, rebuilt, old, kept, corridors);
     const decided = new Map();
     for (const building of conflicts) {
       const choice = decisions.get(building.id);
@@ -352,7 +358,7 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
       decided.set(building.id,choice.kind);
     }
     const refitted = new Map();
-    const complex = old.buildings.filter(building=>replacements.has(building.blockId) && !keptIds.has(building.id) &&
+    const complex = old.buildings.filter(building=>replacements.has(building.blockId) && !keptIds.has(building.id) && !handledBuildings.has(building.id) &&
       classifyRoadProvenance(building)==='generated' && (building.holes?.length || building.plotIds.length>1));
     for (const building of complex.slice(0,24)) {
       const blocks = replacements.get(building.blockId);
@@ -389,7 +395,8 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     validation.project = 'valid';
 
     const changed = [], ledger = [];
-    const retainedIds = new Set(Object.values(kept).flat().map(record => record.id));
+    const retainedIds = new Set([...Object.values(kept).flat().map(record => record.id),
+      ...parcelResolution.dispositions.keys(),...handledBuildings]);
     for (const [key, kind] of ROAD_RECORDS) {
       const before = riIndex(old[key]), after = riIndex(city[key]);
       for (const id of new Set([...before.keys(), ...after.keys()])) {
@@ -398,7 +405,7 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
           (kind === 'block' && replacements.has(id));
         if (riEqual(a,b) && !movedBoundary) continue;
         const disposition = !a ? (kind === 'junction' ? 'created-junction' : 'created') :
-          !b ? (kind === 'road' ? 'removed-road' : 'replaced') : kind === 'building' && decided.has(id) ? (decided.get(id)==='fixed'?'access-reconnected':'authorized-relocation') : refitted.get(id) ?? (retainedIds.has(id) ? 'retained' : kind === 'road' && splitRoadIds.includes(id) ? 'split' : 'reshaped');
+          !b ? (kind === 'property' && parcelResolution.dispositions.has(id) ? parcelResolution.dispositions.get(id) : kind === 'road' ? 'removed-road' : 'replaced') : kind === 'property' && parcelResolution.dispositions.has(id) ? parcelResolution.dispositions.get(id) : kind === 'building' && decided.has(id) ? (decided.get(id)==='fixed'?'access-reconnected':'authorized-relocation') : refitted.get(id) ?? (retainedIds.has(id) ? 'retained' : kind === 'road' && splitRoadIds.includes(id) ? 'split' : 'reshaped');
         ledger.push({ kind, oldId: a?.id ?? null, newId: b?.id ?? null, disposition,
           ...(refitted.has(id) ? {provenance:'generated'} : {}),
           ...(kind === 'block' && a ? { successorIds: successorIdsByOld.get(id) ??
@@ -407,7 +414,7 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
       }
     }
     return { phase: 'C3', status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation,
-      ownershipReview,lineage };
+      ownershipReview,lineage,parcelReview };
   } catch (error) {
     return fail('topology-reflow-blocked', error.message);
   }
