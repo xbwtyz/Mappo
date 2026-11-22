@@ -309,7 +309,7 @@ export class RoadPreviewSession {
           this.roadIntentAnalysis = prepareRoadIntentC1(this.project, this.selection.id, this.roadIntentOffset);
           this.reconciliation = prepareNeighborhoodReflowC3(
             this.project, this.selection.id, this.roadIntentOffset, this.roadIntentAnalysis,
-            this.buildingDecisions,{ownershipChoices:this.ownershipChoices});
+            this.buildingDecisions,{ownershipChoices:this.ownershipChoices,parcelChoices:this.parcelChoices});
         }
         this.settledRevision = revision;
         this.acceptedFingerprint = JSON.stringify(this.project);

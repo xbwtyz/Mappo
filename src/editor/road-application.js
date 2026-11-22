@@ -155,7 +155,7 @@ export function validateRoadApplyC2(project, workspace, draft, inspected) {
       ? prepareRoadTopologyReflowC3(project, selection.id, null, roadConnectionEdit, buildingDecisions,
           {ownershipChoices,parcelChoices})
       : prepareNeighborhoodReflowC3(project, selection.id, roadIntentOffset, undefined, buildingDecisions,
-          {ownershipChoices});
+          {ownershipChoices,parcelChoices});
     if (!fresh.candidateProject)
       return reject('candidate-invalid', fresh.unresolved[0]?.message ?? 'Fresh reflow did not pass validation.');
     const inspectedJson = inspected.candidateJson ?? JSON.stringify(inspected.candidateProject);
