@@ -28,7 +28,7 @@ test('024 P5 acceptance: 4 morphologies by 3 sizes, fallback evidence and saved-
       assert.equal(project.schemaVersion,9);
       assert.doesNotThrow(()=>validateStoredProject(project));
       const saved=decodeProjectDocument(encodeProjectDocument(createProjectDocument(project,defaultWorkspace(project))));
-      assert.deepEqual(saved.project.city,project.city,'Portable roundtrip must be exact');
+      assert.equal(JSON.stringify(saved.project.city),JSON.stringify(project.city),'Portable JSON roundtrip must be exact');
       const repeat=createProject({...options,irregularProperties:true});
       assert.deepEqual(repeat.city,project.city,'Seeded output must be deterministic');
       const sideCounts={};
