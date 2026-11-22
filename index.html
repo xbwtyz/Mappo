@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#131d21">
-  <title>Mappo — City editor · 0.2.6-dev</title>
+  <title>Mappo — City editor · 0.2.7-dev</title>
   <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#e1e7e3;background:#111b1f;font-synthesis:none}*{box-sizing:border-box}html,body{margin:0;min-width:320px;height:100%}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #d8a473;outline-offset:2px}.app{height:100dvh;min-height:650px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:72px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;border-bottom:1px solid #344044;background:#172327}.brand{display:flex;align-items:center;gap:15px}.brand-icon{color:#d2a371;font-size:31px;line-height:1}.brand strong{display:block;font-size:17px;letter-spacing:.21em;line-height:1}.brand-subtitle{display:block;color:#798f8c;font-size:8px;letter-spacing:.28em;margin-top:7px;font-weight:700}.version{border:1px solid #48514d;border-radius:4px;padding:5px 8px;color:#b2a897;font:10px ui-monospace,Consolas,monospace;margin-left:5px}.topbar-right{display:flex;gap:13px;align-items:center;color:#98aca4;font:600 10px ui-monospace,Consolas,monospace;letter-spacing:.07em}.topbar-dot,.map-draft{color:#cf9f6b}.topbar-dot{height:6px;width:6px;background:#8db6a0;border-radius:50%;box-shadow:0 0 0 4px #2b423b}.header-divider{height:20px;border-right:1px solid #40504f;margin:0 4px}.header-phase{color:#b5a48f}.workspace{display:grid;grid-template-columns:minmax(260px,300px) minmax(280px,1fr) minmax(245px,280px);flex:1;min-height:0}.sidebar{background:#19272b;min-height:0;display:flex;flex-direction:column}.sidebar-left{border-right:1px solid #354248}.sidebar-right{border-left:1px solid #354248;background:#1c2a2e}.sidebar-heading{height:59px;flex:none;border-bottom:1px solid #344348;display:flex;align-items:center;gap:14px;padding:0 27px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#a8b6b0}.section-number{font-size:11px;color:#cba074}.sidebar-content{padding:31px 27px;flex:1;overflow:auto;scrollbar-width:thin}.eyebrow{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.19em;color:#d3a676;margin:0 0 15px}h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.06;letter-spacing:-.035em;margin:0}h1 em{font-weight:400;color:#d0a474}h2{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:400;letter-spacing:-.04em;margin:0}.gold-dot{color:#d3a676}.intro{font-size:12px;line-height:1.75;color:#97a9a6;margin:17px 0 29px;max-width:240px}.control-group{margin-bottom:19px}.control-group label{display:block;color:#dce6df;font-size:12px;font-weight:650;margin-bottom:9px}input,select{height:43px;width:100%;border:1px solid #425458;border-radius:5px;background:#122025;color:#dfe8e4;padding:0 12px;outline:0}input{font:13px ui-monospace,Consolas,monospace;letter-spacing:.025em}select{appearance:none;font-size:12px}.select-wrap{position:relative}.select-wrap span{position:absolute;right:13px;top:7px;font-size:22px;pointer-events:none;color:#adbbb6}.hint{margin:8px 0 0;color:#7e9891;font-size:10px}.button-primary,.button-secondary{display:block;width:100%;height:44px;border-radius:5px;font-size:12px;font-weight:700;letter-spacing:.03em}.button-primary{border:1px solid #d1a579;background:#d1a579;color:#1b2424;margin:25px 0 10px}.button-primary:hover{background:#e4b889}.button-secondary{border:1px solid #576967;color:#e4e9df;background:transparent}.button-secondary:hover{background:#27363a}.sidebar-rule{border-top:1px solid #344449;margin:28px 0}.upcoming{display:flex;align-items:flex-start;gap:13px;margin:16px 0}.upcoming-icon{flex:none;font-size:20px;color:#b69a78;width:22px}.upcoming strong{font-size:12px;font-weight:650}.upcoming p{font-size:11px;line-height:1.6;color:#899f98;margin:5px 0 0}.sidebar-footer{flex:none;min-height:45px;border-top:1px solid #344348;padding:15px 27px;display:flex;align-items:center;justify-content:space-between;color:#728882;font:600 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;gap:10px}.sidebar-footer span{color:#a7b6ad;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.map-shell{min-width:0;min-height:0;display:flex;flex-direction:column;background:#efeadd}.map-topline{height:58px;flex:none;background:#e5e0d2;color:#354a49;border-bottom:1px solid #d3cdbf;display:flex;justify-content:space-between;align-items:center;padding:0 22px;gap:10px}.map-breadcrumb{display:flex;align-items:center;gap:9px;min-width:0;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.09em}.map-breadcrumb strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;letter-spacing:0}.map-breadcrumb>span:first-child{color:#82918a}.breadcrumb-slash,.map-muted{color:#99a198}.map-draft{font:700 10px ui-monospace,Consolas,monospace;white-space:nowrap}.map-viewport{position:relative;flex:1;min-height:0;overflow:hidden}.map-viewport canvas{height:100%;width:100%;display:block;touch-action:none;cursor:grab;outline:0}.map-viewport canvas.is-dragging{cursor:grabbing}.map-controls{position:absolute;right:23px;top:23px;display:flex;flex-direction:column;background:#fbf9f2;border:1px solid #d2d0c4;box-shadow:0 5px 16px #34483a18;border-radius:6px;overflow:hidden}.map-controls button{height:36px;width:38px;background:transparent;border:0;color:#314344;font-size:22px;line-height:1}.map-controls button:hover{background:#eee5d2}.map-controls-divider{border-top:1px solid #d9d9d0}.map-legend{position:absolute;left:18px;bottom:21px;display:flex;align-items:center;gap:8px;color:#58695f;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.055em;background:#f9f7ecdc;padding:10px 12px;border:1px solid #dad8ca;border-radius:4px}.legend-mark{width:13px;border-top:2px solid #87947d}.legend-sep{color:#c8c0b4;margin:0 2px}.legend-point{width:15px;border-top:4px solid #f9f3e4;outline:1px solid #ad9c82;border-radius:2px}.map-status{flex:none;height:40px;background:#e7e3d5;border-top:1px solid #d3cbbd;color:#66776e;display:flex;align-items:center;padding:0 20px;gap:17px;font:10px ui-monospace,Consolas,monospace}.map-status [role=status]{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.status-readout{white-space:nowrap}.status-readout strong{color:#364945;font-weight:700}.report-label{font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#8faaa1}.report-primary{font:25px Georgia,serif;color:#e7d9bf;margin:8px 0 20px}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;border-bottom:1px solid #35454a;padding:12px 0;font-size:11px;color:#8ea49e}.stat-row strong{font:600 11px ui-monospace,Consolas,monospace;color:#e1e7db;text-transform:capitalize;overflow-wrap:anywhere;text-align:right}.stat-row small{color:#798c88;font-weight:400;font-size:9px}.shortcut{display:flex;justify-content:space-between;align-items:center;margin:12px 0;color:#91a69f;font-size:11px}kbd{font:10px ui-monospace,Consolas,monospace;color:#c7d2c9;border:1px solid #4b5d5e;border-radius:4px;padding:4px 7px;background:#26363b}.note{border:1px solid #5a594c;background:#34382f;padding:16px;margin-top:26px;border-radius:4px}.note strong{font:700 10px ui-monospace,Consolas,monospace;color:#d9b88c;letter-spacing:.09em}.note p{font-size:11px;line-height:1.7;color:#c1c7ba;margin:9px 0 0}@media(max-width:1100px){.workspace{grid-template-columns:260px minmax(260px,1fr)}.sidebar-right{display:none}}@media(max-width:670px){.app{height:auto;min-height:100dvh;overflow:auto}.topbar{height:62px;padding:0 15px}.topbar-right{display:none}.workspace{display:flex;flex-direction:column}.sidebar-left{border:0}.sidebar-heading{height:38px;padding:0 17px}.sidebar-content{padding:19px 17px}.sidebar-left .intro{margin:8px 0 15px}.sidebar-left h1{font-size:29px}.control-group{margin-bottom:12px}.button-primary{margin-top:12px}.upcoming,.sidebar-left .sidebar-rule,.sidebar-left .sidebar-footer,.sidebar-left .eyebrow:last-of-type{display:none}.map-shell{height:60vh;min-height:400px}.map-draft{display:none}.map-status{font-size:9px;padding:0 10px;gap:8px}.map-status [role=status]{max-width:50%}.map-legend{font-size:8px;left:10px;padding:8px}.map-controls{top:12px;right:12px}}
 
@@ -1038,7 +1038,7 @@
 <body>
 <div id="workspaceApp" class="app workspace-shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2.6-dev</span></div>
+    <div class="brand"><span class="brand-icon" aria-hidden="true">✥</span><div><strong>MAPPO</strong><span class="brand-subtitle">THE CITY MAKER</span></div><span class="version">0.2.7-dev</span></div>
     <div class="workspace-menu-anchor project-menu-anchor"><button id="projectMenuButton" class="workspace-header-button" aria-expanded="false" aria-controls="projectMenu">Project <span id="projectMenuAttention" aria-hidden="true" hidden>●</span><span aria-hidden="true">⌄</span></button>
         <section id="projectMenu" class="workspace-menu file-panel" aria-labelledby="projectMenuButton" hidden>
           <div class="workspace-menu-heading"><h2>Project</h2><button id="projectMenuClose" class="workspace-icon-button" aria-label="Close Project menu">×</button></div>
@@ -1530,7 +1530,7 @@
         </section>
         <section id="propertyEditPanel3I" class="building-transform-panel property-edit-panel-3i" aria-label="Property boundary editing preview" hidden>
           <div class="building-transform-heading"><strong>PROPERTY PREVIEW</strong><span id="propertyEditTarget3I">—</span></div>
-          <p class="hint">Drag vertices or edit their coordinates. Add/remove rear and side vertices for irregular shapes. Four-corner plots still support divider edits; irregular properties use validated convex partitions. Buildings stay in place until a safe Apply.</p>
+          <p class="hint">Drag vertices or edit their coordinates. Add/remove rear and side vertices for irregular shapes. Use flexible plots for angled cuts and multiple plot operations; standard four-corner dividers remain available. Buildings stay in place until a safe Apply.</p>
           <p id="propertyEditCorner3I" class="building-history-status" role="status" aria-live="polite">Select a highlighted property corner.</p>
           <div class="road-preview-actions" role="group" aria-label="Edit property vertices">
             <button id="propertyAddVertex024" type="button" class="minor-button">+ Add vertex</button>
@@ -1551,6 +1551,38 @@
             <input id="propertyCountConsentE4" type="checkbox" aria-label="Authorize preservation of authored plot metadata"/>
             <span id="propertyCountConsentTextE4">Preserve the original authored plot record in history.</span>
           </label>
+          <div id="plot027Panel" class="property-flexible-027">
+            <div class="road-preview-actions" role="group" aria-label="Flexible plot partitioning">
+              <button type="button" id="plot027Start" class="minor-button">Edit flexible plots</button>
+            </div>
+            <div id="plot027Controls" hidden>
+              <p class="hint">Select an existing plot, position two cut points on different edges, and Split. Or choose a second adjoining plot to Merge. Repeat operations before Apply.</p>
+              <div class="building-transform-values">
+                <label>Plot <select id="plot027Selected" aria-label="Selected plot"></select></label>
+                <label>Merge with <select id="plot027Other" aria-label="Other plot"></select></label>
+                <label>Cut edge A <select id="plot027EdgeA" aria-label="First cut edge"></select></label>
+                <label>Edge A % <input id="plot027RatioA" type="number" min="1" max="99" step="0.5" value="50"></label>
+                <label>Cut edge B <select id="plot027EdgeB" aria-label="Second cut edge"></select></label>
+                <label>Edge B % <input id="plot027RatioB" type="number" min="1" max="99" step="0.5" value="50"></label>
+                <label>Map endpoint <select id="plot027Endpoint" aria-label="Endpoint selected on map">
+                  <option value="A">A</option><option value="B">B</option>
+                </select></label>
+                <label>Retain ID on <select id="plot027Retain" aria-label="Identity to retain">
+                  <option value="first">Plot / first portion</option><option value="second">Other / second portion</option>
+                </select></label>
+              </div>
+              <div class="road-preview-actions" role="group" aria-label="Flexible plot operations">
+                <button type="button" id="plot027Split" class="minor-button">Split selected</button>
+                <button type="button" id="plot027Merge" class="minor-button">Merge selected</button>
+                <button type="button" id="plot027Undo" class="minor-button">Undo draft step</button>
+              </div>
+              <label id="plot027ConsentWrap" class="property-split-transfer-e2" hidden>
+                <input id="plot027Consent" type="checkbox" aria-label="Approve authored plot change">
+                <span id="plot027ConsentText">Authorize the stated scope changes; preserve original records in plot history.</span>
+              </label>
+              <p id="plot027Summary" class="building-history-status" role="status" aria-live="polite"></p>
+            </div>
+          </div>
           <p id="propertyPreviewMeasurements4C" data-place-review class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
           <div class="precision-nudge-4c" role="group" aria-label="Selected property corner precision movement">
             <label>Move increment <select id="propertyNudgeStep4C" aria-label="Selected property corner move increment">
@@ -9989,7 +10021,7 @@ function validateWorkspacePresentation(ui) {
 
 
 // src/core/version.js
-const APP_VERSION = '0.2.6-dev';
+const APP_VERSION = '0.2.7-dev';
 const PROJECT_SCHEMA_VERSION = 9;
 
 
@@ -13403,6 +13435,25 @@ function drawPropertyEditPreview3I(ctx, camera, city, session) {
     ctx.setLineDash([4,4]);
     ctx.stroke();
   }
+  if(session.flexibleMode){
+    const f=session.flexible,ring=f.selected?.boundary;
+    if(ring){
+      trace(ring);
+      ctx.fillStyle='rgba(230,174,88,.10)';ctx.fill();
+      try{
+        const cut=f.cut().cut.map(p=>camera.worldToScreen(p));
+        ctx.beginPath();ctx.moveTo(cut[0].x,cut[0].y);ctx.lineTo(cut[1].x,cut[1].y);
+        ctx.strokeStyle='#b96c37';ctx.lineWidth=3;ctx.setLineDash([]);ctx.stroke();
+      }catch{}
+      for(const [which,edge,t] of [['A',f.edgeA,f.ratioA],['B',f.edgeB,f.ratioB]]){
+        const a=ring[edge],b=ring[(edge+1)%ring.length];if(!a||!b)continue;
+        const p=camera.worldToScreen({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
+        ctx.beginPath();ctx.arc(p.x,p.y,which===(f.endpoint??'A')?8:6,0,2*Math.PI);
+        ctx.fillStyle=which==='A'?'#f0b763':'#d9987a';ctx.fill();
+        ctx.strokeStyle='#8f5938';ctx.lineWidth=2;ctx.stroke();
+      }
+    }
+  }
   trace(boundary);
   ctx.fillStyle = 'rgba(45,127,114,.12)';
   ctx.fill();
@@ -13411,7 +13462,7 @@ function drawPropertyEditPreview3I(ctx, camera, city, session) {
   ctx.strokeStyle = session.validation?.status === 'invalid' ? '#c54e49' : '#167f7d';
   ctx.stroke();
   ctx.setLineDash([]);
-  boundary.forEach((point, index) => {
+  if(!session.flexibleMode)boundary.forEach((point, index) => {
     const p = camera.worldToScreen(point);
     const chosen = session.selectedCorner === index;
     ctx.beginPath();
@@ -14675,7 +14726,170 @@ function propertyLocalBounds3I(property,boundary) {
 }
 
 
+// src/core/plot-partition-027.js
+
+
+
+// B04: Pure schema-9 plot geometry. The parent may be concave, but each stored
+// plot must be convex for existing project validation and building occupancy.
+const b04Eps027=1e-6;
+const MAX_PLOT_CORNERS_027=24;
+const b04Same027=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y)<b04Eps027;
+const b04Area027=ring=>polygonSignedArea(ring);
+const b04Point027=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
+const b04Cross027=(a,b,c)=>(b.x-a.x)*(c.y-b.y)-(b.y-a.y)*(c.x-b.x);
+const b04Clean027=ring=>{
+  let out=ring.map(p=>({x:p.x,y:p.y})).filter((p,i,all)=>i===0||!b04Same027(p,all[i-1]));
+  if(out.length>1&&b04Same027(out[0],out.at(-1)))out.pop();
+  let changed=true;
+  while(changed&&out.length>3){
+    changed=false;
+    for(let i=0;i<out.length;i++){
+      const a=out[(i+out.length-1)%out.length],b=out[i],c=out[(i+1)%out.length];
+      if(Math.abs(b04Cross027(a,b,c))>b04Eps027)continue;
+      if((b.x-a.x)*(b.x-c.x)+(b.y-a.y)*(b.y-c.y)>b04Eps027)continue;
+      out.splice(i,1);changed=true;break;
+    }
+  }
+  return out;
+};
+function validConvexPlot027(ring) {
+  return Array.isArray(ring)&&ring.length>=3&&ring.length<=MAX_PLOT_CORNERS_027
+    &&shapeWellFormed(ring)&&convexPropertyPolygon024(ring)&&b04Area027(ring)>=.02
+    &&ring.every((p,i)=>Math.hypot(p.x-ring[(i+1)%ring.length].x,p.y-ring[(i+1)%ring.length].y)>b04Eps027);
+}
+function splitConvexPlot027(ring,edgeA,ratioA,edgeB,ratioB) {
+  if(!validConvexPlot027(ring))throw Error('Select a valid convex plot.');
+  const n=ring.length;
+  if(!Number.isInteger(edgeA)||!Number.isInteger(edgeB)||edgeA===edgeB
+     ||edgeA<0||edgeB<0||edgeA>=n||edgeB>=n
+     ||![ratioA,ratioB].every(t=>Number.isFinite(t)&&t>1e-4&&t<1-1e-4))
+    throw Error('Choose two distinct plot edges and interior cut positions.');
+  const a=b04Point027(ring[edgeA],ring[(edgeA+1)%n],ratioA);
+  const b=b04Point027(ring[edgeB],ring[(edgeB+1)%n],ratioB);
+  const arc=(start,end,first,last)=>{
+    const out=[first];let i=(start+1)%n,guard=0;
+    while(i!==(end+1)%n&&guard++<n){out.push(ring[i]);i=(i+1)%n;}
+    out.push(last);return b04Clean027(out);
+  };
+  const left=arc(edgeA,edgeB,a,b),right=arc(edgeB,edgeA,b,a);
+  if(!validConvexPlot027(left)||!validConvexPlot027(right)
+      ||Math.abs(b04Area027(left)+b04Area027(right)-b04Area027(ring))>.005)
+    throw Error('The divider creates a degenerate or non-convex plot.');
+  return {plots:[left,right],cut:[a,b]};
+}
+function mergeConvexPlots027(a,b) {
+  if(!validConvexPlot027(a)||!validConvexPlot027(b))throw Error('Both plots must be convex.');
+  if(shapesOverlapInterior(a,b))throw Error('Plot interiors overlap.');
+  let shared=null;
+  for(let i=0;i<a.length;i++)for(let j=0;j<b.length;j++){
+    if(b04Same027(a[i],b[(j+1)%b.length])&&b04Same027(a[(i+1)%a.length],b[j])){
+      if(shared)throw Error('Multiple shared edges require a more specific plot merge.');
+      shared={i,j};
+    }
+  }
+  if(!shared)throw Error('Plots must share one complete opposing edge.');
+  const walk=(ring,start,end)=>{
+    const out=[ring[start]];let i=start,guard=0;
+    while(i!==end&&guard++<=ring.length){i=(i+1)%ring.length;out.push(ring[i]);}
+    return out;
+  };
+  const {i,j}=shared;
+  const pa=walk(a,(i+1)%a.length,i),pb=walk(b,(j+1)%b.length,j);
+  const merged=b04Clean027([...pa,...pb.slice(1,-1)]);
+  if(!validConvexPlot027(merged)||Math.abs(b04Area027(merged)-b04Area027(a)-b04Area027(b))>.005)
+    throw Error('The combined plot is not one valid convex polygon.');
+  return merged;
+}
+function validatePlotTiling027(parent,plots) {
+  if(!shapeWellFormed(parent)||!Array.isArray(plots)||!plots.length||plots.length>1000)
+    throw Error('The parent or proposed plot collection is invalid.');
+  let total=0;
+  for(const row of plots){
+    if(!validConvexPlot027(row.boundary)||!shapeContained(row.boundary,parent))
+      throw Error('A plot is non-convex, degenerate or outside its property.');
+    total+=b04Area027(row.boundary);
+  }
+  if(Math.abs(total-b04Area027(parent))>.02)throw Error('Plot partition leaves a gap or changes the property area.');
+  for(let i=0;i<plots.length;i++)for(let j=i+1;j<plots.length;j++)
+    if(shapesOverlapInterior(plots[i].boundary,plots[j].boundary))
+      throw Error('Plot partition overlaps.');
+  return {area:b04Area027(parent),plotCount:plots.length};
+}
+
+
+// src/editor/plot-draft-027.js
+
+
+const baseFields=new Set(['id','propertyId','blockId','frontageRoadId','boundary']);
+const annotatedPlot027=plot=>Boolean(plot&&Object.keys(plot).some(k=>!baseFields.has(k)));
+class FlexiblePlotDraft027 {
+  constructor(city,property){
+    this.propertyId=property.id;
+    this.baseline=JSON.stringify(city);
+    this.plots=property.plotIds.map(id=>{
+      const p=city.plots.find(x=>x.id===id&&x.propertyId===property.id);
+      if(!p)throw Error('Original plot list is incomplete.');
+      return {id,boundary:copyJson(p.boundary)};
+    });
+    validatePlotTiling027(property.boundary,this.plots);
+    this.operations=[];this.selectedId=this.plots[0].id;this.otherId='';
+    this.edgeA=0;this.edgeB=Math.min(2,this.plots[0].boundary.length-1);
+    this.ratioA=.5;this.ratioB=.5;this.retain='first';this.approved=false;this.error='';
+  }
+  get pending(){return this.operations.length>0;}
+  get selected(){return this.plots.find(p=>p.id===this.selectedId)??null;}
+  requireSpace(){if(this.operations.length>=12)throw Error('Apply before adding more than 12 draft operations.');}
+  cut(){
+    if(!this.selected)throw Error('Choose a plot first.');
+    return splitConvexPlot027(this.selected.boundary,this.edgeA,this.ratioA,this.edgeB,this.ratioB);
+  }
+  split(city){
+    this.requireSpace();
+    const source=this.selected,part=this.cut();
+    const used=new Set([...city.plots.map(p=>p.id),...this.plots.map(p=>p.id)]);
+    let serial=1,id;
+    do{id='PLOT-'+String(serial++).padStart(5,'0');}while(used.has(id)&&serial<50000);
+    if(used.has(id))throw Error('No unused plot identifier available.');
+    const index=this.plots.indexOf(source),keep=this.retain==='second'?1:0,before=copyJson(this.plots);
+    this.plots.splice(index,1,...part.plots.map((boundary,i)=>({id:i===keep?source.id:id,boundary})));
+    this.operations.push({kind:'split',sourceId:source.id,retainedId:source.id,createdId:id,before});
+    this.selectedId=source.id;this.edgeA=0;this.edgeB=Math.min(2,this.selected.boundary.length-1);
+    this.approved=false;this.error='';return id;
+  }
+  merge(){
+    this.requireSpace();
+    const a=this.selected,b=this.plots.find(p=>p.id===this.otherId);
+    if(!a||!b||a===b)throw Error('Select two distinct plots.');
+    const boundary=mergeConvexPlots027(a.boundary,b.boundary);
+    const keep=this.retain==='second'?b:a,removed=keep===a?b:a,before=copyJson(this.plots);
+    const first=Math.min(this.plots.indexOf(a),this.plots.indexOf(b));
+    this.plots=this.plots.filter(p=>p!==a&&p!==b);
+    this.plots.splice(first,0,{id:keep.id,boundary});
+    this.operations.push({kind:'merge',sources:[a.id,b.id],retainedId:keep.id,retiredId:removed.id,before});
+    this.selectedId=keep.id;this.otherId='';this.edgeA=0;this.edgeB=Math.min(2,boundary.length-1);
+    this.approved=false;this.error='';return removed.id;
+  }
+  undo(){
+    const op=this.operations.pop();if(!op)return false;
+    this.plots=copyJson(op.before);
+    this.selectedId=this.plots.some(p=>p.id===this.selectedId)?this.selectedId:this.plots[0].id;
+    this.edgeA=0;this.edgeB=Math.min(2,this.selected.boundary.length-1);
+    this.approved=false;this.error='';return true;
+  }
+  authorizations(city){
+    const original=city.properties.find(p=>p.id===this.propertyId);
+    return (original?.plotIds??[]).filter(id=>{
+      const source=city.plots.find(p=>p.id===id&&p.propertyId===this.propertyId);
+      const target=this.plots.find(p=>p.id===id);
+      return annotatedPlot027(source)&&(!target||JSON.stringify(source.boundary)!==JSON.stringify(target.boundary));
+    });
+  }
+}
+
+
 // src/editor/property-edit.js
+
 
 
 
@@ -14683,8 +14897,9 @@ function propertyLocalBounds3I(property,boundary) {
 class PropertyEditSession3I {
   constructor(changed = () => {}) {
     this.changed=changed; this.active=null; this.selectedCorner=null; this.selectedDivider=0; this.drag=null;
-    this.validation=null;
+    this.validation=null;this.flexible=null;
   }
+  get flexibleMode(){return Boolean(this.flexible);}
   get isActive(){return Boolean(this.active);}
   get propertyId(){return this.active?.propertyId??null;}
   get boundary(){return this.active?.boundary??null;}
@@ -14695,12 +14910,12 @@ class PropertyEditSession3I {
   get polygonMode(){return Boolean(this.active && (this.active.polygonEdited || this.active.originalBoundary.length!==4 || this.boundary.length!==4));}
   get isPending(){return Boolean(this.active && (JSON.stringify(this.active.boundary)!==JSON.stringify(this.active.originalBoundary)
     ||JSON.stringify(this.active.dividers)!==JSON.stringify(this.active.originalDividers)
-    ||Boolean(this.active.countChange)));}
+    ||Boolean(this.active.countChange)||Boolean(this.flexible?.pending)));}
   source(city){return city?.properties?.find(p=>p.id===this.propertyId)??null;}
   previewFor(city){return this.isActive && this.source(city)?copyJson(this.active.boundary):null;}
   plotsFor(city){
     if(!this.isActive)return null;
-    try{return (this.polygonMode?propertyPolygonPreview024(city,this.propertyId,this.boundary):propertyGeometryPreview3I(city,this.propertyId,this.boundary,this.dividers,this.plotIds)).plots;}
+    try{return this.flexible?copyJson(this.flexible.plots):(this.polygonMode?propertyPolygonPreview024(city,this.propertyId,this.boundary):propertyGeometryPreview3I(city,this.propertyId,this.boundary,this.dividers,this.plotIds)).plots;}
     catch{return null;}
   }
   start(city,propertyId){
@@ -14716,8 +14931,26 @@ class PropertyEditSession3I {
     this.active={propertyId,boundary,dividers,plotIds:[...property.plotIds],countChange:null,approved:false,polygonEdited,
       originalBoundary:copyJson(boundary),originalDividers:[...dividers],originalPlotIds:[...property.plotIds]};
     this.selectedCorner=null;this.selectedDivider=0;this.drag=null;this.validation=null;
-    this.changed();return true;
+    this.flexible=null;this.changed();return true;
   }
+  beginFlexible(city){
+    if(!this.isActive||this.isPending)return false;
+    try{this.flexible=new FlexiblePlotDraft027(city,this.source(city));this.validation=null;this.changed();return true;}
+    catch(error){this.validation={ok:false,status:'invalid',issues:[{message:error.message}]};return false;}
+  }
+  splitFlexible(city){
+    if(!this.flexible)return false;
+    try{this.flexible.split(city);this.validation=null;this.changed();return true;}
+    catch(error){this.flexible.error=error.message;this.changed();return false;}
+  }
+  mergeFlexible(){
+    if(!this.flexible)return false;
+    try{this.flexible.merge();this.validation=null;this.changed();return true;}
+    catch(error){this.flexible.error=error.message;this.changed();return false;}
+  }
+  undoFlexible(){if(!this.flexible?.undo())return false;this.validation=null;this.changed();return true;}
+  approveFlexible(value){if(!this.flexible)return false;this.flexible.approved=Boolean(value);this.validation=null;this.changed();return true;}
+  updateFlexible(values){if(!this.flexible)return false;Object.assign(this.flexible,values);this.flexible.error='';this.validation=null;this.changed();return true;}
   selectCorner(index){
     if(!this.isActive||!Number.isInteger(index)||index<0||index>=this.boundary.length)return false;
     this.selectedCorner=index;this.changed();return true;
@@ -14732,7 +14965,7 @@ class PropertyEditSession3I {
   // Insert on a rear/side edge. Edge 0->1 is reserved as the authoritative
   // road frontage; a new collinear handle can be dragged into a polygon.
   addVertex(index=this.selectedCorner??2){
-    if(!this.isActive||this.active.countChange||this.boundary.length>=PROPERTY_VERTEX_LIMIT_024
+    if(!this.isActive||this.flexible||this.active.countChange||this.boundary.length>=PROPERTY_VERTEX_LIMIT_024
        ||!Number.isInteger(index)||index<1||index>=this.boundary.length)return false;
     const a=this.boundary[index],b=this.boundary[(index+1)%this.boundary.length];
     this.boundary.splice(index+1,0,{x:(a.x+b.x)/2,y:(a.y+b.y)/2});
@@ -14741,21 +14974,21 @@ class PropertyEditSession3I {
     return true;
   }
   removeVertex(index=this.selectedCorner){
-    if(!this.isActive||this.active.countChange||this.boundary.length<=3
+    if(!this.isActive||this.flexible||this.active.countChange||this.boundary.length<=3
       ||!Number.isInteger(index)||index<2||index>=this.boundary.length)return false;
     this.boundary.splice(index,1);this.active.polygonEdited=true;
     this.active.dividers=[];this.selectedCorner=Math.min(index,this.boundary.length-1);
     this.validation=null;this.changed();return true;
   }
   setDivider(index,ratio){
-    if(!this.isActive||this.polygonMode||!Number.isInteger(index)||index<0||index>=this.dividers.length
+    if(!this.isActive||this.flexible||this.polygonMode||!Number.isInteger(index)||index<0||index>=this.dividers.length
       ||!Number.isFinite(ratio)||ratio<=0||ratio>=1)return false;
     this.active.dividers[index]=ratio;this.selectedDivider=index;
     this.validation=null;this.changed();return true;
   }
   // Only one structural plot-count change per Apply. The normal 3I draft remains active.
   addDivider(city,index=0){
-    if(!this.isActive||this.polygonMode||this.active.countChange||!Number.isInteger(index)
+    if(!this.isActive||this.flexible||this.polygonMode||this.active.countChange||!Number.isInteger(index)
       ||index<0||index>=this.plotIds.length)return false;
     const source=this.plotIds[index],sourcePlot=city?.plots?.find(p=>p.id===source&&p.propertyId===this.propertyId);
     if(!sourcePlot)return false;
@@ -14772,7 +15005,7 @@ class PropertyEditSession3I {
     this.validation=null;this.changed();return true;
   }
   removeDivider(index=0){
-    if(!this.isActive||this.polygonMode||this.active.countChange||!Number.isInteger(index)||
+    if(!this.isActive||this.flexible||this.polygonMode||this.active.countChange||!Number.isInteger(index)||
       index<0||index>=this.dividers.length)return false;
     const retainedId=this.plotIds[index],retiredId=this.plotIds[index+1];
     this.dividers.splice(index,1);this.plotIds.splice(index+1,1);
@@ -14800,19 +15033,90 @@ class PropertyEditSession3I {
     this.active.boundary=copyJson(this.active.originalBoundary);
     this.active.dividers=[...this.active.originalDividers];
     this.active.plotIds=[...this.active.originalPlotIds];
-    this.active.countChange=null;this.active.approved=false;this.active.polygonEdited=false;
+    this.active.countChange=null;this.active.approved=false;this.active.polygonEdited=false;this.flexible=null;
     this.selectedCorner=null;this.selectedDivider=0;this.drag=null;this.validation=null;
     this.changed();return true;
   }
   stop(){
     if(!this.isActive)return false;
-    this.active=null;this.selectedCorner=null;this.selectedDivider=0;this.drag=null;this.validation=null;
+    this.active=null;this.flexible=null;this.selectedCorner=null;this.selectedDivider=0;this.drag=null;this.validation=null;
     this.changed();return true;
   }
 }
 
 
+// src/editor/plot-application-027.js
+
+
+
+
+
+const b04SameProject027=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const b04Issue027=(code,message,targetId)=>({code,message,targetId});
+function inspectFlexiblePlot027(project,session){
+  const draft=session?.flexible,city=project?.city,property=city?.properties.find(p=>p.id===draft?.propertyId);
+  if(!draft||!property)return {ok:false,status:'invalid',issues:[b04Issue027('selection','Flexible plot draft is unavailable.')],preview:null};
+  const issues=[];
+  if(session.propertyId!==property.id||!b04SameProject027(session.boundary,property.boundary))
+    issues.push(b04Issue027('stale','The selected property boundary changed; reset this draft.',property.id));
+  if(draft.error)issues.push(b04Issue027('geometry',draft.error,property.id));
+  try{validatePlotTiling027(property.boundary,draft.plots);}
+  catch(error){issues.push(b04Issue027('tiling',error.message,property.id));}
+  const ids=draft.plots.map(p=>p.id),others=new Set(city.plots.filter(p=>p.propertyId!==property.id).map(p=>p.id));
+  if(new Set(ids).size!==ids.length||ids.some(id=>others.has(id)))
+    issues.push(b04Issue027('identity','A proposed plot identity conflicts with another plot.',property.id));
+  const protectedIds=draft.authorizations(city);
+  if(protectedIds.length&&!draft.approved)
+    issues.push(b04Issue027('authorization','Authorize metadata scope or retirement for '+protectedIds.join(', '),property.id));
+  const preview={boundary:copyJson(property.boundary),plots:copyJson(draft.plots),plotIds:ids,
+    area:property.area,total:draft.plots.reduce((s,p)=>s+polygonSignedArea(p.boundary),0),
+    operations:draft.operations.length,protectedIds};
+  return {ok:!issues.length,status:issues.length?'invalid':draft.pending?'valid':'unchanged',issues,preview};
+}
+function prepareFlexiblePlot027(project,workspace,session){
+  const inspected=inspectFlexiblePlot027(project,session),draft=session?.flexible;
+  if(!inspected.ok)return {...inspected,candidate:null};
+  if(!draft.pending)return {ok:false,status:'unchanged',issues:[b04Issue027('unchanged','No plot changes are pending.')],preview:inspected.preview,candidate:null};
+  if(JSON.stringify(project.city)!==draft.baseline)
+    return {ok:false,status:'stale',issues:[b04Issue027('stale','The accepted city changed; reset this plot draft.')],preview:inspected.preview,candidate:null};
+  try{
+    const candidate=copyJson(project),city=candidate.city,property=city.properties.find(p=>p.id===draft.propertyId);
+    if(!property)throw Error('Selected property disappeared.');
+    const original=new Map(city.plots.filter(p=>p.propertyId===property.id).map(p=>[p.id,p]));
+    const history=property.plotPartitionHistory027;
+    if(history!==undefined&&(!Array.isArray(history)||history.length>=20))
+      throw Error('Unsupported or full plot-partition history; original records must be preserved.');
+    const sources=[...original.values()].map(copyJson),beforeIds=property.plotIds.slice();
+    const afterIds=new Set(draft.plots.map(p=>p.id));
+    const replacements=draft.plots.map(p=>{
+      const old=original.get(p.id);
+      return old?{...copyJson(old),boundary:copyJson(p.boundary)}:{
+        id:p.id,propertyId:property.id,blockId:property.blockId,
+        // Existing schema-9 owner reference; not a new physical road connection.
+        frontageRoadId:property.frontageRoadId,boundary:copyJson(p.boundary)};
+    });
+    property.plotIds=draft.plots.map(p=>p.id);
+    city.plots=city.plots.filter(p=>p.propertyId!==property.id).concat(replacements);
+    property.plotPartitionHistory027=[...(history??[]),{
+      operation:'flexible-plot-partition',sourcePlotIds:beforeIds,resultPlotIds:property.plotIds.slice(),
+      retiredIds:beforeIds.filter(id=>!afterIds.has(id)),sourceRecords:sources,
+      steps:draft.operations.map(({before,...op})=>copyJson(op)),
+      authorizedOriginalIds:draft.authorizations(project.city)
+    }];
+    for(const building of city.buildings.filter(b=>b.propertyId===property.id)){
+      building.plotIds=deriveOccupiedPlots(city,property,building);
+      if(!building.plotIds.length)throw Error('Building '+building.id+' has no valid plot membership.');
+    }
+    validateStoredProject(candidate);
+    const restored=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
+    if(!b04SameProject027(candidate.city,restored.project.city))throw Error('Portable save changed plot records.');
+    return {ok:true,status:'valid',issues:[],preview:inspected.preview,candidate:restored.project};
+  }catch(error){return {ok:false,status:'invalid',issues:[b04Issue027('project','Plot Apply rejected: '+error.message)],preview:inspected.preview,candidate:null};}
+}
+
+
 // src/editor/property-application.js
+
 
 
 
@@ -14832,6 +15136,7 @@ const giSame=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 
 // Pure inspect-on-every-preview; no mutation or JSON save/round-trip until Apply.
 function inspectPropertyEdit3I(project,session){
+  if(session?.flexibleMode)return inspectFlexiblePlot027(project,session);
   const issues=[], city=project?.city, property=session?.source(city);
   if(!session?.isActive||!city||!property){
     giIssue(issues,'selection','The selected property is no longer available.');
@@ -14931,6 +15236,7 @@ function inspectPropertyEdit3I(project,session){
 // Apply is one transaction: entire project cloned; parent, plots, building-to-
 // plot links and open-space area reconciled; schema+portable checks gate commit.
 function preparePropertyApply3I(project,workspace,session){
+  if(session?.flexibleMode)return prepareFlexiblePlot027(project,workspace,session);
   const inspected=inspectPropertyEdit3I(project,session);
   if(!inspected.ok)return {...inspected,candidate:null};
   if(!session.isPending)return {ok:false,status:'unchanged',issues:[{code:'unchanged',message:'The property preview has no changes to apply.'}],preview:inspected.preview,candidate:null};
@@ -25402,13 +25708,13 @@ function syncPropertyEditUI3I() {
   dividerIndex.value=String(session.selectedDivider);
   dividerInput.disabled=dividers.length===0;
   dividerInput.value=dividers.length?String(Number((dividers[session.selectedDivider]*100).toFixed(2))):'';
-  $('propertyAddVertex024').disabled=Boolean(session.drag||session.countChange||session.boundary.length>=12);
-  $('propertyRemoveVertex024').disabled=Boolean(session.drag||session.countChange||session.boundary.length<=3
+  $('propertyAddVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length>=12);
+  $('propertyRemoveVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length<=3
     ||session.selectedCorner===null||session.selectedCorner<2);
-  $('propertyAddDividerE4').disabled=Boolean(session.polygonMode||session.countChange||session.drag);
-  $('propertyRemoveDividerE4').disabled=Boolean(session.polygonMode||session.countChange||session.drag||!dividers.length);
+  $('propertyAddDividerE4').disabled=Boolean(session.flexibleMode||session.polygonMode||session.countChange||session.drag);
+  $('propertyRemoveDividerE4').disabled=Boolean(session.flexibleMode||session.polygonMode||session.countChange||session.drag||!dividers.length);
   const countChange=session.countChange;
-  $('propertyCountSummaryE4').textContent=countChange
+  $('propertyCountSummaryE4').textContent=session.flexibleMode?'Flexible plot operations are drafted below. Existing property geometry is unchanged.':countChange
     ? (countChange.kind==='split'
       ?'Split plot '+countChange.sourceId+' · keep original ID; new plot '+countChange.newId+'.'
       :'Merge two plots · retain '+countChange.retainedId+'; retire '+countChange.retiredId+'.')+
@@ -25424,6 +25730,38 @@ function syncPropertyEditUI3I() {
   $('propertyCountConsentTextE4').textContent=countChange?.kind==='split'
     ?'I authorize the original plot metadata to remain on the retained plot only; the full source record is saved in plot history.'
     :'I authorize retiring the second plot; its full authored record is saved in plot history.';
+  const f=session.flexible;
+  $('plot027Controls').hidden=!f;
+  $('plot027Start').disabled=Boolean(f||session.isPending||session.drag);
+  if(f){
+    const choices=(id,values,selected)=>{
+      const element=$(id),sig=JSON.stringify(values);
+      if(element.dataset.items!==sig){
+        element.replaceChildren(...values.map(({id,label})=>{
+          const o=document.createElement('option');o.value=String(id);o.textContent=label;return o;
+        }));
+        element.dataset.items=sig;
+      }
+      element.value=selected??'';
+    };
+    choices('plot027Selected',f.plots.map(p=>({id:p.id,label:p.id+' · '+p.boundary.length+' edges'})),f.selectedId);
+    choices('plot027Other',[{id:'',label:'Choose adjacent plot'},...f.plots.filter(p=>p.id!==f.selectedId).map(p=>({id:p.id,label:p.id}))],f.otherId);
+    choices('plot027EdgeA',(f.selected?.boundary??[]).map((_,i)=>({id:i,label:'Edge '+(i+1)})),String(f.edgeA));
+    choices('plot027EdgeB',(f.selected?.boundary??[]).map((_,i)=>({id:i,label:'Edge '+(i+1)})),String(f.edgeB));
+    $('plot027RatioA').value=String(Number((f.ratioA*100).toFixed(2)));
+    $('plot027RatioB').value=String(Number((f.ratioB*100).toFixed(2)));
+    $('plot027Endpoint').value=f.endpoint??'A';
+    $('plot027Retain').value=f.retain;
+    $('plot027Undo').disabled=!f.pending;
+    $('plot027Split').disabled=Boolean(session.drag||f.operations.length>=12);
+    $('plot027Merge').disabled=Boolean(session.drag||!f.otherId||f.operations.length>=12);
+    const protectedIds=f.authorizations(project.city);
+    $('plot027ConsentWrap').hidden=!protectedIds.length;
+    $('plot027Consent').checked=f.approved;
+    $('plot027ConsentText').textContent='Approve authored metadata scope/retirement for '+protectedIds.join(', ')+'. Original records will be retained in plot history.';
+    $('plot027Summary').textContent=f.operations.length+' pending operation(s) · '+f.plots.length+
+      ' resulting plots. One Apply and one accepted Undo. '+(f.error||'Choose a plot and edit cut endpoints on the map or numerically.');
+  }
   const canHistory=!session.isPending&&!session.drag;
   $('propertyHistoryUndo3I').disabled=!(canHistory&&propertyHistory.can('undo',project,session.propertyId));
   $('propertyHistoryRedo3I').disabled=!(canHistory&&propertyHistory.can('redo',project,session.propertyId));
@@ -26762,6 +27100,56 @@ $('propertyRemoveDividerE4').addEventListener('click',()=>{
 });
 $('propertyCountConsentE4').addEventListener('change',()=>propertyEditSession?.approvePlotCount(
   $('propertyCountConsentE4').checked));
+$('plot027Start').addEventListener('click',()=>{
+  if(!propertyEditSession?.beginFlexible(project?.city))
+    $('statusMessage').textContent='Apply or reset the existing edit before starting flexible plots.';
+});
+for(const [id,key,convert] of [
+  ['plot027Selected','selectedId',String],['plot027Other','otherId',String],
+  ['plot027EdgeA','edgeA',Number],['plot027EdgeB','edgeB',Number],
+  ['plot027RatioA','ratioA',v=>Number(v)/100],['plot027RatioB','ratioB',v=>Number(v)/100],
+  ['plot027Endpoint','endpoint',String],['plot027Retain','retain',String]
+]){
+  $(id).addEventListener('change',()=>{
+    const s=propertyEditSession,f=s?.flexible;if(!f)return;
+    const value=convert($(id).value);
+    if(key.startsWith('ratio')&&(!Number.isFinite(value)||value<=.0001||value>=.9999)){
+      syncPropertyEditUI3I();return;
+    }
+    if(key==='selectedId'){
+      const chosen=f.plots.find(p=>p.id===value);
+      if(!chosen)return;
+      s.updateFlexible({selectedId:value,otherId:'',edgeA:0,edgeB:Math.min(2,chosen.boundary.length-1)});
+    }else s.updateFlexible({[key]:value});
+  });
+}
+$('plot027Split').addEventListener('click',()=>{
+  if(!propertyEditSession?.splitFlexible(project?.city))
+    $('statusMessage').textContent='Flexible plot split blocked: '+(propertyEditSession?.flexible?.error??'Invalid divider.');
+});
+$('plot027Merge').addEventListener('click',()=>{
+  if(!propertyEditSession?.mergeFlexible())
+    $('statusMessage').textContent='Flexible plot merge blocked: '+(propertyEditSession?.flexible?.error??'Invalid neighbors.');
+});
+$('plot027Undo').addEventListener('click',()=>propertyEditSession?.undoFlexible());
+$('plot027Consent').addEventListener('change',()=>propertyEditSession?.approveFlexible($('plot027Consent').checked));
+function plot027NearestEdge(f,point,zoom){
+  const ring=f?.selected?.boundary;if(!ring)return null;
+  let nearest=null,best=12/Math.max(.18,zoom);
+  for(let i=0;i<ring.length;i++){
+    const a=ring[i],b=ring[(i+1)%ring.length],dx=b.x-a.x,dy=b.y-a.y;
+    const t=Math.max(.01,Math.min(.99,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1)));
+    const x=a.x+dx*t,y=a.y+dy*t,dist=Math.hypot(point.x-x,point.y-y);
+    if(dist<best){best=dist;nearest={edge:i,ratio:t};}
+  }
+  return nearest;
+}
+function plot027EndpointPosition(f,which){
+  const ring=f?.selected?.boundary;if(!ring)return null;
+  const edge=which==='A'?f.edgeA:f.edgeB,t=which==='A'?f.ratioA:f.ratioB;
+  const a=ring[edge],b=ring[(edge+1)%ring.length];
+  return a&&b?{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t}:null;
+}
 function movePropertyHistory3I(direction){
   const session=propertyEditSession;
   if(!project||!session?.isActive||session.isPending||session.drag)return false;
@@ -26847,6 +27235,19 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     if(hit)roadWorkspace.session.select(hit);
     return;
   }
+  if (propertyEditSession?.flexibleMode) {
+    const f=propertyEditSession.flexible,near=plot027NearestEdge(f,point,camera.zoom);
+    if(near){
+      const which=f.endpoint==='B'?'B':'A';
+      propertyEditSession.updateFlexible({[which==='A'?'edgeA':'edgeB']:near.edge,
+        [which==='A'?'ratioA':'ratioB']:near.ratio});
+    }else{
+      const hit=f.plots.find(p=>pointInPolygon(point,p.boundary));
+      if(hit)propertyEditSession.updateFlexible({selectedId:hit.id,otherId:'',
+        edgeA:0,edgeB:Math.min(2,hit.boundary.length-1)});
+    }
+    return;
+  }
   if (propertyEditSession?.isActive) {
     const corner=propertyEditSession.hitCorner(project?.city,point,camera.zoom);
     if(corner!==null)propertyEditSession.selectCorner(corner);
@@ -26919,6 +27320,19 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       propertyCreationSessionE1.drag={startU:u,originalU:draft.u};return true;
     }
     if(roadWorkspace?.active)return !roadWorkspace.comparisonOpen && roadWorkspace.session.begin(point,zoom,event?.pointerType);
+    if(propertyEditSession?.flexibleMode){
+      const f=propertyEditSession.flexible;
+      for(const which of ['A','B']){
+        const p=plot027EndpointPosition(f,which);
+        if(p&&Math.hypot(point.x-p.x,point.y-p.y)<12/Math.max(.18,zoom)){
+          propertyEditSession.drag={kind:'plot027',which,original:{edgeA:f.edgeA,edgeB:f.edgeB,
+            ratioA:f.ratioA,ratioB:f.ratioB}};
+          propertyEditSession.updateFlexible({endpoint:which});
+          return true;
+        }
+      }
+      return false;
+    }
     if(propertyEditSession?.isActive){
       const index=propertyEditSession.hitCorner(project?.city,point,zoom);
       if(index===null)return false;
@@ -26951,7 +27365,14 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       return;
     }
     if(roadWorkspace?.active){roadWorkspace.session.move(point,event);return;}
-    if(propertyEditSession?.drag){
+    if(propertyEditSession?.drag?.kind==='plot027'){
+      const f=propertyEditSession.flexible,near=plot027NearestEdge(f,point,camera.zoom);
+      if(near){
+        const which=propertyEditSession.drag.which;
+        propertyEditSession.updateFlexible({[which==='A'?'edgeA':'edgeB']:near.edge,
+          [which==='A'?'ratioA':'ratioB']:near.ratio});
+      }
+    }else if(propertyEditSession?.drag){
       propertyEditSession.setCorner(propertyEditSession.drag.index,point);
     }else if(buildingPlacementSession?.drag){
       const property=buildingPlacementSession.property(project.city);
@@ -26972,7 +27393,10 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     if(propertyEditSession?.drag){
       const drag=propertyEditSession.drag;
       propertyEditSession.drag=null;
-      if(cancelled)propertyEditSession.setCorner(drag.index,drag.original);
+      if(cancelled){
+        if(drag.kind==='plot027')propertyEditSession.updateFlexible(drag.original);
+        else propertyEditSession.setCorner(drag.index,drag.original);
+      }
       syncPropertyEditUI3I();
     }else if(buildingPlacementSession?.drag){
       const drag=buildingPlacementSession.drag;
