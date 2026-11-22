@@ -559,7 +559,7 @@ function c01ActiveProperty() {
   return sel?.kind==='property'&&sel.id===compoundPanelPropertyId
     ? project?.city.properties.find(p=>p.id===sel.id) : null;
 }
-function c01Group() {
+function c01SelectedGroup() {
   return c01ActiveProperty()?.buildingCompounds?.find(g=>g.id===compoundGroupId)??null;
 }
 function c01SelectGroup(id) {
@@ -603,7 +603,7 @@ function c01SyncPanel(rebuild=false) {
     select.replaceChildren(...options);
   }
   select.value=compoundGroupId;
-  const group=c01Group();
+  const group=c01SelectedGroup();
   const name=$('compoundNameInput');
   if(document.activeElement!==name||rebuild)name.value=compoundName;
   if(rebuild){
@@ -665,7 +665,7 @@ function c01SaveMembership(action) {
   return true;
 }
 function c01ApplyTransform() {
-  const property=c01ActiveProperty(),group=c01Group();
+  const property=c01ActiveProperty(),group=c01SelectedGroup();
   if(!property||!group||!project)return false;
   const previous=project;
   const receipt=prepareCompoundTransform(previous,captureWorkspace().workspace,
