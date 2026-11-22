@@ -6,7 +6,7 @@ import { roadReconciliationPreviewB3 } from '../core/road-inspection.js';
 import { validateRoadApplyC2 } from '../editor/road-application.js';
 
 // Worker computations operate on detached snapshots.
-export function calculateJunctionPreviewP1({ project, junctionId, point, decisions = [], ownershipChoices = [], targetJunctionId = null }) {
+export function calculateJunctionPreviewP1({ project, junctionId, point, decisions = [], ownershipChoices = [], parcelChoices = [], targetJunctionId = null }) {
   const start = performance.now();
   const proposal = proposeJunctionMove(project.city, junctionId, point);
   const report = analyzeRoadImpact(project, proposal);
@@ -15,7 +15,7 @@ export function calculateJunctionPreviewP1({ project, junctionId, point, decisio
   const reflowStart = performance.now();
   try {
     reconciliation = prepareJunctionReflowC7(project, junctionId, point, new Map(decisions),
-      {targetJunctionId,ownershipChoices:new Map(ownershipChoices)});
+      {targetJunctionId,ownershipChoices:new Map(ownershipChoices),parcelChoices:new Map(parcelChoices)});
     if (!reconciliation.candidateProject && proposal.graphValid)
       topology = prepareRoadReconciliationB1(project, junctionId, point);
   } catch (error) {
@@ -36,10 +36,10 @@ export function junctionPreviewMessage(result) {
   const { reconciliation, proposal, report, previewGeometry, reconciliationError, timings } = result;
   const display = { proposal, report, previewGeometry, reconciliationError, timings };
   if (!reconciliation) return { ...display, reconciliation: null };
-  const { candidateProject, phase, status, validation, unresolved, ledger, ownershipReview, lineage } = reconciliation;
+  const { candidateProject, phase, status, validation, unresolved, ledger, ownershipReview, lineage, parcelReview } = reconciliation;
   return {
     ...display,
-    reconciliation: { phase, status, validation, unresolved, ledger, ownershipReview, lineage,
+    reconciliation: { phase, status, validation, unresolved, ledger, ownershipReview, lineage, parcelReview,
       candidateJson: candidateProject ? JSON.stringify(candidateProject) : null },
   };
 }
@@ -47,16 +47,16 @@ export function junctionPreviewMessage(result) {
 if (typeof self !== 'undefined' && typeof self.addEventListener === 'function' &&
     typeof self.postMessage === 'function') {
   self.addEventListener('message', event => {
-    const { requestId, operation, projectJson, junctionId, point, decisions, ownershipChoices, workspace, inspected, targetJunctionId } = event.data ?? {};
+    const { requestId, operation, projectJson, junctionId, point, decisions, ownershipChoices, parcelChoices, workspace, inspected, targetJunctionId } = event.data ?? {};
     try {
       const project = JSON.parse(projectJson);
       const result = operation === 'apply'
         ? validateRoadApplyC2(project, workspace, {
           selection: { kind: 'junction', id: junctionId }, point, buildingDecisions: new Map(decisions),
-          targetJunctionId, ownershipChoices: new Map(ownershipChoices ?? []),
+          targetJunctionId, ownershipChoices: new Map(ownershipChoices ?? []), parcelChoices:new Map(parcelChoices ?? []),
         }, inspected)
         : junctionPreviewMessage(calculateJunctionPreviewP1({ project, junctionId, point, decisions,
-            ownershipChoices, targetJunctionId }));
+            ownershipChoices, parcelChoices, targetJunctionId }));
       if (result.timings) result.timings.sentAt = performance.timeOrigin + performance.now();
       self.postMessage({ requestId, result });
     } catch (error) {

@@ -35,9 +35,9 @@ function b05AccessValid(property,buildings,city,graph,block) {
   return true;
 }
 function b05GeneratedCandidate(candidate,keptIds){
-  if(keptIds.has(candidate.id))return false;
-  return classifyRoadProvenance(candidate)==='generated' ||
-    candidate.roadProvenance?.source==='generator-v1';
+  // All unretained candidate slots come freshly from c3Development.
+  // Previously accepted and already authorized records are protected by ID.
+  return !keptIds.has(candidate.id);
 }
 export function eligibleRoadParcelChoices028(old,city,replacements,generated,graph,keptIds,source) {
   const buildings=source.buildingIds.map(id=>old.buildings.find(b=>b.id===id));
@@ -73,6 +73,9 @@ export function reconcileRoadParcels028(old,city,replacements,generated,graph,ke
   const ids=new Set(conflicts.map(p=>p.id)),unresolved=[],review=[];
   for(const key of map.keys())if(!ids.has(key))unresolved.push(b05Error(key,'The chosen parcel is no longer affected by this road edit.'));
   if(unresolved.length)return {unresolved,review,handledBuildings,dispositions};
+  if(city.roadParcelDecisionHistory028!==undefined && !Array.isArray(city.roadParcelDecisionHistory028))
+    return {unresolved:[b05Error(conflicts[0]?.id??'unknown','Unsupported parcel archive metadata cannot be modified.')],
+      review,handledBuildings,dispositions};
   const archived=Array.isArray(city.roadParcelDecisionHistory028)?b05Copy(city.roadParcelDecisionHistory028):[];
   if(archived.length+conflicts.length>B05_LIMIT)
     return {unresolved:[b05Error(conflicts[0]?.id??'unknown','The bounded parcel decision archive is full; cannot discard original records.')],
@@ -139,8 +142,9 @@ export function reconcileRoadParcels028(old,city,replacements,generated,graph,ke
       }
       if(unresolved.some(row=>row.id===property.id))continue;
       const removedBuildings=generated.buildings.filter(b=>displaced.has(b.propertyId));
-      if(removedBuildings.some(b=>!b05GeneratedCandidate(b,new Set())))
-        {unresolved.push(b05Error(property.id,'A protected building would be displaced.'));continue;}
+      if(removedBuildings.some(b=>kept.buildings.some(k=>k.id===b.id) || handledBuildings.has(b.id))){
+        unresolved.push(b05Error(property.id,'A protected building would be displaced.'));continue;
+      }
       const alreadyOccupied=generated.properties.some(p=>!displaced.has(p.id) &&
         shapesOverlapInterior(p.boundary,updated.boundary));
       if(alreadyOccupied){unresolved.push(b05Error(property.id,'The selected plot conflicts with another retained parcel.'));continue;}
@@ -158,6 +162,7 @@ export function reconcileRoadParcels028(old,city,replacements,generated,graph,ke
       generated.plots.push(...nextPlots);
       generated.buildings.push(...nextBuildings);
       for(const b of nextBuildings)handledBuildings.add(b.id);
+      retainedIds.add(updated.id);
     }
   }
   if(unresolved.length)return {unresolved,review,handledBuildings,dispositions};

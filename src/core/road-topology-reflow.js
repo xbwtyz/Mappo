@@ -351,7 +351,8 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     const decided = new Map();
     for (const building of conflicts) {
       const choice = decisions.get(building.id);
-      const placed = placeRoadConflictBuilding(building,choice,regenerated,replacements.get(building.blockId),graph,keptIds);
+      const placed = placeRoadConflictBuilding(building,choice,regenerated,replacements.get(building.blockId),graph,
+        new Set([...keptIds,...handledBuildings]));
       if (!placed)
         return fail('building-placement-blocked', 'That choice does not fit the adapted neighborhood. Choose another placement or revise the road.',
           'building',building.id);

@@ -88,7 +88,8 @@ function reconcileRoadIntent(project,roadId,draft,decisions,options = {}) {
   let analysis;
   const analyze = () => analysis ??= analyzeNeighborhoodDraft(project, draft);
   const preserved = prepareNeighborhoodReflow(project, roadId, draft, false, analyze, options);
-  if (preserved.candidateProject || !preserved.unresolved.some(row => rebuildableLandIssues.has(row.code)))
+  if (preserved.candidateProject || !preserved.unresolved.some(row =>
+      rebuildableLandIssues.has(row.code) || row.code==='parcel-decision-required' || row.code==='parcel-decision-invalid'))
     return preserved;
   const adapted = prepareNeighborhoodReflow(project, roadId, draft, true, analyze, options);
   if (adapted.candidateProject || !draft.facesResolved) return adapted;
@@ -100,7 +101,8 @@ function reconcileRoadIntent(project,roadId,draft,decisions,options = {}) {
     return adapted;
   const rebuilt = prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions,options);
   return rebuilt.candidateProject || rebuilt.unresolved.some(row =>
-    ['parcel-decision-required', 'building-decision-required'].includes(row.code)) ? rebuilt : adapted;
+    ['parcel-decision-required','parcel-decision-invalid','building-decision-required'].includes(row.code))
+    ? rebuilt : adapted;
 }
 
 function analyzeNeighborhoodDraft(project, draft) {
