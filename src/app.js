@@ -433,9 +433,13 @@ function workspaceChanged() {
   const observed=project&&!d01ReplayingHistory ? acceptedHistoryD01.observe(project) : null;
   // Journal observation follows other component callbacks; refresh the
   // actionable local controls after a newly accepted transaction.
-  if(observed?.status==='recorded'||observed?.status==='barrier'){
+  if(observed?.status==='recorded'||observed?.status==='barrier'||d01ReplayingHistory){
     syncBuildingHistoryUI();
     syncBuildingStructureUI3H();
+    // The property Inspector may render before the accepted transaction has
+    // been observed. Recompute its accepted-history button states afterward.
+    // Do not revalidate every mouse move or visual-only selection change.
+    syncPropertyEditUI3I();
   }
   desktopWorkspace?.sync();
   if(roadWorkspace?.transient){syncPropertyDeletionControls4A();updateUndoFeedback();return;}
