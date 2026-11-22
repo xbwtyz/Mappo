@@ -70,6 +70,7 @@ export class RoadPreviewSession {
     this.reconciliation = this.topology = this.previewGeometry = null;
     this.buildingDecisions = new Map();
     this.ownershipChoices = new Map();
+    this.ownershipFocusKey023 = null;
     this.roadConnectionEdit = null;
     this.bendEditor = null;
     this.roadIntentOffset = null;
@@ -119,6 +120,7 @@ export class RoadPreviewSession {
     this.invalidate();
     this.buildingDecisions = new Map();
     this.ownershipChoices = new Map();
+    this.ownershipFocusKey023 = null;
     this.roadConnectionEdit = null;
     this.bendEditor = null;
     // Never present NaN, Infinity or a blank field as a real road draft.
@@ -195,6 +197,7 @@ export class RoadPreviewSession {
     this.invalidate();
     this.buildingDecisions.clear();
     this.ownershipChoices.clear();
+    this.ownershipFocusKey023 = null;
     const state = this.bendEditor;
     state.points = points;
     this.roadIntentInputError = this.error = '';
@@ -308,6 +311,7 @@ export class RoadPreviewSession {
     this.mergeSourceId = this.mergeTargetId = this.mergeHoverId = null;
     this.buildingDecisions = new Map();
     this.ownershipChoices = new Map();
+    this.ownershipFocusKey023 = null;
     this.roadConnectionEdit = null;
     this.bendEditor = null;
     this.roadIntentOffset = d?.kind === 'road' ? {x:0,y:0} : null;
@@ -328,6 +332,7 @@ export class RoadPreviewSession {
     this.invalidate();
     this.buildingDecisions.clear();
     this.ownershipChoices.clear();
+    this.ownershipFocusKey023 = null;
     this.point = { x: point.x, y: point.y };
     this.targetJunctionId = targetId;
     this.snapTargetId = targetId;
