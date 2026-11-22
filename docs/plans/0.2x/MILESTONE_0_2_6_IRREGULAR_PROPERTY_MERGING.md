@@ -1,6 +1,6 @@
 # Mappo 0.2.6 — B03 Irregular Property Merging
 
-**Status: In progress on feature branch; P1 geometry foundation only.** Implementation authorization granted; **no merge, tag, release, schema change or Pages permission**.
+**Status: Implementation in progress on draft PR #116. P1 geometry and E3 integration; P2–P4 candidate code; P5 verification pending.** Implementation authorization granted; **no merge, tag, release, schema change or Pages permission**.
 
 ## Owner-approved architecture
 D-026-1=A (same-block/district, one shared continuous straight segment including partial edges); D-026-2=A (simple connected convex/concave union, 3–12 vertices); **D-026-3=B (multiple frontage roads)**; D-026-4=A (plots stay unchanged); **D-026-5=B (automatic entrance/building adjustment or relocation when needed, with authorship protections)**; D-026-6=A (primary identity and secondary lineage); D-026-7=A (extend E3, schema 9 if provably safe, five checkpoints, one PR).
