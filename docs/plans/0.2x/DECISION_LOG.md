@@ -37,3 +37,16 @@
 ## Next discussion
 
 Review the [B05 PR #118](https://github.com/xbwtyz/Mappo/pull/118) CI and scope, obtain separate owner merge approval, and verify post-merge main CI. Group C C02 ([Issue #105](https://github.com/xbwtyz/Mappo/issues/105)) before C01 ([Issue #104](https://github.com/xbwtyz/Mappo/issues/104)) is the recommended next review sequence; no code is authorized for either.
+
+
+## 0.2.9 C02 — owner-approved decisions
+
+- **D-029-1=A:** One building per draft
+- **D-029-2=A:** 16 successful structural operations per draft, unlimited coordinate edits
+- **D-029-3=A:** Local geometry validation after each step, full project validation before Apply
+- **D-029-4=A:** Remap selections, clear ambiguous indices
+- **D-029-5=A:** One accepted Undo/Redo entry per Apply; Reset discards draft
+- **D-029-6=A:** Transforms interleave with structural edits
+- **D-029-7=A:** Use the existing compact building editor
+
+P1–P5 implementation separately authorized; PR merge, stable release, schema change and Pages remain gated.

@@ -107,7 +107,7 @@ async function exerciseF2(browserName, browserType) {
     assert.equal(await handle.inputValue(), '1');
     await page.locator('#buildingWingDepth').fill(String(wing.depth));
     await page.locator('#buildingAddWing').click();
-    assert.equal(await page.locator('#buildingInsertVertex').isDisabled(), true);
+    assert.equal(await page.locator('#buildingInsertVertex').isDisabled(), false);
     assert.equal(await page.locator('#buildingPreviewApply').isEnabled(), true);
     assert.ok(JSON.stringify(await readCity(page)) === JSON.stringify(project.city), 'Accepted city should match the expected snapshot');
     await page.locator('#buildingPreviewApply').click();
@@ -196,6 +196,59 @@ async function exerciseF2(browserName, browserType) {
   }
 }
 
+
+async function exerciseC02(name, engine) {
+  const browser = await engine.launch();
+  const page = await browser.newPage({viewport:{width:1440,height:900}});
+  const errors=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.setDefaultTimeout(15000);
+  try {
+    await page.route('**/*',request=>request.request().url()===origin
+      ?request.fulfill({contentType:'text/html',body:html}):request.abort());
+    await page.goto(origin,{waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>__buildingQA.state().files.ready);
+    const project=await page.evaluate(()=>__buildingQA.state().project);
+    const {building,wing,courtyard}=findDirectFootprintFixture(project);
+    const before=JSON.stringify(project.city);
+    await openBuildingEditor(page,building,'Edges');
+    await page.locator('#buildingDirectHandle').selectOption('1');
+    await page.locator('#buildingWingStart').fill(String(wing.start*100));
+    await page.locator('#buildingWingEnd').fill(String(wing.end*100));
+    await page.locator('#buildingWingDepth').fill(String(wing.depth));
+    await page.locator('#buildingAddWing').click();
+    assert.equal(await page.evaluate(()=>__buildingQA.state().buildingEditSession.structuralOperationCount),1);
+    assert.match(await page.locator('#buildingDirectHint').innerText(),/1\/16 structural edits/);
+    assert.equal(await page.locator('#buildingInsertVertex').isDisabled(),false);
+    await page.locator('#buildingToolCourtyard').click();
+    for(const [suffix,value] of Object.entries({
+      X:courtyard.center.x,Y:courtyard.center.y,
+      Width:courtyard.width,Depth:courtyard.depth
+    })) await page.locator('#buildingCourtyard'+suffix).fill(String(value));
+    assert.equal(await page.evaluate(()=>__buildingQA.state().buildingEditSession.structuralOperationCount),2);
+    await page.locator('#buildingToolEdges').click();
+    await page.locator('#buildingDirectRing').selectOption('exterior');
+    await page.locator('#buildingDirectHandle').selectOption('0');
+    await page.locator('#buildingInsertVertex').click();
+    assert.equal(await page.evaluate(()=>__buildingQA.state().buildingEditSession.structuralOperationCount),3);
+    assert.match(await page.locator('#buildingDirectHint').innerText(),/3\/16 structural edits/);
+    assert.equal(await page.locator('#buildingPreviewApply').isEnabled(),true);
+    assert.equal(JSON.stringify(await readCity(page)),before);
+    await page.locator('#buildingPreviewApply').click();
+    assert.equal(await page.evaluate(id=>__buildingQA.state().buildingHistory.count('undo',id),building.id),1);
+    const after=JSON.stringify(await readCity(page));
+    assert.notEqual(after,before);
+    assert.equal(await page.evaluate(()=>__buildingQA.state().buildingEditSession.structuralOperationCount),0);
+    await page.locator('#buildingHistoryUndo').click();
+    assert.equal(JSON.stringify(await readCity(page)),before);
+    await page.locator('#buildingHistoryRedo').click();
+    assert.equal(JSON.stringify(await readCity(page)),after);
+    assert.deepEqual(errors,[]);
+    console.log('PASS C02 '+name+' multi-operation building draft');
+  } finally {await browser.close();}
+}
+
 for (const [name, engine] of [['chromium', chromium], ['firefox', firefox]]) {
   await exerciseF2(name, engine);
+  await exerciseC02(name, engine);
 }

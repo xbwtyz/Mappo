@@ -84,13 +84,14 @@ export class BuildingFootprintControls {
       this.courtyardKey = '';
       return;
     }
-    const { holeIndex, tool, handleIndex, drag, topologyChanged } = session;
+    const { holeIndex, tool, handleIndex, drag, structuralOperationCount } = session;
     const preview = session.previewFor(city);
     const hole = preview.holes[holeIndex];
     const vertices = tool === 'vertices';
     const edges = tool === 'edges';
     const handles = buildingDirectHandles(preview, tool, holeIndex);
-    const blocked = Boolean(drag || topologyChanged);
+    const limitReached = structuralOperationCount >= 16;
+    const blocked = Boolean(drag || limitReached);
     this.setOptions('buildingDirectRing', preview.holes.length, 'Courtyard', ['exterior', 'Exterior']);
     el('buildingDirectRing').value = holeIndex === null ? 'exterior' : String(holeIndex);
     el('buildingDirectRing').disabled = Boolean(drag);
@@ -116,7 +117,7 @@ export class BuildingFootprintControls {
     el('buildingCourtyardControls').hidden = tool !== 'courtyard';
     const frame = rectangularCourtyardFrame(hole);
     const adjustable = !hole || Boolean(frame);
-    const canAdjust = adjustable && !drag && (Boolean(hole) || !topologyChanged);
+    const canAdjust = adjustable && !drag && (Boolean(hole) || !limitReached);
     if (tool === 'courtyard') {
       const outer = buildingFrame(preview);
       const values = frame ?? {
@@ -136,14 +137,15 @@ export class BuildingFootprintControls {
     el('buildingSetCourtyard').hidden = Boolean(hole);
     el('buildingSetCourtyard').disabled = !canAdjust;
     el('buildingRemoveCourtyard').disabled = !hole || blocked;
-    el('buildingDirectHint').textContent = tool === 'courtyard' && hole && adjustable
+    const hint = tool === 'courtyard' && hole && adjustable
       ? 'Changes to the center, width, and depth update the preview as you type.'
-      : topologyChanged
-      ? 'Apply or reset before inserting or removing another vertex, wing, or courtyard.'
       : vertices ? 'Drag a map handle or enter the selected vertex coordinates.'
       : edges ? 'Choose an edge on the map or from the list.'
       : !adjustable ? 'Use Vertices to adjust this nonrectangular courtyard.'
       : 'Choose Exterior to add a rectangular courtyard or select a courtyard to edit.';
+    el('buildingDirectHint').textContent = structuralOperationCount
+      ? `${structuralOperationCount}/16 structural edits · ${limitReached ? 'Apply or Reset to continue. ' : ''}${hint}`
+      : hint;
     el('buildingDirectError').textContent = session.operationError;
     el('buildingDirectError').hidden = !session.operationError;
   }
