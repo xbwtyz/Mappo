@@ -234,9 +234,9 @@ function updatePendingFeedback() {
 }
 
 function d01DraftBlocked() {
-  if(roadWorkspace?.active||propertyEditSession?.isActive||propertyCreationSessionE1?.active||
-    propertySplitE2?.active||propertyMergeE3?.active||buildingEditSession?.isActive||
-    buildingPlacementSession?.isActive||desktopWorkspace?.mapPreview()||
+  if(roadWorkspace?.active||propertyEditSession?.isPending||propertyEditSession?.drag||propertyCreationSessionE1?.active||
+    propertySplitE2?.active||propertyMergeE3?.active||buildingEditSession?.isPending||
+    buildingEditSession?.drag||buildingPlacementSession?.isActive||desktopWorkspace?.mapPreview()||
     editor?.dirty||identityWorkspace?.hasPending()) return true;
   if(compoundPanelPropertyId && (Math.abs(compoundTransform.dx)>1e-9||
       Math.abs(compoundTransform.dy)>1e-9||Math.abs(compoundTransform.angle)>1e-9||
@@ -295,8 +295,12 @@ function d01MoveHistory(direction) {
     propertySplitE2?.history.clear();propertyMergeE3?.history.clear();
     identityWorkspace?.editor.reset();
     if(receipt.entry.family==='road')refreshRoadDistrictWorkspace(receipt.workspace);
-    propertyWorkspace.refresh({replaced:true});
-    buildingWorkspace.refresh({replaced:true});
+    const structural=['road','property-structure','building-structure'].includes(receipt.entry.operation)
+      ||receipt.entry.family==='road';
+    propertyWorkspace.refresh(structural?{replaced:true}:{});
+    buildingWorkspace.refresh(structural?{replaced:true}:{});
+    if(buildingEditSession?.isActive && !structural)buildingEditSession.reset(project.city);
+    if(propertyEditSession?.isActive && !structural)propertyEditSession.reset(project.city);
     clearMapHover();
     updateDetails();workspaceShell.refresh();requestDraw();
     workspaceChanged();
