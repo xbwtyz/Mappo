@@ -138,13 +138,17 @@ Baseline `0.2.1-dev` from merged PR #111: Small Planned `c2-planned`, move exist
 - `src/renderer/road-inspection.js`: preview-only markers for snap, source, hover, destination.
 - `src/core/road-crossings.js`, `road-topology-reflow.js`, `neighborhood-reflow.js`, `src/worker/junction-preview-worker.js` and `src/editor/road-application.js`: preserve target identity by explicit validated preference across preview and authoritative Apply. Standard non-merge normalization retains the previous deterministic identity behavior.
 
+### Acceptance verified on implementation head `f99472a` — [CI 8/8, 3m01s](https://github.com/xbwtyz/Mappo/actions/runs/44978889224)
+
+The owner must still separately approve merging PR #112, and any subsequent documentation-only revision must pass its own exact-head CI.
+
 ### Review acceptance — must pass before merge
-- [ ] J1: zoom-aware capture, hysteresis and deterministic targeting, exclude protected/self.
-- [ ] J2: normal drag, snap, Alt bypass, snap disabled and drag cancellation.
-- [ ] J3: two-click selection without accidental movement, visible labels, target identity through sync and worker reflow, authored conflicts guarded.
-- [ ] J4: editor preview, independent Apply, Undo/Redo, Cancel/Escape, schema-9 portable save, offline Firefox/Chromium.
-- [ ] Official generated standalone `index.html` equals versioned `dist/mappo-0.2.2-dev.html`; historical builds retained.
-- [ ] All six CI runners and required aggregate check green on the final head; provide exact run link and duration.
+- [x] J1: zoom-aware capture, hysteresis and deterministic targeting, exclude protected/self.
+- [x] J2: normal drag, snap, Alt bypass, snap disabled and drag cancellation.
+- [x] J3: two-click selection without accidental movement, visible labels, target identity through sync and worker reflow, authored conflicts guarded.
+- [x] J4: editor preview, independent Apply, Undo/Redo, Cancel/Escape, schema-9 portable save, offline Firefox/Chromium.
+- [x] Official generated standalone `index.html` equals versioned `dist/mappo-0.2.2-dev.html`; historical builds retained.
+- [x] All six CI runners and required aggregate check green on the final head; provide exact run link and duration.
 - [ ] Separate explicit owner approval before PR merge; no release or Pages publication.
 
 **Scope not added:** automatic nearby junction movement outside dragging, near-coincident merging without exact snap, arbitrary collinear overlaps, freehand line drawing, protected-road reparenting, or Issue #98 large reflow.

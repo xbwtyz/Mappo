@@ -1,5 +1,7 @@
 # Mappo 0.2.2 — Coincident Ordinary Junction Normalization: Acceptance Report
 
+> **Status: implementation acceptance passed on code head `f99472a`; review/merge not authorized.**
+>
 > **Issue:** [#95](https://github.com/xbwtyz/Mappo/issues/95) · **PR:** [#112](https://github.com/xbwtyz/Mappo/pull/112) · **Status:** Implementation candidate; required CI and review evidence tracked on PR. **Not merged or released.** Development label `0.2.2-dev`; project schema **9**.
 
 ## 1. Owner-approved scope and user experience
@@ -54,7 +56,7 @@ The original `tests/road-intersections-022.test.js` covers:
 - `scripts/junction-snap-merge-browser-qa.mjs`: actual Chromium and Firefox pointer events and map clicks, target identity, Alt, preview, Apply and history; invoked as part of the unchanged six-runner CI's roads browser suite.
 - **Positive explicit-target fixture:** Small Planned `c2-planned`, move `N-0140` to `N-0139`; target `N-0139` survives. Reverse `N-0139` → `N-0140` remains intentionally blocked with `district-decision-required`, demonstrating that explicit targeting cannot override unsafe ownership.
 - `index.html` and `dist/mappo-0.2.2-dev.html` now contain the same exact official CI-built blob `7854388` (from [run #44978314847](https://github.com/xbwtyz/Mappo/actions/runs/44978314847)); published historical versions are retained.
-- **Pending final gate:** [PR full CI run #44978570784](https://github.com/xbwtyz/Mappo/actions/runs/44978570784) on head `091d646`, with the new browser script and checked-in standalone. Record the final outcome and measured duration in the PR before owner merge review.
+- **Verified implementation gate:** [PR CI run #44978889224](https://github.com/xbwtyz/Mappo/actions/runs/44978889224) on full implementation head `f99472a` succeeded **8/8**: two Node shards, four Firefox/Chromium browser suites including real pointer interactions, build/syntax smoke and required aggregate. Duration **3m01s**. Any subsequent documentation-only head also requires an exact-head CI pass before merge.
 
 A successful test matrix is **not** permission to merge, tag, publish a stable release, or deploy Pages.
 
