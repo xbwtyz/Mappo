@@ -128,7 +128,9 @@ Baseline `0.2.1-dev` from merged PR #111: Small Planned `c2-planned`, move exist
 - **Cancel connection** or Escape abandons the two-click mode before exiting the Roads workspace. Zoom, pan, and editor selection retain existing behavior.
 - For explicit snap/pair selection, the *target* junction survives by ID. A redundant/zero-length road, ambiguous authored reference, protected target, disconnected network or unsafe district/development adaptation continues to block Apply.
 
-**J3 regression note:** A canonical positive mouse-pick fixture is Small Planned `c2-planned`, **source `N-0140` → target `N-0139`**. The reverse direction attempts to combine blocks of different districts/usages and remains blocked with `district-decision-required`; no target-ID preference bypasses this architectural safety boundary. An independent synthetic ordinary graph verifies explicit preference for a lexicographically later target when safe.\n\n### Implementation
+**J3 regression note:** A canonical positive mouse-pick fixture is Small Planned `c2-planned`, **source `N-0140` → target `N-0139`**. The reverse direction attempts to combine blocks of different districts/usages and remains blocked with `district-decision-required`; no target-ID preference bypasses this architectural safety boundary. An independent synthetic ordinary graph verifies explicit preference for a lexicographically later target when safe.
+
+### Implementation
 - `src/core/junction-targeting.js`: pure world-to-screen-distance hit calculation (12px capture, 18px release, stable deterministic ties), guarded by existing ordinary junction eligibility.
 - `src/editor/road-preview.js`: transient snap state, Alt bypass, bounded click-to-pick state and existing reflow invocation. No new mutation path.
 - `src/ui/road-inspection.js` and `index.template.html`: compact checkbox, Connect/Merge button, cancel action, and source/target instructions.

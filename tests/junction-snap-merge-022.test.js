@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
-import { buildRoadGraph } from '../src/core/road-graph.js';\nimport { normalizeRoadCrossingsC3 } from '../src/core/road-crossings.js';
+import { buildRoadGraph } from '../src/core/road-graph.js';
+import { normalizeRoadCrossingsC3 } from '../src/core/road-crossings.js';
 import { roadInspectionDetails } from '../src/core/road-inspection.js';
 import { JUNCTION_SNAP_CAPTURE_PX, JUNCTION_SNAP_RELEASE_PX,
   findEligibleJunctionTarget } from '../src/core/junction-targeting.js';
@@ -12,7 +13,10 @@ import { buildingAppHarness } from './helpers/building-app.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
 
 const projectFixture = () => createProject({seed:'c2-planned',size:'small',morphology:'planned'});
-// Reverse of the original A03 fixture: the accepted 0.2.2 reflow can safely\n// retain N-0139 as the explicitly chosen destination. The opposite direction\n// crosses mixed district/land-use ownership and must remain safely blocked.\nconst sourceId = 'N-0140', targetId = 'N-0139';
+// Reverse of the original A03 fixture: the accepted 0.2.2 reflow can safely
+// retain N-0139 as the explicitly chosen destination. The opposite direction
+// crosses mixed district/land-use ownership and must remain safely blocked.
+const sourceId = 'N-0140', targetId = 'N-0139';
 const node = (project,id) => project.city.nodes.find(record => record.id === id);
 
 test('J1 deterministic zoom-relative snap targets: 12px capture, 18px release and protected exclusion',()=>{
