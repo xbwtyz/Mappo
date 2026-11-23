@@ -1,5 +1,6 @@
 // S10-A structural components: organizational identity, never spatial ownership.
 import { S10_REGION_LIMITS, canonicalizeBuildingRegionsS10 } from './building-topology-s10.js';
+const cloneJson=value=>JSON.parse(JSON.stringify(value));
 const validId=id=>typeof id==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(id);
 
 export function canonicalizeBuildingComponentsS10(components, geometry) {
@@ -13,7 +14,7 @@ export function canonicalizeBuildingComponentsS10(components, geometry) {
       throw Error('S10 components require unique IDs and valid parent references.');
     if (c.name!==undefined&&(typeof c.name!=='string'||c.name.length>80))
       throw Error('S10 component name is invalid.');
-    byId.set(c.id,{...c});
+    byId.set(c.id,cloneJson(c));
   }
   const roots=[...byId.values()].filter(c=>c.parentId===null);
   if(roots.length!==1)throw Error('S10 building requires exactly one component root.');

@@ -9,6 +9,7 @@ export const S10_REGION_LIMITS = Object.freeze({
   maxComponents: 64, maxWork: 6000000
 });
 const EPS = 1e-7;
+const cloneJson = value => JSON.parse(JSON.stringify(value));
 const validId = id => typeof id === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(id);
 const bounds = ring => ({
   minX: Math.min(...ring.map(p => p.x)), maxX: Math.max(...ring.map(p => p.x)),
@@ -84,7 +85,7 @@ export function canonicalizeBuildingRegionsS10(geometry, budget = createS10Geome
     if (source.kind === 'solid' ? !validId(source.componentId) :
       source.componentId !== undefined && source.componentId !== null)
       throw Error('S10 solid regions require a component; voids cannot own one.');
-    const region = {...source, ring: normalizeRing(source.ring)};
+    const region = {...cloneJson(source), ring: normalizeRing(source.ring)};
     map.set(region.id,region);
   }
   const depth = new Map(), active = new Set();
@@ -128,7 +129,7 @@ export function canonicalizeBuildingRegionsS10(geometry, budget = createS10Geome
   }
   append(null);
   if(ordered.length!==map.size)throw Error('S10 regions must form one or more rooted trees.');
-  return { ...geometry, regions:ordered };
+  return { ...cloneJson(geometry), regions:ordered };
 }
 
 export function regionDepthS10(geometry, id) {

@@ -229,3 +229,20 @@ test('S10-A P1 64 legacy courtyard holes fit the proposed 128-region budget',()=
   assert.equal(occupiedAreaS10(adapted.geometry),8100-64*4);
   assert.equal(projectSimpleBuildingS10(adapted.geometry,adapted.components).holes.length,64);
 });
+
+test('S10-A P5 nested compatible metadata is deeply detached from canonical output',()=>{
+  const g=geom({...solid('r',rect(0,0,12,12)),extensions:{notes:{author:'original'}}});
+  g.extensions={history:{marker:1}};
+  const c=[{id:'BC-ROOT',parentId:null,extensions:{label:{text:'original'}}}];
+  const normalized=validateBuildingStructureS10(g,c);
+  normalized.geometry.regions[0].extensions.notes.author='edited';
+  normalized.geometry.extensions.history.marker=2;
+  normalized.components[0].extensions.label.text='edited';
+  assert.equal(g.regions[0].extensions.notes.author,'original');
+  assert.equal(g.extensions.history.marker,1);
+  assert.equal(c[0].extensions.label.text,'original');
+});
+test('S10-A P5 disjoint polygon intersection still rejects invalid input',()=>{
+  const invalid=[{x:0,y:0},{x:5,y:5},{x:5,y:0},{x:0,y:5}];
+  assert.throws(()=>polygonIntersectionAreaS10(invalid,rect(50,50,5,5)),/valid CCW/);
+});

@@ -101,6 +101,8 @@ function ringIntersection(a,b,budget) {
 }
 
 export function polygonIntersectionAreaS10(a,b,budget=createS10GeometryBudget()) {
+  if(!shapeWellFormed(a)||!shapeWellFormed(b))
+    throw Error('S10 polygon intersection requires valid CCW rings.');
   return ringIntersection(a,b,budget);
 }
 
