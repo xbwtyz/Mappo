@@ -5,6 +5,7 @@ import { prepareRoadReconciliationB1 } from '../core/road-reconciliation.js';
 import { roadReconciliationPreviewB3 } from '../core/road-inspection.js';
 import { validateRoadApplyC2 } from '../editor/road-application.js';
 
+import { hydrateProjectS10 } from '../core/building-project-s10.js';
 // Worker computations operate on detached snapshots.
 export function calculateJunctionPreviewP1({ project, junctionId, point, decisions = [], ownershipChoices = [], parcelChoices = [], targetJunctionId = null }) {
   const start = performance.now();
@@ -49,7 +50,7 @@ if (typeof self !== 'undefined' && typeof self.addEventListener === 'function' &
   self.addEventListener('message', event => {
     const { requestId, operation, projectJson, junctionId, point, decisions, ownershipChoices, parcelChoices, workspace, inspected, targetJunctionId } = event.data ?? {};
     try {
-      const project = JSON.parse(projectJson);
+      const project = hydrateProjectS10(JSON.parse(projectJson));
       const result = operation === 'apply'
         ? validateRoadApplyC2(project, workspace, {
           selection: { kind: 'junction', id: junctionId }, point, buildingDecisions: new Map(decisions),

@@ -11,7 +11,16 @@ import { propertyDividerFractions3I, propertyGeometryPreview3I } from './propert
 import { PROPERTY_SETBACK, STREET_EDGE_WIDTH, STREET_WIDTHS, propertyFits, rectangleInFrame } from './placement.js';
 import { distanceToSegment, segmentCuts } from './boundary.js';
 import { validateStoredProject } from '../data/project-validation.js';
+import { hydrateCityS10 } from './building-project-s10.js';
 
+// A road intent is frozen for cancellation safety and loses non-serialized
+// read-only building projections during structuredClone. Rehydrate a detached
+// candidate, never the frozen accepted or intent objects.
+function c2HydrateDraftS10(draft) {
+  if (!draft?.proposedCity?.buildings?.some(b=>b?.geometry &&
+      !Object.getOwnPropertyDescriptor(b,'footprint')?.get)) return draft;
+  return {...draft,proposedCity:hydrateCityS10(structuredClone(draft.proposedCity))};
+}
 const C2_PARCEL_LIMIT = 256;
 const rebuildableLandIssues = new Set([
   'road-clearance', 'road-setback', 'block-containment', 'parcel-reflow-blocked',
@@ -65,7 +74,7 @@ function c2Parcel(city, property, road, edges, fixed) {
 }
 
 export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoadIntentC1(project, roadId, offset)) {
-  return prepareNeighborhoodReflow(project, roadId, draft, false);
+  return prepareNeighborhoodReflow(project, roadId, c2HydrateDraftS10(draft), false);
 }
 
 export function prepareNeighborhoodReflowC3(project, roadId, offset,
@@ -78,6 +87,7 @@ export function prepareJunctionReflowC7(project,junctionId,point,decisions = new
 }
 
 function reconcileRoadIntent(project,roadId,draft,decisions,options = {}) {
+  draft=c2HydrateDraftS10(draft);
   if (draft.draftable && !draft.issues.some(row => row.code === 'boundary-escape') &&
       draft.issues.some(row => row.code === 'unnormalized-crossing'))
     return prepareRoadTopologyReflowC3(project, roadId, draft,null,decisions,options);
@@ -190,7 +200,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
     ));
     if (unresolved.length) return blocked(unresolved);
 
-    const city = structuredClone(draft.proposedCity);
+    const city = hydrateCityS10(structuredClone(draft.proposedCity));
     const plots = riIndex(city.plots), buildings = riIndex(city.buildings);
     const reservedIds = new Set(buildings.keys());
     const affected = city.properties.filter(p => changedBlocks.has(p.blockId));
@@ -294,7 +304,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           next = c2Parcel(city, property, road, edges, []);
           const proposedPlots = ownPlots.map((plot, i) => ({ ...plot, boundary: next.plots[i].boundary }));
           const result = reflowGeneratedRoadBuildings(project.seed, property, next.property, proposedPlots,
-            ownBuildings, reservedIds);
+            ownBuildings, reservedIds, project.schemaVersion===10);
           next.property.buildingIds = result.buildings.map(building => building.id);
           replacements.set(property.id, result.buildings);
           for (const building of ownBuildings) {

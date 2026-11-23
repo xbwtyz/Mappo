@@ -108,7 +108,7 @@ for (const [engineName, engine] of [['chromium', chromium], ['firefox', firefox]
     const raw = await readFile(await downloaded.path(), 'utf8');
     const document = JSON.parse(raw);
     assert.equal(document.formatVersion, 1);
-    assert.equal(document.project.schemaVersion, 9);
+    assert.equal(document.project.schemaVersion, 10);
     assert.equal(JSON.stringify(document.project.city), JSON.stringify(archive.city));
     await el('projectFileInput').setInputFiles({
       name: 'h4-recovery-reopened.mappo.json',

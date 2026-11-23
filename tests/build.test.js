@@ -11,6 +11,7 @@ import {
   waterAt
 } from '../src/core/water-geometry.js';
 import test from 'node:test';
+import { legacyCityViewS10 } from './helpers/schema10-legacy-view.js';
 import assert from 'node:assert/strict';
 import {
   readFile
@@ -706,7 +707,7 @@ test('standalone app downloads, previews and restores complete projects and reco
   delete restored.fortificationState;
   delete restored.gates;
   delete restored.towers;
-  assert.deepEqual(restored, legacyCity);
+  assert.deepEqual(legacyCityViewS10(restored), legacyCity);
   const beforeWalls = copy(reloaded.state().project.city);
   assert.match(reloaded.el('defensePendingMessage').textContent, /No defenses are built/i);
   reloaded.el('wallsEnabledInput').checked = true;

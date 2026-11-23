@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { legacyCityViewS10 } from './helpers/schema10-legacy-view.js';
 import assert from 'node:assert/strict';
 import {
   readFile
@@ -306,8 +307,8 @@ test('native 3E river saves migrate without moving geometry or changing editor h
   assert.equal(raw.project.city.waterFeatures[0].kind, 'river');
   assert.ok(raw.project.city.bridges.length);
   const loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 9);
-  assert.deepEqual(loaded.project.city, raw.project.city);
+  assert.equal(loaded.project.schemaVersion, 10);
+  assert.deepEqual(legacyCityViewS10(loaded.project.city), raw.project.city);
   assert.deepEqual(loaded.workspace, raw.workspace);
   assert.deepEqual(decodeProjectDocument(encodeProjectDocument(loaded)), loaded);
 });

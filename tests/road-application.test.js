@@ -51,7 +51,7 @@ test('B4 field whitelist rejects unauthorized building, metadata, identity and j
  const p=createProject({seed:'b4-preserve',size:'small'}), after=copy(p);
  const node=p.city.nodes[0];after.city.nodes[0].x+=.01;
  assert.equal(verifyRoadDeltaB4(p,after,node.id),true);
- after.city.buildings[0].footprint[0].x+=.1;
+ after.city.buildings[0].geometry.regions[0].ring[0].x+=.1;
  assert.throws(()=>verifyRoadDeltaB4(p,after,node.id),/unsupported/);
  const stale=copy(p);stale.city.nodes[1].x+=.1;
  assert.throws(()=>verifyRoadDeltaB4(p,stale,node.id),/unrelated/);

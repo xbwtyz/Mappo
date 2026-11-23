@@ -311,7 +311,7 @@ test('runtime development validation rejects overlapping properties and broken p
   broken.buildings[0].plotIds = ['unknown'];
   assert.throws(() => validateDevelopment(broken, broken), /invalid property or plot/);
   const escaped = clone();
-  escaped.buildings[0].footprint[0] = {
+  escaped.buildings[0].geometry.regions[0].ring[0] = {
     x: 9000,
     y: 9000
   };

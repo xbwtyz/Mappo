@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { legacyCityViewS10 } from './helpers/schema10-legacy-view.js';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -33,7 +34,7 @@ test('98 frozen 0.1 golden cities retain exact geometry, IDs and metadata after 
     const city = fromFixture(fixture).city;
     // The 0.1 baseline predates C2 provenance. Hash all other fields exactly.
     const withoutProvenance = (key, value) => key === 'roadProvenance' ? undefined : value;
-    assert.equal(createHash('sha256').update(JSON.stringify(city, withoutProvenance)).digest('hex'),
+    assert.equal(createHash('sha256').update(JSON.stringify(legacyCityViewS10(city), withoutProvenance)).digest('hex'),
       fixture.sha256, JSON.stringify(fixture.options));
     const report = analyzeRoadGraph(freeze(city));
     assert.equal(report.valid, true, JSON.stringify(report.issues));
@@ -171,7 +172,7 @@ test('save/recovery document bytes and schema 9 remain unchanged by graph analys
   analyzeRoadGraph(freeze(document.project.city));
   proposeJunctionMove(document.project.city,ordinary,{x:node.x+.01,y:node.y+.01});
   assert.equal(encodeProjectDocument(document),before);
-  assert.equal(document.project.schemaVersion,9);
+  assert.equal(document.project.schemaVersion,10);
   assert.deepEqual(decodeProjectDocument(before),document);
 });
 

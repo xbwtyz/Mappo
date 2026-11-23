@@ -408,7 +408,7 @@ test('reports are frozen, serializable, detached and excluded from saved/recover
   assert.equal(r.city, undefined);
   assert.equal(r.candidate, undefined);
   assert.equal(encodeProjectDocument(document), before);
-  assert.equal(p.schemaVersion, 9);
+  assert.equal(p.schemaVersion, 10);
 });
 
 test('compiled impact reports agree with modular reports without exposing product globals', async () => {

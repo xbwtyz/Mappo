@@ -47,8 +47,8 @@ test('B05 customized local parcel stays blocked until a genuine reshape choice',
  for(const buildingId of parcel.buildingIds){
    const previous=project.city.buildings.find(b=>b.id===buildingId);
    const current=result.candidateProject.city.buildings.find(b=>b.id===buildingId);
-   assert.deepEqual(current.footprint,previous.footprint);
-   assert.deepEqual(current.holes,previous.holes);
+   assert.deepEqual(current.geometry,previous.geometry);
+   assert.deepEqual(current.components,previous.components);
  }
  assert.deepEqual(project,before);
  const ws=defaultWorkspace(project),history=new RoadGeometryHistoryB4();

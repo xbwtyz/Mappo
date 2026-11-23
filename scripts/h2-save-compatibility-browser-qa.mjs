@@ -5,6 +5,7 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
 import { createProjectDocument } from '../src/data/project-format.js';
 import { createProject } from '../src/core/city-model.js';
+import { projectSimpleBuildingS10 } from '../src/core/building-geometry-adapter-s10.js';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 
 const original = await readFile(new URL('../index.html', import.meta.url), 'utf8');
@@ -49,10 +50,23 @@ for (const [name, engine] of [['chromium',chromium],['firefox',firefox]]) {
         return !state.busy && !state.opening && document.getElementById('fileStatus')?.textContent?.startsWith('Opened ');
       });
       const migrated = await page.evaluate(() => __buildingQA.state().project);
-      assert.equal(migrated.schemaVersion, 9);
-      for (const key of ['nodes','roads','blocks','plots','properties','buildings']) {
+      assert.equal(migrated.schemaVersion, 10);
+      for (const key of ['nodes','roads','blocks','plots','properties']) {
         if (Object.hasOwn(project.city,key)) assert.deepEqual(migrated.city[key],project.city[key],
           label+': original '+key+' records cannot be regenerated');
+      }
+      const originals=project.city.buildings??[],converted=migrated.city.buildings;
+      assert.equal(converted.length, originals.length);
+      for (let i=0;i<originals.length;i++) {
+        const before=originals[i],after=converted[i];
+        const view=projectSimpleBuildingS10(after.geometry,after.components);
+        assert.equal(view.ok,true, label+': migrated building must retain its geometry');
+        assert.deepEqual(view.footprint,before.footprint);
+        assert.deepEqual(view.holes,before.holes);
+        const authored={...before},metadata={...after};
+        delete authored.footprint;delete authored.holes;
+        delete metadata.geometry;delete metadata.components;
+        assert.deepEqual(metadata,authored);
       }
       assert.equal(await el('loadPreview').isVisible(), false);
       console.log('PASS H2 '+name+' '+label+' native project migrated without geometry changes');
@@ -60,7 +74,7 @@ for (const [name, engine] of [['chromium',chromium],['firefox',firefox]]) {
     // A future save must fail closed without changing the project being edited.
     const before = await page.evaluate(() => JSON.stringify(__buildingQA.state().project));
     const future = createProjectDocument(createProject({seed:'h2-future',size:'small',morphology:'planned'}));
-    future.project.schemaVersion = 10;
+    future.project.schemaVersion = 11;
     await el('projectFileInput').setInputFiles({
       name:'h2-unsupported.mappo.json', mimeType:'application/json',
       buffer:Buffer.from(JSON.stringify(future)),
@@ -69,7 +83,7 @@ for (const [name, engine] of [['chromium',chromium],['firefox',firefox]]) {
       document.getElementById('fileStatus')?.textContent?.startsWith('Could not open project:'));
     assert.equal(await el('loadPreview').isVisible(), false);
     assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)), before);
-    // Download the migrated city as a modern schema-9 document, then reopen it.
+    // Download the migrated city as a modern schema-10 document, then reopen it.
     if (!await el('projectMenu').isVisible()) await el('projectMenuButton').click();
     const pendingDownload = page.waitForEvent('download',{timeout:20000});
     await el('saveProjectButton').click();
@@ -77,7 +91,7 @@ for (const [name, engine] of [['chromium',chromium],['firefox',firefox]]) {
     const exportedText = await readFile(await file.path(),'utf8');
     const exported = JSON.parse(exportedText);
     assert.equal(exported.formatVersion,1);
-    assert.equal(exported.project.schemaVersion,9);
+    assert.equal(exported.project.schemaVersion,10);
     assert.deepEqual(exported.project, JSON.parse(before));
     await el('projectFileInput').setInputFiles({
       name:'h2-roundtrip.mappo.json', mimeType:'application/json',
@@ -92,7 +106,7 @@ for (const [name, engine] of [['chromium',chromium],['firefox',firefox]]) {
     assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)), before);
     assert.deepEqual(errors,[]);
     assert.deepEqual(outbound,[]);
-    console.log('PASS H2 '+name+' unsupported future schema preserves city; exported schema-9 file reopens');
+    console.log('PASS H2 '+name+' unsupported future schema preserves city; exported schema-10 file reopens');
   } catch (e) {
     failures.push(name+': '+(e.stack??e.message));
     await page.screenshot({path:new URL(name+'-failure.png',artifacts).pathname}).catch(()=>{});

@@ -76,7 +76,7 @@ test('compiled property click/hover reveals the correct inspector, preserves geo
   assert.equal(JSON.stringify(app.state().project), before);
   const captured = app.capture();
   const portable = decodeProjectDocument(encodeProjectDocument(createProjectDocument(captured.project, captured.workspace)));
-  assert.equal(portable.project.schemaVersion, 9);
+  assert.equal(portable.project.schemaVersion, 10);
   assert.deepEqual(copy(portable.workspace.ui.selection), { kind: 'property', id: target.propertyId });
   assert.equal(JSON.stringify(portable.project), before);
   app.apply(portable);

@@ -1,8 +1,10 @@
 import { addRectangularCourtyardF1, attachBuildingWingF1, moveFootprintVertexF1 } from '../../src/core/building-footprint-f1.js';
 import { buildingFrame } from '../../src/core/building-transform.js';
 import { prepareBuildingCandidate } from '../../src/editor/building-application.js';
+import { hydrateProjectS10 } from '../../src/core/building-project-s10.js';
 
 export function findDirectFootprintFixture(project) {
+  hydrateProjectS10(project);
   for (const building of project.city.buildings.slice(0, 100)) {
     if (building.footprint.length !== 4 || building.holes.length) continue;
     const frame = buildingFrame(building);

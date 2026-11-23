@@ -89,7 +89,7 @@ const riKnownFields = {
     'id blockId plotIds boundary frontageRoadId frontage area buildingIds usage frame local districtId customName customUse roadProvenance',
   plots: 'id blockId propertyId frontageRoadId boundary',
   buildings:
-    'id blockId propertyId plotIds frontageRoadId type shape footprint holes area entrance orientation roofTone accessPath districtId customName customUse roadProvenance',
+    'id blockId propertyId plotIds frontageRoadId type shape geometry components area entrance orientation roofTone accessPath districtId customName customUse roadProvenance',
   openSpaces: 'id blockId kind area',
   districts: 'id dataVersion kind name color blockIds extensions',
   walls: 'id dataVersion kind width edgeWidth path waterOpenings terrainOpenings extensions',
@@ -120,7 +120,22 @@ function riUnknownRecord(record, fields, kind, id, emit, spend, path = '') {
       );
   }
 }
+function riCanonicalBuildingGeometry(record,kind,id,emit,spend) {
+  if (record?.geometry === undefined && record?.components === undefined) return;
+  if (!record.geometry || !Array.isArray(record.geometry.regions) ||
+      !Array.isArray(record.components)) return;
+  riUnknownRecord(record.geometry, 'version regions extensions',kind,id,emit,spend,'geometry.');
+  for (const region of record.geometry.regions) {
+    riUnknownRecord(region,'id kind parentId componentId ring extensions',kind,id,emit,spend,'geometry.regions.');
+    for(const point of region.ring??[])
+      riUnknownRecord(point,'x y',kind,id,emit,spend,'geometry.regions.ring.');
+  }
+  for (const component of record.components)
+    riUnknownRecord(component,'id parentId name extensions',kind,id,emit,spend,'components.');
+}
 function riNestedGeometry(record, kind, id, emit, spend) {
+  if (record?.geometry !== undefined || record?.components !== undefined)
+    riCanonicalBuildingGeometry(record,kind,id,emit,spend);
   const point = (value, path, fields = 'id x y') => {
     if (value && typeof value === 'object') riUnknownRecord(value, fields, kind, id, emit, spend, path + '.');
   };

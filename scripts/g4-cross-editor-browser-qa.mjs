@@ -115,7 +115,7 @@ for (const name of names) {
     assert.equal(await el('buildingPreviewApply').isEnabled(), true);
     await el('buildingPreviewApply').click();
     const withWing = await page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id), building.id);
-    assert.ok(withWing.footprint.length > building.footprint.length);
+    assert.ok(withWing.geometry.regions.find(r=>r.kind==='solid'&&r.parentId===null).ring.length > building.footprint.length);
 
     await el('buildingToolCourtyard').click();
     for (const [suffix, value] of Object.entries({
@@ -125,9 +125,9 @@ for (const name of names) {
     assert.equal(await el('buildingPreviewApply').isEnabled(), true);
     await el('buildingPreviewApply').click();
     const accepted = await city();
-    assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id).holes.length, building.id), 1);
+    assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id).geometry.regions.filter(r=>r.kind==='void').length, building.id), 1);
     await el('buildingHistoryUndo').click();
-    assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id).holes.length, building.id), 0);
+    assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id).geometry.regions.filter(r=>r.kind==='void').length, building.id), 0);
     await el('buildingHistoryRedo').click();
     assert.equal(await city(), accepted);
     const captured = await page.evaluate(() => __buildingQA.capture());

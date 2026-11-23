@@ -1,10 +1,11 @@
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
+import { hydrateBuildingS10 } from '../core/building-project-s10.js';
 
 // Session-only, bounded history of accepted building geometry. Never serialized.
 // Identity and other unrelated building fields are intentionally left untouched.
 export const BUILDING_GEOMETRY_FIELDS = Object.freeze([
-  'footprint', 'holes', 'area', 'orientation', 'plotIds',
+  'geometry', 'components', 'area', 'orientation', 'plotIds',
   'entrance', 'accessPath', 'frontageRoadId'
 ]);
 
@@ -67,6 +68,7 @@ export class BuildingGeometryHistory {
         if (target[key] === null && live[key] === undefined) continue;
         live[key] = copyJson(target[key]);
       }
+      hydrateBuildingS10(live,true);
       validateStoredProject(candidate);
       const roundtrip = decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
       if (!sameBuildingGeometry(roundtrip.project.city,candidate.city))

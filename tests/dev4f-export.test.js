@@ -25,7 +25,7 @@ test('Dev4f layer presets only update the existing seven visibility flags',()=>{
  workspace.view.layers=layerPreset4F('minimal');
  const serialized=encodeProjectDocument(createProjectDocument(project,workspace));
  assert.equal(JSON.parse(serialized).workspace.view.layers.plots,false);
- assert.equal(JSON.parse(serialized).project.schemaVersion,9);
+ assert.equal(JSON.parse(serialized).project.schemaVersion,10);
 });
 test('Dev4f filenames sanitize paths and never change existing project content',()=>{
  const project=createProject({seed:'4f-filename',size:'small',morphology:'organic'});

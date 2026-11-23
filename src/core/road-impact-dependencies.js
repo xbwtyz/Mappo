@@ -269,6 +269,12 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
     frontage(plot, 'plot', plot.boundary);
   }
   for (const building of riSorted(city.buildings)) {
+    // Inspection accepts frozen or serialized projects. A read-only facade is
+    // optional, never required to understand canonical saved geometry.
+    const occupiedRoots=building.geometry?.regions?.filter(region =>
+      region.kind==='solid' && region.parentId===null).map(region=>region.ring)
+      ?? [building.footprint];
+    const footprint=occupiedRoots[0];
     spend();
     const property = properties.get(building.propertyId);
     if (!property || !property.buildingIds?.includes(building.id) || building.blockId !== property.blockId)
@@ -280,7 +286,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
         [building.propertyId, building.blockId],
       );
     else if (!context.acceptedValid || changedBlocks.has(building.blockId))
-      if (!contained(building.footprint, property.boundary))
+      if (occupiedRoots.some(ring=>!contained(ring, property.boundary)))
         emit(
           'building',
           building.id,
@@ -300,8 +306,8 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
           [id, building.propertyId],
         );
     }
-    blockContainment(building, 'building', building.footprint);
-    frontage(building, 'building', building.footprint);
+    for (const ring of occupiedRoots) blockContainment(building, 'building', ring);
+    frontage(building, 'building', footprint);
     const path = building.accessPath,
       road = roads.get(building.frontageRoadId),
       a = nodes.get(road?.a),
@@ -337,7 +343,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
         'The accepted entrance/frontage access cannot be verified without a supported path.',
         [building.frontageRoadId],
       );
-    if (riPoints(building.footprint))
+    if (riPoints(footprint))
       for (const id of context.roadIds) {
         spend();
         const r = roads.get(id),
@@ -345,8 +351,8 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
           q = nodes.get(r?.b);
         if (!p || !q) continue;
         const required = (STREET_WIDTHS[r.kind] + STREET_EDGE_WIDTH) / 2;
-        if (!riSegmentNearPolygon(building.footprint, p, q, required)) continue;
-        const distance = riDistance(building.footprint, p, q, spend);
+        if (!riSegmentNearPolygon(footprint, p, q, required)) continue;
+        const distance = riDistance(footprint, p, q, spend);
         if (distance < required - 1e-5)
           emit(
             'building',

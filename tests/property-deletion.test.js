@@ -40,7 +40,7 @@ test('Dev4a deletes one property, every owned plot/building and no neighboring c
   const oldOpen=project.city.openSpaces.find(o=>o.blockId===property.blockId);
   const newOpen=receipt.candidate.city.openSpaces.find(o=>o.blockId===property.blockId);
   if(oldOpen)assert.ok(newOpen.area>=oldOpen.area,'Deleted property becomes open ground');
-  assert.equal(receipt.candidate.schemaVersion,9);
+  assert.equal(receipt.candidate.schemaVersion,10);
   validateStoredProject(receipt.candidate);
   const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(receipt.candidate,workspace)));
   assert.deepEqual(portable.project.city,receipt.candidate.city);
@@ -113,7 +113,7 @@ test('Dev4a Inspector delete, map Undo/Redo and portable reload retain safe stat
   assert.ok(!app.state().project.city.properties.some(p=>p.id===property.id));
   const saved=app.capture();
   const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(saved.project,saved.workspace)));
-  assert.equal(portable.project.schemaVersion,9);
+  assert.equal(portable.project.schemaVersion,10);
   assert.equal(portable.workspace.schemaVersion,1);
   assert.doesNotMatch(JSON.stringify(portable),/PropertyDeletionHistory4A|propertyDeletionHistory4A/);
   app.apply(portable);

@@ -115,7 +115,7 @@ test('0.2.2 P3 generated Planned-city fixture reconciles coincident junction wit
   assert.equal(candidate.city.nodes.length,project.city.nodes.length-1);
   assert.equal(buildRoadGraph(candidate.city).valid,true);
   assert.equal(validateStoredProject(candidate),candidate);
-  assert.equal(candidate.schemaVersion,9);
+  assert.equal(candidate.schemaVersion,10);
   assert.deepEqual(project,before,'Accepted project must be unchanged by preview');
   assert.deepEqual(prepareJunctionReflowC7(project,from,point).candidateProject,candidate);
   const document=createProjectDocument(candidate,defaultWorkspace(candidate));

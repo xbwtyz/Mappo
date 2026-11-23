@@ -14,10 +14,21 @@ import {
 import {
   boundsOf
 } from '../core/geometry.js';
+import { hydrateBuildingS10, hydrateCityS10, hydrateProjectS10 } from '../core/building-project-s10.js';
 
 export const PROJECT_FORMAT = 'mappo-project';
 export function copyJson(value) {
-  return JSON.parse(JSON.stringify(value));
+  const detached=JSON.parse(JSON.stringify(value));
+  // Rehydrate only derived, read-only views; canonical geometry remains the
+  // sole persisted/writable source for Schema 10 buildings.
+  if(detached?.schemaVersion===10 && detached.city) hydrateProjectS10(detached);
+  else if(detached?.project?.schemaVersion===10) hydrateProjectS10(detached.project);
+  else if(Array.isArray(detached?.buildings)) hydrateCityS10(detached);
+  else if(detached?.geometry?.version===1 && Array.isArray(detached?.components)) hydrateBuildingS10(detached);
+  else if(Array.isArray(detached)) detached.forEach(x=>{
+    if(x?.geometry?.version===1 && Array.isArray(x?.components))hydrateBuildingS10(x);
+  });
+  return detached;
 }
 export function utf8Size(text) {
   return new TextEncoder().encode(text).byteLength;
@@ -203,7 +214,9 @@ export function decodeProjectDocument(text) {
     if (document.formatVersion !== CURRENT_FORMAT_VERSION) throw new Error('This file uses a newer or unsupported save format. Use a compatible Mappo build.');
     document.project = migrateProjectData(document.project);
   }
-  return validateDocument(document);
+  validateDocument(document);
+  hydrateProjectS10(document.project);
+  return document;
 }
 export function projectFilename(document) {
   const name = document.project.city.name.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'mappo-city';

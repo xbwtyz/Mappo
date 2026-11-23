@@ -48,7 +48,7 @@ test('3G-A compiled Inspector enters and exits visual-only building context with
   assert.equal(state.buildingEditSession.buildingId, second, 'Other property clicks must not steal edit mode');
   const capture = app.capture();
   const portable = decodeProjectDocument(encodeProjectDocument(createProjectDocument(capture.project, capture.workspace)));
-  assert.equal(portable.project.schemaVersion, 9);
+  assert.equal(portable.project.schemaVersion, 10);
   assert.deepEqual(copy(portable.workspace.ui.selection), { kind: 'building', id: second });
   assert.ok(!JSON.stringify(portable.workspace).includes('buildingEditSession'));
   assert.equal(JSON.stringify(state.project.city), before);

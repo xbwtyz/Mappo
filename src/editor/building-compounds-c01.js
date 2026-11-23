@@ -6,6 +6,7 @@ import {normalizeBuildingTransform,buildingTransformDirty} from '../core/buildin
 import {polygonSignedArea} from '../core/geometry.js';
 import {inspectBuildingGeometry} from '../core/building-validation.js';
 import {deriveOccupiedPlots,resolveBuildingAccess} from './building-application.js';
+import {writeSimpleBuildingS10} from '../core/building-project-s10.js';
 
 const c01Issue=(code,message,buildingId=null)=>({code,message,buildingId});
 const c01Error=(code,message,buildingId=null,preview=null)=>({
@@ -91,16 +92,20 @@ export function previewCompoundTransform(project,propertyId,groupId,input={}) {
   };
   const proposed=copyJson(project);
   const originalIds=new Set(members.map(b=>b.id));
-  for(const b of proposed.city.buildings) {
-    if(!originalIds.has(b.id))continue;
-    b.footprint=b.footprint.map(map);
-    b.holes=b.holes.map(h=>h.map(map));
-    b.orientation+=transform.angle;
-    b.area=polygonSignedArea(b.footprint)-
-      b.holes.reduce((sum,h)=>sum+polygonSignedArea(h),0);
-    b.entrance=b.entrance?map(b.entrance):null;
-    b.accessPath=(b.accessPath??[]).map(map);
-  }
+  proposed.city.buildings=proposed.city.buildings.map(b=>{
+    if(!originalIds.has(b.id))return b;
+    const footprint=b.footprint.map(map);
+    const holes=b.holes.map(h=>h.map(map));
+    const changes={
+      footprint,holes,orientation:b.orientation+transform.angle,
+      entrance:b.entrance?map(b.entrance):null,
+      accessPath:(b.accessPath??[]).map(map)
+    };
+    return b.geometry?writeSimpleBuildingS10(b,changes):{
+      ...b,...changes,
+      area:polygonSignedArea(footprint)-holes.reduce((sum,h)=>sum+polygonSignedArea(h),0)
+    };
+  });
   return {project:proposed,buildingIds:members.map(b=>b.id),frame,transform};
 }
 export function prepareCompoundTransform(project,workspace,propertyId,groupId,transform) {

@@ -25,7 +25,9 @@ function b05AccessValid(property,buildings,city,graph,block) {
   if(!frontage || !frontage.a || !frontage.b ||
       !propertyFits(property.boundary,edges.map(row=>row.a),edges))return false;
   for(const building of buildings) {
-    if(!shapeContained(building.footprint,property.boundary))return false;
+    const roots=building.geometry?.regions?.filter(region=>region.parentId===null).map(region=>region.ring)
+      ?? [building.footprint];
+    if(roots.some(ring=>!shapeContained(ring,property.boundary)))return false;
     if(!Array.isArray(building.accessPath)||!building.accessPath.length ||
        building.frontageRoadId!==property.frontageRoadId)return false;
     const end=building.accessPath.at(-1);

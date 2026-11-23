@@ -27,7 +27,7 @@ test('E4 split retains plot ID and originals, assigns unique ID, preserves struc
   const {source,property,session,attempt}=candidate('split');
   const before=JSON.stringify(source.city),oldIds=[...property.plotIds],oldBuildings=source.city.buildings.map(b=>({
     id:b.id,footprint:b.footprint,accessPath:b.accessPath,entrance:b.entrance}));
-  assert.equal(attempt.candidate.schemaVersion,9);
+  assert.equal(attempt.candidate.schemaVersion,10);
   const changed=attempt.candidate.city.properties.find(p=>p.id===property.id);
   assert.equal(changed.plotIds.length,oldIds.length+1);
   assert.equal(changed.plotIds[0],oldIds[0]);

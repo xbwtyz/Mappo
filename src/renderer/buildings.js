@@ -13,8 +13,13 @@ export function drawDevelopment(ctx, camera, city, layers) {
   if (layers.buildings !== false) {
     for (const building of city.buildings) {
       ctx.beginPath();
-      traceDevelopmentPolygon(ctx, building.footprint, camera);
-      for (const hole of building.holes) traceDevelopmentPolygon(ctx, hole, camera);
+      // Alternating solid/void regions are rendered by even-odd fill, including
+      // nested islands and multiple disjoint solid roots.
+      const regions=building.geometry?.regions ?? [
+        {kind:'solid',parentId:null,ring:building.footprint},
+        ...(building.holes??[]).map(ring=>({kind:'void',ring}))
+      ];
+      for (const region of regions) traceDevelopmentPolygon(ctx, region.ring, camera);
       ctx.fillStyle = ROOF_COLORS[building.roofTone % ROOF_COLORS.length];
       ctx.fill('evenodd');
       ctx.strokeStyle = '#756552';
@@ -23,8 +28,10 @@ export function drawDevelopment(ctx, camera, city, layers) {
       if (camera.zoom > .6) {
         ctx.save();
         ctx.clip('evenodd');
-        const a = building.footprint[0],
-          b = building.footprint[1];
+        const footprint=regions.find(r=>r.kind==='solid'&&r.parentId===null)?.ring;
+        if (!footprint || footprint.length < 2) {ctx.restore();continue;}
+        const a = footprint[0],
+          b = footprint[1];
         const along = {
           x: Math.cos(building.orientation),
           y: Math.sin(building.orientation)
@@ -33,7 +40,7 @@ export function drawDevelopment(ctx, camera, city, layers) {
           x: -along.y,
           y: along.x
         };
-        const offsets = building.footprint.map(p => (p.x - a.x) * inward.x + (p.y - a.y) * inward.y);
+        const offsets = footprint.map(p => (p.x - a.x) * inward.x + (p.y - a.y) * inward.y);
         const distance = (Math.min(...offsets) + Math.max(...offsets)) / 2;
         const start = camera.worldToScreen({
           x: a.x + inward.x * distance,

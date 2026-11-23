@@ -4,7 +4,7 @@ import { validateFootprintF1 } from './building-footprint-f1.js';
 import { validateBuildingStructureS10 } from './building-components-s10.js';
 import { occupiedAreaS10 } from './building-occupancy-s10.js';
 
-const cloneRing=ring=>ring.map(p=>({x:p.x,y:p.y}));
+const s10AdapterCloneRing=ring=>ring.map(p=>({x:p.x,y:p.y}));
 export function reserveBuildingPartIdS10(usedIds,prefix) {
   if(!(usedIds instanceof Set)||!['REG-MAN','BC-MAN'].includes(prefix))
     throw Error('S10 part ID allocator requires a scoped ID set and known prefix.');
@@ -22,10 +22,10 @@ export function legacyBuildingShapeToS10(source) {
   if(old.holes.length>64)throw Error('S10 legacy adapter supports at most 64 courtyards.');
   const geometry={version:1,regions:[
     {id:'REG-ROOT',parentId:null,kind:'solid',componentId:'BC-ROOT',
-      ring:cloneRing(old.footprint)},
+      ring:s10AdapterCloneRing(old.footprint)},
     ...old.holes.map((hole,i)=>({
       id:'REG-H'+String(i+1).padStart(4,'0'),
-      parentId:'REG-ROOT',kind:'void',ring:cloneRing(hole)
+      parentId:'REG-ROOT',kind:'void',ring:s10AdapterCloneRing(hole)
     }))
   ]};
   const components=[{id:'BC-ROOT',parentId:null}];
@@ -49,7 +49,7 @@ export function projectSimpleBuildingS10(geometry,components) {
     roots[0].componentId!==parts[0].id)
     return {ok:false,code:'unsupported-topology',
       reason:'Nested or multi-root S10 geometry cannot be edited by a simple-footprint tool.'};
-  const holes=valid.regions.filter(r=>r.kind==='void').map(r=>cloneRing(r.ring));
-  const footprint=cloneRing(roots[0].ring);
+  const holes=valid.regions.filter(r=>r.kind==='void').map(r=>s10AdapterCloneRing(r.ring));
+  const footprint=s10AdapterCloneRing(roots[0].ring);
   return {ok:true,footprint,holes,area:occupiedAreaS10(valid)};
 }

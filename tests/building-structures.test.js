@@ -51,7 +51,7 @@ test('3H-C safe replacement preserves building ID and custom identity; invalid p
   assert.equal(revised.id,building.id);
   assert.notDeepEqual(revised.footprint,building.footprint);
   assert.equal(revised.propertyId,property.id);
-  assert.equal(receipt.candidate.schemaVersion,9);
+  assert.equal(receipt.candidate.schemaVersion,10);
   const invalid=prepareBuildingStructure3H(named,workspace,
     {operation:'replace',propertyId:property.id,buildingId:building.id,spec:{...spec,u:-9999}});
   assert.equal(invalid.ok,false);
@@ -140,7 +140,7 @@ test('3H-A/D UI inspector adds a preview, protects invalid state and structural 
   assert.ok(!app.state().project.city.buildings.some(b=>b.id===building.id));
   const snapshot=app.capture();
   const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(snapshot.project,snapshot.workspace)));
-  assert.equal(portable.project.schemaVersion,9);
+  assert.equal(portable.project.schemaVersion,10);
   assert.equal(portable.workspace.schemaVersion,1);
   assert.doesNotMatch(JSON.stringify(portable),/buildingPlacementSession|buildingStructureHistory/);
   app.apply(portable);

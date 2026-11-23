@@ -1,11 +1,33 @@
 import { boundsOf, pointInPolygon, polygonSignedArea } from './geometry.js';
+import { projectSimpleBuildingS10 } from './building-geometry-adapter-s10.js';
 
 export const BUILDING_TRANSFORM_LIMITS = Object.freeze({ minimumScale: 0.2, maximumScale: 4 });
 export const EMPTY_BUILDING_TRANSFORM = Object.freeze({ dx: 0, dy: 0, angle: 0, scaleX: 1, scaleY: 1 });
 
+// Read legacy display geometry only as a detached projection from the single
+// canonical Schema 10 source. Raw project JSON and frozen worker snapshots do
+// not carry non-enumerable display getters; neither is mutated by this read.
+export function simpleBuildingViewS10(building) {
+  // An editor-only transient preview may explicitly override canonical rings.
+  // Persisted Schema 10 records cannot contain these enumerable fields and
+  // validation rejects them, so no second accepted authority is introduced.
+  if (Object.prototype.propertyIsEnumerable.call(building??{},'footprint') &&
+      Array.isArray(building?.footprint) && Array.isArray(building?.holes))
+    return {footprint:building.footprint,holes:building.holes};
+  if (building?.geometry) {
+    const view=projectSimpleBuildingS10(building.geometry,building.components);
+    if (!view.ok) throw Error(view.reason);
+    return view;
+  }
+  if (Array.isArray(building?.footprint) && Array.isArray(building?.holes))
+    return {footprint:building.footprint,holes:building.holes};
+  throw Error('A building needs a footprint.');
+}
+
 export function buildingFrame(building) {
-  if (!Array.isArray(building?.footprint) || building.footprint.length < 3) throw new Error('A building needs a footprint.');
-  const b = boundsOf(building.footprint);
+  const shape=simpleBuildingViewS10(building);
+  if (shape.footprint.length < 3) throw Error('A building needs a footprint.');
+  const b = boundsOf(shape.footprint);
   return { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2,
     width: Math.max(1e-6, b.maxX - b.minX), height: Math.max(1e-6, b.maxY - b.minY) };
 }
@@ -40,8 +62,9 @@ export function previewBuildingGeometry(building, input = {}) {
   const transform = normalizeBuildingTransform(input);
   const frame = buildingFrame(building);
   const map = point => transformBuildingPoint(point, frame, transform);
-  const footprint = building.footprint.map(map);
-  const holes = (building.holes ?? []).map(hole => hole.map(map));
+  const shape=simpleBuildingViewS10(building);
+  const footprint = shape.footprint.map(map);
+  const holes = shape.holes.map(hole => hole.map(map));
   const area = Math.abs(polygonSignedArea(footprint))
     - holes.reduce((total, hole) => total + Math.abs(polygonSignedArea(hole)), 0);
   return { ...building, footprint, holes,

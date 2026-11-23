@@ -32,9 +32,23 @@ export function validateDevelopment(layout, development) {
   for (const building of buildings) {
     const property = byProperty.get(building.propertyId);
     if (!property || building.blockId !== property.blockId || !property.buildingIds.includes(building.id) || !building.plotIds.length || building.plotIds.some(id => !property.plotIds.includes(id))) throw new Error('A building has invalid property or plot references.');
-    if (building.footprint.length < 4 || building.area <= 1 || !building.footprint.every(p => Number.isFinite(p.x) && Number.isFinite(p.y) && insideOrOn(p, property.boundary))) throw new Error('A generated building extends outside its property.');
-    if (polygonSignedArea(building.footprint) <= 0) throw new Error('A building footprint has invalid winding.');
-    for (const hole of building.holes)
+    const regions=building.geometry?.regions;
+    const roots=regions?.filter(r=>r.parentId===null).map(r=>r.ring)
+      ?? [building.footprint];
+    if(!roots.length||roots.some(ring=>!Array.isArray(ring)||ring.length<4 ||
+      !ring.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&insideOrOn(p,property.boundary)))||
+      building.area<=1)
+      throw new Error('A generated building extends outside its property.');
+    if(roots.some(ring=>polygonSignedArea(ring)<=0))
+      throw new Error('A building footprint has invalid winding.');
+    if(regions){
+      const byId=new Map(regions.map(r=>[r.id,r]));
+      for(const region of regions.filter(r=>r.parentId!==null)){
+        const parent=byId.get(region.parentId);
+        if(!parent||!region.ring.every(point=>insideOrOn(point,parent.ring)))
+          throw new Error('A courtyard or component region extends beyond its parent.');
+      }
+    }else for (const hole of building.holes)
       if (!hole.every(p => insideOrOn(p, building.footprint))) throw new Error('A courtyard extends beyond its building.');
   }
 }

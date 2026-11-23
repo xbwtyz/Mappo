@@ -45,7 +45,7 @@ test('024 P5: morphology generation is deterministic and schema-9 compatible',()
       const project=createProject(params);
       const again=createProject(params);
       assert.deepEqual(project.city,again.city,'Same seed must be bit-for-bit deterministic.');
-      assert.equal(project.schemaVersion,9);
+      assert.equal(project.schemaVersion,10);
       assert.doesNotThrow(()=>validateStoredProject(project));
       const encoded=encodeProjectDocument(createProjectDocument(project,defaultWorkspace(project)));
       const decoded=decodeProjectDocument(encoded);

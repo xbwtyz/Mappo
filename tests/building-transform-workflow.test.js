@@ -49,7 +49,7 @@ test('3G-B compiled numeric controls preview move/rotate/resize without changing
   assert.equal(JSON.stringify(state.project.city),before);
   const captured=app.capture();
   const doc=decodeProjectDocument(encodeProjectDocument(createProjectDocument(captured.project,captured.workspace)));
-  assert.equal(doc.project.schemaVersion,9);
+  assert.equal(doc.project.schemaVersion,10);
   assert.equal(JSON.stringify(doc.project.city),before);
   assert.equal(JSON.stringify(captured.workspace).includes('buildingTransform'),false);
   assert.equal(JSON.stringify(captured.workspace).includes('buildingEditSession'),false);

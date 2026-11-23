@@ -8,15 +8,15 @@ export const S10_REGION_LIMITS = Object.freeze({
   maxRegions: 128, maxVertices: 1024, maxDepth: 8,
   maxComponents: 64, maxWork: 6000000
 });
-const EPS = 1e-7;
-const cloneJson = value => JSON.parse(JSON.stringify(value));
-const validId = id => typeof id === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(id);
-const bounds = ring => ({
+const S10_TOPOLOGY_EPS = 1e-7;
+const s10TopologyCloneJson = value => JSON.parse(JSON.stringify(value));
+const s10TopologyValidId = id => typeof id === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(id);
+const s10TopologyBounds = ring => ({
   minX: Math.min(...ring.map(p => p.x)), maxX: Math.max(...ring.map(p => p.x)),
   minY: Math.min(...ring.map(p => p.y)), maxY: Math.max(...ring.map(p => p.y))
 });
-const separated = (a,b) => a.maxX < b.minX-EPS || b.maxX < a.minX-EPS ||
-  a.maxY < b.minY-EPS || b.maxY < a.minY-EPS;
+const s10TopologySeparated = (a,b) => a.maxX < b.minX-S10_TOPOLOGY_EPS || b.maxX < a.minX-S10_TOPOLOGY_EPS ||
+  a.maxY < b.minY-S10_TOPOLOGY_EPS || b.maxY < a.minY-S10_TOPOLOGY_EPS;
 
 export function createS10GeometryBudget(limit = S10_REGION_LIMITS.maxWork) {
   if (!Number.isSafeInteger(limit) || limit < 1 || limit > 100000000)
@@ -31,7 +31,7 @@ export function createS10GeometryBudget(limit = S10_REGION_LIMITS.maxWork) {
   };
 }
 
-function normalizeRing(ring) {
+function s10TopologyNormalizeRing(ring) {
   if (!Array.isArray(ring) || ring.length < 3 ||
     ring.length > S10_REGION_LIMITS.maxVertices)
     throw Error('S10 ring must contain 3–1024 vertices.');
@@ -44,7 +44,7 @@ function normalizeRing(ring) {
   return next;
 }
 
-function touches(a,b,budget) {
+function s10TopologyTouches(a,b,budget) {
   budget.charge(a.length*b.length);
   for (let i=0;i<a.length;i++) for (let j=0;j<b.length;j++)
     if (segmentCuts(a[i],a[(i+1)%a.length],b[j],b[(j+1)%b.length]).length)
@@ -52,19 +52,19 @@ function touches(a,b,budget) {
   return false;
 }
 
-function strictlyInside(inner,outer,budget) {
-  if (touches(inner,outer,budget)) return false;
+function s10TopologyStrictlyInside(inner,outer,budget) {
+  if (s10TopologyTouches(inner,outer,budget)) return false;
   budget.charge(inner.length*outer.length);
   for (const p of inner) {
     if (!pointInPolygon(p,outer)) return false;
     for (let i=0;i<outer.length;i++)
-      if (distanceToSegment(p,outer[i],outer[(i+1)%outer.length]) <= EPS) return false;
+      if (distanceToSegment(p,outer[i],outer[(i+1)%outer.length]) <= S10_TOPOLOGY_EPS) return false;
   }
   return true;
 }
-function disjoint(a,b,budget) {
-  if (separated(bounds(a),bounds(b))) return true;
-  if (touches(a,b,budget)) return false;
+function s10TopologyDisjoint(a,b,budget) {
+  if (s10TopologySeparated(s10TopologyBounds(a),s10TopologyBounds(b))) return true;
+  if (s10TopologyTouches(a,b,budget)) return false;
   budget.charge(2);
   return !pointInPolygon(a[0],b) && !pointInPolygon(b[0],a);
 }
@@ -77,15 +77,15 @@ export function canonicalizeBuildingRegionsS10(geometry, budget = createS10Geome
     throw Error('S10 geometry needs version 1 and 1–128 regions.');
   const map = new Map();
   for (const source of geometry.regions) {
-    if (!source || !validId(source.id) || map.has(source.id))
+    if (!source || !s10TopologyValidId(source.id) || map.has(source.id))
       throw Error('S10 region IDs must be unique and valid.');
     if (!['solid','void'].includes(source.kind) ||
-      (source.parentId !== null && !validId(source.parentId)))
+      (source.parentId !== null && !s10TopologyValidId(source.parentId)))
       throw Error('S10 region has invalid kind or parent reference.');
-    if (source.kind === 'solid' ? !validId(source.componentId) :
+    if (source.kind === 'solid' ? !s10TopologyValidId(source.componentId) :
       source.componentId !== undefined && source.componentId !== null)
       throw Error('S10 solid regions require a component; voids cannot own one.');
-    const region = {...cloneJson(source), ring: normalizeRing(source.ring)};
+    const region = {...s10TopologyCloneJson(source), ring: s10TopologyNormalizeRing(source.ring)};
     map.set(region.id,region);
   }
   const depth = new Map(), active = new Set();
@@ -114,11 +114,11 @@ export function canonicalizeBuildingRegionsS10(geometry, budget = createS10Geome
     if (parentId !== null) {
       const parent=map.get(parentId);
       for (const child of siblings)
-        if (!strictlyInside(child.ring,parent.ring,budget))
+        if (!s10TopologyStrictlyInside(child.ring,parent.ring,budget))
           throw Error('S10 child region must be strictly inside its parent without touching.');
     }
     for (let i=0;i<siblings.length;i++) for(let j=i+1;j<siblings.length;j++)
-      if (!disjoint(siblings[i].ring,siblings[j].ring,budget))
+      if (!s10TopologyDisjoint(siblings[i].ring,siblings[j].ring,budget))
         throw Error('S10 sibling regions overlap, touch, or contain each other.');
   }
   const ordered=[];
@@ -129,7 +129,7 @@ export function canonicalizeBuildingRegionsS10(geometry, budget = createS10Geome
   }
   append(null);
   if(ordered.length!==map.size)throw Error('S10 regions must form one or more rooted trees.');
-  return { ...cloneJson(geometry), regions:ordered };
+  return { ...s10TopologyCloneJson(geometry), regions:ordered };
 }
 
 export function regionDepthS10(geometry, id) {
@@ -145,5 +145,5 @@ export function regionDepthS10(geometry, id) {
 }
 
 export function pointOnS10Ring(point,ring) {
-  return ring.some((p,i)=>distanceToSegment(point,p,ring[(i+1)%ring.length])<=EPS);
+  return ring.some((p,i)=>distanceToSegment(point,p,ring[(i+1)%ring.length])<=S10_TOPOLOGY_EPS);
 }

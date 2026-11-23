@@ -122,8 +122,10 @@ export function drawProposedBuildingAccess(ctx,camera,accepted) {
 
 export function drawBuildingEditObstruction(ctx,camera,city,target) {
   ctx.save();
+  const building=city.buildings?.find(b=>b.id===target);
   const conflicting = target && (city.properties?.find(p=>p.id===target)?.boundary
-    || city.buildings?.find(b=>b.id===target)?.footprint);
+    || building?.geometry?.regions?.find(region=>region.parentId===null)?.ring
+    || building?.footprint);
   if(conflicting){
     ctx.beginPath();
     conflicting.forEach((point,i)=>{

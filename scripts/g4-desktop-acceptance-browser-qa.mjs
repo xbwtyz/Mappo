@@ -72,7 +72,7 @@ async function runCase(browser, engine, viewport) {
     assert.equal(await el('desktopWorkspaceTabs').isVisible(), true);
     assert.equal(await page.locator('.legacy-workspace-tabs').isVisible(), false);
     assert.ok((await el('mapCanvas').boundingBox()).width > 250);
-    assert.equal(await page.evaluate(() => __buildingQA.state().project.schemaVersion), 9);
+    assert.equal(await page.evaluate(() => __buildingQA.state().project.schemaVersion), 10);
 
     // Focused form keys never steer the map. The navigation test uses real input events.
     const oldCamera = await page.evaluate(() => ({
@@ -187,7 +187,7 @@ async function runCase(browser, engine, viewport) {
         nodes: __buildingQA.state().project.city.nodes.map(n => [n.id, n.x, n.y]),
         roads: __buildingQA.state().project.city.roads.map(r => r.id),
       }));
-      assert.equal(migrated.schema, 9, 'Historical project must migrate to schema 9');
+      assert.equal(migrated.schema, 10, 'Historical project must migrate to schema 10');
       assert.deepEqual(migrated.nodes, oldSave.project.city.nodes.map(n => [n.id, n.x, n.y]),
         'Loading an older save may not regenerate street geometry');
       assert.deepEqual(migrated.roads, oldSave.project.city.roads.map(r => r.id));
@@ -201,7 +201,7 @@ async function runCase(browser, engine, viewport) {
       const downloadStatus = await el('fileStatus').innerText();
       assert.ok(download, 'Historical save re-export produced no download. Status: ' + downloadStatus);
       const exported = JSON.parse(await readFile(await download.path(), 'utf8'));
-      assert.equal(exported.project.schemaVersion, 9);
+      assert.equal(exported.project.schemaVersion, 10);
       assert.equal(exported.formatVersion, 1);
       assert.equal(exported.project.city.nodes.length, migrated.nodes.length);
       record.legacySave = true;

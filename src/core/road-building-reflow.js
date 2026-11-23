@@ -3,8 +3,9 @@ import { roadBuildingOccupiedPlots } from './road-building-decisions.js';
 import { createRng, hashSeed } from './prng.js';
 import { stampRoadGenerated } from './road-provenance.js';
 import { populateProperty } from '../generators/buildings.js';
+import { adoptNewBuildingS10, writeSimpleBuildingS10 } from './building-project-s10.js';
 
-export function reflowGeneratedRoadBuildings(seed, before, after, plots, original, reservedIds) {
+export function reflowGeneratedRoadBuildings(seed, before, after, plots, original, reservedIds, canonical = false) {
   const oldFrame = before.frame, newFrame = after.frame;
   const center = local => local.x + local.width / 2;
   const transform = point => {
@@ -29,8 +30,11 @@ export function reflowGeneratedRoadBuildings(seed, before, after, plots, origina
       y: newFrame.origin.y + u * newFrame.tangent.y,
     };
     const plotIds = roadBuildingOccupiedPlots({footprint,holes},plots);
-    return { ...building, footprint, holes, entrance, accessPath: [entrance, end],
-      plotIds, orientation: building.orientation + rotation };
+    const changes={footprint,holes,entrance,accessPath:[entrance,end],
+      plotIds,orientation:building.orientation+rotation};
+    return building.geometry
+      ?writeSimpleBuildingS10(building,changes)
+      :{...building,...changes};
   });
   if (moved.every(building => building.plotIds.length && shapeContained(building.footprint, after.boundary))) {
     for (const building of moved) stampRoadGenerated(building);
@@ -53,5 +57,6 @@ export function reflowGeneratedRoadBuildings(seed, before, after, plots, origina
     stampRoadGenerated(building);
   }
   if (!replacements.length) throw new Error('The reshaped parcel has no suitable replacement building.');
-  return { buildings: replacements, disposition: 'regenerated' };
+  return { buildings: canonical || original.some(b=>Boolean(b.geometry)) ? replacements.map(adoptNewBuildingS10) : replacements,
+    disposition: 'regenerated' };
 }

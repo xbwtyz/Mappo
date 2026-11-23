@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {
   createProject
 } from '../src/core/city-model.js';
+import { projectSimpleBuildingS10 } from '../src/core/building-geometry-adapter-s10.js';
+import { stampRoadGenerated, classifyRoadProvenance } from '../src/core/road-provenance.js';
 import {
   makeStartingOutline
 } from '../src/editor/outline.js';
@@ -45,6 +47,20 @@ function documentFixture() {
 
 function textFixture() {
   return encodeProjectDocument(documentFixture());
+}
+
+// Compare older stored cities against a detached, lossless legacy projection.
+// The Schema 10 accepted format never receives writable flat geometry fields.
+function legacyGeometryForComparison(city) {
+  const view=copyJson(city);
+  view.buildings=view.buildings.map(building=>{
+    const projected=projectSimpleBuildingS10(building.geometry,building.components);
+    assert.equal(projected.ok,true);
+    const record={...building,footprint:projected.footprint,holes:projected.holes};
+    delete record.geometry;delete record.components;
+    return record;
+  });
+  return view;
 }
 
 function fakeStorage() {
@@ -234,6 +250,16 @@ test('unknown extension fields, future building types, district records and wall
 test('legacy schema-1 projects migrate in memory while preserving their source geometry and IDs', () => {
   for (const withBuildings of [true, false]) {
     const raw = copyJson(original);
+    // Construct an authentic legacy-shaped input rather than merely changing
+    // the schema number of an already canonical Schema 10 city.
+    raw.city.buildings=raw.city.buildings.map(source=>{
+      const view=projectSimpleBuildingS10(source.geometry,source.components);
+      assert.equal(view.ok,true);
+      const record={...source,footprint:view.footprint,holes:view.holes};
+      delete record.geometry;delete record.components;
+      if (classifyRoadProvenance(source)==='generated') stampRoadGenerated(record);
+      return record;
+    });
     raw.schemaVersion = 1;
     raw.generatorVersion = withBuildings ? '0.1-dev.3b' : '0.1-dev.3a2';
     if (!withBuildings) {
@@ -244,7 +270,7 @@ test('legacy schema-1 projects migrate in memory while preserving their source g
     }
     const text = JSON.stringify(raw),
       loaded = decodeProjectDocument(text);
-    assert.equal(loaded.project.schemaVersion, 9);
+    assert.equal(loaded.project.schemaVersion, 10);
     for (const key of ['nodes', 'roads', 'blocks', 'plaza']) assert.deepEqual(loaded.project.city[key], raw.city[key]);
     assert.equal(loaded.project.generatorVersion, raw.generatorVersion);
     assert.equal(raw.schemaVersion, 1);
@@ -305,7 +331,7 @@ test('duplicate IDs, missing road endpoints, invalid numbers and orphan building
 
 test('changed building placement, overlapping properties and an inconsistent block area cannot be loaded', () => {
   const escaped = documentFixture();
-  escaped.project.city.buildings[0].footprint[0] = {
+  escaped.project.city.buildings[0].geometry.regions[0].ring[0] = {
     x: 9000,
     y: 9000
   };
@@ -795,8 +821,9 @@ test('frozen projects captured from the released 3A.2 and 3B HTML builds remain 
     const raw = JSON.parse(text),
       document = decodeProjectDocument(text);
     assert.equal(raw.generatorVersion, `0.1-dev.${version}`);
-    assert.equal(document.project.schemaVersion, 9);
-    for (const key of ['nodes', 'roads', 'blocks', 'plaza', 'buildings']) assert.deepEqual(document.project.city[key], raw.city[key]);
+    assert.equal(document.project.schemaVersion, 10);
+    for (const key of ['nodes', 'roads', 'blocks', 'plaza', 'buildings'])
+      assert.deepEqual(legacyGeometryForComparison(document.project.city)[key], raw.city[key]);
     assert.deepEqual(decodeProjectDocument(encodeProjectDocument(document)), document);
   }
 });
@@ -807,7 +834,7 @@ test('native 3B.1 schema-2 files migrate to unassigned districts without changin
   } = await import('node:fs/promises');
   const raw = JSON.parse(await readFile(new URL('./fixtures/save-3b1-format1-schema2.json', import.meta.url), 'utf8'));
   const loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 9);
+  assert.equal(loaded.project.schemaVersion, 10);
   assert.equal(loaded.project.city.districtState.status, 'unassigned');
   const {
     districtState,
@@ -819,7 +846,7 @@ test('native 3B.1 schema-2 files migrate to unassigned districts without changin
     gates,
     towers,
     ...city
-  } = loaded.project.city;
+  } = legacyGeometryForComparison(loaded.project.city);
   assert.deepEqual(city, raw.project.city);
   assert.deepEqual(loaded.workspace, raw.workspace);
   assert.equal(loaded.documentId, raw.documentId);
@@ -898,7 +925,7 @@ test('additive workspace ui survives native round-trip without regenerating sche
   };
   const decoded=decodeProjectDocument(encodeProjectDocument(source));
   assert.deepEqual(decoded.project.city,city,'accepted city is stored and restored exactly');
-  assert.equal(decoded.project.schemaVersion,9);
+  assert.equal(decoded.project.schemaVersion,10);
   assert.equal(decoded.workspace.schemaVersion,1);
   assert.equal(decoded.workspace.ui.landscape.formCache[0].controls.lakeSeedInput,'custom pending lake');
   assert.equal(decoded.workspace.ui.section,'defenses');
