@@ -65,10 +65,14 @@ export function inspectPropertyEdit3I(project,session){
     }
     const [front0,front1]=polygon,frame=property.frame;
     if(!front0||!front1||!frame?.inward||!frame?.tangent||
-       Math.hypot(front1.x-front0.x,front1.y-front0.y)<7 ||
+       Math.hypot(front1.x-front0.x,front1.y-front0.y)<7)
+      giIssue(issues,'frontage','Street frontage needs a valid frame and at least 7 units of length. Restore frontage or adjust its endpoints.',property.frontageRoadId);
+    else if(session.frontageChanged &&
        Math.abs((front1.x-front0.x)*frame.inward.x+
          (front1.y-front0.y)*frame.inward.y)>1e-4)
-      giIssue(issues,'frontage','An irregular property must retain one straight, valid street-facing edge.',property.frontageRoadId);
+      // Previously accepted irregular frontage may differ slightly from the
+      // stored frame. Unrelated side/rear edits must not rewrite or reject it.
+      giIssue(issues,'frontage','Edited frontage must stay aligned with its street. Restore frontage to keep the accepted edge.',property.frontageRoadId);
   }
   const block=city.blocks.find(b=>b.id===property.blockId);
   const nodes=new Map(city.nodes.map(n=>[n.id,n]));

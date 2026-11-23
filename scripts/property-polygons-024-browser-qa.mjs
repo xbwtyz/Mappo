@@ -53,6 +53,23 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
     const after=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city));
     assert.notEqual(after,before);
     assert.equal(await page.evaluate(id=>__buildingQA.state().project.city.properties.find(p=>p.id===id).boundary.length,sample.id),5);
+    await page.locator('#propertyAddVertex024').click();
+    assert.equal(await page.evaluate(()=>__buildingQA.state().propertyEditSession.boundary.length),6);
+    await page.evaluate(()=>{
+      const state=__buildingQA.state(),session=state.propertyEditSession;
+      const tip=session.boundary[1],inward=session.source(state.project.city).frame.inward;
+      session.setCorner(1,{x:tip.x+inward.x*.5,y:tip.y+inward.y*.5});
+    });
+    assert.match(await page.locator('#propertyEditIssues3I').innerText(),/Restore frontage/);
+    assert.equal(await page.locator('#propertyEditApply3I').isDisabled(),true);
+    assert.equal(await page.locator('#propertyRestoreFrontage024').isEnabled(),true);
+    await page.locator('#propertyRestoreFrontage024').click();
+    assert.equal(await page.evaluate(()=>__buildingQA.state().propertyEditSession.frontageChanged),false);
+    assert.equal(await page.evaluate(()=>__buildingQA.state().propertyEditSession.boundary.length),6);
+    assert.equal(await page.locator('#propertyEditApply3I').isEnabled(),true,
+      await page.locator('#propertyEditStatus3I').innerText());
+    await page.locator('#propertyEditReset3I').click();
+    assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),after);
     await page.locator('#propertyHistoryUndo3I').click();
     assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),before);
     await page.locator('#propertyHistoryRedo3I').click();

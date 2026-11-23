@@ -18,6 +18,8 @@ export class PropertyEditSession3I {
   get countChange(){return this.active?.countChange??null;}
   get approved(){return Boolean(this.active?.approved);}
   get polygonMode(){return Boolean(this.active && (this.active.polygonEdited || this.active.originalBoundary.length!==4 || this.boundary.length!==4));}
+  get frontageChanged(){return Boolean(this.active && JSON.stringify(this.active.boundary.slice(0,2))!==
+    JSON.stringify(this.active.originalBoundary.slice(0,2)));}
   get isPending(){return Boolean(this.active && (JSON.stringify(this.active.boundary)!==JSON.stringify(this.active.originalBoundary)
     ||JSON.stringify(this.active.dividers)!==JSON.stringify(this.active.originalDividers)
     ||Boolean(this.active.countChange)||Boolean(this.flexible?.pending)));}
@@ -71,6 +73,13 @@ export class PropertyEditSession3I {
       ||Math.abs(point.x)>=10000||Math.abs(point.y)>=10000)return false;
     this.active.boundary[index]={x:point.x,y:point.y};
     this.selectedCorner=index;this.validation=null;this.changed();return true;
+  }
+  // Restore only the accepted street-facing edge. Side/rear draft edits stay intact.
+  restoreFrontage(){
+    if(!this.isActive||this.flexible||!this.frontageChanged)return false;
+    this.active.boundary[0]=copyJson(this.active.originalBoundary[0]);
+    this.active.boundary[1]=copyJson(this.active.originalBoundary[1]);
+    this.validation=null;this.changed();return true;
   }
   // Insert on a rear/side edge. Edge 0->1 is reserved as the authoritative
   // road frontage; a new collinear handle can be dragged into a polygon.

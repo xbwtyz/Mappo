@@ -110,3 +110,76 @@ test('024 P3: annotated plot metadata cannot be silently retiled',()=>{
   assert.equal(preparePropertyApply3I(project,defaultWorkspace(project),session).candidate,null);
   assert.equal(JSON.stringify(project.city),previous);
 });
+
+function historicalIrregularFrontageFixture(){
+  const base=createProject({seed:'024-manual-polygon',size:'small',morphology:'planned'});
+  for(const property of base.city.properties.filter(p=>p.boundary.length===4&&p.plotIds.length===1)){
+    const draft=new PropertyEditSession3I();
+    if(!draft.start(base.city,property.id)||!draft.addVertex(2))continue;
+    const made=preparePropertyApply3I(base,defaultWorkspace(base),draft);
+    if(!made.ok)continue;
+    const project=made.candidate,accepted=project.city.properties.find(p=>p.id===property.id);
+    // Model an accepted historical frontage whose saved street frame is slightly
+    // misaligned. The original parcel and plot geometry remain valid and saved.
+    const {inward,tangent}=accepted.frame;
+    accepted.frame.inward={x:inward.x+.02*tangent.x,y:inward.y+.02*tangent.y};
+    validateStoredProject(project);
+    return {project,id:property.id};
+  }
+  throw Error('Could not construct a valid accepted irregular property fixture.');
+}
+
+test('irregular property: an existing frontage does not block a side/rear edit',()=>{
+  const {project,id}=historicalIrregularFrontageFixture();
+  const before=JSON.stringify(project.city);
+  const accepted=project.city.properties.find(p=>p.id===id);
+  const session=new PropertyEditSession3I();
+  assert.equal(session.start(project.city,id),true);
+  assert.equal(session.addVertex(3),true,'A side/rear corner may be inserted');
+  assert.equal(session.frontageChanged,false);
+  const inspected=inspectPropertyEdit3I(project,session);
+  assert.equal(inspected.ok,true,JSON.stringify(inspected.issues));
+  const result=preparePropertyApply3I(project,defaultWorkspace(project),session);
+  assert.equal(result.ok,true,JSON.stringify(result.issues));
+  const updated=result.candidate.city.properties.find(p=>p.id===id);
+  assert.equal(updated.boundary.length,6);
+  assert.deepEqual(updated.boundary.slice(0,2),accepted.boundary.slice(0,2));
+  assert.deepEqual(updated.frontage,accepted.frontage);
+  assert.deepEqual(updated.frame,accepted.frame);
+  assert.equal(JSON.stringify(project.city),before,'The accepted city is not mutated by preview/Apply');
+  validateStoredProject(result.candidate);
+  const opened=decodeProjectDocument(encodeProjectDocument(createProjectDocument(result.candidate,defaultWorkspace(result.candidate))));
+  assert.deepEqual(opened.project.city,result.candidate.city,'Portable save/open must retain geometry and frame');
+  const history=new PropertyGeometryHistory3I(20);
+  assert.equal(history.record(project,result.candidate,id),true);
+  const undo=history.prepare(result.candidate,defaultWorkspace(result.candidate),id,'undo');
+  assert.equal(undo.ok,true,undo.reason);
+  assert.deepEqual(undo.candidate.city.properties.find(p=>p.id===id).boundary,accepted.boundary);
+  history.accept(undo.entry,'undo');
+  const redo=history.prepare(undo.candidate,defaultWorkspace(undo.candidate),id,'redo');
+  assert.equal(redo.ok,true,redo.reason);
+  assert.deepEqual(redo.candidate.city.properties.find(p=>p.id===id).boundary,updated.boundary);
+});
+
+test('irregular property: changed frontage rejects unsafe alignment and restores only the frontage',()=>{
+  const {project,id}=historicalIrregularFrontageFixture();
+  const before=JSON.stringify(project.city);
+  const session=new PropertyEditSession3I();
+  session.start(project.city,id);
+  assert.equal(session.addVertex(3),true);
+  const tip=session.boundary[1],inward=session.source(project.city).frame.inward;
+  assert.equal(session.setCorner(1,{x:tip.x+inward.x*.5,y:tip.y+inward.y*.5}),true);
+  assert.equal(session.frontageChanged,true);
+  const invalid=inspectPropertyEdit3I(project,session);
+  assert.equal(invalid.ok,false);
+  assert.ok(invalid.issues.some(issue=>issue.code==='frontage'&&/Restore frontage/.test(issue.message)),
+    JSON.stringify(invalid.issues));
+  assert.equal(preparePropertyApply3I(project,defaultWorkspace(project),session).candidate,null);
+  assert.equal(session.restoreFrontage(),true);
+  assert.equal(session.frontageChanged,false);
+  assert.equal(session.boundary.length,6,'Side/rear draft edits survive frontage restoration');
+  assert.equal(session.isPending,true);
+  assert.equal(inspectPropertyEdit3I(project,session).ok,true);
+  assert.equal(session.restoreFrontage(),false,'No second restore when the accepted frontage is intact');
+  assert.equal(JSON.stringify(project.city),before,'Failed Apply and Restore must not mutate accepted state');
+});

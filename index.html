@@ -1572,6 +1572,7 @@
           <div class="road-preview-actions" role="group" aria-label="Edit property vertices">
             <button id="propertyAddVertex024" type="button" class="minor-button">+ Add vertex</button>
             <button id="propertyRemoveVertex024" type="button" class="minor-button">− Remove vertex</button>
+            <button id="propertyRestoreFrontage024" type="button" class="minor-button" disabled>Restore frontage</button>
           </div>
           <div class="building-transform-values">
             <label>Corner X <input id="propertyCornerX3I" type="number" step="0.5" disabled></label>
@@ -15461,6 +15462,8 @@ class PropertyEditSession3I {
   get countChange(){return this.active?.countChange??null;}
   get approved(){return Boolean(this.active?.approved);}
   get polygonMode(){return Boolean(this.active && (this.active.polygonEdited || this.active.originalBoundary.length!==4 || this.boundary.length!==4));}
+  get frontageChanged(){return Boolean(this.active && JSON.stringify(this.active.boundary.slice(0,2))!==
+    JSON.stringify(this.active.originalBoundary.slice(0,2)));}
   get isPending(){return Boolean(this.active && (JSON.stringify(this.active.boundary)!==JSON.stringify(this.active.originalBoundary)
     ||JSON.stringify(this.active.dividers)!==JSON.stringify(this.active.originalDividers)
     ||Boolean(this.active.countChange)||Boolean(this.flexible?.pending)));}
@@ -15514,6 +15517,13 @@ class PropertyEditSession3I {
       ||Math.abs(point.x)>=10000||Math.abs(point.y)>=10000)return false;
     this.active.boundary[index]={x:point.x,y:point.y};
     this.selectedCorner=index;this.validation=null;this.changed();return true;
+  }
+  // Restore only the accepted street-facing edge. Side/rear draft edits stay intact.
+  restoreFrontage(){
+    if(!this.isActive||this.flexible||!this.frontageChanged)return false;
+    this.active.boundary[0]=copyJson(this.active.originalBoundary[0]);
+    this.active.boundary[1]=copyJson(this.active.originalBoundary[1]);
+    this.validation=null;this.changed();return true;
   }
   // Insert on a rear/side edge. Edge 0->1 is reserved as the authoritative
   // road frontage; a new collinear handle can be dragged into a polygon.
@@ -15735,10 +15745,14 @@ function inspectPropertyEdit3I(project,session){
     }
     const [front0,front1]=polygon,frame=property.frame;
     if(!front0||!front1||!frame?.inward||!frame?.tangent||
-       Math.hypot(front1.x-front0.x,front1.y-front0.y)<7 ||
+       Math.hypot(front1.x-front0.x,front1.y-front0.y)<7)
+      giIssue(issues,'frontage','Street frontage needs a valid frame and at least 7 units of length. Restore frontage or adjust its endpoints.',property.frontageRoadId);
+    else if(session.frontageChanged &&
        Math.abs((front1.x-front0.x)*frame.inward.x+
          (front1.y-front0.y)*frame.inward.y)>1e-4)
-      giIssue(issues,'frontage','An irregular property must retain one straight, valid street-facing edge.',property.frontageRoadId);
+      // Previously accepted irregular frontage may differ slightly from the
+      // stored frame. Unrelated side/rear edits must not rewrite or reject it.
+      giIssue(issues,'frontage','Edited frontage must stay aligned with its street. Restore frontage to keep the accepted edge.',property.frontageRoadId);
   }
   const block=city.blocks.find(b=>b.id===property.blockId);
   const nodes=new Map(city.nodes.map(n=>[n.id,n]));
@@ -27203,6 +27217,7 @@ function syncPropertyEditUI3I() {
   $('propertyAddVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length>=12);
   $('propertyRemoveVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length<=3
     ||session.selectedCorner===null||session.selectedCorner<2);
+  $('propertyRestoreFrontage024').disabled=Boolean(session.flexibleMode||session.drag||!session.frontageChanged);
   $('propertyAddDividerE4').disabled=Boolean(session.flexibleMode||session.polygonMode||session.countChange||session.drag);
   $('propertyRemoveDividerE4').disabled=Boolean(session.flexibleMode||session.polygonMode||session.countChange||session.drag||!dividers.length);
   const countChange=session.countChange;
@@ -28619,6 +28634,7 @@ function applyPropertyEdit3I() {
   return true;
 }
 $('propertyEditReset3I').addEventListener('click',()=>propertyEditSession?.reset());
+$('propertyRestoreFrontage024').addEventListener('click',()=>propertyEditSession?.restoreFrontage());
 $('propertyEditCancel3I').addEventListener('click',exitPropertyEditing3I);
 $('propertyEditApply3I').addEventListener('click',applyPropertyEdit3I);
 $('propertyAddVertex024').addEventListener('click',()=>{
