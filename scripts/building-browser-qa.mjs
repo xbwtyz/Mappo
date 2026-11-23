@@ -17,7 +17,25 @@ async function openIdentity(page) {
   else await page.locator('#identityEditorTitle').click();
 }
 
-const html = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'));
+const html = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'), `
+globalThis.__identityHistoryDiagnosticD01 = () => ({
+  entry: acceptedHistoryD01.entry('undo') ? {
+    family: acceptedHistoryD01.entry('undo').family,
+    operation: acceptedHistoryD01.entry('undo').operation,
+    targets: acceptedHistoryD01.entry('undo').targetIds
+  } : null,
+  globalCan: acceptedHistoryD01.can('undo',project),
+  blocked: d01DraftBlocked(),
+  identityPending: identityWorkspace.hasPending(),
+  identitySelection: identityWorkspace.ref(),
+  workspaceSelection: workspaceShell.state.selection,
+  mounted: identityWorkspace.mounted,
+  fields: identityWorkspace.fields(),
+  drafts: [...identityWorkspace.drafts],
+  typeValue: document.getElementById('identityBuildingType').value,
+  historyNotice: acceptedHistoryD01.notice
+});
+`);
 const output = new URL('../artifacts/building-qa/', import.meta.url);
 await mkdir(output, { recursive: true });
 const viewports = [
@@ -318,6 +336,9 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         assert.match(await page.locator('#workspaceSelectionSections').innerText(), /Building use: (Inn|Shop)/);
         const accepted = await page.evaluate(() => __buildingQA.state().files.captureDocument());
         assert.equal(accepted.project.city.buildings.find(b => b.id === buildingId).type, type);
+        assert.equal(await page.locator('#identityUndoButton').isDisabled(),false,
+          'Identity Undo must be available after accepting this building type: '+
+            JSON.stringify(await page.evaluate(()=>__identityHistoryDiagnosticD01())));
         await page.locator('#identityUndoButton').click();
         assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
       }
