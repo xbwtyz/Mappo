@@ -56,6 +56,8 @@ const qaFiles=[
   ['package.json',await readFile(join(root,'package.json'),'utf8')],
   ['index.template.html',await readFile(join(root,'index.template.html'),'utf8')],
 ];
+await mkdir(join(root,'artifacts'),{recursive:true});
+await writeFile(join(root,'artifacts/s10b-qa-source.json'),JSON.stringify(qaFiles));
 html += '\n<!-- S10B-QA-ARCHIVE:' + Buffer.from(JSON.stringify(qaFiles)).toString('base64') + ' -->';
 const distribution = join(root, `dist/mappo-${APP_VERSION}.html`);
 await mkdir(dirname(distribution), { recursive: true });
