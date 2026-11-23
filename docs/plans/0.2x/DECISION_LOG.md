@@ -66,3 +66,16 @@ P1–P5 implementation separately authorized; PR merge, stable release, schema c
 | D-030-8 | Reuse Property Inspector/building controls; no new workspace or forced onboarding |
 
 The owner separately approved P1–P5 implementation on a fresh branch. Merge, release and Pages still require separate authorization.
+
+
+## Mappo 0.2.11 D01 — Approved November 22, 2026
+
+| ID | Owner-approved A decision |
+|---|---|
+| D-031-1 | Session-only unified accepted Undo/Redo; persistence later |
+| D-031-2 | Roads, property, plot, building, compound and identity operations in staged integration |
+| D-031-3 | Shared accepted transaction ledger reusing existing edit/validation mechanisms; no replacement geometry algorithms |
+| D-031-4 | Bounded entries and memory, strict stale-project rejection; proposed 20 entries and 64 MiB |
+| D-031-5 | Existing UI shared Undo/Redo and compact read-only history panel |
+
+P1–P5 implementation separately authorized on a fresh branch from verified main. Merge, release, tags and Pages remain separate gates. [Milestone](MILESTONE_0_2_11_UNIFIED_HISTORY.md) · [#106](https://github.com/xbwtyz/Mappo/issues/106).

@@ -3,8 +3,8 @@ import { IdentityEditor, identityRecord, identityChanges, customizedIdentityCoun
 import { renderBuildingUseOptions } from './building-use.js';
 
 export class IdentityWorkspace {
-  constructor({ getElement, shell, getCity, commit, canChangeBuildingUse = () => true, changed = () => {} }) {
-    Object.assign(this, { $: getElement, shell, getCity, commit, canChangeBuildingUse, changed });
+  constructor({ getElement, shell, getCity, commit, historyMove = null, historyCan = null, canChangeBuildingUse = () => true, changed = () => {} }) {
+    Object.assign(this, { $: getElement, shell, getCity, commit, historyMove, historyCan, canChangeBuildingUse, changed });
     this.editor = new IdentityEditor();
     this.drafts = new Map();
     this.mounted = null;
@@ -74,7 +74,8 @@ export class IdentityWorkspace {
     if (building && !this.$('identityBuildingType').value) this.mounted.previousBuildingType = record.type;
     this.$('identityEditorTitle').textContent = ref.kind === 'property' ? 'Edit property identity' : 'Edit building identity';
     this.$('identityOtherUseGroup').hidden = this.$('identityUseInput').value !== 'other';
-    this.$('identityUndoButton').disabled = !this.editor.history.length;
+    this.$('identityUndoButton').disabled = this.historyCan ? !this.historyCan('undo') : !this.editor.history.length;
+    if(this.$('identityRedoButtonD01'))this.$('identityRedoButtonD01').disabled = !this.historyCan?.('redo');
     this.$('identityDraftState').textContent = this.pending(this.fields(), record, ref) ? 'Unapplied changes' : 'Up to date';
     if (this.rebuildAction) this.updateRebuildWarning();
   }
@@ -90,6 +91,7 @@ export class IdentityWorkspace {
       if (typeChanged && !this.canChangeBuildingUse())
         throw new Error('Finish or cancel the active map edit before applying building use.');
       const next = this.editor.apply(city, ref, input);
+      if(this.historyMove)this.editor.reset(); // canonical ledger handles accepted Undo/Redo
       this.drafts.delete(this.key(ref));
       this.mounted = null;
       this.commit(next);
@@ -106,6 +108,7 @@ export class IdentityWorkspace {
     }
   }
   undo() {
+    if(this.historyMove)return this.historyMove('undo');
     try {
       this.stash();
       const entry = this.editor.history.at(-1);
@@ -156,6 +159,7 @@ export class IdentityWorkspace {
     this.$('identityApplyButton').addEventListener('click', () => this.apply());
     this.$('identityDiscardButton').addEventListener('click', () => this.discard());
     this.$('identityUndoButton').addEventListener('click', () => this.undo());
+    this.$('identityRedoButtonD01')?.addEventListener('click', () => this.historyMove?.('redo'));
     this.$('identityCancelRebuildButton').addEventListener('click', () => {
       this.rebuildAction = null; this.$('identityRebuildWarning').hidden = true;
     });

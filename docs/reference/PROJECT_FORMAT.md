@@ -249,3 +249,8 @@ Each existing building remains one independent simple exterior polygon plus vali
 The list is absent on ungrouped properties. The validator requires a unique `CMP-MAN-`-prefixed group ID, name of 1–80 characters, 2–32 distinct member IDs, each member on the owning property and not in another group. Up to 128 groups per property may be stored. No secondary `building.compoundId` field is introduced. Individual building identity, metadata, footprint, holes, actual plots, entrance and frontage remain authoritative; grouped move/rotation/scale must validate and save atomically.
 
 This additive schema-9 extension does **not** guarantee that older Mappo versions respect group semantics while editing. For safe compound edits use Mappo 0.2.10 or later. Unsupported cross-property transfer or member deletion must fail validation rather than silently breaking a group; explicit unlink/dissolve first. Unknown compatible fields are copied on group edits and project round-trips. No 3D meshes, arbitrary unions, island holes or through-building access are promised.
+
+
+## D01 0.2.11 accepted edit history is session-only
+
+The 0.2.11 shared history ledger is **not included in project JSON**, recovery documents or the portable envelope. Saved city data stays at project schema **9** and format **1**. Undo/Redo targets only this open editing session. Generate/rebuild, open/import, or recover resets it explicitly. Older stored project files are not changed by D01; exporting a project never adds history snapshots. The ledger is limited to 20 transactions and 64 MiB estimated payload and can prune older steps with user-visible status.

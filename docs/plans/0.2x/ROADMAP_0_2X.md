@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Living dependency roadmap, reconciled November 22, 2026.** Published stable baseline is v0.2.0. Development milestones 0.2.1–0.2.7 have merged into `main`; 0.2.8 B05 has merged in [PR #118](https://github.com/xbwtyz/Mappo/pull/118) and post-merge CI passed. 0.2.9 C02 merged in PR #119 (post-merge CI passed). 0.2.10 C01 is in owner-authorized implementation on a feature branch. Stable release remains v0.2.0; merge, release and Pages require separate approval.
+> **Living dependency roadmap, reconciled November 22, 2026.** Published stable baseline is v0.2.0. Development milestones 0.2.1–0.2.7 have merged into `main`; 0.2.8 B05 has merged in [PR #118](https://github.com/xbwtyz/Mappo/pull/118) and post-merge CI passed. 0.2.9 C02 merged in PR #119 (post-merge CI passed). 0.2.10 C01 merged as [PR #120](https://github.com/xbwtyz/Mappo/pull/120) and [post-merge CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45080212898). 0.2.11 D01 is in owner-authorized implementation on a fresh feature branch. Stable release remains v0.2.0; merge, release and Pages require separate approval.
 
 ## Problem and intended outcome
 
@@ -18,7 +18,10 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | 0.2.6 B03 partial-edge property merging | [#101](https://github.com/xbwtyz/Mappo/issues/101) | Merged [PR #116](https://github.com/xbwtyz/Mappo/pull/116); main CI passed |
 | 0.2.7 B04 flexible plot partitions | [#102](https://github.com/xbwtyz/Mappo/issues/102) | Merged [PR #117](https://github.com/xbwtyz/Mappo/pull/117); [post-merge CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45000385031); issue closed |
 | **0.2.8 B05 authored parcel choices** | [#103](https://github.com/xbwtyz/Mappo/issues/103) | Merged [PR #118](https://github.com/xbwtyz/Mappo/pull/118); [post-merge CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45075063510); issue closed |
-| **0.2.9 C02 multi-operation building drafts** | [#105](https://github.com/xbwtyz/Mappo/issues/105) | Merged [PR #119](https://github.com/xbwtyz/Mappo/pull/119); [post-merge CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45077771390); issue closed |\n| **0.2.10 C01 compound building groups** | [#104](https://github.com/xbwtyz/Mappo/issues/104) | Architecture D-030-1–8 and P1–P5 implementation authorized; PR pending |\n| Following candidates | D01 etc. | Unassigned / owner architecture review required |
+| **0.2.9 C02 multi-operation building drafts** | [#105](https://github.com/xbwtyz/Mappo/issues/105) | Merged [PR #119](https://github.com/xbwtyz/Mappo/pull/119); [post-merge CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45077771390); issue closed |
+| **0.2.10 C01 compound building groups** | [#104](https://github.com/xbwtyz/Mappo/issues/104) | Merged [PR #120](https://github.com/xbwtyz/Mappo/pull/120); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45080212898); issue closed |
+| **0.2.11 D01 unified session edit history** | [#106](https://github.com/xbwtyz/Mappo/issues/106) | D-031-1–5 and P1–P5 approved; implementation on fresh branch; merge unapproved |
+| Following candidates | E01, D02/D03, C01 follow-ups etc. | Unassigned / owner architecture review required |
 
 ## Progress and intended delivery waves
 
@@ -28,8 +31,8 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **2 — Road-topology expansion** | A03 intersection normalization, A06 wider face/ownership reflow | A03 → A06 or staged co-design | **Merged as 0.2.2 and 0.2.3** | High to very high |
 | **3 — Flexible parcel foundation** | B01 general polygon properties | After road contract and with new exact polygon validators | **Merged as 0.2.4** | Very high |
 | **4 — Parcel operations** | B02 splits, B03 merges, B04 plot partitions, B05 custom-parcel decisions | B01 → B02/B03/B04 → B05 | **B02–B05 merged as 0.2.5–0.2.8** | High per issue |
-| **5 — Structural edits** | C02 multi-step building drafts, C01 compound structures | C02 merged 0.2.9; C01 0.2.10 approved property-owned linked compounds | C01 development authorized | Medium / high |
-| **6 — Editing history** | D01 coherent and perhaps persistent undo | After transaction semantics settle | Unassigned | High if persisted |
+| **5 — Structural edits** | C02 multi-step building drafts, C01 compound structures | C02 merged 0.2.9; C01 0.2.10 approved property-owned linked compounds | C01 merged 0.2.10 | Medium / high |
+| **6 — Editing history** | D01 coherent and perhaps persistent undo | After 0.2.10 | D01 session-only 0.2.11 implementation authorized; persistent history deferred | High |
 | **7 — Evidence-triggered improvements** | D02 frame hitches, D03 capacity, E01a import cap, E01b whole-city PNG | Only when reproducible need/support target is agreed | Unassigned | Small audit → high implementation |
 | **Policy decisions outside this sequence** | A02 disconnected networks, A04 protected edits, A05 true curves | Scope after product decisions; no automatic version promise | Unassigned | Very high or schema-sensitive |
 
@@ -104,3 +107,8 @@ All 17 additional limitation/capability issues are recorded on GitHub. Several h
 | E — Project files and export | [#109](https://github.com/xbwtyz/Mappo/issues/109) · [#110](https://github.com/xbwtyz/Mappo/issues/110) |
 
 Performance item D02 (#107) is **investigation-only**, not evidence that the closed historical #44/#46 regressions have returned. No version change, runtime work, schema work, release or Pages deployment is authorized by these tracking entries.
+
+
+### D01 0.2.11 approved implementation checkpoint
+
+D-031-1–5=A: session-only shared chronological Undo/Redo, inclusive road/property/plot/building/compound/identity acceptance, reuse validators, bounded 20 entries/64 MiB, existing desktop workspace. P1–P5 accepted for implementation, **not merge**. [Milestone plan](MILESTONE_0_2_11_UNIFIED_HISTORY.md) · [Issue #106](https://github.com/xbwtyz/Mappo/issues/106).

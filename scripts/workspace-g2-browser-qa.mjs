@@ -233,7 +233,7 @@ async function exercise(browser, engine, name, width, height) {
     const relocated = await page.evaluate(() => __buildingQA.state().project.city.buildings.find(b => b.id === 'BLD-00061'));
     assert.equal(relocated.customName, 'Market Hall');
     assert.notEqual(await accepted(), baseline);
-    assert.equal(await page.locator('#workspaceUndoButton').innerText(), 'Undo road');
+    assert.match(await page.locator('#workspaceUndoButton').innerText(), /Undo .*road/i);
     await page.locator('#workspaceUndoButton').click();
     assert.equal(await accepted(), baseline);
     if (name === 'desktop') {

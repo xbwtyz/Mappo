@@ -6,8 +6,8 @@ import { PropertySplitSessionE2,PropertySplitHistoryE2,inspectPropertySplitE2,
 // No separate model/history implementation: E2 uses the same reversible
 // whole-project snapshot rules as E1, and the existing 3I plot primitives.
 export class PropertySplitControlsE2 {
-  constructor({getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed}) {
-    Object.assign(this,{getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed});
+  constructor({getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove=null,historyCan=null}) {
+    Object.assign(this,{getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove,historyCan});
     this.session=new PropertySplitSessionE2(()=>this.changed());
     this.history=new PropertySplitHistoryE2(20);
     this.boundProject=null;
@@ -42,7 +42,7 @@ export class PropertySplitControlsE2 {
       (!session.flexible||(Math.abs(session.exitT-.5)<1e-9&&session.exitEdge===Math.max(1,Math.floor(session.vertexCount/2)))));
     const busy=active;
     for(const [dir,id] of [['undo','propertySplitUndoE2'],['redo','propertySplitRedoE2']]){
-      const available=!busy&&this.history.can(dir,this.getProject());
+      const available=!busy&&(this.historyCan?this.historyCan(dir):this.history.can(dir,this.getProject()));
       $(id).disabled=!available;
       $(id).title=available?'Restore the complete before/after property split.':'No compatible split history.';
     }
@@ -184,7 +184,7 @@ export class PropertySplitControlsE2 {
     $('propertySplitResetE2').addEventListener('click',()=>this.reset());
     $('propertySplitCancelE2').addEventListener('click',()=>this.stop());
     $('propertySplitApplyE2').addEventListener('click',()=>this.apply());
-    $('propertySplitUndoE2').addEventListener('click',()=>this.moveHistory('undo'));
-    $('propertySplitRedoE2').addEventListener('click',()=>this.moveHistory('redo'));
+    $('propertySplitUndoE2').addEventListener('click',()=>this.historyMove?this.historyMove('undo'):this.moveHistory('undo'));
+    $('propertySplitRedoE2').addEventListener('click',()=>this.historyMove?this.historyMove('redo'):this.moveHistory('redo'));
   }
 }

@@ -2,8 +2,8 @@ import { PropertyMergeSessionE3,PropertyMergeHistoryE3,
   inspectPropertyMergeE3,preparePropertyMergeE3 } from '../editor/property-merge-e3.js';
 
 export class PropertyMergeControlsE3 {
-  constructor({getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed}){
-    Object.assign(this,{getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed});
+  constructor({getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove=null,historyCan=null}){
+    Object.assign(this,{getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove,historyCan});
     this.session=new PropertyMergeSessionE3(()=>this.changed());
     this.history=new PropertyMergeHistoryE3(20);
     this.boundProject=null;
@@ -30,7 +30,7 @@ export class PropertyMergeControlsE3 {
     const $=this.getElement,active=this.active,session=this.session;
     $('propertyMergePanelE3').hidden=!active;
     for(const [direction,id] of [['undo','propertyMergeUndoE3'],['redo','propertyMergeRedoE3']]){
-      $(id).disabled=active||!this.history.can(direction,this.getProject());
+      $(id).disabled=active||!(this.historyCan?this.historyCan(direction):this.history.can(direction,this.getProject()));
       $(id).title=$(id).disabled?'No compatible merge history.':'Restore the complete property merge.';
     }
     if(!active)return;
@@ -114,7 +114,7 @@ export class PropertyMergeControlsE3 {
     $('propertyMergeResetE3').addEventListener('click',()=>this.reset());
     $('propertyMergeCancelE3').addEventListener('click',()=>this.stop());
     $('propertyMergeApplyE3').addEventListener('click',()=>this.apply());
-    $('propertyMergeUndoE3').addEventListener('click',()=>this.moveHistory('undo'));
-    $('propertyMergeRedoE3').addEventListener('click',()=>this.moveHistory('redo'));
+    $('propertyMergeUndoE3').addEventListener('click',()=>this.historyMove?this.historyMove('undo'):this.moveHistory('undo'));
+    $('propertyMergeRedoE3').addEventListener('click',()=>this.historyMove?this.historyMove('redo'):this.moveHistory('redo'));
   }
 }

@@ -318,6 +318,8 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         assert.match(await page.locator('#workspaceSelectionSections').innerText(), /Building use: (Inn|Shop)/);
         const accepted = await page.evaluate(() => __buildingQA.state().files.captureDocument());
         assert.equal(accepted.project.city.buildings.find(b => b.id === buildingId).type, type);
+        assert.equal(await page.locator('#identityUndoButton').isDisabled(),false,
+          'Building-local identity Undo is available while its own edit is latest.');
         await page.locator('#identityUndoButton').click();
         assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry);
       }
@@ -482,10 +484,15 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'Pending property name');
       await page.locator('#identityDiscardButton').click();
       assert.equal(await page.locator('#identityNameInput').inputValue(), 'The Silver Stag');
-      await page.locator('#identityUndoButton').click();
+      // D01: the most recent accepted edit belongs to a building, not this
+      // selected property. Local Identity Undo must not reverse another
+      // record's edit; global Undo traverses the accepted chronological stack.
+      assert.equal(await page.locator('#identityUndoButton').isDisabled(),true,
+        'Property-local Undo must not reverse another building identity.');
+      await page.locator('#workspaceUndoButton').click();
       assert.equal(await page.evaluate(id => __buildingQA.state().project.city.buildings.find(b => b.id === id).customName, buildingId), undefined);
       await page.locator('#workspaceUndoButton').click();
-      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry, 'Undo restores the exact city without touching geometry');
+      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)), geometry, 'Chronological Undo restores exact city without touching geometry');
       assert.deepEqual(await page.evaluate(() => {
         const s = __buildingQA.state();
         return [s.editor, s.waterPanel.editor, s.terrainPanel.editor, s.districtPanel.editor, s.fortificationPanel.editor].map(e => e.history.length);
