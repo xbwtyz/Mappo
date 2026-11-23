@@ -1,3 +1,4 @@
+import { lerpPoint } from '../core/boundary.js';
 // 3H placement is a ghost until a validated, atomic Apply to City.
 export function drawBuildingStructurePreview3H(ctx,camera,city,layers,session) {
   if (!session?.isActive || layers?.buildings===false)return;
@@ -30,7 +31,8 @@ export function drawBuildingStructurePreview3H(ctx,camera,city,layers,session) {
     }
     ctx.strokeStyle='#a88d6b';ctx.lineWidth=2;ctx.setLineDash([5,5]);ctx.stroke();
   }
-  if (!geometry?.footprint?.length) {
+  drawCourtyardPlacementPreview(ctx, camera, city, session);
+  if (session.active.courtyard?.only || !geometry?.footprint?.length) {
     ctx.restore();
     return;
   }
@@ -50,5 +52,60 @@ export function drawBuildingStructurePreview3H(ctx,camera,city,layers,session) {
   ctx.lineWidth=3;
   ctx.strokeStyle=invalid?'#cb5143':valid?'#30a37b':'#287fa0';
   ctx.stroke();
+  ctx.restore();
+}
+
+function drawCourtyardPlacementPreview(ctx, camera, city, session) {
+  const state = session.active.courtyard;
+  if (!state?.hostId) return;
+  const host = city.buildings.find(b => b.id === state.hostId);
+  if (!host) return;
+  const courtyard = host.geometry.regions.find(r => r.id === state.courtyardId);
+  const exterior = host.geometry.regions.find(r => r.id === courtyard?.parentId);
+  ctx.save();
+  ctx.setLineDash([]);
+  if (state.action === 'save' && exterior) {
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (const [ring, active, color, prefix] of [
+      [exterior.ring, state.outerEdge, '#176e8a', 'E'],
+      [courtyard.ring, state.innerEdge, '#7d427c', 'C']
+    ]) {
+      for (let i = 0; i < ring.length; i++) {
+        const a = camera.worldToScreen(ring[i]), b = camera.worldToScreen(ring[(i + 1) % ring.length]);
+        const middle = lerpPoint(a, b, .5);
+        if (i === active) {
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 3;
+          ctx.beginPath();ctx.moveTo(a.x, a.y);ctx.lineTo(b.x, b.y);ctx.stroke();
+        }
+        ctx.fillStyle = color;
+        ctx.fillRect(middle.x - 11, middle.y - 8, 22, 16);
+        ctx.fillStyle = '#fff';
+        ctx.fillText(prefix + (i + 1), middle.x, middle.y);
+      }
+    }
+  }
+  const {strip, paths} = session.validation?.accessPreview ?? {};
+  if (strip) {
+    ctx.beginPath();
+    strip.forEach((point, i) => {
+      const p = camera.worldToScreen(point);
+      if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255,211,106,.78)';
+    ctx.fill();
+  }
+  for (const path of paths ?? []) {
+    ctx.beginPath();
+    path.forEach((point, i) => {
+      const p = camera.worldToScreen(point);
+      if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y);
+    });
+    ctx.strokeStyle = '#fff4d2';ctx.lineWidth = 4;ctx.stroke();
+    ctx.strokeStyle = '#176e8a';ctx.lineWidth = 2;ctx.stroke();
+  }
   ctx.restore();
 }

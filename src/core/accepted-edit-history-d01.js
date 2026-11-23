@@ -90,6 +90,13 @@ export function describeAcceptedEditD01(before,after) {
     label:'Edit building compound'};
   if(buildingDelta!==0) return {family:'building',operation:'building-structure',targetIds:buildingIds,
     label:buildingDelta>0?'Add buildings':'Remove buildings'};
+  const previousAccess = new Map(oldBuildings.filter(b => b.geometry?.version === 2)
+    .map(b => [b.id, b.geometry.courtyardAccess]));
+  const courtyardAccessChanged = newBuildings.some(building =>
+    (building.geometry?.version === 2 || previousAccess.has(building.id)) &&
+    !d01Same(previousAccess.get(building.id), building.geometry?.courtyardAccess));
+  if(courtyardAccessChanged) return {family:'building',operation:'building-structure',targetIds:buildingIds,
+    label:'Edit courtyard access'};
   if(buildingIds.length>1)return {family:'compound',operation:'compound-transform',targetIds:buildingIds,
     label:'Transform building compound'};
   if(buildingIds.length)return {family:'building',operation:'building-geometry',targetIds:buildingIds,

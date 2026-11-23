@@ -124,7 +124,16 @@ function riCanonicalBuildingGeometry(record,kind,id,emit,spend) {
   if (record?.geometry === undefined && record?.components === undefined) return;
   if (!record.geometry || !Array.isArray(record.geometry.regions) ||
       !Array.isArray(record.components)) return;
-  riUnknownRecord(record.geometry, 'version regions extensions',kind,id,emit,spend,'geometry.');
+  const geometryFields = record.geometry.version === 2 ? 'version regions extensions courtyardAccess' : 'version regions extensions';
+  riUnknownRecord(record.geometry, geometryFields,kind,id,emit,spend,'geometry.');
+  if (record.geometry.version === 2) {
+    const access = record.geometry.courtyardAccess;
+    riUnknownRecord(access, 'portals occupants extensions', kind, id, emit, spend, 'geometry.courtyardAccess.');
+    for (const portal of access.portals)
+      riUnknownRecord(portal, 'id exteriorId courtyardId inner outer extensions', kind, id, emit, spend, 'geometry.courtyardAccess.portals.');
+    for (const link of access.occupants)
+      riUnknownRecord(link, 'buildingId portalId extensions', kind, id, emit, spend, 'geometry.courtyardAccess.occupants.');
+  }
   for (const region of record.geometry.regions) {
     riUnknownRecord(region,'id kind parentId componentId ring extensions',kind,id,emit,spend,'geometry.regions.');
     for(const point of region.ring??[])

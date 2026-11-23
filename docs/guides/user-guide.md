@@ -74,6 +74,14 @@ From a selected **property**, use **Add building to this property** in the Inspe
 
 From an individual building Inspector, use **Replace building (preview)** to keep its ID and custom identity while replacing its footprint/use after validation. **Delete building…** requires confirmation and removes only the building; the property and plots remain. After any accepted structural change, use **Undo structure** or **Redo structure** when that property is selected. These operations are scoped to the property and are checked against the complete saved-project validator. Session histories may become unavailable if another edit changes related geometry; Undo geometry first or keep a project backup. All committed buildings survive project save/load; placement drafts and structural Undo/Redo history do not. Regeneration and project load clear structural history. This feature does not support moving buildings between properties or editing property boundaries.
 
+### Buildings inside courtyards
+
+Select the enclosing building’s property and choose **Add building to this property**. In **Courtyard access**, select the enclosing building. Position a single-footprint building inside its courtyard. Choose an existing portal, or select **New portal** and set the courtyard wall, exterior wall, opening positions and width. The C and E labels on the map match the courtyard and exterior wall selectors. A valid preview shows the opening strip and the route from the new door to the property’s street. Several buildings can share a portal when each route is clear.
+
+Select **Edit portals only** to add, adjust or remove a portal without placing a building. Before removing a portal in use, select another portal that can serve the buildings using it. **Apply to City** commits the portal, independent buildings and their validated routes in one Undo/Redo step. A building, property or road edit that would block a route reports the conflict before Apply.
+
+Courtyard access supports one level of independent occupancy on the same property. Use this build or a later compatible build to open a project with authored portals. Keep a backup before opening a project in an older standalone.
+
 ### Property and plot editing (3I, stable)
 
 Select a property and choose **Edit property geometry**. Mappo displays the parcel boundary, its four draggable corners and its existing plot subdivisions. Tap a corner or use the numeric **Corner X/Y** fields to adjust its position; choose a plot divider and change its percentage along the frontage to distribute space between plots. **Reset preview** restores the last accepted land geometry; **Cancel preview** discards it.

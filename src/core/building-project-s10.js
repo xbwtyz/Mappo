@@ -1,3 +1,4 @@
+import { mapCourtyardAccess } from './courtyard-access.js';
 // S10-B P1: pure, detached Schema 9 -> Schema 10 building migration.
 // No generator, editor, persistent store, or accepted project is mutated.
 import { legacyBuildingShapeToS10, projectSimpleBuildingS10, reserveBuildingPartIdS10 } from './building-geometry-adapter-s10.js';
@@ -70,7 +71,7 @@ export function hydrateProjectS10(project) {
 // Legacy editing is permitted only for one solid root, flat courtyard
 // children, and one component. Structural IDs and compatible metadata
 // persist across simple transforms; new courtyards receive scoped IDs.
-export function writeSimpleBuildingS10(source,shape) {
+export function writeSimpleBuildingS10(source,shape,mapPortalPoint) {
   if (!source?.geometry || !source?.components)
     throw Error('Schema 10 edit requires a canonical source building.');
   const previous=projectSimpleBuildingS10(source.geometry,source.components);
@@ -89,6 +90,7 @@ export function writeSimpleBuildingS10(source,shape) {
   const geometry={...s10ProjectClone(source.geometry),regions:[
     {...s10ProjectClone(root),ring:next.footprint},...children
   ]};
+  if (geometry.version === 2 && mapPortalPoint) geometry.courtyardAccess = mapCourtyardAccess(geometry, mapPortalPoint);
   const verified=validateBuildingStructureS10(geometry,source.components);
   const updated={...s10ProjectClone(source),...s10ProjectClone(shape),
     geometry:verified.geometry,components:verified.components,area:next.area};

@@ -1,3 +1,4 @@
+import { rerouteCourtyardOccupants } from '../core/courtyard-access.js';
 // C01: property-owned linked compounds. Each child remains an independent
 // schema-9 building; compound relationships never overwrite authored geometry.
 import {copyJson,createProjectDocument,decodeProjectDocument,encodeProjectDocument} from '../data/project-format.js';
@@ -101,7 +102,7 @@ export function previewCompoundTransform(project,propertyId,groupId,input={}) {
       entrance:b.entrance?map(b.entrance):null,
       accessPath:(b.accessPath??[]).map(map)
     };
-    return b.geometry?writeSimpleBuildingS10(b,changes):{
+    return b.geometry?writeSimpleBuildingS10(b,changes,map):{
       ...b,...changes,
       area:polygonSignedArea(footprint)-holes.reduce((sum,h)=>sum+polygonSignedArea(h),0)
     };
@@ -138,6 +139,8 @@ export function prepareCompoundTransform(project,workspace,propertyId,groupId,tr
       if(b.frontageRoadId!==original.frontageRoadId)
         frontageChanges.push({buildingId:id,roadId:b.frontageRoadId});
     }
+    for (const id of preview.buildingIds)
+      rerouteCourtyardOccupants(city, city.buildings.find(b => b.id === id));
     return {ok:true,status:'valid',issues:[],candidate:c01RoundTrip(preview.project,workspace),preview,frontageChanges};
   }catch(error){return c01Error('project',error.message,null,preview);}
 }

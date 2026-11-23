@@ -1,3 +1,5 @@
+import { buildingFrame, transformBuildingPoint } from '../core/building-transform.js';
+import { findCourtyardAccess, resolveCourtyardAccess, rerouteCourtyardOccupants } from '../core/courtyard-access.js';
 import { polygonSignedArea, pointInPolygon } from '../core/geometry.js';
 import { distanceToSegment, clearance, segmentCuts } from '../core/boundary.js';
 import { clipToConvexPolygon, PROPERTY_SETBACK, STREET_WIDTHS, STREET_EDGE_WIDTH } from '../core/placement.js';
@@ -150,6 +152,12 @@ function cornerBuildingFrontages(city, property, roads, nodes) {
 }
 
 export function resolveBuildingAccess(city, original, candidate) {
+  const passage = findCourtyardAccess(city, candidate.id);
+  if (passage) {
+    const geometry = writeSimpleBuildingS10(original, candidate);
+    const updated = {...city, buildings: city.buildings.map(b => b.id === candidate.id ? geometry : b)};
+    return resolveCourtyardAccess(updated, geometry, passage);
+  }
   const existing=retainedBuildingFrontage(city,original,candidate);
   if(existing)return {route:existing,changed:false};
   const roads=new Map(city.roads.map(road=>[road.id,road]));
@@ -201,16 +209,22 @@ export function prepareBuildingCandidate(project, buildingId, transform, draft =
   // The candidate is a full independent project. Any error below discards it.
   const candidate=copyJson(project);
   const index=candidate.city.buildings.findIndex(b=>b.id===buildingId);
-  candidate.city.buildings[index]=original.geometry
-    ?writeSimpleBuildingS10(original,candidateBuilding)
-    :copyJson(candidateBuilding);
-  try { validateStoredProject(candidate); }
+  let courtyardRoutesChanged = [];
+  try {
+    const frame = original.geometry?.version === 2 && !draft ? buildingFrame(original) : null;
+    const map = frame ? point => transformBuildingPoint(point, frame, transform) : undefined;
+    const updated = original.geometry
+      ? writeSimpleBuildingS10(original, candidateBuilding, map) : copyJson(candidateBuilding);
+    candidate.city.buildings[index] = updated;
+    if (updated.geometry?.version === 2) courtyardRoutesChanged = rerouteCourtyardOccupants(candidate.city, updated);
+    validateStoredProject(candidate);
+  }
   catch(error) {
     issues.push({code:'schema',message:`Project validation: ${error.message}`});
     return {ok:false,status:'invalid',issues,preview:base.preview,property:base.property,candidate:null};
   }
   return {ok:true,status:'valid',issues:[],preview:base.preview,property:base.property,candidate,
-    accessChanged: access.changed, frontageChanged: candidateBuilding.frontageRoadId!==original.frontageRoadId};
+    courtyardRoutesChanged, accessChanged: access.changed, frontageChanged: candidateBuilding.frontageRoadId!==original.frontageRoadId};
 }
 
 export function prepareBuildingApply(project,workspace,buildingId,transform,draft = null) {

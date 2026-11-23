@@ -677,7 +677,7 @@
         <section id="buildingStructurePanel" class="building-transform-panel building-structure-panel" aria-label="Add or replace a building" hidden>
           <div class="building-transform-heading"><strong id="structureModeTitle">PLACE BUILDING</strong><span id="structurePropertyLabel">—</span></div>
           <p class="hint">Drag the ghost or click within the property to position it. New buildings only exist after Apply to City.</p>
-          <div class="building-transform-values">
+          <div id="structureFootprintFields" class="building-transform-values">
             <label>Footprint <select id="structurePreset">
               <option value="" disabled>Choose replacement shape</option><option value="rectangle">Rectangle</option><option value="L">L-shape</option>
               <option value="courtyard">Courtyard</option><option value="T">T-shape</option>
@@ -694,8 +694,30 @@
             <label>Depth <input id="structureDepth" type="number" min="2" max="250" step="0.5"></label>
             <label>Angle ° <input id="structureAngle" type="number" min="-360" max="360" step="1"></label>
           </div>
+          <fieldset id="structureCourtyardAccess" hidden>
+            <legend>Courtyard access</legend>
+            <div class="building-transform-values">
+              <label>Enclosing building <select id="structureCourtyardHost"></select></label>
+              <label id="structureCourtyardOnlyLabel" hidden><input type="checkbox" id="structureCourtyardOnly"> Edit portals only</label>
+            </div>
+            <div id="structurePortalOptions" class="building-transform-values" hidden>
+              <label>Portal <select id="structurePortal"></select></label>
+              <label id="structurePortalActionLabel" hidden>Action <select id="structurePortalAction">
+                <option value="use">Use existing</option><option value="save">Place openings</option><option value="remove">Remove</option>
+              </select></label>
+              <label id="structurePortalReplacementLabel" hidden>Replacement portal <select id="structurePortalReplacement"></select></label>
+            </div>
+            <div id="structurePortalOpenings" class="building-transform-values" hidden>
+              <label>Courtyard <select id="structurePortalCourtyard"></select></label>
+              <label>Courtyard wall <select id="structurePortalInnerEdge"></select></label>
+              <label>Exterior wall <select id="structurePortalOuterEdge"></select></label>
+              <label>Courtyard opening % <input id="structurePortalInnerOffset" type="number" min="0" max="100" step="1" value="50"></label>
+              <label>Exterior opening % <input id="structurePortalOuterOffset" type="number" min="0" max="100" step="1" value="50"></label>
+              <label>Opening width <input id="structurePortalWidth" type="number" min=".5" max="8" step=".1" value="1.5"></label>
+            </div>
+          </fieldset>
           <p id="structurePreviewMeasurements4C" data-place-review class="precision-measurements-4c" role="status" aria-live="polite">Live preview measurements appear here.</p>
-          <div class="precision-nudge-4c" role="group" aria-label="Placement precision movement">
+          <div id="structurePlacementNudges" class="precision-nudge-4c" role="group" aria-label="Placement precision movement">
             <label>Move increment <select id="structureNudgeStep4C" aria-label="Placement move increment">
               <option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1</option><option value="5">5</option>
             </select></label>
@@ -706,7 +728,7 @@
               <button type="button" id="structureNudgeDown4C" aria-label="Placement down">↓</button>
             </div>
           </div>
-          <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
+          <p id="structurePlacementKeys" class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
           <div class="building-transform-actions" data-place-actions>
             <button type="button" id="structureApply" disabled>Apply to City</button>
             <button type="button" id="structureCancel">Cancel preview</button>
