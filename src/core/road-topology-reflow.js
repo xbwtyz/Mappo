@@ -336,6 +336,7 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     const keptIds = new Set(Object.values(kept).flat().map(record=>record.id));
     const oldPlots = riIndex(old.plots);
     const regenerated = c3Development(project.seed, city, rebuilt, old, kept, corridors,project.schemaVersion===10);
+    hydrateCityS10(regenerated);
     const parcelResolution = reconcileRoadParcels028(old,city,replacements,regenerated,graph,kept,
       options.parcelChoices);
     parcelReview=parcelResolution.review;

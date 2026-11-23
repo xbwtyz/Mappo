@@ -3,6 +3,7 @@
 import { legacyBuildingShapeToS10, projectSimpleBuildingS10, reserveBuildingPartIdS10 } from './building-geometry-adapter-s10.js';
 import { validateBuildingStructureS10 } from './building-components-s10.js';
 import { validateFootprintF1 } from './building-footprint-f1.js';
+import { classifyRoadProvenance, stampRoadGenerated } from './road-provenance.js';
 
 const s10ProjectClone = value => JSON.parse(JSON.stringify(value));
 const s10ProjectOwn = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
@@ -18,7 +19,12 @@ export function migrateBuildingRecordS10(source) {
   const converted = s10ProjectClone(source);
   delete converted.footprint;
   delete converted.holes;
-  return {...converted, geometry, components};
+  const migrated={...converted, geometry, components};
+  // Road generation provenance fingerprints include canonical building fields.
+  // A true generated legacy building must stay generated after conversion;
+  // altered/custom and unknown provenance are never promoted to generated.
+  if (classifyRoadProvenance(source)==='generated') stampRoadGenerated(migrated);
+  return migrated;
 }
 
 export function migrateSchema9ProjectS10(source) {
@@ -37,12 +43,12 @@ export function migrateSchema9ProjectS10(source) {
 // These accessor properties are non-enumerable and NEVER enter saved JSON.
 // Unsupported complex topology cannot be flattened through this interface.
 const s10ProjectLockRing = ring => Object.freeze(ring.map(p => Object.freeze({...p})));
-export function hydrateBuildingS10(record) {
+export function hydrateBuildingS10(record, refresh = false) {
   if (!record?.geometry || !record?.components) return record;
   if (Object.prototype.propertyIsEnumerable.call(record,'footprint') ||
       Object.prototype.propertyIsEnumerable.call(record,'holes'))
     throw Error('Schema 10 building has competing writable legacy geometry.');
-  if (Object.getOwnPropertyDescriptor(record,'footprint')?.get) return record;
+  if (Object.getOwnPropertyDescriptor(record,'footprint')?.get && !refresh) return record;
   const simple=projectSimpleBuildingS10(record.geometry,record.components);
   const footprint=simple.ok ? s10ProjectLockRing(simple.footprint) : null;
   const holes=simple.ok ? Object.freeze(simple.holes.map(s10ProjectLockRing)) : null;
