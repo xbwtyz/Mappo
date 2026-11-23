@@ -25,6 +25,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **0.2.13-dev import message maintenance** | [#109](https://github.com/xbwtyz/Mappo/issues/109) | Clarify that the 20 MiB maximum is inclusive. Capacity expansion remains pending evidence. |
 | **0.2.14-dev building entrance routing** | Building and compound edits | Try diagonal routes to the current street, then verified side-street frontage. Show the proposed path and identify obstructions. |
 | **Irregular property frontage follow-up (in review)** | 0.2.4 B01 geometry editing | Allow side/rear edits of accepted multi-corner properties without re-rejecting an unchanged historical frontage; keep edited-frontage validation, a frontage-only restore action, and full project checks. No schema or version change. |
+| **Smart Frontage Snapping (approved, dependent PR)** | Irregular properties · frontage editor | Live road-derived corner constraint, midpoint translation, bounded collision clamps, numeric parity. Depends on the unmerged irregular frontage preservation fix PR #128; no version/schema changes. [Implementation contract](milestones/0.2x-smart-frontage-snapping.md) |
 | Following candidates | E01a, D02/D03, C01 follow-ups | Unassigned / owner architecture review required |
 
 ## Progress and intended delivery waves

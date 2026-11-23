@@ -68,6 +68,24 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
     assert.equal(await page.evaluate(()=>__buildingQA.state().propertyEditSession.boundary.length),6);
     assert.equal(await page.locator('#propertyEditApply3I').isEnabled(),true,
       await page.locator('#propertyEditStatus3I').innerText());
+    // SFS: the property inspector's precise coordinate path must use the same
+    // road-aware snap rule as pointer dragging in both supported browsers.
+    const numeric=await page.evaluate(()=>{
+      const state=__buildingQA.state(),session=state.propertyEditSession;
+      session.selectCorner(1);
+      const tangent=session.source(state.project.city).frame.tangent;
+      const axis=Math.abs(tangent.x)>=Math.abs(tangent.y)?'x':'y';
+      return {axis,value:session.boundary[1][axis]+Math.sign(tangent[axis])*.05};
+    });
+    await page.evaluate(({axis,value})=>{
+      const field=document.getElementById(axis==='x'?'propertyCornerX3I':'propertyCornerY3I');
+      field.value=String(value);
+      field.dispatchEvent(new Event('change',{bubbles:true}));
+    },numeric);
+    assert.equal(await page.locator('#propertyEditApply3I').isEnabled(),true,
+      await page.locator('#propertyEditIssues3I').innerText());
+    assert.equal(await page.evaluate(()=>__buildingQA.state().propertyEditSession.boundary.length),6);
+    assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),after);
     await page.locator('#propertyEditReset3I').click();
     assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),after);
     await page.locator('#propertyHistoryUndo3I').click();

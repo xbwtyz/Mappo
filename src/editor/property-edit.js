@@ -74,6 +74,15 @@ export class PropertyEditSession3I {
     this.active.boundary[index]={x:point.x,y:point.y};
     this.selectedCorner=index;this.validation=null;this.changed();return true;
   }
+  // Atomic draft-only frontage change after road projection and inspection.
+  setFrontage(points){
+    if(!this.isActive||this.flexible||!Array.isArray(points)||points.length!==2||
+      !points.every(p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y)&&Math.abs(p.x)<10000&&Math.abs(p.y)<10000))
+      return false;
+    this.active.boundary[0]={x:points[0].x,y:points[0].y};
+    this.active.boundary[1]={x:points[1].x,y:points[1].y};
+    this.validation=null;this.changed();return true;
+  }
   // Restore only the accepted street-facing edge. Side/rear draft edits stay intact.
   restoreFrontage(){
     if(!this.isActive||this.flexible||!this.frontageChanged)return false;
