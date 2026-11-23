@@ -291,7 +291,18 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project.city)),geometry);
       assert.equal(await page.locator('#structureRedo').isDisabled(),false);
       await page.screenshot({ path: new URL(`${label}-3h-structure-undo.png`,output).pathname });
-      await page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`).press('Enter');
+      const d01ChildButton=page.locator(`[data-inspector-kind="building"][data-inspector-id="${buildingId}"]`);
+      console.log('D01_CHILD_BEFORE '+label,JSON.stringify(await d01ChildButton.evaluate(el=>({
+        disabled:el.disabled,connected:el.isConnected,hiddenAncestor:el.closest('[hidden]')?.id??null,
+        inspectorHidden:document.getElementById('workspaceInspector').hidden,
+        text:el.textContent,tag:el.tagName,selection:document.getElementById('workspaceSelectionType').textContent
+      }))));
+      await d01ChildButton.press('Enter');
+      console.log('D01_CHILD_AFTER '+label,JSON.stringify(await page.evaluate(()=>({
+        active:document.activeElement?.outerHTML?.slice(0,150),
+        selection:__buildingQA.state().workspaceShell.state.selection,
+        inspectorHidden:document.getElementById('workspaceInspector').hidden
+      }))));
       assert.equal(await page.locator('#workspaceSelectionType').innerText(), 'Building');
       assert.ok((await page.locator('#workspaceSelectionName').innerText()).includes(buildingId));
       await openInspectorFold(page, 'workspaceInspectorDetails');
