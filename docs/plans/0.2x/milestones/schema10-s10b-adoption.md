@@ -1,6 +1,6 @@
 # Schema 10 — S10-B Authoritative Geometry Adoption and Migration
 
-**Status:** Implementation for P1–P4 is present in [PR #132](https://github.com/xbwtyz/Mappo/pull/132), with P5 final exact-head CI and owner review pending. **Not merged or released.** No tag or Pages authorization.
+**Status:** P1–P5 are implemented in [PR #132](https://github.com/xbwtyz/Mappo/pull/132). Full [implementation-head CI #45129335716](https://github.com/xbwtyz/Mappo/actions/runs/45129335716) passed at `4a1dcc76f2e5db4e81097250e22873765c405c50` (574 Node tests, all four desktop-browser suites and the aggregate gate; 6m 18s). **Owner review and separate merge approval remain pending. Not merged or released.** No tag or Pages authorization. Subsequent commits require new exact-head CI verification.
 
 **Base:** main 1578e3c0a7f504d6510414a419b9374d4b9227ff, app 0.2.14-dev, project schema 9; full post-merge CI green.
 
@@ -34,7 +34,7 @@ S10-C nested building access and portals (#122); S10-D component-authoring contr
 - **P2:** Canonical geometry records are adopted in generation, topology validation, occupied-area/plot calculations, collision detection, rendering and selection, including disconnected solid roots and nested solid/void islands.
 - **P3:** Existing simple-building, compound, parcel and road workflows use derived read-only views and canonical, validated Apply transactions. Unsupported complex editing remains explicitly deferred.
 - **P4:** Portable envelope version 1 and workspace schema version 1 remain independent. Historical save migration, recovery, Undo/Redo, provenance and accepted history are regression-covered.
-- **P5:** Targeted S10-A/S10-B and browser/Node regressions are in place. Earlier PR CI proved 572/572 Node tests and all four browser suites passed but the checked-in compiled distribution differed by a source-formatting byte change. The discrepancy was corrected in the source and compiled artifacts together; **the final exact-head CI result still controls merge readiness**.
+- **P5:** Targeted S10-A/S10-B and negative regression coverage is implemented. [Full CI #45129335716](https://github.com/xbwtyz/Mappo/actions/runs/45129335716) passed at implementation head `4a1dcc76` with **574 Node tests passed, 0 failed** (261 + 313), four desktop browser QA suites passed, and the aggregate gate passed (**6m 18s**). The earlier source-formatting/build-parity discrepancy was corrected; root `index.html` and `dist/mappo-0.2.14-dev.html` are byte-identical (**1,981,925 bytes**). This is automated verification, not hands-on owner UX signoff; subsequent commits require exact-head revalidation.
 
 ### User-experience delta
 
@@ -42,4 +42,4 @@ Schema 9 edits previously relied on persistent flat `footprint` and `holes`. Sch
 
 ### Merge gate
 
-Remain on the dedicated feature branch until exact-head Node shards, all four desktop-browser suites, offline standalone byte parity, and the aggregate gate pass. Do not merge, tag, publish a release, or deploy Pages without separate owner authorization.
+Keep the dedicated feature branch until the **current** PR head passes both Node shards, all four desktop-browser suites, standalone byte parity, and the aggregate gate. The implementation head above passed; this documentation correction also requires a new exact-head check. **Separate owner approval is mandatory for merging**, and merge approval does not authorize tagging, publishing a release, or deploying Pages.
