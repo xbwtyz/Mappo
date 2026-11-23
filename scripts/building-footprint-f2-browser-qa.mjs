@@ -374,6 +374,10 @@ async function exerciseD01(name,engine) {
     assert.equal(await page.evaluate(()=>__d01QA.length()),2);
     assert.deepEqual(await page.evaluate(()=>__d01QA.summaries().map(x=>x.family)),['identity','compound']);
     assert.equal(await page.locator('#workspaceHistoryListD01 li').count(),2);
+    // A local Undo button must not navigate an unrelated family's transaction.
+    assert.equal(await page.locator('#identityUndoButton').isDisabled(),true);
+    assert.equal(await page.locator('#propertySplitUndoE2').isDisabled(),true);
+    assert.equal(await page.locator('#propertyMergeUndoE3').isDisabled(),true);
     assert.match(await page.locator('#workspaceUndoButton').innerText(),/compound/i);
     await page.locator('#workspaceUndoButton').click();
     assert.equal(await page.evaluate(()=>__d01QA.length()),2);
@@ -386,6 +390,20 @@ async function exerciseD01(name,engine) {
       .find(p=>p.id===id).customName,propertyId),'Briar Estate');
     await page.locator('#workspaceRedoButtonD01').click();
     assert.equal(JSON.stringify(await readCity(page)),accepted);
+    // Unsaved compound names and member selections are drafts too: global
+    // history must block instead of silently losing these local edits.
+    await page.locator('#compoundNameInput').fill('Pending rename');
+    assert.equal(await page.evaluate(()=>__d01QA.blocked()),true);
+    assert.equal(await page.locator('#workspaceUndoButton').isDisabled(),true);
+    assert.equal(await page.evaluate(()=>__d01QA.move('undo')),false);
+    await page.locator('#compoundNameInput').fill('Briar Court');
+    assert.equal(await page.evaluate(()=>__d01QA.blocked()),false);
+    const firstMember=page.locator('#compoundMemberList input[type="checkbox"]').first();
+    await firstMember.uncheck();
+    assert.equal(await page.evaluate(()=>__d01QA.blocked()),true);
+    await firstMember.check();
+    assert.equal(await page.evaluate(()=>__d01QA.blocked()),false);
+    assert.equal(await page.locator('#workspaceUndoButton').isDisabled(),false);
     await page.locator('#compoundDx').fill('3');
     const blocked=await page.evaluate(()=>__d01QA.move('undo'));
     assert.equal(blocked,false,'A pending compound preview must block accepted global Undo');
