@@ -105,19 +105,26 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
     const saved=await page.evaluate(()=>__buildingQA.capture());
     await page.evaluate(doc=>__buildingQA.apply(doc),saved);
     assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),after);
-    for(const [caseName,expected] of [['irregular-split-vacant',true],['irregular-split-occupied',false]]){
+    const replays=[
+      ['irregular-split-vacant',null],
+      ['irregular-split-occupied',/BLD-00003/],
+      ['multipart-split',/place parts of building BLD-MAN-COURTYARD-HOST on separate properties/]
+    ];
+    for(const [caseName,expectedMessage] of replays){
       const spec=auditControls[caseName];
       const {project,workspace}=audit.fixture(spec.fixture);
       await page.evaluate(doc=>__buildingQA.apply(doc),{project,workspace});
+      const replayBefore=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city));
       await page.evaluate(id=>__buildingQA.state().workspaceShell.select({kind:'property',id}),spec.target);
       await page.getByRole('button',{name:'Split property',exact:true}).click();
       const status=await page.locator('#propertySplitStatusE2').innerText();
-      assert.equal(await page.locator('#propertySplitApplyE2').isEnabled(),expected,status);
-      if(!expected)assert.match(status,/BLD-00003/);
+      assert.equal(await page.locator('#propertySplitApplyE2').isEnabled(),expectedMessage===null,status);
+      if(expectedMessage)assert.match(status,expectedMessage);
       await page.locator('#propertySplitCancelE2').click();
+      assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),replayBefore);
     }
     assert.deepEqual(errors,[]);
-    console.log('PASS 025 '+name+' irregular split/blocked draft/Apply/Undo/Redo/save and issue #140 replays');
+    console.log('PASS 025 '+name+' irregular split/blocked draft/Apply/Undo/Redo/save and issues #137/#140 replays');
   }catch(error){
     await page.screenshot({path:new URL(name+'-failure.png',screenshots).pathname,fullPage:true}).catch(()=>{});
     throw new Error('025 '+name+': '+error.message,{cause:error});

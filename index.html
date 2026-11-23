@@ -18797,7 +18797,14 @@ function inspectPropertySplitE2(project,session){
     const left = roofs.every(ring => shapeContained(ring, g.left));
     const right = roofs.every(ring => shapeContained(ring, g.right));
     if(left===right){
-      issues.push(e2Issue('building','Building '+(building.customName||building.id)+' crosses or touches the split ambiguously. Move the line instead.',building.id));continue;
+      const name = building.customName || building.id;
+      const dividedParts = !left && roofs.length > 1 && roofs.every(ring =>
+        shapeContained(ring, g.left) !== shapeContained(ring, g.right));
+      const message = dividedParts
+        ? 'The split would place parts of building ' + name + ' on separate properties. Move the divider so all parts stay on one property.'
+        : 'Building ' + name + ' crosses or touches the split ambiguously. Move the line instead.';
+      issues.push(e2Issue('building', message, building.id));
+      continue;
     }
     const side=left?'left':'right';sides.set(building.id,side);
     const sibling=left?g.right:g.left;
