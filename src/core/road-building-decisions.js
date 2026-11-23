@@ -96,7 +96,7 @@ export function placeRoadConflictBuilding(building, choice, development, permitt
       if (conflicts.some(other=>retainedIds.has(other.id))) continue;
       const displaced=new Set(conflicts.map(other=>other.id));
       if (originals.get(property.blockId)?.some(other=>!displaced.has(other.id) &&
-          (roadBuildingPathHits(...accessPath,other.footprint) ||
+          (roadBuildingPathHits(...accessPath,roadBuildingFootprint(other)) ||
             (other.accessPath?.length===2 && roadBuildingPathHits(...other.accessPath,roadBuildingFootprint(moved)))))) continue;
 
       const proposed={...moved,blockId:property.blockId,districtId:property.districtId,
