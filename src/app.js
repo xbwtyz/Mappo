@@ -330,6 +330,21 @@ function d01MoveHistory(direction) {
           :false;
       if(!live)workspaceShell.select({kind:'property',id:returningProperties[0]},{reveal:true});
     }
+    if(receipt.entry.operation==='building-structure'){
+      // The pre-D01 structure Undo returned to the owning property and
+      // revealed the Inspector, including keyboard-reachable child actions.
+      // Keep that behavior even when the property itself was never deleted.
+      const targets=new Set(receipt.entry.targetIds??[]);
+      const parents=new Set([
+        ...receipt.entry.from.city.buildings,
+        ...receipt.entry.to.city.buildings
+      ].filter(b=>targets.has(b.id)).map(b=>b.propertyId));
+      if(parents.size===1){
+        const owner=[...parents][0];
+        if(project.city.properties.some(p=>p.id===owner))
+          workspaceShell.select({kind:'property',id:owner});
+      }
+    }
     requestDraw();
     workspaceChanged();
     $('statusMessage').textContent=acceptedHistoryD01.notice;
