@@ -1,11 +1,11 @@
 # Group E — Project Size and Export Output
 
-**Status:** Planning only. These are **two published GitHub tracking issues** split from the original E01 finding.
+The original E01 finding tracks project import capacity and whole-city PNG export separately.
 
 | ID | Limitation | Suggested scope |
 |---|---|---|
-| [E01a](issues/E01a.md) · [#109](https://github.com/xbwtyz/Mappo/issues/109) | Rejects portable project files at or above 20 MiB | Capacity audit; increase only with measured memory and validation safety |
-| [E01b](issues/E01b.md) · [#110](https://github.com/xbwtyz/Mappo/issues/110) | PNG export captures visible canvas only | Whole-city high-resolution export without changing the live camera |
+| [E01a](issues/E01a.md) · [#109](https://github.com/xbwtyz/Mappo/issues/109) | Rejects portable projects larger than 20 MiB | The D03 audit found no generated sample approaching the limit. A capacity increase remains deferred. |
+| [E01b](MILESTONE_0_2_12_WHOLE_CITY_PNG.md) · [#110](https://github.com/xbwtyz/Mappo/issues/110) | Whole-city PNG export | Merged into `main` in [PR #124](https://github.com/xbwtyz/Mappo/pull/124). |
 
 ## E01a — Project size
 
@@ -13,8 +13,8 @@ A higher import limit may be justified by large authored cities, but loading/par
 
 ## E01b — Whole-city PNG
 
-The current export re-encodes the visible canvas. A full-city export should render the complete chosen bounds in an off-screen, bounded or tiled process, preserve selected layers, avoid changing live camera/editor state and produce predictable resolution. Decide whether the default bounds are survey outline, developed geometry or user-defined crop.
+Whole-city PNG export renders the developed city or full survey bounds on a separate canvas, using the current layers. The existing visible-map export still captures the active canvas.
 
 ## Independent authorization
 
-Neither proposal is an implementation authorization. Do not add required server rendering or a network dependency. A large-image feature may need memory-budget design and a staged export method before approval.
+An import capacity increase or expanded export scope requires separate implementation approval.

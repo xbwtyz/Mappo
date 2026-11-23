@@ -4,7 +4,7 @@ import {
 
 export async function readProjectFile(file) {
   if (!file) throw new Error('Choose a project file first.');
-  if (!Number.isFinite(file.size) || file.size > MAX_PROJECT_BYTES) throw new Error('Choose a project file smaller than 20 MiB.');
+  if (!Number.isFinite(file.size) || file.size > MAX_PROJECT_BYTES) throw new Error('Choose a project file that is 20 MiB or less.');
   return file.text();
 }
 export function downloadProjectText(text, filename, environment = globalThis) {

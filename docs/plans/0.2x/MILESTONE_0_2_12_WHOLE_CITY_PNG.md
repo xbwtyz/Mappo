@@ -1,6 +1,6 @@
 # Mappo 0.2.12 E01b — Whole-city PNG export
 
-**Status:** Architecture and P1–P5 implementation approved. Development base `0a7e4d5`. Merge and publishing require separate approval. [Issue #110](https://github.com/xbwtyz/Mappo/issues/110)
+**Status:** Merged in [PR #124](https://github.com/xbwtyz/Mappo/pull/124). [Post-merge CI](https://github.com/xbwtyz/Mappo/actions/runs/45095188784) passed and [Issue #110](https://github.com/xbwtyz/Mappo/issues/110) is closed. Publishing requires separate approval.
 
 | Checkpoint | Contract and acceptance |
 |---|---|

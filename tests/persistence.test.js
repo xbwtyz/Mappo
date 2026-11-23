@@ -331,8 +331,12 @@ test('project filenames are safe and file reads reject oversized inputs before r
     text() {
       read = true;
     }
-  }), /20 MiB/);
+  }), /20 MiB or less/);
   assert.equal(read, false);
+  assert.equal(await readProjectFile({
+    size: MAX_PROJECT_BYTES,
+    text: async () => '{}'
+  }), '{}');
   assert.equal(await readProjectFile({
     size: 2,
     text: async () => '{}'
