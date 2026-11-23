@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createProject } from '../src/core/city-model.js';
+import { projectSimpleBuildingS10 } from '../src/core/building-geometry-adapter-s10.js';
 import {
   createProjectDocument, decodeProjectDocument, encodeProjectDocument
 } from '../src/data/project-format.js';
@@ -32,22 +33,36 @@ for (const [label, name, schema] of snapshots) {
     const original = JSON.stringify(source);
     assert.equal(project.schemaVersion, schema, 'fixture must describe the expected historical schema');
     const decoded = decodeProjectDocument(bytes);
-    assert.equal(decoded.project.schemaVersion, 9);
+    assert.equal(decoded.project.schemaVersion, 10);
     assert.equal(decoded.formatVersion, 1);
     assert.equal(JSON.stringify(source), original, 'reader must not mutate the fixture source');
     assert.equal(decoded.project.city.name, project.city.name);
     for (const field of savedRecords) {
+      if (field==='buildings') continue; // The S10 migration transforms only building geometry storage.
       if (Object.hasOwn(project.city, field)) {
         assert.deepEqual(decoded.project.city[field], project.city[field],
           label+': historical '+field+' record(s) must not be regenerated or changed');
       }
+    }
+    const legacyBuildings=project.city.buildings ?? [];
+    assert.equal(decoded.project.city.buildings.length,legacyBuildings.length);
+    for (let i=0;i<legacyBuildings.length;i++) {
+      const before=legacyBuildings[i],after=decoded.project.city.buildings[i];
+      const projected=projectSimpleBuildingS10(after.geometry,after.components);
+      assert.equal(projected.ok,true,label+': every migrated building must retain a simple projection');
+      assert.deepEqual(projected.footprint,before.footprint,label+': building geometry must remain exact');
+      assert.deepEqual(projected.holes,before.holes,label+': courtyards must remain exact');
+      const legacyMetadata={...before},newMetadata=JSON.parse(JSON.stringify(after));
+      delete legacyMetadata.footprint;delete legacyMetadata.holes;
+      delete newMetadata.geometry;delete newMetadata.components;
+      assert.deepEqual(newMetadata,legacyMetadata,label+': identity and authored metadata must remain intact');
     }
     for (const key of ['seed', 'generatorVersion']) {
       if (Object.hasOwn(project, key))
         assert.deepEqual(decoded.project[key], project[key], label+': '+key+' must survive migration');
     }
     const reopened = decodeProjectDocument(encodeProjectDocument(decoded));
-    assert.deepEqual(reopened, decoded, 'format 1/save schema 9 must round-trip without drift');
+    assert.deepEqual(reopened, decoded, 'format 1/save schema 10 must round-trip without drift');
     const next = createProjectDocument(decoded.project, decoded.workspace, decoded, '2026-11-21T00:00:00.000Z');
     assert.deepEqual(next.project, decoded.project);
     assert.equal(next.documentId, decoded.documentId);
@@ -57,7 +72,7 @@ for (const [label, name, schema] of snapshots) {
   });
 }
 
-test('H2 current schema 9 saves keep IDs, independent drafts and unknown fields', () => {
+test('H2 current schema 10 saves keep IDs, independent drafts and unknown fields', () => {
   const project = createProject({seed:'h2-current',size:'small',morphology:'planned'});
   const doc = createProjectDocument(project);
   doc.extensions.futureFeature = { id:'test-preserve', enabled:true };
@@ -74,7 +89,7 @@ test('H2 malformed and future native save formats are rejected without mutating 
   const current = createProjectDocument(project);
   const attempts = [
     d => { d.formatVersion = 2; },
-    d => { d.project.schemaVersion = 10; },
+    d => { d.project.schemaVersion = 11; },
     d => { d.workspace.schemaVersion = 2; },
     d => { d.project.city.roads[0].a = 'missing-node'; },
   ];
