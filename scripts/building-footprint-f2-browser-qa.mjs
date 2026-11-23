@@ -3,7 +3,8 @@ import { readFile } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 import { findDirectFootprintFixture } from '../tests/helpers/building-footprint-fixture.js';
-import { encodeProjectDocument } from '../src/data/project-format.js';
+import { cornerBuildingFixture } from '../tests/helpers/corner-building-fixture.js';
+import { defaultWorkspace, encodeProjectDocument } from '../src/data/project-format.js';
 
 async function openInspectorFold(page, id) {
   const fold = page.locator('#' + id);
@@ -224,6 +225,22 @@ async function exerciseF2(browserName, browserType) {
     await page.waitForFunction(() => document.querySelector('#fileStatus').textContent.startsWith('Opened '));
     assert.equal(JSON.stringify(await readCity(page)), JSON.stringify(classified));
     assert.equal(await page.evaluate(() => __buildingQA.state().buildingEditSession.isActive), false);
+    const corner=cornerBuildingFixture();
+    await page.evaluate(({project,workspace})=>__buildingQA.apply({project,workspace}),
+      {project:corner.project,workspace:defaultWorkspace(corner.project)});
+    await openBuildingEditor(page,corner.building,'Transform');
+    await page.locator('#buildingOffsetY').fill(String(corner.dy));
+    await page.locator('#buildingPreviewApply').isEnabled().then(enabled=>assert.equal(enabled,true));
+    assert.match(await page.locator('#buildingPreviewStatus').innerText(), new RegExp(corner.sideRoadId));
+    const frontage=()=>page.evaluate(id=>__buildingQA.state().project.city.buildings.find(b=>b.id===id).frontageRoadId,corner.building.id);
+    assert.equal(await frontage(),corner.building.frontageRoadId);
+    await page.locator('#buildingPreviewApply').click();
+    assert.equal(await frontage(),corner.sideRoadId);
+    await page.locator('#workspaceUndoButton').click();
+    assert.equal(await frontage(),corner.building.frontageRoadId);
+    await page.locator('#workspaceRedoButtonD01').click();
+    assert.equal(await frontage(),corner.sideRoadId);
+    console.log('PASS corner access preview, Apply and history '+browserName);
     assert.deepEqual(errors, []);
     console.log('PASS F2/F4 ' + browserName + ' ' + 'desktop');
   } finally {

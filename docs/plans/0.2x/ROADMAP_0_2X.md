@@ -23,6 +23,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **0.2.11 D01 unified session edit history** | [#106](https://github.com/xbwtyz/Mappo/issues/106) | Merged [PR #123](https://github.com/xbwtyz/Mappo/pull/123); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45092420094); issue closed |
 | **0.2.12 E01b whole-city PNG export** | [#110](https://github.com/xbwtyz/Mappo/issues/110) | Merged [PR #124](https://github.com/xbwtyz/Mappo/pull/124); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45095188784); issue closed. [Milestone](milestones/0.2.12-whole-city-png.md) |
 | **0.2.13-dev import message maintenance** | [#109](https://github.com/xbwtyz/Mappo/issues/109) | Clarify that the 20 MiB maximum is inclusive. Capacity expansion remains pending evidence. |
+| **0.2.14-dev building entrance routing** | Building and compound edits | Try diagonal routes to the current street, then verified side-street frontage. Show the proposed path and identify obstructions. |
 | Following candidates | E01a, D02/D03, C01 follow-ups | Unassigned / owner architecture review required |
 
 ## Progress and intended delivery waves

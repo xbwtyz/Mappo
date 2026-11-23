@@ -42,7 +42,7 @@ const REMEDIES = Object.freeze({
   subdivision:'Keep each divider between its neighbors and away from the frontage ends.',
   tiling:'Adjust dividers so their plots exactly cover the edited parcel.',
   frontage:'Restore a valid street edge for the parcel before applying this edit.',
-  access:'Move the building toward its frontage road or clear its proposed entrance route.',
+  access:'Adjust the footprint or clear the proposed entrance route.',
   selection:'Select an existing property or building and restart the preview.',
   missing:'Select an existing building and its owning property before editing.',
   target:'Re-select the building on its owning property.',
@@ -69,5 +69,6 @@ export function formatEditIssue4D(issue, context = {}) {
   const label=type && typeof targetId === 'string' && targetId ? type+' '+targetId+': ' : '';
   const reason=String(issue.message ?? 'The draft did not pass validation.').trim();
   const remedy=REMEDIES[code] ?? 'Review this draft and try a smaller geometry adjustment.';
-  return label+reason+' '+remedy;
+  const blocker = issue.blockerId ? ' Obstruction found on a proposed route: '+issue.blockerId+'.' : '';
+  return label+reason+blocker+' '+remedy;
 }

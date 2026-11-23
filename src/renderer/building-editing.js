@@ -90,7 +90,15 @@ export function drawBuildingEditOverlay(ctx, camera, city, layers, edit) {
       ctx.stroke();
     }
   }
-  const accepted = edit.draft && edit.validation?.candidate?.city.buildings.find(item => item.id === edit.buildingId);
+  const proposed = edit.validation?.candidate?.city.buildings.find(item => item.id === edit.buildingId);
+  drawProposedBuildingAccess(ctx,camera,proposed);
+  const issue = edit.validation?.issues?.find(row=>row.blockerId||row.targetId);
+  drawBuildingEditObstruction(ctx,camera,city,issue?.blockerId??issue?.targetId);
+  ctx.restore();
+}
+
+export function drawProposedBuildingAccess(ctx,camera,accepted) {
+  ctx.save();
   if (accepted?.accessPath && accepted.entrance) {
     ctx.beginPath();
     for (const [i, point] of accepted.accessPath.entries()) {
@@ -109,7 +117,11 @@ export function drawBuildingEditOverlay(ctx, camera, city, layers, edit) {
     ctx.fillStyle = '#f3bd58';
     ctx.fill();
   }
-  const target = edit.validation?.issues?.find(issue=>issue.targetId)?.targetId;
+  ctx.restore();
+}
+
+export function drawBuildingEditObstruction(ctx,camera,city,target) {
+  ctx.save();
   const conflicting = target && (city.properties?.find(p=>p.id===target)?.boundary
     || city.buildings?.find(b=>b.id===target)?.footprint);
   if(conflicting){
