@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { legacyCityViewS10 } from './helpers/schema10-legacy-view.js';
 import assert from 'node:assert/strict';
 import {
   readFile
@@ -318,7 +319,7 @@ test('native 3C projects migrate without adding defenses or changing district an
     towers,
     ...city
   } = loaded.project.city;
-  assert.deepEqual(city, raw.project.city);
+  assert.deepEqual(legacyCityViewS10(city), raw.project.city);
   assert.deepEqual(loaded.workspace, raw.workspace);
   assert.equal(loaded.documentId, raw.documentId);
   const built = generateFortifications(loaded.project.city, {

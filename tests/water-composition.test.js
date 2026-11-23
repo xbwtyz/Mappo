@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { legacyCityViewS10 } from './helpers/schema10-legacy-view.js';
 import assert from 'node:assert/strict';
 import {
   readFile
@@ -249,7 +250,7 @@ test('native 3E.1 coasts migrate unchanged and can gain a river without changing
   const raw = JSON.parse(await readFile(new URL('./fixtures/save-3e1-format1-schema6.json', import.meta.url), 'utf8')),
     loaded = decodeProjectDocument(JSON.stringify(raw));
   assert.equal(loaded.project.schemaVersion, 10);
-  assert.deepEqual(loaded.project.city, raw.project.city);
+  assert.deepEqual(legacyCityViewS10(loaded.project.city), raw.project.city);
   assert.deepEqual(loaded.workspace, raw.workspace);
   const e = new WaterEditor();
   e.load(loaded.workspace.waterEditor, loaded.project.city);

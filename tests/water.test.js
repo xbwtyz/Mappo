@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { legacyCityViewS10 } from './helpers/schema10-legacy-view.js';
 import assert from 'node:assert/strict';
 import {
   readFile
@@ -279,7 +280,7 @@ test('native 3D files migrate to dry land without changing geometry, walls, dist
     bridges,
     ...city
   } = loaded.project.city;
-  assert.deepEqual(city, raw.project.city);
+  assert.deepEqual(legacyCityViewS10(city), raw.project.city);
   assert.deepEqual(loaded.workspace, raw.workspace);
   assert.deepEqual(decodeProjectDocument(encodeProjectDocument(loaded)), loaded);
 });
