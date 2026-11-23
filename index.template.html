@@ -18,6 +18,23 @@
             <input type="text" id="exportFilename4F" maxlength="80" spellcheck="false" autocomplete="off" placeholder="Auto: city name and date" aria-describedby="exportFilenameHint4F">
             <p id="exportFilenameHint4F" class="hint">Applies to JSON and PNG downloads only. Leave blank for the automatic city name and date.</p>
             <button type="button" id="downloadMapPNG4F" class="minor-button">Download visible map (PNG)</button>
+            <details id="wholeCityPNGOptions" class="whole-city-png">
+              <summary>Whole-city PNG</summary>
+              <div class="whole-city-png-fields">
+                <label for="wholeCityPNGFraming">Framing</label>
+                <select id="wholeCityPNGFraming">
+                  <option value="developed">Developed city</option>
+                  <option value="survey">Full survey</option>
+                </select>
+                <label for="wholeCityPNGSize">Longest side</label>
+                <select id="wholeCityPNGSize">
+                  <option value="2048">2,048 px</option>
+                  <option value="4096">4,096 px</option>
+                </select>
+              </div>
+              <p id="wholeCityPNGDimensions" class="hint" aria-live="polite"></p>
+              <button type="button" id="downloadWholeCityPNG" class="minor-button" aria-describedby="wholeCityPNGDimensions">Download whole city (PNG)</button>
+            </details>
             <p id="mapExportStatus4F" class="file-status" role="status" aria-live="polite"></p>
           </div>
           <input id="projectFileInput" class="sr-only" type="file" accept=".json,.mappo.json,application/json" aria-label="Choose Mappo project file">

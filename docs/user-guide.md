@@ -12,7 +12,7 @@ Some detailed sections below retain historical v0.1.0 control names. The **publi
 - **Add:** Create a property, place a building after selecting its property, or work with rivers, coastline, lakes and mountain ranges. Landscape changes use their own draft/Undo and a separate city rebuild.
 - **Roads:** Select an ordinary road or junction, preview movement and connection changes, review impacts and resolve building placement blockers. Open the impact dock, or a linked accepted/proposed comparison when wide enough. Apply still performs independent validation.
 - **Inspector:** Select an existing property to adjust its footprint, split or merge it, modify plots or access buildings. Building edits cover transforms, vertices, edges, wings, courtyard holes and identity/use changes. Undo/Redo remains specific to the active editor.
-- **Project / Layers:** Download/open portable `.mappo.json`, recover local snapshots, export visible-map PNG, change layers and navigate by keyboard.
+- **Project / Layers:** Download or open portable `.mappo.json`, recover local snapshots, export visible-map or whole-city PNG, change layers and navigate by keyboard.
 
 The separate `?workspace=legacy` desktop entrypoint is retired. Narrow-window compact controls are retained for compatibility but phone/touch acceptance is **not** a 0.2G release target. Drafts never silently replace the accepted city; supported historical project files migrate without regenerating roads or building geometry. The [G4 acceptance report](plans/0.2/G4_ACCEPTANCE_REPORT.md), [H4 release QA](plans/0.2/H4_RELEASE_QA_REPORT.md) and [0.2.0 release notes](releases/v0.2.0.md) record the browser, backup and offline release evidence.
 
@@ -113,7 +113,8 @@ Use the feature-specific apply/commit action to accept valid drafts. Feature edi
 ## 6. Save, open and recover
 
 - **Project → Download project** (or Ctrl/Cmd+S) requests a portable `.mappo.json` file. Confirm the browser actually saved it. Enter an optional **Download filename** in the Project menu to control the JSON filename.
-- **Project → Download visible map (PNG)** saves the currently visible canvas with its selected layers and possible editing previews. It does not automatically export the whole city at a separate resolution. The optional download filename applies to PNG too.
+- **Project → Download visible map (PNG)** saves the current canvas, including the visible layers and any editing previews.
+- **Project → Whole-city PNG** exports the accepted map with the current layer settings and map background. **Developed city** frames roads, blocks, properties, plots, buildings and built defenses. **Full survey** frames the survey boundary and surrounding terrain within it. Choose **2,048 px** or **4,096 px** on the longest side. The menu shows the exact dimensions. The map stays at your current zoom and selection, and drafts stay out of the image. Both PNG modes use the optional download filename.
 - **Project → Load project** reads/validates the file and previews it before **Open project** replaces your workspace; Cancel retains your city.
 - **Restore latest recovery** or **Restore previous recovery** uses browser-local snapshots where available. Browser recovery is *not* a durable backup; clearing browser data or blocked storage can remove it.
 
@@ -121,6 +122,6 @@ Portable files retain accepted geometry, applied identities, editor state, camer
 
 ## 7. Known limits
 
-Building, structural and property Undo/Redo histories are session-only and unavailable after reopening a project. Property editing supports existing convex quadrilaterals and fixed plot membership; cross-property transfers, plot splitting/merging, manual road editing and 3D visualization remain future work. PNG export captures the visible canvas, not a complete offscreen full-city render. See [Roadmap](ROADMAP.md).
+Accepted Undo/Redo history is session-only and unavailable after reopening a project. Cross-property transfers and 3D visualization remain outside the current editor scope. See [Roadmap](ROADMAP.md).
 
 The [archived complete 3F-D README](history/README-pre-cleanup-3fd.md) includes more extensive feature notes and historical milestone descriptions.

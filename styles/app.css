@@ -447,6 +447,10 @@
 .export-options-4f #downloadMapPNG4F{min-height:34px}
 .export-options-4f #mapExportStatus4F:empty{display:none}
 .export-options-4f .hint{margin:0}
+.whole-city-png summary{cursor:pointer;color:#e0e6db;font-size:12px}
+.whole-city-png-fields{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;margin:8px 0}
+.whole-city-png-fields select{min-width:0;border:1px solid #66827d;border-radius:5px;padding:5px 8px;background:#1d3438;color:#f7f1e5}
+.whole-city-png #downloadWholeCityPNG{width:100%;min-height:34px;margin-top:7px}
 @media(max-width:670px){.layer-preset-4f select{max-width:148px}.export-options-4f{gap:6px}}
 
 /* A4 temporary road inspection. The map and normal workspace remain navigable. */
