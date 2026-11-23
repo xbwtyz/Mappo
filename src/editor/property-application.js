@@ -5,6 +5,7 @@ import { segmentDistance, STREET_WIDTHS, STREET_EDGE_WIDTH, PROPERTY_SETBACK } f
 import { propertyGeometryPreview3I, propertyLocalBounds3I } from '../core/property-geometry.js';
 import { convexPropertyPolygon024, partitionPropertyPolygon024, propertyPolygonPreview024 } from '../core/property-polygons-024.js';
 import { classifyRoadProvenance } from '../core/road-provenance.js';
+import { resolvePropertyFrontageGuideSFS, editedFrontageAlignedSFS } from '../core/property-frontage-constraints.js';
 import { deriveOccupiedPlots } from './building-application.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
@@ -68,11 +69,10 @@ export function inspectPropertyEdit3I(project,session){
        Math.hypot(front1.x-front0.x,front1.y-front0.y)<7)
       giIssue(issues,'frontage','Street frontage needs a valid frame and at least 7 units of length. Restore frontage or adjust its endpoints.',property.frontageRoadId);
     else if(session.frontageChanged &&
-       Math.abs((front1.x-front0.x)*frame.inward.x+
-         (front1.y-front0.y)*frame.inward.y)>1e-4)
-      // Previously accepted irregular frontage may differ slightly from the
-      // stored frame. Unrelated side/rear edits must not rewrite or reject it.
-      giIssue(issues,'frontage','Edited frontage must stay aligned with its street. Restore frontage to keep the accepted edge.',property.frontageRoadId);
+      !editedFrontageAlignedSFS(polygon,resolvePropertyFrontageGuideSFS(city,property)))
+      // The assigned street, not a potentially drifted historical frame,
+      // defines the direction. Unchanged accepted frontage stays protected.
+      giIssue(issues,'frontage','Edited frontage must align with its assigned street. Restore frontage or adjust its endpoints.',property.frontageRoadId);
   }
   const block=city.blocks.find(b=>b.id===property.blockId);
   const nodes=new Map(city.nodes.map(n=>[n.id,n]));

@@ -51,6 +51,18 @@ export function drawPropertyEditPreview3I(ctx, camera, city, session) {
   ctx.strokeStyle = session.validation?.status === 'invalid' ? '#c54e49' : '#167f7d';
   ctx.stroke();
   ctx.setLineDash([]);
+  // The distinct center handle moves the whole single frontage without
+  // changing its assigned street or the opposite parcel edges.
+  if(session.polygonMode && !session.flexibleMode){
+    const first=camera.worldToScreen(boundary[0]),last=camera.worldToScreen(boundary[1]);
+    if(session.drag?.kind==='frontage-sfs'){
+      ctx.beginPath();ctx.moveTo(first.x,first.y);ctx.lineTo(last.x,last.y);
+      ctx.strokeStyle='#dea54d';ctx.lineWidth=4;ctx.stroke();
+    }
+    const mx=(first.x+last.x)/2,my=(first.y+last.y)/2;
+    ctx.fillStyle='#f0c57f';ctx.strokeStyle='#945b26';ctx.lineWidth=2;
+    ctx.fillRect(mx-7,my-7,14,14);ctx.strokeRect(mx-7,my-7,14,14);
+  }
   if(!session.flexibleMode)boundary.forEach((point, index) => {
     const p = camera.worldToScreen(point);
     const chosen = session.selectedCorner === index;

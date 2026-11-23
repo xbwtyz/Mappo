@@ -68,6 +68,65 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
     assert.equal(await page.evaluate(()=>__buildingQA.state().propertyEditSession.boundary.length),6);
     assert.equal(await page.locator('#propertyEditApply3I').isEnabled(),true,
       await page.locator('#propertyEditStatus3I').innerText());
+    // SFS: the property inspector's precise coordinate path must use the same
+    // road-aware snap rule as pointer dragging in both supported browsers.
+    const numeric=await page.evaluate(()=>{
+      const state=__buildingQA.state(),session=state.propertyEditSession;
+      session.selectCorner(1);
+      const tangent=session.source(state.project.city).frame.tangent;
+      const axis=Math.abs(tangent.x)>=Math.abs(tangent.y)?'x':'y';
+      return {axis,value:session.boundary[1][axis]+Math.sign(tangent[axis])*.05};
+    });
+    await page.evaluate(({axis,value})=>{
+      const field=document.getElementById(axis==='x'?'propertyCornerX3I':'propertyCornerY3I');
+      field.value=String(value);
+      field.dispatchEvent(new Event('change',{bubbles:true}));
+    },numeric);
+    assert.equal(await page.locator('#propertyEditApply3I').isEnabled(),true,
+      await page.locator('#propertyEditIssues3I').innerText());
+    assert.equal(await page.evaluate(()=>__buildingQA.state().propertyEditSession.boundary.length),6);
+    assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),after);
+    // SFS: real pointer input must engage the midpoint and the frontage corner
+    // in both Firefox and Chromium, with the accepted city still untouched.
+    await page.evaluate(()=>{
+      const state=__buildingQA.state();
+      state.camera.fit(state.propertyEditSession.boundary,140);
+      __buildingQA.draw();
+    });
+    const screenPoint=await page.evaluate(kind=>{
+      const state=__buildingQA.state(),boundary=state.propertyEditSession.boundary;
+      const point=kind==='mid'
+        ?{x:(boundary[0].x+boundary[1].x)/2,y:(boundary[0].y+boundary[1].y)/2}
+        :boundary[0];
+      const canvas=document.getElementById('mapCanvas'),rect=canvas.getBoundingClientRect();
+      const screen=state.camera.worldToScreen(point);
+      return {x:rect.left+screen.x,y:rect.top+screen.y};
+    },'mid');
+    await page.mouse.move(screenPoint.x,screenPoint.y);
+    await page.mouse.down();
+    assert.equal(await page.evaluate(()=>__buildingQA.state().propertyEditSession.drag?.kind),
+      'frontage-sfs','Midpoint pointer-down should begin constrained frontage drag');
+    await page.mouse.move(screenPoint.x+10,screenPoint.y+5,{steps:3});
+    await page.mouse.up();
+    assert.equal(await page.locator('#propertyEditApply3I').isEnabled(),true,
+      await page.locator('#propertyEditIssues3I').innerText());
+    const cornerPoint=await page.evaluate(()=>{
+      const state=__buildingQA.state(),canvas=document.getElementById('mapCanvas');
+      const rect=canvas.getBoundingClientRect(),screen=state.camera.worldToScreen(state.propertyEditSession.boundary[0]);
+      return {x:rect.left+screen.x,y:rect.top+screen.y};
+    });
+    const opposite=await page.evaluate(()=>({...__buildingQA.state().propertyEditSession.boundary[1]}));
+    await page.mouse.move(cornerPoint.x,cornerPoint.y);
+    await page.mouse.down();
+    assert.equal(await page.evaluate(()=>__buildingQA.state().propertyEditSession.drag?.kind),
+      'frontage-sfs','Frontage corner pointer-down should begin constrained drag');
+    await page.mouse.move(cornerPoint.x+6,cornerPoint.y-7,{steps:3});
+    await page.mouse.up();
+    assert.deepEqual(await page.evaluate(()=>__buildingQA.state().propertyEditSession.boundary[1]),opposite,
+      'Dragging one frontage corner must not move its opposite corner');
+    assert.equal(await page.locator('#propertyEditApply3I').isEnabled(),true,
+      await page.locator('#propertyEditIssues3I').innerText());
+    assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),after);
     await page.locator('#propertyEditReset3I').click();
     assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),after);
     await page.locator('#propertyHistoryUndo3I').click();

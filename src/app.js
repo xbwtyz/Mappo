@@ -109,6 +109,9 @@ import { describeStructureChange4E } from './core/structure-history-feedback-4e.
 import { pointInPolygon } from './core/geometry.js';
 import { focusCameraOnSelection4B } from './core/selection-focus-4b.js';
 import { formatEditIssue4D } from './core/inspector-feedback-4d.js';
+import { beginPropertyFrontageGestureSFS, proposePropertyFrontageGestureSFS,
+  proposePropertyFrontageCoordinateSFS } from './editor/property-frontage-snap.js';
+import { frontageMidpointSFS } from './core/property-frontage-constraints.js';
 import {
   nudgeBuilding4C, nudgePropertyCorner4C, nudgeStructure4C,
   buildingMeasurements4C, propertyMeasurements4C, placementMeasurements4C,
@@ -1179,9 +1182,13 @@ function syncPropertyEditUI3I() {
     ' · Offset '+formatPrecision4C(measured.dx)+', '+formatPrecision4C(measured.dy);
   for(const id of ['propertyNudgeLeft4C','propertyNudgeRight4C','propertyNudgeUp4C','propertyNudgeDown4C'])
     $(id).disabled=session.selectedCorner===null || Boolean(session.drag);
-  $('propertyEditCorner3I').textContent = session.selectedCorner === null
-    ? 'Click or drag a highlighted corner to select it.'
-    : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
+  $('propertyEditCorner3I').textContent = session.drag?.kind==='frontage-sfs' && session.drag.clamped
+    ? 'Frontage stopped at the nearest valid boundary. Move back to continue.'
+    : session.drag?.kind==='frontage-sfs' && session.drag.handle==='edge'
+      ? 'Moving street frontage · both endpoints stay parallel to the assigned road.'
+      : session.selectedCorner === null
+        ? 'Click or drag a highlighted corner; drag the frontage midpoint to move the edge.'
+        : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
   const corner = session.selectedCorner === null ? null : session.boundary[session.selectedCorner];
   for(const [id,value] of [['propertyCornerX3I',corner?.x],['propertyCornerY3I',corner?.y]]){
     $(id).disabled = !corner || session.flexibleMode;
@@ -2465,7 +2472,14 @@ function precisionNudge4C(target,direction,step) {
       ...vertex, [axis]: vertex[axis] + sign * step
     }));
   }
-  if(target==='property')return nudgePropertyCorner4C(propertyEditSession,axis,sign,step);
+  if(target==='property'){
+    const session=propertyEditSession,index=session?.selectedCorner;
+    if(session?.polygonMode && !session.drag && (index===0||index===1) && [.1,.5,1,5].includes(step)){
+      const current=session.boundary[index][axis];
+      return updateSnappedFrontageCoordinateSFS(index,axis,Math.round((current+sign*step)*1e8)/1e8);
+    }
+    return nudgePropertyCorner4C(session,axis,sign,step);
+  }
   if(target==='structure')return nudgeStructure4C(buildingPlacementSession,axis==='x'?'u':'v',sign,step);
   return false;
 }
@@ -2713,13 +2727,25 @@ function movePropertyHistory3I(direction){
 }
 $('propertyHistoryUndo3I').addEventListener('click',()=>d01MoveHistory('undo'));
 $('propertyHistoryRedo3I').addEventListener('click',()=>d01MoveHistory('redo'));
+function updateSnappedFrontageCoordinateSFS(index,axis,value){
+  const session=propertyEditSession;
+  const result=proposePropertyFrontageCoordinateSFS(project,session,index,axis,value);
+  if(result.ok && result.frontage && session.setFrontage(result.frontage)){
+    if(result.clamped)$('statusMessage').textContent=result.reason;
+    return true;
+  }
+  $('statusMessage').textContent=result.reason||'This frontage coordinate cannot be changed safely.';
+  syncPropertyEditUI3I();return false;
+}
 for(const [id,axis] of [['propertyCornerX3I','x'],['propertyCornerY3I','y']])
   $(id).addEventListener('change',()=>{
     const session=propertyEditSession;
     if(!session?.isActive||session.selectedCorner===null)return;
     const value=Number($(id).value);
     if($(id).value===''||!Number.isFinite(value)){syncPropertyEditUI3I();return;}
-    session.setCorner(session.selectedCorner,{...session.boundary[session.selectedCorner],[axis]:value});
+    if(session.polygonMode && session.selectedCorner<2)
+      updateSnappedFrontageCoordinateSFS(session.selectedCorner,axis,value);
+    else session.setCorner(session.selectedCorner,{...session.boundary[session.selectedCorner],[axis]:value});
   });
 $('propertyDividerIndex3I').addEventListener('change',()=>{
   if(!propertyEditSession?.isActive)return;
@@ -2887,10 +2913,22 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       return false;
     }
     if(propertyEditSession?.isActive){
-      const index=propertyEditSession.hitCorner(project?.city,point,zoom);
+      const session=propertyEditSession,index=session.hitCorner(project?.city,point,zoom);
+      if(session.polygonMode && index===null){
+        const center=frontageMidpointSFS(session.boundary),radius=10/Math.max(.18,zoom);
+        if(center && Math.hypot(center.x-point.x,center.y-point.y)<=radius){
+          const drag=beginPropertyFrontageGestureSFS(project,session,'edge',null,point);
+          if(!drag){$('statusMessage').textContent='Frontage road cannot be snapped safely.';return false;}
+          session.drag=drag;syncPropertyEditUI3I();return true;
+        }
+      }
       if(index===null)return false;
-      propertyEditSession.drag={index,original:{...propertyEditSession.boundary[index]}};
-      propertyEditSession.selectCorner(index);
+      if(session.polygonMode && index<2){
+        const drag=beginPropertyFrontageGestureSFS(project,session,'corner',index,point);
+        if(!drag){$('statusMessage').textContent='Frontage road cannot be snapped safely.';return false;}
+        session.drag=drag;
+      }else session.drag={index,original:{...session.boundary[index]}};
+      session.selectCorner(index);
       return true;
     }
     if(buildingPlacementSession?.isActive){
@@ -2932,6 +2970,17 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
         propertyEditSession.updateFlexible({[which==='A'?'edgeA':'edgeB']:near.edge,
           [which==='A'?'ratioA':'ratioB']:near.ratio});
       }
+    }else if(propertyEditSession?.drag?.kind==='frontage-sfs'){
+      const drag=propertyEditSession.drag;
+      const result=proposePropertyFrontageGestureSFS(project,propertyEditSession,drag,point);
+      if(result.ok&&result.frontage){
+        drag.clamped=result.clamped;
+        // Candidate checked independently without modifying accepted geometry.
+        if(JSON.stringify(result.frontage)!==JSON.stringify(propertyEditSession.boundary.slice(0,2)))
+          propertyEditSession.setFrontage(result.frontage);
+        if(result.clamped)$('statusMessage').textContent=result.reason;
+        syncPropertyEditUI3I();
+      }else if(result.reason)$('statusMessage').textContent=result.reason;
     }else if(propertyEditSession?.drag){
       propertyEditSession.setCorner(propertyEditSession.drag.index,point);
     }else if(buildingPlacementSession?.drag){
@@ -2962,6 +3011,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       propertyEditSession.drag=null;
       if(cancelled){
         if(drag.kind==='plot027')propertyEditSession.updateFlexible(drag.original);
+        else if(drag.kind==='frontage-sfs')propertyEditSession.setFrontage(drag.original);
         else propertyEditSession.setCorner(drag.index,drag.original);
       }
       syncPropertyEditUI3I();

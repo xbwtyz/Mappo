@@ -12493,6 +12493,18 @@ function drawPropertyEditPreview3I(ctx, camera, city, session) {
   ctx.strokeStyle = session.validation?.status === 'invalid' ? '#c54e49' : '#167f7d';
   ctx.stroke();
   ctx.setLineDash([]);
+  // The distinct center handle moves the whole single frontage without
+  // changing its assigned street or the opposite parcel edges.
+  if(session.polygonMode && !session.flexibleMode){
+    const first=camera.worldToScreen(boundary[0]),last=camera.worldToScreen(boundary[1]);
+    if(session.drag?.kind==='frontage-sfs'){
+      ctx.beginPath();ctx.moveTo(first.x,first.y);ctx.lineTo(last.x,last.y);
+      ctx.strokeStyle='#dea54d';ctx.lineWidth=4;ctx.stroke();
+    }
+    const mx=(first.x+last.x)/2,my=(first.y+last.y)/2;
+    ctx.fillStyle='#f0c57f';ctx.strokeStyle='#945b26';ctx.lineWidth=2;
+    ctx.fillRect(mx-7,my-7,14,14);ctx.strokeRect(mx-7,my-7,14,14);
+  }
   if(!session.flexibleMode)boundary.forEach((point, index) => {
     const p = camera.worldToScreen(point);
     const chosen = session.selectedCorner === index;
@@ -15518,6 +15530,15 @@ class PropertyEditSession3I {
     this.active.boundary[index]={x:point.x,y:point.y};
     this.selectedCorner=index;this.validation=null;this.changed();return true;
   }
+  // Atomic draft-only frontage change after road projection and inspection.
+  setFrontage(points){
+    if(!this.isActive||this.flexible||!Array.isArray(points)||points.length!==2||
+      !points.every(p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y)&&Math.abs(p.x)<10000&&Math.abs(p.y)<10000))
+      return false;
+    this.active.boundary[0]={x:points[0].x,y:points[0].y};
+    this.active.boundary[1]={x:points[1].x,y:points[1].y};
+    this.validation=null;this.changed();return true;
+  }
   // Restore only the accepted street-facing edge. Side/rear draft edits stay intact.
   restoreFrontage(){
     if(!this.isActive||this.flexible||!this.frontageChanged)return false;
@@ -15678,7 +15699,78 @@ function prepareFlexiblePlot027(project,workspace,session){
 }
 
 
+// src/core/property-frontage-constraints.js
+// Canonical road-aware projection for the single frontage edge (vertices 0 -> 1).
+// Geometry-only: never mutate a city, a draft, or the stored property frame.
+const FRONTAGE_MIN_LENGTH_SFS = 7;
+const sfsDot=(a,b)=>a.x*b.x+a.y*b.y;
+const sfsSub=(a,b)=>({x:a.x-b.x,y:a.y-b.y});
+const sfsAdd=(a,b)=>({x:a.x+b.x,y:a.y+b.y});
+const sfsScale=(a,s)=>({x:a.x*s,y:a.y*s});
+const sfsLength=a=>Math.hypot(a.x,a.y);
+const sfsMidpoint=(a,b)=>sfsScale(sfsAdd(a,b),.5);
+const sfsFinite=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y);
+
+function resolvePropertyFrontageGuideSFS(city,property){
+  const road=city?.roads?.find(r=>r.id===property?.frontageRoadId);
+  const block=city?.blocks?.find(b=>b.id===property?.blockId);
+  if(!road||!block||!Array.isArray(block.vertices)||!Array.isArray(property?.boundary)||property.boundary.length<3)
+    return null;
+  // Frontage may not silently jump to an adjacent road on a corner lot.
+  const joins=block.vertices.some((id,i)=>{
+    const next=block.vertices[(i+1)%block.vertices.length];
+    return (id===road.a&&next===road.b)||(id===road.b&&next===road.a);
+  });
+  if(!joins)return null;
+  const a=city.nodes?.find(n=>n.id===road.a),b=city.nodes?.find(n=>n.id===road.b);
+  if(!sfsFinite(a)||!sfsFinite(b))return null;
+  const delta=sfsSub(b,a),roadLength=sfsLength(delta);
+  if(roadLength<1e-7)return null;
+  let tangent=sfsScale(delta,1/roadLength);
+  const front=sfsSub(property.boundary[1],property.boundary[0]),frontLength=sfsLength(front);
+  if(frontLength<FRONTAGE_MIN_LENGTH_SFS-1e-5)return null;
+  if(sfsDot(tangent,front)<0)tangent=sfsScale(tangent,-1);
+  // Reject detached or severely rotated legacy geometry; only small frame drift
+  // may be recovered by a road-aligned edit.
+  if(sfsDot(tangent,front)/frontLength<.995)return null;
+  const inward={x:-tangent.y,y:tangent.x};
+  return {roadId:road.id,tangent,inward,length:frontLength};
+}
+
+function projectFrontageCornerSFS(boundary,guide,index,requested){
+  if(!Array.isArray(boundary)||boundary.length<2||!sfsFinite(requested)||![0,1].includes(index)||!guide)return null;
+  const fixed=boundary[1-index],tangent=guide.tangent;
+  if(!sfsFinite(fixed))return null;
+  const amount=index===0?sfsDot(sfsSub(fixed,requested),tangent):sfsDot(sfsSub(requested,fixed),tangent);
+  const span=Math.max(FRONTAGE_MIN_LENGTH_SFS,amount);
+  const moved=index===0?sfsSub(fixed,sfsScale(tangent,span)):sfsAdd(fixed,sfsScale(tangent,span));
+  return index===0?[moved,{...fixed}]:[{...fixed},moved];
+}
+
+function translateFrontageSFS(boundary,guide,delta){
+  if(!Array.isArray(boundary)||!guide||!sfsFinite(delta))return null;
+  const p=sfsAdd(boundary[0],delta);
+  return [p,sfsAdd(p,sfsScale(guide.tangent,guide.length))];
+}
+
+function frontageMidpointSFS(boundary){
+  if(!Array.isArray(boundary)||!sfsFinite(boundary[0])||!sfsFinite(boundary[1]))return null;
+  return sfsMidpoint(boundary[0],boundary[1]);
+}
+
+// The same road direction must be used by previews and final Apply.
+// This is intentionally independent from historical saved frame.inward drift.
+function editedFrontageAlignedSFS(boundary,guide){
+  if(!guide||!boundary||!sfsFinite(boundary[0])||!sfsFinite(boundary[1]))return false;
+  const front=sfsSub(boundary[1],boundary[0]);
+  return sfsLength(front)>=FRONTAGE_MIN_LENGTH_SFS-1e-7 &&
+    sfsDot(front,guide.tangent)>0 &&
+    Math.abs(sfsDot(front,guide.inward))<=1e-4;
+}
+
+
 // src/editor/property-application.js
+
 
 
 
@@ -15748,11 +15840,10 @@ function inspectPropertyEdit3I(project,session){
        Math.hypot(front1.x-front0.x,front1.y-front0.y)<7)
       giIssue(issues,'frontage','Street frontage needs a valid frame and at least 7 units of length. Restore frontage or adjust its endpoints.',property.frontageRoadId);
     else if(session.frontageChanged &&
-       Math.abs((front1.x-front0.x)*frame.inward.x+
-         (front1.y-front0.y)*frame.inward.y)>1e-4)
-      // Previously accepted irregular frontage may differ slightly from the
-      // stored frame. Unrelated side/rear edits must not rewrite or reject it.
-      giIssue(issues,'frontage','Edited frontage must stay aligned with its street. Restore frontage to keep the accepted edge.',property.frontageRoadId);
+      !editedFrontageAlignedSFS(polygon,resolvePropertyFrontageGuideSFS(city,property)))
+      // The assigned street, not a potentially drifted historical frame,
+      // defines the direction. Unchanged accepted frontage stays protected.
+      giIssue(issues,'frontage','Edited frontage must align with its assigned street. Restore frontage or adjust its endpoints.',property.frontageRoadId);
   }
   const block=city.blocks.find(b=>b.id===property.blockId);
   const nodes=new Map(city.nodes.map(n=>[n.id,n]));
@@ -17844,6 +17935,98 @@ function focusCameraOnSelection4B(camera,city,selection) {
   const padding=Math.max(30,Math.min(94,Math.round(span*.16)));
   camera.fit(points,padding);
   return true;
+}
+
+
+// src/editor/property-frontage-snap.js
+
+
+
+const sfsSqDist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const sfsInterp=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
+const sfsChanged=(a,b)=>sfsSqDist(a[0],b[0])>1e-8||sfsSqDist(a[1],b[1])>1e-8;
+const sfsCandidateSession=(session,frontage)=>{
+  const candidate=Object.create(session);
+  candidate.active={...session.active,boundary:session.boundary.map((p,i)=>i<2?{...frontage[i]}:{...p})};
+  candidate.drag=null;
+  return candidate;
+};
+const sfsValid=(project,session,frontage)=>inspectPropertyEdit3I(project,sfsCandidateSession(session,frontage)).ok;
+
+// A gesture is isolated from accepted data; every frame is recomputed from the
+// same initial draft to avoid pointer drift and cumulative floating-point error.
+function beginPropertyFrontageGestureSFS(project,session,kind,index,start){
+  if(!project||!session?.isActive||!session.polygonMode||session.flexibleMode||
+    !['corner','edge'].includes(kind)||!start||!Number.isFinite(start.x)||!Number.isFinite(start.y))return null;
+  if(kind==='corner'&&![0,1].includes(index))return null;
+  const guide=resolvePropertyFrontageGuideSFS(project.city,session.source(project.city));
+  if(!guide)return null;
+  const boundary=copyJson(session.boundary);
+  return {kind:'frontage-sfs',handle:kind,index,start:{...start},boundary,guide,
+    validStart:inspectPropertyEdit3I(project,session).ok,original:copyJson(boundary.slice(0,2)),clamped:false};
+}
+
+function proposePropertyFrontageGestureSFS(project,session,gesture,point){
+  if(!project||!session?.isActive||gesture?.kind!=='frontage-sfs'||!point||
+    !Number.isFinite(point.x)||!Number.isFinite(point.y))
+    return {ok:false,reason:'Frontage movement is unavailable.'};
+  if(!gesture.validStart)return {ok:false,reason:'Resolve existing property preview issues before moving frontage.'};
+  const base=gesture.boundary.slice(0,2);
+  let requested;
+  if(gesture.handle==='edge'){
+    const delta={x:point.x-gesture.start.x,y:point.y-gesture.start.y};
+    if(Math.hypot(delta.x,delta.y)<1e-9)return {ok:true,frontage:base,clamped:false};
+    requested=translateFrontageSFS(base,gesture.guide,delta);
+  }else{
+    if(sfsSqDist(point,base[gesture.index])<1e-9)return {ok:true,frontage:base,clamped:false};
+    requested=projectFrontageCornerSFS(base,gesture.guide,gesture.index,point);
+  }
+  if(!requested)return {ok:false,reason:'The assigned frontage road could not be resolved.'};
+  if(!sfsChanged(base,requested))return {ok:true,frontage:base,clamped:false};
+  // Historical accepted frontages can be a fraction off the assigned road.
+  // Do not normalize on pointer-down; only align after the user really moves.
+  const aligned=gesture.handle==='edge'
+    ? translateFrontageSFS(base,gesture.guide,{x:0,y:0})
+    : projectFrontageCornerSFS(base,gesture.guide,gesture.index,base[gesture.index]);
+  if(!aligned||!sfsValid(project,session,aligned))
+    return {ok:false,reason:'Existing frontage cannot be aligned safely without affecting a protected parcel or building.'};
+  const displacement=Math.max(sfsSqDist(aligned[0],requested[0]),sfsSqDist(aligned[1],requested[1]));
+  // Check the swept movement in order. A final sfsValid point alone must not let
+  // a fast pointer jump across an obvious blocked interval.
+  const count=Math.max(1,Math.min(24,Math.ceil(displacement/3)));
+  let good=0,blocked=1;
+  for(let i=1;i<=count;i++){
+    const t=i/count;
+    const frontage=[sfsInterp(aligned[0],requested[0],t),sfsInterp(aligned[1],requested[1],t)];
+    if(!sfsValid(project,session,frontage)){blocked=t;break;}
+    good=t;
+  }
+  if(good===1)return {ok:true,frontage:requested,clamped:false};
+  // Refine the first boundary without ever accepting an invalid candidate.
+  for(let i=0;i<9;i++){
+    const mid=(good+blocked)/2;
+    const front=[sfsInterp(aligned[0],requested[0],mid),sfsInterp(aligned[1],requested[1],mid)];
+    if(sfsValid(project,session,front))good=mid;
+    else blocked=mid;
+  }
+  const frontage=[sfsInterp(aligned[0],requested[0],good),sfsInterp(aligned[1],requested[1],good)];
+  return {ok:true,frontage,clamped:true,
+    reason:'Frontage stopped at a property, road, plot, or building constraint.'};
+}
+
+// Numeric controls request the coordinate the user actually typed. For a
+// diagonal road, solve the complementary axis to keep exact requested x/y.
+function proposePropertyFrontageCoordinateSFS(project,session,index,axis,value){
+  if(!['x','y'].includes(axis)||!Number.isFinite(value)||![0,1].includes(index))return {ok:false};
+  const source=session?.source(project?.city),guide=resolvePropertyFrontageGuideSFS(project?.city,source);
+  if(!session?.polygonMode||!guide)return {ok:false,reason:'Frontage snapping is unavailable.'};
+  const p=session.boundary[index],component=guide.tangent[axis];
+  if(Math.abs(component)<1e-7)return {ok:false,reason:axis.toUpperCase()+' is fixed by the frontage street direction.'};
+  const distance=(value-p[axis])/component;
+  const requested={x:p.x+guide.tangent.x*distance,y:p.y+guide.tangent.y*distance};
+  const gesture=beginPropertyFrontageGestureSFS(project,session,'corner',index,p);
+  return gesture?proposePropertyFrontageGestureSFS(project,session,gesture,requested):
+    {ok:false,reason:'Resolve existing property preview issues before moving frontage.'};
 }
 
 
@@ -26132,6 +26315,8 @@ class AcceptedEditHistoryD01 {
 
 
 
+
+
 // A2 face identity APIs remain read-only behind the A4 preview.
 
 // A3 owns classification; A4 only presents its reports.
@@ -27192,9 +27377,13 @@ function syncPropertyEditUI3I() {
     ' · Offset '+formatPrecision4C(measured.dx)+', '+formatPrecision4C(measured.dy);
   for(const id of ['propertyNudgeLeft4C','propertyNudgeRight4C','propertyNudgeUp4C','propertyNudgeDown4C'])
     $(id).disabled=session.selectedCorner===null || Boolean(session.drag);
-  $('propertyEditCorner3I').textContent = session.selectedCorner === null
-    ? 'Click or drag a highlighted corner to select it.'
-    : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
+  $('propertyEditCorner3I').textContent = session.drag?.kind==='frontage-sfs' && session.drag.clamped
+    ? 'Frontage stopped at the nearest valid boundary. Move back to continue.'
+    : session.drag?.kind==='frontage-sfs' && session.drag.handle==='edge'
+      ? 'Moving street frontage · both endpoints stay parallel to the assigned road.'
+      : session.selectedCorner === null
+        ? 'Click or drag a highlighted corner; drag the frontage midpoint to move the edge.'
+        : 'Corner '+(session.selectedCorner + 1)+' selected. Drag or enter coordinates to preview changes.';
   const corner = session.selectedCorner === null ? null : session.boundary[session.selectedCorner];
   for(const [id,value] of [['propertyCornerX3I',corner?.x],['propertyCornerY3I',corner?.y]]){
     $(id).disabled = !corner || session.flexibleMode;
@@ -28478,7 +28667,14 @@ function precisionNudge4C(target,direction,step) {
       ...vertex, [axis]: vertex[axis] + sign * step
     }));
   }
-  if(target==='property')return nudgePropertyCorner4C(propertyEditSession,axis,sign,step);
+  if(target==='property'){
+    const session=propertyEditSession,index=session?.selectedCorner;
+    if(session?.polygonMode && !session.drag && (index===0||index===1) && [.1,.5,1,5].includes(step)){
+      const current=session.boundary[index][axis];
+      return updateSnappedFrontageCoordinateSFS(index,axis,Math.round((current+sign*step)*1e8)/1e8);
+    }
+    return nudgePropertyCorner4C(session,axis,sign,step);
+  }
   if(target==='structure')return nudgeStructure4C(buildingPlacementSession,axis==='x'?'u':'v',sign,step);
   return false;
 }
@@ -28726,13 +28922,25 @@ function movePropertyHistory3I(direction){
 }
 $('propertyHistoryUndo3I').addEventListener('click',()=>d01MoveHistory('undo'));
 $('propertyHistoryRedo3I').addEventListener('click',()=>d01MoveHistory('redo'));
+function updateSnappedFrontageCoordinateSFS(index,axis,value){
+  const session=propertyEditSession;
+  const result=proposePropertyFrontageCoordinateSFS(project,session,index,axis,value);
+  if(result.ok && result.frontage && session.setFrontage(result.frontage)){
+    if(result.clamped)$('statusMessage').textContent=result.reason;
+    return true;
+  }
+  $('statusMessage').textContent=result.reason||'This frontage coordinate cannot be changed safely.';
+  syncPropertyEditUI3I();return false;
+}
 for(const [id,axis] of [['propertyCornerX3I','x'],['propertyCornerY3I','y']])
   $(id).addEventListener('change',()=>{
     const session=propertyEditSession;
     if(!session?.isActive||session.selectedCorner===null)return;
     const value=Number($(id).value);
     if($(id).value===''||!Number.isFinite(value)){syncPropertyEditUI3I();return;}
-    session.setCorner(session.selectedCorner,{...session.boundary[session.selectedCorner],[axis]:value});
+    if(session.polygonMode && session.selectedCorner<2)
+      updateSnappedFrontageCoordinateSFS(session.selectedCorner,axis,value);
+    else session.setCorner(session.selectedCorner,{...session.boundary[session.selectedCorner],[axis]:value});
   });
 $('propertyDividerIndex3I').addEventListener('change',()=>{
   if(!propertyEditSession?.isActive)return;
@@ -28900,10 +29108,22 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       return false;
     }
     if(propertyEditSession?.isActive){
-      const index=propertyEditSession.hitCorner(project?.city,point,zoom);
+      const session=propertyEditSession,index=session.hitCorner(project?.city,point,zoom);
+      if(session.polygonMode && index===null){
+        const center=frontageMidpointSFS(session.boundary),radius=10/Math.max(.18,zoom);
+        if(center && Math.hypot(center.x-point.x,center.y-point.y)<=radius){
+          const drag=beginPropertyFrontageGestureSFS(project,session,'edge',null,point);
+          if(!drag){$('statusMessage').textContent='Frontage road cannot be snapped safely.';return false;}
+          session.drag=drag;syncPropertyEditUI3I();return true;
+        }
+      }
       if(index===null)return false;
-      propertyEditSession.drag={index,original:{...propertyEditSession.boundary[index]}};
-      propertyEditSession.selectCorner(index);
+      if(session.polygonMode && index<2){
+        const drag=beginPropertyFrontageGestureSFS(project,session,'corner',index,point);
+        if(!drag){$('statusMessage').textContent='Frontage road cannot be snapped safely.';return false;}
+        session.drag=drag;
+      }else session.drag={index,original:{...session.boundary[index]}};
+      session.selectCorner(index);
       return true;
     }
     if(buildingPlacementSession?.isActive){
@@ -28945,6 +29165,17 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
         propertyEditSession.updateFlexible({[which==='A'?'edgeA':'edgeB']:near.edge,
           [which==='A'?'ratioA':'ratioB']:near.ratio});
       }
+    }else if(propertyEditSession?.drag?.kind==='frontage-sfs'){
+      const drag=propertyEditSession.drag;
+      const result=proposePropertyFrontageGestureSFS(project,propertyEditSession,drag,point);
+      if(result.ok&&result.frontage){
+        drag.clamped=result.clamped;
+        // Candidate checked independently without modifying accepted geometry.
+        if(JSON.stringify(result.frontage)!==JSON.stringify(propertyEditSession.boundary.slice(0,2)))
+          propertyEditSession.setFrontage(result.frontage);
+        if(result.clamped)$('statusMessage').textContent=result.reason;
+        syncPropertyEditUI3I();
+      }else if(result.reason)$('statusMessage').textContent=result.reason;
     }else if(propertyEditSession?.drag){
       propertyEditSession.setCorner(propertyEditSession.drag.index,point);
     }else if(buildingPlacementSession?.drag){
@@ -28975,6 +29206,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       propertyEditSession.drag=null;
       if(cancelled){
         if(drag.kind==='plot027')propertyEditSession.updateFlexible(drag.original);
+        else if(drag.kind==='frontage-sfs')propertyEditSession.setFrontage(drag.original);
         else propertyEditSession.setCorner(drag.index,drag.original);
       }
       syncPropertyEditUI3I();
