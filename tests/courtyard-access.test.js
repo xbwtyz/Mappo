@@ -160,3 +160,25 @@ test('S10-C allows a skewed C4–E1 passage and rejects paths crossing the wrong
   assert.throws(() => validateStoredProject(crossed), /one clear wall passage/);
   assert.equal(JSON.stringify(project), before);
 });
+
+test('S10-C moves a courtyard building across an internal plot boundary and saves both plot references', () => {
+  const {project, workspace, host, occupant} = courtyardFixture({skewed: true});
+  const accepted = expectAccepted(prepareBuildingStructure3H(project, workspace, occupant));
+  const before = JSON.stringify(accepted);
+  const original = building(accepted, occupant.buildingId);
+  const property = accepted.city.properties.find(p => p.id === occupant.propertyId);
+  assert.deepEqual(original.plotIds, [property.plotIds[1]]);
+
+  const move = prepareBuildingApply(accepted, workspace, original.id, {dy: 2, angle: .2});
+  const moved = expectAccepted(move);
+  const result = building(moved, original.id);
+  assert.deepEqual(result.plotIds, property.plotIds);
+  assert.equal(result.propertyId, original.propertyId);
+  assert.equal(result.frontageRoadId, original.frontageRoadId);
+  assert.notDeepEqual(result.accessPath, original.accessPath);
+  assert.deepEqual(building(moved, host.id).geometry, building(accepted, host.id).geometry);
+  assert.deepEqual(building(decodeProjectDocument(encodeProjectDocument(move.document)).project, original.id).plotIds,
+    property.plotIds);
+  assert.equal(JSON.stringify(accepted), before);
+  assert.equal(prepareBuildingApply(accepted, workspace, original.id, {dy: 6}).ok, false);
+});

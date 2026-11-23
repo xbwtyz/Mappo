@@ -90,7 +90,7 @@ try {
       await enter('structureWidth', 2.5);
       await enter('structureDepth', 3);
       await el('structureApply').press('Enter');
-      const accepted = await city();
+      let accepted = await city();
       assert.notEqual(accepted, initial);
       const host = JSON.parse(accepted).buildings.find(b => b.id === fixture.host.id);
       assert.equal(host.geometry.version, 2);
@@ -102,6 +102,25 @@ try {
       assert.equal(await city(), initial);
       await el('workspaceRedoButtonD01').click();
       assert.equal(await city(), accepted);
+
+      await page.evaluate(id => __buildingQA.state().workspaceShell.select({kind:'building', id}, {reveal:true}), occupant.id);
+      await page.getByRole('button', {name: /^(Edit building footprint|Edit footprint)$/}).click();
+      await enter('buildingOffsetY', 2);
+      assert.equal(await el('buildingPreviewApply').isEnabled(), true, await el('desktopPlaceStatus').innerText());
+      assert.equal(await city(), accepted, 'move preview leaves accepted plot references intact');
+      await el('buildingPreviewApply').click();
+      const moved = await city();
+      assert.notEqual(moved, accepted);
+      const movedBuilding = JSON.parse(moved).buildings.find(b => b.id === occupant.id);
+      const property = JSON.parse(moved).properties.find(p => p.id === occupant.propertyId);
+      assert.deepEqual(movedBuilding.plotIds, property.plotIds);
+      await page.once('dialog', dialog => dialog.accept());
+      await el('buildingPreviewCancel').click();
+      await el('workspaceUndoButton').click();
+      assert.equal(await city(), accepted);
+      await el('workspaceRedoButtonD01').click();
+      assert.equal(await city(), moved);
+      accepted = moved;
       await page.evaluate(() => __buildingQA.state().files.flush());
       await page.reload();
       await ready();
@@ -128,7 +147,7 @@ try {
       assert.equal(await city(), previousCity);
       assert.deepEqual(errors, []);
       assert.deepEqual(requests, []);
-      console.log('PASS S10-C ' + name + ' file:// skewed C4–E1 placement, blocker, cancel, Undo/Redo, recovery, save and old-reader rejection');
+      console.log('PASS S10-C ' + name + ' file:// skewed C4–E1 placement, cross-plot move, blocker, cancel, Undo/Redo, recovery, save and old-reader rejection');
     } finally {
       await browser.close();
     }
