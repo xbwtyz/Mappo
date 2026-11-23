@@ -5,6 +5,7 @@ import {
   APP_VERSION,
   PROJECT_SCHEMA_VERSION
 } from '../core/version.js';
+import { migrateSchema9ProjectS10 } from '../core/building-project-s10.js';
 // Add one explicit, tested migration per data-schema change. Migration never
 // calls the generator: saved geometry and record IDs are authoritative.
 export const CURRENT_PROJECT_SCHEMA = PROJECT_SCHEMA_VERSION;
@@ -60,5 +61,6 @@ export function migrateProjectData(project) {
   if (project.schemaVersion === 7) project.schemaVersion = 8;
   // Terrain is optional: retain older city and workspace records exactly.
   if (project.schemaVersion === 8) project.schemaVersion = 9;
+  if (project.schemaVersion === 9) return migrateSchema9ProjectS10(project);
   return project;
 }

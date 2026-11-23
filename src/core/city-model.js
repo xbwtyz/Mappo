@@ -52,6 +52,7 @@ import {
 import {
   generateBuildings
 } from '../generators/buildings.js';
+import { migrateSchema9ProjectS10, hydrateProjectS10 } from './building-project-s10.js';
 
 const FIRST = ['Alder', 'Ash', 'Briar', 'Brindle', 'Cinder', 'Elder', 'Fell', 'Grey', 'High', 'Iron', 'Moss', 'Raven', 'Silver', 'Stone', 'Thorn', 'Willow'];
 const LAST = ['bridge', 'bury', 'crest', 'dale', 'ford', 'haven', 'mere', 'mont', 'stead', 'watch', 'wick', 'wood'];
@@ -86,7 +87,9 @@ export function createProject(options = {}) {
   const development = generateBuildings(seed, layout, options.irregularProperties === true ? morphology : null, options.irregularMetrics ?? null);
   validateDevelopment(layout, development);
   const project = {
-    schemaVersion: PROJECT_SCHEMA_VERSION,
+    // The generator's existing flat shape output is a transient input to the
+    // pure Schema 10 adapter; no accepted Schema 9 city is published.
+    schemaVersion: 9,
     generatorVersion: APP_VERSION,
     seed,
     options: {
@@ -144,5 +147,8 @@ export function createProject(options = {}) {
   for (const property of project.city.properties)
     stampRoadGenerated(property, property.plotIds.map(id => plots.get(id)));
   for (const building of project.city.buildings) stampRoadGenerated(building);
-  return project;
+  const adopted=hydrateProjectS10(migrateSchema9ProjectS10(project));
+  if (adopted.schemaVersion!==PROJECT_SCHEMA_VERSION)
+    throw Error('The generated city was not upgraded to the supported schema.');
+  return adopted;
 }
