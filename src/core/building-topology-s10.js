@@ -72,9 +72,12 @@ function s10TopologyDisjoint(a,b,budget) {
 // Returns a detached, parent-before-child canonical topology. The supplied
 // region identifiers never change; unknown compatible region keys are copied.
 export function canonicalizeBuildingRegionsS10(geometry, budget = createS10GeometryBudget()) {
-  if (!geometry || geometry.version !== 1 || !Array.isArray(geometry.regions) ||
+  const supportedVersion = geometry?.version === 1 || (geometry?.version === 2 &&
+    Array.isArray(geometry.courtyardAccess?.portals) && geometry.courtyardAccess.portals.length > 0 &&
+    Array.isArray(geometry.courtyardAccess?.occupants));
+  if (!supportedVersion || !Array.isArray(geometry.regions) ||
     !geometry.regions.length || geometry.regions.length > S10_REGION_LIMITS.maxRegions)
-    throw Error('S10 geometry needs version 1 and 1–128 regions.');
+    throw Error('S10 geometry needs version 1 or courtyard-access version 2 and 1–128 regions.');
   const map = new Map();
   for (const source of geometry.regions) {
     if (!source || !s10TopologyValidId(source.id) || map.has(source.id))

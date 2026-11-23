@@ -43,6 +43,7 @@ const REMEDIES = Object.freeze({
   tiling:'Adjust dividers so their plots exactly cover the edited parcel.',
   frontage:'Restore a valid street edge for the parcel before applying this edit.',
   access:'Adjust the footprint or clear a path to the frontage road.',
+  'courtyard-access':'Adjust the portal openings, placement, or frontage path.',
   selection:'Select an existing property or building and restart the preview.',
   missing:'Select an existing building and its owning property before editing.',
   target:'Re-select the building on its owning property.',

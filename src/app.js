@@ -1,3 +1,4 @@
+import { CourtyardPlacementControls } from './ui/courtyard-placement-controls.js';
 // A1 foundation APIs are bundled for the later road inspector; no editor hooks yet.
 import { buildRoadGraph, analyzeRoadGraph, proposeJunctionMove } from './core/road-graph.js';
 import {
@@ -731,7 +732,10 @@ function applyBuildingTransform() {
     // Commit one already-validated project object, preserving IDs and the
     // existing schema. Record and UI updates cannot affect pre-commit checks.
     if(project!==previous || session.buildingId!==buildingId) return false;
-    if (!buildingHistory.record(previous,received.candidate,buildingId)) return false;
+    const recorded = received.courtyardRoutesChanged.length
+      ? buildingStructureHistory.record(previous, received.candidate, session.propertyId, 'courtyard access')
+      : buildingHistory.record(previous, received.candidate, buildingId);
+    if (!recorded) return false;
     propertyHistory.clear();
     propertyDeletionHistory4A.clear();
     project=received.candidate;
@@ -957,6 +961,10 @@ function startStructurePlacement3H(propertyId,buildingId=null) {
     return started;
   }catch(error){$('statusMessage').textContent='Cannot start building placement: '+error.message;return false;}
 }
+const courtyardPlacementControls = new CourtyardPlacementControls($, () => project?.city, () => {
+  syncBuildingStructureUI3H();
+  requestDraw();
+});
 function syncBuildingStructureUI3H() {
   const session=buildingPlacementSession;
   const shown=Boolean(project && session?.isActive && session.property(project.city));
@@ -993,6 +1001,10 @@ function syncBuildingStructureUI3H() {
         : next?' Next: '+next.description:'')
     : '';
   if(!shown)return;
+  courtyardPlacementControls.sync(project.city, session);
+  const portalOnly = Boolean(session.active.courtyard?.only && session.active.courtyard.hostId);
+  for (const id of ['structureFootprintFields', 'structurePreviewMeasurements4C', 'structurePlacementNudges', 'structurePlacementKeys'])
+    $(id).hidden = portalOnly;
   const spec=session.spec;
   const structureMeasure=placementMeasurements4C(project.city,session);
   $('structurePreviewMeasurements4C').textContent=structureMeasure
@@ -1000,7 +1012,7 @@ function syncBuildingStructureUI3H() {
       ' · Area '+formatPrecision4C(structureMeasure.area)+' · Position '+formatPrecision4C(structureMeasure.u)+
       ', '+formatPrecision4C(structureMeasure.v) : 'Adjust your draft to preview its measurements.';
   const replacing = session.operation === 'replace';
-  $('structureModeTitle').textContent = replacing ? 'REPLACE BUILDING' : 'PLACE NEW BUILDING';
+  $('structureModeTitle').textContent = portalOnly ? 'EDIT COURTYARD PORTALS' : replacing ? 'REPLACE BUILDING' : 'PLACE NEW BUILDING';
   $('structureReplaceConsent').hidden = !replacing || !spec.preset;
   $('structureReplaceGeometry').checked = Boolean(session.active.replaceGeometry);
   $('structureReplaceGeometry').disabled = Boolean(session.drag);
@@ -1013,7 +1025,7 @@ function syncBuildingStructureUI3H() {
     structurePreset:spec.preset,structureType:spec.type
   })) $(id).value=typeof value==='number'?String(Number(value.toFixed(2))):value;
   const result = session.drag ? {ok:false,status:'checking',issues:[]}
-    : !spec.preset ? {ok:false,status:'idle',issues:[]}
+    : !portalOnly && !spec.preset ? {ok:false,status:'idle',issues:[]}
     : prepareBuildingStructure3H(project,captureWorkspace().workspace,session.active);
   session.validation=result;
   const consentNeeded = replacing && !session.active.replaceGeometry;
@@ -1034,7 +1046,8 @@ function syncBuildingStructureUI3H() {
     ? 'CHECKING · Complete placement validation runs when movement ends.'
     : result.ok ? (consentNeeded
       ? 'Review the proposed footprint on the map and confirm the replacement.'
-      : 'VALID · This building can be applied to the selected property.')
+      : portalOnly ? 'VALID · Apply the portal changes to the selected property.'
+        : 'VALID · This building can be applied to the selected property.')
     : 'INVALID · Apply disabled. '+formatEditIssue4D(result.issues?.[0],{
       buildingId:session.buildingId,propertyId:session.propertyId,
       frontageRoadId:session.property(project.city)?.frontageRoadId
@@ -1043,6 +1056,7 @@ function syncBuildingStructureUI3H() {
 function applyStructurePlacement3H() {
   const session=buildingPlacementSession;
   if (!project || !session?.isActive || session.drag
+      || session.acceptedCity !== project.city
       || (session.operation === 'replace' && !session.active.replaceGeometry)) return false;
   const selection=workspaceShell?.state.selection;
   if(!selection || (selection.kind==='property' && selection.id!==session.propertyId)
@@ -1055,7 +1069,8 @@ function applyStructurePlacement3H() {
   }
   if(project!==previous || session.active?.buildingId!==request.buildingId)return false;
   try{
-    if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,request.operation))return false;
+    const action = request.courtyard?.only && request.courtyard.hostId ? 'courtyard portal changes' : request.operation;
+    if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,action))return false;
     propertyHistory.clear();
     propertyDeletionHistory4A.clear();
     project=result.candidate;
@@ -1066,7 +1081,9 @@ function applyStructurePlacement3H() {
     workspaceShell.refresh();
     requestDraw();
     workspaceChanged();
-    $('statusMessage').textContent='Applied '+request.operation+' for '+request.buildingId+'. Download a project to keep it.';
+    $('statusMessage').textContent = action === 'courtyard portal changes'
+      ? 'Applied courtyard portal changes. Download a project to keep them.'
+      : 'Applied '+request.operation+' for '+request.buildingId+'. Download a project to keep it.';
     return true;
   }catch(error){$('statusMessage').textContent='Building Apply rejected: '+error.message;return false;}
 }
@@ -2297,6 +2314,8 @@ desktopPlaceEditor = new DesktopPlaceEditor({
   getTitle: (panelId, fallback) => {
     if (panelId === 'buildingTransformPanel' && buildingEditSession.tool === 'courtyard')
       return 'Edit courtyard';
+    if (panelId === 'buildingStructurePanel' && buildingPlacementSession.active?.courtyard?.only)
+      return 'Edit courtyard portals';
     if (panelId === 'buildingStructurePanel' && buildingPlacementSession.operation === 'replace')
       return 'Replace building';
     return fallback;
@@ -2826,7 +2845,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
   }
   if (buildingPlacementSession?.isActive) {
     const property=buildingPlacementSession.property(project?.city);
-    if(property && pointInPolygon(point,property.boundary)) {
+    if(property && !buildingPlacementSession.active.courtyard?.only && pointInPolygon(point,property.boundary)) {
       const local=buildingLocalPoint3H(property,point);
       if(local)buildingPlacementSession.update(local);
     }
@@ -2932,7 +2951,8 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
       return true;
     }
     if(buildingPlacementSession?.isActive){
-      const polygon=buildingPlacementSession.previewFor(project?.city)?.footprint;
+      const polygon=buildingPlacementSession.active.courtyard?.only ? null
+        : buildingPlacementSession.previewFor(project?.city)?.footprint;
       if(polygon?.length && pointInPolygon(point,polygon)){
         const property=buildingPlacementSession.property(project.city);
         buildingPlacementSession.drag={start:buildingLocalPoint3H(property,point),spec:{...buildingPlacementSession.spec}};

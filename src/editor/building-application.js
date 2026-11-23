@@ -1,3 +1,5 @@
+import { buildingFrame, transformBuildingPoint } from '../core/building-transform.js';
+import { findCourtyardAccess, resolveCourtyardAccess, rerouteCourtyardOccupants } from '../core/courtyard-access.js';
 import { polygonSignedArea, pointInPolygon } from '../core/geometry.js';
 import { distanceToSegment, clearance, segmentCuts } from '../core/boundary.js';
 import { clipToConvexPolygon, PROPERTY_SETBACK, STREET_WIDTHS, STREET_EDGE_WIDTH } from '../core/placement.js';
@@ -150,6 +152,8 @@ function cornerBuildingFrontages(city, property, roads, nodes) {
 }
 
 export function resolveBuildingAccess(city, original, candidate) {
+  const passage = findCourtyardAccess(city, candidate.id);
+  if (passage) return resolveCourtyardAccess(city, candidate, passage);
   const existing=retainedBuildingFrontage(city,original,candidate);
   if(existing)return {route:existing,changed:false};
   const roads=new Map(city.roads.map(road=>[road.id,road]));
@@ -184,33 +188,35 @@ export function inspectBuildingPreview(project, buildingId, transform, quick = f
 export function prepareBuildingCandidate(project, buildingId, transform, draft = null) {
   const base=inspectBuildingGeometry(project?.city,buildingId,transform,draft);
   if(!base.ok)return {...base,status:'invalid',candidate:null};
-  const city=project.city,original=city.buildings.find(b=>b.id===buildingId);
-  const issues=[];
-  const plotIds=deriveOccupiedPlots(city,base.property,base.preview);
-  if(!plotIds.length)issues.push({code:'plots',targetId:base.property?.id,message:'Building no longer occupies a valid plot on its property.'});
-  const candidateBuilding={...base.preview,plotIds};
-  // Check clearance against transformed building, not the accepted original.
-  const accessCity={...city,buildings:city.buildings.map(b=>b.id===buildingId?candidateBuilding:b)};
-  const access=resolveBuildingAccess(accessCity,original,candidateBuilding);
-  if(!access.route)issues.push(access.issue);
-  else {
-    const {entrance,accessPath,frontageRoadId}=access.route;
-    Object.assign(candidateBuilding,{entrance,accessPath,frontageRoadId});
+  const city = project.city;
+  const original = city.buildings.find(b => b.id === buildingId);
+  const rejected = issue => ({...base, ok: false, status: 'invalid', issues: [issue], candidate: null});
+  try {
+    const frame = original.geometry?.version === 2 && !draft ? buildingFrame(original) : null;
+    const map = frame ? point => transformBuildingPoint(point, frame, transform) : undefined;
+    const updated = original.geometry
+      ? writeSimpleBuildingS10(original, base.preview, map) : copyJson(base.preview);
+    // The preview carries the original canonical rings alongside its moved
+    // outline. Derive plot references only after writing the candidate rings.
+    updated.plotIds = deriveOccupiedPlots(city, base.property, updated);
+    if (!updated.plotIds.length) return rejected({code: 'plots', targetId: base.property.id,
+      message: 'Building no longer occupies a valid plot on its property.'});
+
+    const candidate = copyJson(project);
+    const index = candidate.city.buildings.findIndex(b => b.id === buildingId);
+    candidate.city.buildings[index] = updated;
+    const access = resolveBuildingAccess(candidate.city, original, updated);
+    if (!access.route) return rejected(access.issue);
+    const {entrance, accessPath, frontageRoadId} = access.route;
+    Object.assign(updated, {entrance, accessPath, frontageRoadId});
+    const courtyardRoutesChanged = updated.geometry?.version === 2
+      ? rerouteCourtyardOccupants(candidate.city, updated) : [];
+    validateStoredProject(candidate);
+    return {...base, status: 'valid', candidate, courtyardRoutesChanged,
+      accessChanged: access.changed, frontageChanged: updated.frontageRoadId !== original.frontageRoadId};
+  } catch (error) {
+    return rejected({code: 'schema', message: `Project validation: ${error.message}`});
   }
-  if(issues.length)return {ok:false,status:'invalid',issues,preview:base.preview,property:base.property,candidate:null};
-  // The candidate is a full independent project. Any error below discards it.
-  const candidate=copyJson(project);
-  const index=candidate.city.buildings.findIndex(b=>b.id===buildingId);
-  candidate.city.buildings[index]=original.geometry
-    ?writeSimpleBuildingS10(original,candidateBuilding)
-    :copyJson(candidateBuilding);
-  try { validateStoredProject(candidate); }
-  catch(error) {
-    issues.push({code:'schema',message:`Project validation: ${error.message}`});
-    return {ok:false,status:'invalid',issues,preview:base.preview,property:base.property,candidate:null};
-  }
-  return {ok:true,status:'valid',issues:[],preview:base.preview,property:base.property,candidate,
-    accessChanged: access.changed, frontageChanged: candidateBuilding.frontageRoadId!==original.frontageRoadId};
 }
 
 export function prepareBuildingApply(project,workspace,buildingId,transform,draft = null) {

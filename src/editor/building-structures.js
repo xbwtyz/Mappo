@@ -1,9 +1,10 @@
+import { editCourtyardPlacement, detachCourtyardBuilding } from './courtyard-placement.js';
 import { BUILDING_USE_TYPES } from '../core/identity.js';
 import { polygonSignedArea } from '../core/geometry.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { inspectBuildingGeometry } from '../core/building-validation.js';
-import { prepareBuildingApply } from './building-application.js';
+import { deriveOccupiedPlots, prepareBuildingApply } from './building-application.js';
 import { adoptNewBuildingS10, writeSimpleBuildingS10 } from '../core/building-project-s10.js';
 
 export const BUILDING_PRESETS_3H = Object.freeze(['rectangle','L','courtyard','T']);
@@ -79,6 +80,7 @@ export class BuildingPlacementSession3H {
     const property=city?.properties.find(p=>p.id===propertyId);
     const source=buildingId?city?.buildings.find(b=>b.id===buildingId&&b.propertyId===propertyId):null;
     if(!property || (buildingId && !source))return false;
+    this.acceptedCity=city;
     this.active={operation:buildingId?'replace':'add',propertyId,
       buildingId:buildingId??newBuildingId3H(city),spec:defaultBuildingSpec3H(property,source)};
     if (source) this.active.spec.preset = '';
@@ -100,13 +102,14 @@ export class BuildingPlacementSession3H {
     const existingType = this.operation === 'replace' ? city.buildings.find(b => b.id === this.buildingId)?.type : undefined;
     try{return makeBuildingShape3H(this.property(city),this.spec,existingType);}catch{return null;}
   }
-  stop(){if(!this.active)return false;this.active=null;this.drag=null;this.validation=null;this.changed();return true;}
+  stop(){if(!this.active)return false;this.active=null;this.acceptedCity=null;this.drag=null;this.validation=null;this.changed();return true;}
 }
 // Validation and transaction are performed against fresh independent project
 // objects; no draft or temporary generated building is ever accepted blindly.
 export function prepareBuildingStructure3H(project,workspace,request,{quick=false}={}) {
   const issue=(code,message,targetId=null)=>({ok:false,status:'invalid',issues:[{code,message,targetId}],candidate:null});
-  const {operation,propertyId,buildingId,spec}=request??{};
+  const {operation,propertyId,buildingId,spec,courtyard}=request??{};
+  const portalOnly = operation === 'add' && courtyard?.hostId && courtyard.only;
   const property=project?.city?.properties.find(p=>p.id===propertyId);
   if(!property)return issue('property','Select a valid property first.',propertyId);
   if(!['add','replace','delete'].includes(operation))return issue('operation','Unsupported building action.');
@@ -116,12 +119,18 @@ export function prepareBuildingStructure3H(project,workspace,request,{quick=fals
   if(operation!=='add' && (!existing || existing.propertyId!==propertyId))
     return issue('target','The target building is not on this property.',buildingId);
   let geometry=null;
-  if(operation!=='delete') {
+  if(operation!=='delete' && !portalOnly) {
     try{geometry=makeBuildingShape3H(property,spec,operation === 'replace' ? existing.type : undefined);}
     catch(error){return issue('shape',error.message);}
   }
   const provisional=copyJson(project),site=provisional.city.properties.find(p=>p.id===propertyId);
-  if(operation==='delete'){
+  let accessPreview = null;
+  if (portalOnly) {
+    try { accessPreview = editCourtyardPlacement(provisional.city, propertyId, courtyard); }
+    catch (error) { return issue('courtyard-access', error.message); }
+  } else if(operation==='delete'){
+    try { detachCourtyardBuilding(provisional.city, existing); }
+    catch (error) { return issue('courtyard-access', error.message); }
     provisional.city.buildings=provisional.city.buildings.filter(b=>b.id!==buildingId);
     site.buildingIds=site.buildingIds.filter(id=>id!==buildingId);
   } else {
@@ -140,14 +149,23 @@ export function prepareBuildingStructure3H(project,workspace,request,{quick=fals
     const geometryCheck=inspectBuildingGeometry(provisional.city,buildingId,{});
     if(!geometryCheck.ok)return {...geometryCheck,status:'invalid',candidate:null};
     if(quick)return {ok:true,status:'checking',issues:[],preview:geometry,candidate:null};
-    const result=prepareBuildingApply(provisional,workspace,buildingId,{});
-    return {...result,preview:geometry};
+    if (operation === 'add' && courtyard?.hostId) {
+      try {
+        canonical.plotIds = deriveOccupiedPlots(provisional.city, site, canonical);
+        if (!canonical.plotIds.length) throw Error('The courtyard building needs an occupied plot.');
+        if (courtyard.action === 'remove') throw Error('Remove a portal in portal-only mode.');
+        accessPreview = editCourtyardPlacement(provisional.city, propertyId, courtyard, canonical);
+      } catch (error) { return issue('courtyard-access', error.message); }
+    } else {
+      const result=prepareBuildingApply(provisional,workspace,buildingId,{});
+      return {...result,preview:geometry};
+    }
   }
   if(quick)return {ok:true,status:'checking',issues:[],preview:null,candidate:null};
   try{
     validateStoredProject(provisional);
     const out=decodeProjectDocument(encodeProjectDocument(createProjectDocument(provisional,workspace)));
     if(!h3Same(out.project.city,provisional.city))throw new Error('Portable save/load changed the city.');
-    return {ok:true,status:'valid',issues:[],preview:null,candidate:out.project};
+    return {ok:true,status:'valid',issues:[],preview:geometry,accessPreview,candidate:out.project};
   }catch(error){return issue('project',error.message);}
 }

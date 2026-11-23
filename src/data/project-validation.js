@@ -1,3 +1,4 @@
+import { validateCourtyardAccess } from '../core/courtyard-access.js';
 import {
   TERRAIN_LIMIT
 } from '../core/terrain-geometry.js';
@@ -481,6 +482,7 @@ export function validateStoredProject(project) {
         if (occupiedRegionsOverlapS10(own[i].geometry, own[j].geometry)) throw new Error('Occupied building regions overlap.');
   }
   if (usedPlots.size !== city.plots.length || usedBuildings.size !== city.buildings.length) throw new Error('The project contains orphan plots or buildings.');
+  if (city.buildings.some(b => b.geometry.version === 2)) validateCourtyardAccess(city, spend);
   for (const record of [...city.properties, ...city.buildings])
     if (record.districtId != null) reference(maps.districts, record.districtId, 'District membership');
   for (const open of city.openSpaces) {

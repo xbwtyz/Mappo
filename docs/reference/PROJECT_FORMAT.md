@@ -37,6 +37,12 @@ Schemas 2–9 share these geometry contracts: polygon coordinates are ordinary f
 
 The current reader additionally validates fortification clearance, gate connectivity, tower placement and defense history, plus district coverage, connected membership, block inheritance, names/colors and saved district undo history. It validates structure, unique IDs, references, street planarity/connectivity, block coverage, street-width setbacks, polygon containment, plot ownership/area, roof geometry and rendering fields. It rejects incomplete or inconsistent core geometry before changing the open city.
 
+### Schema 10 courtyard access
+
+The Schema 10 development build represents building geometry as canonical solid and void regions. A host with authored portals uses **building geometry version 2** and stores `geometry.courtyardAccess: {portals, occupants}`. A portal stores `id`, `exteriorId`, `courtyardId` and two opening intervals `inner` and `outer` as pairs of map-coordinate points. Each occupant link stores `buildingId` and `portalId`. The occupant’s ordinary building record remains the authority for ownership, occupied plots, entrance, `accessPath` and frontage. A portal grants a passage and preserves all occupied geometry.
+
+Buildings without authored portals use geometry version 1. The version 2 geometry marker requires an S10-C-compatible reader. The S10-B standalone rejects such a project before Apply. Project schema 10, container format 1 and workspace schema 1 are independent and retain their versions. See the [S10-C milestone contract](../plans/0.2x/milestones/schema10-s10c-courtyard-access.md).
+
 ## Workspace and unfinished edits
 
 `workspace` stores:
