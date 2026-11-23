@@ -57,6 +57,9 @@ import {
   validateLayout
 } from '../core/validate-layout.js';
 import { terminalCorridors, polygonIntrudesTerminalCorridor } from '../core/road-terminal-corridors.js';
+import { validateBuildingStructureS10 } from '../core/building-components-s10.js';
+import { occupiedAreaS10, occupiedPlotAreaS10, occupiedRegionsOverlapS10 } from '../core/building-occupancy-s10.js';
+import { hydrateProjectS10 } from '../core/building-project-s10.js';
 
 export const MAX_PROJECT_BYTES = 20 * 1024 * 1024;
 export const MAX_VALIDATION_WORK = 6000000;
@@ -286,6 +289,7 @@ export function validateStoredProject(project) {
   const spend = createValidationBudget();
   requireRecord(project, 'Project');
   if (project.schemaVersion !== PROJECT_SCHEMA_VERSION) throw new Error('Unsupported project schema. Open this file in a newer Mappo build.');
+  hydrateProjectS10(project);
   requireText(project.generatorVersion, 'Generator version', 100);
   requireText(project.seed, 'Seed', 64);
   requireRecord(project.options, 'Generation settings');
@@ -443,35 +447,40 @@ export function validateStoredProject(project) {
     for (const building of references(property.buildingIds, maps.buildings, 'Property buildings', true)) {
       if (usedBuildings.has(building.id) || building.propertyId !== property.id || building.blockId !== property.blockId) throw new Error('Building ownership is inconsistent.');
       usedBuildings.add(building.id);
-      validatePolygon(building.footprint, 'Building footprint', spend);
-      polygonContained(building.footprint, property.boundary, 'Building', spend);
+      if (Object.prototype.propertyIsEnumerable.call(building,'footprint') ||
+          Object.prototype.propertyIsEnumerable.call(building,'holes'))
+        throw new Error('Schema 10 building contains competing writable footprint/holes geometry.');
+      // Canonical topology is the only authoritative stored building shape.
+      const {geometry}=validateBuildingStructureS10(building.geometry,building.components);
+      const solids=geometry.regions.filter(r=>r.kind==='solid');
+      for (const root of geometry.regions.filter(r=>r.parentId===null)) {
+        validatePolygon(root.ring,'Building exterior region',spend);
+        polygonContained(root.ring,property.boundary,'Building',spend);
+      }
+      for (const region of geometry.regions) spend(region.ring.length);
       requireText(building.type, 'Building type');
       requireText(building.shape, 'Building shape');
       if (!Number.isFinite(building.orientation) || !Number.isInteger(building.roofTone) || building.roofTone < 0 || building.roofTone > 255) throw new Error('Building rendering data is invalid.');
       reference(maps.roads, building.frontageRoadId, 'Building frontage');
       if (terminalIds.has(building.frontageRoadId))
         throw new Error('A terminal corridor cannot grant new building frontage.');
-      const buildingPlots = references(building.plotIds, maps.plots, 'Building plots');
-      if (buildingPlots.some(p => p.propertyId !== property.id)) throw new Error('A building refers to another property’s plot.');
-      let area = polygonSignedArea(building.footprint);
-      requireList(building.holes, 'Courtyard holes', 64);
-      for (const hole of building.holes) {
-        validatePolygon(hole, 'Courtyard', spend);
-        polygonContained(hole, building.footprint, 'Courtyard', spend);
-        if (hole.some(p => !strictInside(p, building.footprint))) throw new Error('A courtyard touches its outer building boundary.');
-        area -= polygonSignedArea(hole);
-      }
-      for (let i = 0; i < building.holes.length; i++)
-        for (let j = i + 1; j < building.holes.length; j++)
-          if (polygonsOverlapInterior(building.holes[i], building.holes[j], spend)) throw new Error('Courtyard holes overlap.');
-      const occupiedPlots = ownPlots.filter(plot => Math.abs(polygonSignedArea(clipToConvexPolygon(building.footprint, plot.boundary))) - building.holes.reduce((sum, h) => sum + Math.abs(polygonSignedArea(clipToConvexPolygon(h, plot.boundary))), 0) > 1e-5).map(p => p.id);
-      if (occupiedPlots.length !== building.plotIds.length || occupiedPlots.some(id => !building.plotIds.includes(id))) throw new Error('Building plot references do not match its actual footprint.');
-      if (area <= 1 || !Number.isFinite(building.area) || Math.abs(area - building.area) > .02) throw new Error('Building area is invalid.');
+      const buildingPlots=references(building.plotIds,maps.plots,'Building plots');
+      if (buildingPlots.some(p=>p.propertyId!==property.id))
+        throw new Error('A building refers to another property’s plot.');
+      const occupiedPlots=ownPlots.filter(plot=>
+        occupiedPlotAreaS10(geometry,plot.boundary)>1e-5).map(p=>p.id);
+      if (occupiedPlots.length!==building.plotIds.length ||
+          occupiedPlots.some(id=>!building.plotIds.includes(id)))
+        throw new Error('Building plot references do not match actual canonical occupancy.');
+      const area=occupiedAreaS10(geometry);
+      if (!Number.isFinite(building.area) || Math.abs(area-building.area)>.02)
+        throw new Error('Building area is invalid.');
+
     }
     const own = property.buildingIds.map(id => maps.buildings.get(id));
     for (let i = 0; i < own.length; i++)
       for (let j = i + 1; j < own.length; j++)
-        if (polygonsOverlapInterior(own[i].footprint, own[j].footprint, spend)) throw new Error('Building footprints overlap.');
+        if (occupiedRegionsOverlapS10(own[i].geometry, own[j].geometry)) throw new Error('Occupied building regions overlap.');
   }
   if (usedPlots.size !== city.plots.length || usedBuildings.size !== city.buildings.length) throw new Error('The project contains orphan plots or buildings.');
   for (const record of [...city.properties, ...city.buildings])
