@@ -5,11 +5,20 @@ import { clipToConvexPolygon } from './placement.js';
 import { polygonSignedArea } from './geometry.js';
 import { riIndex } from './road-impact-model.js';
 import { classifyRoadProvenance, stampRoadGenerated } from './road-provenance.js';
+import { occupiedPlotAreaS10, occupiedRegionsOverlapS10 } from './building-occupancy-s10.js';
 import { writeSimpleBuildingS10 } from './building-project-s10.js';
 
 const ROAD_REHOUSING_LIMIT = 128;
+const roadBuildingFlatDraft = building =>
+  Object.prototype.propertyIsEnumerable.call(building??{},'footprint') &&
+  Array.isArray(building?.footprint) && Array.isArray(building?.holes);
+const roadBuildingFootprint = building => roadBuildingFlatDraft(building)
+  ? building.footprint
+  : building.geometry?.regions?.find(region=>region.parentId===null)?.ring ?? building.footprint;
 
 export function roadBuildingOccupiedPlots(building, plots) {
+  if(building.geometry && !roadBuildingFlatDraft(building)) return plots.filter(plot=>
+    occupiedPlotAreaS10(building.geometry,plot.boundary)>1e-5).map(plot=>plot.id);
   return plots.filter(plot => Math.abs(polygonSignedArea(clipToConvexPolygon(building.footprint,plot.boundary))) -
     (building.holes ?? []).reduce((sum,hole)=>sum+Math.abs(polygonSignedArea(clipToConvexPolygon(hole,plot.boundary))),0) > 1e-5
   ).map(plot=>plot.id);
@@ -26,7 +35,7 @@ function roadBuildingAccess(building, a, b, polygon) {
   const t=((entrance.x-a.x)*dx+(entrance.y-a.y)*dy)/(dx*dx+dy*dy);
   if (t<=1e-6 || t>=1-1e-6) return null;
   const end={x:a.x+t*dx,y:a.y+t*dy};
-  if (distanceToSegment(entrance,a,b)<1e-6 || roadBuildingPathHits(entrance,end,building.footprint)) return null;
+  if (distanceToSegment(entrance,a,b)<1e-6 || roadBuildingPathHits(entrance,end,roadBuildingFootprint(building))) return null;
   if (polygon.some((point,i)=>segmentCuts(entrance,end,point,polygon[(i+1)%polygon.length])
     .some(cut=>cut>1e-6 && cut<1-1e-6))) return null;
   return [entrance,end];
@@ -39,7 +48,7 @@ export function placeRoadConflictBuilding(building, choice, development, permitt
   if (!choice || !['fixed','auto','position'].includes(choice.kind)) return null;
   if (choice.kind==='position' && (![choice.x,choice.y,choice.angle].every(Number.isFinite) ||
       Math.abs(choice.x)>10000 || Math.abs(choice.y)>10000 || Math.abs(choice.angle)>Math.PI*2)) return null;
-  if (!building.entrance || !Array.isArray(building.footprint)) return null;
+  if (!building.entrance || !Array.isArray(roadBuildingFootprint(building))) return null;
   const allowed = new Set(permittedBlocks.map(block=>block.id));
   const plotIndex=riIndex(development.plots), neighbors=riIndex(development.buildings);
   const frame=buildingFrame(building);
@@ -72,7 +81,7 @@ export function placeRoadConflictBuilding(building, choice, development, permitt
       // Object spread strips non-enumerable Schema 10 read-only projections.
       // Keep the original as a read-only input for an untransformed proposal.
       const moved=transform ? previewBuildingGeometry(building,transform) : building;
-      if (!shapeContained(moved.footprint,property.boundary)) continue;
+      if (!shapeContained(roadBuildingFootprint(moved),property.boundary)) continue;
       const plotIds=roadBuildingOccupiedPlots(moved,plots);
       if (!plotIds.length) continue;
       const polygon=blocks.get(property.blockId).vertices.map(id=>graph.nodesById.get(id));
@@ -80,13 +89,15 @@ export function placeRoadConflictBuilding(building, choice, development, permitt
       if (!accessPath || accessPath.some(p=>!insideOrOn(p,polygon))) continue;
 
       const owned=property.buildingIds.map(id=>neighbors.get(id));
-      const conflicts=owned.filter(other=>shapesOverlapInterior(moved.footprint,other.footprint) ||
-        roadBuildingPathHits(...accessPath,other.footprint));
+      const conflicts=owned.filter(other=>(moved.geometry&&other.geometry&&!roadBuildingFlatDraft(moved)&&!roadBuildingFlatDraft(other)
+        ?occupiedRegionsOverlapS10(moved.geometry,other.geometry)
+        :shapesOverlapInterior(roadBuildingFootprint(moved),roadBuildingFootprint(other))) ||
+        roadBuildingPathHits(...accessPath,roadBuildingFootprint(other)));
       if (conflicts.some(other=>retainedIds.has(other.id))) continue;
       const displaced=new Set(conflicts.map(other=>other.id));
       if (originals.get(property.blockId)?.some(other=>!displaced.has(other.id) &&
           (roadBuildingPathHits(...accessPath,other.footprint) ||
-            (other.accessPath?.length===2 && roadBuildingPathHits(...other.accessPath,moved.footprint))))) continue;
+            (other.accessPath?.length===2 && roadBuildingPathHits(...other.accessPath,roadBuildingFootprint(moved)))))) continue;
 
       const proposed={...moved,blockId:property.blockId,districtId:property.districtId,
         propertyId:property.id,frontageRoadId:property.frontageRoadId,plotIds,accessPath};

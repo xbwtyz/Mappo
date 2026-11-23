@@ -6,7 +6,11 @@ export function drawBuildingSelection(ctx, camera, buildings, layers, selection,
     if (!building) continue;
     ctx.save();
     ctx.beginPath();
-    for (const polygon of [building.footprint, ...(building.holes ?? [])]) {
+    // Use canonical region rings directly for unhydrated and nested records.
+    const rings=building.geometry?.regions?.map(region=>region.ring) ??
+      [building.footprint,...(building.holes??[])];
+    for (const polygon of rings) {
+      if (!Array.isArray(polygon)) continue;
       polygon.forEach((point, i) => {
         const screen = camera.worldToScreen(point);
         if (i) ctx.lineTo(screen.x, screen.y);
