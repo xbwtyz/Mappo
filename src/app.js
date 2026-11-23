@@ -1204,6 +1204,7 @@ function syncPropertyEditUI3I() {
   $('propertyAddVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length>=12);
   $('propertyRemoveVertex024').disabled=Boolean(session.flexibleMode||session.drag||session.countChange||session.boundary.length<=3
     ||session.selectedCorner===null||session.selectedCorner<2);
+  $('propertyRestoreFrontage024').disabled=Boolean(session.flexibleMode||session.drag||!session.frontageChanged);
   $('propertyAddDividerE4').disabled=Boolean(session.flexibleMode||session.polygonMode||session.countChange||session.drag);
   $('propertyRemoveDividerE4').disabled=Boolean(session.flexibleMode||session.polygonMode||session.countChange||session.drag||!dividers.length);
   const countChange=session.countChange;
@@ -2620,6 +2621,7 @@ function applyPropertyEdit3I() {
   return true;
 }
 $('propertyEditReset3I').addEventListener('click',()=>propertyEditSession?.reset());
+$('propertyRestoreFrontage024').addEventListener('click',()=>propertyEditSession?.restoreFrontage());
 $('propertyEditCancel3I').addEventListener('click',exitPropertyEditing3I);
 $('propertyEditApply3I').addEventListener('click',applyPropertyEdit3I);
 $('propertyAddVertex024').addEventListener('click',()=>{
