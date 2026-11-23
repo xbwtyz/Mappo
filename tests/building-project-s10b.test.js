@@ -5,10 +5,27 @@ import { migrateBuildingRecordS10, migrateSchema9ProjectS10 } from '../src/core/
 import { projectSimpleBuildingS10 } from '../src/core/building-geometry-adapter-s10.js';
 
 const clone = x => JSON.parse(JSON.stringify(x));
+// S10-B keeps the shipped Schema 9 migration contract tested independently of
+// the now-native Schema 10 generator; no test deletes historical fixtures.
+function legacyFixture(options) {
+  const current=createProject(options);
+  assert.equal(current.schemaVersion,10);
+  const old=clone(current);
+  old.schemaVersion=9;
+  old.city.buildings=old.city.buildings.map(building=>{
+    const view=projectSimpleBuildingS10(building.geometry,building.components);
+    assert.equal(view.ok,true);
+    const legacy={...building,footprint:view.footprint,holes:view.holes};
+    delete legacy.geometry; delete legacy.components;
+    return legacy;
+  });
+  return old;
+}
+
 
 test('S10-B P1 migrates generated morphologies without regeneration or accepted-data mutation', () => {
   for (const morphology of ['planned','organic','radial','linear']) {
-    const before=createProject({seed:'schema10-b1-'+morphology,size:'small',morphology});
+    const before=legacyFixture({seed:'schema10-b1-'+morphology,size:'small',morphology});
     assert.equal(before.schemaVersion,9);
     const snapshot=JSON.stringify(before);
     const updated=migrateSchema9ProjectS10(before);
@@ -41,7 +58,7 @@ test('S10-B P1 migrates generated morphologies without regeneration or accepted-
 });
 
 test('S10-B P1 preserves building and compound metadata with independent ownership', () => {
-  const project=createProject({seed:'schema10-b1-metadata',size:'small'});
+  const project=legacyFixture({seed:'schema10-b1-metadata',size:'small'});
   const target=project.city.buildings[0];
   target.customName='A deliberately authored building';
   target.extensions={owner:{name:'Keep this'},history:[1,2]};
@@ -64,7 +81,7 @@ test('S10-B P1 preserves building and compound metadata with independent ownersh
 });
 
 test('S10-B P1 refuses field collisions, malformed geometry, and partial migrations', () => {
-  const p=createProject({seed:'schema10-b1-reject',size:'small'});
+  const p=legacyFixture({seed:'schema10-b1-reject',size:'small'});
   const snapshot=JSON.stringify(p);
   assert.throws(()=>migrateBuildingRecordS10({...p.city.buildings[0],geometry:{custom:'data'}}),/overwrite/);
   assert.throws(()=>migrateBuildingRecordS10({...p.city.buildings[0],components:[]}),/overwrite/);
@@ -77,7 +94,7 @@ test('S10-B P1 refuses field collisions, malformed geometry, and partial migrati
 });
 
 test('S10-B P1 converted records never have dual writable geometry', () => {
-  const p=createProject({seed:'schema10-b1-authority',size:'small'});
+  const p=legacyFixture({seed:'schema10-b1-authority',size:'small'});
   const source=p.city.buildings[0];
   const converted=migrateBuildingRecordS10(source);
   assert.deepEqual(Object.keys(converted).filter(k=>['footprint','holes'].includes(k)),[]);
