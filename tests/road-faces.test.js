@@ -355,7 +355,7 @@ test('analysis records are immutable, detached, and absent from project/save byt
   }, TypeError);
   assert.notEqual(match.preserved[0].record, project.city.blocks[0]);
   assert.equal(encodeProjectDocument(document), before);
-  assert.equal(project.schemaVersion, 9);
+  assert.equal(project.schemaVersion, 10);
 });
 
 test('compiled face extraction and identity matching agree with modules', async () => {

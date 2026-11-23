@@ -39,7 +39,7 @@ test('025 P3: irregular source Apply is nonmutating, atomic, schema-9 valid and 
   const receipt=preparePropertySplitE2(project,defaultWorkspace(project),session);
   assert.equal(receipt.ok,true,JSON.stringify(receipt.issues));
   assert.ok(receipt.lineage.operation==='straight-polygon');
-  assert.equal(receipt.candidate.schemaVersion,9);
+  assert.equal(receipt.candidate.schemaVersion,10);
   validateStoredProject(receipt.candidate);
   assert.equal(receipt.candidate.city.properties.length,project.city.properties.length+1);
   const parent=receipt.candidate.city.properties.find(p=>p.id===propertyId);

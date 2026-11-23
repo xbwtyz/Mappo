@@ -341,7 +341,7 @@ test('selected regeneration, removal, snapshots and incompatible terrain corrupt
 test('native schema-8 water cities and unfinished drafts load unchanged and can gain mountains', async () => {
   const raw = JSON.parse(await readFile(new URL('./fixtures/save-3e5-format1-schema8.json', import.meta.url), 'utf8')),
     loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 9);
+  assert.equal(loaded.project.schemaVersion, 10);
   assert.deepEqual(loaded.project.city, raw.project.city);
   assert.deepEqual(loaded.workspace, raw.workspace);
   const e = new TerrainEditor();

@@ -171,7 +171,7 @@ test('save/recovery document bytes and schema 9 remain unchanged by graph analys
   analyzeRoadGraph(freeze(document.project.city));
   proposeJunctionMove(document.project.city,ordinary,{x:node.x+.01,y:node.y+.01});
   assert.equal(encodeProjectDocument(document),before);
-  assert.equal(document.project.schemaVersion,9);
+  assert.equal(document.project.schemaVersion,10);
   assert.deepEqual(decodeProjectDocument(before),document);
 });
 
