@@ -1,7 +1,7 @@
 // S10-A structural components: organizational identity, never spatial ownership.
 import { S10_REGION_LIMITS, canonicalizeBuildingRegionsS10 } from './building-topology-s10.js';
-const cloneJson=value=>JSON.parse(JSON.stringify(value));
-const validId=id=>typeof id==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(id);
+const s10ComponentsCloneJson=value=>JSON.parse(JSON.stringify(value));
+const s10ComponentsValidId=id=>typeof id==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(id);
 
 export function canonicalizeBuildingComponentsS10(components, geometry) {
   if (!Array.isArray(components)||!components.length||
@@ -9,12 +9,12 @@ export function canonicalizeBuildingComponentsS10(components, geometry) {
     throw Error('S10 building requires 1–64 structural components.');
   const byId=new Map();
   for (const c of components) {
-    if (!c||!validId(c.id)||byId.has(c.id)||
-      (c.parentId!==null&&!validId(c.parentId)))
+    if (!c||!s10ComponentsValidId(c.id)||byId.has(c.id)||
+      (c.parentId!==null&&!s10ComponentsValidId(c.parentId)))
       throw Error('S10 components require unique IDs and valid parent references.');
     if (c.name!==undefined&&(typeof c.name!=='string'||c.name.length>80))
       throw Error('S10 component name is invalid.');
-    byId.set(c.id,cloneJson(c));
+    byId.set(c.id,s10ComponentsCloneJson(c));
   }
   const roots=[...byId.values()].filter(c=>c.parentId===null);
   if(roots.length!==1)throw Error('S10 building requires exactly one component root.');

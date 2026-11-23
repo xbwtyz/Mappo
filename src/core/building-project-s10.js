@@ -4,18 +4,18 @@ import { legacyBuildingShapeToS10, projectSimpleBuildingS10, reserveBuildingPart
 import { validateBuildingStructureS10 } from './building-components-s10.js';
 import { validateFootprintF1 } from './building-footprint-f1.js';
 
-const clone = value => JSON.parse(JSON.stringify(value));
-const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
+const s10ProjectClone = value => JSON.parse(JSON.stringify(value));
+const s10ProjectOwn = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 
 export function migrateBuildingRecordS10(source) {
   if (!source || typeof source !== 'object' || Array.isArray(source))
     throw Error('S10 migration requires a building record.');
   // Unsupported extension fields must never be silently replaced with our
   // canonical model. This includes opaque, otherwise compatible metadata.
-  if (own(source, 'geometry') || own(source, 'components'))
+  if (s10ProjectOwn(source, 'geometry') || s10ProjectOwn(source, 'components'))
     throw Error('S10 migration cannot overwrite existing geometry or components metadata.');
   const {geometry, components} = legacyBuildingShapeToS10(source);
-  const converted = clone(source);
+  const converted = s10ProjectClone(source);
   delete converted.footprint;
   delete converted.holes;
   return {...converted, geometry, components};
@@ -26,7 +26,7 @@ export function migrateSchema9ProjectS10(source) {
       source.schemaVersion !== 9 || !source.city ||
       !Array.isArray(source.city.buildings))
     throw Error('S10 migration requires a valid Schema 9 project with buildings.');
-  const proposed = clone(source);
+  const proposed = s10ProjectClone(source);
   // The detached candidate is never assigned to accepted state on failure.
   proposed.city.buildings = proposed.city.buildings.map(migrateBuildingRecordS10);
   proposed.schemaVersion = 10;
@@ -36,7 +36,7 @@ export function migrateSchema9ProjectS10(source) {
 // S10-B P2/P3: transient, read-only projections for legacy UI consumers.
 // These accessor properties are non-enumerable and NEVER enter saved JSON.
 // Unsupported complex topology cannot be flattened through this interface.
-const lockRing = ring => Object.freeze(ring.map(p => Object.freeze({...p})));
+const s10ProjectLockRing = ring => Object.freeze(ring.map(p => Object.freeze({...p})));
 export function hydrateBuildingS10(record) {
   if (!record?.geometry || !record?.components) return record;
   if (Object.prototype.propertyIsEnumerable.call(record,'footprint') ||
@@ -44,8 +44,8 @@ export function hydrateBuildingS10(record) {
     throw Error('Schema 10 building has competing writable legacy geometry.');
   if (Object.getOwnPropertyDescriptor(record,'footprint')?.get) return record;
   const simple=projectSimpleBuildingS10(record.geometry,record.components);
-  const footprint=simple.ok ? lockRing(simple.footprint) : null;
-  const holes=simple.ok ? Object.freeze(simple.holes.map(lockRing)) : null;
+  const footprint=simple.ok ? s10ProjectLockRing(simple.footprint) : null;
+  const holes=simple.ok ? Object.freeze(simple.holes.map(s10ProjectLockRing)) : null;
   Object.defineProperties(record,{
     footprint:{configurable:true,enumerable:false,get:()=>footprint},
     holes:{configurable:true,enumerable:false,get:()=>holes}
@@ -78,13 +78,13 @@ export function writeSimpleBuildingS10(source,shape) {
     const old=oldHoles[i];
     const id=old?.id ?? reserveBuildingPartIdS10(reserved,'REG-MAN');
     reserved.add(id);
-    return {...(old ? clone(old) : {id,parentId:root.id,kind:'void'}),ring};
+    return {...(old ? s10ProjectClone(old) : {id,parentId:root.id,kind:'void'}),ring};
   });
-  const geometry={...clone(source.geometry),regions:[
-    {...clone(root),ring:next.footprint},...children
+  const geometry={...s10ProjectClone(source.geometry),regions:[
+    {...s10ProjectClone(root),ring:next.footprint},...children
   ]};
   const verified=validateBuildingStructureS10(geometry,source.components);
-  const updated={...clone(source),...clone(shape),
+  const updated={...s10ProjectClone(source),...s10ProjectClone(shape),
     geometry:verified.geometry,components:verified.components,area:next.area};
   delete updated.footprint;
   delete updated.holes;
