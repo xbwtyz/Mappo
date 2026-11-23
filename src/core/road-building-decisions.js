@@ -5,6 +5,7 @@ import { clipToConvexPolygon } from './placement.js';
 import { polygonSignedArea } from './geometry.js';
 import { riIndex } from './road-impact-model.js';
 import { classifyRoadProvenance, stampRoadGenerated } from './road-provenance.js';
+import { writeSimpleBuildingS10 } from './building-project-s10.js';
 
 const ROAD_REHOUSING_LIMIT = 128;
 
@@ -85,8 +86,9 @@ export function placeRoadConflictBuilding(building, choice, development, permitt
           (roadBuildingPathHits(...accessPath,other.footprint) ||
             (other.accessPath?.length===2 && roadBuildingPathHits(...other.accessPath,moved.footprint))))) continue;
 
-      const next={...moved,blockId:property.blockId,districtId:property.districtId,
+      const proposed={...moved,blockId:property.blockId,districtId:property.districtId,
         propertyId:property.id,frontageRoadId:property.frontageRoadId,plotIds,accessPath};
+      const next=building.geometry?writeSimpleBuildingS10(building,proposed):proposed;
       property.buildingIds=property.buildingIds.filter(id=>!displaced.has(id)).concat(next.id);
       stampRoadGenerated(property,plots);
       development.buildings=development.buildings.filter(other=>!displaced.has(other.id));

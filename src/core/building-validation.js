@@ -110,10 +110,12 @@ export function inspectBuildingGeometry(city, buildingId, transform, draft = nul
   if(wellFormed){
     for(const neighbor of city.buildings){
       if(neighbor.id===buildingId||neighbor.propertyId!==property.id)continue;
-      const overlap=source.geometry&&neighbor.geometry
-        ?occupiedRegionsOverlapS10(writeSimpleBuildingS10(source,preview).geometry,neighbor.geometry)
-        :shapesOverlapInterior(preview.footprint,neighbor.footprint);
-      if(overlap) fail('collision',`Building overlaps ${neighbor.id}.`,neighbor.id);
+      try {
+        const overlap=source.geometry&&neighbor.geometry
+          ?occupiedRegionsOverlapS10(writeSimpleBuildingS10(source,preview).geometry,neighbor.geometry)
+          :shapesOverlapInterior(preview.footprint,neighbor.footprint);
+        if(overlap) fail('collision',`Building overlaps ${neighbor.id}.`,neighbor.id);
+      } catch(error) { fail('geometry',error.message,neighbor.id); }
     }
   }
   return {ok:!issues.length,issues,preview,property};

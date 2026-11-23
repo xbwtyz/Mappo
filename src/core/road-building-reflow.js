@@ -5,8 +5,7 @@ import { stampRoadGenerated } from './road-provenance.js';
 import { populateProperty } from '../generators/buildings.js';
 import { adoptNewBuildingS10, writeSimpleBuildingS10 } from './building-project-s10.js';
 
-const originalsUseS10 = original => original.some(b=>Boolean(b.geometry));
-export function reflowGeneratedRoadBuildings(seed, before, after, plots, original, reservedIds) {
+export function reflowGeneratedRoadBuildings(seed, before, after, plots, original, reservedIds, canonical = false) {
   const oldFrame = before.frame, newFrame = after.frame;
   const center = local => local.x + local.width / 2;
   const transform = point => {
@@ -58,6 +57,6 @@ export function reflowGeneratedRoadBuildings(seed, before, after, plots, origina
     stampRoadGenerated(building);
   }
   if (!replacements.length) throw new Error('The reshaped parcel has no suitable replacement building.');
-  return { buildings: originalsUseS10(original) ? replacements.map(adoptNewBuildingS10) : replacements,
+  return { buildings: canonical || original.some(b=>Boolean(b.geometry)) ? replacements.map(adoptNewBuildingS10) : replacements,
     disposition: 'regenerated' };
 }

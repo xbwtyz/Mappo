@@ -87,7 +87,7 @@ function c3RetainDevelopment(old, city, replacements, graph) {
   return kept;
 }
 
-function c3Development(seed, city, blocks, old, kept, corridors = []) {
+function c3Development(seed, city, blocks, old, kept, corridors = [], canonical = false) {
   const generated = generateBuildings(seed, { ...city, blocks });
   const keptByBlock = new Map();
   for (const property of kept.properties) {
@@ -127,7 +127,7 @@ function c3Development(seed, city, blocks, old, kept, corridors = []) {
   }
   for (const key of Object.keys(kept)) generated[key].push(...kept[key]);
   // Generated Schema 9 shapes are temporary proposals, never persisted.
-  if (old.buildings.some(b=>b.geometry)) generated.buildings=generated.buildings.map(b=>
+  if (canonical) generated.buildings=generated.buildings.map(b=>
     b.geometry?b:adoptNewBuildingS10(b));
   const occupied = new Map();
   for (const property of generated.properties)
@@ -335,7 +335,7 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     };
     const keptIds = new Set(Object.values(kept).flat().map(record=>record.id));
     const oldPlots = riIndex(old.plots);
-    const regenerated = c3Development(project.seed, city, rebuilt, old, kept, corridors);
+    const regenerated = c3Development(project.seed, city, rebuilt, old, kept, corridors,project.schemaVersion===10);
     const parcelResolution = reconcileRoadParcels028(old,city,replacements,regenerated,graph,kept,
       options.parcelChoices);
     parcelReview=parcelResolution.review;
