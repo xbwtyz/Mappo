@@ -4,6 +4,7 @@ import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDo
 import { validateStoredProject } from '../data/project-validation.js';
 import { inspectBuildingGeometry } from '../core/building-validation.js';
 import { prepareBuildingApply } from './building-application.js';
+import { adoptNewBuildingS10, writeSimpleBuildingS10 } from '../core/building-project-s10.js';
 
 export const BUILDING_PRESETS_3H = Object.freeze(['rectangle','L','courtyard','T']);
 export const BUILDING_TYPES_3H = BUILDING_USE_TYPES;
@@ -131,8 +132,10 @@ export function prepareBuildingStructure3H(project,workspace,request,{quick=fals
       ...geometry,roofTone:existing?.roofTone??2,
       districtId:property.districtId??null,
       entrance:geometry.footprint[0],accessPath:[geometry.footprint[0],geometry.footprint[1]]};
-    if(operation==='add'){site.buildingIds.push(buildingId);provisional.city.buildings.push(record);}
-    else provisional.city.buildings=provisional.city.buildings.map(b=>b.id===buildingId?record:b);
+    const canonical=operation==='add'
+      ?adoptNewBuildingS10(record):writeSimpleBuildingS10(existing,record);
+    if(operation==='add'){site.buildingIds.push(buildingId);provisional.city.buildings.push(canonical);}
+    else provisional.city.buildings=provisional.city.buildings.map(b=>b.id===buildingId?canonical:b);
     // 3G-C's exact geometry, occupied-plot and original-road validation.
     const geometryCheck=inspectBuildingGeometry(provisional.city,buildingId,{});
     if(!geometryCheck.ok)return {...geometryCheck,status:'invalid',candidate:null};

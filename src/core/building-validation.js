@@ -1,6 +1,9 @@
 import { polygonSignedArea, pointInPolygon } from './geometry.js';
 import { insideOrOn, segmentCuts, clearance } from './boundary.js';
 import { previewBuildingGeometry } from './building-transform.js';
+import { projectSimpleBuildingS10 } from './building-geometry-adapter-s10.js';
+import { writeSimpleBuildingS10 } from './building-project-s10.js';
+import { occupiedRegionsOverlapS10 } from './building-occupancy-s10.js';
 
 // Read-only, shape-accurate checks for a single edited building. No schema
 // changes and no mutation of accepted city records.
@@ -73,6 +76,13 @@ export function inspectBuildingGeometry(city, buildingId, transform, draft = nul
     fail('missing','The selected building or its parent property no longer exists.');
     return {ok:false,issues,preview:null,property:null};
   }
+  if(source.geometry){
+    const editable=projectSimpleBuildingS10(source.geometry,source.components);
+    if(!editable.ok){
+      fail('unsupported-topology','This building needs the later Schema 10 component editor.');
+      return {ok:false,issues,preview:null,property};
+    }
+  }
   let preview;
   try{preview=previewBuildingGeometry(draft ? {
     ...source, footprint: draft.footprint, holes: draft.holes, orientation: draft.orientation ?? source.orientation
@@ -100,8 +110,10 @@ export function inspectBuildingGeometry(city, buildingId, transform, draft = nul
   if(wellFormed){
     for(const neighbor of city.buildings){
       if(neighbor.id===buildingId||neighbor.propertyId!==property.id)continue;
-      if(shapesOverlapInterior(preview.footprint,neighbor.footprint))
-        fail('collision',`Building overlaps ${neighbor.id}.`,neighbor.id);
+      const overlap=source.geometry&&neighbor.geometry
+        ?occupiedRegionsOverlapS10(writeSimpleBuildingS10(source,preview).geometry,neighbor.geometry)
+        :shapesOverlapInterior(preview.footprint,neighbor.footprint);
+      if(overlap) fail('collision',`Building overlaps ${neighbor.id}.`,neighbor.id);
     }
   }
   return {ok:!issues.length,issues,preview,property};

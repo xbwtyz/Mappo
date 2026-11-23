@@ -5,6 +5,8 @@ import { classifyRoad } from '../core/road-graph.js';
 import { inspectBuildingGeometry } from '../core/building-validation.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
+import { occupiedPlotAreaS10 } from '../core/building-occupancy-s10.js';
+import { writeSimpleBuildingS10 } from '../core/building-project-s10.js';
 
 const B3GC_ACCESS_EPS = 1e-6;
 const b3gcPlotArea=polygon=>Math.abs(polygonSignedArea(polygon));
@@ -33,6 +35,7 @@ export function deriveOccupiedPlots(city, property, geometry) {
   return property.plotIds.filter(id=>{
     const plot=own.get(id);
     if(!plot) return false;
+    if(geometry.geometry) return occupiedPlotAreaS10(geometry.geometry,plot.boundary)>1e-5;
     const outer=b3gcPlotArea(clipToConvexPolygon(geometry.footprint,plot.boundary));
     const cutouts=(geometry.holes??[]).reduce((sum,h)=>sum+b3gcPlotArea(clipToConvexPolygon(h,plot.boundary)),0);
     return outer-cutouts>1e-5;
@@ -198,7 +201,9 @@ export function prepareBuildingCandidate(project, buildingId, transform, draft =
   // The candidate is a full independent project. Any error below discards it.
   const candidate=copyJson(project);
   const index=candidate.city.buildings.findIndex(b=>b.id===buildingId);
-  candidate.city.buildings[index]=copyJson(candidateBuilding);
+  candidate.city.buildings[index]=original.geometry
+    ?writeSimpleBuildingS10(original,candidateBuilding)
+    :copyJson(candidateBuilding);
   try { validateStoredProject(candidate); }
   catch(error) {
     issues.push({code:'schema',message:`Project validation: ${error.message}`});
