@@ -108,6 +108,12 @@ try {
       await enter('buildingOffsetY', 2);
       assert.equal(await el('buildingPreviewApply').isEnabled(), true, await el('desktopPlaceStatus').innerText());
       assert.equal(await city(), accepted, 'move preview leaves accepted plot references intact');
+      await enter('buildingOffsetY', 10);
+      assert.equal(await el('buildingPreviewApply').isDisabled(), true);
+      assert.match(await el('desktopPlaceStatus').innerText(), /overlaps.*BLD-MAN-COURTYARD-HOST/);
+      assert.equal(await city(), accepted, 'blocked move leaves the accepted city intact');
+      await enter('buildingOffsetY', 2);
+      assert.equal(await el('buildingPreviewApply').isEnabled(), true);
       await el('buildingPreviewApply').click();
       const moved = await city();
       assert.notEqual(moved, accepted);
