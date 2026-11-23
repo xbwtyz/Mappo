@@ -68,7 +68,7 @@ const output = {
   examples,
 };
 await writeFile(
-  new URL('../docs/plans/0.2/A3_IMPACT_EXAMPLES.json', import.meta.url),
+  new URL('../docs/history/0.2/roads/a3-impact-examples.json', import.meta.url),
   JSON.stringify(output, null, 2) + '\n',
 );
 console.log(`Wrote ${examples.length} impact report excerpts.`);

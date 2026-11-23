@@ -27,4 +27,4 @@ Describe changed behavior and practical benefit. If the work is documentation or
 
 List relevant limitations, links to affected issues and one recommended next action. Merging needs separate explicit approval; a merge does not authorize tagging, publishing a release or deploying Pages. Release and Pages workflows are independent and manual/guarded.
 
-[Agent instructions](../AGENTS.md) · [Development rules](../docs/DEVELOPMENT_RULES.md) · [CI policy](../docs/CI_TEST_POLICY.md)
+[Agent instructions](../AGENTS.md) · [Development rules](../docs/contributing/development-rules.md) · [CI policy](../docs/contributing/ci-policy.md)

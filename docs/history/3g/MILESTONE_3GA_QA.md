@@ -35,4 +35,4 @@ Approved 3G-A design: keep property-first selection, enter dedicated edit contex
 
 The unified CI workflow runs the full Node regression suite, exact compiled distribution parity, and two native-browser suites on Chromium and Firefox across desktop, ultrawide, tablet, and phone. Test execution status must be verified from the branch/PR Actions run; **no passing test result is claimed in this document until CI completes**. The browser QA adds a specific `-building-edit.png` screenshot for each viewport/browser combination.
 
-[Developer Guide](../../development.md) · [Roadmap](../../ROADMAP.md).
+[Developer Guide](../../contributing/developer-guide.md) · [Roadmap](../../plans/README.md).

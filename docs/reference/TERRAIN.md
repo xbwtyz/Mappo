@@ -1,6 +1,6 @@
 # Mountain terrain and road passes
 
-Mappo 3E.6 adds independent mountain features around and inside the city. Terrain remains separate from the water model, while sharing the existing planar arrangement and polygon utilities. Building inspection was completed in 3F; the current desktop workflow is described by [G4 acceptance](../plans/0.2/G4_ACCEPTANCE_REPORT.md).
+Mappo 3E.6 adds independent mountain features around and inside the city. Terrain remains separate from the water model, while sharing the existing planar arrangement and polygon utilities. Building inspection was completed in 3F; the current desktop workflow is described by [G4 acceptance](../history/0.2/workspace/g4-acceptance-report.md).
 
 ## Modules
 
@@ -37,4 +37,4 @@ Schema 9 adds optional `terrainFeatures`, `terrainPasses` and `terrainFaces`. Ol
 
 Walls store exact `terrainOpenings` with contributor IDs and wall-distance intervals. Their solid-segment, tower and gate routines respect water and terrain openings independently. The terrain defense adapter reuses generic polygon callbacks rather than introducing mountains into the water geometry registry. Corrupt terrain geometry, face references, pass spans and wall openings reject before replacing the current project.
 
-See `QA.md` for automated coverage and the pending native Firefox checklist.
+See the [historical QA checks](../history/QA-legacy.md) for automated coverage and the pending native Firefox checklist.

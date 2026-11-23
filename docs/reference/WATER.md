@@ -1,6 +1,6 @@
 # Water and bridge architecture
 
-Milestone 3E implements generated/editable rivers and connected bridges. The 3E.1 expansion adds generated/editable coastlines, an explicit ocean side and connected coastal land. The 3E.2 expansion supports one river and one coast together, with independent controls and an exposed-shore union at river mouths. The 3E.5 expansion adds up to eight independent lakes with closed shore handles, whole-lake movement and inland access streets. Additional rivers/coasts remain extensions. Building inspection was completed in 3F; the current desktop workflow is described by [G4 acceptance](../plans/0.2/G4_ACCEPTANCE_REPORT.md).
+Milestone 3E implements generated/editable rivers and connected bridges. The 3E.1 expansion adds generated/editable coastlines, an explicit ocean side and connected coastal land. The 3E.2 expansion supports one river and one coast together, with independent controls and an exposed-shore union at river mouths. The 3E.5 expansion adds up to eight independent lakes with closed shore handles, whole-lake movement and inland access streets. Additional rivers/coasts remain extensions. Building inspection was completed in 3F; the current desktop workflow is described by [G4 acceptance](../history/0.2/workspace/g4-acceptance-report.md).
 
 ## Module boundaries
 
@@ -40,7 +40,7 @@ Water definitions and histories are independent of outline, district and defense
 - Extend the fortification adapter for each new feature kind so walls, towers and street gates respect its geometry.
 - Use explicit migrations and frozen standalone-save fixtures for incompatible model changes. Schema 5 preserves older cities as dry land; schema 6 preserves existing river data unchanged.
 
-See `PROJECT_FORMAT.md` for the exact persistence contract and `QA.md` for automated coverage and the native Firefox checklist.
+See the [project format](PROJECT_FORMAT.md) for the persistence contract and the [historical QA checks](../history/QA-legacy.md) for automated coverage and the native Firefox checklist.
 
 ## Coast adapter
 

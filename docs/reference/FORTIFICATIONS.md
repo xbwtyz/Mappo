@@ -38,4 +38,4 @@ Possible later additions include alternate towers/gatehouses, manually chosen ga
 
 Explicit rebuilds replace defense records; metadata transfer between old and new generated records requires a defined mapping rather than an assumption based on reused IDs. Toggle and undo retain exact records.
 
-See `PROJECT_FORMAT.md` for schema 4 and `QA.md` for tests and the remaining graphical Firefox checklist.
+See the [project format](PROJECT_FORMAT.md) for schema 4 and the [historical QA checks](../history/QA-legacy.md) for tests and the remaining graphical Firefox checklist.

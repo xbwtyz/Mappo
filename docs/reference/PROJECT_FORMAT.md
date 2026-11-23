@@ -62,7 +62,7 @@ Viewport dimensions and active pointer capture are transient. New native saves r
 
 Unknown envelope, record, extension and workspace fields are preserved as JSON. Reserved district/wall records are retained even before the current renderer understands their presentation. References to district IDs, when present, must resolve.
 
-**Current release behavior:** v0.2.0 migrates historical project schemas **1–8** into schema 9. The owner has turned **mandatory compatibility with every old save OFF for future releases**. That does not remove current migrations, fixtures or tests. A future breaking change needs separate approval of supported versions, safe rejection/backup guidance, validation and CI changes; see [Development Rules](../DEVELOPMENT_RULES.md).
+**Current release behavior:** v0.2.0 migrates historical project schemas **1–8** into schema 9. The owner has turned **mandatory compatibility with every old save OFF for future releases**. That does not remove current migrations, fixtures or tests. A future breaking change needs separate approval of supported versions, safe rejection/backup guidance, validation and CI changes; see [Development Rules](../contributing/development-rules.md).
 
 Future developers should:
 1. Preserve compatible unknown fields during supported saves and loads.

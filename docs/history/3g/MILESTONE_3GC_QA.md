@@ -32,4 +32,4 @@ Click **Apply to City** to recompute a *fresh* candidate from accepted records a
 - No editor Undo/Redo for committed building changes yet (**3G-D**).
 - Historical standalone HTML builds and Pages workflow are unchanged.
 
-[Standalone 3G-C preview](../../../dist/mappo-0.1-dev.3gc.html) · [Roadmap](../../ROADMAP.md) · [3G-B checkpoint](MILESTONE_3GB_QA.md).
+[Standalone 3G-C preview](../../../dist/mappo-0.1-dev.3gc.html) · [Roadmap](../../plans/README.md) · [3G-B checkpoint](MILESTONE_3GB_QA.md).

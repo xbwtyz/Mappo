@@ -1,4 +1,4 @@
-> **Archived document:** Full original 3F-D README before Pass A. Historical phase status and some older build commands below may be superseded. See the [current README](../../README.md), [User Guide](../user-guide.md), and [Developer Guide](../development.md).
+> **Archived document:** Full original 3F-D README before Pass A. Historical phase status and some older build commands below may be superseded. See the [current README](../../README.md), [User Guide](../guides/user-guide.md), and [Developer Guide](../contributing/developer-guide.md).
 
 # Mappo
 
@@ -12,7 +12,7 @@ Open [`dist/mappo-0.1-dev.3fd.html`](../../dist/mappo-0.1-dev.3fd.html) directly
 
 ### UI overhaul complete; Building Inspector 3F ready for review
 
-Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](../reference/UI_CONTROL_MAP.md) lists the new homes of the existing controls.
+Use **Project** in the top bar for downloads, validated loading and browser recovery. A dot marks recovery/load decisions. **Layers** in the map header holds all building, property, plot, district and fortification visibility switches. The shared map rail keeps **Select / Pan**, **Fit**, and zoom available in every section. City groups Outline, Main square and Streets, with optional starting shapes and seeds behind expandable settings. [UI_CONTROL_MAP.md](ui/ui-control-map.md) lists the new homes of the existing controls.
 
 The working editor now opens in **City**, with **Landscape**, **Districts** and **Defenses** tabs showing one tool section at a time. Use the arrow buttons to collapse the tools or inspector; the live map takes the available space. **Tools** and **Inspector** buttons reopen the panels. **Generate city** stays available beneath the active tools.
 
@@ -24,7 +24,7 @@ Select a feature from the list or map in **Select / Pan** to open only its own e
 
 Switching sections stops tools whose controls are being hidden while preserving completed drafts, history, pending inputs and the accepted city. An in-progress gesture is cancelled through its original editor. Panel collapse resizes the Canvas without changing the city or camera position/zoom. Shell layout preferences are restored through optional validated workspace presentation fields in saved projects and recovery snapshots. Existing project saves and recovery still restore their original city geometry and editor drafts.
 
-See [UI_OVERHAUL_PLAN.md](ui/UI_OVERHAUL_PLAN.md) for the phase-by-phase goals and review checkpoints, and [WORKSPACE_UI.md](../reference/WORKSPACE_UI.md) for the modular shell/inspector architecture.
+See [UI_OVERHAUL_PLAN.md](ui/UI_OVERHAUL_PLAN.md) for the phase-by-phase goals and review checkpoints, and [WORKSPACE_UI.md](ui/workspace-ui.md) for the modular shell/inspector architecture.
 
 ### Property and building selection (3F-Aa)
 

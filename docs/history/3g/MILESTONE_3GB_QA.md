@@ -28,4 +28,4 @@ The original accepted building remains visible beneath a translucent, dashed tur
 
 The unified CI job runs Node tests (including preview geometry and compiled-app save invariants), deterministic standalone HTML parity, browser smoke tests and property/building browser QA with a **building-preview** screenshot for each viewport/browser pair. Inspect the PR Actions result before merge; this document does not assert successful tests in advance.
 
-[Versioned 3G-B standalone HTML](../../../dist/mappo-0.1-dev.3gb.html) · [3G-A milestone](MILESTONE_3GA_QA.md) · [Roadmap](../../ROADMAP.md).
+[Versioned 3G-B standalone HTML](../../../dist/mappo-0.1-dev.3gb.html) · [3G-A milestone](MILESTONE_3GA_QA.md) · [Roadmap](../../plans/README.md).

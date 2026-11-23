@@ -32,4 +32,4 @@ Undo is accessible without the deleted property still being selectable. On narro
 
 **Out of scope:** property merging, property splitting, preserving buildings after deletion, moving neighbors or changing road topology, persistent Undo across project reloads.
 
-[Standalone HTML](../../../dist/mappo-0.1-dev.4a.html) · [Roadmap](../../ROADMAP.md)
+[Standalone HTML](../../../dist/mappo-0.1-dev.ui4a.html) · [Roadmap](../../plans/README.md)
