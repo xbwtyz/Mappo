@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Register
 
-> **Status:** Working proposals (not all bugs). Prepared from the published 0.2.0 baseline and `main` commit `799532b6fb35`. This register has **17 assessed limitation IDs** across five groups. `E01` is split into `E01a` (import capacity) and `E01b` (whole-city PNG) for **18 individually tracked GitHub issues**. All future priorities/version targets are provisional except A01 → **0.2.1**. **A01 architectural decisions D-021-1–4 = A/A/A/A are approved; Issue #79 body is published; implementation is not.**
+> **Status: historical candidate register.** This 18-item limitation assessment was originally drafted against published v0.2.0 / `main` commit `799532b6fb35`; the rows below retain original issue classifications and proposed priorities, **not current implementation status**. For merged 0.2.1–0.2.14-dev work and the completed frontage fixes ([PR #128](https://github.com/xbwtyz/Mappo/pull/128), [PR #129](https://github.com/xbwtyz/Mappo/pull/129)), use the [living 0.2.x roadmap](ROADMAP_0_2X.md). Open, deferred and evidence-gated issues still require explicit owner review. Do not mistake this historic baseline for an authorization to implement.
 
 ## Classification rules
 
@@ -11,6 +11,8 @@
 - **New capability:** An extension (e.g., whole-city export) rather than regression; remains a legitimate 0.2.x candidate if owner wants it.
 
 ## Full candidate register
+
+*Historical planning snapshot: the Target column shows original proposals, some of which have since been implemented and merged. Refer to the living roadmap and issue states for current disposition.*
 
 | ID | Proposed issue | Classification | Priority | Target |
 |---|---|---|---|---|
