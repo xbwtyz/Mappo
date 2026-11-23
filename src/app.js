@@ -648,12 +648,12 @@ function syncBuildingTransformUI() {
     ? inspectBuildingPreview(project,session.buildingId,t,Boolean(session.drag),session.draft)
     : {ok:false,status:'idle',issues:[]};
   session.validation = result;
+  const proposed = result.candidate?.city.buildings.find(b => b.id === session.buildingId);
   const details = $('buildingFootprintDetails');
   details.hidden = !session.isDirect && !session.draft;
   if (!details.hidden) {
     const footprint = result.preview ?? session.previewFor(project.city);
     const gross = Math.abs(polygonSignedArea(footprint.footprint));
-    const proposed = result.candidate?.city.buildings.find(b => b.id === session.buildingId);
     details.textContent = 'Footprint '+formatPrecision4C(gross)
       +' · Courtyards '+formatPrecision4C(gross-footprint.area)
       +' · Occupied '+formatPrecision4C(footprint.area)
@@ -679,7 +679,9 @@ function syncBuildingTransformUI() {
     : result.status==='checking'
       ? 'CHECKING · Fast geometry check complete; road access is verified when the drag ends.'
       : result.ok
-        ? 'VALID PLACEMENT · Ready to apply footprint. Project compatibility will be rechecked.'
+        ? result.frontageChanged
+          ? 'VALID PLACEMENT · Entrance moves to side street '+proposed.frontageRoadId+'. See proposed route on the map.'
+          : 'VALID PLACEMENT · Ready to apply footprint. Project compatibility will be rechecked.'
         : 'INVALID PLACEMENT · Apply disabled. '+formatEditIssue4D(result.issues?.[0],{
           buildingId:session.buildingId,propertyId:session.propertyId,
           frontageRoadId:session.source(project.city)?.frontageRoadId
@@ -861,10 +863,14 @@ function c01SyncPanel(rebuild=false) {
     }catch(error){compoundResult={ok:false,issues:[{message:error.message}],preview:null};}
   }else compoundResult=null;
   $('compoundApply').disabled=!group||!compoundResult?.ok;
-  const msg=compoundResult?.ok?'VALID · All compound members can be applied together.'
+  const msg=compoundResult?.ok
+    ? 'VALID · All compound members can be applied together.'+
+      (compoundResult.frontageChanges.length
+        ? ' Side streets: '+compoundResult.frontageChanges.map(row=>row.buildingId+' → '+row.roadId).join(', ')+'.' : '')
     :compoundResult?.issues?.length
       ? 'CANNOT APPLY · '+(compoundResult.issues[0].buildingId?compoundResult.issues[0].buildingId+': ':'')
-        +compoundResult.issues[0].message
+        +(compoundResult.issues[0].code==='access'
+          ? formatEditIssue4D(compoundResult.issues[0]) : compoundResult.issues[0].message)
       : 'Select 2 or more property buildings to create a compound.';
   $('compoundStatus').textContent=msg;
   $('buildingCompoundPanel').setAttribute('data-validation',compoundResult?.ok?'valid':'idle');

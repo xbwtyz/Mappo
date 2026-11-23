@@ -5,7 +5,7 @@ import {validateStoredProject} from '../data/project-validation.js';
 import {normalizeBuildingTransform,buildingTransformDirty} from '../core/building-transform.js';
 import {polygonSignedArea} from '../core/geometry.js';
 import {inspectBuildingGeometry} from '../core/building-validation.js';
-import {deriveOccupiedPlots,reattachFrontage} from './building-application.js';
+import {deriveOccupiedPlots,resolveBuildingAccess} from './building-application.js';
 
 const c01Issue=(code,message,buildingId=null)=>({code,message,buildingId});
 const c01Error=(code,message,buildingId=null,preview=null)=>({
@@ -122,12 +122,17 @@ export function prepareCompoundTransform(project,workspace,propertyId,groupId,tr
       b.plotIds=deriveOccupiedPlots(city,property,b);
       if(!b.plotIds.length)return c01Error('plots','No occupied plot remains.',id,preview);
     }
+    const frontageChanges=[];
+    const originals=new Map(project.city.buildings.map(building=>[building.id,building]));
     for(const id of preview.buildingIds){
       const b=city.buildings.find(item=>item.id===id);
-      const route=reattachFrontage(city,b);
-      if(!route)return c01Error('access','No unobstructed access to the existing frontage road.',id,preview);
-      b.entrance=route.entrance;b.accessPath=route.accessPath;
+      const original=originals.get(id);
+      const {route,issue}=resolveBuildingAccess(city,original,b);
+      if(!route)return {ok:false,status:'invalid',issues:[{...issue,buildingId:id}],candidate:null,preview};
+      b.entrance=route.entrance;b.accessPath=route.accessPath;b.frontageRoadId=route.frontageRoadId;
+      if(b.frontageRoadId!==original.frontageRoadId)
+        frontageChanges.push({buildingId:id,roadId:b.frontageRoadId});
     }
-    return {ok:true,status:'valid',issues:[],candidate:c01RoundTrip(preview.project,workspace),preview};
+    return {ok:true,status:'valid',issues:[],candidate:c01RoundTrip(preview.project,workspace),preview,frontageChanges};
   }catch(error){return c01Error('project',error.message,null,preview);}
 }

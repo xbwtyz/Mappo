@@ -1,3 +1,5 @@
+import { drawProposedBuildingAccess, drawBuildingEditObstruction } from './building-editing.js';
+
 // C01: drawing-only overlay of a detached all-member transform candidate.
 export function drawCompoundPreviewC01(ctx,camera,result) {
   const preview=result?.preview;
@@ -24,5 +26,9 @@ export function drawCompoundPreviewC01(ctx,camera,result) {
       ctx.closePath();ctx.stroke();
     }
   }
+  for(const id of preview.buildingIds) {
+    if(result.ok)drawProposedBuildingAccess(ctx,camera,preview.project.city.buildings.find(building=>building.id===id));
+  }
+  drawBuildingEditObstruction(ctx,camera,preview.project.city,result.issues[0]?.blockerId);
   ctx.restore();
 }
