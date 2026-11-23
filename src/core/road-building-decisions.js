@@ -69,7 +69,9 @@ export function placeRoadConflictBuilding(building, choice, development, permitt
       [0,align,align+Math.PI].map(angle=>({dx:parcelCenter.x-frame.x,dy:parcelCenter.y-frame.y,angle}));
     const plots=property.plotIds.map(id=>plotIndex.get(id));
     for (const transform of transforms) {
-      const moved=transform ? previewBuildingGeometry(building,transform) : {...building};
+      // Object spread strips non-enumerable Schema 10 read-only projections.
+      // Keep the original as a read-only input for an untransformed proposal.
+      const moved=transform ? previewBuildingGeometry(building,transform) : building;
       if (!shapeContained(moved.footprint,property.boundary)) continue;
       const plotIds=roadBuildingOccupiedPlots(moved,plots);
       if (!plotIds.length) continue;
@@ -88,7 +90,9 @@ export function placeRoadConflictBuilding(building, choice, development, permitt
 
       const proposed={...moved,blockId:property.blockId,districtId:property.districtId,
         propertyId:property.id,frontageRoadId:property.frontageRoadId,plotIds,accessPath};
-      const next=building.geometry?writeSimpleBuildingS10(building,proposed):proposed;
+      const next=building.geometry
+        ?writeSimpleBuildingS10(building,{...proposed,footprint:moved.footprint,holes:moved.holes})
+        :proposed;
       property.buildingIds=property.buildingIds.filter(id=>!displaced.has(id)).concat(next.id);
       stampRoadGenerated(property,plots);
       development.buildings=development.buildings.filter(other=>!displaced.has(other.id));

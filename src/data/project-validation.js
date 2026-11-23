@@ -59,7 +59,6 @@ import {
 import { terminalCorridors, polygonIntrudesTerminalCorridor } from '../core/road-terminal-corridors.js';
 import { validateBuildingStructureS10 } from '../core/building-components-s10.js';
 import { occupiedAreaS10, occupiedPlotAreaS10, occupiedRegionsOverlapS10 } from '../core/building-occupancy-s10.js';
-import { hydrateProjectS10 } from '../core/building-project-s10.js';
 
 export const MAX_PROJECT_BYTES = 20 * 1024 * 1024;
 export const MAX_VALIDATION_WORK = 6000000;
@@ -289,7 +288,6 @@ export function validateStoredProject(project) {
   const spend = createValidationBudget();
   requireRecord(project, 'Project');
   if (project.schemaVersion !== PROJECT_SCHEMA_VERSION) throw new Error('Unsupported project schema. Open this file in a newer Mappo build.');
-  hydrateProjectS10(project);
   requireText(project.generatorVersion, 'Generator version', 100);
   requireText(project.seed, 'Seed', 64);
   requireRecord(project.options, 'Generation settings');

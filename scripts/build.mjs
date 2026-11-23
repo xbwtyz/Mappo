@@ -1,5 +1,5 @@
 import { APP_VERSION } from '../src/core/version.js';
-import { readFile, mkdir, writeFile, readdir } from 'node:fs/promises';
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve, join } from 'node:path';
 import { createHash } from 'node:crypto';
 
@@ -33,32 +33,8 @@ const script = "(function(){\n'use strict';\nconst ROAD_JUNCTION_WORKER_SOURCE_P
 const css = await readFile(join(root, 'styles/app.css'), 'utf8');
 const template = (await readFile(join(root, 'index.template.html'), 'utf8')).replaceAll('{{APP_VERSION}}', APP_VERSION);
 if (!template.includes('<!-- INLINE_CSS -->') || !template.includes('<!-- INLINE_JS -->')) throw new Error('HTML template markers missing');
-let html = template.replace('<!-- INLINE_CSS -->', `<style>\n${css}\n</style>`)
+const html = template.replace('<!-- INLINE_CSS -->', `<style>\n${css}\n</style>`)
   .replace('<!-- INLINE_JS -->', `<script>\n${script.replaceAll('</script', '<\\/script')}\n</script>`);
-// TEMPORARY S10-B development snapshot for local regression debugging.
-// Removed before PR is eligible for review/merge, never published in a release.
-async function s10bSnapshot(dir) {
-  const rows = [];
-  for (const entry of await readdir(join(root,dir),{withFileTypes:true})) {
-    const name=dir+'/'+entry.name;
-    if (entry.isDirectory()) rows.push(...await s10bSnapshot(name));
-    else if (entry.isFile() && /\.(?:js|mjs|css|json|html|md|yml)$/.test(name))
-      rows.push([name,await readFile(join(root,name),'utf8')]);
-  }
-  return rows;
-}
-const qaFiles=[
-  ...await s10bSnapshot('src'),
-  ...await s10bSnapshot('tests'),
-  ...await s10bSnapshot('scripts'),
-  ...await s10bSnapshot('styles'),
-  ...await s10bSnapshot('.github'),
-  ['package.json',await readFile(join(root,'package.json'),'utf8')],
-  ['index.template.html',await readFile(join(root,'index.template.html'),'utf8')],
-];
-await mkdir(join(root,'artifacts'),{recursive:true});
-await writeFile(join(root,'artifacts/s10b-qa-source.json'),JSON.stringify(qaFiles));
-html += '\n<!-- S10B-QA-ARCHIVE:' + Buffer.from(JSON.stringify(qaFiles)).toString('base64') + ' -->';
 const distribution = join(root, `dist/mappo-${APP_VERSION}.html`);
 await mkdir(dirname(distribution), { recursive: true });
 await Promise.all([writeFile(distribution, html), writeFile(join(root, 'index.html'), html)]);
