@@ -1344,7 +1344,7 @@ export class RoadInspectionWorkspace {
     const fresh=s.current()&&s.pending&&!s.drag&&!s.checking&&s.settledRevision===s.revision;
     const review=new Map((s.reconciliation?.parcelReview??[]).map(row=>[row.id,row]));
     const problems=(s.reconciliation?.unresolved??[]).filter(row=>row.kind==='property'&&
-      ['parcel-decision-required','parcel-decision-invalid','parcel-corridor-conflict'].includes(row.code));
+      ['parcel-decision-required','parcel-decision-invalid','parcel-corridor-conflict','courtyard-frontage-blocked'].includes(row.code));
     const ids=[...new Set([...review.keys(),...problems.map(x=>x.id),...s.parcelChoices.keys()])];
     const focused=this.comparisonOpen?this.comparisonRecord:this.selectedImpact;
     const visible=this.desktopReview?ids.filter(id=>focused?.kind==='property'&&focused.id===id):ids;

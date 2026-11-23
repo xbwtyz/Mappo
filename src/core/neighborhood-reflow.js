@@ -1,5 +1,7 @@
 import { buildingExteriorRingsS10 } from './building-geometry-adapter-s10.js';
 import { prepareRoadTopologyReflowC3 } from './road-topology-reflow.js';
+import { roadBuildingOccupiedPlots } from './road-building-decisions.js';
+import { resolveBuildingAccess } from '../editor/building-application.js';
 import { reflowGeneratedRoadBuildings } from './road-building-reflow.js';
 import { prepareJunctionIntentC7, prepareRoadIntentC1 } from './road-intent-c1.js';
 import { buildRoadGraph } from './road-graph.js';
@@ -23,6 +25,7 @@ function c2HydrateDraftS10(draft) {
   return {...draft,proposedCity:hydrateCityS10(structuredClone(draft.proposedCity))};
 }
 const C2_PARCEL_LIMIT = 256;
+const c2CourtyardReshapeLabel = 'Reshape property and reconnect courtyard access';
 const rebuildableLandIssues = new Set([
   'road-clearance', 'road-setback', 'block-containment', 'parcel-reflow-blocked',
   'access-reflow-blocked', 'access-decision-required', 'candidate-validation',
@@ -74,6 +77,18 @@ function c2Parcel(city, property, road, edges, fixed) {
   throw new Error('No local parcel envelope fits the new block and its fixed buildings.');
 }
 
+function c2CourtyardFrontageUpdates(city, property, buildings, plots) {
+  return buildings.map(building => {
+    const { route, issue } = resolveBuildingAccess(city, building, building);
+    if (!route || route.frontageRoadId !== property.frontageRoadId)
+      throw new Error('Cannot reconnect ' + building.id + ' to the moved frontage. ' +
+        (issue?.message ?? 'Adjust the road so access can remain on the same street.'));
+    const plotIds = roadBuildingOccupiedPlots(building, plots);
+    if (!plotIds.length) throw new Error('No reshaped plot covers ' + building.id + '.');
+    return { entrance: route.entrance, accessPath: route.accessPath, plotIds };
+  });
+}
+
 export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = prepareRoadIntentC1(project, roadId, offset)) {
   return prepareNeighborhoodReflow(project, roadId, c2HydrateDraftS10(draft), false);
 }
@@ -104,6 +119,8 @@ function reconcileRoadIntent(project,roadId,draft,decisions,options = {}) {
     return preserved;
   const adapted = prepareNeighborhoodReflow(project, roadId, draft, true, analyze, options);
   if (adapted.candidateProject || !draft.facesResolved) return adapted;
+  // A selected local courtyard repair does not authorize a topology replacement.
+  if (adapted.parcelReview?.some(row => row.courtyardAccess && row.selected)) return adapted;
   // If a fixed parcel layout cannot be repaired, try filling the same affected
   // blocks again. Topology reflow independently verifies provenance, protects
   // authored work, retains compatible geometry, and validates the whole result.
@@ -181,7 +198,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
     }).map(node => node.id);
     if (!junctionIds.length) return fail('unchanged-street', 'The offset does not move either street endpoint.');
     const draftBuildings = riIndex(draft.proposedCity.buildings);
-    const replacements = new Map();
+    const replacements = new Map(), courtyardRepairs = new Map();
     const displacedParcels = new Set();
     if (adaptBuildings) for (const row of impact.issues) {
       const building = draftBuildings.get(row.id);
@@ -253,23 +270,43 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
         continue;
       }
       const choice = parcelChoices.get(property.id);
+      const ownBuildings = property.buildingIds.map(id => buildings.get(id));
+      const courtyardIds = new Set();
+      if (changedFrontage) for (const host of ownBuildings) {
+        const occupants = host.geometry?.courtyardAccess?.occupants;
+        if (!occupants?.length) continue;
+        courtyardIds.add(host.id);
+        for (const {buildingId} of occupants) courtyardIds.add(buildingId);
+      }
+      const courtyardBuildings = ownBuildings.filter(building => courtyardIds.has(building.id) &&
+        building.frontageRoadId === property.frontageRoadId);
+      const repairCourtyard = courtyardIds.size > 0 && courtyardBuildings.length === courtyardIds.size;
       if (provenance !== 'generated' && !choice) {
         const road=graph.roadsById.get(property.frontageRoadId);
         const edges=blockEdges.get(property.blockId);
-        const ownBuildings=property.buildingIds.map(id=>buildings.get(id));
         const options=[];
+        let repairFailure;
         if(road && edges?.length && edges.some(row=>row.road?.id===road.id)){
           if(propertyFits(property.boundary,edges.map(row=>row.a),edges))
             options.push({kind:'keep',targetId:null,label:'Keep existing property footprint'});
           try{
             // This is an eligibility preflight, never an Apply authorization.
-            c2Parcel(city,property,road,edges,ownBuildings.flatMap(b=>buildingExteriorRingsS10(b).flat()));
-            options.push({kind:'reshape',targetId:null,label:'Reshape property around fixed buildings'});
-          }catch{}
+            const next = c2Parcel(city,property,road,edges,ownBuildings.flatMap(b=>buildingExteriorRingsS10(b).flat()));
+            if (repairCourtyard) {
+              const local = {...city, properties: city.properties.map(row =>
+                row.id === property.id ? next.property : row)};
+              c2CourtyardFrontageUpdates(local, next.property, courtyardBuildings, next.plots);
+            }
+            options.push({kind:'reshape',targetId:null,label:repairCourtyard
+              ? c2CourtyardReshapeLabel : 'Reshape property around fixed buildings'});
+          } catch (error) {
+            if (repairCourtyard) repairFailure = error.message;
+          }
         }
         parcelReview.push({id:property.id,provenance,options,selected:null});
-        unresolved.push(c2Issue('property', property.id, 'parcel-decision-required',
-          'This parcel has custom or unknown provenance. Choose a compatible preservation option.'));
+        const code = repairFailure && !options.length ? 'courtyard-frontage-blocked' : 'parcel-decision-required';
+        unresolved.push(c2Issue('property', property.id, code,
+          repairFailure ?? 'This parcel has custom or unknown provenance. Choose a compatible preservation option.'));
         continue;
       }
       if (choice && (provenance === 'generated' || !['keep','reshape'].includes(choice.kind) ||
@@ -285,8 +322,10 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
         continue; // Full-project validation determines whether this is safe.
       }
       const road = graph.roadsById.get(property.frontageRoadId);
+      const authorizedCourtyardRepair = repairCourtyard && choice?.kind === 'reshape';
+      if (authorizedCourtyardRepair) parcelReview.push({id:property.id, provenance, selected:choice, courtyardAccess:true,
+        options:[{kind:'reshape',targetId:null,label:c2CourtyardReshapeLabel}]});
       try {
-        const ownBuildings = property.buildingIds.map(id => buildings.get(id));
         const mayAdapt = adaptBuildings && ownBuildings.length &&
           ownBuildings.every(building => classifyRoadProvenance(building) === 'generated');
         const edges = blockEdges.get(property.blockId);
@@ -301,6 +340,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           }
         }
         if (adapt) {
+          if (authorizedCourtyardRepair) throw new Error('The courtyard buildings cannot stay fixed at this road position.');
           if (!mayAdapt) throw new Error('A custom or unknown building needs a decision before it can move.');
           next = c2Parcel(city, property, road, edges, []);
           const proposedPlots = ownPlots.map((plot, i) => ({ ...plot, boundary: next.plots[i].boundary }));
@@ -327,10 +367,15 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           record('plot', plot.id, modified ? 'reshaped' : 'preserved', modified ? ['boundary'] : [], provenance);
         }
         if (provenance === 'generated') stampRoadGenerated(property, ownPlots);
-        else if(choice)archiveParcelChoice028(property.id,'reshape');
+        else if(choice) {
+          archiveParcelChoice028(property.id,'reshape');
+          if (authorizedCourtyardRepair && !adapt)
+            courtyardRepairs.set(property.id, { property, courtyardBuildings, ownPlots });
+        }
         record('property', property.id, choice ? 'authorized-reshape' : 'reshaped', ['boundary', 'frontage', 'frame', 'local', 'area'], provenance);
       } catch (error) {
-        unresolved.push(c2Issue('property', property.id, 'parcel-reflow-blocked', error.message));
+        unresolved.push(c2Issue('property', property.id, authorizedCourtyardRepair
+          ? 'courtyard-frontage-blocked' : 'parcel-reflow-blocked', error.message));
       }
     }
     const inserted = new Set();
@@ -341,6 +386,23 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
       return replacements.get(building.propertyId);
     });
 
+    const repairedAccess = new Set();
+    for (const { property, courtyardBuildings, ownPlots } of courtyardRepairs.values()) {
+      try {
+        const updates = c2CourtyardFrontageUpdates(city, property, courtyardBuildings, ownPlots);
+        courtyardBuildings.forEach((building, index) => {
+          const update = updates[index];
+          const fields = Object.keys(update).filter(key => !riEqual(building[key], update[key]));
+          const provenance = classifyRoadProvenance(building);
+          Object.assign(building, update);
+          repairedAccess.add(building.id);
+          record('building', building.id, fields.length ? 'access-reconnected' : 'preserved', fields, provenance);
+        });
+      } catch (error) {
+        return blocked([c2Issue('property', property.id, 'courtyard-frontage-blocked', error.message)]);
+      }
+    }
+
     const buildingsByBlock = new Map();
     for (const building of city.buildings) {
       if (!changedBlocks.has(building.blockId)) continue;
@@ -348,7 +410,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
       buildingsByBlock.get(building.blockId).push(building);
     }
     for (const building of city.buildings) {
-      if (!changedBlocks.has(building.blockId)) continue;
+      if (!changedBlocks.has(building.blockId) || repairedAccess.has(building.id)) continue;
       const intersectsBuilding = (start, end) => buildingsByBlock.get(building.blockId).some(other =>
         buildingExteriorRingsS10(other).some(ring => ring.some((point, index) =>
           segmentCuts(start, end, point, ring[(index + 1) % ring.length]).some(t => t > 1e-6))));

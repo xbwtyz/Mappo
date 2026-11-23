@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { AcceptedEditHistoryD01 } from '../src/core/accepted-edit-history-d01.js';
+import { distanceToSegment } from '../src/core/boundary.js';
+import { validateCourtyardAccess } from '../src/core/courtyard-access.js';
 import { occupiedPlotAreaS10 } from '../src/core/building-occupancy-s10.js';
 import { prepareJunctionReflowC7 } from '../src/core/neighborhood-reflow.js';
 import { copyJson, createProjectDocument, decodeProjectDocument, encodeProjectDocument } from '../src/data/project-format.js';
@@ -87,7 +89,7 @@ test('Schema 10 mixed city recomputes plot occupancy and blocks a split through 
   assertHistoryAndSave([project, divided]);
 });
 
-test('Schema 10 mixed city validates a nearby junction edit and blocks an unresolved frontage move', () => {
+test('Schema 10 mixed city requires consent to reconnect fixed courtyard buildings after a frontage move', () => {
   const start = JSON.stringify(project);
   const occupant = building(project, occupantId);
   const frontage = project.city.roads.find(road => road.id === occupant.frontageRoadId);
@@ -109,12 +111,36 @@ test('Schema 10 mixed city validates a nearby junction edit and blocks an unreso
   const blocked = prepareJunctionReflowC7(project, junction.id, movedFrontage);
   assert.equal(blocked.candidateProject, null);
   assert.ok(blocked.unresolved.some(issue => issue.id === occupantId && issue.code === 'access-decision-required'));
+  assert.deepEqual(blocked.parcelReview.find(review => review.id === occupant.propertyId).options,
+    [{kind:'reshape',targetId:null,label:'Reshape property and reconnect courtyard access'}]);
   assert.equal(validateRoadApplyC2(project, workspace, {selection:{kind:'junction', id:junction.id},
     point: movedFrontage, buildingDecisions:new Map()}, blocked).ok, false);
   const reshape = new Map([[occupant.propertyId, {kind: 'reshape', targetId: null}]]);
-  const unresolved = prepareJunctionReflowC7(project, junction.id, movedFrontage, new Map(), {parcelChoices: reshape});
-  assert.equal(unresolved.candidateProject, null);
-  assert.ok(unresolved.unresolved.some(issue => issue.id === occupant.propertyId && issue.code === 'parcel-decision-invalid'));
-  assert.equal(JSON.stringify(project), start);
+  const preview = prepareJunctionReflowC7(project, junction.id, movedFrontage, new Map(), {parcelChoices: reshape});
+  assert.ok(preview.candidateProject, JSON.stringify(preview.unresolved));
+  const repaired = candidate(validateRoadApplyC2(project, workspace, {
+    selection: {kind: 'junction', id: junction.id}, point: movedFrontage,
+    buildingDecisions: new Map(), parcelChoices: reshape
+  }, preview));
+  const [a, b] = [frontage.a, frontage.b].map(id => repaired.city.nodes.find(node => node.id === id));
+  for (const id of [hostId, occupantId]) {
+    const original = building(project, id), fixed = building(repaired, id);
+    assert.deepEqual(fixed.geometry, original.geometry);
+    assert.equal(fixed.propertyId, original.propertyId);
+    assert.notDeepEqual(fixed.accessPath, original.accessPath);
+    assert.equal(fixed.frontageRoadId, frontage.id);
+    assert.ok(distanceToSegment(fixed.accessPath.at(-1), a, b) <= 1e-5);
+  }
+  assert.deepEqual(building(repaired, joinedId), building(project, joinedId));
+  validateCourtyardAccess(repaired.city, () => {});
   assertHistoryAndSave([project, roadEdit]);
+  assertHistoryAndSave([project, repaired]);
+
+  const invalidPoint = {...movedFrontage, y: junction.y + 3};
+  const infeasible = prepareJunctionReflowC7(project, junction.id, invalidPoint, new Map(), {parcelChoices: reshape});
+  assert.equal(infeasible.candidateProject, null);
+  assert.ok(infeasible.unresolved.some(issue => /Property boundaries overlap/.test(issue.message)));
+  assert.equal(validateRoadApplyC2(project, workspace, {selection:{kind:'junction', id:junction.id},
+    point: invalidPoint, buildingDecisions:new Map(), parcelChoices:reshape}, infeasible).ok, false);
+  assert.equal(JSON.stringify(project), start);
 });
