@@ -26134,6 +26134,21 @@ function d01MoveHistory(direction) {
           workspaceShell.select({kind:'property',id:owner});
       }
     }
+    // A validated history replay can add/remove/rename a compound. The
+    // membership Inspector's transient form must follow that accepted state;
+    // otherwise the prior group becomes a false "unsaved draft" and blocks
+    // the next chronological Undo/Redo.
+    if(compoundPanelPropertyId){
+      if(!c01ActiveProperty()){
+        compoundPanelPropertyId=null;compoundResult=null;compoundDrag=null;
+        c01SyncPanel();
+      }else{
+        const site=c01ActiveProperty();
+        const group=site.buildingCompounds?.find(g=>g.id===compoundGroupId)
+          ??site.buildingCompounds?.[0];
+        c01SelectGroup(group?.id??'');
+      }
+    }
     requestDraw();
     workspaceChanged();
     $('statusMessage').textContent=acceptedHistoryD01.notice;

@@ -383,6 +383,8 @@ async function exerciseD01(name,engine) {
     assert.equal(await page.evaluate(()=>__d01QA.length()),2);
     assert.equal(await page.evaluate(id=>__buildingQA.state().project.city.properties
       .find(p=>p.id===id).buildingCompounds??null,propertyId),null);
+    assert.equal(await page.evaluate(()=>__d01QA.blocked()),false,
+      'Accepted compound Undo must not resurrect a stale group membership draft');
     await page.locator('#workspaceUndoButton').click();
     assert.equal(JSON.stringify(await readCity(page)),original);
     await page.locator('#workspaceRedoButtonD01').click();
