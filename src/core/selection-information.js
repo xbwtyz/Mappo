@@ -93,7 +93,7 @@ export function buildingInformation(city, building) {
     title: inspectionTitle(building, 'type'),
     sections: [{ title: 'Building summary', rows: [
       ['Building use', inspectionValue(building.type)],
-      ['Footprint shape', inspectionValue(building.shape)],
+      ['Footprint shape', (building.components?.length > 1 ? 'Multiple components' : inspectionValue(building.shape))],
       ['Footprint area', inspectionArea(building.area)],
       ['Occupied plots', inspectionCount(building.plotIds)],
       ['Custom name', building.customName || 'Not set'],

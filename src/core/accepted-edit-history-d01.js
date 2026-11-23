@@ -95,6 +95,14 @@ export function describeAcceptedEditD01(before,after) {
   const courtyardAccessChanged = newBuildings.some(building =>
     (building.geometry?.version === 2 || previousAccess.has(building.id)) &&
     !d01Same(previousAccess.get(building.id), building.geometry?.courtyardAccess));
+  if (buildingIds.length === 1) {
+    const targetId = buildingIds[0];
+    const next = newBuildings.find(b => b.id === targetId);
+    const original = oldBuildings.find(b => b.id === targetId);
+    if (next?.geometry?.version === 3 || original?.geometry?.version === 3 ||
+        !d01Same(next?.components, original?.components))
+      return {family:'building', operation:'building-structure', targetIds:buildingIds, label:'Edit building components'};
+  }
   if(courtyardAccessChanged) return {family:'building',operation:'building-structure',targetIds:buildingIds,
     label:'Edit courtyard access'};
   if(buildingIds.length>1)return {family:'compound',operation:'compound-transform',targetIds:buildingIds,

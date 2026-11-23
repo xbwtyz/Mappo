@@ -1,3 +1,4 @@
+import { buildingExteriorRingsS10 } from '../core/building-geometry-adapter-s10.js';
 import { pointInPolygon } from '../core/geometry.js';
 import { distanceToSegment, clearance, segmentCuts } from '../core/boundary.js';
 import { shapeContained, shapeWellFormed, shapesOverlapInterior } from '../core/building-validation.js';
@@ -39,7 +40,7 @@ function b03RouteVerified(city,building,sourceFrontages=[]){
   for(let k=1;k<path.length;k++){
     const p=path[k-1],q=path[k];
     if(b03AccessDist(p,q)<B03_ACCESS_EPS||b03SegmentEntersPolygon(p,q,building.footprint))return false;
-    if(city.buildings.some(other=>other.id!==building.id&&b03SegmentEntersPolygon(p,q,other.footprint)))
+    if(city.buildings.some(other=>other.id!==building.id&&buildingExteriorRingsS10(other).some(ring => b03SegmentEntersPolygon(p,q,ring))))
       return false;
     if(city.properties.some(prop=>prop.id!==building.propertyId&&
       b03SegmentEntersPolygon(p,q,prop.boundary)))return false;
@@ -69,7 +70,7 @@ function b03ProposeRelocation(city,property,building,roads,sourceFrontages){
       const moved=previewBuildingGeometry(building,{dx,dy,angle});
       if(!shapeWellFormed(moved.footprint)||!shapeContained(moved.footprint,property.boundary)||
         city.buildings.some(other=>other.id!==building.id&&
-          shapesOverlapInterior(moved.footprint,other.footprint)))continue;
+          buildingExteriorRingsS10(other).some(ring => shapesOverlapInterior(moved.footprint,ring))))continue;
       const plotIds=deriveOccupiedPlots(city,property,moved);
       if(!plotIds.length)continue;
       const candidate=b03ProposeRoute(city,{...moved,plotIds},roads,sourceFrontages);
@@ -89,6 +90,10 @@ export function reconcileMergeBuildings026(city,property,roads,originals,approve
     const original=originals.get(id);
     if(!building||!original){
       issues.push({code:'building',targetId:id,message:'Source building identity is missing.'});
+      continue;
+    }
+    if (!building.footprint) {
+      issues.push({code:'building',targetId:id,message:'This frontage repair requires a single-footprint building.'});
       continue;
     }
     if(!shapeContained(building.footprint,property.boundary)){

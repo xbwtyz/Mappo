@@ -1,3 +1,4 @@
+import { buildingExteriorRingsS10 } from '../core/building-geometry-adapter-s10.js';
 import { buildingFrame, transformBuildingPoint } from '../core/building-transform.js';
 import { findCourtyardAccess, resolveCourtyardAccess, rerouteCourtyardOccupants } from '../core/courtyard-access.js';
 import { polygonSignedArea, pointInPolygon } from '../core/geometry.js';
@@ -44,12 +45,17 @@ export function deriveOccupiedPlots(city, property, geometry) {
   });
 }
 
+function b3gcRoutingRoofs(building) {
+  const roots = building.geometry?.regions?.filter(r => r.parentId === null);
+  return roots?.length > 1 ? roots.map(r => r.ring) : buildingExteriorRingsS10(building);
+}
+
 function b3gcRouteBlocker(city, building, door, roadPoint) {
-  if(Math.hypot(roadPoint.x-door.x,roadPoint.y-door.y)<B3GC_ACCESS_EPS ||
-      b3gcRouteCrossesInterior(door,roadPoint,building.footprint))return building;
-  for(const other of city.buildings){
-    if(other.id===building.id)continue;
-    if(b3gcRouteCrossesInterior(door,roadPoint,other.footprint))return other;
+  const crosses = ring => b3gcRouteCrossesInterior(door, roadPoint, ring);
+  if (Math.hypot(roadPoint.x-door.x,roadPoint.y-door.y) < B3GC_ACCESS_EPS ||
+      b3gcRoutingRoofs(building).some(crosses)) return building;
+  for (const other of city.buildings) {
+    if (other.id !== building.id && b3gcRoutingRoofs(other).some(crosses)) return other;
   }
   for(const property of city.properties) {
     if(property.id===building.propertyId)continue;

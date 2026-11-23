@@ -43,6 +43,10 @@ The Schema 10 development build represents building geometry as canonical solid 
 
 Buildings without authored portals use geometry version 1. The version 2 geometry marker requires an S10-C-compatible reader. The S10-B standalone rejects such a project before Apply. Project schema 10, container format 1 and workspace schema 1 are independent and retain their versions. See the [S10-C milestone contract](../plans/0.2x/milestones/schema10-s10c-courtyard-access.md).
 
+### Schema 10 building components
+
+Authored multipart footprints use building geometry version 3. The stored `regions` retain building-scoped IDs and each solid root references a `componentId`. The building’s `components` contain stable `id`, `parentId` and optional `name`. Roots remain disjoint, and the building retains its existing property and frontage records. S10-C rejects geometry version 3 before replacing an active project.
+
 ## Workspace and unfinished edits
 
 `workspace` stores:

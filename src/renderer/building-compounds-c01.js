@@ -9,22 +9,20 @@ export function drawCompoundPreviewC01(ctx,camera,result) {
   ctx.setLineDash([7,4]);
   for(const id of preview.buildingIds) {
     const b=preview.project.city.buildings.find(item=>item.id===id);
-    if(!b?.footprint?.length)continue;
+    if (!b) continue;
+    const rings = b.geometry?.regions.map(r => r.ring) ?? [b.footprint, ...(b.holes ?? [])];
     ctx.beginPath();
-    for(const [i,p] of b.footprint.entries()){
-      const q=camera.worldToScreen(p);
-      if(i===0)ctx.moveTo(q.x,q.y);else ctx.lineTo(q.x,q.y);
+    for (const ring of rings) {
+      ring.forEach((point, index) => {
+        const p = camera.worldToScreen(point);
+        if (index) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y);
+      });
+      ctx.closePath();
     }
-    ctx.closePath();
     ctx.fillStyle=result.ok?'rgba(36,153,115,0.17)':'rgba(210,116,40,0.15)';
     ctx.strokeStyle=result.ok?'#21a57f':'#d27428';
-    ctx.fill();
+    ctx.fill('evenodd');
     ctx.stroke();
-    for(const hole of b.holes??[]){
-      ctx.beginPath();
-      hole.forEach((p,i)=>{const q=camera.worldToScreen(p);if(!i)ctx.moveTo(q.x,q.y);else ctx.lineTo(q.x,q.y);});
-      ctx.closePath();ctx.stroke();
-    }
   }
   for(const id of preview.buildingIds) {
     if(result.ok)drawProposedBuildingAccess(ctx,camera,preview.project.city.buildings.find(building=>building.id===id));

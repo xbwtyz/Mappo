@@ -39,5 +39,8 @@ export function canonicalizeBuildingComponentsS10(components, geometry) {
 export function validateBuildingStructureS10(geometry, components, budget) {
   const canonical=canonicalizeBuildingRegionsS10(geometry,budget);
   const organized=canonicalizeBuildingComponentsS10(components,canonical);
+  if (canonical.version === 3 && !canonical.regions.some(r =>
+    r.parentId === null && r.componentId === organized[0].id))
+    throw Error('The primary component needs an exterior footprint.');
   return {geometry:canonical,components:organized};
 }

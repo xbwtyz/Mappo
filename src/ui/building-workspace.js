@@ -1,3 +1,5 @@
+import { canEditBuildingComponents } from '../editor/building-component-application.js';
+import { findCourtyardAccess } from '../core/courtyard-access.js';
 import { hitBuilding } from '../core/building-selection.js';
 import { workspaceSelectionEqual } from '../core/workspace-state.js';
 import { buildingInformation } from '../core/selection-information.js';
@@ -5,7 +7,7 @@ import { buildingInformation } from '../core/selection-information.js';
 // Building inspection owns only transient view state. Accepted city records,
 // geometry tools and their histories remain owned by their existing modules.
 export class BuildingWorkspace {
-  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, showCourtyardShortcut = () => false, exitEditing = () => false, startReplacement = () => false, deleteBuilding = () => false, focusSelection = () => false, confirmPreviewDiscard = () => true, onSelect = () => {}, draw = () => {} }) {
+  constructor({ shell, getCity, getLayers, getProperties = () => null, getEditSession = () => null, enterEditing = () => false, openComponents = () => false, showCourtyardShortcut = () => false, exitEditing = () => false, startReplacement = () => false, deleteBuilding = () => false, focusSelection = () => false, confirmPreviewDiscard = () => true, onSelect = () => {}, draw = () => {} }) {
     this.shell = shell;
     this.getCity = getCity;
     this.getLayers = getLayers;
@@ -40,16 +42,21 @@ export class BuildingWorkspace {
           shortLabel: editing ? 'Exit building editing' : 'Edit footprint',
           primary: true, run: () => editing ? this.exitEditing() : this.enterEditing(id),
         };
-        const courtyard = !editing && showCourtyardShortcut()
+        const courtyard = building.footprint && !editing && showCourtyardShortcut()
           ? { label: 'Edit courtyard', run: () => this.enterEditing(id, 'courtyard') } : null;
         const replace = { label: 'Replace building (preview)', shortLabel: 'Preview replacement',
           run: () => this.startReplacement(property?.id, id) };
         const remove = { label: 'Delete building…', danger: true, run: () => this.deleteBuilding(property?.id, id) };
         const locate = { label: 'Zoom to this building', shortLabel: 'Locate',
           run: () => this.focusSelection({ kind: 'building', id: building.id }) };
-        const actions = [footprint, ...(courtyard ? [courtyard] : [])];
+        const components = canEditBuildingComponents(building) &&
+          !findCourtyardAccess(this.getCity(), id)
+          ? {label: 'Edit building components', shortLabel:'Edit components', primary: !building.footprint,
+            run: () => openComponents(building)} : null;
+        const actions = [building.footprint ? footprint : null, courtyard, components].filter(Boolean);
+        const management = building.footprint ? [replace, remove] : [remove];
         information.sections.push(
-          { title: 'Building footprint editing', actions: [...actions, replace, remove] },
+          { title: 'Building footprint editing', actions: [...actions, ...management] },
           { title: 'Map navigation', actions: [locate] },
         );
         return {
@@ -57,7 +64,7 @@ export class BuildingWorkspace {
           description: 'Details from the current city. Footprint area excludes open courtyard space.',
           sections: information.sections,
           quickInspector: {
-            subtitle: building.id, actions, more: [replace, remove], parent, locate,
+            subtitle: building.id, actions, more: management, parent, locate,
             detailsTitle: 'Footprint, plots & access', facts,
           }
         };

@@ -1,3 +1,4 @@
+import { buildingExteriorRingsS10 } from '../core/building-geometry-adapter-s10.js';
 import { inspectPropertyMerge026, preparePropertyMerge026 } from './property-merge-026.js';
 import { copyJson,createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
@@ -54,7 +55,7 @@ export function inspectPropertyMergeE3(project,session){
   if(members.size!==geometry.buildingIds.length)
     issues.push(e3MergeIssue('building','The source building lists overlap.'));
   for(const building of project.city.buildings.filter(b=>members.has(b.id))){
-    if(!shapeContained(building.footprint,geometry.union)||
+    if(buildingExteriorRingsS10(building).some(ring => !shapeContained(ring, geometry.union))||
       !Array.isArray(building.plotIds)||!building.plotIds.length||
       building.plotIds.some(id=>!plotIds.has(id)))
       issues.push(e3MergeIssue('building','Building '+building.id+' lacks verifiable footprint or plot membership.',building.id));

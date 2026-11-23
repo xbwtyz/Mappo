@@ -1,3 +1,5 @@
+import { buildingExteriorRingsS10, buildingPrimaryRouteViewS10 } from '../core/building-geometry-adapter-s10.js';
+import { occupiedAreaS10 } from '../core/building-occupancy-s10.js';
 import { rerouteCourtyardOccupants } from '../core/courtyard-access.js';
 // C01: property-owned linked compounds. Each child remains an independent
 // schema-9 building; compound relationships never overwrite authored geometry.
@@ -76,7 +78,7 @@ function c01Members(project,propertyId,groupId) {
 }
 export function compoundTransformFrame(project,propertyId,groupId) {
   const {members}=c01Members(project,propertyId,groupId);
-  const pts=members.flatMap(b=>b.footprint);
+  const pts=members.flatMap(b=>buildingExteriorRingsS10(b).flat());
   const minX=Math.min(...pts.map(p=>p.x)),maxX=Math.max(...pts.map(p=>p.x));
   const minY=Math.min(...pts.map(p=>p.y)),maxY=Math.max(...pts.map(p=>p.y));
   return {x:(minX+maxX)/2,y:(minY+maxY)/2,width:maxX-minX,height:maxY-minY};
@@ -95,6 +97,12 @@ export function previewCompoundTransform(project,propertyId,groupId,input={}) {
   const originalIds=new Set(members.map(b=>b.id));
   proposed.city.buildings=proposed.city.buildings.map(b=>{
     if(!originalIds.has(b.id))return b;
+    if (b.geometry?.version === 3) {
+      for (const region of b.geometry.regions) region.ring = region.ring.map(map);
+      b.orientation += transform.angle;
+      b.area = occupiedAreaS10(b.geometry);
+      return b;
+    }
     const footprint=b.footprint.map(map);
     const holes=b.holes.map(h=>h.map(map));
     const changes={
@@ -119,6 +127,7 @@ export function prepareCompoundTransform(project,workspace,propertyId,groupId,tr
     for(const id of preview.buildingIds){
       // All proposed footprints are already in the same detached city before
       // we check collisions, so member iteration order cannot change validity.
+      if (city.buildings.find(b => b.id === id).geometry?.version === 3) continue;
       const check=inspectBuildingGeometry(city,id,{});
       if(!check.ok)return c01Error('geometry',check.issues[0].message,id,preview);
     }
@@ -133,7 +142,8 @@ export function prepareCompoundTransform(project,workspace,propertyId,groupId,tr
     for(const id of preview.buildingIds){
       const b=city.buildings.find(item=>item.id===id);
       const original=originals.get(id);
-      const {route,issue}=resolveBuildingAccess(city,original,b);
+      const routeView = b.geometry?.version === 3 ? buildingPrimaryRouteViewS10(b) : b;
+      const {route,issue}=resolveBuildingAccess(city,original,routeView);
       if(!route)return {ok:false,status:'invalid',issues:[{...issue,buildingId:id}],candidate:null,preview};
       b.entrance=route.entrance;b.accessPath=route.accessPath;b.frontageRoadId=route.frontageRoadId;
       if(b.frontageRoadId!==original.frontageRoadId)

@@ -1,3 +1,5 @@
+import { canEditBuildingComponents, prepareBuildingComponents } from './editor/building-component-application.js';
+import { BuildingComponentControls, initialBuildingComponentDraft } from './ui/building-component-controls.js';
 import { CourtyardPlacementControls } from './ui/courtyard-placement-controls.js';
 // A1 foundation APIs are bundled for the later road inspector; no editor hooks yet.
 import { buildRoadGraph, analyzeRoadGraph, proposeJunctionMove } from './core/road-graph.js';
@@ -961,6 +963,30 @@ function startStructurePlacement3H(propertyId,buildingId=null) {
     return started;
   }catch(error){$('statusMessage').textContent='Cannot start building placement: '+error.message;return false;}
 }
+function componentEditorBuilding() {
+  return project?.city.buildings.find(b => b.id === buildingPlacementSession?.buildingId);
+}
+
+function openBuildingComponentEditor(building) {
+  if (!canEditBuildingComponents(building) || !startStructurePlacement3H(building.propertyId)) return false;
+  const session = buildingPlacementSession;
+  const property = session.property(project.city);
+  Object.assign(session.active, {operation:'components', buildingId:building.id,
+    componentDraft:initialBuildingComponentDraft(property)});
+  updateMapIndicators();
+  requestDraw();
+  return true;
+}
+
+function prepareComponentPlacement(project, workspace, request) {
+  const draft = request.componentDraft;
+  return prepareBuildingComponents(project, workspace, request.buildingId, {...draft,
+    transform:{dx:draft.dx, dy:draft.dy, angle:draft.angle * Math.PI / 180,
+      scaleX:draft.scaleX / 100, scaleY:draft.scaleY / 100}});
+}
+
+const buildingComponentControls = new BuildingComponentControls($, () => buildingPlacementSession,
+  componentEditorBuilding, () => {syncBuildingStructureUI3H(); requestDraw();});
 const courtyardPlacementControls = new CourtyardPlacementControls($, () => project?.city, () => {
   syncBuildingStructureUI3H();
   requestDraw();
@@ -1002,9 +1028,12 @@ function syncBuildingStructureUI3H() {
     : '';
   if(!shown)return;
   courtyardPlacementControls.sync(project.city, session);
+  const componentMode = session.operation === 'components';
+  $('structureComponentEditor').hidden = !componentMode;
   const portalOnly = Boolean(session.active.courtyard?.only && session.active.courtyard.hostId);
   for (const id of ['structureFootprintFields', 'structurePreviewMeasurements4C', 'structurePlacementNudges', 'structurePlacementKeys'])
-    $(id).hidden = portalOnly;
+    $(id).hidden = portalOnly || componentMode;
+  if (componentMode) buildingComponentControls.sync(componentEditorBuilding());
   const spec=session.spec;
   const structureMeasure=placementMeasurements4C(project.city,session);
   $('structurePreviewMeasurements4C').textContent=structureMeasure
@@ -1012,7 +1041,7 @@ function syncBuildingStructureUI3H() {
       ' · Area '+formatPrecision4C(structureMeasure.area)+' · Position '+formatPrecision4C(structureMeasure.u)+
       ', '+formatPrecision4C(structureMeasure.v) : 'Adjust your draft to preview its measurements.';
   const replacing = session.operation === 'replace';
-  $('structureModeTitle').textContent = portalOnly ? 'EDIT COURTYARD PORTALS' : replacing ? 'REPLACE BUILDING' : 'PLACE NEW BUILDING';
+  $('structureModeTitle').textContent = componentMode ? 'EDIT BUILDING COMPONENTS' : portalOnly ? 'EDIT COURTYARD PORTALS' : replacing ? 'REPLACE BUILDING' : 'PLACE NEW BUILDING';
   $('structureReplaceConsent').hidden = !replacing || !spec.preset;
   $('structureReplaceGeometry').checked = Boolean(session.active.replaceGeometry);
   $('structureReplaceGeometry').disabled = Boolean(session.drag);
@@ -1025,6 +1054,7 @@ function syncBuildingStructureUI3H() {
     structurePreset:spec.preset,structureType:spec.type
   })) $(id).value=typeof value==='number'?String(Number(value.toFixed(2))):value;
   const result = session.drag ? {ok:false,status:'checking',issues:[]}
+    : componentMode ? prepareComponentPlacement(project,captureWorkspace().workspace,session.active)
     : !portalOnly && !spec.preset ? {ok:false,status:'idle',issues:[]}
     : prepareBuildingStructure3H(project,captureWorkspace().workspace,session.active);
   session.validation=result;
@@ -1041,11 +1071,12 @@ function syncBuildingStructureUI3H() {
     });return el;
   }));
   $('structureStatus').textContent = result.status === 'idle'
-    ? 'Choose a footprint preset to preview it against the existing outline.'
+    ? componentMode ? 'Choose a component and make a change.' : 'Choose a footprint preset to preview it against the existing outline.'
     : result.status==='checking'
     ? 'CHECKING · Complete placement validation runs when movement ends.'
     : result.ok ? (consentNeeded
       ? 'Review the proposed footprint on the map and confirm the replacement.'
+      : componentMode ? 'VALID · Apply the component changes to this building.'
       : portalOnly ? 'VALID · Apply the portal changes to the selected property.'
         : 'VALID · This building can be applied to the selected property.')
     : 'INVALID · Apply disabled. '+formatEditIssue4D(result.issues?.[0],{
@@ -1063,7 +1094,9 @@ function applyStructurePlacement3H() {
     || (selection.kind==='building' && selection.id!==session.buildingId)
     || !['property','building'].includes(selection.kind))return false;
   const previous=project,request={...session.active,spec:{...session.spec}};
-  const result=prepareBuildingStructure3H(previous,captureWorkspace().workspace,request);
+  const workspace = captureWorkspace().workspace;
+  const result = request.operation === 'components' ? prepareComponentPlacement(previous,workspace,request)
+    : prepareBuildingStructure3H(previous,workspace,request);
   if(!result.ok){
     session.validation=result;syncBuildingStructureUI3H();return false;
   }
@@ -1077,11 +1110,13 @@ function applyStructurePlacement3H() {
     buildingHistory.clear();
     session.stop();
     updateDetails();
-    workspaceShell.select({kind:'property',id:request.propertyId});
+    workspaceShell.select(request.operation === 'components' ? {kind:'building',id:request.buildingId}
+      : {kind:'property',id:request.propertyId});
     workspaceShell.refresh();
     requestDraw();
     workspaceChanged();
-    $('statusMessage').textContent = action === 'courtyard portal changes'
+    $('statusMessage').textContent = action === 'components' ? 'Applied building component changes.'
+      : action === 'courtyard portal changes'
       ? 'Applied courtyard portal changes. Download a project to keep them.'
       : 'Applied '+request.operation+' for '+request.buildingId+'. Download a project to keep it.';
     return true;
@@ -2220,6 +2255,7 @@ buildingWorkspace = new BuildingWorkspace({
   getProperties: () => propertyWorkspace,
   getEditSession: () => buildingEditSession,
   enterEditing: enterBuildingEditing,
+  openComponents: openBuildingComponentEditor,
   showCourtyardShortcut: () => Boolean(desktopPlaceEditor?.media?.matches),
   exitEditing: exitBuildingEditing,
   startReplacement: (propertyId,id) => startStructurePlacement3H(propertyId,id),
@@ -2314,6 +2350,8 @@ desktopPlaceEditor = new DesktopPlaceEditor({
   getTitle: (panelId, fallback) => {
     if (panelId === 'buildingTransformPanel' && buildingEditSession.tool === 'courtyard')
       return 'Edit courtyard';
+    if (panelId === 'buildingStructurePanel' && buildingPlacementSession.operation === 'components')
+      return 'Edit building components';
     if (panelId === 'buildingStructurePanel' && buildingPlacementSession.active?.courtyard?.only)
       return 'Edit courtyard portals';
     if (panelId === 'buildingStructurePanel' && buildingPlacementSession.operation === 'replace')
@@ -2844,6 +2882,10 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
     return; // Never switch selection or commit geometry while previewing land.
   }
   if (buildingPlacementSession?.isActive) {
+    if (buildingPlacementSession.operation === 'components') {
+      buildingComponentControls.choosePoint(point);
+      return;
+    }
     const property=buildingPlacementSession.property(project?.city);
     if(property && !buildingPlacementSession.active.courtyard?.only && pointInPolygon(point,property.boundary)) {
       const local=buildingLocalPoint3H(property,point);

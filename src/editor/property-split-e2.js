@@ -1,3 +1,4 @@
+import { buildingExteriorRingsS10 } from '../core/building-geometry-adapter-s10.js';
 import { copyJson,createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { pointInPolygon, polygonSignedArea } from '../core/geometry.js';
@@ -102,7 +103,9 @@ export function inspectPropertySplitE2(project,session){
     issues.push(e2Issue('frontage','The accepted property has no verifiable frontage frame.',source.id));
   const sides=new Map();
   for(const building of buildings){
-    const left=shapeContained(building.footprint,g.left),right=shapeContained(building.footprint,g.right);
+    const roofs = buildingExteriorRingsS10(building);
+    const left = roofs.every(ring => shapeContained(ring, g.left));
+    const right = roofs.every(ring => shapeContained(ring, g.right));
     if(left===right){
       issues.push(e2Issue('building','Building '+(building.customName||building.id)+' crosses or touches the split ambiguously. Move the line instead.',building.id));continue;
     }

@@ -3,6 +3,10 @@ import { lerpPoint } from '../core/boundary.js';
 export function drawBuildingStructurePreview3H(ctx,camera,city,layers,session) {
   if (!session?.isActive || layers?.buildings===false)return;
   const property=city?.properties.find(p=>p.id===session.propertyId);
+  if (session.operation === 'components') {
+    drawComponentPlacement(ctx, camera, city, session);
+    return;
+  }
   const geometry=session.previewFor(city);
   if (!property) return;
   const trace=points=>{
@@ -106,6 +110,40 @@ function drawCourtyardPlacementPreview(ctx, camera, city, session) {
     });
     ctx.strokeStyle = '#fff4d2';ctx.lineWidth = 4;ctx.stroke();
     ctx.strokeStyle = '#176e8a';ctx.lineWidth = 2;ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawComponentPlacement(ctx, camera, city, session) {
+  const building = city.buildings.find(b => b.id === session.buildingId);
+  if (!building) return;
+  const result = session.validation;
+  const regions = result?.preview?.geometry.regions ?? building.geometry.regions;
+  const active = result?.preview?.activeId ?? session.active.componentDraft.componentId;
+  const byId = new Map(regions.map(region => [region.id, region]));
+  const trace = (points, close) => {
+    points.forEach((point, index) => {
+      const screen = camera.worldToScreen(point);
+      if (index) ctx.lineTo(screen.x, screen.y); else ctx.moveTo(screen.x, screen.y);
+    });
+    if (close) ctx.closePath();
+  };
+  ctx.save();
+  for (const region of regions) {
+    const componentId = region.componentId ?? byId.get(region.parentId)?.componentId;
+    ctx.strokeStyle = result?.status === 'invalid' ? '#cb5143' : '#287fa0';
+    ctx.lineWidth = !active || active === componentId ? 3 : 1.5;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    trace(region.ring, true);
+    ctx.stroke();
+  }
+  if (result?.preview?.accessPath) {
+    ctx.strokeStyle = '#176e8a';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    trace(result.preview.accessPath, false);
+    ctx.stroke();
   }
   ctx.restore();
 }

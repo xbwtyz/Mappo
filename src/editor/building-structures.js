@@ -79,7 +79,7 @@ export class BuildingPlacementSession3H {
   start(city,propertyId,buildingId=null) {
     const property=city?.properties.find(p=>p.id===propertyId);
     const source=buildingId?city?.buildings.find(b=>b.id===buildingId&&b.propertyId===propertyId):null;
-    if(!property || (buildingId && !source))return false;
+    if(!property || (buildingId && !source?.footprint))return false;
     this.acceptedCity=city;
     this.active={operation:buildingId?'replace':'add',propertyId,
       buildingId:buildingId??newBuildingId3H(city),spec:defaultBuildingSpec3H(property,source)};
@@ -98,7 +98,7 @@ export class BuildingPlacementSession3H {
   }
   property(city){return city?.properties.find(p=>p.id===this.propertyId)??null;}
   previewFor(city) {
-    if(!this.active)return null;
+    if(!this.active || this.operation === 'components')return null;
     const existingType = this.operation === 'replace' ? city.buildings.find(b => b.id === this.buildingId)?.type : undefined;
     try{return makeBuildingShape3H(this.property(city),this.spec,existingType);}catch{return null;}
   }
@@ -118,6 +118,8 @@ export function prepareBuildingStructure3H(project,workspace,request,{quick=fals
     return issue('id','New building identifier must be unique.');
   if(operation!=='add' && (!existing || existing.propertyId!==propertyId))
     return issue('target','The target building is not on this property.',buildingId);
+  if (operation === 'replace' && !existing.footprint)
+    return issue('geometry','Use Edit building components to change a multipart footprint.');
   let geometry=null;
   if(operation!=='delete' && !portalOnly) {
     try{geometry=makeBuildingShape3H(property,spec,operation === 'replace' ? existing.type : undefined);}

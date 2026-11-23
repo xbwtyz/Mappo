@@ -50,7 +50,7 @@ export class BuildingEditSession {
     if (!city || layers?.buildings === false || typeof id !== 'string') return null;
     const building = city.buildings?.find(item => item.id === id);
     const property = city.properties?.find(item => item.id === building?.propertyId);
-    if (!building || !property || !(property.buildingIds ?? []).includes(id)) return null;
+    if (!building?.footprint || !property || !(property.buildingIds ?? []).includes(id)) return null;
     if (propertyId !== null && property.id !== propertyId) return null;
     return { buildingId: id, propertyId: property.id };
   }
