@@ -791,6 +791,9 @@ function c01SelectGroup(id) {
       ['compoundScaleX',100],['compoundScaleY',100]])$(input).value=String(value);
   compoundResult=null;
   c01SyncPanel(true);
+  // A committed membership/transform is a structure history action.
+  // Re-evaluate its local buttons after clearing the now-accepted draft.
+  syncBuildingStructureUI3H();
   updateUndoFeedback();
   requestDraw();
 }
