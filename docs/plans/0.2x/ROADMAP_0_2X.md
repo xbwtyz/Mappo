@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Living dependency roadmap, reconciled November 22, 2026.** Development milestones 0.2.1–0.2.11 have merged into `main`. 0.2.12 E01b is in owner-authorized implementation. Stable release remains v0.2.0. Merge, release and Pages require separate approval.
+> **Living dependency roadmap, reconciled November 22, 2026.** Development milestones 0.2.1–0.2.12 have merged into `main`. Stable release remains v0.2.0. Merge, release and Pages require separate approval.
 
 ## Problem and intended outcome
 
@@ -21,7 +21,8 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **0.2.9 C02 multi-operation building drafts** | [#105](https://github.com/xbwtyz/Mappo/issues/105) | Merged [PR #119](https://github.com/xbwtyz/Mappo/pull/119); [post-merge CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45077771390); issue closed |
 | **0.2.10 C01 compound building groups** | [#104](https://github.com/xbwtyz/Mappo/issues/104) | Merged [PR #120](https://github.com/xbwtyz/Mappo/pull/120); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45080212898); issue closed |
 | **0.2.11 D01 unified session edit history** | [#106](https://github.com/xbwtyz/Mappo/issues/106) | Merged [PR #123](https://github.com/xbwtyz/Mappo/pull/123); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45092420094); issue closed |
-| **0.2.12 E01b whole-city PNG export** | [#110](https://github.com/xbwtyz/Mappo/issues/110) | [Architecture and P1–P5 implementation approved](MILESTONE_0_2_12_WHOLE_CITY_PNG.md); separate merge approval pending |
+| **0.2.12 E01b whole-city PNG export** | [#110](https://github.com/xbwtyz/Mappo/issues/110) | Merged [PR #124](https://github.com/xbwtyz/Mappo/pull/124); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45095188784); issue closed. [Milestone](MILESTONE_0_2_12_WHOLE_CITY_PNG.md) |
+| **0.2.13-dev import message maintenance** | [#109](https://github.com/xbwtyz/Mappo/issues/109) | Clarify that the 20 MiB maximum is inclusive. Capacity expansion remains pending evidence. |
 | Following candidates | E01a, D02/D03, C01 follow-ups | Unassigned / owner architecture review required |
 
 ## Progress and intended delivery waves
@@ -34,8 +35,8 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **4 — Parcel operations** | B02 splits, B03 merges, B04 plot partitions, B05 custom-parcel decisions | B01 → B02/B03/B04 → B05 | **B02–B05 merged as 0.2.5–0.2.8** | High per issue |
 | **5 — Structural edits** | C02 multi-step building drafts, C01 compound structures | C02 merged 0.2.9; C01 0.2.10 approved property-owned linked compounds | C01 merged 0.2.10 | Medium / high |
 | **6 — Editing history** | D01 chronological Undo/Redo | After 0.2.10 | Session history merged in 0.2.11; persistent history deferred | High |
-| **7 — Whole-city export** | E01b bounded whole-city PNG | Validate supported sizes on Large maps | 0.2.12 implementation approved | Moderate |
-| **8 — Evidence-triggered improvements** | D02 frame hitches, D03 capacity, E01a import cap | When reproducible need and support targets are established | Unassigned | Small audit → high implementation |
+| **7 — Whole-city export** | E01b bounded whole-city PNG | Validated supported sizes on Large maps | Merged as 0.2.12 | Moderate |
+| **8 — Evidence-triggered improvements** | D02 frame hitches, D03 capacity, E01a import cap | D03 sampled Large cities and found no road-reflow or import cap hits | Capacity changes deferred pending reproducible need | Small audit → high implementation |
 | **Policy decisions outside this sequence** | A02 disconnected networks, A04 protected edits, A05 true curves | Scope after product decisions; no automatic version promise | Unassigned | Very high or schema-sensitive |
 
 Prioritization is a dependency guide, **not** a commitment to 0.2.2, 0.2.3, etc. We may split high-risk items across multiple 0.2.x releases or defer them if the cost exceeds user value. Preserve a stable, usable editor at each release gate.
