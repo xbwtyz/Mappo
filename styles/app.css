@@ -1042,15 +1042,15 @@
 .workspace-history-d01 li{white-space:normal;overflow-wrap:anywhere}
 .workspace-history-d01 p{margin:5px 0;color:var(--text-muted,#77818c);font-size:11px}
 
-#structureCourtyardAccess {
+#structureCourtyardAccess, #structureComponentEditor {
   min-width: 0;
   margin: .75rem 0;
   padding: .5rem .65rem .65rem;
 }
-#structureCourtyardAccess legend {
+#structureCourtyardAccess legend, #structureComponentEditor legend {
   padding: 0 .3rem;
   font-weight: 600;
 }
-#structureCourtyardAccess select {
+#structureCourtyardAccess select, #structureComponentEditor select {
   max-width: 100%;
 }

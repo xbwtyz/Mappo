@@ -24,9 +24,9 @@ export function copyJson(value) {
   if(detached?.schemaVersion===10 && detached.city) hydrateProjectS10(detached);
   else if(detached?.project?.schemaVersion===10) hydrateProjectS10(detached.project);
   else if(Array.isArray(detached?.buildings)) hydrateCityS10(detached);
-  else if([1, 2].includes(detached?.geometry?.version) && Array.isArray(detached?.components)) hydrateBuildingS10(detached);
+  else if([1, 2, 3].includes(detached?.geometry?.version) && Array.isArray(detached?.components)) hydrateBuildingS10(detached);
   else if(Array.isArray(detached)) detached.forEach(x=>{
-    if([1, 2].includes(x?.geometry?.version) && Array.isArray(x?.components))hydrateBuildingS10(x);
+    if([1, 2, 3].includes(x?.geometry?.version) && Array.isArray(x?.components))hydrateBuildingS10(x);
   });
   return detached;
 }

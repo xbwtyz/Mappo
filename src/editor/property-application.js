@@ -1,3 +1,4 @@
+import { buildingExteriorRingsS10 } from '../core/building-geometry-adapter-s10.js';
 import { polygonSignedArea } from '../core/geometry.js';
 import { inspectFlexiblePlot027,prepareFlexiblePlot027 } from './plot-application-027.js';
 import { shapeWellFormed, shapeContained, shapesOverlapInterior } from '../core/building-validation.js';
@@ -112,7 +113,7 @@ export function inspectPropertyEdit3I(project,session){
     giIssue(issues,'tiling','Plot subdivisions do not completely cover the property.');
   for(const building of city.buildings){
     if(building.propertyId!==property.id)continue;
-    if(!shapeContained(building.footprint,polygon)){
+    if(buildingExteriorRingsS10(building).some(ring => !shapeContained(ring, polygon))){
       giIssue(issues,'building','Building '+building.id+' would extend outside the edited property.',building.id);
       break;
     }

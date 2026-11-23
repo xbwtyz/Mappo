@@ -694,6 +694,28 @@
             <label>Depth <input id="structureDepth" type="number" min="2" max="250" step="0.5"></label>
             <label>Angle ° <input id="structureAngle" type="number" min="-360" max="360" step="1"></label>
           </div>
+          <fieldset id="structureComponentEditor" hidden>
+            <legend>Building components</legend>
+            <div class="building-transform-values">
+              <label>Target <select id="componentTarget"></select></label>
+              <label>Action <select id="componentAction"></select></label>
+              <label id="componentNameRow" hidden>Name <input id="componentName" type="text" maxlength="80"></label>
+              <label id="componentParentRow" hidden>Parent <select id="componentParent"></select></label>
+            </div>
+            <div id="componentTransformFields" class="building-transform-values">
+              <label>X offset <input id="componentOffsetX" type="number" step=".5"></label>
+              <label>Y offset <input id="componentOffsetY" type="number" step=".5"></label>
+              <label>X scale % <input id="componentScaleX" type="number" min="20" max="400" step="5"></label>
+              <label>Y scale % <input id="componentScaleY" type="number" min="20" max="400" step="5"></label>
+            </div>
+            <div id="componentRectangleFields" class="building-transform-values" hidden>
+              <label>Center X <input id="componentCenterX" type="number" step=".5"></label>
+              <label>Center Y <input id="componentCenterY" type="number" step=".5"></label>
+              <label>Width <input id="componentWidth" type="number" min="2" max="250" step=".5"></label>
+              <label>Depth <input id="componentDepth" type="number" min="2" max="250" step=".5"></label>
+            </div>
+            <div id="componentAngleRow" class="building-transform-values"><label>Angle ° <input id="componentAngle" type="number" step="1"></label></div>
+          </fieldset>
           <fieldset id="structureCourtyardAccess" hidden>
             <legend>Courtyard access</legend>
             <div class="building-transform-values">

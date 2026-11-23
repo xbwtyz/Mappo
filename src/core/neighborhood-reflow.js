@@ -1,3 +1,4 @@
+import { buildingExteriorRingsS10 } from './building-geometry-adapter-s10.js';
 import { prepareRoadTopologyReflowC3 } from './road-topology-reflow.js';
 import { reflowGeneratedRoadBuildings } from './road-building-reflow.js';
 import { prepareJunctionIntentC7, prepareRoadIntentC1 } from './road-intent-c1.js';
@@ -262,7 +263,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
             options.push({kind:'keep',targetId:null,label:'Keep existing property footprint'});
           try{
             // This is an eligibility preflight, never an Apply authorization.
-            c2Parcel(city,property,road,edges,ownBuildings.flatMap(b=>b.footprint));
+            c2Parcel(city,property,road,edges,ownBuildings.flatMap(b=>buildingExteriorRingsS10(b).flat()));
             options.push({kind:'reshape',targetId:null,label:'Reshape property around fixed buildings'});
           }catch{}
         }
@@ -293,7 +294,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
         let adapt = displacedParcels.has(property.id);
         if (!adapt) {
           try {
-            next = c2Parcel(city, property, road, edges, ownBuildings.flatMap(building => building.footprint));
+            next = c2Parcel(city, property, road, edges, ownBuildings.flatMap(building => buildingExteriorRingsS10(building).flat()));
           } catch (error) {
             if (!mayAdapt) throw error;
             adapt = true;
@@ -349,8 +350,8 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
     for (const building of city.buildings) {
       if (!changedBlocks.has(building.blockId)) continue;
       const intersectsBuilding = (start, end) => buildingsByBlock.get(building.blockId).some(other =>
-        other.footprint.some((point, index) => segmentCuts(start, end, point,
-          other.footprint[(index + 1) % other.footprint.length]).some(t => t > 1e-6)));
+        buildingExteriorRingsS10(other).some(ring => ring.some((point, index) =>
+          segmentCuts(start, end, point, ring[(index + 1) % ring.length]).some(t => t > 1e-6))));
       if (replacements.has(building.propertyId)) {
         if (intersectsBuilding(...building.accessPath))
           unresolved.push(c2Issue('building', building.id, 'access-reflow-blocked',

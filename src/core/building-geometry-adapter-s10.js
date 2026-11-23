@@ -53,3 +53,22 @@ export function projectSimpleBuildingS10(geometry,components) {
   const footprint=s10AdapterCloneRing(roots[0].ring);
   return {ok:true,footprint,holes,area:occupiedAreaS10(valid)};
 }
+
+// The separate roots share one owner. Callers that need containment or
+// bounds must inspect every exterior rather than flattening the building.
+export function buildingExteriorRingsS10(building) {
+  if (Array.isArray(building?.footprint)) return [building.footprint];
+  return building?.geometry?.regions.filter(r => r.parentId === null).map(r => r.ring) ?? [];
+}
+
+export function buildingPrimaryRouteViewS10(building) {
+  const main = building.components?.find(c => c.parentId === null);
+  const roof = building.geometry?.regions.find(r => r.parentId === null && r.componentId === main?.id);
+  if (!roof) throw Error('The primary component needs a footprint for street access.');
+  return {...building, footprint: roof.ring};
+}
+
+export function hasSimpleBuildingFootprintS10(building) {
+  if (Array.isArray(building?.footprint)) return true;
+  return Boolean(building?.geometry && projectSimpleBuildingS10(building.geometry, building.components).ok);
+}

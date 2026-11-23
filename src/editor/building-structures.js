@@ -1,3 +1,5 @@
+import { hasSimpleBuildingFootprintS10 } from '../core/building-geometry-adapter-s10.js';
+import { simpleBuildingViewS10 } from '../core/building-transform.js';
 import { editCourtyardPlacement, detachCourtyardBuilding } from './courtyard-placement.js';
 import { BUILDING_USE_TYPES } from '../core/identity.js';
 import { polygonSignedArea } from '../core/geometry.js';
@@ -30,7 +32,7 @@ export function defaultBuildingSpec3H(property,source=null) {
     depth:Math.min(5,Math.max(3,local.depth*.35)),
     angle:0,preset:'rectangle',type:'house'
   };
-  const pts=source.footprint.map(p=>buildingLocalPoint3H(property,p));
+  const pts=simpleBuildingViewS10(source).footprint.map(p=>buildingLocalPoint3H(property,p));
   const xs=pts.map(p=>p.u),ys=pts.map(p=>p.v);
   const minU=Math.min(...xs),maxU=Math.max(...xs),minV=Math.min(...ys),maxV=Math.max(...ys);
   return {u:(minU+maxU)/2,v:(minV+maxV)/2,width:Math.max(2,maxU-minU),
@@ -79,7 +81,7 @@ export class BuildingPlacementSession3H {
   start(city,propertyId,buildingId=null) {
     const property=city?.properties.find(p=>p.id===propertyId);
     const source=buildingId?city?.buildings.find(b=>b.id===buildingId&&b.propertyId===propertyId):null;
-    if(!property || (buildingId && !source))return false;
+    if(!property || (buildingId && !hasSimpleBuildingFootprintS10(source)))return false;
     this.acceptedCity=city;
     this.active={operation:buildingId?'replace':'add',propertyId,
       buildingId:buildingId??newBuildingId3H(city),spec:defaultBuildingSpec3H(property,source)};
@@ -98,7 +100,7 @@ export class BuildingPlacementSession3H {
   }
   property(city){return city?.properties.find(p=>p.id===this.propertyId)??null;}
   previewFor(city) {
-    if(!this.active)return null;
+    if(!this.active || this.operation === 'components')return null;
     const existingType = this.operation === 'replace' ? city.buildings.find(b => b.id === this.buildingId)?.type : undefined;
     try{return makeBuildingShape3H(this.property(city),this.spec,existingType);}catch{return null;}
   }
@@ -118,6 +120,8 @@ export function prepareBuildingStructure3H(project,workspace,request,{quick=fals
     return issue('id','New building identifier must be unique.');
   if(operation!=='add' && (!existing || existing.propertyId!==propertyId))
     return issue('target','The target building is not on this property.',buildingId);
+  if (operation === 'replace' && !hasSimpleBuildingFootprintS10(existing))
+    return issue('geometry','Use Edit building components to change a multipart footprint.');
   let geometry=null;
   if(operation!=='delete' && !portalOnly) {
     try{geometry=makeBuildingShape3H(property,spec,operation === 'replace' ? existing.type : undefined);}

@@ -74,6 +74,14 @@ From a selected **property**, use **Add building to this property** in the Inspe
 
 From an individual building Inspector, use **Replace building (preview)** to keep its ID and custom identity while replacing its footprint/use after validation. **Delete building…** requires confirmation and removes only the building; the property and plots remain. After any accepted structural change, use **Undo structure** or **Redo structure** when that property is selected. These operations are scoped to the property and are checked against the complete saved-project validator. Session histories may become unavailable if another edit changes related geometry; Undo geometry first or keep a project backup. All committed buildings survive project save/load; placement drafts and structural Undo/Redo history do not. Regeneration and project load clear structural history. This feature does not support moving buildings between properties or editing property boundaries.
 
+### Buildings with multiple footprints
+
+Select a building and choose **Edit components**. To add a separate footprint, choose **Add rectangle**, name the part, then click a point inside the same property or enter the center coordinates. Set its width, depth and angle, then choose **Apply to City**. The new footprint belongs to the same building and must clear its other parts, property edges and access routes.
+
+Select **Whole building** for a common transform, or select a named component to move, rotate or scale that part and its descendants. Choose **Rename or reparent** to organize the parts without moving them. A leaf component can be removed, and the primary component provides the building’s entrance. Applied edits can be undone and redone together.
+
+Use the courtyard tools for portal hosts and linked courtyard buildings. Projects with authored multiple footprints require a compatible reader beginning with `0.2.16-dev`.
+
 ### Buildings inside courtyards
 
 Select the enclosing building’s property and choose **Add building to this property**. In **Courtyard access**, select the enclosing building. Position a single-footprint building inside its courtyard. Choose an existing portal, or select **New portal** and set the courtyard wall, exterior wall, opening positions and width. The C and E labels on the map match the courtyard and exterior wall selectors. Angled walls can share a portal if the entire passage clears both openings and the surrounding corners. A valid preview shows the opening strip and the route from the new door to the property’s street. Several buildings can share a portal when each route is clear.
