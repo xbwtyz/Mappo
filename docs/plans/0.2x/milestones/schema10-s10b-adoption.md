@@ -1,6 +1,6 @@
 # Schema 10 — S10-B Authoritative Geometry Adoption and Migration
 
-**Status:** Owner-authorized implementation, checkpoint P1 in progress on dedicated branch. No merge, release, tag, or Pages authorization.
+**Status:** Implementation for P1–P4 is present in [PR #132](https://github.com/xbwtyz/Mappo/pull/132), with P5 final exact-head CI and owner review pending. **Not merged or released.** No tag or Pages authorization.
 
 **Base:** main 1578e3c0a7f504d6510414a419b9374d4b9227ff, app 0.2.14-dev, project schema 9; full post-merge CI green.
 
@@ -27,3 +27,19 @@
 ## Deferred scope
 
 S10-C nested building access and portals (#122); S10-D component-authoring controls; S10-E Boolean unions (#121); S10-F stabilization beyond migration. None is implicitly authorized by S10-B.
+
+## Implementation review and verification status
+
+- **P1:** Pure Schema 9 to 10 conversion is implemented with deterministic geometry/component IDs, authored building identity retention, metadata protection, explicit collision rejection, and untouched unrelated city/workspace structures.
+- **P2:** Canonical geometry records are adopted in generation, topology validation, occupied-area/plot calculations, collision detection, rendering and selection, including disconnected solid roots and nested solid/void islands.
+- **P3:** Existing simple-building, compound, parcel and road workflows use derived read-only views and canonical, validated Apply transactions. Unsupported complex editing remains explicitly deferred.
+- **P4:** Portable envelope version 1 and workspace schema version 1 remain independent. Historical save migration, recovery, Undo/Redo, provenance and accepted history are regression-covered.
+- **P5:** Targeted S10-A/S10-B and browser/Node regressions are in place. Earlier PR CI proved 572/572 Node tests and all four browser suites passed but the checked-in compiled distribution differed by a source-formatting byte change. The discrepancy was corrected in the source and compiled artifacts together; **the final exact-head CI result still controls merge readiness**.
+
+### User-experience delta
+
+Schema 9 edits previously relied on persistent flat `footprint` and `holes`. Schema 10 preserves existing simple-building editing behavior but stores only canonical regions and components. Users do not yet receive S10-C portals/nested occupancy editing, S10-D component editing, or S10-E unions. The foundation now supports future behavior without implicitly assigning ownership through courtyard containment.
+
+### Merge gate
+
+Remain on the dedicated feature branch until exact-head Node shards, all four desktop-browser suites, offline standalone byte parity, and the aggregate gate pass. Do not merge, tag, publish a release, or deploy Pages without separate owner authorization.
