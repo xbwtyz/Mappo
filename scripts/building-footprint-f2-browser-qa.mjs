@@ -5,6 +5,7 @@ import { observeBuildingApp } from '../tests/helpers/building-app.js';
 import { findDirectFootprintFixture } from '../tests/helpers/building-footprint-fixture.js';
 import { cornerBuildingFixture } from '../tests/helpers/corner-building-fixture.js';
 import { defaultWorkspace, encodeProjectDocument } from '../src/data/project-format.js';
+import { projectSimpleBuildingS10 } from '../src/core/building-geometry-adapter-s10.js';
 
 async function openInspectorFold(page, id) {
   const fold = page.locator('#' + id);
@@ -90,7 +91,12 @@ async function exerciseF2(browserName, browserType) {
     await page.waitForFunction(() => __buildingQA.state().files.ready);
     const project = await page.evaluate(() => __buildingQA.state().project);
     const { building, wing, courtyard, vertex, moved } = findDirectFootprintFixture(project);
-    const appliedBuilding = async () => (await readCity(page)).buildings.find(item => item.id === building.id);
+    const appliedBuilding = async () => {
+      const record=(await readCity(page)).buildings.find(item=>item.id===building.id);
+      const projection=projectSimpleBuildingS10(record.geometry,record.components);
+      assert.equal(projection.ok,true);
+      return {...record,footprint:projection.footprint,holes:projection.holes};
+    };
 
     await openBuildingEditor(page, building, 'Vertices');
     const point = await showOnMap(page, vertex);

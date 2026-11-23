@@ -139,7 +139,7 @@ async function exercise(browser, engine, name, width, height) {
       assert.ok(Math.abs(left.width - right.width) <= 1 && left.height === right.height);
       const newBuilding = await page.evaluate(() => __buildingQA.state().roadWorkspace
         .comparisonCandidate().city.buildings.find(building => building.id === 'BLD-00061'));
-      assert.notDeepEqual(newBuilding.footprint, oldBuilding.footprint);
+      assert.notDeepEqual(newBuilding.geometry.regions, oldBuilding.geometry.regions);
       assert.equal(await revision(), beforeComparison);
       const initialView = await view();
       await proposed.press('ArrowRight');
