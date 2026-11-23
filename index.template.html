@@ -676,7 +676,7 @@
         </section>
         <section id="buildingStructurePanel" class="building-transform-panel building-structure-panel" aria-label="Add or replace a building" hidden>
           <div class="building-transform-heading"><strong id="structureModeTitle">PLACE BUILDING</strong><span id="structurePropertyLabel">—</span></div>
-          <p class="hint">Drag the ghost or click within the property to position it. New buildings only exist after Apply to City.</p>
+          <p id="structurePlacementHint" class="hint">Drag the ghost or click within the property to position it. New buildings only exist after Apply to City.</p>
           <div id="structureFootprintFields" class="building-transform-values">
             <label>Footprint <select id="structurePreset">
               <option value="" disabled>Choose replacement shape</option><option value="rectangle">Rectangle</option><option value="L">L-shape</option>
@@ -701,6 +701,7 @@
               <label>Action <select id="componentAction"></select></label>
               <label id="componentNameRow" hidden>Name <input id="componentName" type="text" maxlength="80"></label>
               <label id="componentParentRow" hidden>Parent <select id="componentParent"></select></label>
+              <label id="componentIncomingRow" hidden>Incoming part <select id="componentIncoming"></select></label>
             </div>
             <div id="componentTransformFields" class="building-transform-values">
               <label>X offset <input id="componentOffsetX" type="number" step=".5"></label>
@@ -715,6 +716,9 @@
               <label>Depth <input id="componentDepth" type="number" min="2" max="250" step=".5"></label>
             </div>
             <div id="componentAngleRow" class="building-transform-values"><label>Angle ° <input id="componentAngle" type="number" step="1"></label></div>
+            <label id="componentJoinConsentRow" hidden>
+              <input id="componentJoinConsent" type="checkbox"> <span id="componentJoinConsentLabel"></span>
+            </label>
           </fieldset>
           <fieldset id="structureCourtyardAccess" hidden>
             <legend>Courtyard access</legend>

@@ -29,8 +29,9 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **Schema 10 S10-A pure foundation** | Canonical region/component geometry | **Merged [PR #131](https://github.com/xbwtyz/Mappo/pull/131)**; [post-merge CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45119448609). No live schema change in S10-A. |
 | **Schema 10 S10-B adoption** | Schema 9 to 10 migration, runtime/editor/save compatibility | **Merged [PR #132](https://github.com/xbwtyz/Mappo/pull/132)** at `08b33925cd8e`. [Implementation contract](milestones/schema10-s10b-adoption.md). |
 | **Schema 10 S10-C courtyard access** | Independent courtyard buildings, explicit portals and validated routes [#122](https://github.com/xbwtyz/Mappo/issues/122) | Merged in [PR #133](https://github.com/xbwtyz/Mappo/pull/133) for `0.2.15-dev`. [Contract and acceptance](milestones/schema10-s10c-courtyard-access.md). |
-| **Schema 10 S10-D building components** | One building with separately editable footprints | Review candidate for `0.2.16-dev`. [Contract and acceptance](milestones/schema10-s10d-building-components.md). |
-| **Later Schema 10 milestones** | S10-E Boolean unions [#121](https://github.com/xbwtyz/Mappo/issues/121), S10-F stabilization | Each implementation requires separate authorization. A02/A04/A05 remain separate. Other scale and capacity work remains evidence-gated. |
+| **Schema 10 S10-D building components** | One building with separately editable footprints | Merged in [PR #134](https://github.com/xbwtyz/Mappo/pull/134) for `0.2.16-dev`. [Contract and acceptance](milestones/schema10-s10d-building-components.md). |
+| **Schema 10 S10-E footprint joins** | Join two components within one building [#121](https://github.com/xbwtyz/Mappo/issues/121) | Review candidate for `0.2.17-dev`. [Contract and acceptance](milestones/schema10-s10e-join-footprints.md). |
+| **Later Schema 10 milestones** | S10-F stabilization | Each implementation requires separate authorization. A02/A04/A05 remain separate. Other scale and capacity work remains evidence-gated. |
 
 ## Progress and intended delivery waves
 
