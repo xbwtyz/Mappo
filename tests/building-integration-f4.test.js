@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { buildingFrame } from '../src/core/building-transform.js';
+import { projectSimpleBuildingS10 } from '../src/core/building-geometry-adapter-s10.js';
 import { lerpPoint } from '../src/core/boundary.js';
 import { IdentityEditor } from '../src/core/identity.js';
 import { prepareNeighborhoodReflowC3 } from '../src/core/neighborhood-reflow.js';
@@ -134,7 +135,7 @@ test('F4 on E4 land composes replacement, wing, courtyard, use, exact scoped his
   assert.equal(accepted.customDescription, placedBuilding.customDescription);
   assert.equal(accepted.customName, placedBuilding.customName);
   assert.equal(accepted.customUse, placedBuilding.customUse);
-  assert.equal(accepted.holes.length, 1);
+  assert.equal(projectSimpleBuildingS10(accepted.geometry,accepted.components).holes.length, 1);
   assert.ok(accepted.plotIds.length >= 2);
   assert.deepEqual(accepted.plotIds, deriveOccupiedPlots(classified.city, site, accepted));
   assert.equal(structures.prepare(classified, defaultWorkspace(classified), propertyId, 'undo').ok, false);
@@ -183,8 +184,8 @@ test('F4 road reflow preserves authored fields and blocks unknown dependencies o
   assert.equal(next.type, 'inn');
   assert.equal(next.customUse, 'Covered market');
   assert.equal(next.customName, 'Copper Market');
-  assert.equal(next.footprint.length, custom.footprint.length);
-  assert.equal(next.holes.length, custom.holes.length);
+  assert.equal(projectSimpleBuildingS10(next.geometry,next.components).footprint.length, custom.footprint.length);
+  assert.equal(projectSimpleBuildingS10(next.geometry,next.components).holes.length, custom.holes.length);
   assert.ok(Math.abs(next.area - custom.area) < 1e-6);
   assert.deepEqual(next.plotIds, deriveOccupiedPlots(relocated.candidateProject.city,
     propertyIn(relocated.candidateProject, next.propertyId), next));
