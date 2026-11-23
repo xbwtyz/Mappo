@@ -152,7 +152,7 @@ test('F4 on E4 land composes replacement, wing, courtyard, use, exact scoped his
   const document = createProjectDocument(redo.candidate);
   const reopened = decodeProjectDocument(encodeProjectDocument(document));
   assert.equal(reopened.formatVersion, 1);
-  assert.equal(reopened.project.schemaVersion, 9);
+  assert.equal(reopened.project.schemaVersion, 10);
   assert.equal(JSON.stringify(reopened.project), JSON.stringify(classified));
 });
 
