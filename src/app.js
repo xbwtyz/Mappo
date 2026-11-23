@@ -261,9 +261,12 @@ function d01TouchesStructureProperty(entry,id){
 function d01CompoundMembershipPending(){
   if(!compoundPanelPropertyId||!c01ActiveProperty())return false;
   const group=c01SelectedGroup();
+  // Membership is a set: toggling a checkbox off and on again must not
+  // leave a false pending draft simply because its array order changed.
   return group
     ?compoundName.trim()!==group.name||
-      JSON.stringify(compoundMemberIds)!==JSON.stringify(group.memberBuildingIds)
+      compoundMemberIds.length!==group.memberBuildingIds.length||
+      compoundMemberIds.some(id=>!group.memberBuildingIds.includes(id))
     :Boolean(compoundName.trim()||compoundMemberIds.length);
 }
 function d01DraftBlocked() {
