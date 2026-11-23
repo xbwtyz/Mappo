@@ -80,6 +80,8 @@ Select a building and choose **Edit components**. To add a separate footprint, c
 
 Select **Whole building** for a common transform, or select a named component to move, rotate or scale that part and its descendants. Choose **Rename or reparent** to organize the parts without moving them. A leaf component can be removed, and the primary component provides the building’s entrance. Applied edits can be undone and redone together.
 
+To connect two parts of the same building, select the destination and choose **Join footprints**. Pick the incoming part, then click a location or set its offsets to bring it against or slightly into the destination. The preview shows the combined perimeter. Apply makes that outline one component. If the incoming part has a name, confirm that its separate component will be removed. Undo restores the original parts.
+
 Use the courtyard tools for portal hosts and linked courtyard buildings. Projects with authored multiple footprints require a compatible reader beginning with `0.2.16-dev`.
 
 ### Buildings inside courtyards

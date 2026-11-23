@@ -129,6 +129,13 @@ function drawComponentPlacement(ctx, camera, city, session) {
     if (close) ctx.closePath();
   };
   ctx.save();
+  if (result?.preview?.join) {
+    // Fill the combined footprint so the removal of the seam is visible.
+    ctx.beginPath();
+    for (const region of regions) trace(region.ring, true);
+    ctx.fillStyle = 'rgba(45,160,130,.38)';
+    ctx.fill('evenodd');
+  }
   for (const region of regions) {
     const componentId = region.componentId ?? byId.get(region.parentId)?.componentId;
     ctx.strokeStyle = result?.status === 'invalid' ? '#cb5143' : '#287fa0';
@@ -136,6 +143,13 @@ function drawComponentPlacement(ctx, camera, city, session) {
     ctx.setLineDash([5, 4]);
     ctx.beginPath();
     trace(region.ring, true);
+    ctx.stroke();
+  }
+  if (result?.incomingOutline) {
+    ctx.strokeStyle = '#cb5143';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    trace(result.incomingOutline, true);
     ctx.stroke();
   }
   if (result?.preview?.accessPath) {

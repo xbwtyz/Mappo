@@ -1,3 +1,4 @@
+import { joinComponentFootprints, positionIncomingFootprint, verifyJoinNeighborAccess } from './building-component-join.js';
 import { boundsOf } from '../core/geometry.js';
 import { normalizeBuildingTransform, transformBuildingPoint } from '../core/building-transform.js';
 import { validateBuildingStructureS10 } from '../core/building-components-s10.js';
@@ -44,6 +45,7 @@ export function previewBuildingComponents(building, request) {
     throw Error('Component names can use at most 80 characters.');
   let activeId = selected?.id ?? null;
   let orientation = building.orientation;
+  let join = null;
   switch (request.action) {
     case 'add': {
       const ring = componentRectangle(request);
@@ -71,6 +73,10 @@ export function previewBuildingComponents(building, request) {
       activeId = selected.parentId;
       break;
     }
+    case 'join': {
+      join = joinComponentFootprints(geometry, components, selected, request);
+      break;
+    }
     case 'transform': {
       const transform = normalizeBuildingTransform({...request.transform});
       if (!selected || selected.id === root.id) orientation += transform.angle;
@@ -92,16 +98,22 @@ export function previewBuildingComponents(building, request) {
   const multipart = components.length > 1 || geometry.regions.filter(r => r.parentId === null).length > 1;
   if (multipart) geometry.version = 3;
   else if (geometry.version === 3) geometry.version = 1;
-  return {geometry, components, activeId, orientation};
+  return {geometry, components, activeId, orientation, join};
 }
 
-export function prepareBuildingComponents(project, workspace, buildingId, request) {
+export function prepareBuildingComponents(project, workspace, buildingId, request, {previewOnly = false} = {}) {
   const original = project.city.buildings.find(b => b.id === buildingId);
-  let preview = null;
+  let preview = null, incomingOutline = null;
   try {
     if (!canEditBuildingComponents(original) || findCourtyardAccess(project.city, buildingId))
       throw Error('Use the courtyard tools for buildings with portal access.');
+    if (previewOnly && request.action === 'join') {
+      const incoming = original.geometry.regions.find(r => r.parentId === null && r.componentId === request.incomingId);
+      if (incoming) incomingOutline = incoming.ring.map(positionIncomingFootprint(incoming.ring,request.transform));
+    }
     preview = previewBuildingComponents(original, request);
+    if (preview.join?.retiredName && !request.confirmJoin && !previewOnly)
+      throw Error('Confirm that ' + preview.join.retiredName + ' will become part of the destination.');
     const structure = validateBuildingStructureS10(preview.geometry, preview.components);
     if (JSON.stringify([original.geometry, original.components, original.orientation]) ===
         JSON.stringify([structure.geometry, structure.components, preview.orientation]))
@@ -119,12 +131,13 @@ export function prepareBuildingComponents(project, workspace, buildingId, reques
     if (!access.route) throw Error(access.issue.message);
     const {entrance, accessPath, frontageRoadId} = access.route;
     Object.assign(building, {entrance, accessPath, frontageRoadId});
+    if (preview.join) verifyJoinNeighborAccess(city,original,building);
     validateStoredProject(cityProject);
     const decoded = decodeProjectDocument(encodeProjectDocument(createProjectDocument(cityProject, workspace)));
     if (JSON.stringify(decoded.project.city) !== JSON.stringify(city))
       throw Error('The component edit changed during verification of the portable save.');
     return {ok: true, status: 'valid', issues: [], preview: {...preview, accessPath}, candidate: decoded.project};
   } catch (error) {
-    return {ok: false, status: 'invalid', issues: [{message: error.message}], preview, candidate: null};
+    return {ok: false, status: 'invalid', issues: [{message: error.message}], preview, incomingOutline, candidate: null};
   }
 }

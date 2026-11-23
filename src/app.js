@@ -978,11 +978,15 @@ function openBuildingComponentEditor(building) {
   return true;
 }
 
-function prepareComponentPlacement(project, workspace, request) {
+function prepareComponentPlacement(project, workspace, request, options) {
   const draft = request.componentDraft;
-  return prepareBuildingComponents(project, workspace, request.buildingId, {...draft,
+  const result = prepareBuildingComponents(project, workspace, request.buildingId, {...draft,
     transform:{dx:draft.dx, dy:draft.dy, angle:draft.angle * Math.PI / 180,
-      scaleX:draft.scaleX / 100, scaleY:draft.scaleY / 100}});
+      scaleX:draft.scaleX / 100, scaleY:draft.scaleY / 100}},options);
+  if (draft.action === 'join' && result.ok && !acceptedHistoryD01.fits(project,result.candidate))
+    return {...result,ok:false,status:'invalid',candidate:null,
+      issues:[{message:'This join exceeds the session Undo capacity.'}]};
+  return result;
 }
 
 const buildingComponentControls = new BuildingComponentControls($, () => buildingPlacementSession,
@@ -1034,6 +1038,8 @@ function syncBuildingStructureUI3H() {
   for (const id of ['structureFootprintFields', 'structurePreviewMeasurements4C', 'structurePlacementNudges', 'structurePlacementKeys'])
     $(id).hidden = portalOnly || componentMode;
   if (componentMode) buildingComponentControls.sync(componentEditorBuilding());
+  $('structurePlacementHint').hidden = componentMode || portalOnly;
+  const joining = componentMode && session.active.componentDraft.action === 'join';
   const spec=session.spec;
   const structureMeasure=placementMeasurements4C(project.city,session);
   $('structurePreviewMeasurements4C').textContent=structureMeasure
@@ -1054,12 +1060,13 @@ function syncBuildingStructureUI3H() {
     structurePreset:spec.preset,structureType:spec.type
   })) $(id).value=typeof value==='number'?String(Number(value.toFixed(2))):value;
   const result = session.drag ? {ok:false,status:'checking',issues:[]}
-    : componentMode ? prepareComponentPlacement(project,captureWorkspace().workspace,session.active)
+    : componentMode ? prepareComponentPlacement(project,captureWorkspace().workspace,session.active,{previewOnly:true})
     : !portalOnly && !spec.preset ? {ok:false,status:'idle',issues:[]}
     : prepareBuildingStructure3H(project,captureWorkspace().workspace,session.active);
   session.validation=result;
   const consentNeeded = replacing && !session.active.replaceGeometry;
-  $('structureApply').disabled = !(result.ok && result.status === 'valid' && !session.drag && !consentNeeded);
+  const joinConsentNeeded = joining && result.preview?.join?.retiredName && !session.active.componentDraft.confirmJoin;
+  $('structureApply').disabled = !(result.ok && result.status === 'valid' && !session.drag && !consentNeeded && !joinConsentNeeded);
   $('buildingStructurePanel').setAttribute('data-validation',result.status);
   const issues=$('structureIssues');
   issues.hidden=!result.issues?.length;
@@ -1076,6 +1083,8 @@ function syncBuildingStructureUI3H() {
     ? 'CHECKING · Complete placement validation runs when movement ends.'
     : result.ok ? (consentNeeded
       ? 'Review the proposed footprint on the map and confirm the replacement.'
+      : joinConsentNeeded ? 'Confirm the incoming part before applying the joined outline.'
+      : joining ? 'VALID · Apply the joined outline.'
       : componentMode ? 'VALID · Apply the component changes to this building.'
       : portalOnly ? 'VALID · Apply the portal changes to the selected property.'
         : 'VALID · This building can be applied to the selected property.')
