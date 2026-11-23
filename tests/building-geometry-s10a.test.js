@@ -207,15 +207,19 @@ test('S10-A P4 adapter verifies existing generated schema-9 cities without touch
     const buildings=project.city.buildings.slice(0,5);
     assert.ok(buildings.length>0);
     for(const building of buildings) {
-      const adapted=legacyBuildingShapeToS10(building);
+      const baseline=projectSimpleBuildingS10(building.geometry,building.components);
+      assert.equal(baseline.ok,true);
+      const legacy={...building,footprint:baseline.footprint,holes:baseline.holes};
+      delete legacy.geometry;delete legacy.components;
+      const adapted=legacyBuildingShapeToS10(legacy);
       const projected=projectSimpleBuildingS10(adapted.geometry,adapted.components);
       assert.equal(projected.ok,true);
-      assert.deepEqual(projected.footprint,building.footprint);
-      assert.deepEqual(projected.holes,building.holes);
+      assert.deepEqual(projected.footprint,baseline.footprint);
+      assert.deepEqual(projected.holes,baseline.holes);
       assert.ok(Math.abs(occupiedAreaS10(adapted.geometry)-building.area)<.02);
     }
     assert.equal(JSON.stringify(project),before);
-    assert.equal(project.schemaVersion,9);
+    assert.equal(project.schemaVersion,10);
   }
 });
 

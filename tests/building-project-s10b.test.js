@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { migrateBuildingRecordS10, migrateSchema9ProjectS10 } from '../src/core/building-project-s10.js';
 import { projectSimpleBuildingS10 } from '../src/core/building-geometry-adapter-s10.js';
+import { stampRoadGenerated, classifyRoadProvenance } from '../src/core/road-provenance.js';
 
 const clone = x => JSON.parse(JSON.stringify(x));
 // S10-B keeps the shipped Schema 9 migration contract tested independently of
@@ -17,6 +18,7 @@ function legacyFixture(options) {
     assert.equal(view.ok,true);
     const legacy={...building,footprint:view.footprint,holes:view.holes};
     delete legacy.geometry; delete legacy.components;
+    if (classifyRoadProvenance(building)==='generated') stampRoadGenerated(legacy);
     return legacy;
   });
   return old;
@@ -41,6 +43,8 @@ test('S10-B P1 migrates generated morphologies without regeneration or accepted-
       assert.deepEqual(next.entrance,original.entrance);
       assert.deepEqual(next.accessPath,original.accessPath);
       assert.equal(next.area,original.area);
+      assert.equal(classifyRoadProvenance(next),classifyRoadProvenance(original),
+        'authored/generated/unknown provenance must survive the schema rewrite');
       assert.equal(Object.hasOwn(next,'footprint'),false);
       assert.equal(Object.hasOwn(next,'holes'),false);
       const view=projectSimpleBuildingS10(next.geometry,next.components);
@@ -49,7 +53,14 @@ test('S10-B P1 migrates generated morphologies without regeneration or accepted-
       assert.deepEqual(view.holes,original.holes);
       const roundtrip={...clone(next)};
       delete roundtrip.geometry; delete roundtrip.components;
-      assert.deepEqual(roundtrip,(()=>{const b=clone(original);delete b.footprint;delete b.holes;return b;})());
+      const comparableOriginal=clone(original);
+      delete comparableOriginal.footprint;delete comparableOriginal.holes;
+      // A generator fingerprint includes the serialized shape fields and must
+      // be recomputed exactly for proven generated records only.
+      if(classifyRoadProvenance(original)==='generated') {
+        delete roundtrip.roadProvenance;delete comparableOriginal.roadProvenance;
+      }
+      assert.deepEqual(roundtrip,comparableOriginal);
     }
     assert.deepEqual({...updated, schemaVersion:9,city:{...updated.city,buildings:[]}},
       {...before,city:{...before.city,buildings:[]}});
