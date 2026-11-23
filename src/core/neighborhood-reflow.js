@@ -21,7 +21,6 @@ function c2HydrateDraftS10(draft) {
       !Object.getOwnPropertyDescriptor(b,'footprint')?.get)) return draft;
   return {...draft,proposedCity:hydrateCityS10(structuredClone(draft.proposedCity))};
 }
-
 const C2_PARCEL_LIMIT = 256;
 const rebuildableLandIssues = new Set([
   'road-clearance', 'road-setback', 'block-containment', 'parcel-reflow-blocked',
