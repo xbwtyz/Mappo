@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Living dependency roadmap, reconciled November 22, 2026.** Development milestones 0.2.1–0.2.12 have merged into `main`. Stable release remains v0.2.0. Merge, release and Pages require separate approval.
+> **Living dependency roadmap, reconciled after frontage PRs #128–#129 on November 22, 2026 (Pacific).** Development milestones 0.2.1–0.2.12 and the 0.2.13/0.2.14-dev follow-ups have merged into `main`; the irregular-frontage correction and Smart Frontage Snapping are also merged. Stable published release remains **v0.2.0**. A development merge does **not** publish a new release or deploy Pages.
 
 ## Problem and intended outcome
 
@@ -24,9 +24,9 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **0.2.12 E01b whole-city PNG export** | [#110](https://github.com/xbwtyz/Mappo/issues/110) | Merged [PR #124](https://github.com/xbwtyz/Mappo/pull/124); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45095188784); issue closed. [Milestone](milestones/0.2.12-whole-city-png.md) |
 | **0.2.13-dev import message maintenance** | [#109](https://github.com/xbwtyz/Mappo/issues/109) | Clarify that the 20 MiB maximum is inclusive. Capacity expansion remains pending evidence. |
 | **0.2.14-dev building entrance routing** | Building and compound edits | Try diagonal routes to the current street, then verified side-street frontage. Show the proposed path and identify obstructions. |
-| **Irregular property frontage follow-up (in review)** | 0.2.4 B01 geometry editing | Allow side/rear edits of accepted multi-corner properties without re-rejecting an unchanged historical frontage; keep edited-frontage validation, a frontage-only restore action, and full project checks. No schema or version change. |
-| **Smart Frontage Snapping (approved, dependent PR)** | Irregular properties · frontage editor | Live road-derived corner constraint, midpoint translation, bounded collision clamps, numeric parity. Depends on the unmerged irregular frontage preservation fix PR #128; no version/schema changes. [Implementation contract](milestones/0.2x-smart-frontage-snapping.md) |
-| Following candidates | E01a, D02/D03, C01 follow-ups | Unassigned / owner architecture review required |
+| **Irregular property frontage correction** | 0.2.4 B01 geometry editing | **Merged [PR #128](https://github.com/xbwtyz/Mappo/pull/128)**: preserve accepted historical frontage on side/rear edits; retain strict edited-frontage validation, Restore frontage and independent Apply checks. No schema or version change. |
+| **Smart Frontage Snapping** | Irregular properties · frontage editor | **Merged [PR #129](https://github.com/xbwtyz/Mappo/pull/129)** after #128: assigned-road corner snapping, rigid midpoint translation, bounded valid-preview clamping and precision-input parity. [Closeout/evidence](milestones/0.2x-smart-frontage-snapping.md). [Exact-main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45111675723). No schema/version change. |
+| **Architecture candidates, not approved implementations** | [#121](https://github.com/xbwtyz/Mappo/issues/121) geometric building-footprint unions; [#122](https://github.com/xbwtyz/Mappo/issues/122) nested courtyard islands; A02/A04/A05 | Owner architecture review required before work. Evidence-gated E01a/D02/A06 scale work stays deferred until a reproducible use case. |
 
 ## Progress and intended delivery waves
 
@@ -41,6 +41,8 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **7 — Whole-city export** | E01b bounded whole-city PNG | Validated supported sizes on Large maps | Merged as 0.2.12 | Moderate |
 | **8 — Evidence-triggered improvements** | D02 frame hitches, D03 capacity, E01a import cap | D03 sampled Large cities and found no road-reflow or import cap hits | Capacity changes deferred pending reproducible need | Small audit → high implementation |
 | **Policy decisions outside this sequence** | A02 disconnected networks, A04 protected edits, A05 true curves | Scope after product decisions; no automatic version promise | Unassigned | Very high or schema-sensitive |
+
+**Latest merged-code gate:** [post-merge CI #45111675723](https://github.com/xbwtyz/Mappo/actions/runs/45111675723) passed on exact `main` commit `847a24880d78dd9dab84ae47b4e9ba84d9d6b247` after PR #129. This is development evidence, **not** a release, deployed Pages update or owner hands-on UX signoff.
 
 Prioritization is a dependency guide, **not** a commitment to 0.2.2, 0.2.3, etc. We may split high-risk items across multiple 0.2.x releases or defer them if the cost exceeds user value. Preserve a stable, usable editor at each release gate.
 
