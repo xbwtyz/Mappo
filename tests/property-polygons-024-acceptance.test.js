@@ -25,7 +25,7 @@ test('024 P5 acceptance: 4 morphologies by 3 sizes, fallback evidence and saved-
       assert.deepEqual(project.city.roads,baseline.city.roads,'Street roads must not change');
       assert.deepEqual(project.city.blocks,baseline.city.blocks,'Street blocks must not change');
       assert.deepEqual(project.city.districts,baseline.city.districts,'Districts must not change');
-      assert.equal(project.schemaVersion,9);
+      assert.equal(project.schemaVersion,10);
       assert.doesNotThrow(()=>validateStoredProject(project));
       const saved=decodeProjectDocument(encodeProjectDocument(createProjectDocument(project,defaultWorkspace(project))));
       assert.equal(JSON.stringify(saved.project.city),JSON.stringify(project.city),'Portable JSON roundtrip must be exact');
