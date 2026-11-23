@@ -76,7 +76,7 @@ From an individual building Inspector, use **Replace building (preview)** to kee
 
 ### Buildings inside courtyards
 
-Select the enclosing building’s property and choose **Add building to this property**. In **Courtyard access**, select the enclosing building. Position a single-footprint building inside its courtyard. Choose an existing portal, or select **New portal** and set the courtyard wall, exterior wall, opening positions and width. The C and E labels on the map match the courtyard and exterior wall selectors. A valid preview shows the opening strip and the route from the new door to the property’s street. Several buildings can share a portal when each route is clear.
+Select the enclosing building’s property and choose **Add building to this property**. In **Courtyard access**, select the enclosing building. Position a single-footprint building inside its courtyard. Choose an existing portal, or select **New portal** and set the courtyard wall, exterior wall, opening positions and width. The C and E labels on the map match the courtyard and exterior wall selectors. Angled walls can share a portal if the entire passage clears both openings and the surrounding corners. A valid preview shows the opening strip and the route from the new door to the property’s street. Several buildings can share a portal when each route is clear.
 
 Select **Edit portals only** to add, adjust or remove a portal without placing a building. Before removing a portal in use, select another portal that can serve the buildings using it. **Apply to City** commits the portal, independent buildings and their validated routes in one Undo/Redo step. A building, property or road edit that would block a route reports the conflict before Apply.
 

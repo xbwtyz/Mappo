@@ -8,7 +8,7 @@ import { courtyardFixture } from '../tests/helpers/courtyard-fixture.js';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 import { createProjectDocument } from '../src/data/project-format.js';
 
-const fixture = courtyardFixture();
+const fixture = courtyardFixture({skewed: true});
 const directory = await mkdtemp(join(tmpdir(), 'mappo-s10c-'));
 const instrument = async (source, name) => {
   const path = join(directory, name);
@@ -61,6 +61,8 @@ try {
         }, fixture.occupant.propertyId);
         await page.getByRole('button', {name:/^Add building(?: to this property)?$/}).click();
         await el('structureCourtyardHost').selectOption(fixture.host.id);
+        await el('structurePortalInnerEdge').selectOption({label: 'C4'});
+        await el('structurePortalOuterEdge').selectOption({label: 'E1'});
       };
       const enter = async (id, value) => {
         await el(id).fill(String(value));
@@ -75,6 +77,10 @@ try {
       assert.equal(await el('structureApply').isDisabled(), true);
       assert.match(await el('desktopPlaceStatus').innerText(), /opening/);
       await enter('structurePortalWidth', 1.5);
+      await el('structurePortalOuterEdge').selectOption({label: 'E3'});
+      assert.equal(await el('structureApply').isDisabled(), true);
+      assert.match(await el('desktopPlaceStatus').innerText(), /one clear wall passage/);
+      await el('structurePortalOuterEdge').selectOption({label: 'E1'});
       assert.equal(await el('structureApply').isEnabled(), true);
       assert.equal(await city(), initial, 'preview cannot change accepted city');
       await page.once('dialog', dialog => dialog.accept());
@@ -122,7 +128,7 @@ try {
       assert.equal(await city(), previousCity);
       assert.deepEqual(errors, []);
       assert.deepEqual(requests, []);
-      console.log('PASS S10-C ' + name + ' file:// placement, blocker, cancel, Undo/Redo, recovery, save and old-reader rejection');
+      console.log('PASS S10-C ' + name + ' file:// skewed C4–E1 placement, blocker, cancel, Undo/Redo, recovery, save and old-reader rejection');
     } finally {
       await browser.close();
     }

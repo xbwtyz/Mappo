@@ -137,3 +137,26 @@ test('S10-C validates compound transforms, plot changes and an edit that would r
   assert.ok(removed.unresolved.length);
   assert.equal(JSON.stringify(second), before);
 });
+
+test('S10-C allows a skewed C4–E1 passage and rejects paths crossing the wrong wall', () => {
+  const {project, workspace, host, occupant} = courtyardFixture({skewed: true});
+  const before = JSON.stringify(project);
+  const placed = prepareBuildingStructure3H(project, workspace, occupant);
+  const accepted = expectAccepted(placed);
+  const {inner, outer} = building(accepted, host.id).geometry.courtyardAccess.portals[0];
+  const innerDirection = {x: inner[1].x - inner[0].x, y: inner[1].y - inner[0].y};
+  const outerDirection = {x: outer[1].x - outer[0].x, y: outer[1].y - outer[0].y};
+  assert.ok(Math.abs(innerDirection.x * outerDirection.y - innerDirection.y * outerDirection.x) > .1);
+  assert.ok([...inner, ...outer].every(point =>
+    placed.accessPreview.strip.some(corner => corner.x === point.x && corner.y === point.y)));
+  assert.doesNotThrow(() => decodeProjectDocument(encodeProjectDocument(createProjectDocument(accepted, workspace))));
+  const wrong = prepareBuildingStructure3H(project, workspace, {
+    ...occupant, courtyard: {...occupant.courtyard, outerEdge: 2}
+  });
+  assert.equal(wrong.ok, false);
+  assert.match(wrong.issues[0].message, /one clear wall passage/);
+  const crossed = copyJson(accepted);
+  building(crossed, host.id).geometry.courtyardAccess.portals[0].outer.reverse();
+  assert.throws(() => validateStoredProject(crossed), /one clear wall passage/);
+  assert.equal(JSON.stringify(project), before);
+});

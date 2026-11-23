@@ -1,6 +1,6 @@
 // Courtyard access grants a passage through a wall while preserving its footprint.
 import { boundsOf, pointInPolygon } from './geometry.js';
-import { clearance, distanceToSegment, lerpPoint, segmentCuts } from './boundary.js';
+import { clearance, cross2, distanceToSegment, lerpPoint, segmentCuts } from './boundary.js';
 import { classifyRoad } from './road-graph.js';
 import { PROPERTY_SETBACK, STREET_EDGE_WIDTH, STREET_WIDTHS } from './placement.js';
 import { terminalCorridors } from './road-terminal-corridors.js';
@@ -56,19 +56,21 @@ export function inspectCourtyardPortal(city, host, portal, spend = () => {}) {
   const outer = exterior.ring, hole = courtyard.ring;
   const inner = courtyardOpening(portal.inner, hole), exit = courtyardOpening(portal.outer, outer);
   const [a, b] = portal.inner, [c, d] = portal.outer;
-  // The two openings have the same edge vector. The strip's parallel sides
-  // and its middle line must cross the same wall once, from courtyard to outside.
-  if (Math.hypot((b.x - a.x) - (d.x - c.x), (b.y - a.y) - (d.y - c.y)) > COURTYARD_EPS ||
+  // Join endpoints on the same side of travel even when the walls meet the
+  // passage at different angles. Check both sides as well as the centerline.
+  if (segmentCuts(a, c, b, d).length ||
       ![[a, c], [inner, exit], [b, d]].every(([from, to]) =>
         courtyardOpenSegment(from, to, outer, true) && courtyardOpenSegment(from, to, hole, false)))
-    courtyardFail('The portal must cross one wall in a straight strip between parallel openings.');
+    courtyardFail('The openings must face each other across one clear wall passage.');
   const length = courtyardLength(inner, exit);
   const landing = (p, sign) => ({x: p.x + sign * (exit.x - inner.x) / length * COURTYARD_ACCESS_LIMITS.landing,
     y: p.y + sign * (exit.y - inner.y) / length * COURTYARD_ACCESS_LIMITS.landing});
   const insideLanding = [landing(a, -1), landing(b, -1)];
   const outsideLanding = [landing(c, 1), landing(d, 1)];
   const property = city.properties.find(p => p.id === host.propertyId);
-  const strip = [...insideLanding, outsideLanding[1], outsideLanding[0]];
+  // Keep the exact corners at both openings. Connecting the landing corners
+  // directly would shift the sides of a skewed passage away from those openings.
+  const strip = [insideLanding[0], a, c, ...outsideLanding, d, b, insideLanding[1]];
   if (!property || !strip.every(p => courtyardStrictInside(p, property.boundary)) ||
       courtyardEdges(strip).some(([x, y]) => courtyardCuts(x, y, property.boundary).length) ||
       !courtyardOpenSegment(...insideLanding, hole, true) || !courtyardOpenSegment(...outsideLanding, outer, false) ||
@@ -115,8 +117,10 @@ export function makeCourtyardPortal(host, spec, id) {
     return [lerpPoint(a, b, offset - half), lerpPoint(a, b, offset + half)];
   };
   const inner = opening(innerEdge, spec.innerOffset), outer = opening(outerEdge, spec.outerOffset);
-  if ((inner[1].x - inner[0].x) * (outer[1].x - outer[0].x) +
-      (inner[1].y - inner[0].y) * (outer[1].y - outer[0].y) < 0) outer.reverse();
+  const start = lerpPoint(...inner, .5), end = lerpPoint(...outer, .5);
+  const travel = {x: end.x - start.x, y: end.y - start.y};
+  const openingSide = ([a, b]) => cross2(travel, {x: b.x - a.x, y: b.y - a.y});
+  if (openingSide(inner) * openingSide(outer) < 0) outer.reverse();
   return {id, exteriorId: exterior.id, courtyardId: hole.id, inner, outer};
 }
 
