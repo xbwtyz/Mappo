@@ -15,6 +15,7 @@ import { inspectRoadContextReferences, inspectRoadDependencies } from './road-im
 import { inspectOpaqueRoadDependencies, riBudget, riEqual, riIndex, riReporter } from './road-impact-model.js';
 import { draftRoadConnectionC3, normalizeRoadCrossingsC3, roadTopologyId } from './road-crossings.js';
 import { validateStoredProject } from '../data/project-validation.js';
+import { hydrateCityS10, adoptNewBuildingS10 } from './building-project-s10.js';
 
 const TOPOLOGY_BLOCK_LIMIT = 32;
 function roadInspectionTargetAllowed(graph,id) {
@@ -125,6 +126,9 @@ function c3Development(seed, city, blocks, old, kept, corridors = []) {
     stampRoadGenerated(building);
   }
   for (const key of Object.keys(kept)) generated[key].push(...kept[key]);
+  // Generated Schema 9 shapes are temporary proposals, never persisted.
+  if (old.buildings.some(b=>b.geometry)) generated.buildings=generated.buildings.map(b=>
+    b.geometry?b:adoptNewBuildingS10(b));
   const occupied = new Map();
   for (const property of generated.properties)
     occupied.set(property.blockId, (occupied.get(property.blockId) ?? 0) + property.area);
@@ -200,6 +204,7 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
       return fail('terminal-edit-out-of-scope',
         'Editing an existing dead-end road requires a separately scoped operation.', 'road', roadId);
     const { city, graph, splitRoadIds } = normalizeRoadCrossingsC3(structuredClone(draft.proposedCity), {preferredNodeId: preferred});
+    hydrateCityS10(city);
     const introduced = graph.terminalRoadIds.filter(id => !oldTerminals.has(id));
     if (introduced.length && edit?.kind !== 'remove')
       return fail('terminal-edit-out-of-scope',
@@ -372,6 +377,7 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     }
     for (const key of Object.keys(regenerated))
       city[key] = [...city[key].filter(record => !replacements.has(record.blockId)), ...regenerated[key]];
+    hydrateCityS10(city);
 
     const oldRoads = riIndex(old.roads);
     const oldNodes = riIndex(old.nodes);
