@@ -26226,6 +26226,9 @@ function workspaceChanged() {
     // been observed. Recompute its accepted-history button states afterward.
     // Do not revalidate every mouse move or visual-only selection change.
     syncPropertyEditUI3I();
+    // Identity Apply renders before the shared journal records the accepted
+    // transaction. Refresh its buttons after observation, not just before it.
+    identityWorkspace?.render();
   }
   desktopWorkspace?.sync();
   if(roadWorkspace?.transient){syncPropertyDeletionControls4A();updateUndoFeedback();return;}
@@ -26294,8 +26297,13 @@ function syncBuildingHistoryUI() {
   const session = buildingEditSession;
   const id = session?.isActive ? session.buildingId : null;
   const ready = Boolean(id && !session.isPending && !session.drag);
-  const undo = ready && acceptedHistoryD01.entry('undo')?.family==='building' && acceptedHistoryD01.can('undo',project);
-  const redo = ready && acceptedHistoryD01.entry('redo')?.family==='building' && acceptedHistoryD01.can('redo',project);
+  const belongsToCurrentFootprint = direction => {
+    const entry=acceptedHistoryD01.entry(direction);
+    return entry?.operation==='building-geometry' && entry.targetIds.includes(id)
+      && acceptedHistoryD01.can(direction,project);
+  };
+  const undo = ready && belongsToCurrentFootprint('undo');
+  const redo = ready && belongsToCurrentFootprint('redo');
   $('buildingHistoryUndo').disabled = !undo;
   $('buildingHistoryRedo').disabled = !redo;
   const status = $('buildingHistoryStatus');
