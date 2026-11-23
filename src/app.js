@@ -70,6 +70,7 @@ import { copyJson, projectFilename } from './data/project-format.js';
 import { LAYER_KEYS_4F,layerPreset4F,identifyLayerPreset4F } from './core/layer-presets-4f.js';
 import { exportFilename4F } from './core/export-filenames-4f.js';
 import { downloadMapPNG4F } from './data/png-export-4f.js';
+import { downloadWholeCityPNG, planWholeCityPNG } from './data/whole-city-png.js';
 import {
   createProject
 } from './core/city-model.js';
@@ -1376,6 +1377,7 @@ function fitMap() {
 
 function updateDetails() {
   const c = project.city;
+  if ($('wholeCityPNGOptions').open) updateWholeCityPNGDimensions();
   for (const [id, value] of Object.entries({
       cityName: c.name,
       reportCityName: c.name,
@@ -3264,6 +3266,47 @@ $('downloadMapPNG4F').addEventListener('click', async()=>{
     message.textContent='PNG download requested: '+name+' ('+snapshot.width+' × '+snapshot.height+
       ' pixels). The image uses current visible layers and any editing previews.';
   }catch(error){message.textContent='PNG export failed: '+error.message;}
+});
+
+function updateWholeCityPNGDimensions() {
+  const dimensions = $('wholeCityPNGDimensions');
+  if (!project) {
+    dimensions.textContent = 'Generate or load a city first.';
+    return;
+  }
+  const framing = $('wholeCityPNGFraming').value;
+  try {
+    const plan = planWholeCityPNG(project.city, framing, Number($('wholeCityPNGSize').value));
+    dimensions.textContent = `${plan.width} × ${plan.height} pixels` +
+      (framing === 'developed' && plan.usedSurvey ? ' · Full survey used' : '');
+  } catch (error) {
+    dimensions.textContent = error.message;
+  }
+}
+
+$('wholeCityPNGOptions').addEventListener('toggle', () => {
+  if ($('wholeCityPNGOptions').open) updateWholeCityPNGDimensions();
+});
+$('wholeCityPNGFraming').addEventListener('change', updateWholeCityPNGDimensions);
+$('wholeCityPNGSize').addEventListener('change', updateWholeCityPNGDimensions);
+$('downloadWholeCityPNG').addEventListener('click', async () => {
+  const button = $('downloadWholeCityPNG');
+  const message = $('mapExportStatus4F');
+  if (button.disabled) return;
+  button.disabled = true;
+  try {
+    if (!project) throw new Error('Generate or load a city first.');
+    message.textContent = 'Preparing whole-city PNG…';
+    const defaultName = projectFilename({ project, savedAt: new Date().toISOString() });
+    const name = exportFilename4F($('exportFilename4F').value, defaultName, 'png');
+    const result = await downloadWholeCityPNG(project.city, layers, $('wholeCityPNGFraming').value,
+      Number($('wholeCityPNGSize').value), name);
+    message.textContent = `PNG download requested: ${name} (${result.width} × ${result.height} pixels).`;
+  } catch (error) {
+    message.textContent = 'PNG export failed: ' + error.message;
+  } finally {
+    button.disabled = false;
+  }
 });
 syncLayerPreset4F();
 files = new ProjectFiles({

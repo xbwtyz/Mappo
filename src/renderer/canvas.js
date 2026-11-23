@@ -233,10 +233,9 @@ function drawCompassAndScale(ctx, camera, step) {
   ctx.fillText(`${step} survey units`, width - 24, barY - 9);
 }
 
-export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null, landscapeSelection = null, landscapeHover = null, buildingHover = null, propertyHover = null, buildingEditSession = null, buildingPlacementSession = null, propertyEditSession = null) {
+function prepareMapCanvas(canvas, camera, dpr) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-  const dpr = Math.min(3, window.devicePixelRatio || 1);
   const width = camera.width;
   const height = camera.height;
   const physicalW = Math.max(1, Math.round(width * dpr));
@@ -246,13 +245,15 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
     canvas.height = physicalH;
   }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.globalAlpha = 1;
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = '#efeadc';
   ctx.fillRect(0, 0, width, height);
-  const gridStep = drawGrid(ctx, camera);
-  const city = project.city;
+  return ctx;
+}
+
+function drawAcceptedMap(ctx, camera, city, layers, districtSelection) {
   const byId = new Map(city.nodes.map(node => [node.id, node]));
-  ctx.globalAlpha = editor?.dirty || waterEditor?.dirty || terrainEditor?.dirty ? 0.20 : 1;
   drawSurvey(ctx, camera, city.survey);
   drawMountains(ctx, camera, city.terrainFeatures);
   drawWater(ctx, camera, city.waterFeatures);
@@ -265,7 +266,23 @@ export function renderMap(canvas, camera, project, editor, layers = {}, district
   drawPlaza(ctx, camera, city.plaza, byId);
   drawDistrictOverlay(ctx, camera, city, layers, districtSelection);
   drawFortifications(ctx, camera, city, layers);
+}
 
+export function renderWholeCityMap(canvas, camera, city, layers, pixelScale) {
+  const ctx = prepareMapCanvas(canvas, camera, pixelScale);
+  if (!ctx) throw new Error('The browser could not allocate the whole-city map canvas.');
+  const gridStep = drawGrid(ctx, camera);
+  drawAcceptedMap(ctx, camera, city, layers, null);
+  drawCompassAndScale(ctx, camera, gridStep);
+}
+
+export function renderMap(canvas, camera, project, editor, layers = {}, districtSelection = null, waterEditor = null, terrainEditor = null, landscapeSelection = null, landscapeHover = null, buildingHover = null, propertyHover = null, buildingEditSession = null, buildingPlacementSession = null, propertyEditSession = null) {
+  const ctx = prepareMapCanvas(canvas, camera, Math.min(3, window.devicePixelRatio || 1));
+  if (!ctx) return;
+  const gridStep = drawGrid(ctx, camera);
+  const city = project.city;
+  ctx.globalAlpha = editor?.dirty || waterEditor?.dirty || terrainEditor?.dirty ? 0.20 : 1;
+  drawAcceptedMap(ctx, camera, city, layers, districtSelection);
   ctx.globalAlpha = 1;
   if (editor && !(city.waterFeatures?.some(f => f.kind === 'coast') && !editor.dirty && editor.mode === 'pan')) drawOutline(ctx, camera, editor);
   drawWaterDraft(ctx, camera, waterEditor, editor?.boundary ?? city.survey.boundary);
