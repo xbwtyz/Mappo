@@ -4,6 +4,7 @@ import {chromium,firefox} from 'playwright';
 import {createProject} from '../src/core/city-model.js';
 import {prepareNeighborhoodReflowC3} from '../src/core/neighborhood-reflow.js';
 import {defaultWorkspace} from '../src/data/project-format.js';
+import {mixedCityFixtureS10} from '../tests/helpers/schema10-mixed-city.js';
 import {observeBuildingApp} from '../tests/helpers/building-app.js';
 
 const street='RD-0116',offset={x:5,y:0};
@@ -24,6 +25,10 @@ function fixture(){
  throw Error('B05 browser fixture lacks one valid authored parcel choice.');
 }
 const {project,id}=fixture();
+const mixed=mixedCityFixtureS10();
+const courtyard=mixed.project.city.buildings.find(row=>row.id===mixed.occupantId);
+const frontage=mixed.project.city.roads.find(row=>row.id===courtyard.frontageRoadId);
+const junction=mixed.project.city.nodes.find(row=>row.id===frontage.a);
 const html=observeBuildingApp(await readFile(new URL('../index.html',import.meta.url),'utf8'));
 const origin='http://mappo-b05-028.test/';
 await mkdir(new URL('../artifacts/road-parcels-028/',import.meta.url),{recursive:true});
@@ -75,8 +80,30 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
    assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),before);
    assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('redo')),true);
    assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),after);
+   await page.evaluate(doc=>__buildingQA.apply(doc),{project:mixed.project,workspace:mixed.workspace});
+   await page.locator('#roadModeButton').click();
+   assert.equal(await page.evaluate(({junction})=>{
+     const s=__buildingQA.state().roadWorkspace.session;
+     s.select({kind:'junction',id:junction.id});
+     return s.update({x:junction.x,y:junction.y+.5},{defer:false});
+   },{junction}),true);
+   const repair=page.getByRole('button',{name:'Reshape property and reconnect courtyard access',exact:true});
+   await repair.waitFor({timeout:60000});
+   const capture=()=>page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
+   const courtyardBefore=await capture();
+   assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+   await repair.click();
+   await page.waitForFunction(()=>!document.querySelector('#roadApplyB4').disabled,null,{timeout:60000});
+   assert.equal(await capture(),courtyardBefore);
+   await page.locator('#roadApplyB4').click();
+   await page.waitForFunction(before=>JSON.stringify(__buildingQA.state().project)!==before,courtyardBefore,{timeout:60000});
+   const courtyardAfter=await capture();
+   assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
+   assert.equal(await capture(),courtyardBefore);
+   assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('redo')),true);
+   assert.equal(await capture(),courtyardAfter);
    assert.deepEqual(errors,[]);
-   console.log('PASS B05 0.2.8 authored parcel choice, Apply, Undo/Redo '+name);
+   console.log('PASS B05 authored parcel choices, courtyard access #138, Apply, Undo/Redo '+name);
  }catch(error){
    await page.screenshot({path:new URL('../artifacts/road-parcels-028/'+name+'-failure.png',import.meta.url).pathname,
      fullPage:true}).catch(()=>{});

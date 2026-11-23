@@ -98,7 +98,8 @@ test('E2 explicitly blocks a building crossing the proposed divider without chan
   const before=JSON.stringify(project.city);
   const inspected=inspectPropertySplitE2(project,session);
   assert.equal(inspected.ok,false);
-  assert.ok(inspected.issues.some(issue=>issue.code==='building'&&issue.targetId===building.id));
+  const issue=inspected.issues.find(issue=>issue.code==='building'&&issue.targetId===building.id);
+  assert.match(issue?.message??'',/crosses or touches the split ambiguously/);
   const result=preparePropertySplitE2(project,defaultWorkspace(project),session);
   assert.equal(result.ok,false);
   assert.equal(result.candidate,null);

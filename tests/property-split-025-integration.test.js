@@ -1,11 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
-import { defaultWorkspace } from '../src/data/project-format.js';
+import { createProjectDocument, decodeProjectDocument, defaultWorkspace,
+  encodeProjectDocument } from '../src/data/project-format.js';
 import { validateStoredProject } from '../src/data/project-validation.js';
 import { preparePropertyBuildingClear4E } from '../src/editor/property-building-clear-4e.js';
 import { PropertySplitSessionE2, PropertySplitHistoryE2, inspectPropertySplitE2,
   preparePropertySplitE2 } from '../src/editor/property-split-e2.js';
+import { auditControls, createAdjustmentAudit } from './helpers/adjustment-audit.js';
 
 function irregularFixture(){
   for(const seed of ['025-split-one','025-split-two','025-split-three']){
@@ -68,4 +70,53 @@ test('025 P3: protected crossing plot metadata blocks irregular split and keeps 
   assert.ok(inspection.issues.some(x=>x.code==='plot-metadata'));
   assert.equal(preparePropertySplitE2(project,defaultWorkspace(project),session).candidate,null);
   assert.equal(JSON.stringify(project.city),before);
+});
+
+
+test('a vacant five-sided property splits at shared endpoints and stays valid through history and save', () => {
+  const audit = createAdjustmentAudit();
+  const spec = auditControls['irregular-split-vacant'];
+  const {project, workspace} = audit.fixture(spec.fixture);
+  const {preview, apply} = audit.execute(spec);
+  assert.ok(preview.ok, JSON.stringify(preview.issues));
+  assert.ok(apply.ok, JSON.stringify(apply.issues));
+
+  const {candidate, newPropertyId} = apply;
+  const source = project.city.properties.find(property => property.id === spec.target);
+  assert.equal(source.boundary.length, 5);
+  const successors = [spec.target, newPropertyId].map(id =>
+    candidate.city.properties.find(property => property.id === id));
+  for (const property of successors) {
+    assert.equal(property.frontageRoadId, source.frontageRoadId);
+    assert.ok(Math.hypot(property.frontage[1].x - property.frontage[0].x,
+      property.frontage[1].y - property.frontage[0].y) >= 7);
+    assert.ok(property.plotIds.length > 0);
+    for (const id of property.plotIds) {
+      const plot = candidate.city.plots.find(row => row.id === id);
+      assert.equal(plot.propertyId, property.id);
+      assert.equal(plot.frontageRoadId, property.frontageRoadId);
+    }
+  }
+
+  const history = new PropertySplitHistoryE2();
+  assert.equal(history.record(project, candidate, spec.target), true);
+  const undo = history.prepare('undo', candidate, workspace);
+  assert.ok(undo.ok, undo.reason);
+  assert.equal(JSON.stringify(undo.candidate.city), JSON.stringify(project.city));
+  history.accept('undo', undo.entry);
+  const redo = history.prepare('redo', undo.candidate, workspace);
+  assert.ok(redo.ok, redo.reason);
+  const reopened = decodeProjectDocument(encodeProjectDocument(createProjectDocument(redo.candidate, workspace)));
+  assert.equal(JSON.stringify(reopened.project.city), JSON.stringify(candidate.city));
+});
+
+test('the same cut on the occupied property reports the building conflict', () => {
+  const audit = createAdjustmentAudit();
+  const {preview, apply} = audit.execute(auditControls['irregular-split-occupied']);
+  assert.equal(preview.ok, false);
+  assert.equal(apply.ok, false);
+  assert.equal(apply.candidate, null);
+  assert.deepEqual(preview.issues.map(({code, targetId}) => ({code, targetId})),
+    [{code: 'building', targetId: 'BLD-00003'}]);
+  assert.match(preview.issues[0].message, /BLD-00003/);
 });

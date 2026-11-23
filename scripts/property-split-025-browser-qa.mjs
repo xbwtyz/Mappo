@@ -7,6 +7,7 @@ import { createProject } from '../src/core/city-model.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
 import { preparePropertyBuildingClear4E } from '../src/editor/property-building-clear-4e.js';
 import { PropertySplitSessionE2,inspectPropertySplitE2 } from '../src/editor/property-split-e2.js';
+import { auditControls, createAdjustmentAudit } from '../tests/helpers/adjustment-audit.js';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 
 function fixture(){
@@ -34,6 +35,7 @@ function fixture(){
   throw Error('025 desktop QA fixture could not find a valid irregular split.');
 }
 const sample=fixture();
+const audit=createAdjustmentAudit();
 const html=observeBuildingApp(await readFile(new URL('../index.html',import.meta.url),'utf8'));
 const screenshots=new URL('../artifacts/025/',import.meta.url);
 await mkdir(screenshots,{recursive:true});
@@ -103,8 +105,26 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
     const saved=await page.evaluate(()=>__buildingQA.capture());
     await page.evaluate(doc=>__buildingQA.apply(doc),saved);
     assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),after);
+    const replays=[
+      ['irregular-split-vacant',null],
+      ['irregular-split-occupied',/BLD-00003/],
+      ['multipart-split',/place parts of building BLD-MAN-COURTYARD-HOST on separate properties/]
+    ];
+    for(const [caseName,expectedMessage] of replays){
+      const spec=auditControls[caseName];
+      const {project,workspace}=audit.fixture(spec.fixture);
+      await page.evaluate(doc=>__buildingQA.apply(doc),{project,workspace});
+      const replayBefore=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city));
+      await page.evaluate(id=>__buildingQA.state().workspaceShell.select({kind:'property',id}),spec.target);
+      await page.getByRole('button',{name:'Split property',exact:true}).click();
+      const status=await page.locator('#propertySplitStatusE2').innerText();
+      assert.equal(await page.locator('#propertySplitApplyE2').isEnabled(),expectedMessage===null,status);
+      if(expectedMessage)assert.match(status,expectedMessage);
+      await page.locator('#propertySplitCancelE2').click();
+      assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),replayBefore);
+    }
     assert.deepEqual(errors,[]);
-    console.log('PASS 025 '+name+' irregular split/blocked draft/Apply/Undo/Redo/save');
+    console.log('PASS 025 '+name+' irregular split/blocked draft/Apply/Undo/Redo/save and issues #137/#140 replays');
   }catch(error){
     await page.screenshot({path:new URL(name+'-failure.png',screenshots).pathname,fullPage:true}).catch(()=>{});
     throw new Error('025 '+name+': '+error.message,{cause:error});

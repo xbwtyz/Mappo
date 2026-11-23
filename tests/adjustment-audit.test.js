@@ -51,5 +51,10 @@ test('adjustment audit blocks a split that assigns one building to both parcels'
   assert.ok(rings.some(ring => ring.every(point => side(point) < -1e-5)));
   assert.ok(rings.some(ring => ring.every(point => side(point) > 1e-5)));
   assert.equal(apply.ok, false);
-  assert.ok(preview.issues.some(issue => issue.code === 'building' && issue.targetId === joinedId));
+  assert.equal(apply.candidate, null);
+  const issue = preview.issues.find(issue => issue.code === 'building' && issue.targetId === joinedId);
+  assert.ok(issue);
+  assert.equal(issue.message,
+    'The split would place parts of building ' + joinedId + ' on separate properties. Move the divider so all parts stay on one property.');
+  assert.deepEqual(apply.issues, preview.issues);
 });
