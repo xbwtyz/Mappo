@@ -42,7 +42,7 @@ test('025 P1: a cut exiting and reentering concavity is rejected without mutatin
   const city=fixture(concave,[lower,upper]),before=JSON.stringify(city);
   const draft=propertySplitDraft025(city,'PROP-S',.8,3,.5);
   assert.equal(draft.cut.length,2);
-  assert.throws(()=>propertySplitGeometry025(city,'PROP-S',.8,3,.5),/crosses or touches|not create|leave or overlap/);
+  assert.throws(()=>propertySplitGeometry025(city,'PROP-S',.8,3,.5),/crosses or touches another property edge/);
   assert.equal(JSON.stringify(city),before);
 });
 test('025 P1: degenerate, sliver, invalid boundary and invalid exit edge fail closed',()=>{
@@ -50,4 +50,12 @@ test('025 P1: degenerate, sliver, invalid boundary and invalid exit edge fail cl
   for(const [f,e,t] of [[.01,2,.5],[.5,0,.5],[.5,2,1],[.5,2,0],[0,2,.5]])
     assert.throws(()=>propertySplitGeometry025(city,'PROP-S',f,e,t));
   assert.equal(propertySplitGeometry025(city,'PROP-S',.5,2,.5).left.length,4);
+});
+
+
+test('a cut following the frontage and adjacent collinear boundary is rejected', () => {
+  const boundary = [rect[0], {x: 20, y: 0}, ...rect.slice(1)];
+  const city = fixture(boundary, [squarePlot]);
+  assert.throws(() => propertySplitGeometry025(city, 'PROP-S', .5, 1, .5),
+    /touches or follows the frontage or exit edge ambiguously/);
 });

@@ -14,7 +14,9 @@ const b3gcShapeCross = (a,b,c) => (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
 
 function b3gcProperCross(a,b,c,d) {
   const ab1=b3gcShapeCross(a,b,c),ab2=b3gcShapeCross(a,b,d),cd1=b3gcShapeCross(c,d,a),cd2=b3gcShapeCross(c,d,b);
-  return ab1*ab2 < -B3GC_SHAPE_EPS*B3GC_SHAPE_EPS && cd1*cd2 < -B3GC_SHAPE_EPS*B3GC_SHAPE_EPS;
+  // A rounded point on a shared edge must not count as a proper crossing.
+  return Math.min(Math.abs(ab1), Math.abs(ab2), Math.abs(cd1), Math.abs(cd2)) > B3GC_SHAPE_EPS
+    && ab1 * ab2 < 0 && cd1 * cd2 < 0;
 }
 
 export function shapeWellFormed(points) {
