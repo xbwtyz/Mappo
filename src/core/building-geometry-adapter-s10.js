@@ -67,3 +67,8 @@ export function buildingPrimaryRouteViewS10(building) {
   if (!roof) throw Error('The primary component needs a footprint for street access.');
   return {...building, footprint: roof.ring};
 }
+
+export function hasSimpleBuildingFootprintS10(building) {
+  if (Array.isArray(building?.footprint)) return true;
+  return Boolean(building?.geometry && projectSimpleBuildingS10(building.geometry, building.components).ok);
+}

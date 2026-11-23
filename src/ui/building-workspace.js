@@ -1,3 +1,4 @@
+import { hasSimpleBuildingFootprintS10 } from '../core/building-geometry-adapter-s10.js';
 import { canEditBuildingComponents } from '../editor/building-component-application.js';
 import { findCourtyardAccess } from '../core/courtyard-access.js';
 import { hitBuilding } from '../core/building-selection.js';
@@ -42,7 +43,8 @@ export class BuildingWorkspace {
           shortLabel: editing ? 'Exit building editing' : 'Edit footprint',
           primary: true, run: () => editing ? this.exitEditing() : this.enterEditing(id),
         };
-        const courtyard = building.footprint && !editing && showCourtyardShortcut()
+        const simple = hasSimpleBuildingFootprintS10(building);
+        const courtyard = simple && !editing && showCourtyardShortcut()
           ? { label: 'Edit courtyard', run: () => this.enterEditing(id, 'courtyard') } : null;
         const replace = { label: 'Replace building (preview)', shortLabel: 'Preview replacement',
           run: () => this.startReplacement(property?.id, id) };
@@ -51,10 +53,10 @@ export class BuildingWorkspace {
           run: () => this.focusSelection({ kind: 'building', id: building.id }) };
         const components = canEditBuildingComponents(building) &&
           !findCourtyardAccess(this.getCity(), id)
-          ? {label: 'Edit building components', shortLabel:'Edit components', primary: !building.footprint,
+          ? {label: 'Edit building components', shortLabel:'Edit components', primary: !simple,
             run: () => openComponents(building)} : null;
-        const actions = [building.footprint ? footprint : null, courtyard, components].filter(Boolean);
-        const management = building.footprint ? [replace, remove] : [remove];
+        const actions = [simple ? footprint : null, courtyard, components].filter(Boolean);
+        const management = simple ? [replace, remove] : [remove];
         information.sections.push(
           { title: 'Building footprint editing', actions: [...actions, ...management] },
           { title: 'Map navigation', actions: [locate] },
