@@ -40,7 +40,7 @@ Water definitions and histories are independent of outline, district and defense
 - Extend the fortification adapter for each new feature kind so walls, towers and street gates respect its geometry.
 - Use explicit migrations and frozen standalone-save fixtures for incompatible model changes. Schema 5 preserves older cities as dry land; schema 6 preserves existing river data unchanged.
 
-See `PROJECT_FORMAT.md` for the exact persistence contract and `QA.md` for automated coverage and the native Firefox checklist.
+See the [project format](PROJECT_FORMAT.md) for the persistence contract and the [historical QA checks](../history/QA-legacy.md) for automated coverage and the native Firefox checklist.
 
 ## Coast adapter
 
