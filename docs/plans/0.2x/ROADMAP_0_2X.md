@@ -21,7 +21,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **0.2.9 C02 multi-operation building drafts** | [#105](https://github.com/xbwtyz/Mappo/issues/105) | Merged [PR #119](https://github.com/xbwtyz/Mappo/pull/119); [post-merge CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45077771390); issue closed |
 | **0.2.10 C01 compound building groups** | [#104](https://github.com/xbwtyz/Mappo/issues/104) | Merged [PR #120](https://github.com/xbwtyz/Mappo/pull/120); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45080212898); issue closed |
 | **0.2.11 D01 unified session edit history** | [#106](https://github.com/xbwtyz/Mappo/issues/106) | Merged [PR #123](https://github.com/xbwtyz/Mappo/pull/123); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45092420094); issue closed |
-| **0.2.12 E01b whole-city PNG export** | [#110](https://github.com/xbwtyz/Mappo/issues/110) | Merged [PR #124](https://github.com/xbwtyz/Mappo/pull/124); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45095188784); issue closed. [Milestone](MILESTONE_0_2_12_WHOLE_CITY_PNG.md) |
+| **0.2.12 E01b whole-city PNG export** | [#110](https://github.com/xbwtyz/Mappo/issues/110) | Merged [PR #124](https://github.com/xbwtyz/Mappo/pull/124); [main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45095188784); issue closed. [Milestone](milestones/0.2.12-whole-city-png.md) |
 | **0.2.13-dev import message maintenance** | [#109](https://github.com/xbwtyz/Mappo/issues/109) | Clarify that the 20 MiB maximum is inclusive. Capacity expansion remains pending evidence. |
 | Following candidates | E01a, D02/D03, C01 follow-ups | Unassigned / owner architecture review required |
 
@@ -29,7 +29,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 
 | Wave | Candidate scope | Suggested order | Version status | Relative complexity |
 |---|---|---|---|---|
-| **1 — First confirmed issue** | [A01 connected interior stubs after road deletion](MILESTONE_0_2_1_DEAD_END_ROADS.md), [Issue #79](https://github.com/xbwtyz/Mappo/issues/79); corridor only, proven-generated reflow | First, prior to other changes | **Merged as 0.2.1** | **High** — graph/faces/development reflow |
+| **1 — First confirmed issue** | [A01 connected interior stubs after road deletion](milestones/0.2.1-dead-end-roads.md), [Issue #79](https://github.com/xbwtyz/Mappo/issues/79); corridor only, proven-generated reflow | First, prior to other changes | **Merged as 0.2.1** | **High** — graph/faces/development reflow |
 | **2 — Road-topology expansion** | A03 intersection normalization, A06 wider face/ownership reflow | A03 → A06 or staged co-design | **Merged as 0.2.2 and 0.2.3** | High to very high |
 | **3 — Flexible parcel foundation** | B01 general polygon properties | After road contract and with new exact polygon validators | **Merged as 0.2.4** | Very high |
 | **4 — Parcel operations** | B02 splits, B03 merges, B04 plot partitions, B05 custom-parcel decisions | B01 → B02/B03/B04 → B05 | **B02–B05 merged as 0.2.5–0.2.8** | High per issue |
@@ -43,7 +43,7 @@ Prioritization is a dependency guide, **not** a commitment to 0.2.2, 0.2.3, etc.
 
 ## Historical 0.2.1 architecture decisions
 
-**D-021-1=A:** interior connected ordinary stubs from otherwise-supported deletion only. **D-021-2=A:** clearance, **no new frontage**. **D-021-3=A:** only proven generated untouched content may adapt; authored/unknown data remains protected. **D-021-4=A:** one implementation PR with four internal checkpoints, after separate coding approval. [Decision log](DECISION_LOG.md) · [Issue #79 replacement draft](ISSUE_79_UPDATE_DRAFT.md).
+**D-021-1=A:** interior connected ordinary stubs from otherwise-supported deletion only. **D-021-2=A:** clearance, **no new frontage**. **D-021-3=A:** only proven generated untouched content may adapt; authored/unknown data remains protected. **D-021-4=A:** one implementation PR with four internal checkpoints, after separate coding approval. [Decision log](DECISION_LOG.md) · [Issue #79 replacement draft](issues/issue-79-update-draft.md).
 
 ## Architecture dependencies
 
@@ -96,7 +96,7 @@ flowchart TD
 
 ## Current collaboration and issue documents
 
-[Issue register](ENGINE_LIMITATIONS_REGISTER.md) · [0.2.1 detailed plan](MILESTONE_0_2_1_DEAD_END_ROADS.md) · [Issue review guide](ISSUE_REVIEW_GUIDE.md) · [Decision log](DECISION_LOG.md) · [All issue drafts](issues/)
+[Issue register](ENGINE_LIMITATIONS_REGISTER.md) · [0.2.1 detailed plan](milestones/0.2.1-dead-end-roads.md) · [Issue review guide](../../contributing/issue-review-guide.md) · [Decision log](DECISION_LOG.md) · [All issue drafts](issues/)
 ## Published GitHub issue tracker
 
 All 17 additional limitation/capability issues are recorded on GitHub. Several have since been implemented in individually approved milestones as shown above. Remaining proposals do **not** authorize implementation, merging or publishing.
@@ -114,4 +114,4 @@ Performance item D02 (#107) is **investigation-only**, not evidence that the clo
 
 ### D01 0.2.11 approved implementation checkpoint
 
-D-031-1–5=A: session-only shared chronological Undo/Redo for roads, properties, plots, buildings, compounds and identities, using existing validators with a 20-entry/64 MiB estimated payload budget. [Milestone plan](MILESTONE_0_2_11_UNIFIED_HISTORY.md) · [Issue #106](https://github.com/xbwtyz/Mappo/issues/106).
+D-031-1–5=A: session-only shared chronological Undo/Redo for roads, properties, plots, buildings, compounds and identities, using existing validators with a 20-entry/64 MiB estimated payload budget. [Milestone plan](milestones/0.2.11-unified-history.md) · [Issue #106](https://github.com/xbwtyz/Mappo/issues/106).

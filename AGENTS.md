@@ -2,7 +2,7 @@
 
 > **Owner-approved Mappo agent instructions.** Effective once the separately reviewed documentation PR is merged. No code, data schema, CI, release or Pages changes are authorized by adopting this policy.
 
-**Read first:** [Detailed Development & Communication Policy](docs/DEVELOPMENT_RULES.md). It is the complete catalog of owner-selected **51 development rules** and **48 output rules**, including statuses, exceptions, reporting templates and reconciliation notes. This file is intentionally short rather than a second competing rulebook.
+**Read first:** [Detailed Development & Communication Policy](docs/contributing/development-rules.md). It is the complete catalog of owner-selected **51 development rules** and **48 output rules**, including statuses, exceptions, reporting templates and reconciliation notes. This file is intentionally short rather than a second competing rulebook.
 
 ## How to interpret the rules
 
@@ -48,11 +48,11 @@
 
 ## Current references (verify state before relying on historical labels)
 
-- [Mappo Developer Guide](docs/development.md)
-- [CI Test Policy](docs/CI_TEST_POLICY.md) · [CI Guide](docs/CI.md)
+- [Mappo Developer Guide](docs/contributing/developer-guide.md)
+- [CI Test Policy](docs/contributing/ci-policy.md) · [CI Guide](docs/contributing/ci-guide.md)
 - [Project Format Contract](docs/reference/PROJECT_FORMAT.md)
 - [Build Retention Policy](docs/maintenance/BUILD_RETENTION_POLICY.md)
-- [Road Preservation Contract](docs/plans/0.2/ROAD_EDIT_CONTRACT.md)
+- [Road Preservation Contract](docs/reference/road-edit-contract.md)
 - [Current release notes](docs/releases/v0.2.0.md)
 
 **Documentation reconciliation:** current-facing guides now identify published v0.2.0. Future legacy-save support is optional while current v0.2.0 migrations/tests remain supported. Existing workflow guards, archival distributions and historical acceptance reports are preserved.

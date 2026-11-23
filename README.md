@@ -4,7 +4,7 @@
 
 **Mappo** is an offline-first medieval and fantasy city generator and 2D editor, shipped as **one standalone HTML file**.
 
-**[Download the official v0.2.0 HTML](https://github.com/xbwtyz/Mappo/releases/download/v0.2.0/mappo-0.2.0.html)** · **[0.2.0 release notes](docs/releases/v0.2.0.md)** · **[Hosted Pages site](https://xbwtyz.github.io/Mappo/)** · **[User guide](docs/user-guide.md)** · **[Development roadmap](docs/ROADMAP.md)**
+**[Download the official v0.2.0 HTML](https://github.com/xbwtyz/Mappo/releases/download/v0.2.0/mappo-0.2.0.html)** · **[0.2.0 release notes](docs/releases/v0.2.0.md)** · **[Hosted Pages site](https://xbwtyz.github.io/Mappo/)** · **[User guide](docs/guides/user-guide.md)** · **[Development roadmap](docs/plans/README.md)**
 
 **Stable release:** `0.2.0` · Project schema **9** · Portable format **1** · Offline browser runtime.
 
@@ -33,17 +33,17 @@ The [v0.2.0 City Designer](https://github.com/xbwtyz/Mappo/releases/tag/v0.2.0) 
 3. Use **Add** for new properties/buildings/landscape, **Roads** for road edits, and the **Inspector** for modifying existing sites.
 4. Under **Project**, download the `.mappo.json` backup and optionally export the visible map as PNG.
 
-See the [User Guide](docs/user-guide.md) for detailed editing and save/recovery behavior.
+See the [User Guide](docs/guides/user-guide.md) for detailed editing and save/recovery behavior.
 
 ## Historical interface screenshots
 
-The following images document the earlier 3F property/building Inspector, **not** the published v0.2.0 Generation/Add/Roads desktop layout. They remain useful development examples. For current controls, see the [user guide](docs/user-guide.md).
+The following images document the earlier 3F property/building Inspector, **not** the published v0.2.0 Generation/Add/Roads desktop layout. They remain useful development examples. For current controls, see the [user guide](docs/guides/user-guide.md).
 
 | Property-first selection | Individual building details | Identity customization |
 | --- | --- | --- |
 | ![Property Inspector and selected site](docs/images/mappo-3faa-property.jpg) | ![Building Inspector and generated facts](docs/images/mappo-3fb-building.jpg) | ![Property identity editor](docs/images/mappo-3fc-property.jpg) |
 
-[Full gallery](docs/gallery.md)
+[Full gallery](docs/guides/gallery.md)
 
 ## Development
 
@@ -60,8 +60,8 @@ Node 20.11+ is needed for development, **not to run** the distributed HTML. CI r
 
 Connected dead-end roads remain limited ([issue #79](https://github.com/xbwtyz/Mappo/issues/79)). Full 3D editing and high-resolution full-city tiled PNG export are not included; PNG export captures the current canvas. Undo histories and unfinished previews are generally session-scoped.
 
-v0.2.0 **currently supports** migrations from old schemas 1–8. **Future releases are not required to support every older save**, but a breaking format, migration policy or CI change requires separate approval. See [AGENTS.md](AGENTS.md) and [Development Rules](docs/DEVELOPMENT_RULES.md).
+v0.2.0 **currently supports** migrations from old schemas 1–8. **Future releases are not required to support every older save**, but a breaking format, migration policy or CI change requires separate approval. See [AGENTS.md](AGENTS.md) and [Development Rules](docs/contributing/development-rules.md).
 
-**Next:** separately plan future milestones; this policy PR does not authorize code changes, merges, releases or Pages deployment. The [0.2 acceptance history](docs/plans/0.2/H5_RELEASE_CANDIDATE_REPORT.md) remains preserved.
+**Next:** separately plan future milestones; this policy PR does not authorize code changes, merges, releases or Pages deployment. The [0.2 acceptance history](docs/history/0.2/release/h5-release-candidate-report.md) remains preserved.
 
-[Development guide](docs/development.md) · [Project format](docs/reference/PROJECT_FORMAT.md) · [0.2.0 release notes](docs/releases/v0.2.0.md) · [0.1.0 release notes](docs/releases/v0.1.0.md) · [Docs index](docs/README.md)
+[Development guide](docs/contributing/developer-guide.md) · [Project format](docs/reference/PROJECT_FORMAT.md) · [0.2.0 release notes](docs/releases/v0.2.0.md) · [0.1.0 release notes](docs/releases/v0.1.0.md) · [Docs index](docs/README.md)

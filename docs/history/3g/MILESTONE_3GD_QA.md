@@ -35,4 +35,4 @@ Accepted changed geometry remains in schema **9** files and browser recovery. Se
 - No changes to previous versioned standalone files.
 - Do not merge without explicit approval from the owner.
 
-[Standalone preview](../../../dist/mappo-0.1-dev.3gd.html) · [Roadmap](../../ROADMAP.md) · [3G-C QA](MILESTONE_3GC_QA.md).
+[Standalone preview](../../../dist/mappo-0.1-dev.3gd.html) · [Roadmap](../../plans/README.md) · [3G-C QA](MILESTONE_3GC_QA.md).

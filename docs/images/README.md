@@ -1,6 +1,6 @@
 # Screenshot Assets
 
-[Captioned gallery](../gallery.md) · [Documentation index](../README.md)
+[Captioned gallery](../guides/gallery.md) · [Documentation index](../README.md)
 
 Original screenshot bytes and filenames are unchanged, preserving links from earlier milestone reports.
 

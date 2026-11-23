@@ -20,4 +20,4 @@ Before any **future separately approved** pruning, prepare an explicit filename-
 
 ## Verification
 
-[Inventory audit](PASS_C_INVENTORY_AUDIT.md) · [Archive snapshot](https://github.com/xbwtyz/Mappo/tree/archive/pre-3g-history) · [Branch review](BRANCH_CLEANUP_REVIEW.md).
+[Inventory audit](../history/maintenance/pass-c-inventory-audit.md) · [Archive snapshot](https://github.com/xbwtyz/Mappo/tree/archive/pre-3g-history) · [Branch review](../history/maintenance/branch-cleanup-review.md).

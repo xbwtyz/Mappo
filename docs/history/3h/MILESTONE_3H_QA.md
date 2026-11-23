@@ -31,4 +31,4 @@ Delete requires explicit confirmation in browsers and removes a building only, p
 
 Properties are usually largely occupied, so a valid new 5-unit footprint may not fit without removing or shrinking existing structures. Building positions and angles are numeric as well as draggable; no new property setbacks are introduced. Structural history is in-memory and cannot be recovered from a portable project. If later accepted edits to the same property invalidate a history target, Undo is disabled rather than overwriting unrelated geometry.
 
-[Standalone build](../../../dist/mappo-0.1-dev.3he.html) · [Roadmap](../../ROADMAP.md) · [3G-D safeguards](../3g/MILESTONE_3GD_QA.md).
+[Standalone build](../../../dist/mappo-0.1-dev.3he.html) · [Roadmap](../../plans/README.md) · [3G-D safeguards](../3g/MILESTONE_3GD_QA.md).

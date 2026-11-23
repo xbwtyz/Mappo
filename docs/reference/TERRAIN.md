@@ -1,6 +1,6 @@
 # Mountain terrain and road passes
 
-Mappo 3E.6 adds independent mountain features around and inside the city. Terrain remains separate from the water model, while sharing the existing planar arrangement and polygon utilities. Building inspection was completed in 3F; the current desktop workflow is described by [G4 acceptance](../plans/0.2/G4_ACCEPTANCE_REPORT.md).
+Mappo 3E.6 adds independent mountain features around and inside the city. Terrain remains separate from the water model, while sharing the existing planar arrangement and polygon utilities. Building inspection was completed in 3F; the current desktop workflow is described by [G4 acceptance](../history/0.2/workspace/g4-acceptance-report.md).
 
 ## Modules
 

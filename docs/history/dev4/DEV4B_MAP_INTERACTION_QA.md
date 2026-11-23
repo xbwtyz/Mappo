@@ -2,7 +2,7 @@
 
 **Status:** Dev 4a integrated into Dev 4b source; final CI and separate owner merge approval pending.  
 **Version:** `0.1-dev.4b` · **Branch:** `feature/dev4-map-interaction`  
-**Scope:** Four improvements approved in the [Dev 4 roadmap](DEV4_SMALL_IMPROVEMENT_CYCLES_PLAN.md) (the original individual ideas 4b, 4c, 4m, and 4o).
+**Scope:** Four improvements approved in the Dev 4 roadmap (the original individual ideas 4b, 4c, 4m, and 4o).
 
 > Integration: Dev 4a PR #12 passed CI and merged into `main`. This Dev 4b branch incorporates its property deletion code, Inspector controls, browser QA and regression tests alongside the Dev 4b improvements. Combined build and browser checks must pass on the final head before Dev 4b may be separately approved for merging.
 

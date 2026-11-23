@@ -1,4 +1,4 @@
-> **Archived document:** Earlier validation history. For the current release baseline, consult [3F-D QA](3f/MILESTONE_3FD_QA.md) and the [Developer Guide](../development.md).
+> **Archived document:** Earlier validation history. For the current release baseline, consult [3F-D QA](3f/MILESTONE_3FD_QA.md) and the [Developer Guide](../contributing/developer-guide.md).
 
 # Mappo 0.1-dev.3e4 validation
 

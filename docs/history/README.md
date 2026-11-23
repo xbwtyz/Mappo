@@ -1,9 +1,13 @@
 # Mappo Development History
 
-[Documentation index](../README.md) · [Current Roadmap](../ROADMAP.md)
+[Documentation index](../README.md) · [Current Roadmap](../plans/README.md)
 
 This archive preserves original milestone plans, implementation notes and dated QA results. Statements about work being incomplete or unmerged reflect the time of writing, not the current release.
 
+- [0.2 City Designer](0.2/README.md) — road, property, building, workspace and release plans with acceptance evidence.
+- [CI implementation history](ci/) — parallel regression and six-runner migration.
+- [Maintenance history](maintenance/) — prior documentation cleanup and build inventory.
+- [Dev 4](dev4/) — property deletion, map interaction, precision editing and export improvements.
 - [3H preview checkpoint](3h/MILESTONE_3H_QA.md) — property-first placement, replacement, deletion and structural history; awaiting merge.
 - [3G-D merged checkpoint](3g/MILESTONE_3GD_QA.md) — session-only accepted building history and Undo/Redo.
 - [3G-C merged checkpoint](3g/MILESTONE_3GC_QA.md) — validated Apply to City and schema-9 safeguards.

@@ -35,7 +35,7 @@ Visual/interaction reference: [interactive UI mockup](https://chatgpt.com/librar
 
 Acceptance: the main city tools are immediately available; switching sections changes the visible controls without regenerating the city or discarding completed drafts. Empty inspector space is available to the map unless the panel is pinned.
 
-Phase 1 scope: existing editing forms remain in their respective sections. Inspector providers currently supply live read-only summaries and a shortcut to those controls. Full landscape selection/listing, inspector forms and persisted shell preferences remain assigned to later phases. See [WORKSPACE_UI.md](../../reference/WORKSPACE_UI.md).
+Phase 1 scope: existing editing forms remain in their respective sections. Inspector providers currently supply live read-only summaries and a shortcut to those controls. Full landscape selection/listing, inspector forms and persisted shell preferences remain assigned to later phases. See [WORKSPACE_UI.md](workspace-ui.md).
 
 ## Phase 2 — City, Project, and Layers organization
 
@@ -50,7 +50,7 @@ Phase 1 scope: existing editing forms remain in their respective sections. Inspe
 
 Acceptance: users can shape the city, manage files, and change visibility without searching a long sidebar. Every existing option has a documented new home and retains its current behavior.
 
-Phase 2 scope: the City panel is compact, seeds live in local expandable settings, Project is a shared top-bar menu, all seven visibility fields share Layers, and the map rail exposes the existing combined Select/Pan interaction, Fit and zoom. The validated file preview and explicit Open project are unchanged. See [UI_CONTROL_MAP.md](../../reference/UI_CONTROL_MAP.md) for every existing control family's new home.
+Phase 2 scope: the City panel is compact, seeds live in local expandable settings, Project is a shared top-bar menu, all seven visibility fields share Layers, and the map rail exposes the existing combined Select/Pan interaction, Fit and zoom. The validated file preview and explicit Open project are unchanged. See [UI_CONTROL_MAP.md](ui-control-map.md) for every existing control family's new home.
 
 ## Phase 3 — Landscape list and selection inspector
 

@@ -1,6 +1,6 @@
 # Milestone 3F History
 
-[History index](../README.md) · [Current Roadmap](../../ROADMAP.md)
+[History index](../README.md) · [Current Roadmap](../../plans/README.md)
 
 Milestone 3F was merged in [PR #2](https://github.com/xbwtyz/Mappo/pull/2). Its documents are preserved for reference:
 
@@ -11,4 +11,4 @@ Milestone 3F was merged in [PR #2](https://github.com/xbwtyz/Mappo/pull/2). Its 
 - [3F-C QA](MILESTONE_3FC_QA.md)
 - [3F-D QA](MILESTONE_3FD_QA.md)
 
-[See the screenshots](../../gallery.md). Archived status wording should not be read as a current development status.
+[See the screenshots](../../guides/gallery.md). Archived status wording should not be read as a current development status.
