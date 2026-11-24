@@ -3,7 +3,8 @@ import { prepareRoadTopologyReflowC3 } from './road-topology-reflow.js';
 import { roadBuildingOccupiedPlots } from './road-building-decisions.js';
 import { resolveBuildingAccess } from '../editor/building-application.js';
 import { reflowGeneratedRoadBuildings } from './road-building-reflow.js';
-import { prepareJunctionIntentC7, prepareRoadIntentC1 } from './road-intent-c1.js';
+import { prepareJunctionIntentC7, prepareRoadIntentC1, prepareRoadGroupIntentB1 } from './road-intent-c1.js';
+import { verifyRoadGroupPreservationB1 } from './road-group-preservation-b1.js';
 import { buildRoadGraph } from './road-graph.js';
 import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
 import { analyzeRoadImpact } from './road-impact.js';
@@ -96,6 +97,38 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
 export function prepareNeighborhoodReflowC3(project, roadId, offset,
   draft = prepareRoadIntentC1(project, roadId, offset), decisions = new Map(), options = {}) {
   return reconcileRoadIntent(project,roadId,draft,decisions,options);
+}
+
+// Group movement intentionally does not call reconcileRoadIntent, whose
+// singleton policy can normalize crossings or reconstruct block topology.
+export function prepareRoadGroupReflowB1(project,selectedRoadIds,offset,options={}) {
+  const draft=c2HydrateDraftS10(prepareRoadGroupIntentB1(project,selectedRoadIds,offset));
+  const id=draft.selectedRoadIds?.[0]??'group';
+  const blocked=(issues,source={})=>({...source,phase:'B1',status:'needs-review',
+    candidateProject:null,changed:[],ledger:[],unresolved:issues,
+    validation:source.validation??{graph:'not-run',faces:'not-run',parcels:'not-run',project:'not-run'},
+    parcelReview:source.parcelReview??[],selectedRoadIds:draft.selectedRoadIds??[],
+    offset:draft.offset??null});
+  if(project?.schemaVersion!==10)
+    return blocked([c2Issue('road',id,'group-schema','Group translation requires Schema 10.')]);
+  if(!draft.draftable || !draft.topologyResolved || !draft.facesResolved ||
+    draft.status==='unchanged' || draft.issues.some(issue=>issue.code==='boundary-escape')) {
+    const issues=draft.issues.filter(issue=>issue.code!=='neighborhood-reflow-pending')
+      .map(issue=>({...c2Issue('road',id,issue.code,issue.message),
+        relatedIds:issue.roadIds??[]}));
+    return blocked(issues.length?issues:[c2Issue('road',id,'group-topology','A nonzero move with unchanged road and face topology is required.')]);
+  }
+  let analysis;
+  const analyze=()=>analysis??=analyzeNeighborhoodDraft(project,draft);
+  const preserved=prepareNeighborhoodReflow(project,id,draft,false,analyze,options);
+  let result=preserved;
+  if(!preserved.candidateProject && preserved.unresolved.some(row=>
+    rebuildableLandIssues.has(row.code)||row.code==='parcel-decision-required'||row.code==='parcel-decision-invalid'))
+    result=prepareNeighborhoodReflow(project,id,draft,true,analyze,options);
+  if(!result.candidateProject)return blocked(result.unresolved,result);
+  const violation=verifyRoadGroupPreservationB1(project,result.candidateProject,draft);
+  if(violation)return blocked([violation],result);
+  return {...result,phase:'B1',selectedRoadIds:draft.selectedRoadIds,offset:draft.offset};
 }
 
 export function prepareJunctionReflowC7(project,junctionId,point,decisions = new Map(), options = {}) {

@@ -22,7 +22,7 @@ export function resolveRoadGroupB1(graph, ids) {
     issues.push(b1Issue('invalid-base-road-graph','A valid accepted road graph is required.'));
     return result();
   }
-  if (!Array.isArray(ids) || ids.length>graph.roadsById.size ||
+  if (!Array.isArray(ids) || ids.length>40000 ||
       ids.some(id=>typeof id!=='string'||!id)) {
     issues.push(b1Issue('invalid-group-selection','Choose existing road segment IDs.'));
     return result();
