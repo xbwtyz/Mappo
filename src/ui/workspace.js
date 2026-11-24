@@ -228,7 +228,7 @@ export class WorkspaceShell {
     }
     const owner=this.state.selection?{...this.state.selection}:null;
     button.addEventListener('click', () => {
-      if(!workspaceSelectionEqual(owner,this.state.selection)||!this.descriptor())return;
+      if(button.isConnected===false||!workspaceSelectionEqual(owner,this.state.selection)||!this.descriptor())return;
       action.run();
       if (!compact || !button.isConnected) {
         const heading = this.$('workspaceSelectionName');

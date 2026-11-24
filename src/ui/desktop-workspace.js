@@ -1,3 +1,4 @@
+import { inspectorFactsA3 } from './workspace.js';
 // Desktop navigation reuses the existing edit forms and their transaction owners.
 const landscapeActions = {
   river: 'generateRiverButton', coast: 'generateCoastButton',

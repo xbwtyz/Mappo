@@ -1,3 +1,4 @@
+import { inspectorFactsA3 } from './workspace.js';
 // Hosts the existing property and building controls in the same resizable
 // map layout as roads. The original controls keep their handlers and IDs.
 const panels = [

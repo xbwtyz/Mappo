@@ -823,7 +823,6 @@ export class RoadInspectionWorkspace {
       const group=s.selectionSet.items.length>1;
       const key=group?'road-group:'+s.selectionSet.items.map(ref=>ref.id).join('|'):
         kind+':'+(d?.id??'none');
-      const prior=this.shell.inspectorA3.current('road');
       const views=group?['Details']:['Details','Edit','Review'];
       const rows=group?[['Selection',s.selectionSet.items.length+' road segments'],
         ['Primary',s.selectionSet.primary?.id??'None']]:d?[

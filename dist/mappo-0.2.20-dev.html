@@ -11920,7 +11920,7 @@ class WorkspaceShell {
     }
     const owner=this.state.selection?{...this.state.selection}:null;
     button.addEventListener('click', () => {
-      if(!workspaceSelectionEqual(owner,this.state.selection)||!this.descriptor())return;
+      if(button.isConnected===false||!workspaceSelectionEqual(owner,this.state.selection)||!this.descriptor())return;
       action.run();
       if (!compact || !button.isConnected) {
         const heading = this.$('workspaceSelectionName');
@@ -22476,6 +22476,7 @@ class DesktopEditLayout {
 
 
 // src/ui/desktop-place-editor.js
+
 // Hosts the existing property and building controls in the same resizable
 // map layout as roads. The original controls keep their handlers and IDs.
 const panels = [
@@ -22593,6 +22594,7 @@ class DesktopPlaceEditor {
 
 
 // src/ui/desktop-workspace.js
+
 // Desktop navigation reuses the existing edit forms and their transaction owners.
 const landscapeActions = {
   river: 'generateRiverButton', coast: 'generateCoastButton',
@@ -26536,7 +26538,6 @@ class RoadInspectionWorkspace {
       const group=s.selectionSet.items.length>1;
       const key=group?'road-group:'+s.selectionSet.items.map(ref=>ref.id).join('|'):
         kind+':'+(d?.id??'none');
-      const prior=this.shell.inspectorA3.current('road');
       const views=group?['Details']:['Details','Edit','Review'];
       const rows=group?[['Selection',s.selectionSet.items.length+' road segments'],
         ['Primary',s.selectionSet.primary?.id??'None']]:d?[
