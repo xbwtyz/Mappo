@@ -4,9 +4,9 @@ import {execFileSync} from 'node:child_process';
 import {mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-const modes={"feature/lare-inset-placement-experiment":"inset","feature/lare-building-aware-order-experiment":"interleaved"};
+const modes={"feature/lare-strict-candidate-containment-experiment":"strict","feature/lare-placement-fallback-experiment":"fallback"};
 const config=modes[process.env.GITHUB_REF_NAME]??(process.env.MAPPO_LARE_CAPTURE==='1'?process.env.MAPPO_LARE_FAILURE_MODE:null);
-test('B1R native frozen baseline and candidate comparison — detached building failure experiments', {skip: !config || !(process.env.MAPPO_LARE_CAPTURE==='1'||(process.env.GITHUB_ACTIONS==='true'&&process.env.GITHUB_WORKFLOW==='Mappo Fast Checks')),timeout: 600000},()=>{
+test('B1R native frozen baseline and candidate comparison — detached candidate containment and fallback experiments', {skip: !config || !(process.env.MAPPO_LARE_CAPTURE==='1'||(process.env.GITHUB_ACTIONS==='true'&&process.env.GITHUB_WORKFLOW==='Mappo Fast Checks')),timeout: 600000},()=>{
  const root=mkdtempSync(join(tmpdir(),'mappo-lare-'));
  const baseline=join(root,'baseline'),out=join(root,'corpus'),experiment=join(root,'experiment');
  const sha='e5f1cf83dcdcc75e52911aa717035955b40569d0';
@@ -15,7 +15,7 @@ test('B1R native frozen baseline and candidate comparison — detached building 
   execFileSync('git',['worktree','add','--detach',baseline,sha],{stdio:'inherit'});
   execFileSync(process.execPath,['scripts/lare-baseline.mjs',baseline,out,'0','4'],{stdio:'inherit',timeout:540000});
   execFileSync('git',['worktree','add','--detach',experiment,'HEAD'],{stdio:'inherit'});
-  execFileSync(process.execPath,['scripts/lare-experiment-building-failures.mjs',experiment,config],{stdio:'inherit'});
+  execFileSync(process.execPath,['scripts/lare-experiment-placement-alternatives.mjs',experiment,config],{stdio:'inherit'});
   execFileSync(process.execPath,[join(experiment,'scripts/lare-compare.mjs'),out],{cwd:experiment,stdio:'inherit',timeout:540000});
  } finally {
   try {execFileSync('git',['worktree','remove','--force',baseline],{stdio:'inherit'});} catch {}
