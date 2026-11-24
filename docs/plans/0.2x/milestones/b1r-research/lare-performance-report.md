@@ -36,3 +36,8 @@ Three completed shards (planned, organic, radial; 48 cases), 697 trials, 1278789
 ## Deeper-removal complete timing round
 
 65 movements, 919 trials, 1587425342 measured preview work units. Per-strategy trial-sequence p95: deep largest 7094.30 ms, deep obstruction 7487.11 ms, clear-all 1928.54 ms. Hosted-runner timings; work excludes fresh Apply and setup. No production performance gate passed. See demolition study for full outcomes.
+
+
+## Terminal diagnostics and compact pilot
+
+Terminal diagnostic run 45365153567 reproduced deterministic reduced-input work/expansion counts on all 22 cases; summed preview work 25258299. Compact pilot 45365642330 increased candidate generation and recovered seven of nine reduced-input cases, none on original input. On the identical nine reduced-input cases, preview work changed from 9728748 to 14784238; original-input compact work 19729544. Compact trial-sequence p95 3638.98 ms (hosted-runner observation, includes successful Apply). No production performance gate passed.

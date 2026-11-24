@@ -31,3 +31,11 @@ All three runs exact commit b05c009c48927d55f99fe48faf0165c33662c525, 60/60 Fast
 ## Deeper-removal final shard
 
 - `demolition-45362395263.jsonl`: linear, 17 movements, 51 strategy records, 222 trials, [run 45362395263](https://github.com/xbwtyz/Mappo/actions/runs/45362395263), job 138338141994. Exact commit b05c009c48927d55f99fe48faf0165c33662c525; 60/60 Fast Checks; no invalid outcomes. All 65 remaining identities now accounted for, 195 records, 919 trials, 43 distinct recoveries. Prior evidence retained. Total archive: 800 preservation records, 882 demolition records (including hybrid), 6736 demolition trials, 22 JSONL files.
+
+
+## Terminal parcel diagnostics and compact joint pilot
+
+- `parcel-diagnostics-45365153567.jsonl`: 22 paired original/reduced diagnostic records, 22 subset trials, job 138344843550, exact commit 3e5d863784829f509f8b8bf9395cf3a466f69240. All identities and reduced work/expansions reproduced prior refusals.
+- `parcel-compact-45365642330.jsonl`: nine paired original/reduced records, nine subset trials, job 138346538289, exact commit fcfcb7900f3c1531e14e424a1c13f90758036d9a. All identities and exact removal sets matched the diagnostic cohort; seven reduced-input recoveries, zero original-input recoveries.
+
+Both Fast Checks passed 60/60. Raw case payloads plus run/job IDs are retained without overwriting earlier data. The two experiments add 31 diagnostic/counterfactual records and 31 subset trials; distinguish these from the original 882 demolition-strategy records and 6736 trials. Total JSONL files: 24.
