@@ -21,6 +21,10 @@ breaking release-workflow compatibility or existing required status checks.
 
 **Future legacy-save policy:** v0.2.0's historical schema 1–8 migrations and tests remain active. The owner has disabled a **standing obligation to support every older save in future versions**, not authorized deletion of existing code, tests or fixtures. Any future change to save support must have a separately approved data-policy/CI proposal, explicit safe rejection and appropriate new tests. See [Development Rules](development-rules.md) and [Project Format](../reference/PROJECT_FORMAT.md).
 
+## Browser execution environment and timing
+
+Four browser jobs use the official version-matched Playwright 1.56.1 Noble container, with the same test-only JS package. System dependencies and browser binaries are preinstalled; missing executables fail the job. Two Node shards, six parallel runners and the required aggregate gate remain unchanged. The authoritative browser assignment is scripts/browser-suites.json, guarded by an independent inventory test. The sequential timed runner records every script, reports any failure as nonzero, and saves artifacts/ci-timings/*.json plus job summaries. All existing scenarios remain scheduled. See [CI optimization plan](ci-optimization-0.2.19.md) for baseline, acceptance and rollback.
+
 ## Desktop browser acceptance from 0.2G
 
 The [desktop workspace plan](../history/0.2/workspace/milestone-0-2g-desktop-ui.md)

@@ -1,0 +1,42 @@
+{
+  "desktop": [
+    "scripts/g3g-desktop-parity-browser-qa.mjs",
+    "scripts/desktop-three-tabs-browser-qa.mjs",
+    "scripts/workspace-g2-browser-qa.mjs",
+    "scripts/g4-desktop-acceptance-browser-qa.mjs",
+    "scripts/g4-cross-editor-browser-qa.mjs",
+    "scripts/h2-save-compatibility-browser-qa.mjs",
+    "scripts/h4-recovery-browser-qa.mjs",
+    "scripts/building-footprint-f2-browser-qa.mjs"
+  ],
+  "roads": [
+    "scripts/road-browser-qa.mjs",
+    "scripts/selection-a1-browser-qa.mjs",
+    "scripts/input-a2-browser-qa.mjs",
+    "scripts/c7-p2-browser-qa.mjs",
+    "scripts/c7-p3-offline-qa.mjs",
+    "scripts/junction-snap-merge-browser-qa.mjs",
+    "scripts/road-ownership-023-browser-qa.mjs",
+    "scripts/road-parcel-decisions-028-browser-qa.mjs"
+  ],
+  "property": [
+    "scripts/property-integration-e5-browser-qa.mjs",
+    "scripts/property-count-e4-browser-qa.mjs",
+    "scripts/property-merge-e3-browser-qa.mjs",
+    "scripts/property-merge-026-browser-qa.mjs",
+    "scripts/plot-partition-027-browser-qa.mjs",
+    "scripts/property-split-e2-browser-qa.mjs",
+    "scripts/property-split-025-browser-qa.mjs",
+    "scripts/property-creation-e1-browser-qa.mjs",
+    "scripts/property-polygons-024-browser-qa.mjs",
+    "scripts/building-browser-qa.mjs"
+  ],
+  "integration": [
+    "scripts/browser-qa.mjs",
+    "scripts/d4-browser-acceptance.mjs",
+    "scripts/building-performance-f4.mjs",
+    "scripts/whole-city-png-browser-qa.mjs",
+    "scripts/courtyard-access-browser-qa.mjs",
+    "scripts/building-components-browser-qa.mjs"
+  ]
+}

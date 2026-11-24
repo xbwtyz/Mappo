@@ -82,6 +82,10 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: Browser QA (${{ matrix.suite }})
     runs-on: ubuntu-24.04
+    # Match the JS package and preinstalled browser binaries exactly.
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
     timeout-minutes: 35
     strategy:
       fail-fast: false
@@ -101,18 +105,15 @@ jobs:
       - name: Build standalone HTML for browser QA
         run: npm run build
 
-      - name: Cache test-only Playwright downloads
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ runner.arch }}-node22-1.56.1
+      - name: Install matching test-only Playwright package
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm install --no-save --no-package-lock playwright@1.56.1
 
-      - name: Install test-only Playwright browsers
+      - name: Verify preinstalled browser executables
         run: |
-          npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium firefox
+          node --input-type=module -e "import { chromium, firefox } from 'playwright'; import { existsSync } from 'node:fs'; for (const engine of [chromium, firefox]) { const file = engine.executablePath(); if (!existsSync(file)) throw new Error('Missing preinstalled browser: ' + file); console.log(file); }"
+
 
       - name: Run ${{ matrix.suite }} browser regression suite
         run: npm run test:browser:${{ matrix.suite }}

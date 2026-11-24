@@ -8,12 +8,12 @@ The required `Mappo CI` runs full validation on review-ready PRs, main pushes, m
 | --- | --- |
 | Node shard 1/2 | Compile offline standalone; run native Node file shard; verify `index.html` equals tracked versioned HTML |
 | Node shard 2/2 | Compile; run complementary Node shard; verify standalone distribution parity |
-| Browser desktop | Seven scripts: G3G parity, three-tab navigation, G2 workspace, G4 acceptance/cross-editor, H2 saves, H4 recovery |
-| Browser roads | Three scripts: road editing, C7 cancellation and offline QA |
-| Browser property | Seven scripts: building and plot/property transformation, creation, merge and split QA |
-| Browser integration | Three scripts: general browser QA, D4 acceptance and F4 performance |
+| Browser desktop | 8 scripts: desktop workspace, save/recovery and building footprint/compound QA |
+| Browser roads | 8 scripts: road editing, selection, input routing, snapping, ownership, reflow and offline QA |
+| Browser property | 10 scripts: parcel/property editing, creation, split/merge, identity and property integration |
+| Browser integration | 6 scripts: general browser QA, D4 acceptance, F4 performance, whole-city PNG, courtyard access and components |
 
-All six jobs must pass for the unchanged required `Build, Node tests and browser QA` check to succeed. Browser runners install test-only Playwright 1.56.1 with Chromium and Firefox. The current `package.json` assigns **20 browser QA scripts** across four suites (7 desktop, 3 roads, 7 property, 3 integration), including G3G, G4, H2 and H4. G4 adds two modern-desktop scripts: viewport, road-dock/comparison, old-save migration and `file://` startup across 1366×768, 1440×900 and 5120×1440; plus a 1440×900 cross-editor split/merge/wing/courtyard/Undo/Redo and portable reopen acceptance check.
+All six jobs must pass for the unchanged required `Build, Node tests and browser QA` check to succeed. Browser runners use the official Playwright v1.56.1-noble container plus matching test-only package and retain Chromium and Firefox. The manifest `scripts/browser-suites.json` assigns all **32 A2 browser QA scripts** exactly once across the four suites. `scripts/run-browser-suite.mjs` records durations, exit status, per-suite timing artifacts and GitHub Actions summaries. The independent inventory test guards against omitted/duplicate scripts. See [CI optimization plan](ci-optimization-0.2.19.md). G4 retains its existing viewport and file:// coverage; no test scripts were rewritten.
 
 H2 adds frozen 3A.2–3E.5 historical save migration and nonmutation tests to the Node matrix, plus real Chromium/Firefox Project-menu import, rejection and re-export for representative schemas in the desktop browser group. `npm run test:browser:h2` runs that focused browser suite.
 
