@@ -63,3 +63,17 @@ test('B1R context is detached and rejects stale decisions and topology changes',
   assert.throws(()=>createLareContext(project,{...draft,facesResolved:false},new Map(),createLareBudget()),/topology-preserving/);
   assert.equal(JSON.stringify(project),before);
 });
+
+test('B1R never grants adaptation to opaque stamped parcel or plot geometry',()=>{
+  const {property,plot}=fixture();
+  property.opaqueGeometry={x:1,y:2};stampRoadGenerated(property,[plot]);
+  assert.equal(classifyLareProperty(property,[plot]).mode,'fixed-unsupported');
+  delete property.opaqueGeometry;plot.opaqueGeometry={x:2,y:3};stampRoadGenerated(property,[plot]);
+  assert.equal(classifyLareProperty(property,[plot]).mode,'fixed-unsupported');
+});
+test('B1R compound member stays fixed even with otherwise generated provenance',()=>{
+  const {project,draft,property,plot}=fixture();
+  property.buildingCompounds=[{id:'CMP',memberBuildingIds:['H']}];stampRoadGenerated(property,[plot]);
+  const context=createLareContext(project,draft,new Map(),createLareBudget());
+  assert.equal(context.properties[0].buildings[0].reason,'dependent-structure');
+});

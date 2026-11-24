@@ -19,6 +19,8 @@ export function createLareContext(project,draft,choices,budget){
       budget.spend();dependent.add(b.id);dependent.add(o.buildingId);
     }
   }
+  for(const p of city.properties)for(const compound of p.buildingCompounds??[])
+    for(const id of compound.memberBuildingIds??[]){budget.spend();dependent.add(id);}
   const affected=city.properties.filter(p=>{budget.spend();return blockIds.has(p.blockId);});
   if(affected.length>LARE_LIMITS.affectedParcels)throw new LareBudgetExceeded('affectedParcels');
   const ids=new Set(affected.map(p=>p.id));

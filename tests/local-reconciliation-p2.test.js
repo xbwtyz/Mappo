@@ -66,3 +66,20 @@ test('B1R shared budget limits geometry work and plot identity is independently 
   const wrong=input.plots.map((p,i)=>({...p,id:'wrong'+i}));
   assert.throws(()=>verifyLarePlotDeformation(input.property.boundary,input.plots,wrong,createLareBudget()),/identity/);
 });
+
+test('B1R flexible mesh hinge changes a polygon non-affinely without splitting any plot',()=>{
+  const input=fixture(rect(15,5,45,35));
+  const boundary=[{x:15,y:5},{x:45,y:5},{x:45,y:20},{x:45,y:35},{x:30,y:25},{x:15,y:35},{x:15,y:20}];
+  const plots=[
+    {id:'LOW',boundary:rect(15,5,45,20)},
+    {id:'LEFT',boundary:[{x:15,y:20},{x:30,y:20},{x:30,y:25},{x:15,y:35}]},
+    {id:'RIGHT',boundary:[{x:30,y:20},{x:45,y:20},{x:45,y:35},{x:30,y:25}]}
+  ];
+  input.property={...input.property,boundary,plotIds:plots.map(p=>p.id)};input.plots=plots;
+  const next=solve(input).find(c=>c.family==='polygon-hinge');
+  assert.ok(next,'Expected safe non-affine hinge');
+  assert.deepEqual(next.plots.map(p=>p.id),plots.map(p=>p.id));
+  assert.deepEqual(larePlotAdjacency(next.plots,createLareBudget()),larePlotAdjacency(plots,createLareBudget()));
+  assert.equal(validatePlotTiling027(next.property.boundary,next.plots).plotCount,3);
+  assert.ok(Math.abs(next.property.boundary[3].x-boundary[3].x)>1e-6);
+});

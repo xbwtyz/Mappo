@@ -106,6 +106,44 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
     const su=(right-left)/width,sv=(rear-front)/oldDepth;
     mapped(family,p=>{const q=local(p);return world(left+q.u*su+shear*q.v/oldDepth,front+q.v*sv);});
   };
+  // Non-affine flexible mesh deformation: choose a seam that separates
+  // complete existing cells and crosses no parent edge interior. On each
+  // side the map is affine and agrees exactly on the seam. No new cells,
+  // vertex insertion or topology changes are needed.
+  function hingeCandidates(front){
+    if(strip!==null||plots.length<2||usableWidth<minimumWidth)return;
+    const left=lareParcelClamp(center-usableWidth/2,0,length-usableWidth);
+    const base=p=>{const q=local(p);return world(left+q.u*usableWidth/width,front+q.v);};
+    const seams=new Set();let eligible=0;
+    for(const plot of plots)for(let i=0;i<plot.boundary.length;i++){
+      if(eligible>=8||attempts>=192)return;
+      const p=plot.boundary[i],q=plot.boundary[(i+1)%plot.boundary.length],len=Math.hypot(q.x-p.x,q.y-p.y);
+      if(len<lareParcelEps)continue;
+      const key=[p.x+','+p.y,q.x+','+q.y].sort().join('|');
+      if(seams.has(key))continue;seams.add(key);
+      let sign=1;const distance=v=>sign*((q.x-p.x)*(v.y-p.y)-(q.y-p.y)*(v.x-p.x))/len;
+      budget.spend(Math.max(1,cornerCount+original.length));
+      if(distance(f0)>lareParcelEps||distance(f1)>lareParcelEps)sign=-1;
+      if(distance(f0)>lareParcelEps||distance(f1)>lareParcelEps)continue;
+      const sides=ring=>ring.map(distance);
+      const across=values=>Math.min(...values)<-lareParcelEps&&Math.max(...values)>lareParcelEps;
+      const boundarySides=sides(original);
+      if(!across(boundarySides)||boundarySides.some((v,j)=>
+        (v>lareParcelEps&&boundarySides[(j+1)%boundarySides.length]<-lareParcelEps)||
+        (v<-lareParcelEps&&boundarySides[(j+1)%boundarySides.length]>lareParcelEps)))continue;
+      if(plots.some(cell=>across(sides(cell.boundary))))continue;
+      const depth=Math.max(...boundarySides);
+      if(depth<=lareParcelEps)continue;
+      eligible++;
+      for(const dx of [-width*.08,width*.08]){
+        mapped('polygon-hinge',p=>{
+          const v=base(p),d=Math.max(0,distance(p))/depth;
+          return {x:v.x+tangent.x*dx*d,y:v.y+tangent.y*dx*d};
+        });
+      }
+    }
+  }
+  for(const front of frontValues)hingeCandidates(front);
   // Independent front endpoints and rear depth. Candidate boundaries are
   // driven by existing footprint, fixed-building extents and available block.
   for(const front of frontValues){

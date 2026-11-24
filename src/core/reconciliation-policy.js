@@ -3,7 +3,7 @@ import { classifyRoadProvenance } from './road-provenance.js';
 export const LARE_POLICY_B1R = Object.freeze({
   operation:'translate-road-group',schemaVersion:10,allowRegeneration:false,
   allowOwnershipChange:false,allowTopologyChange:false,allowFrontageChange:false,
-  allowAuthoredBuildingMove:false
+  allowAuthoredBuildingMove:false,allowScaling:false,allowReflection:false
 });
 const lareKnownKeys=(r,keys)=>r && Object.keys(r).every(k=>keys.includes(k));
 const larePoint=p=>lareKnownKeys(p,['x','y'])&&Number.isFinite(p.x)&&Number.isFinite(p.y);
@@ -20,6 +20,19 @@ function lareKnownBuilding(b){
     b.components.every(c=>lareKnownKeys(c,['id','parentId']))&&larePoint(b.entrance)&&
     Array.isArray(b.accessPath)&&b.accessPath.every(larePoint)&&Number.isFinite(b.orientation);
 }
+const larePropertyKeys=['id','blockId','plotIds','boundary','frontageRoadId','frontage','area','buildingIds',
+  'usage','frame','local','districtId','customName','customUse','roadProvenance','buildingCompounds'];
+const larePlotKeys=['id','blockId','propertyId','frontageRoadId','boundary'];
+const lareFramePoint=p=>lareKnownKeys(p,['id','x','y'])&&Number.isFinite(p.x)&&Number.isFinite(p.y);
+const larePropertyRing=r=>Array.isArray(r)&&r.every(lareFramePoint);
+function lareKnownProperty(p,plots){
+  return lareKnownKeys(p,larePropertyKeys)&&plots.every(q=>lareKnownKeys(q,larePlotKeys)&&
+    (!q.boundary||larePropertyRing(q.boundary)))&&
+    (!p.boundary||larePropertyRing(p.boundary))&&(!p.frontage||larePropertyRing(p.frontage))&&
+    (!p.frame||(lareKnownKeys(p.frame,['origin','tangent','inward'])&&
+      [p.frame.origin,p.frame.tangent,p.frame.inward].every(lareFramePoint)))&&
+    (!p.local||lareKnownKeys(p.local,['x','y','width','depth']));
+}
 export function classifyLareProperty(p,plots,choice=null){
   const provenance=classifyRoadProvenance(p,plots);
   let mode;
@@ -28,6 +41,7 @@ export function classifyLareProperty(p,plots,choice=null){
   else if(!['keep','reshape'].includes(choice.kind)||choice.targetId!=null||
     Object.keys(choice).some(k=>!['kind','targetId'].includes(k)))mode='invalid-choice';
   else mode=choice.kind==='keep'?'fixed':'authorized-reshape';
+  if(['adaptive','authorized-reshape'].includes(mode)&&!lareKnownProperty(p,plots))mode='fixed-unsupported';
   return Object.freeze({provenance,mode});
 }
 export function classifyLareBuilding(b,propertyPolicy,dependent=false){
