@@ -39,4 +39,6 @@ Move building-footprint-f2-browser-qa to desktop; courtyard-access and building-
 
 ## Results
 
-Pending candidate CI. Do not report target or projected times as measured.
+First candidate [CI run 45308402272](https://github.com/xbwtyz/Mappo/actions/runs/45308402272) encountered Firefox launch failures. Browser startup diagnostics identify the root process using /github/home owned by pwuser, and explicitly recommend HOME=/root. Chromium scenarios completed before Firefox launch failed. Container initialization measured 19–31s across four jobs and matching package installation 2–3s; these are setup observations only, not a valid successful full-CI benchmark.
+
+Correction: set HOME=/root only on browser execution steps (including opt-in C7), as advised by Playwright; add an offline headless launch check for both engines before suite execution. No browser sandbox or container security settings are weakened, no test scenarios skipped. A new exact-head full CI run must succeed before measuring the end-to-end improvement.

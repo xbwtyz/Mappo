@@ -115,11 +115,23 @@ jobs:
           node --input-type=module -e "import { chromium, firefox } from 'playwright'; import { existsSync } from 'node:fs'; for (const engine of [chromium, firefox]) { const file = engine.executablePath(); if (!existsSync(file)) throw new Error('Missing preinstalled browser: ' + file); console.log(file); }"
 
 
+      # GitHub's container HOME is /github/home, which can belong to pwuser.
+      # Firefox refuses to launch as root with a different user's HOME.
+      - name: Smoke launch both preinstalled browsers
+        env:
+          HOME: /root
+        run: |
+          node --input-type=module -e "import { chromium, firefox } from 'playwright'; for (const engine of [chromium, firefox]) { const browser = await engine.launch({headless:true}); try { const context = await browser.newContext({offline:true}); const page = await context.newPage(); await page.goto('about:blank'); console.log(engine.name() + ' launch OK'); } finally { await browser.close(); } }"
+
       - name: Run ${{ matrix.suite }} browser regression suite
+        env:
+          HOME: /root
         run: npm run test:browser:${{ matrix.suite }}
 
       - name: C7 desktop browser performance and stale-draft checks
         if: ${{ matrix.suite == 'integration' && github.event_name == 'workflow_dispatch' && inputs.run_c7_benchmark }}
+        env:
+          HOME: /root
         run: node scripts/c7-browser-performance.mjs
 
       - name: Upload browser screenshots and failure evidence
