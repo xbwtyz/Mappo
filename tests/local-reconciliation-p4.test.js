@@ -73,3 +73,12 @@ test('B1R stable tie keys grow linearly across large neighborhoods',()=>{
   assert.equal(result.status,'candidate');assert.equal(result.best.assignments.length,200);
   assert.ok(result.best.key.length<6000);
 });
+
+test('B1R validates a complete greedy arrangement before bounded beam exhaustion',()=>{
+  const entries=arrangementEntries();let validations=0;
+  const result=solveLareArrangement({entries,finalize:row=>{validations++;return {score:row.score,key:row.key,parcels:row.parcels};}},
+    createLareBudget({work:1000000,stateExpansions:120}));
+  assert.equal(result.status,'candidate');assert.ok(validations>0);
+  assert.equal(result.best.parcels.length,2);
+  assert.ok(!shapesOverlapInterior(...result.best.parcels.map(p=>p.property.boundary)));
+});

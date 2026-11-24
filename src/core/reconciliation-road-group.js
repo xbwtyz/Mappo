@@ -215,10 +215,11 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     }
     if(incumbent)return {...incumbent.result,lare:{source:incumbent.key==='baseline'?'verified-baseline':'adaptive',
       score:incumbent.score,stats:budget.snapshot(),exhausted:outcome.exhausted??null}};
-    return refused(lareGroupIssue(group,outcome.exhausted?'lare-work-limit':'lare-search-exhausted',
+    const result=refused(lareGroupIssue(group,outcome.exhausted?'lare-work-limit':'lare-search-exhausted',
       outcome.exhausted?'Local reconciliation reached its deterministic work limit; safety is unproven.':
       'No supported local arrangement was found; this does not prove the requested movement is impossible.',
       outcome.exhausted?'work-limit':'search-exhausted',lastIssue?.relatedIds??[...activeIds]));
+    result.lare.lastRejectedCandidate=lastIssue;return result;
   }catch(error){
     if(incumbent)return {...incumbent.result,lare:{source:'verified-baseline',score:incumbent.score,stats:budget.snapshot()}};
     return refused(lareGroupIssue(group,error instanceof LareBudgetExceeded?'lare-work-limit':'lare-unproven',

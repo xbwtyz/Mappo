@@ -96,14 +96,43 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null},budget
         lareArrangeBuildingOverlap(choice.value.building,row.choice.value.building,budget);
     });
   };
+  const finalizeState=row=>{
+    const parcels=row.assignments.filter(r=>r.variable.startsWith('property:')).map(r=>r.choice.value);
+    const buildings=row.assignments.filter(r=>r.variable.startsWith('building:')).map(r=>r.choice.value.building);
+    if(parcels.length!==entries.length||buildings.length!==entries.reduce((n,e)=>n+e.buildings.length,0))return null;
+    return finalize({parcels,buildings,score:row.score,key:row.key},false);
+  };
+  // Try the first fully compatible arrangement before expanding the entire
+  // beam. This is a complete candidate, not a weaker acceptance path.
+  // The verified result is retained even if subsequent search hits its cap.
+  try{
+    let row={assignments:[],score:[0,0,0,0,0,0],key:''},complete=true;
+    for(const id of variables){
+      let chosen=null;
+      for(const option of choices(id,row)){
+        budget.expand();
+        if(compatible(id,option,row)){chosen=option;break;}
+        yield {stage:'greedy-alternative',id,stats:budget.snapshot()};
+      }
+      if(!chosen){complete=false;break;}
+      row={assignments:[...row.assignments,{variable:id,choice:chosen}],
+        score:row.score.map((v,i)=>v+chosen.score[i]),key:row.key+JSON.stringify([id,chosen.key])+';'};
+      yield {stage:'greedy-assignment',id,stats:budget.snapshot()};
+    }
+    if(complete){
+      budget.spend();
+      const candidate=finalizeState(row);
+      if(candidate&&(!verifiedIncumbent||compareLareScore(candidate.score,verifiedIncumbent.score)<0||
+        (compareLareScore(candidate.score,verifiedIncumbent.score)===0&&candidate.key<verifiedIncumbent.key)))
+        verifiedIncumbent=candidate;
+      yield {stage:'greedy-validation',stats:budget.snapshot()};
+    }
+  }catch(error){
+    if(!(error instanceof LareBudgetExceeded))throw error;
+    return {status:verifiedIncumbent?'candidate':'work-limit',best:verifiedIncumbent,stage:0,complete:0,stats:budget.snapshot(),exhausted:error.resource};
+  }
   const result=yield* iterateLareSearch({variables,choices,compatible,incumbent:verifiedIncumbent,
-    finalize:(row,old)=>{
-      if(old)return verifiedIncumbent;
-      const parcels=row.assignments.filter(r=>r.variable.startsWith('property:')).map(r=>r.choice.value);
-      const buildings=row.assignments.filter(r=>r.variable.startsWith('building:')).map(r=>r.choice.value.building);
-      if(parcels.length!==entries.length||buildings.length!==entries.reduce((n,e)=>n+e.buildings.length,0))return null;
-      return finalize({parcels,buildings,score:row.score,key:row.key},false);
-    }},budget);
+    finalize:(row,old)=>old?verifiedIncumbent:finalizeState(row)},budget);
   if(!result.best&&verifiedIncumbent)return {...result,status:'candidate',best:verifiedIncumbent};
   return result;
 }
