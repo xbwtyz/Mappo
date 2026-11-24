@@ -50,6 +50,7 @@ for(const entry of corpus.projects){
     const draft=prepareRoadGroupIntentB1(project,row.roadIds,row.offset);
     const violation=verifyLareGroupPreservation(project,receipt.candidate,draft,new Map(),createLareBudget());
     assert.equal(violation,null,JSON.stringify(violation));
+    assert.deepEqual(receipt.candidate.city.buildings.map(b=>b.id).sort(),project.city.buildings.map(b=>b.id).sort(),'Building identity changed');
    }catch(error){invalid=error.message;summary.invalid++;}
   }
   assert.equal(JSON.stringify(project),raw,'Accepted input mutated');
