@@ -43,7 +43,15 @@ for(const record of manifest){
  const control=prepareRoadGroupReflowB1(source,row.roadIds,row.offset);
  const controlDiagnostic=globalThis.__lareParcelDiagnostic;
  globalThis.__lareParcelDiagnostic=null;
- assert.ok(!control.candidateProject&&control.unresolved.some(i=>['lare-search-exhausted','lare-work-limit'].includes(i.code)),'Control outcome changed');
+ let originalResult=null;
+ if(control.candidateProject){
+   const receipt=validateRoadGroupApplyB1(source,defaultWorkspace(source),{selectedRoadIds:row.roadIds,offset:row.offset},control);
+   assert.ok(receipt?.ok,'Original-input candidate failed fresh Apply');
+   validateStoredProject(receipt.candidate);
+   assert.equal(verifyLareGroupPreservation(source,receipt.candidate,draft,new Map(),createLareBudget({work:1000000,stateExpansions:2048})),null,'Original-input preservation failure');
+   assert.deepEqual(receipt.candidate.city.buildings.map(b=>b.id).sort(),source.city.buildings.map(b=>b.id).sort(),'Original-input building identity change');
+   originalResult={fingerprint:hash(JSON.stringify(receipt.candidate)),score:control.lare?.score??null};
+ }else assert.ok(control.unresolved.some(i=>['lare-search-exhausted','lare-work-limit'].includes(i.code)),'Unexpected original-input refusal');
  const context=createLareContext(source,draft,new Map(),createLareBudget({work:1000000,stateExpansions:2048}));
  const properties=new Map(source.city.properties.map(p=>[p.id,p]));
  const plots=new Map(source.city.plots.map(p=>[p.id,p]));
@@ -90,17 +98,18 @@ for(const record of manifest){
    globalThis.__lareParcelDiagnostic=null;
    const trial={removed:[...ids].sort(),area:chosen.reduce((s,b)=>s+b.area,0),work:preview.lare?.stats?.work??0,expansions:preview.lare?.stats?.expansions??0,previewMs:performance.now()-t,accepted:false,issues:preview.unresolved?.map(i=>i.code)??[]};
    trial.diagnostic=diagnostic;trial.lastRejectedCandidate=preview.lare?.lastRejectedCandidate??null;
-   assert.ok(preview.candidateProject,'Archived witness no longer produces candidate');
+   // An experimental refusal is recorded, not treated as a harness failure.
    if(preview.candidateProject){
      const receipt=validateRoadGroupApplyB1(reduced,defaultWorkspace(reduced),{selectedRoadIds:row.roadIds,offset:row.offset},preview);
      trial.accepted=Boolean(receipt?.ok);trial.issues=receipt?.issues?.map(i=>i.code)??[];
+     assert.ok(trial.accepted,'Reduced-input candidate failed fresh Apply');
      if(trial.accepted){
        validateStoredProject(receipt.candidate);
        const reducedDraft=prepareRoadGroupIntentB1(reduced,row.roadIds,row.offset);
        assert.equal(verifyLareGroupPreservation(reduced,receipt.candidate,reducedDraft,new Map(),createLareBudget({work:1000000,stateExpansions:2048})),null,'Remaining-record preservation failure');
        assert.deepEqual(receipt.candidate.city.buildings.map(b=>b.id).sort(),source.city.buildings.filter(b=>!ids.has(b.id)).map(b=>b.id).sort(),'Unexpected building identity change');
        trial.score=preview.lare?.score??null;trial.fingerprint=hash(JSON.stringify(receipt.candidate));
-       assert.equal(trial.fingerprint,record.witnessFingerprint,'Witness candidate fingerprint changed');
+       trial.matchesArchivedWitness=trial.fingerprint===record.witnessFingerprint;
        best=trial;
      }
    }
@@ -109,9 +118,9 @@ for(const record of manifest){
  }
  assert.equal(JSON.stringify(source),raw,'Original accepted source mutated');
  summary.attempted++;summary.trialCount+=trials.length;
- assert.ok(best,'Archived witness failed fresh Apply');
+ // Archive witness losses separately from original-input recoveries.
  if(best){summary.recovered++;summary.removed+=best.removed.length;summary.area+=best.area;}else summary.refused++;
- const payload=JSON.stringify({...record,strategy,eligible:eligible.length,controlWork:control.lare?.stats?.work??0,controlExpansions:control.lare?.stats?.expansions??0,controlIssues:control.unresolved.map(i=>i.code),controlDiagnostic,controlLastRejectedCandidate:control.lare?.lastRejectedCandidate??null,best,trials,totalMs:performance.now()-start});
+ const payload=JSON.stringify({...record,strategy,originalResult,eligible:eligible.length,controlWork:control.lare?.stats?.work??0,controlExpansions:control.lare?.stats?.expansions??0,controlIssues:control.unresolved.map(i=>i.code),controlDiagnostic,controlLastRejectedCandidate:control.lare?.lastRejectedCandidate??null,best,trials,totalMs:performance.now()-start});
  const size=12000,count=Math.ceil(payload.length/size);
  for(let i=0;i<count;i++)console.log('LARE_CASE_CHUNK '+JSON.stringify({caseKey:key(record),i,count,data:payload.slice(i*size,(i+1)*size)}));
 }
