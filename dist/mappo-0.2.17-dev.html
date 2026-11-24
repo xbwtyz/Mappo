@@ -15035,6 +15035,7 @@ function drawOutline(ctx, camera, editor) {
 
 
 
+
 const WHOLE_CITY_PNG_BASE_PIXELS = 2048;
 const WHOLE_CITY_PNG_MAX_PIXELS = 4096;
 const WHOLE_CITY_PNG_PADDING = 0.04;
@@ -15063,7 +15064,8 @@ function wholeCityBounds(city, framing) {
     for (const plot of city.plots)
       for (const point of plot.boundary) include(point);
     for (const building of city.buildings)
-      for (const point of building.footprint) include(point);
+      for (const ring of buildingExteriorRingsS10(building))
+        for (const point of ring) include(point);
     if (city.fortificationState?.enabled && city.fortificationState.status === 'built') {
       const walls = new Map(city.walls.map(wall => [wall.id, wall]));
       for (const wall of city.walls)

@@ -3,6 +3,7 @@ import { renderWholeCityMap } from '../renderer/canvas.js';
 import { WALL_EDGE_WIDTH, measureWall } from '../core/fortification-geometry.js';
 import { gatePosts } from '../core/gate-geometry.js';
 import { STREET_EDGE_WIDTH, STREET_WIDTHS } from '../core/placement.js';
+import { buildingExteriorRingsS10 } from '../core/building-geometry-adapter-s10.js';
 import { downloadCanvasPNG } from './png-export-4f.js';
 
 const WHOLE_CITY_PNG_BASE_PIXELS = 2048;
@@ -33,7 +34,8 @@ function wholeCityBounds(city, framing) {
     for (const plot of city.plots)
       for (const point of plot.boundary) include(point);
     for (const building of city.buildings)
-      for (const point of building.footprint) include(point);
+      for (const ring of buildingExteriorRingsS10(building))
+        for (const point of ring) include(point);
     if (city.fortificationState?.enabled && city.fortificationState.status === 'built') {
       const walls = new Map(city.walls.map(wall => [wall.id, wall]));
       for (const wall of city.walls)
