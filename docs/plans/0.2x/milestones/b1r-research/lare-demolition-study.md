@@ -64,3 +64,25 @@ Exact commit [b05c009](https://github.com/xbwtyz/Mappo/commit/b05c009c48927d55f9
 ## Prospective production direction (not authorized)
 
 Preserve first, then only if explicitly permitted explore targeted generated-building deletion. Compare deletion count, occupied area, surviving relocation and other objective costs. Preserve original records, authorization, stable survivor identity, topology, protected/authored/linked/unknown entities, exact rollback and portable integrity. Require an independent original-to-candidate gate that authorizes only the exact removal set plus permitted ownership/reference updates, explicit preview of removed records, atomic Apply/Undo/Redo, cancellation, bounded shared work across demolition subsets, and no automatic replacement unless separately approved. Determine whether deletion is a separate policy/milestone before changing the approved B1R scope. Full targeted and browser acceptance is outstanding.
+
+
+### Deeper-removal verified results — partial round
+
+Exact experiment commit b05c009c48927d55f99fe48faf0165c33662c525. Planned, organic and radial runs listed above each passed 60/60 Fast Checks, zero reported invalid outcomes. Linear (17 cases) still running at this checkpoint. All 48 distinct completed identities matched against the 664 archived original strategy records (166 cases, 101 prior successes); zero overlap with prior wins or outside-manifest cases.
+
+| Morphology | Tested | Deep largest | Deep obstruction | Clear all | Distinct recovered |
+|---|---:|---:|---:|---:|---:|
+| Planned | 9 | 1 | 2 | 4 | 4 |
+| Organic | 19 | 4 | 9 | 10 | 10 |
+| Radial | 20 | 2 | 12 | 17 | 17 |
+| Total | 48 | 7 | 23 | 31 | 31 |
+
+| Strategy | Recovered | Buildings removed in successes | Area removed | Trials | Preview work | Total trial time p95 (ms) |
+|---|---:|---:|---:|---:|---:|---:|
+| Deep largest | 7 | 89 | 23276.69 | 361 | 688800171 | 7161.05 |
+| Deep obstruction | 23 | 272 | 60030.78 | 288 | 536385159 | 8129.03 |
+| Clear all | 31 | 1032 | 183098.04 | 48 | 53604050 | 1928.54 |
+
+The two bounded deep strategies collectively recovered 23 cases; eight additional cases recovered only by clear-all. Best observed outcome per new movement (fewest removals, then area): 647 removed buildings and 123789.20 area across 31 independent counterfactuals. Area is Mappo units squared. The 144 strategy records contain 697 trials and 1278789380 measured preview work units. Clear-all still refused 17/48 cases, all search-exhausted; eight had zero expansions. All 17 used below 4M work and 16,384 expansions. Clear-all removes eligible generated buildings, not necessarily all structures; protected buildings, parcel/plot/access constraints and search limitations remain. These observations motivate terminal parcel/plot candidate diagnostics rather than merely increasing budgets. No proof of infeasibility.
+
+Updated demonstrated union: 739/800 (92.375%), with 34 non-topological cases lacking a demonstrated solution (17 completed failures, 17 pending linear cases) and 27 topology refusals. Excluding clear-all-only additions gives 731/800 (91.375%) observed union. Neither is integrated production acceptance. No runtime changes or demolition authorization.

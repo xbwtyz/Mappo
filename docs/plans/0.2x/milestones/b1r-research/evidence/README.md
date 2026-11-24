@@ -17,3 +17,12 @@ Thirteen `demolition-<run>.jsonl` files contain the original LARE_DEMOLITION_CAS
 - All source runs reported successful Fast Checks (60 tests passed). No full production CI claim.
 
 Future updates should append new exact-run records, never replace an older experiment under the same filename. Distinguish verified complete runs from partial or failed runs. Keep summary reports aligned with the case archive and retain unsuccessful configurations in the research ledger.
+
+
+## Deeper-removal evidence — partial round
+
+- `demolition-45362362651.jsonl`: planned, 9 movements, 27 records, 134 trials, [run 45362362651](https://github.com/xbwtyz/Mappo/actions/runs/45362362651), job 138335339299.
+- `demolition-45362373616.jsonl`: organic, 19 movements, 57 records, 280 trials, [run 45362373616](https://github.com/xbwtyz/Mappo/actions/runs/45362373616), job 138335402411.
+- `demolition-45362385877.jsonl`: radial, 20 movements, 60 records, 283 trials, [run 45362385877](https://github.com/xbwtyz/Mappo/actions/runs/45362385877), job 138335438360.
+
+All three runs exact commit b05c009c48927d55f99fe48faf0165c33662c525, 60/60 Fast Checks, zero reported invalid outcomes. 144 original case payloads plus run/job IDs, 697 trials. Verified 48 distinct identities against 664 original records, no overlap with 101 prior wins. 31 new distinct recoveries. Linear run 45362395263 pending at this checkpoint; not archived or counted. Earlier evidence unchanged.
