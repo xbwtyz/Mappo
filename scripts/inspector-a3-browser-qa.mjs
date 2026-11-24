@@ -46,7 +46,24 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
     assert.equal(await el('buildingOffsetX').inputValue(),offset);
     assert.equal(await city(),original);
     const placeMs=Date.now()-editStart;
-    await el('buildingPreviewCancel').click();
+    // Exercise the real discard guard: dismiss preserves the draft; accept closes it.
+    const cancelBuilding = async accept => {
+      const seen = page.waitForEvent('dialog');
+      const click = el('buildingPreviewCancel').click();
+      const dialog = await seen;
+      const message = dialog.message(), type = dialog.type();
+      await (accept ? dialog.accept() : dialog.dismiss());
+      await click;
+      assert.equal(type,'confirm');
+      assert.match(message,/Discard the unsaved building preview/);
+    };
+    await cancelBuilding(false);
+    assert.equal(await page.evaluate(()=>__buildingQA.state().buildingEditSession.isActive),true);
+    assert.equal(await el('buildingOffsetX').inputValue(),offset);
+    assert.equal(await city(),original);
+    await cancelBuilding(true);
+    assert.equal(await page.evaluate(()=>__buildingQA.state().buildingEditSession.isActive),false);
+    assert.equal(await city(),original);
     const baseline=await browser.newPage({viewport:{width:1440,height:900}});
     let baselineMs;
     try{
