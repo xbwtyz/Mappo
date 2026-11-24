@@ -20,10 +20,13 @@ function riContained(inner, outer, spend) {
 }
 function riDistance(polygon, a, b, spend) {
   spend(polygon.length * 3);
-  return Math.min(...polygon.map((p, i) => segmentDistance(p, polygon[(i + 1) % polygon.length], a, b)));
+  let nearest = Infinity;
+  for (let i = 0; i < polygon.length; i++) {
+    nearest = Math.min(nearest, segmentDistance(polygon[i], polygon[(i + 1) % polygon.length], a, b));
+  }
+  return nearest;
 }
-function riSegmentNearPolygon(polygon, a, b, margin) {
-  const box = boundsOf(polygon);
+function riSegmentNearBounds(box, a, b, margin) {
   return (
     Math.max(a.x, b.x) + margin >= box.minX &&
     Math.min(a.x, b.x) - margin <= box.maxX &&
@@ -219,7 +222,8 @@ export function* iterateRoadDependencies(city, snapshot, context, emit, spend, m
     const block = blocks.get(property.blockId);
     const boundaryRoadIds = blockRoads.get(property.blockId) ?? new Set();
     const relevant = new Set([...boundaryRoadIds, ...context.roadIds]);
-    if (riPoints(polygon))
+    if (riPoints(polygon)) {
+      const box = boundsOf(polygon);
       for (const id of [...relevant].sort(riCompare)) {
         spend();
         const road = roads.get(id),
@@ -228,7 +232,7 @@ export function* iterateRoadDependencies(city, snapshot, context, emit, spend, m
         if (!road || !a || !b) continue;
         if (context.acceptedValid && !changed.has(id) && !changedBlocks.has(property.blockId)) continue;
         const margin = (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
-        if (!riSegmentNearPolygon(polygon, a, b, margin)) continue;
+        if (!riSegmentNearBounds(box, a, b, margin)) continue;
         const distance = riDistance(polygon, a, b, spend);
         if (distance < margin - 1e-5) {
           const old = oldRoads.get(id),
@@ -252,6 +256,7 @@ export function* iterateRoadDependencies(city, snapshot, context, emit, spend, m
           );
         }
       }
+    }
     const origin = property.frame?.origin;
     if (origin?.id && changedNodes.has(origin.id)) {
       const node = nodes.get(origin.id);
@@ -325,10 +330,11 @@ export function* iterateRoadDependencies(city, snapshot, context, emit, spend, m
         );
     }
     for (const ring of occupiedRoots) {
-      yield { stage: 'building-block-containment', id: building.id };
+      if (!context.acceptedValid || changedBlocks.has(building.blockId))
+        yield { stage: 'building-block-containment', id: building.id };
       blockContainment(building, 'building', ring);
     }
-    yield { stage: 'building-frontage', id: building.id };
+    if (changed.has(building.frontageRoadId)) yield { stage: 'building-frontage', id: building.id };
     frontage(building, 'building', footprint);
     const path = building.accessPath,
       road = roads.get(building.frontageRoadId),
@@ -365,16 +371,19 @@ export function* iterateRoadDependencies(city, snapshot, context, emit, spend, m
         'The accepted entrance/frontage access cannot be verified without a supported path.',
         [building.frontageRoadId],
       );
-    if (riPoints(footprint))
+    if (riPoints(footprint)) {
+      const box = boundsOf(footprint);
+      let scanned = 0;
       for (const id of context.roadIds) {
-        yield { stage: 'building-road-clearance', id: building.id };
+        if (++scanned % 32 === 0) yield { stage: 'building-road-bounds', id: building.id };
         spend();
         const r = roads.get(id),
           p = nodes.get(r?.a),
           q = nodes.get(r?.b);
         if (!p || !q) continue;
         const required = (STREET_WIDTHS[r.kind] + STREET_EDGE_WIDTH) / 2;
-        if (!riSegmentNearPolygon(footprint, p, q, required)) continue;
+        if (!riSegmentNearBounds(box, p, q, required)) continue;
+        yield { stage: 'building-road-clearance', id: building.id };
         const distance = riDistance(footprint, p, q, spend);
         if (distance < required - 1e-5)
           emit(
@@ -386,6 +395,7 @@ export function* iterateRoadDependencies(city, snapshot, context, emit, spend, m
             { newDistance: distance, requiredDistance: required },
           );
       }
+    }
   }
   const openMetrics = [];
   for (const open of riSorted(city.openSpaces)) {

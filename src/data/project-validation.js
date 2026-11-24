@@ -45,6 +45,7 @@ import {
   insideOrOn,
   distanceToSegment,
   segmentCuts,
+  appendSegmentCuts,
   clearance
 } from '../core/boundary.js';
 import {
@@ -108,16 +109,12 @@ export function createValidationBudget() {
   };
 }
 export function* iterateJsonTreeValidation(value) {
-  const pending = [{
-    value,
-    depth: 0
-  }];
+  const values = [value], depths = [0];
   let count = 0;
-  while (pending.length) {
-    const item = pending.pop();
-    if (++count > 1200000 || item.depth > 64) throw new Error('Project data is too deeply nested or too large.');
-    if (count % 1024 === 0) yield { stage: 'project-json-data' };
-    const v = item.value;
+  while (values.length) {
+    const v = values.pop(), depth = depths.pop();
+    if (++count > 1200000 || depth > 64) throw new Error('Project data is too deeply nested or too large.');
+    if (count % 256 === 0) yield { stage: 'project-json-data' };
     if (v === null || typeof v === 'string' || typeof v === 'boolean') continue;
     if (typeof v === 'number') {
       if (!Number.isFinite(v)) throw new Error('Project data contains a non-finite number.');
@@ -126,10 +123,8 @@ export function* iterateJsonTreeValidation(value) {
     if (typeof v !== 'object' || (!Array.isArray(v) && Object.prototype.toString.call(v) !== '[object Object]')) throw new Error('Project data must contain JSON values only.');
     for (const key of Object.keys(v)) {
       if (key === '__proto__') throw new Error('Project data contains an unsafe object key.');
-      pending.push({
-        value: v[key],
-        depth: item.depth + 1
-      });
+      values.push(v[key]);
+      depths.push(depth + 1);
     }
   }
 }
@@ -235,7 +230,7 @@ function* iterateStoredRoadGraph(city, boundary, nodes, spend) {
     const cuts = [0, 1];
     for (let i = 0; i < boundary.length; i++) {
       spend(1);
-      cuts.push(...segmentCuts(a, b, boundary[i], boundary[(i + 1) % boundary.length]));
+      appendSegmentCuts(cuts, a, b, boundary[i], boundary[(i + 1) % boundary.length]);
     }
     cuts.sort((a, b) => a - b);
     for (let i = 1; i < cuts.length; i++) {

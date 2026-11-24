@@ -3,10 +3,10 @@ import { prepareRoadTopologyReflowC3 } from './road-topology-reflow.js';
 import { roadBuildingOccupiedPlots } from './road-building-decisions.js';
 import { resolveBuildingAccess } from '../editor/building-application.js';
 import { reflowGeneratedRoadBuildings } from './road-building-reflow.js';
-import { prepareJunctionIntentC7, prepareRoadIntentC1, iterateRoadGroupIntentB1 } from './road-intent-c1.js';
+import { prepareJunctionIntentC7, prepareRoadIntentC1, iterateRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent-c1.js';
 import { buildRoadGraph } from './road-graph.js';
 import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
-import { analyzeRoadImpact, iterateRoadImpact } from './road-impact.js';
+import { analyzeRoadImpact, iterateRoadGroupImpactB1 } from './road-impact.js';
 import { iterateRoadDependencies, inspectRoadContextReferences } from './road-impact-dependencies.js';
 import { riBudget, riEqual, riIndex, riReporter } from './road-impact-model.js';
 import { classifyRoadProvenance, stampRoadGenerated } from './road-provenance.js';
@@ -121,8 +121,7 @@ export function prepareNeighborhoodReflowC3(project, roadId, offset,
 // Group movement intentionally does not call reconcileRoadIntent, whose
 // singleton policy can normalize crossings or reconstruct block topology.
 export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options={}) {
-  let topology;
-  const draft = yield* iterateRoadGroupIntentB1(project, selectedRoadIds, offset, value => { topology = value; });
+  const draft = yield* iterateRoadGroupIntentB1(project, selectedRoadIds, offset);
   const id=draft.selectedRoadIds?.[0]??'group';
   const blocked=(issues,source={})=>({...source,phase:'B1',status:'needs-review',
     candidateProject:null,changed:[],ledger:[],unresolved:issues.map(describeLareRefusal),
@@ -138,8 +137,8 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
         relatedIds:issue.roadIds??[]}));
     return blocked(issues.length?issues:[c2Issue('road',id,'group-topology','A nonzero move with unchanged road and face topology is required.')]);
   }
-  const { graph, faces, identity } = topology;
-  const impact = yield* iterateRoadImpact(project, { operation: 'translate-road', graph });
+  const { graph, faces, identity } = readRoadGroupTopologyB1(project, draft);
+  const impact = yield* iterateRoadGroupImpactB1(project, draft);
   const analysis = { graph, faces, identity, impact };
   const analyze = () => analysis;
   const strictOptions = { ...options, strictGroup: true };

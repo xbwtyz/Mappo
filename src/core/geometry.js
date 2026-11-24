@@ -4,12 +4,13 @@ export function clamp(value, min, max) {
 
 export function boundsOf(points) {
   if (!points.length) return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
-  return points.reduce((bounds, p) => ({
-    minX: Math.min(bounds.minX, p.x),
-    minY: Math.min(bounds.minY, p.y),
-    maxX: Math.max(bounds.maxX, p.x),
-    maxY: Math.max(bounds.maxY, p.y)
-  }), { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
+  return points.reduce((bounds, p) => {
+    bounds.minX = Math.min(bounds.minX, p.x);
+    bounds.minY = Math.min(bounds.minY, p.y);
+    bounds.maxX = Math.max(bounds.maxX, p.x);
+    bounds.maxY = Math.max(bounds.maxY, p.y);
+    return bounds;
+  }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
 }
 
 export function pointInPolygon(point, polygon) {

@@ -13,7 +13,7 @@ import { findEligibleJunctionTarget } from '../core/junction-targeting.js';
 import { makeSelectionSetA1, selectionSingletonA1, selectionTransitionA1, sameSelectionRefA1 } from '../core/workspace-state.js';
 
 // Leave headroom for the last kernel in each 8 ms scheduled slice.
-export const LARE_SLICE_WINDOW_MS = 4;
+export const LARE_SLICE_WINDOW_MS = 1.25;
 let lareSliceChannel;
 const lareSliceQueue = [];
 

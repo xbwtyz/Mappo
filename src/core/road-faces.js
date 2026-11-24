@@ -1,6 +1,6 @@
 import { iterateRoadGraph } from './road-graph.js';
 import { polygonSignedArea, pointInPolygon, boundsOf } from './geometry.js';
-import { insideOrOn, distanceToSegment, segmentCuts, lerpPoint } from './boundary.js';
+import { insideOrOn, distanceToSegment, appendSegmentCuts, lerpPoint } from './boundary.js';
 import { waterFaceInterior, waterSetContains, waterFaceFeatureIds } from './water-geometry.js';
 import { validateWaterCity } from './water-model.js';
 import { validateTerrainCity } from './terrain-model.js';
@@ -198,7 +198,7 @@ export function* iterateRoadFaces(graph, protectedGeometry) {
         cuts = [0, 1];
       for (let i = 0; i < boundary.length; i++) {
         spend();
-        cuts.push(...segmentCuts(a, b, boundary[i], boundary[(i + 1) % boundary.length]));
+        appendSegmentCuts(cuts, a, b, boundary[i], boundary[(i + 1) % boundary.length]);
       }
       cuts.sort((x, y) => x - y);
       if (
@@ -355,7 +355,7 @@ export function extractRoadFaces(graph, protectedGeometry) {
   }
 }
 
-export function* iterateRoadFaceIdentity(oldCity, extraction) {
+export function* iterateRoadFaceIdentity(oldCity, extraction, acceptedGraph = null) {
   const result = {
     valid: false,
     preserved: [],
@@ -380,7 +380,7 @@ export function* iterateRoadFaceIdentity(oldCity, extraction) {
     return rfFreeze(result);
   }
   yield { stage: 'accepted-face-graph' };
-  const accepted = yield* iterateRoadGraph(oldCity);
+  const accepted = acceptedGraph ?? (yield* iterateRoadGraph(oldCity));
   const baseline = yield* iterateRoadFaces(accepted, oldCity);
   if (!baseline.valid) {
     result.issues.push(rfIssue('invalid-accepted-faces', 'The accepted road/face network is not valid.'));

@@ -11,8 +11,19 @@ const b1Mutable = {
   buildings: ['entrance','accessPath','plotIds','roadProvenance','geometry','orientation','area'],
   openSpaces: ['area']
 };
-const b1Without=(value,keys)=>Object.fromEntries(Object.entries(value)
-  .filter(([key])=>!keys.includes(key)));
+function b1SameProtectedFields(before, after, editable) {
+  let matched = 0;
+  for (const key of Object.keys(before)) {
+    if (editable.includes(key)) continue;
+    if (!Object.prototype.propertyIsEnumerable.call(after, key) || !riEqual(before[key], after[key]))
+      return false;
+    matched++;
+  }
+  for (const key of Object.keys(after)) {
+    if (!editable.includes(key)) matched--;
+  }
+  return matched === 0;
+}
 const b1Mismatch=(code,message,id)=>({kind:'road',id,code,message,severity:'needs-review'});
 
 // Schema 10 region topology and component metadata must survive any relocation.
@@ -20,10 +31,9 @@ const b1Mismatch=(code,message,id)=>({kind:'road',id,code,message,severity:'need
 // are outside this group's generated-building relocation scope.
 function b1GeometryPreserved(before,after) {
   if(!before || !after || !Array.isArray(before.regions) || !Array.isArray(after.regions))return false;
-  return riEqual(b1Without(before,['regions']),b1Without(after,['regions'])) &&
+  return b1SameProtectedFields(before, after, ['regions']) &&
     before.regions.length===after.regions.length &&
-    before.regions.every((region,i)=>riEqual(b1Without(region,['ring']),
-      b1Without(after.regions[i],['ring'])));
+    before.regions.every((region,i)=>b1SameProtectedFields(region, after.regions[i], ['ring']));
 }
 
 export function* iterateRoadGroupPreservationB1(before,after,draft,removedIds = new Set()) {
@@ -32,7 +42,7 @@ export function* iterateRoadGroupPreservationB1(before,after,draft,removedIds = 
   if(before?.schemaVersion!==10 || after?.schemaVersion!==10 ||
     !draft?.group?.eligible || !before.city || !after.city)
     return fail('group-preservation','A verified Schema 10 group draft is required.');
-  if(!riEqual(b1Without(before,['city']),b1Without(after,['city'])))
+  if(!b1SameProtectedFields(before, after, ['city']))
     return fail('group-project-metadata','The road group would change project metadata.');
   const old=before.city,next=after.city;
   const collections=Object.keys(b1Mutable);
@@ -83,15 +93,19 @@ export function* iterateRoadGroupPreservationB1(before,after,draft,removedIds = 
         if(!riEqual(a,b))return fail('group-unaffected-change','An unaffected record would change.',a.id);
         continue;
       }
+      const canRemoveFromProperty = key === 'properties' && removedIds.size > 0;
+      if ((key === 'properties' || key === 'buildings') && !canRemoveFromProperty && riEqual(a, b)) continue;
       let allowed=b1Mutable[key];
       if (key === 'properties') {
         const generated = classifyRoadProvenance(a, a.plotIds.map(pid => oldPlots.get(pid))) === 'generated';
         if (!generated) allowed = allowed.filter(field => field !== 'roadProvenance');
-        const remaining = a.buildingIds.filter(buildingId => !removedIds.has(buildingId));
-        if (remaining.length !== a.buildingIds.length) {
-          if (!generated || !riEqual(remaining, b.buildingIds))
-            return fail('group-demolition-membership','A demolition would change unauthorized property membership.',a.id);
-          allowed = [...allowed,'buildingIds'];
+        if (canRemoveFromProperty) {
+          const remaining = a.buildingIds.filter(buildingId => !removedIds.has(buildingId));
+          if (remaining.length !== a.buildingIds.length) {
+            if (!generated || !riEqual(remaining, b.buildingIds))
+              return fail('group-demolition-membership','A demolition would change unauthorized property membership.',a.id);
+            allowed = [...allowed,'buildingIds'];
+          }
         }
       }
       if(key==='buildings') {
@@ -100,7 +114,7 @@ export function* iterateRoadGroupPreservationB1(before,after,draft,removedIds = 
         else if(!riEqual(a.geometry,b.geometry) && !b1GeometryPreserved(a.geometry,b.geometry))
           return fail('group-building-structure','Generated relocation would alter building structure or metadata.',a.id);
       }
-      if(!riEqual(b1Without(a,allowed),b1Without(b,allowed)))
+      if(!b1SameProtectedFields(a, b, allowed))
         return fail('group-record-change','This movement would change protected metadata or ownership.',a.id);
     }
   }

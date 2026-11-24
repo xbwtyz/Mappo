@@ -1,5 +1,6 @@
 import { iterateRoadGraph, proposeJunctionMove } from './road-graph.js';
 import { iterateRoadFaces, iterateRoadFaceIdentity } from './road-faces.js';
+import { readRoadGroupTopologyB1 } from './road-intent-c1.js';
 import { iterateJsonTreeValidation, iterateStoredProjectValidation } from '../data/project-validation.js';
 import { iterateRoadDependencies, inspectRoadContextReferences } from './road-impact-dependencies.js';
 import {
@@ -214,6 +215,16 @@ function riTopologyDependencies(city, faceIds, emit) {
 }
 
 export function* iterateRoadImpact(project, proposal) {
+  return yield* iterateRoadImpactReport(project, proposal);
+}
+
+export function* iterateRoadGroupImpactB1(project, draft) {
+  const topology = readRoadGroupTopologyB1(project, draft);
+  if (!topology) throw Error('Road impact requires topology from the current group intent.');
+  return yield* iterateRoadImpactReport(project, { operation: 'translate-road', graph: topology.graph }, topology);
+}
+
+function* iterateRoadImpactReport(project, proposal, topology = null) {
   const { emit, items } = riReporter(),
     spend = riBudget(),
     city = project?.city;
@@ -291,7 +302,7 @@ export function* iterateRoadImpact(project, proposal) {
       emit('city', city.id, 'accepted-project', error.message, [], null, 'invalid');
     }
     yield { stage: 'impact-accepted-graph' };
-    const accepted = yield* iterateRoadGraph(city);
+    const accepted = topology?.accepted ?? (yield* iterateRoadGraph(city));
     if (!accepted.valid) {
       riGraphIssues(city, accepted.issues, null, emit);
       return finish();
@@ -333,10 +344,10 @@ export function* iterateRoadImpact(project, proposal) {
       )
         throw new Error('The temporary candidate graph is missing supported node/road indexes.');
       yield { stage: 'impact-candidate-graph' };
-      graph = yield* iterateRoadGraph({
+      graph = topology?.graph ?? (yield* iterateRoadGraph({
         nodes: [...proposal.graph.nodesById.values()],
         roads: [...proposal.graph.roadsById.values()],
-      });
+      }));
     } catch (error) {
       emit('city', city.id, 'candidate-input', error.message, [], null, 'invalid');
       return finish();
@@ -400,7 +411,7 @@ export function* iterateRoadImpact(project, proposal) {
       return finish();
     }
     yield { stage: 'impact-candidate-faces' };
-    const extraction = yield* iterateRoadFaces(graph, city);
+    const extraction = topology?.faces ?? (yield* iterateRoadFaces(graph, city));
     if (!extraction.valid) {
       for (const issue of extraction.issues) {
         for (const id of issue.roadIds.length ? issue.roadIds : [city.id])
@@ -421,7 +432,7 @@ export function* iterateRoadImpact(project, proposal) {
       );
       return finish();
     }
-    identity = yield* iterateRoadFaceIdentity(city, extraction);
+    identity = topology?.identity ?? (yield* iterateRoadFaceIdentity(city, extraction, accepted));
     const kinds = new Map(riRecords(city).map((r) => [r.id, r.kind]));
     const faceKinds = new Map([
       ...city.blocks.map((f) => [f.id, 'block']),

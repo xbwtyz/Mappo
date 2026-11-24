@@ -52,7 +52,16 @@ export function prepareRoadGroupIntentB1(project, selectedRoadIds, offset) {
   }
 }
 
-export function* iterateRoadGroupIntentB1(project,selectedRoadIds,offset,captureTopology) {
+// Topology computed inside the intent can be reused during that operation.
+// Caller-constructed intents have no entry and cannot supply these results.
+const c1GroupTopology = new WeakMap();
+
+export function readRoadGroupTopologyB1(project, draft) {
+  const topology = c1GroupTopology.get(draft);
+  return topology && topology.project === project && topology.city === project.city ? topology : null;
+}
+
+export function* iterateRoadGroupIntentB1(project,selectedRoadIds,offset) {
   yield { stage: 'accepted-road-graph' };
   const graph=yield* iterateRoadGraph(project?.city);
   const proposal=proposeRoadGroupNodesB1(graph,selectedRoadIds,offset);
@@ -62,9 +71,13 @@ export function* iterateRoadGroupIntentB1(project,selectedRoadIds,offset,capture
       operation:'draft-road-group-translation',group:proposal.group,
       selectedRoadIds:proposal.group.selectedRoadIds,issues:proposal.issues});
   }
-  return yield* iterateRoadIntent(project,graph,proposal.proposedNodes,
-    'draft-road-group-translation',{group:proposal.group,
-      selectedRoadIds:proposal.group.selectedRoadIds,offset:proposal.offset},captureTopology);
+  let topology;
+  const draft = yield* iterateRoadIntent(project, graph, proposal.proposedNodes,
+    'draft-road-group-translation', { group: proposal.group,
+      selectedRoadIds: proposal.group.selectedRoadIds, offset: proposal.offset },
+    value => { topology = value; });
+  if (topology) c1GroupTopology.set(draft, Object.freeze({ project, city: project.city, accepted: graph, ...topology }));
+  return draft;
 }
 
 export function prepareJunctionIntentC7(project,junctionId,point) {
@@ -128,7 +141,7 @@ function* iterateRoadIntent(project,accepted,proposedNodes,operation,selection,c
         if(!faces.valid)issues.push(...faces.issues.map(issue=>({code:issue.code,message:issue.message})));
         else{
           yield { stage: 'road-intent-face-identity' };
-          const identity=yield* iterateRoadFaceIdentity(project.city,faces);
+          const identity=yield* iterateRoadFaceIdentity(project.city,faces,accepted);
           captureTopology?.({ graph, faces, identity });
           facesResolved=identity.valid && !identity.requiresReview;
           if(!facesResolved)issues.push({code:'face-reflow-needed',

@@ -6,7 +6,8 @@ import { inspectRoadDependencies } from '../src/core/road-impact-dependencies.js
 import { riBudget,riReporter } from '../src/core/road-impact-model.js';
 import { buildRoadGraph } from '../src/core/road-graph.js';
 import { extractRoadFaces,matchExistingFaces } from '../src/core/road-faces.js';
-import { analyzeRoadImpact } from '../src/core/road-impact.js';
+import { analyzeRoadImpact, iterateRoadGroupImpactB1 } from '../src/core/road-impact.js';
+import { finishLareSteps } from '../src/core/reconciliation-steps.js';
 import { prepareRoadGroupReflowB1,iterateRoadGroupReflowB1 } from '../src/core/neighborhood-reflow.js';
 import { validateRoadGroupApplyB1 } from '../src/editor/road-application.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
@@ -91,4 +92,18 @@ test('B1R outside-block setback diagnostics measure the original and candidate r
   assert.ok(Math.abs(issue.metrics.newDistance-8.080749215358827)<1e-9);
   assert.equal(issue.metrics.requiredDistance,8.7);
   assert.equal(issue.severity,'needs-review');
+});
+
+test('B1R reuses only an issued group intent and reports identical checked impact', () => {
+  const project = createProject({ seed: 'c2-planned', size: 'small', morphology: 'planned' });
+  const draft = prepareRoadGroupIntentB1(project, ['RD-0113', 'RD-0114'], { x: .05, y: 0 });
+  assert.ok(draft.facesResolved);
+
+  const expected = analyzeRoadImpact(project, {
+    operation: 'translate-road',
+    graph: buildRoadGraph(draft.proposedCity),
+  });
+  assert.deepEqual(finishLareSteps(iterateRoadGroupImpactB1(project, draft)), expected);
+  assert.throws(() => finishLareSteps(iterateRoadGroupImpactB1(project, { ...draft })), /current group intent/);
+  assert.throws(() => finishLareSteps(iterateRoadGroupImpactB1({ ...project }, draft)), /current group intent/);
 });
