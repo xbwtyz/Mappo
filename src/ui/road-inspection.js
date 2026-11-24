@@ -262,6 +262,7 @@ export class RoadInspectionWorkspace {
       reconcile,
       reconcileRoad,
       computeJunctionAsync,
+      selectionAuthority: shell.roadSelectionA1,
       changed: () => {
         this.render();
         this.draw();
@@ -321,10 +322,9 @@ export class RoadInspectionWorkspace {
     this.baseRevision = this.getRevision();
     this.applyError = '';
     this.baseline = { project: captured.project, workspace: JSON.parse(JSON.stringify(captured.workspace)) };
-    this.session.start();
     const ui = this.baseline.workspace.ui;
     this.shell.reset({
-      selection: ui.selection,
+      selection: null,
       transient: true,
       ui: {
         ...ui,
@@ -332,6 +332,7 @@ export class RoadInspectionWorkspace {
         toolsCollapsed: this.usesDesktopPanel || this.camera.width < 900 || ui.toolsCollapsed,
       },
     });
+    this.session.start();
     this.$('workspaceSection-city').inert = true;
     this.$('mapViewport').classList.add('road-inspection-active');
     if (this.usesDesktopPanel) this.desktopLayout.show(this.$('roadPreviewPanel'));
@@ -385,6 +386,16 @@ export class RoadInspectionWorkspace {
     this.session.reset();
   }
   bind() {
+    this.$('roadSelectionClearA1').addEventListener('click',()=>this.session.requestSelectionA1(null));
+    this.$('roadSelectionLocateA1').addEventListener('click',()=>{
+      const s=this.session;
+      if(!s.current()||s.selectionSet.items.length<2)return;
+      const points=s.selectionSet.items.flatMap(ref=>{
+        const road=s.graph.roadsById.get(ref.id);
+        return road?[s.graph.nodesById.get(road.a),s.graph.nodesById.get(road.b)]:[];
+      }).filter(Boolean);
+      if(points.length){this.camera.fit(points,60);this.draw();}
+    });
     this.$('roadModeButton').addEventListener('click', () => this.start());
     this.$('roadDesktopPreviewG2').addEventListener('click', () => this.start({ desktop: true }));
     this.$('roadPreviewCancel').addEventListener('click', () => this.exit({ focus: true }));
@@ -481,10 +492,10 @@ export class RoadInspectionWorkspace {
       this.optionsKind = null;
       const kind = this.$('roadSelectionKind').value;
       const index = kind === 'junction' ? this.session.graph.nodesById : this.session.graph.roadsById;
-      this.session.select({ kind, id: index.keys().next().value });
+      this.session.requestSelectionA1({ kind, id: index.keys().next().value });
     });
     this.$('roadSelectionId').addEventListener('change', () =>
-      this.session.select({
+      this.session.requestSelectionA1({
         kind: this.$('roadSelectionKind').value,
         id: this.$('roadSelectionId').value,
       }),
@@ -592,7 +603,7 @@ export class RoadInspectionWorkspace {
             'Inspect ' + (kind === 'road' ? 'endpoint ' : 'connected junction ') + id,
           );
           button.addEventListener('click', () => {
-            s.select({ kind: 'junction', id });
+            s.requestSelectionA1({ kind: 'junction', id });
             this.$('roadSelectionId').focus();
           });
           return button;
@@ -676,7 +687,7 @@ export class RoadInspectionWorkspace {
           'The neighborhood could not be reconciled.') :
         bends ? 'Add or move a bend to preview the street shape.' :
         'Drag a road on the map or enter a displacement to preview your chosen street position.');
-    this.$('roadStartMergeJunctions').disabled = !s.current() || Boolean(s.drag);
+    this.$('roadStartMergeJunctions').disabled = !s.current() || Boolean(s.drag) || s.selectionSet.items.length>1;
     this.$('roadPreviewEligibility').textContent = d?.movable
       ? 'Drag the selected junction, edit X/Y, or focus the map and use arrow keys. Space/middle drag pans.'
       : d?.protected
@@ -801,6 +812,35 @@ export class RoadInspectionWorkspace {
       this.lastReport = s.report;
       this.limit = 50;
       this.renderReport();
+    }
+    this.renderSelectionGroupA1();
+  }
+
+  renderSelectionGroupA1() {
+    const s=this.session,set=s.selectionSet,group=set.items.length>1;
+    const panel=this.$('roadSelectionGroupA1');
+    panel.hidden=!group;
+    this.$('roadEditControlsD1').hidden=group;
+    this.$('roadDetailsD1').hidden=group;
+    if(s.selectionNoticeA1)this.$('roadApplyStatusB4').textContent=s.selectionNoticeA1;
+    if(!group){this.groupKeyA1=null;return;}
+    this.$('roadMenuViews').hidden=true;
+    this.$('roadPreviewHeading').textContent=set.items.length+' road segments selected';
+    this.$('roadSelectionCountA1').textContent=set.items.length+' road segments';
+    this.$('roadReportStatus').textContent='Selection only';
+    this.$('roadApplyStatusB4').textContent=s.selectionNoticeA1||'Select one road to edit. Group movement is not supported yet.';
+    this.$('roadApplyB4').disabled=true;
+    const key=JSON.stringify(set);
+    if(this.groupKeyA1!==key){
+      this.groupKeyA1=key;
+      this.$('roadSelectionMembersA1').replaceChildren(...set.items.map(ref=>{
+        const button=document.createElement('button');
+        button.type='button';button.className='minor-button';
+        button.textContent=ref.id+(ref.id===set.primary?.id?' · primary':'')+' ×';
+        button.setAttribute('aria-label','Remove '+ref.id+' from selection');
+        button.addEventListener('click',()=>s.requestSelectionA1(ref,{toggle:true}));
+        return button;
+      }));
     }
   }
 

@@ -181,6 +181,10 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
     ctx.fill();
   }
   const d = session.details;
+  if(session.selectionSet?.items.length>1)
+    for(const ref of session.selectionSet.items) {
+      if(ref.kind==='road')segment(graph.roadsById.get(ref.id),ref.id===session.selectionSet.primary?.id?'#1b58ad':'#347cc5',ref.id===session.selectionSet.primary?.id?7:5);
+    }
   if (d?.kind === 'road') segment(d.record, '#315c69', 5);
   if (d?.kind === 'road' && session.roadConnectionEdit && session.roadConnectionEdit.kind !== 'shape' && session.previewVisible !== false) {
     const { kind, endpoint, target } = session.roadConnectionEdit;

@@ -7,6 +7,7 @@ import { hitRoadInspection, roadInspectionDetails } from '../core/road-inspectio
 import { prepareRoadIntentC1 } from '../core/road-intent-c1.js';
 import { distanceToSegment } from '../core/boundary.js';
 import { findEligibleJunctionTarget } from '../core/junction-targeting.js';
+import { makeSelectionSetA1, selectionSingletonA1, selectionTransitionA1, sameSelectionRefA1 } from '../core/workspace-state.js';
 
 // No commit, history or serialization interface. Revisions invalidate every
 // deferred callback, including callbacks already queued when cancellation occurs.
@@ -20,14 +21,45 @@ export class RoadPreviewSession {
     reconcile = null,
     reconcileRoad = null,
     computeJunctionAsync = null,
+    selectionAuthority = null,
   }) {
     Object.assign(this, { getProject, changed, schedule, unschedule, analyze, reconcile, reconcileRoad, computeJunctionAsync });
+    this.selectionAuthority = selectionAuthority;
+    this.localSelectionA1 = makeSelectionSetA1();
     this.active = false;
     this.snapEnabled = true;
     this.revision = 0;
     this.previewVisible = true;
     this.focusKey = null;
     this.recoveryFocusD3 = null;
+  }
+  get selectionSet() {
+    return this.selectionAuthority?.read() ?? this.localSelectionA1;
+  }
+  set selectionSet(set) {
+    if(this.selectionAuthority)this.selectionAuthority.write(set);
+    else this.localSelectionA1=set;
+  }
+  get selection() { return selectionSingletonA1(this.selectionSet); }
+  set selection(ref) { this.selectionSet=makeSelectionSetA1(ref?[ref]:[]); }
+  get selectionDraftLockedA1() {
+    return Boolean(this.pending || this.checking || this.drag || this.mergeMode || this.bendEditor ||
+      this.roadIntentInputError || this.error);
+  }
+  requestSelectionA1(ref,{toggle=false}={}) {
+    if(!this.current())return false;
+    if(!toggle && this.selection && sameSelectionRefA1(this.selection,ref))return true;
+    if(this.selectionDraftLockedA1){
+      this.selectionNoticeA1='Finish or reset the road draft before changing selection.';
+      this.changed();return false;
+    }
+    const result=selectionTransitionA1(this.selectionSet,{type:toggle?'toggle':'replace',ref},{
+      canGroup:kind=>kind==='road',
+      exists:item=>item.kind==='road'?this.graph.roadsById.has(item.id):
+        item.kind==='junction'&&this.graph.nodesById.has(item.id)
+    });
+    if(!result.ok){this.selectionNoticeA1=result.reason;this.changed();return false;}
+    this.selectionSet=result.selection;this.reset();return true;
   }
   start() {
     this.stop();
@@ -328,6 +360,7 @@ export class RoadPreviewSession {
     this.reset();
   }
   reset() {
+    this.selectionNoticeA1='';
     this.invalidate();
     const d = this.details;
     this.point = d?.kind === 'junction' ? { x: d.record.x, y: d.record.y } : null;
@@ -562,8 +595,11 @@ export class RoadPreviewSession {
       }
     }
     const hit = this.hit(point, zoom, pointerType);
-    if (!hit) return false;
-    if (hit.kind !== this.selection?.kind || hit.id !== this.selection?.id) this.select(hit);
+    if (!hit || this.selectionSet.items.length>1) return false;
+    if (!sameSelectionRefA1(hit,this.selection)) {
+      if(this.selectionDraftLockedA1)return false;
+      this.select(hit);
+    }
     this.drag = {
       point: this.point ? { ...this.point } : null,
       offset: {...(this.roadIntentOffset ?? {x:0,y:0})},

@@ -79,3 +79,7 @@ The owner separately approved P1–P5 implementation on a fresh branch. Merge, r
 | D-031-5 | Existing UI shared Undo/Redo and compact read-only history panel |
 
 P1–P5 implementation separately authorized on a fresh branch from verified main. Merge, release, tags and Pages remain separate gates. [Milestone](milestones/0.2.11-unified-history.md) · [#106](https://github.com/xbwtyz/Mappo/issues/106).
+
+## 0.2.18-dev A1 — Owner-approved shared selection architecture
+
+A1-01 through A1-10 = A; detailed P1–P5 implementation separately authorized. See [A1 contract](milestones/0.2.18-shared-selection-a1.md). Schema 10, envelope 1, workspace 1 retained. Separate PR merge, release, tag and Pages approval required. A0 manual task-friction evidence remains outstanding.
