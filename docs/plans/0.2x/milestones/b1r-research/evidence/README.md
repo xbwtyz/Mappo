@@ -39,3 +39,13 @@ All three runs exact commit b05c009c48927d55f99fe48faf0165c33662c525, 60/60 Fast
 - `parcel-compact-45365642330.jsonl`: nine paired original/reduced records, nine subset trials, job 138346538289, exact commit fcfcb7900f3c1531e14e424a1c13f90758036d9a. All identities and exact removal sets matched the diagnostic cohort; seven reduced-input recoveries, zero original-input recoveries.
 
 Both Fast Checks passed 60/60. Raw case payloads plus run/job IDs are retained without overwriting earlier data. The two experiments add 31 diagnostic/counterfactual records and 31 subset trials; distinguish these from the original 882 demolition-strategy records and 6736 trials. Total JSONL files: 24.
+
+
+## Compact expansion and witness pilot
+
+- `parcel-compact-45366278402.jsonl`: planned, 5 records, job 138348698293.
+- `parcel-compact-45366283090.jsonl`: radial, 3 records, job 138348715845.
+- `parcel-compact-45366287308.jsonl`: linear, 5 records, job 138348730459.
+- `single-witness-45365975725.jsonl`: ten intact records plus two explicitly marked incomplete raw truncated log lines, job 138347659665. Summary and 60/60 Fast Checks establish twelve witness reproductions; detailed evidence partial until chunked replay. Do not count the two raw fragments as complete records.
+
+Compact runs exact commit 3995ebd062d321d01693a8356be7bc5c3f16c9f7, witness run a318dc35753d482c249fe5db3b73ad8ca562be26. Earlier datasets retained. All four runs passed 60/60 Fast Checks. Total JSONL files: 28.

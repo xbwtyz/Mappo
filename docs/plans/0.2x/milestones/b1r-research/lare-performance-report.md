@@ -41,3 +41,8 @@ Three completed shards (planned, organic, radial; 48 cases), 697 trials, 1278789
 ## Terminal diagnostics and compact pilot
 
 Terminal diagnostic run 45365153567 reproduced deterministic reduced-input work/expansion counts on all 22 cases; summed preview work 25258299. Compact pilot 45365642330 increased candidate generation and recovered seven of nine reduced-input cases, none on original input. On the identical nine reduced-input cases, preview work changed from 9728748 to 14784238; original-input compact work 19729544. Compact trial-sequence p95 3638.98 ms (hosted-runner observation, includes successful Apply). No production performance gate passed.
+
+
+## Compact cross-morphology replay
+
+22 matched reduced-input cases: original preview work 25258299, compact preview work 34753296, original-input compact work 43225915, compact trial-sequence p95 2370.36 ms, hosted timing only. Eleven reduced-input recoveries, zero original-input recoveries. Additional work is not evidence of improved production responsiveness. Single-building witness pilot completed; two oversized log records truncated, detailed aggregate performance deferred to chunked replay.
