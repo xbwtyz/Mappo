@@ -4,9 +4,9 @@ import {execFileSync} from 'node:child_process';
 import {mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-const configs={"feature/lare-building-aware-parcel-experiment":{"branch":"feature/lare-building-aware-parcel-experiment","strategies":["witness-single"],"mode":"selective","work":4000000,"expansions":16384,"beam":8,"parcels":24,"buildings":24,"combined":false,"ranges":[[0,5,12]]}};
+const configs={"feature/lare-rigid-feasible-region-experiment":{"branch":"feature/lare-rigid-feasible-region-experiment","strategies":["witness-single"],"mode":"selective","work":4000000,"expansions":16384,"beam":8,"parcels":24,"buildings":24,"combined":false,"ranges":[[0,5,12]]}};
 const config=configs[process.env.GITHUB_REF_NAME]??(process.env.MAPPO_LARE_CAPTURE==='1'&&process.env.MAPPO_LARE_INSET_CONFIG?JSON.parse(process.env.MAPPO_LARE_INSET_CONFIG):null);
-test('B1R native frozen baseline and candidate comparison — detached building-aware parcel lookahead', {skip: !config || !(process.env.MAPPO_LARE_CAPTURE==='1'||(process.env.GITHUB_ACTIONS==='true'&&process.env.GITHUB_WORKFLOW==='Mappo Fast Checks')),timeout: 600000},()=>{
+test('B1R native frozen baseline and candidate comparison — detached rigid feasible-region placement', {skip: !config || !(process.env.MAPPO_LARE_CAPTURE==='1'||(process.env.GITHUB_ACTIONS==='true'&&process.env.GITHUB_WORKFLOW==='Mappo Fast Checks')),timeout: 600000},()=>{
  const root=mkdtempSync(join(tmpdir(),'mappo-lare-'));
  const baseline=join(root,'baseline'),out=join(root,'corpus'),experiment=join(root,'experiment');
  const sha='e5f1cf83dcdcc75e52911aa717035955b40569d0';
@@ -18,6 +18,7 @@ test('B1R native frozen baseline and candidate comparison — detached building-
   execFileSync(process.execPath,['scripts/lare-experiment-parcel-diagnostics.mjs',experiment],{stdio:'inherit'});
   execFileSync(process.execPath,['scripts/lare-experiment-interleaved-placement.mjs',experiment],{stdio:'inherit'});
   execFileSync(process.execPath,['scripts/lare-experiment-building-aware.mjs',experiment],{stdio:'inherit'});
+  execFileSync(process.execPath,['scripts/lare-experiment-rigid-region.mjs',experiment],{stdio:'inherit'});
   for(const [first,count,expected] of config.ranges){
    const corpus=join(out,String(first));
    execFileSync(process.execPath,['scripts/lare-baseline.mjs',baseline,corpus,String(first),String(count)],{stdio:'inherit',timeout:540000});
