@@ -1,7 +1,8 @@
-import { buildRoadGraph, proposeJunctionMove } from './road-graph.js';
-import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
-import { validateJsonTree, validateStoredProject } from '../data/project-validation.js';
-import { inspectRoadDependencies, inspectRoadContextReferences } from './road-impact-dependencies.js';
+import { iterateRoadGraph, proposeJunctionMove } from './road-graph.js';
+import { iterateRoadFaces, iterateRoadFaceIdentity } from './road-faces.js';
+import { readRoadGroupTopologyB1 } from './road-intent-c1.js';
+import { iterateJsonTreeValidation, iterateStoredProjectValidation } from '../data/project-validation.js';
+import { iterateRoadDependencies, inspectRoadContextReferences } from './road-impact-dependencies.js';
 import {
   riCompare,
   riEqual,
@@ -213,7 +214,17 @@ function riTopologyDependencies(city, faceIds, emit) {
       );
 }
 
-export function analyzeRoadImpact(project, proposal) {
+export function* iterateRoadImpact(project, proposal) {
+  return yield* iterateRoadImpactReport(project, proposal);
+}
+
+export function* iterateRoadGroupImpactB1(project, draft) {
+  const topology = readRoadGroupTopologyB1(project, draft);
+  if (!topology) throw Error('Road impact requires topology from the current group intent.');
+  return yield* iterateRoadImpactReport(project, { operation: 'translate-road', graph: topology.graph }, topology);
+}
+
+function* iterateRoadImpactReport(project, proposal, topology = null) {
   const { emit, items } = riReporter(),
     spend = riBudget(),
     city = project?.city;
@@ -275,21 +286,23 @@ export function analyzeRoadImpact(project, proposal) {
   }
   try {
     try {
-      validateJsonTree(project);
+      yield { stage: 'impact-project-json' };
+      yield* iterateJsonTreeValidation(project);
     } catch (error) {
       report.validation.accepted = 'invalid';
       emit('city', city.id, 'accepted-project', error.message, [], null, 'invalid');
       return finish();
     }
     try {
-      validateStoredProject(project);
+      yield* iterateStoredProjectValidation(project);
       baseValid = true;
       report.validation.accepted = 'valid';
     } catch (error) {
       report.validation.accepted = 'invalid';
       emit('city', city.id, 'accepted-project', error.message, [], null, 'invalid');
     }
-    const accepted = buildRoadGraph(city);
+    yield { stage: 'impact-accepted-graph' };
+    const accepted = topology?.accepted ?? (yield* iterateRoadGraph(city));
     if (!accepted.valid) {
       riGraphIssues(city, accepted.issues, null, emit);
       return finish();
@@ -330,10 +343,11 @@ export function analyzeRoadImpact(project, proposal) {
         typeof proposal.graph.roadsById?.values !== 'function'
       )
         throw new Error('The temporary candidate graph is missing supported node/road indexes.');
-      graph = buildRoadGraph({
+      yield { stage: 'impact-candidate-graph' };
+      graph = topology?.graph ?? (yield* iterateRoadGraph({
         nodes: [...proposal.graph.nodesById.values()],
         roads: [...proposal.graph.roadsById.values()],
-      });
+      }));
     } catch (error) {
       emit('city', city.id, 'candidate-input', error.message, [], null, 'invalid');
       return finish();
@@ -396,7 +410,8 @@ export function analyzeRoadImpact(project, proposal) {
       );
       return finish();
     }
-    const extraction = extractRoadFaces(graph, city);
+    yield { stage: 'impact-candidate-faces' };
+    const extraction = topology?.faces ?? (yield* iterateRoadFaces(graph, city));
     if (!extraction.valid) {
       for (const issue of extraction.issues) {
         for (const id of issue.roadIds.length ? issue.roadIds : [city.id])
@@ -417,7 +432,7 @@ export function analyzeRoadImpact(project, proposal) {
       );
       return finish();
     }
-    identity = matchExistingFaces(city, extraction);
+    identity = topology?.identity ?? (yield* iterateRoadFaceIdentity(city, extraction, accepted));
     const kinds = new Map(riRecords(city).map((r) => [r.id, r.kind]));
     const faceKinds = new Map([
       ...city.blocks.map((f) => [f.id, 'block']),
@@ -514,13 +529,13 @@ export function analyzeRoadImpact(project, proposal) {
       changedBlockIds,
       acceptedValid: baseValid,
     };
-    report.metrics.openSpaceAreas = inspectRoadDependencies(
+    report.metrics.openSpaceAreas = (yield* iterateRoadDependencies(
       city,
       snapshot,
       context,
       emit,
       spend,
-    ).openSpaceAreas;
+    )).openSpaceAreas;
     inspectRoadContextReferences(city, snapshot, context, emit, spend);
     for (const issue of deferredContext) {
       const kind = issue.code === 'district-reference' ? 'district' : 'defense';
@@ -549,7 +564,7 @@ export function analyzeRoadImpact(project, proposal) {
     const blocking = items().some((i) => i.severity !== 'info');
     if (!blocking && baseValid && identity.valid && !identity.requiresReview) {
       try {
-        validateStoredProject({ ...project, city: snapshot });
+        yield* iterateStoredProjectValidation({ ...project, city: snapshot });
         report.validation.candidate = 'valid';
       } catch (error) {
         report.validation.candidate = 'failed';
@@ -568,6 +583,13 @@ export function analyzeRoadImpact(project, proposal) {
     complete = false;
   }
   return finish();
+}
+
+export function analyzeRoadImpact(project, proposal) {
+  const iterator = iterateRoadImpact(project, proposal);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
 }
 
 export function inspectJunctionImpact(project, junctionId, point) {

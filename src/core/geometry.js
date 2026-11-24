@@ -4,12 +4,13 @@ export function clamp(value, min, max) {
 
 export function boundsOf(points) {
   if (!points.length) return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
-  return points.reduce((bounds, p) => ({
-    minX: Math.min(bounds.minX, p.x),
-    minY: Math.min(bounds.minY, p.y),
-    maxX: Math.max(bounds.maxX, p.x),
-    maxY: Math.max(bounds.maxY, p.y)
-  }), { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
+  return points.reduce((bounds, p) => {
+    bounds.minX = Math.min(bounds.minX, p.x);
+    bounds.minY = Math.min(bounds.minY, p.y);
+    bounds.maxX = Math.max(bounds.maxX, p.x);
+    bounds.maxY = Math.max(bounds.maxY, p.y);
+    return bounds;
+  }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
 }
 
 export function pointInPolygon(point, polygon) {
@@ -33,4 +34,30 @@ export function polygonSignedArea(points) {
     area += a.x * b.y - b.x * a.y;
   }
   return area / 2;
+}
+
+export function properPolygonEdgeIntersection(a, b, c, d) {
+  const rx = b.x - a.x,
+    ry = b.y - a.y,
+    sx = d.x - c.x,
+    sy = d.y - c.y,
+    den = rx * sy - ry * sx;
+  if (Math.abs(den) < 1e-8) return false;
+  const qx = c.x - a.x,
+    qy = c.y - a.y,
+    t = (qx * sy - qy * sx) / den,
+    u = (qx * ry - qy * rx) / den;
+  return t > 1e-7 && t < 1 - 1e-7 && u > 1e-7 && u < 1 - 1e-7;
+}
+
+// Match the strict edge-crossing test used to validate stored polygon containment.
+export function polygonRingsProperlyCross(inner, outer, spend) {
+  for (let i = 0; i < inner.length; i++) {
+    for (let j = 0; j < outer.length; j++) {
+      spend(1);
+      if (properPolygonEdgeIntersection(inner[i], inner[(i + 1) % inner.length],
+          outer[j], outer[(j + 1) % outer.length])) return true;
+    }
+  }
+  return false;
 }

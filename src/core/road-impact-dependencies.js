@@ -20,10 +20,13 @@ function riContained(inner, outer, spend) {
 }
 function riDistance(polygon, a, b, spend) {
   spend(polygon.length * 3);
-  return Math.min(...polygon.map((p, i) => segmentDistance(p, polygon[(i + 1) % polygon.length], a, b)));
+  let nearest = Infinity;
+  for (let i = 0; i < polygon.length; i++) {
+    nearest = Math.min(nearest, segmentDistance(polygon[i], polygon[(i + 1) % polygon.length], a, b));
+  }
+  return nearest;
 }
-function riSegmentNearPolygon(polygon, a, b, margin) {
-  const box = boundsOf(polygon);
+function riSegmentNearBounds(box, a, b, margin) {
   return (
     Math.max(a.x, b.x) + margin >= box.minX &&
     Math.min(a.x, b.x) - margin <= box.maxX &&
@@ -32,16 +35,29 @@ function riSegmentNearPolygon(polygon, a, b, margin) {
   );
 }
 
-export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
-  const oldNodes = riIndex(city.nodes),
+export function* iterateRoadDependencies(city, snapshot, context, emit, spend, measurementBase = city) {
+  // Land records come from the geometry being checked. Historical distances
+  // use the corresponding original record and original road endpoints.
+  const oldNodes = riIndex(measurementBase.nodes),
     nodes = riIndex(snapshot.nodes),
     roads = riIndex(snapshot.roads),
-    oldRoads = riIndex(city.roads),
+    oldRoads = riIndex(measurementBase.roads),
     blocks = riIndex(snapshot.blocks);
   const properties = riIndex(city.properties),
     plots = riIndex(city.plots),
     buildings = riIndex(city.buildings),
     districts = riIndex(city.districts);
+  const oldLand = measurementBase === city ? null : {
+    property: riIndex(measurementBase.properties), plot: riIndex(measurementBase.plots),
+    building: riIndex(measurementBase.buildings),
+  };
+  const originalPolygon = (kind, id, polygon) => {
+    if (!oldLand) return polygon;
+    const record = oldLand[kind].get(id);
+    return record?.boundary ?? record?.footprint ?? record?.geometry?.regions
+      ?.find(region => region.kind === 'solid' && region.parentId === null)?.ring;
+  };
+
   const edges = new Map(snapshot.roads.map((r) => [riEdgeKey(r.a, r.b), r]));
   const changedNodes = new Set(context.junctionIds);
   const changed = new Set(context.roadIds),
@@ -118,8 +134,9 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
       ob = oldNodes.get(old?.b);
     if (!a || !b) return;
     if (changed.has(road.id)) {
-      const newDistance = riDistance(polygon, a, b, spend),
-        oldDistance = oa && ob ? riDistance(polygon, oa, ob, spend) : null;
+      const priorPolygon = originalPolygon(kind, record.id, polygon);
+      const newDistance = riDistance(polygon, a, b, spend);
+      const oldDistance = oa && ob && riPoints(priorPolygon) ? riDistance(priorPolygon, oa, ob, spend) : null;
       // Supplemental measured frontage data, retained separately from ownership.
       emit(
         kind,
@@ -169,6 +186,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
       );
   }
   for (const property of riSorted(city.properties)) {
+    yield { stage: 'parcel-dependencies', id: property.id };
     spend();
     const polygon = property.boundary;
     blockContainment(property, 'property', polygon);
@@ -204,7 +222,8 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
     const block = blocks.get(property.blockId);
     const boundaryRoadIds = blockRoads.get(property.blockId) ?? new Set();
     const relevant = new Set([...boundaryRoadIds, ...context.roadIds]);
-    if (riPoints(polygon))
+    if (riPoints(polygon)) {
+      const box = boundsOf(polygon);
       for (const id of [...relevant].sort(riCompare)) {
         spend();
         const road = roads.get(id),
@@ -213,12 +232,13 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
         if (!road || !a || !b) continue;
         if (context.acceptedValid && !changed.has(id) && !changedBlocks.has(property.blockId)) continue;
         const margin = (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
-        if (!riSegmentNearPolygon(polygon, a, b, margin)) continue;
+        if (!riSegmentNearBounds(box, a, b, margin)) continue;
         const distance = riDistance(polygon, a, b, spend);
         if (distance < margin - 1e-5) {
           const old = oldRoads.get(id),
             oa = oldNodes.get(old?.a),
             ob = oldNodes.get(old?.b);
+          const priorPolygon = originalPolygon('property', property.id, polygon);
           emit(
             'property',
             property.id,
@@ -226,7 +246,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
             'The proposed street conflicts with the accepted property setback.',
             [id, block?.id ?? property.blockId],
             {
-              oldDistance: oa && ob ? riDistance(polygon, oa, ob, spend) : null,
+              oldDistance: oa && ob && riPoints(priorPolygon) ? riDistance(priorPolygon, oa, ob, spend) : null,
               newDistance: distance,
               requiredDistance: margin,
               oldRequiredDistance: old
@@ -236,6 +256,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
           );
         }
       }
+    }
     const origin = property.frame?.origin;
     if (origin?.id && changedNodes.has(origin.id)) {
       const node = nodes.get(origin.id);
@@ -250,6 +271,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
     }
   }
   for (const plot of riSorted(city.plots)) {
+    yield { stage: 'plot-dependencies', id: plot.id };
     spend();
     const property = properties.get(plot.propertyId);
     if (!property || !property.plotIds?.includes(plot.id) || plot.blockId !== property.blockId)
@@ -269,6 +291,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
     frontage(plot, 'plot', plot.boundary);
   }
   for (const building of riSorted(city.buildings)) {
+    yield { stage: 'building-dependencies', id: building.id };
     // Inspection accepts frozen or serialized projects. A read-only facade is
     // optional, never required to understand canonical saved geometry.
     const occupiedRoots=building.geometry?.regions?.filter(region =>
@@ -306,7 +329,12 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
           [id, building.propertyId],
         );
     }
-    for (const ring of occupiedRoots) blockContainment(building, 'building', ring);
+    for (const ring of occupiedRoots) {
+      if (!context.acceptedValid || changedBlocks.has(building.blockId))
+        yield { stage: 'building-block-containment', id: building.id };
+      blockContainment(building, 'building', ring);
+    }
+    if (changed.has(building.frontageRoadId)) yield { stage: 'building-frontage', id: building.id };
     frontage(building, 'building', footprint);
     const path = building.accessPath,
       road = roads.get(building.frontageRoadId),
@@ -343,15 +371,19 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
         'The accepted entrance/frontage access cannot be verified without a supported path.',
         [building.frontageRoadId],
       );
-    if (riPoints(footprint))
+    if (riPoints(footprint)) {
+      const box = boundsOf(footprint);
+      let scanned = 0;
       for (const id of context.roadIds) {
+        if (++scanned % 32 === 0) yield { stage: 'building-road-bounds', id: building.id };
         spend();
         const r = roads.get(id),
           p = nodes.get(r?.a),
           q = nodes.get(r?.b);
         if (!p || !q) continue;
         const required = (STREET_WIDTHS[r.kind] + STREET_EDGE_WIDTH) / 2;
-        if (!riSegmentNearPolygon(footprint, p, q, required)) continue;
+        if (!riSegmentNearBounds(box, p, q, required)) continue;
+        yield { stage: 'building-road-clearance', id: building.id };
         const distance = riDistance(footprint, p, q, spend);
         if (distance < required - 1e-5)
           emit(
@@ -363,6 +395,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
             { newDistance: distance, requiredDistance: required },
           );
       }
+    }
   }
   const openMetrics = [];
   for (const open of riSorted(city.openSpaces)) {
@@ -393,6 +426,13 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
     }
   }
   return { openSpaceAreas: openMetrics };
+}
+
+export function inspectRoadDependencies(...args) {
+  const iterator = iterateRoadDependencies(...args);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
 }
 
 export function inspectRoadContextReferences(city, snapshot, context, emit, spend) {

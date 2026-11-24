@@ -22,6 +22,8 @@ export const riCompare = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 export const riIndex = (records) => new Map((records ?? []).map((record) => [record.id, record]));
 export function riRoadEqual(a, b) {
   if (!a || !b) return a === b;
+  if (typeof a.a === 'string' && typeof a.b === 'string' && a.a === b.a && a.b === b.b)
+    return riEqual(a, b);
   const first = [a.a, a.b].sort(riCompare),
     second = [b.a, b.b].sort(riCompare);
   return riEqual({ ...a, a: first[0], b: first[1] }, { ...b, a: second[0], b: second[1] });
@@ -30,9 +32,12 @@ export function riEqual(a, b) {
   if (a === b) return true;
   if (!a || !b || typeof a !== 'object' || typeof b !== 'object' || Array.isArray(a) !== Array.isArray(b))
     return false;
-  const ak = Object.keys(a).sort(riCompare),
-    bk = Object.keys(b).sort(riCompare);
-  return ak.length === bk.length && ak.every((k, i) => k === bk[i] && riEqual(a[k], b[k]));
+  const keys = Object.keys(a);
+  if (keys.length !== Object.keys(b).length) return false;
+  for (const key of keys) {
+    if (!Object.prototype.propertyIsEnumerable.call(b, key) || !riEqual(a[key], b[key])) return false;
+  }
+  return true;
 }
 export function riFreeze(value) {
   if (value && typeof value === 'object' && !Object.isFrozen(value)) {
@@ -75,7 +80,7 @@ export function riReporter() {
     if (!old || (old.severity === 'info' && severity !== 'info') || severity === 'invalid')
       items.set(key, issue);
   };
-  return { emit, items: () => [...items.values()].sort((a, b) => riCompare(riIssueKey(a), riIssueKey(b))) };
+  return { emit, items: () => [...items.entries()].sort(([a], [b]) => riCompare(a, b)).map(([, issue]) => issue) };
 }
 
 // Only fields with a defined meaning in the current project model can support

@@ -5,6 +5,7 @@ import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDo
 import { validateStoredProject } from '../data/project-validation.js';
 import { buildRoadGraph } from '../core/road-graph.js';
 import { extractRoadFaces, matchExistingFaces } from '../core/road-faces.js';
+import { validateLareDemolitionAuthorization } from '../core/reconciliation-demolition.js';
 import { prepareParcelReconciliationB2 } from '../core/parcel-reconciliation.js';
 
 // B4 owns acceptance. B1/B2/B3 statuses never grant write permission.
@@ -186,7 +187,7 @@ export function validateRoadGroupApplyB1(project,workspace,draft,inspected) {
       !b4Same(draft.offset,inspected.offset)||!inspected.candidateProject)
       return reject('stale-preview','The connected-road proposal no longer matches the inspected selection.');
     const fresh=prepareRoadGroupReflowB1(project,draft.selectedRoadIds,draft.offset,
-      {parcelChoices:draft.parcelChoices??new Map()});
+      {parcelChoices:draft.parcelChoices??new Map(),acceptedRevision:draft.acceptedRevision,strategy:draft.strategy});
     if(!fresh.candidateProject)
       return reject('candidate-invalid',fresh.unresolved[0]?.message??'Group reflow failed fresh validation.');
     if(!b4Same(fresh.candidateProject,inspected.candidateProject)||!b4Same(fresh.ledger,inspected.ledger))
@@ -202,4 +203,30 @@ export function validateRoadGroupApplyB1(project,workspace,draft,inspected) {
       transaction:{family:'road',operation:'translate-road-group',
         label:'Move '+fresh.selectedRoadIds.length+' connected road segments',targetIds:fresh.selectedRoadIds.slice()}};
   }catch(error){return reject('apply-validation','Connected road Apply blocked: '+error.message);}
+}
+
+export function validateRoadGroupDemolitionApplyB1R(project, workspace, draft, reviewed, authorization) {
+  try {
+    const preview = validateLareDemolitionAuthorization(authorization, reviewed, project, draft.revision, draft);
+    const candidate = preview.candidateProject;
+    const nextWorkspace = reconcileRoadWorkspace(workspace, project.city, candidate.city);
+    const decoded = decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate, nextWorkspace)));
+    if (!b4Same(decoded.project, candidate) || !b4Same(decoded.workspace, nextWorkspace))
+      return reject('group-roundtrip', 'Portable save verification changed the reviewed demolition candidate.');
+    const removed = reviewed.removalIds.map(id => ({ kind: 'building', id, fields: ['removed'] }));
+    const ledger = reviewed.removalIds.map(id => ({
+      kind: 'building', oldId: id, newId: null, disposition: 'demolished', provenance: 'generated',
+    }));
+    return {
+      ok: true, candidate: decoded.project, workspace: decoded.workspace,
+      changed: [...preview.changed, ...removed], ledger: [...preview.ledger, ...ledger],
+      transaction: {
+        family: 'road', operation: 'translate-road-group-demolition',
+        label: 'Move ' + preview.selectedRoadIds.length + ' roads and demolish ' + removed.length + ' buildings',
+        targetIds: [...preview.selectedRoadIds, ...reviewed.removalIds],
+      },
+    };
+  } catch (error) {
+    return reject('demolition-validation', 'Connected road demolition blocked. ' + error.message);
+  }
 }

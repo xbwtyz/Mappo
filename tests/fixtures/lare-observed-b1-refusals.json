@@ -1,0 +1,54 @@
+{
+  "baseline": "e5f1cf83dcdcc75e52911aa717035955b40569d0",
+  "status": "Compatibility-harness observed refusals; independent solvability witnesses pending.",
+  "cases": [
+    {
+      "morphology": "radial",
+      "seed": "b1-radial",
+      "size": "small",
+      "irregularProperties": true,
+      "roadIds": [
+        "RD-0100",
+        "RD-0152"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 2
+      },
+      "baselineCode": "group-record-change",
+      "target": "PROP-00054"
+    },
+    {
+      "morphology": "linear",
+      "seed": "b1-linear",
+      "size": "small",
+      "irregularProperties": true,
+      "roadIds": [
+        "RD-0122",
+        "RD-0123"
+      ],
+      "offset": {
+        "x": 1,
+        "y": 1
+      },
+      "baselineCode": "candidate-validation",
+      "message": "Building plot references do not match actual canonical occupancy."
+    },
+    {
+      "morphology": "linear",
+      "seed": "b1-linear",
+      "size": "small",
+      "irregularProperties": true,
+      "roadIds": [
+        "RD-0122",
+        "RD-0123"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 2
+      },
+      "baselineCode": "candidate-validation",
+      "message": "Building plot references do not match actual canonical occupancy."
+    }
+  ]
+}
