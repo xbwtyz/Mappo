@@ -209,7 +209,7 @@ for (const [name, type] of [
         await page.evaluate(() => __buildingQA.state().roadWorkspace.session.point.x),
         original.x + 0.5,
       );
-      await page.keyboard.press('Control+z');
+      await page.keyboard.press('Control+Shift+z');
       assert.equal(await page.evaluate(() => __buildingQA.state().roadWorkspace.session.pending), false);
       await page.locator('#roadProposedX').focus();
       await page.keyboard.press('ArrowRight');

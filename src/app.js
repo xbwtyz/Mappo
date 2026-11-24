@@ -39,7 +39,7 @@ import {
   WaterPanel
 } from './ui/water.js';
 import {
-  FortificationPanel
+  FortificationPanel, describeDefenseUpdate
 } from './ui/fortifications.js';
 import {
   fortificationViewPoints
@@ -54,9 +54,6 @@ import {
   describePendingChanges,
   REBUILD_EFFECTS
 } from './core/pending-changes.js';
-import {
-  describeUndoContext
-} from './core/undo-context.js';
 import {
   rebuildFailureMessage
 } from './core/validation-feedback.js';
@@ -131,8 +128,8 @@ import { DesktopEditLayout } from './ui/desktop-edit-layout.js';
 import { DesktopPlaceEditor } from './ui/desktop-place-editor.js';
 import { DesktopWorkspace } from './ui/desktop-workspace.js';
 import { WaterEditor } from './editor/water.js';
-import { DistrictEditor } from './editor/districts.js';
-import { FortificationEditor } from './editor/fortifications.js';
+import { DistrictEditor, restoreDistrictSnapshot } from './editor/districts.js';
+import { FortificationEditor, restoreFortificationSnapshot } from './editor/fortifications.js';
 import { RoadInspectionWorkspace } from './ui/road-inspection.js';
 import { createJunctionPreviewWorkerP1 } from './editor/junction-preview-worker-client.js';
 import { drawRoadComparison } from './renderer/road-comparison.js';
@@ -145,7 +142,9 @@ import { checkRoadApplyC2, prepareRoadApplyC2 } from './editor/road-application.
 import { RoadGeometryHistoryB4 } from './editor/road-history.js';
 import { DraftEngine } from './core/draft-engine.js';
 import { renderDraftControls, syncDraftControls } from './ui/draft-controls.js';
-import { AcceptedEditHistoryD01 } from './core/accepted-edit-history-d01.js';
+import { AcceptedEditHistoryD01, describeAcceptedEditD01 } from './core/accepted-edit-history-d01.js';
+import { HISTORY_EDITOR_KEYS, historyWorkspaceForReplay } from './core/accepted-history-workspace-a5.js';
+import { createProjectDocument, encodeProjectDocument } from './data/project-format.js';
 
 const $ = id => document.getElementById(id),
   canvas = $('mapCanvas'),
@@ -197,6 +196,13 @@ const propertyCreationHistoryE1 = new PropertyCreationHistoryE1(20);
 const roadHistory = new RoadGeometryHistoryB4(6);
 const acceptedHistoryD01 = new AcceptedEditHistoryD01({maxEntries:20,maxBytes:64*1024*1024});
 let d01ReplayingHistory=false;
+let acceptedHistoryHint = null;
+let historyFeedback = null;
+const savedHistoryCount = { districts: 0, defenses: 0 };
+const localHistoryLabels = {
+  districts: { generate: 'Rebuild districts', identity: 'Edit district name or color', move: 'Move block to district', restore: 'Restore saved district edit' },
+  defenses: { build: 'Build defenses', rebuild: 'Rebuild defenses', enable: 'Enable defenses', disable: 'Disable defenses', restore: 'Restore saved defense edit' },
+};
 let buildingPlacementSession;
 // C01 panel state is transient and never serialized into accepted city geometry.
 let compoundPanelPropertyId=null,compoundGroupId='',compoundMemberIds=[],compoundName='';
@@ -302,27 +308,68 @@ function d01CompoundMembershipPending(){
       compoundMemberIds.some(id=>!group.memberBuildingIds.includes(id))
     :Boolean(compoundName.trim()||compoundMemberIds.length);
 }
+function acceptedHistoryBlocker({ savedRestore = false } = {}) {
+  if (roadWorkspace?.active) return 'Finish the road preview and close Roads to use city history.';
+  if (propertyCreationSessionE1?.active) return 'Finish or cancel property creation to use city history.';
+  if (propertySplitE2?.active) return 'Finish or cancel the property split preview to use city history.';
+  if (propertyMergeE3?.active) return 'Finish or cancel the property merge preview to use city history.';
+  if (propertyEditSession?.isPending || propertyEditSession?.drag) return 'Apply or reset the property preview to use city history.';
+  if (buildingEditSession?.isPending || buildingEditSession?.drag) return 'Apply or reset the building preview to use city history.';
+  if (buildingPlacementSession?.isActive) return 'Finish or cancel building placement to use city history.';
+  if (desktopWorkspace?.mapPreview()) return 'Close the generation preview to use city history.';
+  if (!savedRestore && editor?.dirty && (editor.mode !== 'pan' || !editor.closed))
+    return 'Finish or reset the active outline draft to use city history.';
+  if (!savedRestore && identityWorkspace?.hasPending()) return 'Apply or discard pending identity changes to use city history.';
+  if (d01CompoundMembershipPending()) return 'Save or close the building compound to use city history.';
+  if (compoundPanelPropertyId && compoundTransformPending()) return 'Apply or reset the compound transform to use city history.';
+  return '';
+}
 function d01DraftBlocked() {
-  if(roadWorkspace?.active||propertyEditSession?.isPending||propertyEditSession?.drag||propertyCreationSessionE1?.active||
-    propertySplitE2?.active||propertyMergeE3?.active||buildingEditSession?.isPending||
-    buildingEditSession?.drag||buildingPlacementSession?.isActive||desktopWorkspace?.mapPreview()||
-    editor?.dirty||identityWorkspace?.hasPending()||d01CompoundMembershipPending()) return true;
-  return Boolean(compoundPanelPropertyId && compoundTransformPending());
+  return Boolean(acceptedHistoryBlocker());
 }
 function compoundTransformPending() {
   return Math.abs(compoundTransform.dx) > 1e-9 || Math.abs(compoundTransform.dy) > 1e-9 ||
     Math.abs(compoundTransform.angle) > 1e-9 || Math.abs(compoundTransform.scaleX - 1) > 1e-9 ||
     Math.abs(compoundTransform.scaleY - 1) > 1e-9;
 }
+function historyLabel(direction, entry) {
+  return (direction === 'undo' ? 'Undo' : 'Redo') + (entry ? ' · ' + entry.label : '');
+}
+
+function historyCommandState(direction, blocker = acceptedHistoryBlocker()) {
+  const entry = acceptedHistoryD01.entry(direction);
+  const label = historyLabel(direction, entry);
+  if (blocker) return { label, available: false, reason: blocker };
+  if (!entry) return { label, available: false, reason: 'No applied city change to ' + direction + '.' };
+  const available = acceptedHistoryD01.can(direction, project);
+  return { label, available, reason: available ? '' : 'History is out of date. Review the current city before continuing.' };
+}
+
 function d01SyncHistoryView() {
-  const blocked=d01DraftBlocked();
-  const lastUndo=acceptedHistoryD01.entry('undo'),lastRedo=acceptedHistoryD01.entry('redo');
-  const redo=$('workspaceRedoButtonD01');
-  if(redo){
-    redo.disabled=blocked||!lastRedo||!acceptedHistoryD01.can('redo',project);
-    redo.textContent=lastRedo?'Redo · '+lastRedo.label:'Redo';
-    redo.title=blocked?'Finish or cancel the current draft before redoing accepted work.'
-      :lastRedo?'Redo the last reversed transaction.':'No accepted Redo available.';
+  const blocker = acceptedHistoryBlocker();
+  for (const [direction, buttonId, tooltipId] of [
+    ['undo', 'workspaceUndoButton', 'workspaceUndoTooltipA5'],
+    ['redo', 'workspaceRedoButtonD01', 'workspaceRedoTooltipA5'],
+  ]) {
+    const action = historyCommandState(direction, blocker);
+    const button = $(buttonId), tooltip = $(tooltipId);
+    const message = action.reason || (historyFeedback?.direction === direction ? historyFeedback.message : '');
+    button.textContent = action.label;
+    button.setAttribute('aria-disabled', String(!action.available));
+    tooltip.textContent = message;
+    tooltip.hidden = !message;
+  }
+  for (const [family, buttonId, restoreId] of [
+    ['districts', 'undoDistrictButton', 'restoreDistrictHistoryA5'],
+    ['defenses', 'undoFortificationButton', 'restoreDefenseHistoryA5'],
+  ]) {
+    const entry = acceptedHistoryD01.entry('undo');
+    $(buttonId).disabled = !domainUndoAvailableA5(family);
+    $(buttonId).textContent = entry?.family === family ? historyLabel('undo', entry)
+      : savedDomainHistoryAvailableA5(family) ? localHistoryLabels[family].restore
+        : family === 'districts' ? 'Undo district edit' : 'Undo defense edit';
+    $(restoreId).hidden = !savedDomainHistoryAvailableA5(family);
+    $(restoreId).disabled = Boolean(acceptedHistoryBlocker({ savedRestore: true }));
   }
   const list=$('workspaceHistoryListD01');
   if(list){
@@ -338,25 +385,23 @@ function d01SyncHistoryView() {
     }
   }
   const status=$('workspaceHistoryStatusD01');
-  if(status)status.textContent=acceptedHistoryD01.notice+
-    ' · '+acceptedHistoryD01.length+'/20 entries · '+
-    (acceptedHistoryD01.bytes/1048576).toFixed(1)+'/64 MiB estimated. Not saved in project files.';
+  if (status) {
+    const undo = acceptedHistoryD01.entry('undo'), redo = acceptedHistoryD01.entry('redo');
+    status.textContent = [undo && historyLabel('undo', undo), redo && historyLabel('redo', redo),
+      acceptedHistoryD01.notice].filter(Boolean).join(' · ');
+  }
 }
 function d01MoveHistory(direction) {
   if(!project)return false;
-  if(d01DraftBlocked()){
-    $('statusMessage').textContent='History blocked: finish or cancel the active preview or identity draft.';
-    updateUndoFeedback();return false;
-  }
+  const action = historyCommandState(direction);
+  if (!action.available) return showHistoryFailure(direction, action.reason);
+  historyFeedback = null;
   const receipt=acceptedHistoryD01.prepare(direction,project,captureWorkspace().workspace);
-  if(!receipt.ok){
-    $('statusMessage').textContent=receipt.reason;
-    acceptedHistoryD01.notice=receipt.reason;
-    updateUndoFeedback();return false;
-  }
+  if (!receipt.ok) return showHistoryFailure(direction, receipt.reason);
   // A retired property may return during Undo. Capture it before replacing
   // the accepted city so the existing Inspector can recover a useful target
   // when no other live selection survives.
+  const beforeCity = project.city;
   const returningProperties=receipt.candidate.city.properties.filter(p=>
     !project.city.properties.some(old=>old.id===p.id)).map(p=>p.id);
   d01ReplayingHistory=true;
@@ -377,7 +422,8 @@ function d01MoveHistory(direction) {
       identityWorkspace.mounted=null;
       identityWorkspace.render({reload:true});
     }
-    if(receipt.entry.family==='road')refreshRoadDistrictWorkspace(receipt.workspace);
+    if (receipt.entry.family === 'road') refreshRoadDistrictWorkspace(receipt.workspace);
+    if (receipt.entry.editorHistory) restoreDomainHistoryStateA5(receipt, direction, beforeCity);
     // Road/parcel ownership replacement can invalidate a selected property.
     // A building add/delete does not replace its parent property, so retain
     // that Inspector and its scoped structural Undo/Redo controls.
@@ -437,115 +483,166 @@ function d01MoveHistory(direction) {
   }finally{d01ReplayingHistory=false;updateUndoFeedback();}
 }
 
-function currentUndoContext() {
-  if(propertyMergeE3?.active)return {kind:'property-merge-preview',controlId:'propertyMergeResetE3',
-    label:'Reset merge preview',available:Boolean(propertyMergeE3.session.secondaryId),
-    description:'Clear the uncommitted neighboring property selection.'};
-  if(propertySplitE2?.active)return {kind:'property-split-preview',controlId:'propertySplitResetE2',
-    label:'Reset split line',available:Math.abs(propertySplitE2.session.t-.5)>1e-9||
-      (propertySplitE2.session.flexible&&(Math.abs(propertySplitE2.session.exitT-.5)>1e-9||
-      propertySplitE2.session.exitEdge!==Math.max(1,Math.floor(propertySplitE2.session.vertexCount/2)))),
-    description:'Reset the uncommitted split line without changing accepted land.'};
-  if(propertyCreationSessionE1?.active)return {kind:'property-create-preview',controlId:'propertyCreateResetE1',
-    label:'Reset property preview',available:Boolean(propertyCreationSessionE1.draft),
-    description:'Clear the uncommitted property preview without changing accepted land.'};
-  if(roadWorkspace?.active)return {kind:'road-preview',controlId:'roadPreviewReset',label:'Reset roads',
-    available:roadWorkspace.session.pending,description:'Reset temporary junction coordinates; accepted roads have no edits to undo.'};
-  // Shared accepted-history commands are chronological, not selection scoped.
-  // Uncommitted previews above retain their own safe Reset/Cancel behavior.
-  if(project){
-    const blocked=d01DraftBlocked(),entry=acceptedHistoryD01.entry('undo');
-    if(blocked)return {kind:'d01-blocked',controlId:'workspaceUndoButton',
-      label:'Undo accepted',available:false,
-      description:'Finish or cancel the active editor/draft before accepted Undo.'};
-    if(entry)return {kind:'d01',controlId:'workspaceUndoButton',
-      label:'Undo · '+entry.label,
-      available:acceptedHistoryD01.can('undo',project),
-      description:'Undo the latest accepted change across all editing tools.'};
-    if(workspaceShell?.state.section==='landscape'||editor?.dirty)
-      return describeUndoContext({section:workspaceShell?.state.section??'city',
-        selection:workspaceShell?.state.selection??null,outline:editor,
-        water:waterPanel?.editor,terrain:terrainPanel?.editor,
-        district:districtPanel?.editor,defense:fortificationPanel?.editor,
-        identity:identityWorkspace?.editor});
-    return {kind:'d01-empty',controlId:'workspaceUndoButton',
-      label:'Undo accepted',available:false,
-      description:acceptedHistoryD01.notice};
-  }
-  if(propertyEditSession?.isActive){
-    const id=propertyEditSession.propertyId;
-    const available=!propertyEditSession.isPending&&!propertyEditSession.drag&&propertyHistory.can('undo',project,id);
-    return {kind:'property',controlId:'propertyHistoryUndo3I',label:'Undo property',available,
-      description:propertyEditSession.isPending
-        ? 'Apply or reset your parcel draft before Undo.'
-        : available?'Undo the last accepted property and plot edit.':'No accepted property edit to undo.'};
-  }
-  const structuralProperty=structureHistoryProperty3H();
-  if (!buildingEditSession?.isActive && !buildingPlacementSession?.isActive
-      && structuralProperty && buildingStructureHistory.can('undo',project,structuralProperty)) {
-    const action=describeStructureChange4E(buildingStructureHistory.entry('undo',structuralProperty),'undo');
-    return {kind:'structure',controlId:'structureUndo',
-      label:action?.label??'Undo structure',available:true,
-      description:action?.description??'Undo the last structural edit on this property.'};
-  }
-  if (buildingEditSession?.isActive && workspaceShell?.state.selection?.kind === 'building') {
-    const id = buildingEditSession.buildingId;
-    const available = !buildingEditSession.isPending && !buildingEditSession.drag && buildingHistory.can('undo',project,id);
-    return {kind:'building',controlId:'buildingHistoryUndo',label:'Undo building',available,
-      description: buildingEditSession.isPending ? 'Reset or Apply the preview before undoing accepted geometry.'
-        : available ? 'Undo the last accepted edit to this building.' : 'No accepted building edit to undo.'};
-  }
-  if(propertyMergeE3?.history.can('undo',project) && !propertyMergeE3.active)
-    return {kind:'property-merge',controlId:'propertyMergeUndoE3',label:'Undo property merge',
-      available:true,description:'Restore both accepted properties and all associated records.'};
-  if(propertySplitE2?.history.can('undo',project) && !propertySplitE2.active)
-    return {kind:'property-split',controlId:'propertySplitUndoE2',label:'Undo property split',
-      available:true,description:'Restore the original property and all owned plots/buildings in one revision.'};
-  if(propertyCreationHistoryE1.can('undo',project) && !propertyCreationSessionE1?.active)
-    return {kind:'property-creation',controlId:'propertyCreateUndoE1',
-      label:'Undo property creation',available:true,
-      description:'Remove the newly created property and its plot in one reversible action.'};
-  if (propertyDeletionHistory4A.can('undo',project)
-      && !propertyEditSession?.isActive && !buildingPlacementSession?.isActive && !buildingEditSession?.isActive)
-    return {kind:'property-deletion',controlId:'propertyDeletionUndo4A',label:'Undo deletion',available:true,
-      description:'Restore the last deleted property, its plots and buildings.'};
-  if(!roadWorkspace?.active && !propertyEditSession?.isActive &&
-     !buildingEditSession?.isActive && !buildingPlacementSession?.isActive &&
-     roadHistory.can('undo',project))
-    return {kind:'road-edit',controlId:'roadHistoryUndoB4',label:'Undo road',
-      available:true,description:'Undo the entire last accepted road and neighborhood edit.'};
-  return describeUndoContext({
-    section: workspaceShell?.state.section ?? 'city',
-    selection: workspaceShell?.state.selection ?? null,
-    outline: editor,
-    water: waterPanel?.editor, terrain: terrainPanel?.editor,
-    district: districtPanel?.editor, defense: fortificationPanel?.editor,
-    identity: identityWorkspace?.editor
-  });
+function showHistoryFailure(direction, message) {
+  historyFeedback = { direction, message };
+  $('statusMessage').textContent = message;
+  updateUndoFeedback();
+  return false;
 }
+
 function updateUndoFeedback() {
-  const scope = currentUndoContext();
-  $('workspaceUndoButton').textContent = scope.label;
-  $('workspaceUndoButton').disabled = !scope.available;
-  $('workspaceUndoButton').setAttribute('title', scope.description);
-  $('workspaceUndoDescription').textContent = scope.description;
   d01SyncHistoryView();
 }
-function undoCurrentScope() {
-  const scope = currentUndoContext();
-  if (!scope.available) return false;
-  if(scope.kind==='d01')return d01MoveHistory('undo');
-  const button = $(scope.controlId);
+
+function currentResetPreviewA5() {
+  if (roadWorkspace?.active) return 'roadPreviewReset';
+  if (propertyMergeE3?.active) return 'propertyMergeResetE3';
+  if (propertySplitE2?.active) return 'propertySplitResetE2';
+  if (propertyCreationSessionE1?.active) return 'propertyCreateResetE1';
+  if (buildingEditSession?.isPending || drafts.read('building').dirty) return 'buildingPreviewReset';
+  if (propertyEditSession?.isPending) return 'propertyEditReset3I';
+  if (compoundPanelPropertyId && compoundTransformPending()) return 'compoundReset';
+  if (desktopWorkspace?.mapPreview()) return 'desktopGenerationCancel';
+  return null;
+}
+
+function resetCurrentPreviewA5() {
+  const id = currentResetPreviewA5();
+  const button = id ? $(id) : null;
+  if (!button || button.disabled) {
+    $('statusMessage').textContent = 'There is no preview ready to reset.';
+    return false;
+  }
   if (typeof button.click === 'function') button.click();
-  else button.handlers?.click?.(); // test DOM shim
-  updateUndoFeedback();
+  else button.handlers?.click?.();
   return true;
+}
+
+function domainEditorA5(family) {
+  return family === 'districts' ? districtPanel?.editor : fortificationPanel?.editor;
+}
+
+function savedDomainHistoryAvailableA5(family) {
+  const count = savedHistoryCount[family];
+  return count > 0 && domainEditorA5(family)?.history.length === count;
+}
+
+function domainUndoAvailableA5(family) {
+  return acceptedHistoryD01.entry('undo')?.family === family
+    ? historyCommandState('undo').available
+    : savedDomainHistoryAvailableA5(family) && !acceptedHistoryBlocker({ savedRestore: true });
+}
+
+function undoDomainA5(family) {
+  return acceptedHistoryD01.entry('undo')?.family === family
+    ? d01MoveHistory('undo') : restoreSavedDomainEditA5(family);
+}
+
+function editorHistoryDeltaA5(family, beforeHistory, afterHistory, afterSavedCount) {
+  return { key: HISTORY_EDITOR_KEYS[family],
+    before: { history: beforeHistory, savedCount: savedHistoryCount[family] },
+    after: { history: afterHistory, savedCount: afterSavedCount } };
+}
+
+function stageAcceptedHistoryHint(candidate, detail) {
+  acceptedHistoryHint = { candidate, detail };
+  project = candidate;
+}
+
+function commitDomainEditA5(family, city, { operation, beforeHistory }) {
+  if (city === project.city || JSON.stringify(city) === JSON.stringify(project.city)) return false;
+  const afterHistory = domainEditorA5(family).history;
+  const expired = Math.max(0, beforeHistory.length + 1 - afterHistory.length);
+  const editorHistory = editorHistoryDeltaA5(family, beforeHistory, afterHistory,
+    Math.max(0, savedHistoryCount[family] - expired));
+  savedHistoryCount[family] = editorHistory.after.savedCount;
+  let label = localHistoryLabels[family][operation];
+  if (family === 'districts' && operation === 'identity') {
+    const id = districtPanel.editor.selectedDistrictId;
+    const before = project.city.districts.find(record => record.id === id);
+    const after = city.districts.find(record => record.id === id);
+    if (before && after) label = before.name === after.name ? 'Recolor district'
+      : before.color === after.color ? 'Rename district' : 'Rename and recolor district';
+  }
+  stageAcceptedHistoryHint({ ...project, city }, { family, operation, label, editorHistory });
+  return true;
+}
+
+function refreshDomainHistoryA5(family, workspace, beforeCity) {
+  const state = workspace[HISTORY_EDITOR_KEYS[family]];
+  if (family === 'districts') {
+    const mounted = districtPanel.formDistrictId;
+    const before = beforeCity.districts.find(record => record.id === mounted);
+    if (before && ($('districtNameInput').value !== before.name || $('districtColorInput').value !== before.color)) {
+      districtPanel.stashDraft();
+    } else if (mounted) districtPanel.formCache.delete(mounted);
+    districtPanel.editor.load(state);
+    districtPanel.formDistrictId = null;
+    districtPanel.formBlockId = null;
+    districtPanel.refresh();
+    const selected = workspaceShell.state.selection;
+    if (selected?.kind === 'district') {
+      const restored = workspace.ui?.selection;
+      workspaceShell.select(restored?.kind === 'district' ? restored : null, { reveal: false });
+    }
+  } else {
+    fortificationPanel.editor.load(state);
+    const pending = describeDefenseUpdate(beforeCity, fortificationPanel.controls()).pending;
+    fortificationPanel.refresh(!pending);
+  }
+}
+
+function restoreDomainHistoryStateA5(receipt, direction, beforeCity) {
+  const { family, editorHistory } = receipt.entry;
+  savedHistoryCount[family] = editorHistory[direction === 'undo' ? 'before' : 'after'].savedCount;
+  refreshDomainHistoryA5(family, receipt.workspace, beforeCity);
+}
+
+function restoreSavedDomainEditA5(family) {
+  if (!savedDomainHistoryAvailableA5(family)) return false;
+  const blocker = acceptedHistoryBlocker({ savedRestore: true });
+  if (blocker) return showHistoryFailure('undo', blocker);
+  const editor = domainEditorA5(family), beforeHistory = editor.history;
+  const restore = family === 'districts' ? restoreDistrictSnapshot : restoreFortificationSnapshot;
+  const editorHistory = editorHistoryDeltaA5(family, beforeHistory, beforeHistory.slice(0, -1), savedHistoryCount[family] - 1);
+  try {
+    const beforeCity = project.city;
+    const candidate = { ...project, city: restore(beforeCity, beforeHistory.at(-1)) };
+    const workspace = historyWorkspaceForReplay(captureWorkspace().workspace, candidate.city, editorHistory, 'redo');
+    encodeProjectDocument(createProjectDocument(candidate, workspace));
+    if (JSON.stringify(candidate.city) === JSON.stringify(project.city)) {
+      editor.history = editorHistory.after.history;
+      savedHistoryCount[family] = editorHistory.after.savedCount;
+      workspaceChanged();
+      return true;
+    }
+    const label = localHistoryLabels[family].restore;
+    stageAcceptedHistoryHint(candidate, { family, operation: 'restore', label, editorHistory });
+    savedHistoryCount[family] = editorHistory.after.savedCount;
+    refreshDomainHistoryA5(family, workspace, beforeCity);
+    updateDetails();
+    workspaceShell.refresh();
+    requestDraw();
+    workspaceChanged();
+    $('statusMessage').textContent = acceptedHistoryD01.notice;
+    return true;
+  } catch (error) {
+    return showHistoryFailure('undo', error.message);
+  }
 }
 function workspaceChanged() {
   // This is the common accepted-project observation boundary. Visual-only
   // changes do not touch the ledger. Unsupported accepted-city changes become
   // explicit barriers, never silently replayed with a stale project.
-  const observed=project&&!d01ReplayingHistory ? acceptedHistoryD01.observe(project) : null;
+  const hint = acceptedHistoryHint && acceptedHistoryHint.candidate === project ? acceptedHistoryHint.detail : null;
+  acceptedHistoryHint = null;
+  const describe = (before, after) => {
+    if (hint?.family) return hint;
+    const classified = describeAcceptedEditD01(before, after);
+    return hint && classified && !classified.barrier ? { ...classified, ...hint } : classified;
+  };
+  const observed = project && !d01ReplayingHistory ? acceptedHistoryD01.observe(project, describe) : null;
+  if (['recorded', 'barrier', 'oversize'].includes(observed?.status)) historyFeedback = null;
   // Journal observation follows other component callbacks; refresh the
   // actionable local controls after a newly accepted transaction.
   if(observed?.status==='recorded'||observed?.status==='barrier'||d01ReplayingHistory){
@@ -772,7 +869,9 @@ function commitBuildingTransform(current) {
     if (!recorded) return false;
     propertyHistory.clear();
     propertyDeletionHistory4A.clear();
-    project=received.candidate;
+    const label = session.draft ? 'Edit building footprint' : transform.scaleX !== 1 || transform.scaleY !== 1
+      ? 'Resize building' : transform.angle ? 'Rotate building' : 'Move building';
+    stageAcceptedHistoryHint(received.candidate, { label });
     session.reset(project.city, { keepCourtyard: true });
     updateDetails();
     workspaceShell.refresh();
@@ -1650,6 +1749,7 @@ function commitCityGeneration(current) {
     drafts.clear();
     project = next;
     desktopWorkspace?.cancelPreview();
+    historyFeedback = null;
     acceptedHistoryD01.clear(project,'City generation started a new session history.');
     buildingHistory.clear(); // Rebuilding invalidates every accepted-building history entry.
     roadHistory.clear();
@@ -1665,6 +1765,7 @@ function commitCityGeneration(current) {
       terrainPanel.refresh(true);
       terrainPanel.message('City generated with saved mountain footprints, ridges and road passes.');
     }
+    savedHistoryCount.districts = savedHistoryCount.defenses = 0;
     districtPanel?.editor.load();
     districtPanel?.refresh(true);
     fortificationPanel?.editor.load();
@@ -1762,7 +1863,9 @@ $('panButton').addEventListener('click', () => {
 $('centerButton').addEventListener('click', () => editor.setMode('center'));
 $('finishButton').addEventListener('click', () => editor.finish());
 $('undoButton').addEventListener('click', () => editor.undo());
-$('workspaceUndoButton').addEventListener('click', undoCurrentScope);
+$('workspaceUndoButton').addEventListener('click', () => d01MoveHistory('undo'));
+$('restoreDistrictHistoryA5').addEventListener('click', () => restoreSavedDomainEditA5('districts'));
+$('restoreDefenseHistoryA5').addEventListener('click', () => restoreSavedDomainEditA5('defenses'));
 $('workspaceRedoButtonD01').addEventListener('click',()=>d01MoveHistory('redo'));
 $('cancelButton').addEventListener('click', () => drafts.reset('landscape-rebuild', () => {
   if (!project) return;
@@ -1850,11 +1953,14 @@ function handleMapCommandA2(e) {
     e.preventDefault();
     return;
   }
+  const key = e.key.toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && ['z', 'y'].includes(key)) {
+    if (key === 'z' && e.shiftKey) resetCurrentPreviewA5();
+    else d01MoveHistory(key === 'z' ? 'undo' : 'redo');
+    e.preventDefault();
+    return;
+  }
   if(roadWorkspace?.active){
-    if((e.ctrlKey||e.metaKey)&&['z','y'].includes(e.key.toLowerCase())){
-      if(e.key.toLowerCase()==='z'&&!e.shiftKey)roadWorkspace.reset();
-      e.preventDefault();return;
-    }
     if(['Delete','Backspace'].includes(e.key)){e.preventDefault();return;}
     if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)
       && (e.target === canvas || document.activeElement === canvas ||
@@ -1868,14 +1974,6 @@ function handleMapCommandA2(e) {
       e.preventDefault();
       return;
     }
-  }
-  if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
-    if(d01MoveHistory('redo'))e.preventDefault();
-    return;
-  }
-  if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'z') {
-    if (undoCurrentScope()) e.preventDefault();
-    return;
   }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   // Arrow nudges only when the map canvas has focus, never in text inputs.
@@ -1974,22 +2072,16 @@ districtPanel = new DistrictPanel({
     requestDraw();
     workspaceChanged();
   },
-  commit: city => {
-    // District generation/Undo can also rewrite road or block metadata.
-    // This is outside the approved D01 history scope: clear the accepted
-    // journal explicitly rather than misclassifying it as road topology.
-    acceptedHistoryD01.clear({...project,city},
-      'District editing cleared accepted session Undo/Redo.');
+  undoHistory: () => undoDomainA5('districts'),
+  historyAvailable: () => domainUndoAvailableA5('districts'),
+  commit: (city, detail) => {
+    if (!commitDomainEditA5('districts', city, detail)) return;
     // Rebuilding/undoing districts is a local update. Keep a valid property or
     // building in the Inspector rather than adopting the editor's default ward.
     if (['property', 'building'].includes(workspaceShell?.state.selection?.kind)) {
       districtPanel.editor.selectedDistrictId = null;
       districtPanel.editor.selectedBlockId = null;
     }
-    project = {
-      ...project,
-      city
-    };
     updateDetails();
     workspaceShell?.refresh();
     requestDraw();
@@ -2013,11 +2105,10 @@ districtPanel.onMapSelect = () => districtWorkspace.reveal();
 fortificationPanel = new FortificationPanel({
   drafts, getElement: $,
   getCity: () => project.city,
-  commit: city => {
-    project = {
-      ...project,
-      city
-    };
+  undoHistory: () => undoDomainA5('defenses'),
+  historyAvailable: () => domainUndoAvailableA5('defenses'),
+  commit: (city, detail) => {
+    if (!commitDomainEditA5('defenses', city, detail)) return;
     workspaceShell?.refresh();
     requestDraw();
     workspaceChanged();
@@ -2193,7 +2284,8 @@ propertySplitE2 = new PropertySplitControlsE2({
   historyCan:direction=>Boolean(!d01DraftBlocked()&&d01ScopedPropertyAction(direction,'split')),
   onCommit:(candidate,propertyId,direction,receipt)=>{
     const revisionBeforeCommit=files?.revision??0;
-    project=candidate;
+    if (direction === 'apply') stageAcceptedHistoryHint(candidate, { label: 'Split property' });
+    else project = candidate;
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     propertyCreationHistoryE1.clear();buildingHistory.clear();buildingStructureHistory.clear();
     propertyMergeE3?.history.clear();identityWorkspace.reset();
@@ -2224,7 +2316,8 @@ propertyMergeE3 = new PropertyMergeControlsE3({
   historyCan:direction=>Boolean(!d01DraftBlocked()&&d01ScopedPropertyAction(direction,'merge')),
   onCommit:(candidate,propertyId,direction)=>{
     const revisionBefore=files?.revision??0;
-    project=candidate;
+    if (direction === 'apply') stageAcceptedHistoryHint(candidate, { label: 'Merge properties' });
+    else project = candidate;
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     propertyCreationHistoryE1.clear();propertySplitE2.history.clear();
     buildingHistory.clear();buildingStructureHistory.clear();identityWorkspace.reset();
@@ -2320,7 +2413,7 @@ function commitPropertyCreationE1(current) {
   if (!current() || project !== before || (files?.revision ?? 0) !== rev ||
       JSON.stringify(session.draft) !== JSON.stringify(draft)) return false;
   if(!propertyCreationHistoryE1.record(before,receipt.candidate,receipt.propertyId))return false;
-  project=receipt.candidate;
+  stageAcceptedHistoryHint(receipt.candidate, { label: 'Create property' });
   roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
   buildingHistory.clear();buildingStructureHistory.clear();identityWorkspace.reset();
   session.stop();
@@ -2474,7 +2567,7 @@ identityWorkspace = new IdentityWorkspace({
     || propertyEditSession?.isActive || propertyCreationSessionE1?.active
     || propertySplitE2?.active || propertyMergeE3?.active
   ),
-  historyMove: direction => d01MoveHistory(direction),
+  historyMove: direction => identityWorkspace.historyCan(direction) && d01MoveHistory(direction),
   historyCan: direction => {
     const entry=acceptedHistoryD01.entry(direction),ref=identityWorkspace?.ref();
     return Boolean(!d01DraftBlocked()&&entry?.family==='identity'&&ref?.id&&
@@ -2571,7 +2664,12 @@ function applyRoadEditB4(session,baselineRevision,current){
 }
 
 function refreshRoadDistrictWorkspace(workspace) {
-  if (workspace.districtEditor) districtPanel.editor.load(workspace.districtEditor);
+  if (workspace.districtEditor) {
+    const olderHistory = districtPanel.editor.history.length;
+    districtPanel.editor.load(workspace.districtEditor);
+    const dropped = Math.max(0, olderHistory - districtPanel.editor.history.length);
+    savedHistoryCount.districts = Math.max(0, savedHistoryCount.districts - dropped);
+  }
   districtPanel.refresh();
 }
 
@@ -2784,7 +2882,7 @@ function deleteProperty4A(propertyId) {
   if(project!==previous || workspaceShell.state.selection?.id!==propertyId)return false;
   try{
     propertyDeletionHistory4A.record(previous,receipt.candidate,propertyId);
-    project=receipt.candidate;
+    stageAcceptedHistoryHint(receipt.candidate, { label: 'Delete property' });
     buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
     identityWorkspace.reset();
     workspaceShell.select(null,{reveal:false});
@@ -3397,6 +3495,7 @@ function applyProjectDocument(document) {
   buildingWorkspace.refresh({ replaced: true });
   clearMapHover();
   project = next;
+  historyFeedback = null;
   acceptedHistoryD01.clear(project,'Opening or recovering a project cleared session history.');
   buildingHistory.clear(); // History does not travel with portable or recovery files.
   editor.boundary = draft.boundary;
@@ -3454,6 +3553,7 @@ function applyProjectDocument(document) {
   $('waterPanel').open = workspace.panels?.water ?? false;
   waterPanel.message(waterPanel.editor.dirty ? 'Loaded unfinished water edits. Generate city when ready to apply.' : 'Saved water and bridge geometry loaded exactly.');
   districtPanel.editor.load(workspace.districtEditor);
+  savedHistoryCount.districts = districtPanel.editor.history.length;
   districtPanel.refresh(true);
   const districtControls = workspace.districtEditor?.controls;
   if (districtControls)
@@ -3465,6 +3565,7 @@ function applyProjectDocument(document) {
         districtTargetInput: districtControls.target
       })) $(id).value = value;
   fortificationPanel.editor.load(workspace.fortificationEditor);
+  savedHistoryCount.defenses = fortificationPanel.editor.history.length;
   fortificationPanel.refresh(true);
   const fortControls = workspace.fortificationEditor?.controls;
   if (fortControls) {

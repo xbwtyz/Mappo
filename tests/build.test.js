@@ -258,6 +258,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
     requestAnimationFrame: cb => cb(),
     URL,
     Uint32Array,
+    TextEncoder,
     Math,
     Date,
     console
@@ -355,7 +356,7 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
   el('districtTargetInput').value = candidate.target;
   assert.equal(el('moveDistrictButton').handlers.click(), true);
   assert.equal(state().project.city.blocks.find(b => b.id === candidate.block.id).districtId, candidate.target);
-  el('undoDistrictButton').handlers.click();
+  assert.equal(el('workspaceUndoButton').handlers.click(), true, el('statusMessage').textContent);
   assert.equal(state().project.city.blocks.find(b => b.id === candidate.block.id).districtId, candidate.block.districtId);
   el('undoDistrictButton').handlers.click();
   const beforeDistrictLayers = copy(state().project);
@@ -815,17 +816,17 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.deepEqual(crossFile.project.city, crossExpected);
   assert.ok(crossFile.workspace.districtEditor.history.length >= 2);
   assert.ok(crossFile.workspace.fortificationEditor.history.length >= 2);
-  // Change the in-memory state, then reload the combined save without regenerating.
-  assert.equal(reloaded.el('undoDistrictButton').handlers.click(), true);
-  assert.equal(reloaded.el('undoFortificationButton').handlers.click(), true);
+  // Reverse the latest defense and district changes in chronological order.
+  assert.equal(reloaded.el('workspaceUndoButton').handlers.click(), true);
+  assert.equal(reloaded.el('workspaceUndoButton').handlers.click(), true);
   await reloaded.state().files.stageFile({ size: crossText.length, text: async () => crossText });
   assert.equal(await reloaded.el('openProjectButton').handlers.click(), true);
   assert.deepEqual(copy(reloaded.state().project.city), crossExpected);
   assert.equal(reloaded.state().workspaceShell.state.selection.id, crossDistrictId);
   assert.equal(reloaded.el('districtInspectorControls').hidden, false);
   assert.equal(reloaded.el('defensePendingMessage').textContent, 'No defense changes pending. The accepted city and fortifications are unchanged.');
-  // Undo operations remain independent across the loaded district and defense histories.
-  assert.equal(reloaded.el('undoFortificationButton').handlers.click(), true);
+  // Portable snapshots reopen as independent saved restore points.
+  assert.equal(reloaded.el('restoreDefenseHistoryA5').handlers.click(), true);
   assert.equal(reloaded.state().project.city.fortificationState.seed, 'phase4c-fort');
   assert.equal(reloaded.state().project.city.districts[0].name, 'Cross-workflow District');
   const crossDefenseAfterUndo = copy({
@@ -833,16 +834,16 @@ test('standalone app downloads, previews and restores complete projects and reco
     gates: reloaded.state().project.city.gates,
     towers: reloaded.state().project.city.towers
   });
-  assert.equal(reloaded.el('undoDistrictButton').handlers.click(), true);
+  assert.equal(reloaded.el('restoreDistrictHistoryA5').handlers.click(), true);
   assert.equal(reloaded.state().project.city.districts[0].name, crossDistrictOriginalName);
   assert.deepEqual(copy({
     walls: reloaded.state().project.city.walls,
     gates: reloaded.state().project.city.gates,
     towers: reloaded.state().project.city.towers
   }), crossDefenseAfterUndo);
-  assert.equal(reloaded.el('undoFortificationButton').handlers.click(), true);
+  assert.equal(reloaded.el('restoreDefenseHistoryA5').handlers.click(), true);
   assert.equal(reloaded.state().project.city.fortificationState.status, 'unbuilt');
-  assert.equal(reloaded.el('undoDistrictButton').handlers.click(), true);
+  assert.equal(reloaded.el('restoreDistrictHistoryA5').handlers.click(), true);
   assert.deepEqual(copy(reloaded.state().project.city), crossBaseline, 'Cross-workflow undo restores exact original city');
   // Water remains a draft until its complete street/bridge generation succeeds.
   const dryProject = copy(reloaded.state().project);

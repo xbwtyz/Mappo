@@ -56,6 +56,8 @@ export class FortificationPanel {
     getElement,
     getCity,
     commit,
+    undoHistory,
+    historyAvailable,
     changed,
     activateLayer = () => {}
   }) {
@@ -63,6 +65,8 @@ export class FortificationPanel {
     this.drafts = drafts;
     this.getCity = getCity;
     this.commit = commit;
+    this.undoHistory = undoHistory;
+    this.historyAvailable = historyAvailable ?? (() => this.editor.history.length > 0);
     this.changed = changed;
     this.activateLayer = activateLayer;
     this.editor = new FortificationEditor();
@@ -102,7 +106,7 @@ export class FortificationPanel {
     this.$('fortificationStats').textContent = built
       ? `${state.enabled ? 'Enabled' : 'Disabled · saved'} · ${city.gates.length} gates · ${city.towers.length} towers`
       : 'No perimeter defenses built yet.';
-    this.$('undoFortificationButton').disabled = !this.editor.history.length;
+    this.$('undoFortificationButton').disabled = !this.historyAvailable();
     if (reset) {
       this.$('wallsEnabledInput').checked = state.enabled;
       this.$('gateCountInput').value = String(built ? state.requestedGateCount : 4);
@@ -121,9 +125,12 @@ export class FortificationPanel {
     try {
       const previous = this.getCity(),
         before = previous.fortificationState,
+        beforeHistory = this.editor.history.slice(),
         wasUnbuilt = before.status !== 'built',
         city = this.editor.apply(previous, this.controls());
-      this.commit(city);
+      this.commit(city, { operation: city.fortificationState.enabled !== before.enabled && !wasUnbuilt
+        ? (city.fortificationState.enabled ? 'enable' : 'disable')
+        : wasUnbuilt ? 'build' : 'rebuild', beforeHistory });
       this.refresh();
       if (wasUnbuilt && city.fortificationState.status === 'built') this.activateLayer();
       const state = city.fortificationState;
@@ -148,17 +155,7 @@ export class FortificationPanel {
   }
   bind() {
     this.$('applyFortificationButton').addEventListener('click', () => this.apply());
-    this.$('undoFortificationButton').addEventListener('click', () => {
-      try {
-        this.commit(this.editor.undo(this.getCity()));
-        this.refresh(true);
-        this.message('Fortification edit undone.');
-        return true;
-      } catch (error) {
-        this.message(error.message, true);
-        return false;
-      }
-    });
+    this.$('undoFortificationButton').addEventListener('click', () => this.undoHistory?.());
     for (const id of ['wallsEnabledInput', 'gateCountInput', 'towerSpacingInput', 'fortificationSeedInput']) {
       this.$(id).addEventListener('input', () => {
         this.syncPreview();

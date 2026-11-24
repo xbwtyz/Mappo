@@ -4,6 +4,7 @@
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { reconcileRoadWorkspace } from '../editor/road-workspace.js';
+import { historyWorkspaceForReplay } from './accepted-history-workspace-a5.js';
 
 const d01Same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const d01Bytes=project=>JSON.stringify(project).length*2; // conservative UTF-16 estimate
@@ -146,14 +147,14 @@ export class AcceptedEditHistoryD01 {
     }
     return this.record(before,project,receipt);
   }
-  record(before,after,{family,operation,label,targetIds=[]}={}) {
+  record(before,after,{family,operation,label,targetIds=[],editorHistory}={}) {
     if(!before?.city||!after?.city||!family||!label)
       throw Error('A complete accepted-history receipt is required.');
     if(d01Same(before,after)){this.baseline=copyJson(after);return {status:'no-op'};}
     if(this.baseline&&!d01Same(this.baseline,before))
       return {status:'stale',reason:'The accepted city changed before history recording.'};
     const from=copyJson(before),to=copyJson(after);
-    const bytes=d01Bytes(from)+d01Bytes(to);
+    const bytes=d01Bytes(from)+d01Bytes(to)+(editorHistory ? d01Bytes(editorHistory) : 0);
     // The accepted edit itself remains valid even if its history does not fit.
     if(bytes>this.maxBytes) {
       this.clear(after,'Last accepted edit exceeded the session history budget. Undo is unavailable.');
@@ -161,7 +162,8 @@ export class AcceptedEditHistoryD01 {
     }
     this.future=[]; // A new accepted edit cuts the redo branch.
     const item={serial:++this.serial,family,operation:operation??family,label,
-      targetIds:targetIds.slice(),from,to,bytes};
+      targetIds:targetIds.slice(),from,to,bytes,
+      ...(editorHistory ? { editorHistory: copyJson(editorHistory) } : {})};
     this.past.push(item);
     let pruned=0;
     while(this.length>this.maxEntries||this.bytes>this.maxBytes){
@@ -191,6 +193,7 @@ export class AcceptedEditHistoryD01 {
       // Full road transactions may change face, selection and district IDs.
       if(item.family==='road')
         nextWorkspace=reconcileRoadWorkspace(nextWorkspace,project.city,candidate.city);
+      nextWorkspace = historyWorkspaceForReplay(nextWorkspace, candidate.city, item.editorHistory, direction);
       const ref=nextWorkspace?.ui?.selection;
       if(ref?.kind==='property'&&!candidate.city.properties.some(p=>p.id===ref.id))
         nextWorkspace.ui.selection=null;

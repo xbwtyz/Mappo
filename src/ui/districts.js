@@ -12,6 +12,8 @@ export class DistrictPanel {
     getElement,
     getCity,
     commit,
+    undoHistory,
+    historyAvailable,
     changed,
     activateLayers = () => {},
     document = globalThis.document
@@ -21,6 +23,8 @@ export class DistrictPanel {
     this.activateLayers = activateLayers;
     this.getCity = getCity;
     this.commit = commit;
+    this.undoHistory = undoHistory;
+    this.historyAvailable = historyAvailable ?? (() => this.editor.history.length > 0);
     this.changed = changed;
     this.document = document;
     this.editor = new DistrictEditor();
@@ -88,7 +92,7 @@ export class DistrictPanel {
     this.$('applyDistrictButton').disabled = !district;
     this.$('districtNameInput').disabled = !district;
     this.$('districtColorInput').disabled = !district;
-    this.$('undoDistrictButton').disabled = !this.editor.history.length;
+    this.$('undoDistrictButton').disabled = !this.historyAvailable();
     this.$('districtCount').textContent = active ? city.districts.length : 0;
     if (resetControls) {
       this.$('districtNumberInput').value = active ? String(city.districtState.requestedCount ?? 'auto') : 'auto';
@@ -150,8 +154,11 @@ export class DistrictPanel {
   }
   operation(action, message, operation) {
     try {
+      const before = this.getCity();
+      const beforeHistory = this.editor.history.slice();
       const city = action();
-      this.commit(city);
+      if (JSON.stringify(before) === JSON.stringify(city)) this.editor.history = beforeHistory;
+      this.commit(city, { operation, beforeHistory });
       // Refill committed values without clearing independent generation inputs.
       if (this.formDistrictId) this.formCache.delete(this.formDistrictId);
       this.formDistrictId = null;
@@ -184,7 +191,7 @@ export class DistrictPanel {
     });
     this.$('applyDistrictButton').addEventListener('click', () => this.apply('identity', () => this.editor.edit(this.getCity(), this.$('districtNameInput').value, this.$('districtColorInput').value), 'District name and color updated.'));
     this.$('moveDistrictButton').addEventListener('click', () => this.apply('move', () => this.editor.move(this.getCity(), this.$('districtTargetInput').value), 'Block moved. Both districts remain connected.'));
-    this.$('undoDistrictButton').addEventListener('click', () => this.operation(() => this.editor.undo(this.getCity()), 'District edit undone.'));
+    this.$('undoDistrictButton').addEventListener('click', () => this.undoHistory?.());
     this.$('districtSelect').addEventListener('change', () => {
       this.editor.selectedDistrictId = this.$('districtSelect').value || null;
       this.editor.selectedBlockId = null;

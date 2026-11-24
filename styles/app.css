@@ -202,12 +202,11 @@
 @media(max-width:900px){.workspace-pending-indicator{padding:4px 6px;font-size:9px}}
 
 
-/* Phase 5B contextual undo: independent editor histories, not a global stack. */
+/* Shared accepted-history commands. */
 .workspace-context-undo{white-space:nowrap;min-width:100px;font-size:11px;font-weight:650;padding:7px 11px;border:1px solid #a18f70;background:#35483e;color:#e7d4b6;border-radius:5px}
 .workspace-context-undo:hover:not(:disabled){background:#496151}
-.workspace-context-undo:disabled{opacity:.52;cursor:not-allowed}
-.workspace-undo-description{font-size:10px;color:#a8c0b1;padding:0 10px}
-@media(max-width:850px){.workspace-undo-description{display:none}.workspace-context-undo{min-width:0}}
+.workspace-context-undo[aria-disabled="true"]{opacity:.52;cursor:not-allowed}
+@media(max-width:850px){.workspace-context-undo{min-width:0}}
 
 
 /* Phase 5C: visible, adjacent validation without blocking dialogs. */
@@ -1065,3 +1064,13 @@
 #roadPreviewPanel[data-inspector-view="Details"]:not(.inspector-road-group-a3) #roadPreviewBody>:not(#roadInspectorDetailsA3){display:none}
 #roadPreviewPanel[data-inspector-view="Details"]:not(.inspector-road-group-a3) #roadImpactList{display:none}
 #workspaceSelectionInspector[data-inspector-view] .workspace-inspector-title h2{overflow-wrap:anywhere}
+
+/* Keep history diagnostics beside the current toolbar action. */
+.workspace-shell .workspace-map-controls{overflow:visible;z-index:4}
+.history-command-a5{position:relative;min-width:0}
+.history-command-a5>button{width:100%;min-width:0;height:auto;padding:6px;white-space:normal;overflow-wrap:anywhere}
+.history-command-a5>.history-tooltip-a5{top:0;right:calc(100% + 7px);bottom:auto;left:auto;z-index:15;
+  width:max-content;max-width:min(255px,62vw);opacity:0;visibility:hidden;pointer-events:none}
+.history-command-a5:hover>.history-tooltip-a5,.history-command-a5:focus-within>.history-tooltip-a5{opacity:1;visibility:visible;pointer-events:auto}
+.history-command-a5>.history-tooltip-a5::after{content:"";position:absolute;left:100%;top:0;width:8px;height:100%}
+.history-command-a5>.history-tooltip-a5[hidden]{display:none}

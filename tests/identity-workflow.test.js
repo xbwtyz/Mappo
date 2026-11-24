@@ -9,7 +9,7 @@ function editIdentity(app, name, use = '') {
   app.el('identityUseInput').value = use;
   app.el('identityNameInput').handlers.input();
 }
-test('out-of-scope accepted district edits preserve identity but clear unified Undo safely', async () => {
+test('district and identity edits remain independently reversible in shared chronological history', async () => {
   const app = await buildingAppHarness(), property = app.state().project.city.properties[0];
   app.state().propertyWorkspace.select({ kind: 'property', id: property.id });
   editIdentity(app, 'Local landmark', 'Guildhall');
@@ -20,13 +20,17 @@ test('out-of-scope accepted district edits preserve identity but clear unified U
   assert.equal(app.state().project.city.properties.find(p => p.id === property.id).customName, 'Local landmark');
   assert.equal(app.state().identityWorkspace.editor.history.length, 0,
     'No second actionable accepted-identity cursor is retained.');
-  assert.equal(app.state().acceptedHistoryD01.length, 0,
-    'District Apply is an explicit out-of-scope accepted history barrier.');
+  assert.deepEqual(copyIdentity(app.state().acceptedHistoryD01.summaries()).map(row => row.family), ['identity', 'districts']);
   assert.equal(app.el('identityUndoButton').handlers.click(), false);
   assert.equal(app.state().project.city.properties.find(p => p.id === property.id).districtId, districtId);
   assert.equal(app.state().districtPanel.editor.history.length, 1);
-  assert.equal(app.el('undoDistrictButton').handlers.click(), true);
+  assert.equal(app.el('workspaceUndoButton').handlers.click(), true);
   assert.equal(app.state().project.city.properties.find(p => p.id === property.id).customName, 'Local landmark');
+  assert.equal(app.el('workspaceUndoButton').handlers.click(), true);
+  assert.equal(app.state().project.city.properties.find(p => p.id === property.id).customName, undefined);
+  assert.equal(app.el('workspaceRedoButtonD01').handlers.click(), true);
+  assert.equal(app.el('workspaceRedoButtonD01').handlers.click(), true);
+  assert.equal(app.state().project.city.properties.find(p => p.id === property.id).districtId, districtId);
 });
 test('compiled identity forms apply explicitly, keep independent property/wing drafts, and undo only identity metadata', async () => {
   const app = await buildingAppHarness(), initial = copyIdentity(app.state().project);
@@ -52,7 +56,8 @@ test('compiled identity forms apply explicitly, keep independent property/wing d
   assert.equal(app.el('identityNameInput').value, 'Pending name');
   app.el('identityDiscardButton').handlers.click();
   assert.equal(app.el('identityNameInput').value, 'The Silver Stag');
-  assert.equal(app.el('identityUndoButton').handlers.click(), true);
+  assert.equal(app.el('identityUndoButton').disabled, true);
+  assert.equal(app.el('workspaceUndoButton').handlers.click(), true);
   assert.equal(app.state().project.city.buildings.find(b => b.id === buildingId).customName, undefined);
   assert.equal(app.el('identityNameInput').value, 'The Silver Stag');
   app.el('workspaceUndoButton').handlers.click();

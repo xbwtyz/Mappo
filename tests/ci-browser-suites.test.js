@@ -27,6 +27,7 @@ const baseline=[
   "scripts/g4-desktop-acceptance-browser-qa.mjs",
   "scripts/h2-save-compatibility-browser-qa.mjs",
   "scripts/h4-recovery-browser-qa.mjs",
+  "scripts/history-workflow-a5-browser-qa.mjs",
   "scripts/input-a2-browser-qa.mjs",
   "scripts/inspector-a3-browser-qa.mjs",
   "scripts/junction-snap-merge-browser-qa.mjs",

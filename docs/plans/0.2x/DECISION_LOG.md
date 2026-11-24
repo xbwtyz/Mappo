@@ -95,3 +95,7 @@ A3-01 through A3-10 = A; detailed P1–P5 implementation separately approved. [A
 ## 0.2.21-dev A4 — Shared draft lifecycle and diagnostics
 
 A4-01=B and A4-02 through A4-10=A. The detailed P1–P5 [A4 milestone](milestones/0.2.21-draft-lifecycle-a4.md) records the lifecycle and acceptance criteria. Schema 10, portable envelope 1 and workspace version 1 are retained.
+
+## 0.2.22-dev A5 — History and workflow improvements
+
+Owner approved dedicated Reset Preview on Ctrl/Cmd+Shift+Z, accepted Undo on Ctrl/Cmd+Z, district and defense transactions in the shared history, and hover and keyboard-focus feedback for history errors. The [A5 milestone](milestones/0.2.22-history-workflow-a5.md) records the approved saved-snapshot restoration policy and P1–P5 acceptance.
