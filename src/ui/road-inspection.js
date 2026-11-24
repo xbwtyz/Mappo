@@ -585,8 +585,8 @@ export class RoadInspectionWorkspace {
     desktopEntry.setAttribute('aria-pressed', String(s.active && Boolean(this.usesDesktopPanel)));
     desktopEntry.disabled = s.active;
     if (!s.active) { this.drafts.close('road'); this.shell.inspectorA3.release('road'); return; }
-    const d = s.details,
-      kind = d?.kind ?? 'junction';
+    const d = s.details, groupB1=s.roadGroupB1,
+      kind = groupB1?'road':d?.kind ?? 'junction';
     this.$('roadSelectionKind').value = kind;
     if (this.optionsKind !== kind) {
       const index = kind === 'junction' ? s.graph.nodesById : s.graph.roadsById;
@@ -602,6 +602,9 @@ export class RoadInspectionWorkspace {
       this.optionsKind = kind;
     }
     this.$('roadSelectionId').value = d?.id ?? '';
+    this.$('roadMenuRecordDetails').hidden=Boolean(groupB1);
+    this.$('roadMenuBends').hidden=Boolean(groupB1);
+    this.$('roadMenuConnections').hidden=Boolean(groupB1);
     this.$('roadRecordDetails').textContent = d
       ? `${d.id} · ${d.classes.join(', ')} · ${d.roadIds.length} road${d.roadIds.length === 1 ? '' : 's'} · ${d.protected ? 'Protected: ' + d.reasons.join(', ') : 'Ordinary / unprotected'}`
       : 'No road records available.';
@@ -634,6 +637,7 @@ export class RoadInspectionWorkspace {
           ? `Endpoints ${d.record.a} (${s.graph.incidentRoads.get(d.record.a).length} connected roads) ↔ ${d.record.b} (${s.graph.incidentRoads.get(d.record.b).length} connected roads)`
           : '';
     this.$('roadIntentPanelC1').hidden=kind!=='road';
+    this.$('roadIntentHeadingB1').textContent=groupB1?'Move connected roads':'Move road';
     this.$('roadJunctionTools').hidden = kind === 'road' && !s.mergeMode;
     this.$('roadSnapJunctions').checked = s.snapEnabled;
     this.$('roadStartMergeJunctions').hidden = s.mergeMode;
@@ -647,7 +651,7 @@ export class RoadInspectionWorkspace {
       : 'Drag a junction close to another to snap, or choose Connect / Merge Junctions.';
     const bends = s.bendEditor, bend = bends?.points[bends.selected];
     this.$('roadStartBendsC4').hidden = Boolean(bends);
-    this.$('roadStartBendsC4').disabled = !s.roadIntentEligible || Boolean(s.drag);
+    this.$('roadStartBendsC4').disabled = Boolean(groupB1) || !s.roadIntentEligible || Boolean(s.drag);
     this.$('roadBendEditorC4').hidden = !bends;
     if (bends) {
       const count = bends.points.length;
@@ -689,14 +693,14 @@ export class RoadInspectionWorkspace {
       this.$('roadConnectionTargetC3').replaceChildren(option('', 'Choose junction'), ...targets.map(node => option(node.id)));
     }
     for (const id of ['roadReconnectC3','roadAddC3','roadRemoveC3','roadConnectionEndpointC3','roadConnectionTargetC3'])
-      this.$(id).disabled = !s.roadIntentEligible || Boolean(s.drag);
+      this.$(id).disabled = Boolean(groupB1) || !s.roadIntentEligible || Boolean(s.drag);
     for(const [id,field] of [['roadIntentDxC1','x'],['roadIntentDyC1','y']]){
       this.$(id).disabled=!s.roadIntentEligible;
       if(document.activeElement!==this.$(id))
         this.$(id).value=String(s.roadIntentOffset?.[field]??0);
     }
     this.$('roadIntentStatusC1').textContent=!s.roadIntentEligible ?
-      'Protected connection: choose a road with two ordinary unprotected endpoints.' :
+      groupB1?.issues[0]?.message ?? 'Protected connection: choose a road with two ordinary unprotected endpoints.' :
       s.roadIntentInputError || s.error ||
       (s.pending ? s.checking?'Checking the street and neighborhood…':
         s.hasApplyCandidate ? 'Street and local neighborhood ready to review.' :
@@ -757,7 +761,7 @@ export class RoadInspectionWorkspace {
       this.$('roadMenuReviewCount').textContent = String(count);
     }
     this.$('roadApplyB4').textContent = this.usesDesktopPanel && s.roadConnectionEdit?.kind === 'remove'
-      ? 'Apply deletion' : 'Apply road edit';
+      ? 'Apply deletion' : groupB1?'Apply road group':'Apply road edit';
     const problem = this.applyError || s.roadIntentInputError || s.error || s.reconciliationError;
     const topologyOnly = s.previewGeometry?.mode==='topology-only';
     // A verified geometry snapshot can still contain real unresolved blockers.
@@ -772,7 +776,7 @@ export class RoadInspectionWorkspace {
       baseline: s.city, key: s.project, intent: s.revision, dirty: s.selectionDraftLockedA1,
       checking: Boolean(s.checking || s.drag), stale, ready: verified, validatedIntent: s.settledRevision,
       issues: verified ? [] : diagnostics.length ? diagnostics : problem ? [{ message: problem }] : [],
-      target: s.selection,
+      target: s.selection ?? (groupB1?s.selectionSet.primary:null),
     }, panel, this.$('roadApplyB4'));
     const ready = draft.canApply, applying = draft.status === 'applying';
     this.$('roadPreviewReset').disabled ||= applying;
@@ -844,9 +848,11 @@ export class RoadInspectionWorkspace {
       const group=s.selectionSet.items.length>1;
       const key=group?'road-group:'+s.selectionSet.items.map(ref=>ref.id).join('|'):
         kind+':'+(d?.id??'none');
-      const views=group?['Details']:['Details','Edit','Review'];
+      const views=group&&!groupB1?.eligible?['Details']:['Details','Edit','Review'];
       const rows=group?[['Selection',s.selectionSet.items.length+' road segments'],
-        ['Primary',s.selectionSet.primary?.id??'None']]:d?[
+        ['Primary',s.selectionSet.primary?.id??'None'],['Connectivity',groupB1?.components.length===1?'Connected':'Disconnected'],
+        ['Moving junctions',String(groupB1?.movedJunctionIds.length??0)],['External attachments',String(groupB1?.attachmentRoadIds.length??0)],
+        ['Eligibility',groupB1?.eligible?'Ready to edit':groupB1?.issues[0]?.message??'Selection only']]:d?[
           ['Record',d.id],['Class',d.classes.join(', ')],['Connected roads',d.roadIds.length],
           ['Protection',d.protected?d.reasons.join(', '):'Ordinary / unprotected']]:[];
       const c=this.shell.inspectorA3.present('road',{key,kind:group?'road-group':kind,
@@ -862,31 +868,45 @@ export class RoadInspectionWorkspace {
             this.$('roadMenuDetailsA3').focus({preventScroll:true});
           }
         }});
-      this.$('roadInspectorDetailsA3').hidden=group||c.view!=='Details';
+      this.$('roadInspectorDetailsA3').hidden=c.view!=='Details';
       panel.classList.toggle('inspector-road-group-a3',group);
     }else this.shell.inspectorA3.release('road');
   }
 
   renderSelectionGroupA1() {
-    const s=this.session,set=s.selectionSet,group=set.items.length>1;
+    const s=this.session,set=s.selectionSet,group=set.items.length>1,resolution=s.roadGroupB1;
     const panel=this.$('roadSelectionGroupA1');
     panel.hidden=!group;
-    this.$('roadEditControlsD1').hidden=group;
-    this.$('roadDetailsD1').hidden=group;
+    this.$('roadEditControlsD1').hidden=group&&!resolution?.eligible;
+    this.$('roadDetailsD1').hidden=group&&!resolution?.eligible;
     if(s.selectionNoticeA1)this.$('roadApplyStatusB4').textContent=s.selectionNoticeA1;
     if(!group){this.groupKeyA1=null;return;}
-    this.$('roadMenuViews').hidden=true;
+    this.$('roadMenuViews').hidden=!this.usesDesktopPanel;
     this.$('roadPreviewHeading').textContent=set.items.length+' road segments selected';
     this.$('roadSelectionCountA1').textContent=set.items.length+' road segments';
-    this.$('roadReportStatus').textContent='Selection only';
-    this.$('roadApplyStatusB4').textContent=s.selectionNoticeA1||'Select one road to edit. Group movement is not supported yet.';
-    this.$('roadApplyB4').disabled=true;
+    const reason=resolution?.issues.map(row=>row.message+' '+row.roadIds.join(', ')).join(' ')??'Selection only.';
+    this.$('roadGroupEligibilityB1').textContent=resolution?.eligible
+      ? resolution.movedJunctionIds.length+' moving junctions · '+resolution.attachmentRoadIds.length+' attached roads'
+      : reason;
+    if(!resolution?.eligible){
+      this.$('roadReportStatus').textContent='Selection only';
+      this.$('roadApplyStatusB4').textContent=s.selectionNoticeA1||reason;
+      this.$('roadApplyB4').disabled=true;
+      this.$('roadMenuEdit').title=reason;
+      this.$('roadMenuReview').title=reason;
+    }else{
+      this.$('roadMenuEdit').title='';
+      this.$('roadMenuReview').title='';
+    }
+    this.$('roadSelectionClearA1').disabled=s.selectionDraftLockedA1;
+    for(const button of this.$('roadSelectionMembersA1').querySelectorAll?.('button')??[])button.disabled=s.selectionDraftLockedA1;
     const key=JSON.stringify(set);
     if(this.groupKeyA1!==key){
       this.groupKeyA1=key;
       this.$('roadSelectionMembersA1').replaceChildren(...set.items.map(ref=>{
         const button=document.createElement('button');
         button.type='button';button.className='minor-button';
+        button.disabled=s.selectionDraftLockedA1;
         button.textContent=ref.id+(ref.id===set.primary?.id?' · primary':'')+' ×';
         button.setAttribute('aria-label','Remove '+ref.id+' from selection');
         button.addEventListener('click',()=>s.requestSelectionA1(ref,{toggle:true}));
@@ -910,7 +930,8 @@ export class RoadInspectionWorkspace {
     this.$('roadMenuEdit').setAttribute('aria-pressed', String(!review));
     this.$('roadMenuReview').setAttribute('aria-pressed', String(review));
     this.$('roadMenuValidationSummary').textContent = desktop ? 'Validation details' : 'Details';
-    this.$('roadMenuDelete').hidden = !desktop || kind !== 'road';
+    this.$('roadMenuDelete').hidden = !desktop || kind !== 'road' || Boolean(this.session.roadGroupB1);
+    this.$('roadMenuEdit').title='';this.$('roadMenuReview').title='';
     if (!desktop) return;
     const deleting = this.session.roadConnectionEdit?.kind === 'remove';
     this.$('roadPreviewHeading').textContent = deleting ? 'Preview deletion'
@@ -924,7 +945,7 @@ export class RoadInspectionWorkspace {
   }
 
   setDesktopReview(review) {
-    if (!this.active || !this.usesDesktopPanel) return;
+    if (!this.active || !this.usesDesktopPanel || (this.session.roadGroupB1&&!this.session.roadGroupB1.eligible)) return;
     if (!review) {
       if (this.comparisonOpen) this.clearComparison();
       this.dockOpen = false;
@@ -1290,7 +1311,7 @@ export class RoadInspectionWorkspace {
     this.$('roadEditControlsD1').open = true;
     if (this.usesDesktopPanel) this.$('roadMenuRecordDetails').open = guide.action === 'choose';
     const control = guide.action === 'choose' ? 'roadSelectionId'
-      : s.details?.kind === 'road' ? 'roadIntentDxC1' : 'roadProposedX';
+      : s.details?.kind === 'road' || s.roadGroupB1 ? 'roadIntentDxC1' : 'roadProposedX';
     const input = this.$(control);
     if (!input.disabled) {
       input.scrollIntoView?.({block:'center'});

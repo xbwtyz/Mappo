@@ -138,7 +138,7 @@ import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
 // B2 conservative parcel adaptation remains preview-only until B4 Apply.
 import { prepareJunctionReflowC7 } from './core/neighborhood-reflow.js';
-import { checkRoadApplyC2, prepareRoadApplyC2 } from './editor/road-application.js';
+import { checkRoadApplyC2, prepareRoadApplyC2, validateRoadGroupApplyB1 } from './editor/road-application.js';
 import { RoadGeometryHistoryB4 } from './editor/road-history.js';
 import { DraftEngine } from './core/draft-engine.js';
 import { renderDraftControls, syncDraftControls } from './ui/draft-controls.js';
@@ -1902,7 +1902,7 @@ function handleMapCommandA2(e) {
     if (drafts.read('road').status === 'applying') { e.preventDefault(); return; }
     if (roadWorkspace.comparisonOpen) roadWorkspace.setComparison(false);
     else if (roadWorkspace.session.cancelMergeMode()) { /* Escape cancels the two-click tool first. */ }
-    else if (roadWorkspace.session.selectionSet.items.length>1 && isMapShortcutEvent(e,document.activeElement))
+    else if (roadWorkspace.session.selectionSet.items.length>1 && !roadWorkspace.session.selectionDraftLockedA1 && isMapShortcutEvent(e,document.activeElement))
       roadWorkspace.session.requestSelectionA1(null);
     else roadWorkspace.cancel();
     e.preventDefault();return;
@@ -2592,7 +2592,8 @@ function applyRoadEditB4(session,baselineRevision,current){
     return {ok:false,message:'The road preview is stale. Reopen it before Apply.'};
   const workspace = captureWorkspace().workspace;
   const draftRevision = session.revision;
-  const junctionId = session.selection?.id;
+  const group=session.roadGroupB1;
+  const junctionId = session.selection?.id ?? group?.selectedRoadIds[0];
   const connection = session.roadConnectionEdit?.kind;
   const label = connection === 'remove' ? 'Delete road' : connection === 'shape' ? 'Reshape road'
     : connection === 'add' ? 'Add road connection' : connection === 'reconnect' ? 'Reconnect road'
@@ -2604,8 +2605,18 @@ function applyRoadEditB4(session,baselineRevision,current){
     if (!current() || project !== previous || revision !== (files?.revision ?? 0) || !session.current() ||
         session.revision !== draftRevision || session.settledRevision !== draftRevision)
       return {ok:false,message:'Accepted project or preview changed during Apply.'};
-    return commitRoadEditB4(previous, revision, receipt, junctionId, transaction);
+    return commitRoadEditB4(previous, revision, receipt, junctionId, receipt.transaction??transaction);
   };
+  if(group) {
+    if(!group.eligible || !session.pending || session.drag || session.checking ||
+      session.error || session.roadIntentInputError || session.reconciliationError ||
+      session.settledRevision!==draftRevision || baselineRevision!==revision ||
+      session.acceptedFingerprint!==JSON.stringify(previous) || !session.previewGeometry?.verified)
+      return {ok:false,message:'The connected-road preview is not complete and current.'};
+    return commit(validateRoadGroupApplyB1(previous,workspace,
+      {selectedRoadIds:group.selectedRoadIds,offset:session.roadIntentOffset,parcelChoices:session.parcelChoices},
+      session.reconciliation));
+  }
   if (session.selection?.kind !== 'junction' || !session.computeJunctionAsync)
     return commit(prepareRoadApplyC2(previous, workspace, session, baselineRevision, revision));
 
@@ -2637,12 +2648,23 @@ function refreshRoadDistrictWorkspace(workspace) {
 }
 
 function commitRoadEditB4(previous, revision, { candidate, workspace }, junctionId, transaction) {
+  const group=transaction.operation==='translate-road-group';
+  if(group){
+    // B1 preserves all IDs and protected data. No saved restore point may
+    // be pruned or rewritten by this operation.
+    const beforeWorkspace=captureWorkspace().workspace;
+    for(const key of ['districtEditor','fortificationEditor'])
+      if(JSON.stringify(beforeWorkspace[key]?.history??[])!==JSON.stringify(workspace[key]?.history??[]))
+        return {ok:false,message:'Connected road movement would alter saved restore points.'};
+    if(!acceptedHistoryD01.canRecord(previous,candidate,transaction.editorHistory))
+      return {ok:false,message:'The complete reversible road-group transaction cannot fit the current history or the history is stale.'};
+  }
   // Exit only transient UI state before accepted data is replaced. No file or
   // history writes occur until the candidate passes the entire B4 gate.
   roadWorkspace.exit({restore:true,focus:roadWorkspace.usesDesktopPanel});
   if(project!==previous||revision!==(files?.revision??0))
     return {ok:false,message:'The accepted project changed before commit.'};
-  if(!roadHistory.record(previous,candidate,junctionId))
+  if(!group&&!roadHistory.record(previous,candidate,junctionId))
     return {ok:false,message:'Nothing was changed.'};
   const beforeHistory = districtPanel.editor.history;
   const afterHistory = workspace.districtEditor?.history ?? beforeHistory;
@@ -2650,6 +2672,13 @@ function commitRoadEditB4(previous, revision, { candidate, workspace }, junction
     const removed = beforeHistory.length - afterHistory.length;
     transaction = { ...transaction, editorHistory: editorHistoryDeltaA5('districts', beforeHistory, afterHistory,
       Math.max(0, savedHistoryCount.districts - removed)) };
+  }
+  if(group){
+    if(!acceptedHistoryD01.canRecord(previous,candidate,transaction.editorHistory))
+      return {ok:false,message:'The reversible history changed before group Apply.'};
+    const recorded=acceptedHistoryD01.record(previous,candidate,transaction);
+    if(recorded.status!=='recorded')return {ok:false,message:'The reversible group transaction was not recorded.'};
+    historyFeedback=null;
   }
   commitAcceptedEdit(candidate, transaction);
   refreshRoadDistrictWorkspace(workspace);
@@ -2664,8 +2693,8 @@ function commitRoadEditB4(previous, revision, { candidate, workspace }, junction
   workspaceShell.refresh();
   requestDraw();
   workspaceChanged(); // exactly one file revision / normal recovery notification
-  $('statusMessage').textContent='Applied road '+junctionId+' and all validated neighborhood changes. Undo road is available.';
-  $('roadHistoryStatusB4').textContent='Road '+junctionId+' applied. Undo restores the complete previous city.';
+  $('statusMessage').textContent=group?transaction.label+' applied. Undo restores all validated changes.':'Applied road '+junctionId+' and all validated neighborhood changes. Undo road is available.';
+  $('roadHistoryStatusB4').textContent=group?transaction.label+' applied. Undo restores the complete previous city.':'Road '+junctionId+' applied. Undo restores the complete previous city.';
   return {ok:true};
 }
 function moveRoadHistoryB4(direction) {

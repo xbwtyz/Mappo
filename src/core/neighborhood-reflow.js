@@ -3,7 +3,8 @@ import { prepareRoadTopologyReflowC3 } from './road-topology-reflow.js';
 import { roadBuildingOccupiedPlots } from './road-building-decisions.js';
 import { resolveBuildingAccess } from '../editor/building-application.js';
 import { reflowGeneratedRoadBuildings } from './road-building-reflow.js';
-import { prepareJunctionIntentC7, prepareRoadIntentC1 } from './road-intent-c1.js';
+import { prepareJunctionIntentC7, prepareRoadIntentC1, prepareRoadGroupIntentB1 } from './road-intent-c1.js';
+import { verifyRoadGroupPreservationB1 } from './road-group-preservation-b1.js';
 import { buildRoadGraph } from './road-graph.js';
 import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
 import { analyzeRoadImpact } from './road-impact.js';
@@ -11,6 +12,7 @@ import { inspectRoadDependencies, inspectRoadContextReferences } from './road-im
 import { riBudget, riEqual, riIndex, riReporter } from './road-impact-model.js';
 import { classifyRoadProvenance, stampRoadGenerated } from './road-provenance.js';
 import { propertyDividerFractions3I, propertyGeometryPreview3I } from './property-geometry.js';
+import { reshapeRoadParcelPolygon } from './road-parcel-shape-reflow.js';
 import { PROPERTY_SETBACK, STREET_EDGE_WIDTH, STREET_WIDTHS, propertyFits, rectangleInFrame } from './placement.js';
 import { distanceToSegment, segmentCuts } from './boundary.js';
 import { validateStoredProject } from '../data/project-validation.js';
@@ -35,9 +37,21 @@ const c2Issue = (kind, id, code, message) => ({ kind, id, code, message, severit
 const c2Margin = road => (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
 
 function c2Parcel(city, property, road, edges, fixed) {
-  const edge = edges.find(e => e.road.id === road.id);
-  if (!edge || property.boundary.length !== 4)
-    throw new Error('This parcel needs a four-corner envelope with frontage on its own block.');
+  const edge = edges?.find(e => e.road?.id === road?.id);
+  if (!road || !edge)
+    throw new Error('The assigned frontage road no longer bounds this parcel’s own block.');
+  const ownPlots=property.plotIds.map(id=>city.plots.find(plot=>plot.id===id&&plot.propertyId===property.id));
+  if(ownPlots.some(plot=>!plot))throw Error('The parcel’s existing plot records are incomplete.');
+  let legacy=false;
+  if(property.boundary.length===4 && ownPlots.every(plot=>plot.boundary.length===4)){
+    try {
+      const ratios=propertyDividerFractions3I(city,property);
+      const reference=propertyGeometryPreview3I(city,property.id,property.boundary,ratios);
+      legacy=ownPlots.every((plot,i)=>plot.boundary.every((pt,j)=>
+        Math.hypot(pt.x-reference.plots[i].boundary[j].x,pt.y-reference.plots[i].boundary[j].y)<1e-6));
+    }catch{/* Flexible plot layouts use the identity-preserving path. */}
+  }
+  if(!legacy)return reshapeRoadParcelPolygon(property,ownPlots,edge,edges,c2Margin(road)+.05,fixed);
   const { a, b } = edge;
   const length = Math.hypot(b.x - a.x, b.y - a.y);
   const tangent = { x: (b.x - a.x) / length, y: (b.y - a.y) / length };
@@ -96,6 +110,38 @@ export function prepareNeighborhoodReflowC2(project, roadId, offset, draft = pre
 export function prepareNeighborhoodReflowC3(project, roadId, offset,
   draft = prepareRoadIntentC1(project, roadId, offset), decisions = new Map(), options = {}) {
   return reconcileRoadIntent(project,roadId,draft,decisions,options);
+}
+
+// Group movement intentionally does not call reconcileRoadIntent, whose
+// singleton policy can normalize crossings or reconstruct block topology.
+export function prepareRoadGroupReflowB1(project,selectedRoadIds,offset,options={}) {
+  const draft=c2HydrateDraftS10(prepareRoadGroupIntentB1(project,selectedRoadIds,offset));
+  const id=draft.selectedRoadIds?.[0]??'group';
+  const blocked=(issues,source={})=>({...source,phase:'B1',status:'needs-review',
+    candidateProject:null,changed:[],ledger:[],unresolved:issues,
+    validation:source.validation??{graph:'not-run',faces:'not-run',parcels:'not-run',project:'not-run'},
+    parcelReview:source.parcelReview??[],selectedRoadIds:draft.selectedRoadIds??[],
+    offset:draft.offset??null});
+  if(project?.schemaVersion!==10)
+    return blocked([c2Issue('road',id,'group-schema','Group translation requires Schema 10.')]);
+  if(!draft.draftable || !draft.topologyResolved || !draft.facesResolved ||
+    draft.status==='unchanged' || draft.issues.some(issue=>issue.code==='boundary-escape')) {
+    const issues=draft.issues.filter(issue=>issue.code!=='neighborhood-reflow-pending')
+      .map(issue=>({...c2Issue('road',id,issue.code,issue.message),
+        relatedIds:issue.roadIds??[]}));
+    return blocked(issues.length?issues:[c2Issue('road',id,'group-topology','A nonzero move with unchanged road and face topology is required.')]);
+  }
+  let analysis;
+  const analyze=()=>analysis??=analyzeNeighborhoodDraft(project,draft);
+  const preserved=prepareNeighborhoodReflow(project,id,draft,false,analyze,options);
+  let result=preserved;
+  if(!preserved.candidateProject && preserved.unresolved.some(row=>
+    rebuildableLandIssues.has(row.code)||row.code==='parcel-decision-required'||row.code==='parcel-decision-invalid'))
+    result=prepareNeighborhoodReflow(project,id,draft,true,analyze,options);
+  if(!result.candidateProject)return blocked(result.unresolved,result);
+  const violation=verifyRoadGroupPreservationB1(project,result.candidateProject,draft);
+  if(violation)return blocked([violation],result);
+  return {...result,phase:'B1',selectedRoadIds:draft.selectedRoadIds,offset:draft.offset};
 }
 
 export function prepareJunctionReflowC7(project,junctionId,point,decisions = new Map(), options = {}) {
@@ -365,6 +411,18 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           const modified = !riEqual(plot.boundary, update.boundary);
           plot.boundary = update.boundary;
           record('plot', plot.id, modified ? 'reshaped' : 'preserved', modified ? ['boundary'] : [], provenance);
+        }
+        if(next.flexible && !adapt){
+          for(const building of ownBuildings){
+            const occupied=roadBuildingOccupiedPlots(building,ownPlots);
+            if(!occupied.length)throw Error('No preserved plot covers '+building.id+'.');
+            if(!riEqual(building.plotIds,occupied)){
+              const source=classifyRoadProvenance(building);
+              building.plotIds=occupied;
+              if(source==='generated')stampRoadGenerated(building);
+              record('building',building.id,'plot-occupancy-updated',['plotIds'],source);
+            }
+          }
         }
         if (provenance === 'generated') stampRoadGenerated(property, ownPlots);
         else if(choice) {

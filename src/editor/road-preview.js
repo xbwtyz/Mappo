@@ -1,6 +1,7 @@
 import { editableRoadPath, ROAD_BEND_LIMIT } from '../core/road-shape.js';
 import { prepareRoadTopologyReflowC3 } from '../core/road-topology-reflow.js';
-import { prepareNeighborhoodReflowC3 } from '../core/neighborhood-reflow.js';
+import { prepareNeighborhoodReflowC3, prepareRoadGroupReflowB1 } from '../core/neighborhood-reflow.js';
+import { resolveRoadGroupB1 } from '../core/road-group-b1.js';
 import { buildRoadGraph, proposeJunctionMove } from '../core/road-graph.js';
 import { analyzeRoadImpact } from '../core/road-impact.js';
 import { hitRoadInspection, roadInspectionDetails } from '../core/road-inspection.js';
@@ -44,6 +45,15 @@ export class RoadPreviewSession {
   }
   get selection() { return selectionSingletonA1(this.selectionSet); }
   set selection(ref) { this.selectionSet=makeSelectionSetA1(ref?[ref]:[]); }
+  get roadGroupB1() {
+    const set=this.selectionSet;
+    if(!this.current() || set.items.length<2 || !set.items.every(ref=>ref.kind==='road'))return null;
+    if(this.groupGraphB1!==this.graph || this.groupSelectionB1!==set) {
+      this.groupGraphB1=this.graph;this.groupSelectionB1=set;
+      this.groupResolutionB1=resolveRoadGroupB1(this.graph,set.items.map(ref=>ref.id));
+    }
+    return this.groupResolutionB1;
+  }
   get selectionDraftLockedA1() {
     return Boolean(this.pending || this.checking || this.drag || this.mergeMode || this.bendEditor ||
       this.roadIntentInputError || this.error);
@@ -127,7 +137,7 @@ export class RoadPreviewSession {
   }
   get pending() {
     const d = this.details;
-    if(d?.kind==='road')
+    if(d?.kind==='road'||this.roadGroupB1)
       return Boolean(this.roadConnectionEdit || (this.roadIntentOffset &&
         (this.roadIntentOffset.x!==0 || this.roadIntentOffset.y!==0)));
     return Boolean(
@@ -135,6 +145,8 @@ export class RoadPreviewSession {
     );
   }
   get roadIntentEligible(){
+    const group=this.roadGroupB1;
+    if(group)return group.eligible;
     const d=this.details;
     return Boolean(this.current() && this.graph?.valid && d?.kind==='road' &&
       d.endpoints.every(id=>this.graph.incidentRoads.get(id).every(roadId=>
@@ -143,7 +155,7 @@ export class RoadPreviewSession {
   get roadIntentNodes(){
     if(!this.roadIntentEligible || !this.roadIntentOffset || this.roadConnectionEdit)return null;
     const d=this.details,coords=new Map();
-    for(const id of d.endpoints){
+    for(const id of this.roadGroupB1?.movedJunctionIds??d.endpoints){
       const accepted=this.graph.nodesById.get(id);
       coords.set(id,{id,x:accepted.x+this.roadIntentOffset.x,
         y:accepted.y+this.roadIntentOffset.y});
@@ -179,7 +191,7 @@ export class RoadPreviewSession {
     return true;
   }
   startBendEditor() {
-    if (!this.roadIntentEligible || this.drag) return false;
+    if (this.roadGroupB1 || !this.roadIntentEligible || this.drag) return false;
     const path = editableRoadPath(this.graph, this.selection.id);
     if (!path) return false;
     this.reset();
@@ -250,7 +262,7 @@ export class RoadPreviewSession {
     return true;
   }
   previewRoadConnection(edit) {
-    if (!this.roadIntentEligible || this.drag) return false;
+    if (this.roadGroupB1 || !this.roadIntentEligible || this.drag) return false;
     this.reset();
     this.roadConnectionEdit = { ...edit };
     this.checking = true;
@@ -270,7 +282,7 @@ export class RoadPreviewSession {
     this.ownershipChoices.set(candidateKey,{...(this.ownershipChoices.get(candidateKey)??{}),[field]:value});
     this.checking=true;
     this.changed();
-    if(this.selection.kind==='junction')this.evaluateJunctionDraft(true);
+    if(this.selection?.kind==='junction')this.evaluateJunctionDraft(true);
     else this.evaluateRoadDraft(true);
     return true;
   }
@@ -284,7 +296,7 @@ export class RoadPreviewSession {
     this.invalidate();
     this.parcelChoices.set(id,{kind:choice.kind,targetId:choice.targetId??null});
     this.checking=true;this.changed();
-    if(this.selection.kind==='junction')this.evaluateJunctionDraft(true);
+    if(this.selection?.kind==='junction')this.evaluateJunctionDraft(true);
     else this.evaluateRoadDraft(true);
     return true;
   }
@@ -292,7 +304,7 @@ export class RoadPreviewSession {
     if(!this.current()||!this.pending||this.drag||this.checking||!this.parcelChoices.has(id))return false;
     this.invalidate();this.parcelChoices.delete(id);
     this.checking=true;this.changed();
-    if(this.selection.kind==='junction')this.evaluateJunctionDraft(true);
+    if(this.selection?.kind==='junction')this.evaluateJunctionDraft(true);
     else this.evaluateRoadDraft(true);
     return true;
   }
@@ -305,7 +317,7 @@ export class RoadPreviewSession {
     this.buildingDecisions.set(id,{...choice});
     this.checking = true;
     this.changed();
-    if (this.selection.kind==='junction') this.evaluateJunctionDraft(true);
+    if (this.selection?.kind==='junction') this.evaluateJunctionDraft(true);
     else this.evaluateRoadDraft(true);
     return true;
   }
@@ -316,7 +328,7 @@ export class RoadPreviewSession {
     this.buildingDecisions.delete(id);
     this.checking = true;
     this.changed();
-    if (this.selection.kind === 'junction') this.evaluateJunctionDraft(true);
+    if (this.selection?.kind === 'junction') this.evaluateJunctionDraft(true);
     else this.evaluateRoadDraft(true);
     return true;
   }
@@ -326,7 +338,7 @@ export class RoadPreviewSession {
     this.buildingDecisions.clear();
     this.checking = true;
     this.changed();
-    if (this.selection.kind==='junction') this.evaluateJunctionDraft(true);
+    if (this.selection?.kind==='junction') this.evaluateJunctionDraft(true);
     else this.evaluateRoadDraft(true);
     return true;
   }
@@ -336,7 +348,11 @@ export class RoadPreviewSession {
       if (!this.current() || revision !== this.revision) return;
       this.timer = undefined;
       try {
-        if (this.roadConnectionEdit) {
+        const group=this.roadGroupB1;
+        if(group) {
+          this.reconciliation=prepareRoadGroupReflowB1(this.project,group.selectedRoadIds,this.roadIntentOffset,
+            {parcelChoices:this.parcelChoices});
+        } else if (this.roadConnectionEdit) {
           this.reconciliation = prepareRoadTopologyReflowC3(this.project, this.selection.id, null,
             this.roadConnectionEdit,this.buildingDecisions,{ownershipChoices:this.ownershipChoices,parcelChoices:this.parcelChoices});
         } else {
@@ -375,7 +391,7 @@ export class RoadPreviewSession {
     this.ownershipFocusKey023 = null;
     this.roadConnectionEdit = null;
     this.bendEditor = null;
-    this.roadIntentOffset = d?.kind === 'road' ? {x:0,y:0} : null;
+    this.roadIntentOffset = d?.kind === 'road' || this.roadGroupB1 ? {x:0,y:0} : null;
     this.roadIntentAnalysis = null;
     this.roadIntentInputError = '';
     this.proposal = this.report = this.drag = null;
@@ -497,7 +513,7 @@ export class RoadPreviewSession {
       const point = this.bendEditor.points[this.bendEditor.selected];
       return point ? this.moveBend({x:point.x+dx,y:point.y+dy}) : false;
     }
-    if(this.details?.kind==='road'){
+    if(this.details?.kind==='road'||this.roadGroupB1){
       const offset=this.roadIntentOffset??{x:0,y:0};
       return this.updateRoadIntent({x:offset.x+dx,y:offset.y+dy});
     }
@@ -509,7 +525,7 @@ export class RoadPreviewSession {
     this.changed();
   }
   startMergeMode() {
-    if (!this.current() || this.drag) return false;
+    if (this.roadGroupB1 || !this.current() || this.drag) return false;
     this.reset();
     this.mergeMode = true;
     this.changed();
@@ -558,6 +574,17 @@ export class RoadPreviewSession {
     // A displaced road should remain draggable at its *proposed* position.
     // The legacy hit test uses accepted nodes only; relying on it would make
     // subsequent drags unexpectedly select a different object or pan.
+    const group=this.roadGroupB1;
+    if(group?.eligible && Number.isFinite(zoom) && zoom>0 && Number.isFinite(point?.x) && Number.isFinite(point?.y)){
+      const nodes=this.pending?this.roadIntentNodes:null;
+      const pos=id=>nodes?.get(id)??this.graph.nodesById.get(id);
+      let hit=null,best=(pointerType==='touch'?22:7)/zoom;
+      for(const id of group.selectedRoadIds){
+        const road=this.graph.roadsById.get(id),distance=distanceToSegment(point,pos(road.a),pos(road.b));
+        if(distance<=best){best=distance;hit={kind:'road',id};}
+      }
+      if(hit)return hit;
+    }
     if(this.current() && this.pending && this.details?.kind==='road' &&
       this.roadIntentNodes && Number.isFinite(zoom) && zoom>0){
       const road=this.details.record,nodes=this.roadIntentNodes;
@@ -598,7 +625,14 @@ export class RoadPreviewSession {
       }
     }
     const hit = this.hit(point, zoom, pointerType);
-    if (!hit || this.selectionSet.items.length>1) return false;
+    if(!hit)return false;
+    const group=this.roadGroupB1;
+    if(group) {
+      if(!group.eligible || hit.kind!=='road' || !group.selectedRoadIds.includes(hit.id))return false;
+      this.drag={kind:'road',movable:true,start:{...point},offset:{...(this.roadIntentOffset??{x:0,y:0})},zoom};
+      this.invalidate();
+      return true;
+    }
     if (!sameSelectionRefA1(hit,this.selection)) {
       if(this.selectionDraftLockedA1)return false;
       this.select(hit);

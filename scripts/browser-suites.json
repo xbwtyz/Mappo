@@ -18,7 +18,8 @@
     "scripts/c7-p3-offline-qa.mjs",
     "scripts/junction-snap-merge-browser-qa.mjs",
     "scripts/road-ownership-023-browser-qa.mjs",
-    "scripts/road-parcel-decisions-028-browser-qa.mjs"
+    "scripts/road-parcel-decisions-028-browser-qa.mjs",
+    "scripts/road-group-b1-browser-qa.mjs"
   ],
   "property": [
     "scripts/property-integration-e5-browser-qa.mjs",

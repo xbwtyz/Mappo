@@ -19,7 +19,8 @@ export class AcceptedEditHistoryD01 {
   }
   get bytes(){return [...this.past,...this.future].reduce((n,x)=>n+x.bytes,0);}
   get length(){return this.past.length+this.future.length;}
-  fits(before,after){return d01Bytes(before)+d01Bytes(after)<=this.maxBytes;}
+  fits(before,after,editorHistory){return d01Bytes(before)+d01Bytes(after)+(editorHistory?d01Bytes(editorHistory):0)<=this.maxBytes;}
+  canRecord(before,after,editorHistory){return Boolean(this.baseline&&d01Same(this.baseline,before)&&!d01Same(before,after)&&this.fits(before,after,editorHistory));}
   entry(direction){return direction==='undo'?this.past.at(-1):
     direction==='redo'?this.future.at(-1):null;}
   clear(project=null,notice='Accepted history cleared for this city.') {

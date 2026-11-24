@@ -1074,3 +1074,7 @@
 .history-command-a5:hover>.history-tooltip-a5,.history-command-a5:focus-within>.history-tooltip-a5{opacity:1;visibility:visible;pointer-events:auto}
 .history-command-a5>.history-tooltip-a5::after{content:"";position:absolute;left:100%;top:0;width:8px;height:100%}
 .history-command-a5>.history-tooltip-a5[hidden]{display:none}
+
+/* B1: group details share the normal Inspector views. */
+#roadPreviewPanel.inspector-road-group-a3[data-inspector-view="Details"] #roadPreviewBody>:not(#roadInspectorDetailsA3):not(#roadSelectionGroupA1){display:none}
+#roadPreviewPanel.inspector-road-group-a3[data-inspector-view="Details"] #roadImpactList{display:none}

@@ -1,6 +1,7 @@
 import { buildRoadGraph } from './road-graph.js';
 import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
 import { insideOrOn } from './boundary.js';
+import { proposeRoadGroupNodesB1 } from './road-group-b1.js';
 
 // C1 road-first intent is a *draft*, not an accepted city transaction.
 // Existing parcels never veto the placement of an ordinary road in preview.
@@ -42,6 +43,22 @@ export function prepareRoadIntentC1(project,roadId,offset){
   });
   return finishRoadIntent(project,accepted,proposedNodes,'draft-road-translation',{roadId,offset:c1IntentCopy(offset)});
 }
+// The same detached graph/face intent used by the singleton editor, with a
+// canonical group membership and no implied acceptance or topology rewrite.
+export function prepareRoadGroupIntentB1(project,selectedRoadIds,offset) {
+  const graph=buildRoadGraph(project?.city);
+  const proposal=proposeRoadGroupNodesB1(graph,selectedRoadIds,offset);
+  if(!proposal.draftable) {
+    const issue=proposal.issues[0];
+    return c1IntentFreeze({...c1IntentRefused(issue.code,issue.message),
+      operation:'draft-road-group-translation',group:proposal.group,
+      selectedRoadIds:proposal.group.selectedRoadIds,issues:proposal.issues});
+  }
+  return finishRoadIntent(project,graph,proposal.proposedNodes,
+    'draft-road-group-translation',{group:proposal.group,
+      selectedRoadIds:proposal.group.selectedRoadIds,offset:proposal.offset});
+}
+
 export function prepareJunctionIntentC7(project,junctionId,point) {
   const accepted=buildRoadGraph(project?.city);
   if (!accepted.valid) return c1IntentRefused('invalid-base-road-graph','A valid city is required to move a junction.');

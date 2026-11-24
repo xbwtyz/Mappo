@@ -1,6 +1,6 @@
 import { reconcileRoadWorkspace } from './road-workspace.js';
 import { prepareRoadTopologyReflowC3 } from '../core/road-topology-reflow.js';
-import { prepareJunctionReflowC7, prepareNeighborhoodReflowC3 } from '../core/neighborhood-reflow.js';
+import { prepareJunctionReflowC7, prepareNeighborhoodReflowC3, prepareRoadGroupReflowB1 } from '../core/neighborhood-reflow.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { buildRoadGraph } from '../core/road-graph.js';
@@ -174,4 +174,32 @@ export function validateRoadApplyC2(project, workspace, draft, inspected) {
 export function prepareRoadApplyC2(project, workspace, session, expectedRevision, currentRevision) {
   const check = checkRoadApplyC2(project, session, expectedRevision, currentRevision);
   return check.ok ? validateRoadApplyC2(project, workspace, session, session.reconciliation) : check;
+}
+
+// Pure acceptance preparation for the group operation. The UI/session caller
+// must independently enforce current selection, revision, fingerprint and
+// complete history capacity before committing this receipt.
+export function validateRoadGroupApplyB1(project,workspace,draft,inspected) {
+  try {
+    if(inspected?.phase!=='B1'||!Array.isArray(draft?.selectedRoadIds)||
+      !b4Same([...new Set(draft.selectedRoadIds)].sort(),inspected.selectedRoadIds)||
+      !b4Same(draft.offset,inspected.offset)||!inspected.candidateProject)
+      return reject('stale-preview','The connected-road proposal no longer matches the inspected selection.');
+    const fresh=prepareRoadGroupReflowB1(project,draft.selectedRoadIds,draft.offset,
+      {parcelChoices:draft.parcelChoices??new Map()});
+    if(!fresh.candidateProject)
+      return reject('candidate-invalid',fresh.unresolved[0]?.message??'Group reflow failed fresh validation.');
+    if(!b4Same(fresh.candidateProject,inspected.candidateProject)||!b4Same(fresh.ledger,inspected.ledger))
+      return reject('candidate-changed','The reconstructed connected-road proposal differs from the inspected preview.');
+    const nextWorkspace=reconcileRoadWorkspace(workspace,project.city,fresh.candidateProject.city);
+    const decoded=decodeProjectDocument(encodeProjectDocument(createProjectDocument(fresh.candidateProject,nextWorkspace)));
+    if(!b4Same(decoded.project,fresh.candidateProject)||!b4Same(decoded.workspace,nextWorkspace))
+      return reject('group-roundtrip','Portable save verification changed the connected-road candidate.');
+    // Commit the verified portable representation, exactly as history replay does.
+    // JSON canonicalizes signed zero; returning the raw draft would make Redo
+    // differ under strict equality even though the persisted geometry is identical.
+    return {ok:true,candidate:decoded.project,workspace:decoded.workspace,changed:fresh.changed,ledger:fresh.ledger,
+      transaction:{family:'road',operation:'translate-road-group',
+        label:'Move '+fresh.selectedRoadIds.length+' connected road segments',targetIds:fresh.selectedRoadIds.slice()}};
+  }catch(error){return reject('apply-validation','Connected road Apply blocked: '+error.message);}
 }
