@@ -74,7 +74,8 @@ test('S10-D rejects overlapping parts and boundary crossings before Apply and re
   assert.equal(JSON.stringify(pair), snapshot);
   const history = new AcceptedEditHistoryD01();
   history.clear(pair);
-  assert.equal(history.observe(triple).status, 'recorded');
+  assert.equal(history.observe(triple, { family: 'building', operation: 'building-structure',
+    label: 'Edit building components', targetIds: [building(triple).id] }).status, 'recorded');
   const undo = history.prepare('undo', triple, workspace);
   assert.deepEqual(undo.candidate, pair);
   history.accept('undo', undo.entry, undo.candidate);

@@ -142,7 +142,7 @@ import { checkRoadApplyC2, prepareRoadApplyC2 } from './editor/road-application.
 import { RoadGeometryHistoryB4 } from './editor/road-history.js';
 import { DraftEngine } from './core/draft-engine.js';
 import { renderDraftControls, syncDraftControls } from './ui/draft-controls.js';
-import { AcceptedEditHistoryD01, describeAcceptedEditD01 } from './core/accepted-edit-history-d01.js';
+import { AcceptedEditHistoryD01 } from './core/accepted-edit-history-d01.js';
 import { HISTORY_EDITOR_KEYS, historyWorkspaceForReplay } from './core/accepted-history-workspace-a5.js';
 import { createProjectDocument, encodeProjectDocument } from './data/project-format.js';
 
@@ -196,7 +196,7 @@ const propertyCreationHistoryE1 = new PropertyCreationHistoryE1(20);
 const roadHistory = new RoadGeometryHistoryB4(6);
 const acceptedHistoryD01 = new AcceptedEditHistoryD01({maxEntries:20,maxBytes:64*1024*1024});
 let d01ReplayingHistory=false;
-let acceptedHistoryHint = null;
+let pendingHistoryTransaction = null;
 let historyFeedback = null;
 const savedHistoryCount = { districts: 0, defenses: 0 };
 const localHistoryLabels = {
@@ -274,17 +274,12 @@ function updatePendingFeedback() {
 
 // Legacy per-editor buttons must not advertise history owned by a different
 // tool merely because that transaction happens to be next chronologically.
+const propertyHistoryOperations = new Map([
+  ['property-create', 'create'], ['property-split', 'split'], ['property-merge', 'merge'], ['property-delete', 'delete'],
+]);
+
 function d01PropertyStructureKind(entry) {
-  if(entry?.operation!=='property-structure')return null;
-  const from=entry.from.city.properties,to=entry.to.city.properties;
-  const previous=new Map(from.map(p=>[p.id,p])),next=new Set(to.map(p=>p.id));
-  const added=to.filter(p=>!previous.has(p.id));
-  const removed=from.filter(p=>!next.has(p.id));
-  const changedRetained=to.some(p=>previous.has(p.id)&&
-    JSON.stringify(previous.get(p.id))!==JSON.stringify(p));
-  if(added.length===1&&!removed.length)return changedRetained?'split':'create';
-  if(removed.length===1&&!added.length)return changedRetained?'merge':'delete';
-  return null; // Ambiguous multi-property changes remain global-history only.
+  return propertyHistoryOperations.get(entry?.operation) ?? null;
 }
 function d01ScopedPropertyAction(direction,kind) {
   const entry=acceptedHistoryD01.entry(direction);
@@ -427,7 +422,7 @@ function d01MoveHistory(direction) {
     // Road/parcel ownership replacement can invalidate a selected property.
     // A building add/delete does not replace its parent property, so retain
     // that Inspector and its scoped structural Undo/Redo controls.
-    const resetProperty=receipt.entry.family==='road'||receipt.entry.operation==='property-structure';
+    const resetProperty=receipt.entry.family==='road'||d01PropertyStructureKind(receipt.entry);
     const resetBuilding=resetProperty||receipt.entry.operation==='building-structure';
     // Synchronize live editor baselines before workspace reconciliation.
     if(buildingEditSession?.isActive&&!resetBuilding)buildingEditSession.reset(project.city);
@@ -437,7 +432,7 @@ function d01MoveHistory(direction) {
     buildingWorkspace.refresh(resetBuilding?{replaced:true}:{});
     clearMapHover();
     updateDetails();workspaceShell.refresh();
-    if(receipt.entry.operation==='property-structure'&&returningProperties.length===1){
+    if(d01PropertyStructureKind(receipt.entry)&&returningProperties.length===1){
       const selected=workspaceShell?.state.selection;
       const live=selected?.kind==='property'
         ?project.city.properties.some(p=>p.id===selected.id)
@@ -544,8 +539,8 @@ function editorHistoryDeltaA5(family, beforeHistory, afterHistory, afterSavedCou
     after: { history: afterHistory, savedCount: afterSavedCount } };
 }
 
-function stageAcceptedHistoryHint(candidate, detail) {
-  acceptedHistoryHint = { candidate, detail };
+function commitAcceptedEdit(candidate, transaction) {
+  pendingHistoryTransaction = { candidate, transaction };
   project = candidate;
 }
 
@@ -564,7 +559,11 @@ function commitDomainEditA5(family, city, { operation, beforeHistory }) {
     if (before && after) label = before.name === after.name ? 'Recolor district'
       : before.color === after.color ? 'Rename district' : 'Rename and recolor district';
   }
-  stageAcceptedHistoryHint({ ...project, city }, { family, operation, label, editorHistory });
+  const targetIds = family === 'districts'
+    ? (operation === 'generate' ? city.districts.map(record => record.id)
+      : [districtPanel.editor.selectedDistrictId, districtPanel.editor.selectedBlockId].filter(Boolean))
+    : [...city.walls, ...city.gates, ...city.towers].map(record => record.id);
+  commitAcceptedEdit({ ...project, city }, { family, operation, label, targetIds, editorHistory });
   return true;
 }
 
@@ -594,8 +593,13 @@ function refreshDomainHistoryA5(family, workspace, beforeCity) {
 
 function restoreDomainHistoryStateA5(receipt, direction, beforeCity) {
   const { family, editorHistory } = receipt.entry;
-  savedHistoryCount[family] = editorHistory[direction === 'undo' ? 'before' : 'after'].savedCount;
-  refreshDomainHistoryA5(family, receipt.workspace, beforeCity);
+  const count = editorHistory[direction === 'undo' ? 'before' : 'after'].savedCount;
+  if (family === 'road') {
+    savedHistoryCount.districts = count;
+  } else {
+    savedHistoryCount[family] = count;
+    refreshDomainHistoryA5(family, receipt.workspace, beforeCity);
+  }
 }
 
 function restoreSavedDomainEditA5(family) {
@@ -617,7 +621,7 @@ function restoreSavedDomainEditA5(family) {
       return true;
     }
     const label = localHistoryLabels[family].restore;
-    stageAcceptedHistoryHint(candidate, { family, operation: 'restore', label, editorHistory });
+    commitAcceptedEdit(candidate, { family, operation: 'restore', label, targetIds: [], editorHistory });
     savedHistoryCount[family] = editorHistory.after.savedCount;
     refreshDomainHistoryA5(family, workspace, beforeCity);
     updateDetails();
@@ -634,14 +638,9 @@ function workspaceChanged() {
   // This is the common accepted-project observation boundary. Visual-only
   // changes do not touch the ledger. Unsupported accepted-city changes become
   // explicit barriers, never silently replayed with a stale project.
-  const hint = acceptedHistoryHint && acceptedHistoryHint.candidate === project ? acceptedHistoryHint.detail : null;
-  acceptedHistoryHint = null;
-  const describe = (before, after) => {
-    if (hint?.family) return hint;
-    const classified = describeAcceptedEditD01(before, after);
-    return hint && classified && !classified.barrier ? { ...classified, ...hint } : classified;
-  };
-  const observed = project && !d01ReplayingHistory ? acceptedHistoryD01.observe(project, describe) : null;
+  const transaction = pendingHistoryTransaction?.candidate === project ? pendingHistoryTransaction?.transaction : null;
+  pendingHistoryTransaction = null;
+  const observed = project && !d01ReplayingHistory ? acceptedHistoryD01.observe(project, transaction) : null;
   if (['recorded', 'barrier', 'oversize'].includes(observed?.status)) historyFeedback = null;
   // Journal observation follows other component callbacks; refresh the
   // actionable local controls after a newly accepted transaction.
@@ -871,7 +870,12 @@ function commitBuildingTransform(current) {
     propertyDeletionHistory4A.clear();
     const label = session.draft ? 'Edit building footprint' : transform.scaleX !== 1 || transform.scaleY !== 1
       ? 'Resize building' : transform.angle ? 'Rotate building' : 'Move building';
-    stageAcceptedHistoryHint(received.candidate, { label });
+    const portalsChanged = received.courtyardRoutesChanged.length ||
+      JSON.stringify(session.source(previous.city)?.geometry?.courtyardAccess) !==
+      JSON.stringify(received.candidate.city.buildings.find(building => building.id === buildingId)?.geometry?.courtyardAccess);
+    commitAcceptedEdit(received.candidate, { family: 'building',
+      operation: portalsChanged ? 'building-structure' : 'building-geometry',
+      label: portalsChanged ? 'Edit courtyard access' : label, targetIds: [buildingId] });
     session.reset(project.city, { keepCourtyard: true });
     updateDetails();
     workspaceShell.refresh();
@@ -889,30 +893,10 @@ function commitBuildingTransform(current) {
 }
 
 function moveBuildingHistory(direction) {
-  const session=buildingEditSession;
-  if (!project || !session?.isActive || session.isPending || session.drag
-      || workspaceShell?.state.selection?.kind !== 'building'
-      || workspaceShell.state.selection.id !== session.buildingId) return false;
-  const id=session.buildingId;
-  const receipt=buildingHistory.prepare(project,captureWorkspace().workspace,id,direction);
-  if (!receipt.ok) {
-    $('buildingHistoryStatus').textContent=receipt.reason;
-    syncBuildingHistoryUI();
-    return false;
-  }
-  buildingHistory.accept(receipt.entry,direction);
-  propertyHistory.clear();
-  propertyDeletionHistory4A.clear();
-  project=receipt.candidate;
-  session.reset(project.city);
-  updateDetails();
-  workspaceShell.refresh();
-  requestDraw();
-  workspaceChanged();
-  $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' accepted footprint edit for '+id+'. Download a project copy to keep it.';
-  return true;
+  const entry = acceptedHistoryD01.entry(direction);
+  return Boolean(entry?.operation === 'building-geometry' && buildingEditSession?.isActive &&
+    entry.targetIds.includes(buildingEditSession.buildingId) && d01MoveHistory(direction));
 }
-
 
 // C01 shares the existing property Inspector and property-scoped structure
 // history. Draft membership and group transforms never mutate the accepted
@@ -1034,7 +1018,10 @@ function c01SaveMembership(action) {
   }
   if(project!==previous||c01ActiveProperty()?.id!==property.id)return false;
   if(!buildingStructureHistory.record(previous,receipt.candidate,property.id,'compound-'+action))return false;
-  project=receipt.candidate;
+  const label = action === 'create' ? 'Create building compound' : action === 'dissolve'
+    ? 'Dissolve building compound' : 'Edit building compound';
+  commitAcceptedEdit(receipt.candidate, { family: 'compound', operation: 'compound-membership',
+    label, targetIds: [property.id] });
   buildingHistory.clear();
   propertyWorkspace.refresh();buildingWorkspace.refresh();
   workspaceShell.refresh();updateDetails();workspaceChanged();
@@ -1062,7 +1049,8 @@ function commitCompoundTransform(current) {
   if (!current() || project !== previous || c01ActiveProperty()?.id !== property.id) return false;
   if(!buildingStructureHistory.record(previous,receipt.candidate,property.id,'compound-transform'))
     return false;
-  project=receipt.candidate;
+  commitAcceptedEdit(receipt.candidate, { family: 'compound', operation: 'compound-transform',
+    label: 'Transform building compound', targetIds: [property.id, ...group.memberBuildingIds] });
   buildingHistory.clear();
   propertyWorkspace.refresh();buildingWorkspace.refresh();
   workspaceShell.refresh();updateDetails();workspaceChanged();
@@ -1274,7 +1262,10 @@ function commitStructurePlacement3H(current) {
     if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,action))return false;
     propertyHistory.clear();
     propertyDeletionHistory4A.clear();
-    project=result.candidate;
+    const label = action === 'components' ? 'Edit building components' : action === 'courtyard portal changes'
+      ? 'Edit courtyard access' : action === 'replace' ? 'Replace building' : 'Place building';
+    commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',
+      label, targetIds: [request.buildingId] });
     buildingHistory.clear();
     session.stop();
     updateDetails();
@@ -1313,7 +1304,8 @@ function clearPropertyBuildings4E(propertyId) {
   if(project!==previous||workspaceShell?.state.selection?.id!==propertyId)return false;
   try {
     if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'clear'))return false;
-    project=result.candidate;
+    commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',
+      label: 'Clear property buildings', targetIds: site.buildingIds });
     buildingHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     identityWorkspace.reset();
     updateDetails();
@@ -1337,7 +1329,8 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
     if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'delete'))return false;
     propertyHistory.clear();
     propertyDeletionHistory4A.clear();
-    project=result.candidate;
+    commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',
+      label: 'Delete building', targetIds: [buildingId] });
     buildingHistory.clear();
     updateDetails();
     workspaceShell.select({kind:'property',id:propertyId});
@@ -1348,28 +1341,6 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
     return true;
   }catch(error){$('statusMessage').textContent='Deletion failed: '+error.message;return false;}
 }
-function moveStructureHistory3H(direction) {
-  if(!project || buildingPlacementSession?.isActive || buildingEditSession?.isActive)return false;
-  const propertyId=structureHistoryProperty3H();
-  if(!propertyId || !buildingStructureHistory.can(direction,project,propertyId))return false;
-  const result=buildingStructureHistory.prepare(project,captureWorkspace().workspace,propertyId,direction);
-  if(!result.ok){$('statusMessage').textContent='Cannot '+direction+' structure: '+result.issues[0]?.message;return false;}
-  const action=describeStructureChange4E(result.entry,direction);
-  buildingStructureHistory.accept(result.entry,direction);
-  propertyHistory.clear();
-  propertyDeletionHistory4A.clear();
-  project=result.candidate;
-  buildingHistory.clear();
-  updateDetails();
-  workspaceShell.select({kind:'property',id:propertyId});
-  workspaceShell.refresh();
-  requestDraw();
-  workspaceChanged();
-  $('statusMessage').textContent=(direction==='undo'?'Undid: ':'Redid: ')+
-    (action?.description??'Structural edit on '+propertyId+'.');
-  return true;
-}
-
 function exitBuildingEditing() {
   if (!buildingEditSession?.isActive) return true;
   if (!confirmBuildingPreviewDiscard()) return false;
@@ -2284,8 +2255,8 @@ propertySplitE2 = new PropertySplitControlsE2({
   historyCan:direction=>Boolean(!d01DraftBlocked()&&d01ScopedPropertyAction(direction,'split')),
   onCommit:(candidate,propertyId,direction,receipt)=>{
     const revisionBeforeCommit=files?.revision??0;
-    if (direction === 'apply') stageAcceptedHistoryHint(candidate, { label: 'Split property' });
-    else project = candidate;
+    commitAcceptedEdit(candidate, { family: 'property', operation: 'property-split',
+      label: 'Split property', targetIds: [propertyId, receipt.newPropertyId] });
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     propertyCreationHistoryE1.clear();buildingHistory.clear();buildingStructureHistory.clear();
     propertyMergeE3?.history.clear();identityWorkspace.reset();
@@ -2314,10 +2285,10 @@ propertyMergeE3 = new PropertyMergeControlsE3({
     &&!propertySplitE2?.active&&!identityWorkspace?.hasPending()),
   historyMove:direction=>d01MoveHistory(direction),
   historyCan:direction=>Boolean(!d01DraftBlocked()&&d01ScopedPropertyAction(direction,'merge')),
-  onCommit:(candidate,propertyId,direction)=>{
+  onCommit:(candidate,propertyId,direction,receipt)=>{
     const revisionBefore=files?.revision??0;
-    if (direction === 'apply') stageAcceptedHistoryHint(candidate, { label: 'Merge properties' });
-    else project = candidate;
+    commitAcceptedEdit(candidate, { family: 'property', operation: 'property-merge',
+      label: 'Merge properties', targetIds: [propertyId, receipt.retiredId] });
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     propertyCreationHistoryE1.clear();propertySplitE2.history.clear();
     buildingHistory.clear();buildingStructureHistory.clear();identityWorkspace.reset();
@@ -2413,7 +2384,8 @@ function commitPropertyCreationE1(current) {
   if (!current() || project !== before || (files?.revision ?? 0) !== rev ||
       JSON.stringify(session.draft) !== JSON.stringify(draft)) return false;
   if(!propertyCreationHistoryE1.record(before,receipt.candidate,receipt.propertyId))return false;
-  stageAcceptedHistoryHint(receipt.candidate, { label: 'Create property' });
+  commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-create',
+    label: 'Create property', targetIds: [receipt.propertyId] });
   roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
   buildingHistory.clear();buildingStructureHistory.clear();identityWorkspace.reset();
   session.stop();
@@ -2424,24 +2396,6 @@ function commitPropertyCreationE1(current) {
   workspaceShell.refresh();requestDraw();syncPropertyCreationE1();updateUndoFeedback();
   $('statusMessage').textContent='Created '+receipt.propertyId+' with plot '+receipt.plotId+
     '. Undo property creation is available this session; download a project to preserve it.';
-  return true;
-}
-function movePropertyCreationE1(direction){
-  if(!project||propertyCreationSessionE1?.active||roadWorkspace?.active||
-      buildingPlacementSession?.isActive||buildingEditSession?.isActive||propertyEditSession?.isActive)
-    return false;
-  const receipt=propertyCreationHistoryE1.prepare(direction,project,captureWorkspace().workspace);
-  if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
-  const id=receipt.entry.id;
-  project=receipt.candidate;
-  propertyCreationHistoryE1.accept(direction,receipt.entry);
-  roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
-  buildingHistory.clear();buildingStructureHistory.clear();identityWorkspace.reset();
-  propertyWorkspace.refresh({replaced:true});buildingWorkspace.refresh({replaced:true});
-  updateDetails();
-  workspaceShell.select(direction==='undo'?null:{kind:'property',id},{reveal:false});
-  workspaceShell.refresh();requestDraw();syncPropertyCreationE1();updateUndoFeedback();
-  $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' creation of '+id+'.';
   return true;
 }
 $('propertyCreateStartE1').addEventListener('click',()=>propertyCreationSessionE1?.active
@@ -2573,8 +2527,11 @@ identityWorkspace = new IdentityWorkspace({
     return Boolean(!d01DraftBlocked()&&entry?.family==='identity'&&ref?.id&&
       entry.targetIds.includes(ref.id)&&acceptedHistoryD01.can(direction,project));
   },
-  commit: city => {
-    project = { ...project, city };
+  commit: (city, { ref, fields }) => {
+    const label = fields.includes('type') ? 'Change building use'
+      : fields.includes('customName') ? 'Rename ' + ref.kind : 'Edit ' + ref.kind + ' identity';
+    commitAcceptedEdit({ ...project, city }, { family: 'identity', operation: 'identity-change',
+      label, targetIds: [ref.id] });
     updateDetails(); workspaceShell.refresh(); requestDraw();
   },
   changed: workspaceChanged
@@ -2636,12 +2593,18 @@ function applyRoadEditB4(session,baselineRevision,current){
   const workspace = captureWorkspace().workspace;
   const draftRevision = session.revision;
   const junctionId = session.selection?.id;
+  const connection = session.roadConnectionEdit?.kind;
+  const label = connection === 'remove' ? 'Delete road' : connection === 'shape' ? 'Reshape road'
+    : connection === 'add' ? 'Add road connection' : connection === 'reconnect' ? 'Reconnect road'
+    : session.targetJunctionId ? 'Merge junctions' : session.selection?.kind === 'junction' ? 'Move road junction' : 'Move road';
+  const transaction = { family: 'road', operation: 'road-reflow', label,
+    targetIds: [junctionId, session.targetJunctionId].filter(Boolean) };
   const commit = receipt => {
     if (!receipt.ok) return {ok:false,message:receipt.issues?.[0]?.message??'Road Apply blocked.'};
     if (!current() || project !== previous || revision !== (files?.revision ?? 0) || !session.current() ||
         session.revision !== draftRevision || session.settledRevision !== draftRevision)
       return {ok:false,message:'Accepted project or preview changed during Apply.'};
-    return commitRoadEditB4(previous, revision, receipt, junctionId);
+    return commitRoadEditB4(previous, revision, receipt, junctionId, transaction);
   };
   if (session.selection?.kind !== 'junction' || !session.computeJunctionAsync)
     return commit(prepareRoadApplyC2(previous, workspace, session, baselineRevision, revision));
@@ -2673,7 +2636,7 @@ function refreshRoadDistrictWorkspace(workspace) {
   districtPanel.refresh();
 }
 
-function commitRoadEditB4(previous, revision, { candidate, workspace }, junctionId) {
+function commitRoadEditB4(previous, revision, { candidate, workspace }, junctionId, transaction) {
   // Exit only transient UI state before accepted data is replaced. No file or
   // history writes occur until the candidate passes the entire B4 gate.
   roadWorkspace.exit({restore:true,focus:roadWorkspace.usesDesktopPanel});
@@ -2681,7 +2644,14 @@ function commitRoadEditB4(previous, revision, { candidate, workspace }, junction
     return {ok:false,message:'The accepted project changed before commit.'};
   if(!roadHistory.record(previous,candidate,junctionId))
     return {ok:false,message:'Nothing was changed.'};
-  project=candidate; // one atomic accepted-state replacement
+  const beforeHistory = districtPanel.editor.history;
+  const afterHistory = workspace.districtEditor?.history ?? beforeHistory;
+  if (afterHistory.length < beforeHistory.length) {
+    const removed = beforeHistory.length - afterHistory.length;
+    transaction = { ...transaction, editorHistory: editorHistoryDeltaA5('districts', beforeHistory, afterHistory,
+      Math.max(0, savedHistoryCount.districts - removed)) };
+  }
+  commitAcceptedEdit(candidate, transaction);
   refreshRoadDistrictWorkspace(workspace);
   buildingHistory.clear();
   buildingStructureHistory.clear();
@@ -2698,32 +2668,9 @@ function commitRoadEditB4(previous, revision, { candidate, workspace }, junction
   $('roadHistoryStatusB4').textContent='Road '+junctionId+' applied. Undo restores the complete previous city.';
   return {ok:true};
 }
-function moveRoadHistoryB4(direction){
-  if(!project || roadWorkspace?.active || propertyEditSession?.isActive ||
-     buildingEditSession?.isActive || buildingPlacementSession?.isActive)return false;
-  const receipt=roadHistory.prepare(project,captureWorkspace().workspace,direction);
-  if(!receipt.ok){
-    $('roadHistoryStatusB4').textContent=receipt.reason;
-    syncRoadHistoryB4UI();
-    return false;
-  }
-  project=receipt.candidate;
-  roadHistory.accept(receipt.entry,direction);
-  refreshRoadDistrictWorkspace(receipt.workspace);
-  buildingHistory.clear();
-  buildingStructureHistory.clear();
-  propertyHistory.clear();
-  propertyDeletionHistory4A.clear();
-  clearMapHover();
-  propertyWorkspace.refresh({replaced:true});
-  buildingWorkspace.refresh({replaced:true});
-  updateDetails();
-  workspaceShell.refresh();
-  requestDraw();
-  workspaceChanged();
-  $('roadHistoryStatusB4').textContent=(direction==='undo'?'Undid':'Redid')+
-    ' the complete road and neighborhood transaction.';
-  return true;
+function moveRoadHistoryB4(direction) {
+  if (acceptedHistoryD01.entry(direction)?.family !== 'road') return false;
+  return d01MoveHistory(direction);
 }
 $('roadHistoryUndoB4').addEventListener('click',()=>d01MoveHistory('undo'));
 $('roadHistoryRedoB4').addEventListener('click',()=>d01MoveHistory('redo'));
@@ -2882,7 +2829,8 @@ function deleteProperty4A(propertyId) {
   if(project!==previous || workspaceShell.state.selection?.id!==propertyId)return false;
   try{
     propertyDeletionHistory4A.record(previous,receipt.candidate,propertyId);
-    stageAcceptedHistoryHint(receipt.candidate, { label: 'Delete property' });
+    commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-delete',
+      label: 'Delete property', targetIds: [propertyId] });
     buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
     identityWorkspace.reset();
     workspaceShell.select(null,{reveal:false});
@@ -2895,26 +2843,6 @@ function deleteProperty4A(propertyId) {
       ' buildings. Use Undo deletion to restore them during this session.';
     return true;
   }catch(error){$('statusMessage').textContent='Deletion failed: '+error.message;return false;}
-}
-function movePropertyDeletion4A(direction) {
-  if(!project||propertyEditSession?.isActive||buildingPlacementSession?.isActive||buildingEditSession?.isActive)return false;
-  const receipt=propertyDeletionHistory4A.prepare(project,captureWorkspace().workspace,direction);
-  if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
-  const id=receipt.entry.snapshot.propertyId;
-  project=receipt.candidate;
-  propertyDeletionHistory4A.accept(receipt.entry,direction);
-  buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
-  identityWorkspace.reset();
-  workspaceShell.select(direction==='undo'?{kind:'property',id}:null,{reveal:false});
-  // Restoring selection can reopen the mobile Inspector over Redo Delete.
-  // Keep map-level deletion history controls reachable after both directions.
-  if(Number.isFinite(window.innerWidth)&&window.innerWidth<=900 && !workspaceShell.state.inspectorCollapsed)
-    workspaceShell.dispatch({type:'inspector',collapsed:true});
-  propertyWorkspace.refresh();buildingWorkspace.refresh();
-  updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
-  $('statusMessage').textContent=(direction==='undo'?'Restored ':'Deleted again: ')+id+
-    ' (property, plots and buildings).';
-  return true;
 }
 $('propertyDeletionUndo4A').addEventListener('click',()=>d01MoveHistory('undo'));
 $('propertyDeletionRedo4A').addEventListener('click',()=>d01MoveHistory('redo'));
@@ -2943,7 +2871,9 @@ function commitPropertyEdit3I(current) {
   }
   if (!current() || project !== before || session.propertyId !== propertyId) return false;
   if(!propertyHistory.record(before,received.candidate,propertyId))return false;
-  project=received.candidate;
+  const label = session.flexible?.pending || session.active?.countChange ? 'Edit plot partitions' : 'Edit property and plots';
+  commitAcceptedEdit(received.candidate, { family: 'property', operation: 'property-and-plot', label,
+    targetIds: [propertyId] });
   buildingHistory.clear();
   buildingStructureHistory.clear();
   propertyDeletionHistory4A.clear();
@@ -3028,22 +2958,6 @@ function plot027EndpointPosition(f,which){
   const edge=which==='A'?f.edgeA:f.edgeB,t=which==='A'?f.ratioA:f.ratioB;
   const a=ring[edge],b=ring[(edge+1)%ring.length];
   return a&&b?{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t}:null;
-}
-function movePropertyHistory3I(direction){
-  const session=propertyEditSession;
-  if(!project||!session?.isActive||session.isPending||session.drag)return false;
-  const id=session.propertyId;
-  const receipt=propertyHistory.prepare(project,captureWorkspace().workspace,id,direction);
-  if(!receipt.ok){
-    $('statusMessage').textContent=receipt.reason;return false;
-  }
-  project=receipt.candidate;
-  propertyHistory.accept(receipt.entry,direction);
-  propertyDeletionHistory4A.clear();
-  session.start(project.city,id);
-  updateDetails();workspaceShell.refresh();keepPropertyEditorVisible3I();requestDraw();workspaceChanged();
-  $('statusMessage').textContent=(direction==='undo'?'Undid':'Redid')+' property and plot edit for '+id+'.';
-  return true;
 }
 $('propertyHistoryUndo3I').addEventListener('click',()=>d01MoveHistory('undo'));
 $('propertyHistoryRedo3I').addEventListener('click',()=>d01MoveHistory('redo'));

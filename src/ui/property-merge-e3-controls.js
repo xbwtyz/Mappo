@@ -112,6 +112,7 @@ export class PropertyMergeControlsE3 {
     this.stop();this.changed();return true;
   }
   moveHistory(direction){
+    if (this.historyMove) return this.historyMove(direction);
     if(this.active||this.canEnter()!==true)return false;
     const receipt=this.history.prepare(direction,this.getProject(),this.getWorkspace());
     if(!receipt.ok)return false;

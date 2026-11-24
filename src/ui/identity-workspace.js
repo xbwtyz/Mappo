@@ -103,11 +103,12 @@ export class IdentityWorkspace {
       const typeChanged = Boolean(input.buildingType && input.buildingType !== record?.type);
       if (typeChanged && !this.canChangeBuildingUse())
         throw new Error('Finish or cancel the active map edit before applying building use.');
+      const fields = identityChanges(record, ref, input).fields;
       const next = this.editor.apply(city, ref, input);
       if(this.historyMove)this.editor.reset(); // canonical ledger handles accepted Undo/Redo
       this.drafts.delete(this.key(ref));
       this.mounted = null;
-      this.commit(next);
+      this.commit(next, { ref, fields });
       this.render({ reload: true });
       this.showMessage(typeChanged ? 'Building use applied.' : 'Identity applied.');
       for (const id of ['identityNameInput', 'identityOtherUseInput']) this.$(id).setAttribute('aria-invalid', 'false');

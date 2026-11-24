@@ -23,10 +23,11 @@ function candidate(receipt) {
   return receipt.candidate;
 }
 
-function assertHistoryAndSave(states) {
+function assertHistoryAndSave(states, transactions) {
   const history = new AcceptedEditHistoryD01();
   history.clear(states[0]);
-  for (const state of states.slice(1)) assert.equal(history.observe(state).status, 'recorded');
+  for (const [index, state] of states.slice(1).entries())
+    assert.equal(history.observe(state, transactions[index]).status, 'recorded');
   let current = states.at(-1);
   for (const [direction, sequence] of [
     ['undo', states.slice(0, -1).reverse()], ['redo', states.slice(1)]
@@ -57,7 +58,10 @@ test('Schema 10 mixed city preserves the portal and joined outline through build
   assert.deepEqual(building(after, joinedId).geometry.regions.find(region => region.id === root.id), root);
   assert.deepEqual(building(after, hostId), building(project, hostId));
   assert.deepEqual(building(after, occupantId), building(movedOccupant, occupantId));
-  assertHistoryAndSave([project, movedOccupant, after]);
+  assertHistoryAndSave([project, movedOccupant, after], [
+    { family: 'building', operation: 'building-geometry', label: 'Move building', targetIds: [occupantId] },
+    { family: 'building', operation: 'building-structure', label: 'Edit building components', targetIds: [joinedId] },
+  ]);
 });
 
 test('Schema 10 mixed city recomputes plot occupancy and blocks a split through a joined building', () => {
@@ -86,7 +90,8 @@ test('Schema 10 mixed city recomputes plot occupancy and blocks a split through 
   assert.ok(blocked.issues.some(issue => issue.code === 'building' && issue.targetId === joinedId));
   assert.equal(JSON.stringify(divided), dividedSnapshot);
   assert.equal(JSON.stringify(project), start);
-  assertHistoryAndSave([project, divided]);
+  assertHistoryAndSave([project, divided], [{ family: 'property', operation: 'property-and-plot',
+    label: 'Edit plot partitions', targetIds: [joinedPropertyId] }]);
 });
 
 test('Schema 10 mixed city requires consent to reconnect fixed courtyard buildings after a frontage move', () => {
@@ -133,8 +138,10 @@ test('Schema 10 mixed city requires consent to reconnect fixed courtyard buildin
   }
   assert.deepEqual(building(repaired, joinedId), building(project, joinedId));
   validateCourtyardAccess(repaired.city, () => {});
-  assertHistoryAndSave([project, roadEdit]);
-  assertHistoryAndSave([project, repaired]);
+  assertHistoryAndSave([project, roadEdit], [{ family: 'road', operation: 'road-reflow',
+    label: 'Move road junction', targetIds: [nearby.id] }]);
+  assertHistoryAndSave([project, repaired], [{ family: 'road', operation: 'road-reflow',
+    label: 'Move road junction', targetIds: [junction.id] }]);
 
   const invalidPoint = {...movedFrontage, y: junction.y + 3};
   const infeasible = prepareJunctionReflowC7(project, junction.id, invalidPoint, new Map(), {parcelChoices: reshape});
