@@ -61,3 +61,8 @@ Twelve matched witness cases, original-input work 16205909 to 24839382, expansio
 ## Rigid feasible-region fallback
 
 Twelve matched cases: original-input work 24839382 to 24879850, expansions 33378 to 33376; reduced-input work 38380599 to 38414980. No incremental recovery or score gain. No production performance pass.
+
+
+## Coordinated parcel round 3
+
+Six matched resistant cases: reduced-input preview work 7769191 to 8602891, expansions 348 to 22194; original-input work 8067826 to 12537217. Six reduced-input recoveries, no original-input recoveries. No production performance pass.

@@ -69,3 +69,11 @@ Both runs passed 60/60; twelve reduced-input successes each, zero original-input
 
 - `rigid-region-results-45368589135.jsonl`: twelve intact result summaries, exact commit a27a468163eae9bb47b03d2cedba4216279cadf3, job 138356658199.
 - `rigid-region-payloads-45368589135.jsonl`: twelve complete base64 chunk collections, emitted payload hashes available in result summaries, hash verification pending. Both datasets from 60/60 Fast Checks, one original-input recovery reproduced, twelve reduced-input recoveries, no incremental recovery. Total JSONL files: 34.
+
+
+## Coordinated parcel round 3
+
+- `cooperative-results-45369701418.jsonl`, `cooperative-payloads-45369701418.jsonl`: three planned cases, job 138360472924.
+- `cooperative-results-45369705005.jsonl`, `cooperative-payloads-45369705005.jsonl`: three linear cases, job 138360485419.
+
+Exact commit d3af286a89ce53fc313f417f6f48def389fb260a. Six complete result summaries and six complete base64 chunk collections, payload hashes emitted but independent verification pending. Both 60/60 Fast Checks. Six reduced-input recoveries, zero original-input recoveries. All exact reduced removal sets and identities matched archived compact failures. Total JSONL files: 38.
