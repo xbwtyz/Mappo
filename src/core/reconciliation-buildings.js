@@ -27,9 +27,12 @@ function lareBuildingCharge(b,budget){
 // original edge, then check every corresponding vertex in every region.
 export function verifyLareRigidGeometry(before,after,budget){
   if(!before?.geometry||!after?.geometry||!riEqual(before.components,after.components)||
+     !Array.isArray(before.geometry.regions)||!Array.isArray(after.geometry.regions)||
      !riEqual(lareBuildingWithout(before.geometry,['regions']),lareBuildingWithout(after.geometry,['regions'])))return false;
   const old=before.geometry.regions,next=after.geometry.regions;
-  if(!old.length||old.length!==next.length||old.some((r,i)=>
+  const finiteRing=r=>Array.isArray(r)&&r.length>=3&&r.every(p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y));
+  if(!Number.isFinite(before.orientation)||!Number.isFinite(after.orientation)||
+    !old.length||old.length!==next.length||old.some((r,i)=>!finiteRing(r.ring)||!finiteRing(next[i].ring)||
     !riEqual(lareBuildingWithout(r,['ring']),lareBuildingWithout(next[i],['ring']))||
     r.ring.length!==next[i].ring.length))return false;
   const [a,b]=old[0].ring,[c,d]=next[0].ring;

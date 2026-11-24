@@ -81,3 +81,18 @@ test('B1R route search refuses a fixed obstruction and never changes street',()=
   const result=reconcileLareAccess(city,b,b,permission,budget());
   assert.equal(result.ok,false);assert.equal(result.code,'access-reflow-blocked');
 });
+
+test('B1R verifier refuses malformed vertices and non-finite orientation',()=>{
+  const b=building(),bad=JSON.parse(JSON.stringify(b));
+  bad.geometry.regions[0].ring[0].x=NaN;
+  assert.equal(verifyLareRigidGeometry(b,bad,budget()),false);
+  bad.geometry=JSON.parse(JSON.stringify(b.geometry));bad.orientation=NaN;
+  assert.equal(verifyLareRigidGeometry(b,bad,budget()),false);
+});
+test('B1R fixed opaque and dependency-bearing records cannot silently repair access',()=>{
+  const {b,city}=accessFixture();
+  for(const reason of ['unsupported-geometry','dependent-structure','authored-or-fixed-property']){
+    const result=reconcileLareAccess(city,b,b,{mode:'fixed',reason},budget());
+    assert.equal(result.code,'access-decision-required');
+  }
+});
