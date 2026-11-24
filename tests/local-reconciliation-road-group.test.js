@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
+import { inspectRoadDependencies } from '../src/core/road-impact-dependencies.js';
+import { riBudget,riReporter } from '../src/core/road-impact-model.js';
 import { buildRoadGraph } from '../src/core/road-graph.js';
 import { extractRoadFaces,matchExistingFaces } from '../src/core/road-faces.js';
 import { analyzeRoadImpact } from '../src/core/road-impact.js';
@@ -69,4 +71,24 @@ test('B1R staged and synchronous integrated group drafts produce the same accept
   const iterator=iterateRoadGroupReflowB1(project,ids,offset);let step=iterator.next();
   while(!step.done)step=iterator.next();
   assert.deepEqual(step.value,direct);
+});
+
+
+test('B1R outside-block setback diagnostics measure the original and candidate records independently', () => {
+  const project = createProject({ seed:'lare-organic-3', morphology:'organic', size:'small', irregularProperties:false });
+  const original = project.city;
+  const draft = prepareRoadGroupIntentB1(project, ['RD-0167','RD-0170','RD-0188','RD-0232'], { x:0,y:-2 });
+  assert.ok(draft.topologyResolved && draft.facesResolved);
+  assert.ok(draft.changedRoadIds.includes('RD-0233'));
+  const {emit,items} = riReporter();
+  const context = { roadIds:draft.changedRoadIds, junctionIds:draft.proposedNodes.map(node=>node.id),
+    changedBlockIds:[], acceptedValid:true };
+  inspectRoadDependencies(draft.proposedCity,draft.proposedCity,context,emit,riBudget(),original);
+  const issue = items().find(item=>item.id==='PROP-00092' && item.code==='road-setback' &&
+    item.relatedIds.includes('RD-0233'));
+  assert.ok(issue, JSON.stringify(items().filter(item=>item.id==='PROP-00092')));
+  assert.ok(Math.abs(issue.metrics.oldDistance-9.959298255558103)<1e-9);
+  assert.ok(Math.abs(issue.metrics.newDistance-8.080749215358827)<1e-9);
+  assert.equal(issue.metrics.requiredDistance,8.7);
+  assert.equal(issue.severity,'needs-review');
 });

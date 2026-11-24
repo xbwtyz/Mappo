@@ -3,23 +3,25 @@ import { prepareRoadTopologyReflowC3 } from './road-topology-reflow.js';
 import { roadBuildingOccupiedPlots } from './road-building-decisions.js';
 import { resolveBuildingAccess } from '../editor/building-application.js';
 import { reflowGeneratedRoadBuildings } from './road-building-reflow.js';
-import { prepareJunctionIntentC7, prepareRoadIntentC1, prepareRoadGroupIntentB1 } from './road-intent-c1.js';
-import { verifyRoadGroupPreservationB1 } from './road-group-preservation-b1.js';
+import { prepareJunctionIntentC7, prepareRoadIntentC1, iterateRoadGroupIntentB1 } from './road-intent-c1.js';
 import { buildRoadGraph } from './road-graph.js';
 import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
-import { analyzeRoadImpact } from './road-impact.js';
-import { inspectRoadDependencies, inspectRoadContextReferences } from './road-impact-dependencies.js';
+import { analyzeRoadImpact, iterateRoadImpact } from './road-impact.js';
+import { iterateRoadDependencies, inspectRoadContextReferences } from './road-impact-dependencies.js';
 import { riBudget, riEqual, riIndex, riReporter } from './road-impact-model.js';
 import { classifyRoadProvenance, stampRoadGenerated } from './road-provenance.js';
 import { propertyDividerFractions3I, propertyGeometryPreview3I } from './property-geometry.js';
 import { reshapeRoadParcelPolygon } from './road-parcel-shape-reflow.js';
 import { PROPERTY_SETBACK, STREET_EDGE_WIDTH, STREET_WIDTHS, propertyFits, rectangleInFrame } from './placement.js';
 import { distanceToSegment, segmentCuts } from './boundary.js';
-import { validateStoredProject } from '../data/project-validation.js';
+import { iterateStoredProjectValidation } from '../data/project-validation.js';
 import { hydrateCityS10 } from './building-project-s10.js';
 import { iterateLareRoadGroup } from './reconciliation-road-group.js';
 import { createLareRoadOperation } from './reconciliation-operation.js';
 import { iterateLareStrategies } from './reconciliation-strategies.js';
+import { describeLareRefusal } from './reconciliation-diagnostics.js';
+import { cloneLareCity } from './reconciliation-city.js';
+import { finishLareSteps } from './reconciliation-steps.js';
 import { createLareBudget } from './reconciliation-budget.js';
 
 // A road intent is frozen for cancellation safety and loses non-serialized
@@ -119,10 +121,11 @@ export function prepareNeighborhoodReflowC3(project, roadId, offset,
 // Group movement intentionally does not call reconcileRoadIntent, whose
 // singleton policy can normalize crossings or reconstruct block topology.
 export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options={}) {
-  const draft=c2HydrateDraftS10(prepareRoadGroupIntentB1(project,selectedRoadIds,offset));
+  let topology;
+  const draft = yield* iterateRoadGroupIntentB1(project, selectedRoadIds, offset, value => { topology = value; });
   const id=draft.selectedRoadIds?.[0]??'group';
   const blocked=(issues,source={})=>({...source,phase:'B1',status:'needs-review',
-    candidateProject:null,changed:[],ledger:[],unresolved:issues,
+    candidateProject:null,changed:[],ledger:[],unresolved:issues.map(describeLareRefusal),
     validation:source.validation??{graph:'not-run',faces:'not-run',parcels:'not-run',project:'not-run'},
     parcelReview:source.parcelReview??[],selectedRoadIds:draft.selectedRoadIds??[],
     offset:draft.offset??null});
@@ -135,18 +138,16 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
         relatedIds:issue.roadIds??[]}));
     return blocked(issues.length?issues:[c2Issue('road',id,'group-topology','A nonzero move with unchanged road and face topology is required.')]);
   }
-  const analysis = analyzeNeighborhoodDraft(project, draft);
+  const { graph, faces, identity } = topology;
+  const impact = yield* iterateRoadImpact(project, { operation: 'translate-road', graph });
+  const analysis = { graph, faces, identity, impact };
   const analyze = () => analysis;
   const strictOptions = { ...options, strictGroup: true };
   const choices = options.parcelChoices instanceof Map ? options.parcelChoices : new Map(options.parcelChoices ?? []);
   const operation = createLareRoadOperation(project, draft, analysis, choices, options.acceptedRevision, options.strategy);
   const operationChoices = new Map(operation.permissions.parcelChoices);
   strictOptions.parcelChoices = operationChoices;
-  const checked = result => {
-    if (!result.candidateProject) return blocked(result.unresolved, result);
-    const violation = verifyRoadGroupPreservationB1(project, result.candidateProject, draft);
-    return violation ? blocked([violation], result) : result;
-  };
+  const checked = result => result.candidateProject ? result : blocked(result.unresolved, result);
   const parent = createLareBudget(operation.limits.total, {
     ceiling: operation.limits.total,
     parent: options.sharedBudget ?? null,
@@ -176,20 +177,21 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     direct: {
       canRun: () => true,
       *run() {
-        return prepareNeighborhoodReflow(project, id, draft, false, analyze, strictOptions);
+        return yield* iterateNeighborhoodReflow(project, id, draft, false, analyze, strictOptions);
       },
     },
     strict: {
       canRun: previous => !previous.candidateProject && previous.unresolved.some(row =>
         rebuildableLandIssues.has(row.code) || row.code === 'parcel-decision-required' || row.code === 'parcel-decision-invalid'),
       *run() {
-        return prepareNeighborhoodReflow(project, id, draft, true, analyze, strictOptions);
+        return yield* iterateNeighborhoodReflow(project, id, draft, true, analyze, strictOptions);
       },
     },
     'selective-adaptive': adaptiveStrategy(false),
     'enhanced-adaptive': adaptiveStrategy(true),
   });
-  return { ...result, phase: 'B1', selectedRoadIds: draft.selectedRoadIds, offset: draft.offset };
+  const unresolved = result.unresolved.map(describeLareRefusal);
+  return { ...result, unresolved, phase: 'B1', selectedRoadIds: draft.selectedRoadIds, offset: draft.offset };
 }
 export function prepareRoadGroupReflowB1(project,selectedRoadIds,offset,options={}){
   const iterator=iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options);
@@ -240,7 +242,7 @@ function reconcileRoadIntent(project,roadId,draft,decisions,options = {}) {
     ? rebuilt : adapted;
 }
 
-export function analyzeNeighborhoodDraft(project, draft) {
+function analyzeNeighborhoodDraft(project, draft) {
   const graph = buildRoadGraph(draft.proposedCity);
   const faces = extractRoadFaces(graph, project.city);
   const identity = matchExistingFaces(project.city, faces);
@@ -251,7 +253,11 @@ export function analyzeNeighborhoodDraft(project, draft) {
   } };
 }
 
-function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
+function prepareNeighborhoodReflow(...args) {
+  return finishLareSteps(iterateNeighborhoodReflow(...args));
+}
+
+function* iterateNeighborhoodReflow(project, roadId, draft, adaptBuildings,
   analyze = () => analyzeNeighborhoodDraft(project, draft), options = {}) {
   const changed = [], ledger = [], parcelReview=[];
   const parcelChoices = options.parcelChoices instanceof Map ? options.parcelChoices
@@ -316,7 +322,8 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
     ));
     if (unresolved.length) return blocked(unresolved);
 
-    const city = hydrateCityS10(structuredClone(draft.proposedCity));
+    yield { stage: 'strict-candidate-materialization' };
+    const city = yield* cloneLareCity(draft.proposedCity, structuredClone);
     const plots = riIndex(city.plots), buildings = riIndex(city.buildings);
     const reservedIds = new Set(buildings.keys());
     const affected = city.properties.filter(p => changedBlocks.has(p.blockId));
@@ -359,6 +366,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
     for (const id of changedBlocks.keys()) record('block', id, 'reshaped', ['area', 'boundary-geometry']);
 
     for (const property of affected) {
+      yield { stage: 'strict-parcel', id: property.id };
       const ownPlots = property.plotIds.map(id => plots.get(id));
       const provenance = classifyRoadProvenance(property, ownPlots);
       const changedFrontage = roadIds.has(property.frontageRoadId);
@@ -499,6 +507,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
 
     const repairedAccess = new Set();
     for (const { property, courtyardBuildings, ownPlots } of courtyardRepairs.values()) {
+      yield { stage: 'strict-courtyard-access', id: property.id };
       try {
         const updates = c2CourtyardFrontageUpdates(city, property, courtyardBuildings, ownPlots);
         courtyardBuildings.forEach((building, index) => {
@@ -521,6 +530,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
       buildingsByBlock.get(building.blockId).push(building);
     }
     for (const building of city.buildings) {
+      yield { stage: 'strict-building-access', id: building.id };
       if (!changedBlocks.has(building.blockId) || repairedAccess.has(building.id)) continue;
       const intersectsBuilding = (start, end) => buildingsByBlock.get(building.blockId).some(other =>
         buildingExteriorRingsS10(other).some(ring => ring.some((point, index) =>
@@ -581,7 +591,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
     const { emit, items } = riReporter();
     const context = { roadIds: draft.changedRoadIds, junctionIds, changedBlockIds: [...changedBlocks.keys()], acceptedValid: true };
     const spend = riBudget();
-    inspectRoadDependencies(city, city, context, emit, spend);
+    yield* iterateRoadDependencies(city, city, context, emit, spend, accepted);
     inspectRoadContextReferences(accepted, city, context, emit, spend);
     // The full validator checks plot containment with the same shared-edge
     // tolerance used by generation and parcel subdivision.
@@ -591,7 +601,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
 
     // Clone project metadata, with the already detached city in its original key position.
     const candidateProject = { ...structuredClone({ ...project, city: null }), city };
-    validateStoredProject(candidateProject);
+    yield* iterateStoredProjectValidation(candidateProject);
     validation.parcels = 'pass';
     validation.project = 'valid';
     return { phase, status: 'candidate-only', candidateProject, changed, ledger, unresolved: [], validation,parcelReview };

@@ -1,3 +1,4 @@
+import { finishLareSteps } from './reconciliation-steps.js';
 import { polygonSignedArea } from './geometry.js';
 import { shapeWellFormed,shapeContained,shapesOverlapInterior } from './building-validation.js';
 import { propertyFits,STREET_WIDTHS,STREET_EDGE_WIDTH,PROPERTY_SETBACK } from './placement.js';
@@ -24,7 +25,7 @@ const lareParcelCmp=(a,b)=>a.score-b.score||a.order-b.order;
 // Returns admissible parcel/plot candidates, never a complete accepted edit.
 // Fixed exterior rings and fixed neighbors constrain the search; movable
 // neighboring properties must be checked later by the cooperative solver.
-export function generateLareParcelCandidates({property,plots,edge,edges,fixedRings=[],fixedNeighbors=[],mode='adaptive',compactDeformation=false},budget){
+export function* iterateLareParcelCandidates({property,plots,edge,edges,fixedRings=[],fixedNeighbors=[],mode='adaptive',compactDeformation=false},budget){
   if(!budget?.spend)throw Error('Shared LARE budget required.');
   if(!['adaptive','authorized-reshape','fixed','decision-required','invalid-choice','fixed-unsupported'].includes(mode))
     throw Error('Unknown parcel policy.');
@@ -63,10 +64,11 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
   const strip=lareParcelStrip(property,plots);
   const found=[],seen=new Set();
   let order=0,attempts=0,attemptLimit=192;
-  const tryCandidate=(family,boundary,nextPlots)=>{
+  const tryCandidate = function* (family, boundary, nextPlots) {
     if(attempts++>=attemptLimit)return;
     const rank=order++,key=JSON.stringify(boundary);
     if(seen.has(key))return;seen.add(key);
+    yield { stage: 'parcel-candidate', id: property.id };
     const n=boundary.length;
     const fixedWork=[...fixedRings,...fixedNeighbors].reduce((sum,r)=>sum+r.length,0);
     budget.spend(Math.max(1,n*n+n*(edges.length*4+fixedWork*4)));
@@ -90,27 +92,27 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
       found.splice(drop,1);
     }
   };
-  const mapped=(family,map)=>{
+  const mapped = function* (family, map) {
     if(attempts>=attemptLimit)return;
-    tryCandidate(family,original.map(map),mapLarePlotCells(plots,map,budget));
+    yield* tryCandidate(family, original.map(map), mapLarePlotCells(plots, map, budget));
   };
-  mapped('world-preserved',p=>({...p}));
+  yield* mapped('world-preserved',p=>({...p}));
   if(mode==='fixed'||mode==='fixed-unsupported')return found;
   const frontValues=lareParcelUnique([Math.max(setback+.05,frontOld.v),setback+.05]);
   const oldLeft=Math.min(frontOld.u,rightOld.u),oldRight=Math.max(frontOld.u,rightOld.u);
   const usableWidth=Math.min(width,length);
   const center=(oldLeft+oldRight)/2;
-  const affine=(family,left,right,front,rear,shear=0)=>{
+  const affine = function* (family, left, right, front, rear, shear = 0) {
     if(attempts>=attemptLimit||right-left<minimumWidth-lareParcelEps||rear-front<=1||
        left< -lareParcelEps||right>length+lareParcelEps)return;
     const su=(right-left)/width,sv=(rear-front)/oldDepth;
-    mapped(family,p=>{const q=local(p);return world(left+q.u*su+shear*q.v/oldDepth,front+q.v*sv);});
+    yield* mapped(family,p=>{const q=local(p);return world(left+q.u*su+shear*q.v/oldDepth,front+q.v*sv);});
   };
   // Non-affine flexible mesh deformation: choose a seam that separates
   // complete existing cells and crosses no parent edge interior. On each
   // side the map is affine and agrees exactly on the seam. No new cells,
   // vertex insertion or topology changes are needed.
-  function hingeCandidates(front){
+  function* hingeCandidates(front){
     if(strip!==null||plots.length<2||usableWidth<minimumWidth)return;
     const left=lareParcelClamp(center-usableWidth/2,0,length-usableWidth);
     const base=p=>{const q=local(p);return world(left+q.u*usableWidth/width,front+q.v);};
@@ -136,14 +138,14 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
       if(depth<=lareParcelEps)continue;
       eligible++;
       for(const dx of [-width*.08,width*.08]){
-        mapped('polygon-hinge',p=>{
+        yield* mapped('polygon-hinge',p=>{
           const v=base(p),d=Math.max(0,distance(p))/depth;
           return {x:v.x+tangent.x*dx*d,y:v.y+tangent.y*dx*d};
         });
       }
     }
   }
-  for(const front of frontValues)hingeCandidates(front);
+  for(const front of frontValues)yield* hingeCandidates(front);
   // Independent front endpoints and rear depth. Candidate boundaries are
   // driven by existing footprint, fixed-building extents and available block.
   for(const front of frontValues){
@@ -164,14 +166,14 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
       const starts=lareParcelUnique([center-span/2,oldLeft,oldLeft-span*.25,oldLeft+span*.25,
         fixed.length?fixedLeft-.03:0,fixed.length?fixedRight-span+.03:length-span]
         .map(x=>lareParcelClamp(x,0,length-span)));
-      for(const left of starts)affine('frontage-slide',left,left+span,front,rearOld);
+      for(const left of starts)yield* affine('frontage-slide',left,left+span,front,rearOld);
     }
-    for(const left of leftValues)affine('independent-left',left,nearRight,front,rearOld);
-    for(const right of rightValues)affine('independent-right',nearLeft,right,front,rearOld);
-    for(const rear of rearValues)affine('independent-rear',nearLeft,nearRight,front,rear);
+    for(const left of leftValues)yield* affine('independent-left',left,nearRight,front,rearOld);
+    for(const right of rightValues)yield* affine('independent-right',nearLeft,right,front,rearOld);
+    for(const rear of rearValues)yield* affine('independent-rear',nearLeft,nearRight,front,rear);
     // Shared positive affine shear also supports non-strip and concave layouts.
     for(const shear of [-width*.1,width*.1,-width*.2,width*.2])
-      affine('affine-shear',nearLeft,nearRight,front,rearOld,shear);
+      yield* affine('affine-shear',nearLeft,nearRight,front,rearOld,shear);
     // A verified strip partition permits independent taper at the rear corners.
     // Reconstructing from the same divider fractions preserves every strip ID.
     if(strip!==null){
@@ -183,12 +185,12 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
           const boundary=[world(nearLeft,front),world(nearRight,front),world(rearR,rearOld),world(rearL,rearOld)];
           const preview=propertyGeometryPreview3I({properties:[property],plots},property.id,boundary,strip);
           const next=plots.map((p,i)=>({...p,boundary:preview.plots[i].boundary}));
-          tryCandidate('taper-'+side,boundary,next);
+          yield* tryCandidate('taper-'+side,boundary,next);
         }
       }
     }
     for(const left of leftValues)for(const right of rightValues)for(const rear of rearValues)
-      affine('independent-combined',left,right,front,rear);
+      yield* affine('independent-combined',left,right,front,rear);
   }
   if (compactDeformation) {
     attemptLimit = attempts + 54;
@@ -200,10 +202,14 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
         const starts = lareParcelUnique([center - span / 2, oldLeft, oldRight - span]
           .map(x => lareParcelClamp(x, 0, length - span)));
         for (const start of starts) {
-          for (const depth of depths) affine('compact-joint', start, start + span, front, front + depth);
+          for (const depth of depths) yield* affine('compact-joint', start, start + span, front, front + depth);
         }
       }
     }
   }
   return found.sort(lareParcelCmp);
+}
+
+export function generateLareParcelCandidates(request, budget) {
+  return finishLareSteps(iterateLareParcelCandidates(request, budget));
 }

@@ -1,3 +1,4 @@
+import { finishLareSteps } from './reconciliation-steps.js';
 import { polygonRingsProperlyCross } from './geometry.js';
 import { riEqual } from './road-impact-model.js';
 import { validateBuildingStructureS10 } from './building-components-s10.js';
@@ -76,7 +77,7 @@ const lareBuildingBounds=(points,project)=>{const ps=points.map(project);
   return {minX:Math.min(...ps.map(p=>p.x)),maxX:Math.max(...ps.map(p=>p.x)),
     minY:Math.min(...ps.map(p=>p.y)),maxY:Math.max(...ps.map(p=>p.y))};};
 const lareBuildingOrder=(a,b)=>a.moved-b.moved||a.displacement-b.displacement||a.rotation-b.rotation||a.order-b.order;
-export function generateLareBuildingCandidates({source,permission,oldProperty,property,plots,fixedBuildings=[]},budget){
+export function* iterateLareBuildingCandidates({source,permission,oldProperty,property,plots,fixedBuildings=[]},budget){
   if(!budget?.spend||!property?.boundary?.length||property.id!==source.propertyId||
     !plots.length||plots.some(p=>p.propertyId!==undefined&&p.propertyId!==property.id))
     throw Error('Invalid local building context.');
@@ -87,7 +88,7 @@ export function generateLareBuildingCandidates({source,permission,oldProperty,pr
     y:(p.x-frame.origin.x)*frame.inward.x+(p.y-frame.origin.y)*frame.inward.y});
   const world=(u,v)=>({x:frame.tangent.x*u+frame.inward.x*v,y:frame.tangent.y*u+frame.inward.y*v});
   const pb=lareBuildingBounds(property.boundary,project);
-  const tryOne=(dx,dy,angle,family,retry=false)=>{
+  const tryOne = function* (dx, dy, angle, family, retry = false) {
     if (retry) {
       if (clearanceRetries++ >= 160) return;
     } else if (attempts++ >= 160) return;
@@ -96,6 +97,7 @@ export function generateLareBuildingCandidates({source,permission,oldProperty,pr
     if(Math.abs(dx)<1e-10)dx=0;if(Math.abs(dy)<1e-10)dy=0;
     const key=[dx,dy,angle].map(x=>x.toFixed(8)).join('|');
     if(seen.has(key))return;seen.add(key);
+    yield { stage: 'building-placement', id: source.id };
     const rank=order++;budget.spend();
     try{
       const b=transformLareBuilding(source,permission,{dx,dy,angle},budget);
@@ -126,7 +128,7 @@ export function generateLareBuildingCandidates({source,permission,oldProperty,pr
       }
     }catch(error){if(error instanceof LareBudgetExceeded)throw error;}
   };
-  tryOne(0,0,0,'world-preserved');
+  yield* tryOne(0,0,0,'world-preserved');
   if(permission?.mode!=='rigid')return candidates;
   const old=oldProperty?.frame;
   if(old&&oldProperty.local&&property.local){
@@ -134,7 +136,7 @@ export function generateLareBuildingCandidates({source,permission,oldProperty,pr
       property.local.x+property.local.width/2-oldProperty.local.x-oldProperty.local.width/2;
     const v=(center.x-old.origin.x)*old.inward.x+(center.y-old.origin.y)*old.inward.y+property.local.y-oldProperty.local.y;
     const w=world(u,v),angle=Math.atan2(frame.tangent.y,frame.tangent.x)-Math.atan2(old.tangent.y,old.tangent.x);
-    tryOne(frame.origin.x+w.x-center.x,frame.origin.y+w.y-center.y,angle,'frontage-frame');
+    yield* tryOne(frame.origin.x+w.x-center.x,frame.origin.y+w.y-center.y,angle,'frontage-frame');
   }
   const angles=[0,Math.PI/12,-Math.PI/12,Math.PI/6,-Math.PI/6,Math.PI/4,-Math.PI/4,Math.PI/2,-Math.PI/2,Math.PI];
   for(let i=0;i<property.boundary.length;i++){
@@ -154,7 +156,7 @@ export function generateLareBuildingCandidates({source,permission,oldProperty,pr
       [us[0],vs[2]],[us[0],vs[3]],[us[2],vs[2]],[us[2],vs[3]],[us[3],vs[2]],[us[3],vs[3]]]){
       if (attempts >= 160) break;
       const delta = world(u, v);
-      const result = tryOne(delta.x, delta.y, angle, angle === 0 ? 'translate' : 'rotate');
+      const result = yield* tryOne(delta.x, delta.y, angle, angle === 0 ? 'translate' : 'rotate');
       if (result === 'crossing') {
         // Retry only a placement rejected by the strict edge-crossing test.
         // The correction is rigid and leaves exact-fit axes unmodified.
@@ -162,9 +164,13 @@ export function generateLareBuildingCandidates({source,permission,oldProperty,pr
         const insetV = Math.min(1e-5, Math.max(0, (maxV - minV) / 4));
         const corrected = world(clamp(u, minU + insetU, maxU - insetU),
           clamp(v, minV + insetV, maxV - insetV));
-        tryOne(corrected.x, corrected.y, angle, 'selective-inset', true);
+        yield* tryOne(corrected.x, corrected.y, angle, 'selective-inset', true);
       }
     }
   }
   return candidates.sort(lareBuildingOrder);
+}
+
+export function generateLareBuildingCandidates(request, budget) {
+  return finishLareSteps(iterateLareBuildingCandidates(request, budget));
 }

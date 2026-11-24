@@ -1,20 +1,26 @@
 import { createLareBudget, LARE_DEMOLITION_LIMITS, LARE_STRATEGY_LIMITS, LareBudgetExceeded } from './reconciliation-budget.js';
 import { createLareContext, discoverLareParcelScope } from './reconciliation-context.js';
-import { verifyLareGroupPreservation } from './reconciliation-preservation.js';
-import { prepareRoadGroupIntentB1 } from './road-intent-c1.js';
-import { analyzeNeighborhoodDraft, iterateRoadGroupReflowB1 } from './neighborhood-reflow.js';
+import { iterateLareGroupPreservation } from './reconciliation-preservation.js';
+import { iterateRoadGroupIntentB1 } from './road-intent-c1.js';
+import { iterateRoadGraph } from './road-graph.js';
+import { iterateRoadFaces, iterateRoadFaceIdentity } from './road-faces.js';
+import { iterateRoadImpact } from './road-impact.js';
+import { cloneLareCity } from './reconciliation-city.js';
+import { finishLareSteps } from './reconciliation-steps.js';
+import { iterateRoadGroupReflowB1 } from './neighborhood-reflow.js';
 import { stampRoadGenerated } from './road-provenance.js';
 import { riBudget, riCompare, riEqual, riFreeze, riIndex, riReporter } from './road-impact-model.js';
 import { LARE_CONSTRAINTS } from './reconciliation-constraints.js';
-import { validateStoredProject } from '../data/project-validation.js';
 
 const lareDemolitionSessions = new WeakMap();
 const lareDemolitionRefusals = new WeakMap();
 const lareDemolitionAuthorizations = new WeakMap();
 
-function lareProtectReferencedBuildings(project, candidates, budget) {
+function* lareProtectReferencedBuildings(project, candidates, budget) {
   const work = [{ value: project, role: 'project' }];
+  let steps = 0;
   while (work.length && candidates.size) {
+    if (steps++ % 1024 === 0) yield { stage: 'demolition-reference-check' };
     const { value, role } = work.pop();
     budget.spend();
     if (typeof value === 'string') {
@@ -37,15 +43,17 @@ function lareProtectReferencedBuildings(project, candidates, budget) {
   }
 }
 
-function lareDemolitionScope(project, draft, choices, budget) {
-  const analysis = analyzeNeighborhoodDraft(project, draft);
-  if (!analysis.graph.valid || !analysis.faces.valid || !analysis.identity.valid ||
-      analysis.identity.requiresReview || !analysis.impact.complete || analysis.impact.status === 'invalid')
-    return { eligible: new Map(), issues: [], blocks: [] };
+function* lareDemolitionScope(project, draft, choices, budget) {
+  const graph = yield* iterateRoadGraph(draft.proposedCity);
+  const faces = yield* iterateRoadFaces(graph, project.city);
+  const identity = yield* iterateRoadFaceIdentity(project.city, faces);
+  const impact = yield* iterateRoadImpact(project, { operation: 'translate-road', graph });
+  if (!graph.valid || !faces.valid || !identity.valid || identity.requiresReview ||
+      !impact.complete || impact.status === 'invalid') return { eligible: new Map(), issues: [], blocks: [] };
   const context = createLareContext(project, draft, choices, budget);
-  const blocks = new Map(analysis.identity.changed.filter(face => face.kind === 'block')
+  const blocks = new Map(identity.changed.filter(face => face.kind === 'block')
     .map(face => [face.id, face.record]));
-  const issues = analysis.impact.issues;
+  const issues = impact.issues;
   const scope = discoverLareParcelScope(context, project.city, draft, blocks, issues, budget).adapt();
   const buildings = riIndex(project.city.buildings), eligible = new Map();
   for (const parcel of scope.authorized) {
@@ -58,15 +66,15 @@ function lareDemolitionScope(project, draft, choices, budget) {
       }
     }
   }
-  lareProtectReferencedBuildings(project, eligible, budget);
+  yield* lareProtectReferencedBuildings(project, eligible, budget);
   return { eligible, issues, blocks: [...blocks.keys()] };
 }
 
-function lareRequireDemolitionDelta(original, candidate, draft, choices, removalIds, budget) {
+function* lareRequireDemolitionDelta(original, candidate, draft, choices, removalIds, budget) {
   if (!Array.isArray(removalIds) || !removalIds.length ||
       new Set(removalIds).size !== removalIds.length)
     throw Error('The reviewed removal set is incomplete or contains duplicates.');
-  const { eligible, blocks } = lareDemolitionScope(original, draft, choices, budget);
+  const { eligible, blocks } = yield* lareDemolitionScope(original, draft, choices, budget);
   const removed = new Set(removalIds);
   if (!removalIds.every(id => eligible.has(id)))
     throw Error('A reviewed building is protected or outside the eligible reconciliation scope.');
@@ -74,40 +82,43 @@ function lareRequireDemolitionDelta(original, candidate, draft, choices, removal
   const missing = original.city.buildings.filter(building => !surviving.has(building.id)).map(building => building.id);
   if (missing.length !== removed.size || missing.some(id => !removed.has(id)))
     throw Error('Candidate removals differ from the reviewed removal set.');
-  const violation = verifyLareGroupPreservation(original, candidate, draft, choices, budget, removed);
+  const violation = yield* iterateLareGroupPreservation(original, candidate, draft, choices, budget, removed);
   if (violation) throw Error(violation.message);
   const { emit, items } = riReporter(), spend = riBudget();
   const context = {
     roadIds: draft.changedRoadIds, junctionIds: draft.proposedNodes.map(node => node.id),
     changedBlockIds: blocks, acceptedValid: true,
   };
-  LARE_CONSTRAINTS.landDependencies.check(candidate.city, candidate.city, context, emit, spend);
+  yield* LARE_CONSTRAINTS.landDependencies.iterate(candidate.city, candidate.city, context, emit, spend, original.city);
   LARE_CONSTRAINTS.infrastructure.check(original.city, candidate.city, context, emit, spend);
   const blocking = items().find(issue => issue.severity !== 'info' && issue.code !== 'frontage-geometry' &&
     !(issue.kind === 'plot' && issue.code === 'property-containment'));
   if (blocking) throw Error(blocking.message);
-  LARE_CONSTRAINTS.storedProject.check(candidate);
+  yield* LARE_CONSTRAINTS.storedProject.iterate(candidate);
 }
 
 export function verifyLareDemolitionDelta(original, candidate, draft, choices, removalIds) {
-  lareRequireDemolitionDelta(original, candidate, draft, choices, removalIds, createLareBudget());
+  finishLareSteps(lareRequireDemolitionDelta(original, candidate, draft, choices, removalIds, createLareBudget()));
 }
 
-function lareRemoveForTrial(project, ids, budget) {
-  const removed = new Set(ids), reduced = structuredClone(project);
+function* lareRemoveForTrial(project, ids, budget) {
+  const removed = new Set(ids);
+  const city = yield* cloneLareCity(project.city, structuredClone);
+  const reduced = { ...structuredClone({ ...project, city: null }), city };
   reduced.city.buildings = reduced.city.buildings.filter(building => {
     budget.spend();
     return !removed.has(building.id);
   });
   const plots = riIndex(reduced.city.plots);
   for (const property of reduced.city.properties) {
+    yield { stage: 'demolition-membership' };
     budget.spend(1 + property.buildingIds.length);
     const surviving = property.buildingIds.filter(id => !removed.has(id));
     if (surviving.length === property.buildingIds.length) continue;
     property.buildingIds = surviving;
     stampRoadGenerated(property, property.plotIds.map(id => plots.get(id)));
   }
-  validateStoredProject(reduced);
+  yield* LARE_CONSTRAINTS.storedProject.iterate(reduced);
   return reduced;
 }
 
@@ -158,13 +169,17 @@ function lareDemolitionIsCurrent(state, project, revision) {
 
 // Called by an explicit Explore action. The returned handle keeps the search
 // capabilities and mutable budget private to this accepted revision and intent.
-export function createLareDemolitionSession(project, { selectedRoadIds, offset, parcelChoices = new Map(), revision }, preservation) {
+export function createLareDemolitionSession(...args) {
+  return finishLareSteps(iterateLareDemolitionSession(...args));
+}
+
+export function* iterateLareDemolitionSession(project, { selectedRoadIds, offset, parcelChoices = new Map(), revision }, preservation) {
   if (!Number.isSafeInteger(revision) || revision < 0 || !preservation ||
       preservation.candidateProject || !preservation.unresolved?.some(issue =>
         ['lare-work-limit', 'lare-search-exhausted'].includes(issue.code)) ||
       !riEqual(selectedRoadIds, preservation.selectedRoadIds) || !riEqual(offset, preservation.offset))
     throw Error('A current preservation refusal is required before exploring demolition.');
-  const draft = prepareRoadGroupIntentB1(project, selectedRoadIds, offset);
+  const draft = yield* iterateRoadGroupIntentB1(project, selectedRoadIds, offset);
   if (!draft.draftable || !draft.topologyResolved || !draft.facesResolved || draft.status === 'unchanged' ||
       draft.issues.some(issue => issue.code === 'boundary-escape'))
     throw Error('Demolition recovery requires a topology-preserving road translation.');
@@ -178,7 +193,7 @@ export function createLareDemolitionSession(project, { selectedRoadIds, offset, 
     return existing;
   }
   const budget = createLareBudget(LARE_DEMOLITION_LIMITS, { ceiling: LARE_DEMOLITION_LIMITS });
-  const { eligible, issues } = lareDemolitionScope(project, draft, choices, budget);
+  const { eligible, issues } = yield* lareDemolitionScope(project, draft, choices, budget);
   if (!eligible.size) throw Error('No generated buildings are eligible for demolition in this neighborhood.');
   const session = Object.freeze({ eligibleIds: Object.freeze([...eligible.keys()].sort(riCompare)) });
   lareDemolitionSessions.set(session, {
@@ -217,7 +232,7 @@ export function* iterateLareDemolition(session, { deeper = false } = {}) {
       yield { stage: 'demolition-subset', tried, removalIds: ids.slice(), stats: budget.snapshot() };
       if (state.cancelled) return null;
       try {
-        const reduced = lareRemoveForTrial(state.project, ids, subset);
+        const reduced = yield* lareRemoveForTrial(state.project, ids, subset);
         const trial = iterateRoadGroupReflowB1(reduced, draft.selectedRoadIds, draft.offset, {
           parcelChoices: choices, acceptedRevision: state.revision, strategy: 'selective-adaptive', sharedBudget: subset,
         });
@@ -233,7 +248,8 @@ export function* iterateLareDemolition(session, { deeper = false } = {}) {
         if (state.cancelled) return null;
         const preview = step.value;
         if (!preview?.candidateProject) continue;
-        verifyLareDemolitionDelta(state.project, preview.candidateProject, draft, choices, ids);
+        yield* lareRequireDemolitionDelta(state.project, preview.candidateProject, draft, choices, ids,
+          createLareBudget());
         const area = ids.reduce((total, id) => total + eligible.get(id).area, 0);
         const score = [ids.length, area, ...(preview.lare?.score ?? [0, 0, 0, 0, 0, 0])];
         if (!score.every(value => Number.isFinite(value) && value >= 0)) continue;

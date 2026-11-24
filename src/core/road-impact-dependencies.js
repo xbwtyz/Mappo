@@ -32,16 +32,29 @@ function riSegmentNearPolygon(polygon, a, b, margin) {
   );
 }
 
-export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
-  const oldNodes = riIndex(city.nodes),
+export function* iterateRoadDependencies(city, snapshot, context, emit, spend, measurementBase = city) {
+  // Land records come from the geometry being checked. Historical distances
+  // use the corresponding original record and original road endpoints.
+  const oldNodes = riIndex(measurementBase.nodes),
     nodes = riIndex(snapshot.nodes),
     roads = riIndex(snapshot.roads),
-    oldRoads = riIndex(city.roads),
+    oldRoads = riIndex(measurementBase.roads),
     blocks = riIndex(snapshot.blocks);
   const properties = riIndex(city.properties),
     plots = riIndex(city.plots),
     buildings = riIndex(city.buildings),
     districts = riIndex(city.districts);
+  const oldLand = measurementBase === city ? null : {
+    property: riIndex(measurementBase.properties), plot: riIndex(measurementBase.plots),
+    building: riIndex(measurementBase.buildings),
+  };
+  const originalPolygon = (kind, id, polygon) => {
+    if (!oldLand) return polygon;
+    const record = oldLand[kind].get(id);
+    return record?.boundary ?? record?.footprint ?? record?.geometry?.regions
+      ?.find(region => region.kind === 'solid' && region.parentId === null)?.ring;
+  };
+
   const edges = new Map(snapshot.roads.map((r) => [riEdgeKey(r.a, r.b), r]));
   const changedNodes = new Set(context.junctionIds);
   const changed = new Set(context.roadIds),
@@ -118,8 +131,9 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
       ob = oldNodes.get(old?.b);
     if (!a || !b) return;
     if (changed.has(road.id)) {
-      const newDistance = riDistance(polygon, a, b, spend),
-        oldDistance = oa && ob ? riDistance(polygon, oa, ob, spend) : null;
+      const priorPolygon = originalPolygon(kind, record.id, polygon);
+      const newDistance = riDistance(polygon, a, b, spend);
+      const oldDistance = oa && ob && riPoints(priorPolygon) ? riDistance(priorPolygon, oa, ob, spend) : null;
       // Supplemental measured frontage data, retained separately from ownership.
       emit(
         kind,
@@ -169,6 +183,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
       );
   }
   for (const property of riSorted(city.properties)) {
+    yield { stage: 'parcel-dependencies', id: property.id };
     spend();
     const polygon = property.boundary;
     blockContainment(property, 'property', polygon);
@@ -219,6 +234,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
           const old = oldRoads.get(id),
             oa = oldNodes.get(old?.a),
             ob = oldNodes.get(old?.b);
+          const priorPolygon = originalPolygon('property', property.id, polygon);
           emit(
             'property',
             property.id,
@@ -226,7 +242,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
             'The proposed street conflicts with the accepted property setback.',
             [id, block?.id ?? property.blockId],
             {
-              oldDistance: oa && ob ? riDistance(polygon, oa, ob, spend) : null,
+              oldDistance: oa && ob && riPoints(priorPolygon) ? riDistance(priorPolygon, oa, ob, spend) : null,
               newDistance: distance,
               requiredDistance: margin,
               oldRequiredDistance: old
@@ -250,6 +266,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
     }
   }
   for (const plot of riSorted(city.plots)) {
+    yield { stage: 'plot-dependencies', id: plot.id };
     spend();
     const property = properties.get(plot.propertyId);
     if (!property || !property.plotIds?.includes(plot.id) || plot.blockId !== property.blockId)
@@ -269,6 +286,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
     frontage(plot, 'plot', plot.boundary);
   }
   for (const building of riSorted(city.buildings)) {
+    yield { stage: 'building-dependencies', id: building.id };
     // Inspection accepts frozen or serialized projects. A read-only facade is
     // optional, never required to understand canonical saved geometry.
     const occupiedRoots=building.geometry?.regions?.filter(region =>
@@ -306,7 +324,11 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
           [id, building.propertyId],
         );
     }
-    for (const ring of occupiedRoots) blockContainment(building, 'building', ring);
+    for (const ring of occupiedRoots) {
+      yield { stage: 'building-block-containment', id: building.id };
+      blockContainment(building, 'building', ring);
+    }
+    yield { stage: 'building-frontage', id: building.id };
     frontage(building, 'building', footprint);
     const path = building.accessPath,
       road = roads.get(building.frontageRoadId),
@@ -345,6 +367,7 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
       );
     if (riPoints(footprint))
       for (const id of context.roadIds) {
+        yield { stage: 'building-road-clearance', id: building.id };
         spend();
         const r = roads.get(id),
           p = nodes.get(r?.a),
@@ -393,6 +416,13 @@ export function inspectRoadDependencies(city, snapshot, context, emit, spend) {
     }
   }
   return { openSpaceAreas: openMetrics };
+}
+
+export function inspectRoadDependencies(...args) {
+  const iterator = iterateRoadDependencies(...args);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
 }
 
 export function inspectRoadContextReferences(city, snapshot, context, emit, spend) {

@@ -1,4 +1,4 @@
-import { buildRoadGraph } from './road-graph.js';
+import { iterateRoadGraph } from './road-graph.js';
 import { polygonSignedArea, pointInPolygon, boundsOf } from './geometry.js';
 import { insideOrOn, distanceToSegment, segmentCuts, lerpPoint } from './boundary.js';
 import { waterFaceInterior, waterSetContains, waterFaceFeatureIds } from './water-geometry.js';
@@ -69,7 +69,7 @@ const rfObjects = (city) => [
 
 // Canonical editing traversal is separate from generator insertion order. Every
 // half-edge must close exactly once; repeated vertices are explicit diagnostics.
-function rfWalk(graph, spend) {
+function* rfWalk(graph, spend) {
   const next = new Map(),
     roads = new Map();
   // Leaf-chain roads occupy real corridors but do not define closed faces.
@@ -98,6 +98,7 @@ function rfWalk(graph, spend) {
     walks = [];
   for (const key of [...next.keys()].sort(rfCompare)) {
     if (visited.has(key)) continue;
+    yield { stage: 'road-face-walk' };
     const start = JSON.parse(key),
       vertices = [],
       roadIds = [];
@@ -133,7 +134,7 @@ function rfWalk(graph, spend) {
   return walks;
 }
 
-export function extractRoadFaces(graph, protectedGeometry) {
+export function* iterateRoadFaces(graph, protectedGeometry) {
   const issues = [],
     faces = [],
     spend = rfBudget();
@@ -156,7 +157,7 @@ export function extractRoadFaces(graph, protectedGeometry) {
   if (issues.length)
     return rfFreeze({ valid: false, issues: rfIssues(issues), faces, exterior, coverage, graph });
   try {
-    const walks = rfWalk(graph, spend),
+    const walks = yield* rfWalk(graph, spend),
       outside = walks.filter((f) => f.area < -1e-6),
       bounded = walks.filter((f) => f.area > 1e-6);
     if (outside.length !== 1 || walks.length !== bounded.length + 1)
@@ -191,6 +192,7 @@ export function extractRoadFaces(graph, protectedGeometry) {
       return insideOrOn(p, boundary);
     };
     for (const road of graph.roadsById.values()) {
+      yield { stage: 'road-outline-validation', id: road.id };
       const a = graph.nodesById.get(road.a),
         b = graph.nodesById.get(road.b),
         cuts = [0, 1];
@@ -225,6 +227,7 @@ export function extractRoadFaces(graph, protectedGeometry) {
       terrain = protectedGeometry.terrainFeatures ?? [];
     let plazaCount = 0;
     for (const face of bounded) {
+      yield { stage: 'bounded-face-validation' };
       const interior = waterFaceInterior(face.vertices, graph.nodesById),
         wet = waterSetContains(interior, waters),
         mountain = waterSetContains(interior, terrain);
@@ -345,7 +348,14 @@ function rfProtectedIssues(city, candidate, accepted) {
   return issues;
 }
 
-export function matchExistingFaces(oldCity, extraction) {
+export function extractRoadFaces(graph, protectedGeometry) {
+  const iterator = iterateRoadFaces(graph, protectedGeometry);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
+}
+
+export function* iterateRoadFaceIdentity(oldCity, extraction) {
   const result = {
     valid: false,
     preserved: [],
@@ -369,8 +379,9 @@ export function matchExistingFaces(oldCity, extraction) {
     );
     return rfFreeze(result);
   }
-  const accepted = buildRoadGraph(oldCity),
-    baseline = extractRoadFaces(accepted, oldCity);
+  yield { stage: 'accepted-face-graph' };
+  const accepted = yield* iterateRoadGraph(oldCity);
+  const baseline = yield* iterateRoadFaces(accepted, oldCity);
   if (!baseline.valid) {
     result.issues.push(rfIssue('invalid-accepted-faces', 'The accepted road/face network is not valid.'));
     return rfFreeze(result);
@@ -440,6 +451,7 @@ export function matchExistingFaces(oldCity, extraction) {
         );
     }
     for (const a of old) {
+      yield { stage: 'road-face-identity', id: a.record.id };
       const b = newByKey.get(a.key);
       if (
         !b ||
@@ -472,6 +484,7 @@ export function matchExistingFaces(oldCity, extraction) {
       areas = new Map();
     const boxes = remainingNew.map((f) => boundsOf(f.polygon));
     for (let i = 0; i < remainingOld.length; i++) {
+      yield { stage: 'road-face-overlap', id: remainingOld[i].record.id };
       const a = remainingOld[i],
         bounds = boundsOf(a.polygon);
       links.set(i, []);
@@ -617,4 +630,11 @@ export function matchExistingFaces(oldCity, extraction) {
   }
   rfIssues(result.issues);
   return rfFreeze(result);
+}
+
+export function matchExistingFaces(oldCity, extraction) {
+  const iterator = iterateRoadFaceIdentity(oldCity, extraction);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
 }

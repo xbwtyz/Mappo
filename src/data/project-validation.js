@@ -107,7 +107,7 @@ export function createValidationBudget() {
     if (remaining < 0) throw new Error('This project is too complex for this build to validate safely.');
   };
 }
-export function validateJsonTree(value) {
+export function* iterateJsonTreeValidation(value) {
   const pending = [{
     value,
     depth: 0
@@ -116,6 +116,7 @@ export function validateJsonTree(value) {
   while (pending.length) {
     const item = pending.pop();
     if (++count > 1200000 || item.depth > 64) throw new Error('Project data is too deeply nested or too large.');
+    if (count % 1024 === 0) yield { stage: 'project-json-data' };
     const v = item.value;
     if (v === null || typeof v === 'string' || typeof v === 'boolean') continue;
     if (typeof v === 'number') {
@@ -130,6 +131,12 @@ export function validateJsonTree(value) {
         depth: item.depth + 1
       });
     }
+  }
+}
+export function validateJsonTree(value) {
+  const iterator = iterateJsonTreeValidation(value);
+  while (!iterator.next().done) {
+    // Existing persistence callers run authoritative validation synchronously.
   }
 }
 export function validatePolygon(points, path, spend) {
@@ -210,13 +217,14 @@ function references(value, map, path, allowEmpty = false) {
   return value.map(id => reference(map, id, path));
 }
 
-function validateRoadGraph(city, boundary, nodes, spend) {
+function* iterateStoredRoadGraph(city, boundary, nodes, spend) {
   const boxes = boundsOf(boundary),
     cell = Math.max(1, Math.max(boxes.maxX - boxes.minX, boxes.maxY - boxes.minY) / 48);
   const bins = new Map(),
     pairs = new Set(),
     edges = new Set();
   for (const road of city.roads) {
+    yield { stage: 'stored-road-edge', id: road.id };
     const a = reference(nodes, road.a, 'Road endpoint'),
       b = reference(nodes, road.b, 'Road endpoint');
     if (road.a === road.b || Math.hypot(a.x - b.x, a.y - b.y) < 1e-7) throw new Error('Road has zero length.');
@@ -268,7 +276,7 @@ function validateRoadGraph(city, boundary, nodes, spend) {
   return edges;
 }
 
-export function validateStoredProject(project) {
+export function* iterateStoredProjectValidation(project) {
   const spend = createValidationBudget();
   requireRecord(project, 'Project');
   if (project.schemaVersion !== PROJECT_SCHEMA_VERSION) throw new Error('Unsupported project schema. Open this file in a newer Mappo build.');
@@ -294,7 +302,8 @@ export function validateStoredProject(project) {
     requirePoint(n, 'Road junction');
     if (!insideOrOn(n, boundary)) throw new Error('Road junction is outside the city boundary.');
   }
-  const edgeKeys = validateRoadGraph(city, boundary, maps.nodes, spend);
+  yield { stage: 'project-road-validation' };
+  const edgeKeys = yield* iterateStoredRoadGraph(city, boundary, maps.nodes, spend);
   const roadByEdge = new Map(city.roads.map(r => [
     [r.a, r.b].sort().join(':'), r
   ]));
@@ -306,6 +315,7 @@ export function validateStoredProject(project) {
   if (maps.blocks.has(plaza.id)) throw new Error('The main square and a block share an ID.');
   requireText(plaza.name, 'Main square name', 200);
   for (const face of [...city.blocks, plaza, ...city.waterFaces, ...(city.terrainFaces ?? [])]) {
+    yield { stage: 'project-face-validation', id: face.id };
     const points = references(face.vertices, maps.nodes, 'Face vertices').map(p => ({
       x: p.x,
       y: p.y
@@ -324,6 +334,7 @@ export function validateStoredProject(project) {
     if (!Number.isFinite(face.area) || Math.abs(face.area - area) > .02) throw new Error('A block or square has an incorrect area.');
     facePolygons.set(face.id, points);
   }
+  yield { stage: 'project-layout' };
   validateLayout(city, boundary);
   const terminal = terminalCorridors(city);
   const terminalIds = new Set(terminal.map(row => row.id));
@@ -343,6 +354,7 @@ export function validateStoredProject(project) {
     usedCompoundIds = new Set(),
     usedCompoundMembers = new Set();
   for (const property of city.properties) {
+    yield { stage: 'project-parcel-validation', id: property.id };
     reference(maps.blocks, property.blockId, 'Property block');
     reference(maps.roads, property.frontageRoadId, 'Property frontage');
     if (terminalIds.has(property.frontageRoadId))
@@ -472,11 +484,21 @@ export function validateStoredProject(project) {
     reference(maps.blocks, open.blockId, 'Open-space block');
     if (!Number.isFinite(open.area) || open.area < 0) throw new Error('Open-space area is invalid.');
   }
-  validateDistricts(city);
-  validateWaterCity(city);
-  validateTerrainCity(city);
-  validateFortifications(city);
+  for (const [stage, validate] of [
+    ['project-districts', validateDistricts], ['project-water', validateWaterCity],
+    ['project-terrain', validateTerrainCity], ['project-fortifications', validateFortifications],
+  ]) {
+    yield { stage };
+    validate(city);
+  }
   return project;
+}
+
+export function validateStoredProject(project) {
+  const iterator = iterateStoredProjectValidation(project);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
 }
 
 export function validateWorkspace(workspace, project) {

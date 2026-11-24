@@ -1,6 +1,8 @@
 import { editableRoadPath, ROAD_BEND_LIMIT } from '../core/road-shape.js';
 import { prepareRoadTopologyReflowC3 } from '../core/road-topology-reflow.js';
 import { prepareNeighborhoodReflowC3, prepareRoadGroupReflowB1, iterateRoadGroupReflowB1 } from '../core/neighborhood-reflow.js';
+import { iterateLareDemolitionSession, iterateLareDemolition, cancelLareDemolition,
+  authorizeLareDemolition } from '../core/reconciliation-demolition.js';
 import { resolveRoadGroupB1 } from '../core/road-group-b1.js';
 import { buildRoadGraph, proposeJunctionMove } from '../core/road-graph.js';
 import { analyzeRoadImpact } from '../core/road-impact.js';
@@ -9,6 +11,26 @@ import { prepareRoadIntentC1 } from '../core/road-intent-c1.js';
 import { distanceToSegment } from '../core/boundary.js';
 import { findEligibleJunctionTarget } from '../core/junction-targeting.js';
 import { makeSelectionSetA1, selectionSingletonA1, selectionTransitionA1, sameSelectionRefA1 } from '../core/workspace-state.js';
+
+// Leave headroom for the last kernel in each 8 ms scheduled slice.
+export const LARE_SLICE_WINDOW_MS = 4;
+let lareSliceChannel;
+const lareSliceQueue = [];
+
+export function scheduleLareSlice(callback) {
+  if (typeof MessageChannel !== 'function') {
+    const timer = setTimeout(callback, 0);
+    return () => clearTimeout(timer);
+  }
+  if (!lareSliceChannel) {
+    lareSliceChannel = new MessageChannel();
+    lareSliceChannel.port1.onmessage = () => lareSliceQueue.shift()?.run?.();
+  }
+  const task = { run: callback };
+  lareSliceQueue.push(task);
+  lareSliceChannel.port2.postMessage(null);
+  return () => { task.run = null; };
+}
 
 // No commit, history or serialization interface. Revisions invalidate every
 // deferred callback, including callbacks already queued when cancellation occurs.
@@ -19,6 +41,7 @@ export class RoadPreviewSession {
     changed = () => {},
     schedule = (fn, ms) => setTimeout(fn, ms),
     unschedule = (id) => clearTimeout(id),
+    scheduleSlice = null,
     analyze = analyzeRoadImpact,
     reconcile = null,
     reconcileRoad = null,
@@ -28,6 +51,10 @@ export class RoadPreviewSession {
   }) {
     Object.assign(this, { getProject, changed, schedule, unschedule, analyze, reconcile, reconcileRoad, computeJunctionAsync });
     this.getAcceptedRevision = getAcceptedRevision;
+    this.scheduleSlice = scheduleSlice ?? (callback => {
+      const id = schedule(callback, 0);
+      return () => unschedule(id);
+    });
     this.selectionAuthority = selectionAuthority;
     this.captureDraftValidation = captureDraftValidation;
     this.localSelectionA1 = makeSelectionSetA1();
@@ -94,6 +121,9 @@ export class RoadPreviewSession {
   }
   invalidate() {
     this.revision++;
+    this.clearLareDemolition();
+    this.cancelLareSlice?.();
+    this.cancelLareSlice = null;
     this.recoveryFocusD3 = null;
     this.workerPreviewGeometry = null;
     if (this.timer !== undefined) this.unschedule(this.timer);
@@ -345,6 +375,125 @@ export class RoadPreviewSession {
     else this.evaluateRoadDraft(true);
     return true;
   }
+  offerLareDemolition(group, acceptedRevision) {
+    if (this.reconciliation?.lare?.lastRejectedCandidate?.type === 'scope-conflict') return;
+    if (!this.reconciliation?.unresolved?.some(issue =>
+      ['lare-work-limit', 'lare-search-exhausted'].includes(issue.code))) return;
+    const project = this.project, draftRevision = this.revision;
+    const intent = { selectedRoadIds: group.selectedRoadIds, offset: this.roadIntentOffset,
+      parcelChoices: this.parcelChoices, revision: acceptedRevision };
+    const iterator = iterateLareDemolitionSession(project, intent, this.reconciliation);
+    this.lareOfferIterator = iterator;
+    const slice = () => {
+      this.cancelLareOffer = null;
+      if (!this.current() || this.revision !== draftRevision || this.getAcceptedRevision() !== acceptedRevision ||
+          this.lareOfferIterator !== iterator) {
+        iterator.return();
+        return;
+      }
+      try {
+        const start = performance.now();
+        let step;
+        do { step = iterator.next(); }
+        while (!step.done && performance.now() - start < LARE_SLICE_WINDOW_MS);
+        if (!step.done) {
+          this.cancelLareOffer = this.scheduleSlice(slice);
+          return;
+        }
+        this.lareOfferIterator = null;
+        this.demolition = { offer: step.value, candidate: null, authorization: null, progress: '', started: false,
+          running: false, deeper: false, complete: false };
+        this.changed();
+      } catch {
+        // A refusal with no eligible generated building remains a preservation review.
+        this.lareOfferIterator = null;
+      }
+    };
+    this.cancelLareOffer = this.scheduleSlice(slice);
+  }
+  clearLareDemolition() {
+    this.cancelLareOffer?.();
+    this.cancelLareOffer = null;
+    this.lareOfferIterator?.return();
+    this.lareOfferIterator = null;
+    if (!this.demolition) return false;
+    cancelLareDemolition(this.demolition.offer);
+    this.demolition.iterator?.return();
+    this.demolition.cancelSlice?.();
+    this.demolition = null;
+    return true;
+  }
+  stopLareDemolition() {
+    if (this.clearLareDemolition()) this.changed();
+  }
+  searchLareDemolition(deeper = false) {
+    const state = this.demolition, acceptedRevision = this.getAcceptedRevision(), draftRevision = this.revision;
+    if (!state || state.running || !this.current() || this.checking || this.drag ||
+        this.settledRevision !== this.revision || (deeper ? !state.complete || state.deeper : state.started)) return false;
+    state.started = true;
+    state.deeper = deeper;
+    state.running = true;
+    state.authorization = null;
+    state.progress = 'Preparing demolition options…';
+    const iterator = iterateLareDemolition(state.offer, { deeper });
+    state.iterator = iterator;
+    const current = () => this.current() && this.demolition === state && this.revision === draftRevision &&
+      this.getAcceptedRevision() === acceptedRevision;
+    const slice = () => {
+      state.cancelSlice = null;
+      if (!current()) {
+        if (this.demolition === state && this.clearLareDemolition()) this.changed();
+        return;
+      }
+      try {
+        const start = performance.now();
+        let step, nextProgress = state.progress;
+        do {
+          step = iterator.next();
+          if (step.value?.stage === 'demolition-subset') nextProgress = 'Checking removal set ' + step.value.tried + '…';
+        } while (!step.done && performance.now() - start < LARE_SLICE_WINDOW_MS);
+        if (step.done) {
+          state.running = false;
+          state.complete = true;
+          state.iterator = null;
+          state.candidate = step.value?.candidate ?? null;
+          state.progress = state.candidate ? 'Review the removal set before authorizing Apply.'
+            : 'The bounded search found no valid demolition option.';
+          state.deeperAvailable = !deeper && !state.candidate && state.offer.eligibleIds.length > 8 &&
+            step.value?.stats.remainingWork > 0 && step.value?.stats.remainingExpansions > 0;
+          this.changed();
+        } else {
+          if (nextProgress !== state.progress) {
+            state.progress = nextProgress;
+            this.changed();
+          }
+          state.cancelSlice = this.scheduleSlice(slice);
+        }
+      } catch (error) {
+        state.running = false;
+        state.complete = true;
+        state.iterator = null;
+        state.progress = error.message;
+        this.changed();
+      }
+    };
+    state.cancelSlice = this.scheduleSlice(slice);
+    this.changed();
+    return true;
+  }
+  confirmLareDemolition() {
+    const state = this.demolition;
+    if (!state?.candidate || state.running || !this.current() || this.settledRevision !== this.revision) return false;
+    try {
+      state.authorization = authorizeLareDemolition(state.offer, state.candidate, this.project, this.getAcceptedRevision());
+      this.changed();
+      return true;
+    } catch (error) {
+      state.progress = error.message;
+      this.changed();
+      return false;
+    }
+  }
   evaluateLareGroupSlices(group,revision){
     const project=this.project,fingerprint=JSON.stringify(project),draftIsCurrent=this.captureDraftValidation();
     const acceptedRevision=this.getAcceptedRevision();
@@ -355,25 +504,26 @@ export class RoadPreviewSession {
       this.getAcceptedRevision()===acceptedRevision&&this.lareIteratorB1R===iterator;
     const settle=()=>{
       if(!current())return;
-      this.lareIteratorB1R=null;this.timer=undefined;this.checking=false;this.changed();
+      this.lareIteratorB1R=null;this.cancelLareSlice=null;this.checking=false;this.changed();
     };
     const slice=()=>{
       if(!current())return;
-      this.timer=undefined;
+      this.cancelLareSlice=null;
       try{
         const now=()=>typeof performance!=='undefined'?performance.now():Date.now();
         const start=now();let step,count=0;
-        do{step=iterator.next();count++;}while(!step.done&&count<32&&now()-start<8);
+        do{step=iterator.next();count++;}while(!step.done&&count<256&&now()-start<LARE_SLICE_WINDOW_MS);
         if(!current())return;
         if(step.done){
           if(fingerprint!==JSON.stringify(project)){
             this.error='Accepted project changed during adaptive preview. Start a new draft.';
           }else{
             this.reconciliation=step.value;this.settledRevision=revision;this.acceptedFingerprint=fingerprint;
+            this.offerLareDemolition(group, acceptedRevision);
           }
           settle();return;
         }
-        this.timer=this.schedule(slice,0);
+        this.cancelLareSlice=this.scheduleSlice(slice);
       }catch(error){
         if(!current())return;
         iterator.return();

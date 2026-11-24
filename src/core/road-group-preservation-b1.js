@@ -26,7 +26,7 @@ function b1GeometryPreserved(before,after) {
       b1Without(after.regions[i],['ring'])));
 }
 
-export function verifyRoadGroupPreservationB1(before,after,draft,removedIds = new Set()) {
+export function* iterateRoadGroupPreservationB1(before,after,draft,removedIds = new Set()) {
   const id=draft?.selectedRoadIds?.[0]??'group';
   const fail=(code,message,target=id)=>b1Mismatch(code,message,target);
   if(before?.schemaVersion!==10 || after?.schemaVersion!==10 ||
@@ -37,12 +37,27 @@ export function verifyRoadGroupPreservationB1(before,after,draft,removedIds = ne
   const old=before.city,next=after.city;
   const collections=Object.keys(b1Mutable);
   const archive='roadParcelDecisionHistory028';
-  if(!riEqual(b1Without(old,[...collections,archive]),b1Without(next,[...collections,archive])))
-    return fail('group-protected-context','The road group would change roads, protected infrastructure or unrelated city records.');
+  const protectedFields = [...new Set([...Object.keys(old), ...Object.keys(next)])]
+    .filter(key => key !== archive && !collections.includes(key));
+  for (const key of protectedFields) {
+    yield { stage: 'protected-city-context', id: key };
+    const prior = old[key], current = next[key];
+    if (Array.isArray(prior) && Array.isArray(current) && prior.length === current.length &&
+        Object.keys(prior).length === prior.length && Object.keys(current).length === current.length) {
+      for (let i = 0; i < prior.length; i++) {
+        if (i % 16 === 0) yield { stage: 'protected-city-records', id: key };
+        if (!riEqual(prior[i], current[i]))
+          return fail('group-protected-context','The road group would change roads, protected infrastructure or unrelated city records.');
+      }
+    } else if (!Object.hasOwn(old, key) || !Object.hasOwn(next, key) || !riEqual(prior, current)) {
+      return fail('group-protected-context','The road group would change roads, protected infrastructure or unrelated city records.');
+    }
+  }
   const moved=new Map(draft.proposedNodes.map(node=>[node.id,node]));
   const affectedBlocks=new Set(old.blocks.filter(block=>block.vertices.some(v=>moved.has(v))).map(block=>block.id));
   const oldPlots=riIndex(old.plots);
   for(const key of collections) {
+    yield { stage: 'preservation-inventory', id: key };
     const expectedCount = old[key]?.length - (key === 'buildings' ? removedIds.size : 0);
     if(!Array.isArray(old[key]) || !Array.isArray(next[key]) || expectedCount!==next[key].length)
       return fail('group-identity-change','This movement would create or retire '+key+' records.');
@@ -50,6 +65,7 @@ export function verifyRoadGroupPreservationB1(before,after,draft,removedIds = ne
     if(indexed.size!==expectedCount)
       return fail('group-identity-change','This movement would duplicate '+key+' IDs.');
     for(const a of old[key]) {
+      yield { stage: 'preservation-record', id: a.id };
       const b=indexed.get(a.id);
       if (key === 'buildings' && removedIds.has(a.id)) {
         if (b || !affectedBlocks.has(a.blockId))
@@ -95,4 +111,11 @@ export function verifyRoadGroupPreservationB1(before,after,draft,removedIds = ne
     !previous.every((entry,i)=>riEqual(entry,updated[i])))
     return fail('group-archive-change','The original authored parcel archive would be changed.');
   return null;
+}
+
+export function verifyRoadGroupPreservationB1(...args) {
+  const iterator = iterateRoadGroupPreservationB1(...args);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
 }

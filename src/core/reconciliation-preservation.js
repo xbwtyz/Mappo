@@ -1,3 +1,4 @@
+import { finishLareSteps } from './reconciliation-steps.js';
 import { LARE_CONSTRAINTS } from './reconciliation-constraints.js';
 import { riEqual,riIndex } from './road-impact-model.js';
 import { createLareContext } from './reconciliation-context.js';
@@ -11,8 +12,9 @@ const lareGateParcelFields=['boundary','frontage','frame','local','area','roadPr
 // Recompute all permission and preservation checks independently of search
 // scores, ledger, or claimed dispositions. Both the incumbent and every new
 // arrangement must pass this gate before full project validation.
-export function verifyLareGroupPreservation(before,after,draft,choices,budget,removedIds = new Set()){
-  const violation=LARE_CONSTRAINTS.identity.check(before,after,draft,removedIds);
+export function* iterateLareGroupPreservation(before,after,draft,choices,budget,removedIds = new Set()){
+  yield { stage: 'identity-preservation' };
+  const violation=yield* LARE_CONSTRAINTS.identity.iterate(before,after,draft,removedIds);
   if(violation)return violation;
   const group=draft.selectedRoadIds?.[0]??'group';
   try{
@@ -37,6 +39,7 @@ export function verifyLareGroupPreservation(before,after,draft,choices,budget,re
     for(const id of appended.keys())if(!contextIds.has(id))
       return lareGateFail('property',id,'lare-archive','Archive entry is outside the affected neighborhood.');
     for(const entry of context.properties){
+      yield { stage: 'parcel-preservation', id: entry.id };
       const a=aProps.get(entry.id),b=bProps.get(entry.id);
       const ap=entry.plotIds.map(id=>aPlots.get(id)),bp=entry.plotIds.map(id=>bPlots.get(id));
       budget.spend(Math.max(1,ap.length+entry.buildings.length));
@@ -65,6 +68,7 @@ export function verifyLareGroupPreservation(before,after,draft,choices,budget,re
           if(occupants.length){courtyardMembers.add(id);for(const o of occupants)courtyardMembers.add(o.buildingId);}
         }
       for(const policy of entry.buildings){
+        yield { stage: 'building-preservation', id: policy.id };
         if (removedIds.has(policy.id)) continue;
         const original=aBuildings.get(policy.id),candidate=bBuildings.get(policy.id);
         budget.spend();
@@ -90,4 +94,8 @@ export function verifyLareGroupPreservation(before,after,draft,choices,budget,re
     if(error instanceof LareBudgetExceeded)throw error;
     return lareGateFail('road',group,'lare-preservation-unproven',error.message);
   }
+}
+
+export function verifyLareGroupPreservation(...args) {
+  return finishLareSteps(iterateLareGroupPreservation(...args));
 }

@@ -1,5 +1,5 @@
-import { buildRoadGraph } from './road-graph.js';
-import { extractRoadFaces, matchExistingFaces } from './road-faces.js';
+import { buildRoadGraph, iterateRoadGraph } from './road-graph.js';
+import { iterateRoadFaces, iterateRoadFaceIdentity } from './road-faces.js';
 import { insideOrOn } from './boundary.js';
 import { proposeRoadGroupNodesB1 } from './road-group-b1.js';
 
@@ -45,8 +45,16 @@ export function prepareRoadIntentC1(project,roadId,offset){
 }
 // The same detached graph/face intent used by the singleton editor, with a
 // canonical group membership and no implied acceptance or topology rewrite.
-export function prepareRoadGroupIntentB1(project,selectedRoadIds,offset) {
-  const graph=buildRoadGraph(project?.city);
+export function prepareRoadGroupIntentB1(project, selectedRoadIds, offset) {
+  const iterator = iterateRoadGroupIntentB1(project, selectedRoadIds, offset);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
+}
+
+export function* iterateRoadGroupIntentB1(project,selectedRoadIds,offset,captureTopology) {
+  yield { stage: 'accepted-road-graph' };
+  const graph=yield* iterateRoadGraph(project?.city);
   const proposal=proposeRoadGroupNodesB1(graph,selectedRoadIds,offset);
   if(!proposal.draftable) {
     const issue=proposal.issues[0];
@@ -54,9 +62,9 @@ export function prepareRoadGroupIntentB1(project,selectedRoadIds,offset) {
       operation:'draft-road-group-translation',group:proposal.group,
       selectedRoadIds:proposal.group.selectedRoadIds,issues:proposal.issues});
   }
-  return finishRoadIntent(project,graph,proposal.proposedNodes,
+  return yield* iterateRoadIntent(project,graph,proposal.proposedNodes,
     'draft-road-group-translation',{group:proposal.group,
-      selectedRoadIds:proposal.group.selectedRoadIds,offset:proposal.offset});
+      selectedRoadIds:proposal.group.selectedRoadIds,offset:proposal.offset},captureTopology);
 }
 
 export function prepareJunctionIntentC7(project,junctionId,point) {
@@ -66,16 +74,37 @@ export function prepareJunctionIntentC7(project,junctionId,point) {
   return finishRoadIntent(project,accepted,[{id:junctionId,x:point?.x,y:point?.y}],
     'draft-junction-move',{junctionId});
 }
-function finishRoadIntent(project,accepted,proposedNodes,operation,selection) {
+function finishRoadIntent(...args) {
+  const iterator = iterateRoadIntent(...args);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
+}
+
+function* iterateRoadIntent(project,accepted,proposedNodes,operation,selection,captureTopology) {
   const changedRoadIds=[...new Set(proposedNodes.flatMap(({id})=>accepted.incidentRoads.get(id)??[]))].sort();
   if(changedRoadIds.some(id=>accepted.roadClasses.get(id)?.protected))
     return c1IntentRefused('protected-connection','This junction touches protected infrastructure. Edit that feature separately.');
   if(proposedNodes.some(p=>!c1IntentFinite(p)))
     return c1IntentRefused('coordinate-limit','The requested road coordinates exceed supported world bounds.');
   const next=new Map(proposedNodes.map(p=>[p.id,p]));
-  const proposedCity=c1IntentCopy(project.city);
-  proposedCity.nodes=proposedCity.nodes.map(node=>next.has(node.id)
-    ? {...node,x:next.get(node.id).x,y:next.get(node.id).y}:node);
+  yield { stage: 'road-intent-materialization' };
+  const entries = [];
+  for (const [key, value] of Object.entries(project.city)) {
+    if (!Array.isArray(value)) {
+      entries.push([key, c1IntentFreeze(c1IntentCopy(value))]);
+      continue;
+    }
+    const records = [];
+    for (let i = 0; i < value.length; i++) {
+      if (i % 32 === 0) yield { stage: 'road-intent-records' };
+      const record = c1IntentCopy(value[i]);
+      const moved = key === 'nodes' ? next.get(record.id) : null;
+      records.push(c1IntentFreeze(moved ? { ...record, x: moved.x, y: moved.y } : record));
+    }
+    entries.push([key, Object.freeze(records)]);
+  }
+  const proposedCity = Object.fromEntries(entries);
   const issues=[];
   const changed=proposedNodes.some(({id,x,y})=>{
     const old=accepted.nodesById.get(id);
@@ -88,14 +117,19 @@ function finishRoadIntent(project,accepted,proposedNodes,operation,selection) {
       !insideOrOn(node,project.city.survey.boundary)))
       issues.push({code:'boundary-escape',message:'The intended street extends beyond the protected city outline.'});
     try{
-      const graph=buildRoadGraph(proposedCity);
-      if(!graph.valid)issues.push(...graph.issues.map(issue=>({code:issue.code,message:issue.message})));
+      yield { stage: 'road-intent-graph' };
+      const graph=yield* iterateRoadGraph(proposedCity);
+      if(!graph.valid)issues.push(...graph.issues.map(issue=>({code:issue.code,message:issue.message,
+        roadIds:issue.roadIds??[],nodeIds:issue.nodeIds??[]})));
       else{
         topologyResolved=true;
-        const faces=extractRoadFaces(graph,project.city);
+        yield { stage: 'road-intent-faces' };
+        const faces=yield* iterateRoadFaces(graph,project.city);
         if(!faces.valid)issues.push(...faces.issues.map(issue=>({code:issue.code,message:issue.message})));
         else{
-          const identity=matchExistingFaces(project.city,faces);
+          yield { stage: 'road-intent-face-identity' };
+          const identity=yield* iterateRoadFaceIdentity(project.city,faces);
+          captureTopology?.({ graph, faces, identity });
           facesResolved=identity.valid && !identity.requiresReview;
           if(!facesResolved)issues.push({code:'face-reflow-needed',
             message:'These street positions require block identity and ownership reconciliation.'});

@@ -1,15 +1,15 @@
 import { verifyLareRigidGeometry } from './reconciliation-buildings.js';
 import { verifyLarePlotDeformation } from './reconciliation-plots.js';
-import { verifyRoadGroupPreservationB1 } from './road-group-preservation-b1.js';
-import { inspectRoadDependencies, inspectRoadContextReferences } from './road-impact-dependencies.js';
-import { validateStoredProject } from '../data/project-validation.js';
+import { iterateRoadGroupPreservationB1 } from './road-group-preservation-b1.js';
+import { iterateRoadDependencies, inspectRoadContextReferences } from './road-impact-dependencies.js';
+import { iterateStoredProjectValidation } from '../data/project-validation.js';
 
 // Shared descriptions for the finalization pipeline and future diagnostics.
 // Each check keeps the signature and acceptance semantics of its validator.
 export const LARE_CONSTRAINTS = Object.freeze({
   identity: Object.freeze({
     kinds: Object.freeze(['ownership', 'protection', 'connectivity']),
-    check: verifyRoadGroupPreservationB1,
+    iterate: iterateRoadGroupPreservationB1,
   }),
   plots: Object.freeze({
     kinds: Object.freeze(['containment', 'separation', 'ownership']),
@@ -21,7 +21,7 @@ export const LARE_CONSTRAINTS = Object.freeze({
   }),
   landDependencies: Object.freeze({
     kinds: Object.freeze(['containment', 'separation', 'attachment']),
-    check: inspectRoadDependencies,
+    iterate: iterateRoadDependencies,
   }),
   infrastructure: Object.freeze({
     kinds: Object.freeze(['connectivity', 'attachment', 'protection']),
@@ -29,6 +29,6 @@ export const LARE_CONSTRAINTS = Object.freeze({
   }),
   storedProject: Object.freeze({
     kinds: Object.freeze(['containment', 'separation', 'ownership', 'connectivity', 'attachment']),
-    check: validateStoredProject,
+    iterate: iterateStoredProjectValidation,
   }),
 });

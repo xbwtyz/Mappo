@@ -1,6 +1,7 @@
+import { lareStepResult } from './reconciliation-steps.js';
 import { LARE_LIMITS,LareBudgetExceeded } from './reconciliation-budget.js';
-import { generateLareParcelCandidates } from './reconciliation-parcels.js';
-import { generateLareBuildingCandidates } from './reconciliation-buildings.js';
+import { iterateLareParcelCandidates } from './reconciliation-parcels.js';
+import { iterateLareBuildingCandidates } from './reconciliation-buildings.js';
 import { buildingExteriorRingsS10 } from './building-geometry-adapter-s10.js';
 import { shapesOverlapInterior } from './building-validation.js';
 import { occupiedRegionsOverlapS10 } from './building-occupancy-s10.js';
@@ -39,11 +40,12 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
   let verifiedIncumbent=null;
   try{
     // Verify before candidate inventory can consume the shared work budget.
-    if(incumbent){budget.spend();verifiedIncumbent=finalize(incumbent,true);
+    if(incumbent){budget.spend();verifiedIncumbent = yield* lareStepResult(finalize(incumbent, true));
       if(verifiedIncumbent)compareLareScore(verifiedIncumbent.score,verifiedIncumbent.score);}
     for(const entry of entries.slice().sort((a,b)=>lareArrangeCompare(a.property.id,b.property.id))){
       const fixedRings=entry.buildings.filter(b=>b.permission.mode!=='rigid').flatMap(b=>buildingExteriorRingsS10(b.source));
-      parcelCandidates.set(entry.property.id,generateLareParcelCandidates({...entry,fixedRings,compactDeformation:enhanced},budget));
+      const candidates = yield* iterateLareParcelCandidates({ ...entry, fixedRings, compactDeformation: enhanced }, budget);
+      parcelCandidates.set(entry.property.id, candidates);
       yield {stage:'parcel-inventory',id:entry.property.id,stats:budget.snapshot()};
     }
   }catch(error){
@@ -68,7 +70,7 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
       byVariable.set(id, { entry, building });
     }
   }
-  const buildingInventory = (entry, building, parcel) => {
+  const buildingInventory = function* (entry, building, parcel) {
     // A parcel candidate and building descriptor belong to this arrangement
     // only. Retries and different fixed/rigid passes get separate inventories.
     if (!buildingCache.has(parcel)) buildingCache.set(parcel, new Map());
@@ -76,13 +78,14 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
     if (!inventory.has(building)) {
       const fixedBuildings = entry.buildings.filter(other => other.permission.mode !== 'rigid' &&
         other.source.id !== building.source.id).map(other => other.source);
-      inventory.set(building, generateLareBuildingCandidates({ source: building.source,
+      const candidates = yield* iterateLareBuildingCandidates({ source: building.source,
         permission: building.permission, oldProperty: entry.property, property: parcel.property,
-        plots: parcel.plots, fixedBuildings }, budget));
+        plots: parcel.plots, fixedBuildings }, budget);
+      inventory.set(building, candidates);
     }
     return inventory.get(building);
   };
-  const choices = (id, state) => {
+  const choices = function* (id, state) {
     const { entry, building } = byVariable.get(id);
     if (!building) return parcelCandidates.get(entry.property.id).map(candidate => ({
       key: String(candidate.order), value: candidate,
@@ -90,12 +93,12 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
     }));
     const parcel = lareArrangeIndex(state, 'property:' + entry.property.id);
     if (!parcel) throw Error('Building choice has no selected property.');
-    return buildingInventory(entry, building, parcel).map(candidate => ({
+    return (yield* buildingInventory(entry, building, parcel)).map(candidate => ({
       key: String(candidate.order), value: candidate,
       score: [candidate.moved, candidate.displacement, candidate.rotation, 0, 0, 0],
     }));
   };
-  const compatible=(id,choice,state)=>{
+  const compatible = function* (id, choice, state) {
     const {entry,building}=byVariable.get(id);
     if(!building){
       const assigned=state.assignments.filter(row=>row.variable.startsWith('property:')&&
@@ -108,6 +111,7 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
       for(const neighbor of sorted){
         if(neighbor.property.id===entry.property.id||neighbor.property.blockId!==entry.property.blockId||
           assignedIds.has(neighbor.property.id))continue;
+        yield { stage: 'parcel-compatibility', id: neighbor.property.id };
         if(!parcelCandidates.get(neighbor.property.id).some(c=>
           !lareArrangeOverlap(boundary,c.property.boundary,budget)&&
           assigned.every(r=>!lareArrangeOverlap(c.property.boundary,r.choice.value.property.boundary,budget))))return false;
@@ -115,7 +119,7 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
       const probe = enhanced ? largestRigid.get(entry) : null;
       if (probe) {
         budget.spend();
-        if (!buildingInventory(entry, probe, choice.value).length) return false;
+        if (!(yield* buildingInventory(entry, probe, choice.value)).length) return false;
       }
       return true;
     }
@@ -138,9 +142,9 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
     let row={assignments:[],score:[0,0,0,0,0,0],key:''},complete=true;
     for(const id of variables){
       let chosen=null;
-      for(const option of choices(id,row)){
+      for (const option of yield* choices(id, row)) {
         budget.expand();
-        if(compatible(id,option,row)){chosen=option;break;}
+        if (yield* compatible(id, option, row)) { chosen = option; break; }
         yield {stage:'greedy-alternative',id,stats:budget.snapshot()};
       }
       if(!chosen){complete=false;break;}
@@ -150,7 +154,7 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
     }
     if(complete){
       budget.spend();
-      const candidate=finalizeState(row);
+      const candidate = yield* lareStepResult(finalizeState(row));
       if(candidate&&(!verifiedIncumbent||compareLareScore(candidate.score,verifiedIncumbent.score)<0||
         (compareLareScore(candidate.score,verifiedIncumbent.score)===0&&candidate.key<verifiedIncumbent.key)))
         verifiedIncumbent=candidate;

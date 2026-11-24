@@ -1,12 +1,13 @@
+import { describeLareRefusal } from './reconciliation-diagnostics.js';
 import { createLareBudget,LareBudgetExceeded } from './reconciliation-budget.js';
 import { createLareContext, discoverLareParcelScope } from './reconciliation-context.js';
 import { iterateLareArrangement } from './reconciliation-arrangement.js';
-import { verifyLareGroupPreservation } from './reconciliation-preservation.js';
+import { iterateLareGroupPreservation } from './reconciliation-preservation.js';
 import { reconcileLareAccess } from './reconciliation-access.js';
 import { riEqual,riIndex,riReporter,riBudget } from './road-impact-model.js';
 import { LARE_CONSTRAINTS } from './reconciliation-constraints.js';
 import { stampRoadGenerated,classifyRoadProvenance } from './road-provenance.js';
-import { hydrateCityS10 } from './building-project-s10.js';
+import { cloneLareCity, hydrateLareCity } from './reconciliation-city.js';
 
 const lareGroupCodes=new Set(['frontage-geometry','block-containment','road-setback','frame-reference',
   'property-containment','access-connection','road-clearance']);
@@ -70,7 +71,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
   let incumbent=null;
   try{
     if(baseline?.candidateProject){
-      const violation=verifyLareGroupPreservation(project,baseline.candidateProject,draft,choices,budget);
+      const violation=yield* iterateLareGroupPreservation(project,baseline.candidateProject,draft,choices,budget);
       if(!violation){
         const score=lareGroupRank(project,baseline.candidateProject);
         incumbent={score,key:'baseline',result:baseline};
@@ -118,10 +119,11 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     const permissions=new Map(context.properties.flatMap(p=>p.buildings.map(b=>[b.id,b])));
     const parcelPermissions=new Map(context.properties.map(p=>[p.id,p.policy]));
     let lastIssue=null;
-    const finalize=(row,old)=>{
+    const finalize = function* (row, old) {
       if(old)return incumbent?.result?incumbent:null;
       try{
-        const next=hydrateCityS10(lareGroupClone(draft.proposedCity));
+        yield { stage: 'candidate-materialization' };
+        const next = yield* cloneLareCity(draft.proposedCity, lareGroupClone);
         next.blocks=next.blocks.map(b=>lareGroupClone(changedBlocks.get(b.id)??b));
         const parcels=new Map(row.parcels.map(p=>[p.property.id,p]));
         const plotUpdates=new Map(row.parcels.flatMap(p=>p.plots.map(q=>[q.id,q])));
@@ -129,7 +131,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
         next.properties=next.properties.map(p=>parcels.has(p.id)?lareGroupClone(parcels.get(p.id).property):p);
         next.plots=next.plots.map(p=>plotUpdates.has(p.id)?lareGroupClone(plotUpdates.get(p.id)):p);
         next.buildings=next.buildings.map(b=>buildingUpdates.has(b.id)?lareGroupClone(buildingUpdates.get(b.id)):b);
-        hydrateCityS10(next);
+        yield* hydrateLareCity(next);
         const nextPlots=riIndex(next.plots),nextProperties=riIndex(next.properties);
         for(const id of activeIds){
           const p=nextProperties.get(id),policy=parcelPermissions.get(id);
@@ -152,6 +154,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
           const b=next.buildings[i],original=buildingIndex.get(b.id),permission=permissions.get(b.id);
           if(!permission||(!activeIds.has(b.propertyId)&&!roadsChanged.has(b.frontageRoadId)))continue;
           if(permission.reason==='dependent-structure')return null;
+          yield { stage: 'building-access', id: b.id };
           const repaired=reconcileLareAccess(next,original,b,permission,budget);
           if(!repaired.ok){lastIssue=lareGroupIssue(group,repaired.code,'No authorized route to the existing frontage was found.','geometric-obstruction',[b.id]);return null;}
           const candidate=repaired.building;
@@ -166,17 +169,22 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
         for(const space of next.openSpaces)if(changedBlocks.has(space.blockId))
           space.area=Math.max(0,changedBlocks.get(space.blockId).area-(areaByBlock.get(space.blockId)??0));
         const candidateProject={...lareGroupClone({...project,city:null}),city:next};
-        const violation=verifyLareGroupPreservation(project,candidateProject,draft,choices,budget);
+        const violation=yield* iterateLareGroupPreservation(project,candidateProject,draft,choices,budget);
         if(violation){lastIssue=violation;return null;}
         const {emit,items}=riReporter(),impactSpend=riBudget(),spend=(n=1)=>{impactSpend(n);if(n>0)budget.spend(n);};
         const dependencyContext={roadIds:draft.changedRoadIds,junctionIds:draft.proposedNodes.map(n=>n.id),
           changedBlockIds:[...changedBlocks.keys()],acceptedValid:true};
-        LARE_CONSTRAINTS.landDependencies.check(next,next,dependencyContext,emit,spend);
+        yield* LARE_CONSTRAINTS.landDependencies.iterate(next,next,dependencyContext,emit,spend,city);
         LARE_CONSTRAINTS.infrastructure.check(city,next,dependencyContext,emit,spend);
         const remaining=items().filter(i=>i.severity!=='info'&&i.code!=='frontage-geometry'&&
           !(i.kind==='plot'&&i.code==='property-containment'));
-        if(remaining.length){lastIssue=remaining[0];return null;}
-        LARE_CONSTRAINTS.storedProject.check(candidateProject);
+        if (remaining.length) {
+          const issue = remaining[0];
+          const outOfScope = issue.kind === 'property' && spatial.role(issue.id) !== 'authorized';
+          lastIssue = describeLareRefusal(outOfScope ? { ...issue, type: 'scope-conflict' } : issue);
+          return null;
+        }
+        yield* LARE_CONSTRAINTS.storedProject.iterate(candidateProject);
         const {changed,ledger}=lareGroupLedger(project,candidateProject,draft,changedBlocks);
         const score=row.score.slice();score[5]+=accessChanges;
         return {score,key:row.key,result:{phase:'B1',status:'candidate-only',candidateProject,changed,ledger,unresolved:[],

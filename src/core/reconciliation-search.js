@@ -1,3 +1,4 @@
+import { lareStepResult } from './reconciliation-steps.js';
 import { LARE_LIMITS,LareBudgetExceeded } from './reconciliation-budget.js';
 
 // Hard constraints are not penalty scores. Rank valid alternatives by moved
@@ -29,13 +30,13 @@ function* lareSearchCore({variables,choices,compatible=()=>true,finalize},budget
     for(const variable of variables){
       const next=[],keys=new Set();
       for(const state of beam){
-        const alternatives=choices(variable,state);
+        const alternatives = yield* lareStepResult(choices(variable, state));
         if(!Array.isArray(alternatives))throw Error('Search alternatives must be an array.');
         for(const choice of alternatives){
           budget.expand();
           if(typeof choice.key!=='string'||!lareSearchValid(choice.score))throw Error('Invalid search alternative.');
           const key=state.key+JSON.stringify([variable,choice.key])+';';
-          if(!keys.has(key)&&compatible(variable,choice,state)){
+          if (!keys.has(key) && (yield* lareStepResult(compatible(variable, choice, state)))) {
             keys.add(key);
             const score=lareSearchAdd(state.score,choice.score);
             if(!best||compareLareScore(score,best.score)<=0){
@@ -51,7 +52,7 @@ function* lareSearchCore({variables,choices,compatible=()=>true,finalize},budget
       if(!beam.length)return report(best?'candidate':'search-exhausted');
     }
     for(const row of beam){
-      budget.spend();const verified=finalize(row,false);
+      budget.spend();const verified = yield* lareStepResult(finalize(row, false));
       if(verified){
         lareSearchVerified(verified);
         if(compareLareScore(verified.score,row.score)<0)throw Error('Final score violates the partial lower bound.');
@@ -68,7 +69,7 @@ function* lareSearchCore({variables,choices,compatible=()=>true,finalize},budget
 export function* iterateLareSearch(request,budget){
   let best=null;
   try{
-    if(request.incumbent){budget.spend();const row=request.finalize(request.incumbent,true);
+    if(request.incumbent){budget.spend();const row = yield* lareStepResult(request.finalize(request.incumbent, true));
       if(row)best=lareSearchVerified(row);}
   }catch(error){
     if(error instanceof LareBudgetExceeded)return {status:'work-limit',best:null,stage:0,complete:0,stats:budget.snapshot(),exhausted:error.resource};
