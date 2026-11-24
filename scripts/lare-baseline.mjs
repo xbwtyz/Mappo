@@ -6,7 +6,9 @@ import {resolve,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {performance} from 'node:perf_hooks';
 const BASELINE='e5f1cf83dcdcc75e52911aa717035955b40569d0';
-const [rootArg,outArg]=process.argv.slice(2);
+const [rootArg,outArg,firstArg='0',countArg='20']=process.argv.slice(2);
+const first=Number(firstArg),count=Number(countArg);
+if(!Number.isInteger(first)||!Number.isInteger(count)||first<0||count<1||first+count>20)throw Error('Invalid project range');
 if(!rootArg||!outArg)throw Error('Usage: node scripts/lare-baseline.mjs BASELINE_CHECKOUT OUTPUT_DIRECTORY');
 const root=resolve(rootArg),out=resolve(outArg);
 const git=(...args)=>execFileSync('git',['-C',root,...args],{encoding:'utf8'}).trim();
@@ -54,6 +56,8 @@ function selectGroups(project){
 }
 const rows=[],projects=[];
 for(const morphology of Object.keys(initialSeeds))for(let index=0;index<5;index++){
+  const ordinal=Object.keys(initialSeeds).indexOf(morphology)*5+index;
+  if(ordinal<first||ordinal>=first+count)continue;
   const options={seed:index===0?initialSeeds[morphology]:'lare-'+morphology+'-'+index,
     morphology,size:index===4?'medium':'small',irregularProperties:index%2===0};
   const project=createProject(options);validateStoredProject(project);
@@ -77,9 +81,9 @@ for(const morphology of Object.keys(initialSeeds))for(let index=0;index<5;index+
       changed:accepted?receipt.changed:[],previewMs});
   }
   await writeFile(join(out,'baseline.partial.json'),JSON.stringify({baseline:BASELINE,projects,rows},null,2)+'\n');
-  console.log(projectId+': '+rows.length+'/800');
+  console.log(projectId+': '+rows.length+'/'+(40*count));
 }
-if(rows.length!==800||projects.length!==20)throw Error('Incomplete baseline corpus');
+if(rows.length!==40*count||projects.length!==count)throw Error('Incomplete baseline corpus');
 const accepted=rows.filter(r=>r.accepted).length;
 await writeFile(join(out,'baseline.json'),JSON.stringify({baseline:BASELINE,node:process.version,projects,rows,
   summary:{attempted:rows.length,accepted,rejected:rows.length-accepted}},null,2)+'\n');
