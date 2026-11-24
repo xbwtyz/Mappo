@@ -85,3 +85,20 @@ Remaining production gates: retain B1 and separately review any loss of the 607 
 ## Research maintenance
 
 After each research round update the relevant report, append verified exact-SHA/run evidence, preserve per-case records independently of Actions retention, reconcile totals by stable case identity, and record negative results as well as improvements. Never silently rewrite prior observations or call a detached experiment a production acceptance pass.
+
+
+## Final combined preservation benchmark — completed round 5
+
+Exact commit 8fbdc1a05f408f5e76c9f17a981a3ba121069268; planned [45370972589](https://github.com/xbwtyz/Mappo/actions/runs/45370972589), organic [45370976555](https://github.com/xbwtyz/Mappo/actions/runs/45370976555), radial [45370980324](https://github.com/xbwtyz/Mappo/actions/runs/45370980324), linear [45370985737](https://github.com/xbwtyz/Mappo/actions/runs/45370985737). Each passed 60/60 Fast Checks. All 800 case identities and baseline outcomes exactly match the archived selective corpus. Combined configuration: selective containment/clearance, compact joint deformation, interleaved variables and shared-cache largest-rigid-building lookahead; 4M work, 16384 expansions, beam8, 24 retained candidates. No demolition, oracle pair hints, rigid-region fallback or validator exemption.
+
+| Morphology | B1 | Selective | Combined |
+|---|---:|---:|---:|
+| Planned | 121 | 164 | 167 |
+| Organic | 123 | 155 | 163 |
+| Radial | 100 | 144 | 149 |
+| Linear | 126 | 144 | 146 |
+| Total | 470 | 607 | 625 |
+
+155 new successes vs B1, zero B1 losses and zero reported invalid acceptances; 20 new successes and two losses vs selective, 605 shared successes (score better/tied/worse 13/579/13). Both losses are work-limit refusals at (0,-2): radial-1 RD-0124/RD-0125/RD-0238 and radial-4 RD-0159/RD-0160/RD-0374. Preservation-only empirical union 627/800 (78.375%); earlier round 1 witness is among combined gains. This is not a single configuration or guaranteed staged result. Combined refusals: 115 search-exhausted, 33 work-limit, 27 topology; selective 159/7/27. Per vector, selective to combined: (0.05,0) 100→100; (0,0.05) 95→95; (0.5,-0.5) 100→100; (-0.5,0.5) 95→95; (2,0) 89→90; (0,-2) 87→88; (4,3) 39→52; (-8,-5) 2→5. All four smallest-vector non-topology edits retained (390/400). Combined experimental union including demolition witnesses remains 768/800 (96%); five non-topological cases without any witness (four empty inventories, one newly introduced out-of-scope setback) and 27 topology refusals. Distinguish empirical preservation union from production acceptance.
+
+Hosted timing, not controlled browser latency: median preview 226.03→236.06 ms, p95 preview 1059.36→1840.48 ms, accepted Apply p95 1193.36→1990.08 ms, max iterator-step p95 310.32→270.34 ms, worst step 740.15→334.48 ms, total charged work 597586817→961593054. Performance gates remain unmet. Recommendation for separate owner review: retain selective as primary adaptive strategy, escalate to combined only when necessary with deterministic shared limits, reusable inventories and independently validated incumbents. Do not assume a shared-budget staged configuration recovers the empirical union; demonstrate no losses on exact corpus. Future architecture extensions and destructive policy decisions remain separately gated. Five research rounds complete; production integration not authorized by research results. Existing 90 targeted/40 independent solvability witness/50% recovery requirements, canonical history, save/reopen, browser performance, standalone parity and full exact-head CI remain operative.

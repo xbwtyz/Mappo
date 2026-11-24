@@ -82,3 +82,13 @@ Exact commit d3af286a89ce53fc313f417f6f48def389fb260a. Six complete result summa
 ## Setback contract audit round 4
 
 - `setback-audit-45370355699.jsonl`: two actual geometry observations (original and reduced inputs), one compact case result, exact commit 030bc6dc8f3fa49c25c52818a286c7f762cc6e2f, job 138362761658. 60/60 Fast Checks; no new recovery. Genuine newly introduced non-boundary-road setback conflict outside active block scope; identical old/new reported metrics are not original-source measurements. Total JSONL files: 39.
+
+
+## Final combined benchmark round 5
+
+- `combined-45370972589.jsonl`: planned, 200 rows, job 138364840710.
+- `combined-45370976555.jsonl`: organic, 200 rows, job 138364854338.
+- `combined-45370980324.jsonl`: radial, 200 rows, job 138364867467.
+- `combined-45370985737.jsonl`: linear, 200 rows, job 138364886793.
+
+Exact commit 8fbdc1a05f408f5e76c9f17a981a3ba121069268, all four 60/60 Fast Checks. 800 distinct complete case payloads, exact identity/baseline match to selective archive. 625 accepted, zero B1 regressions, zero reported invalid acceptances; 20 gains and two work-limit losses relative to selective. Total 43 JSONL files. Five-round research complete; production acceptance is separate.

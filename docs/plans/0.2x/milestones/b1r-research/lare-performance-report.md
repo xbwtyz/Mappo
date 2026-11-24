@@ -66,3 +66,8 @@ Twelve matched cases: original-input work 24839382 to 24879850, expansions 33378
 ## Coordinated parcel round 3
 
 Six matched resistant cases: reduced-input preview work 7769191 to 8602891, expansions 348 to 22194; original-input work 8067826 to 12537217. Six reduced-input recoveries, no original-input recoveries. No production performance pass.
+
+
+## Final combined benchmark (800 exact matches)
+
+Selective → combined: median preview 226.03→236.06 ms; p95 preview 1059.36→1840.48 ms; accepted Apply p95 1193.36→1990.08 ms; p95 max iterator step 310.32→270.34 ms; worst step 740.15→334.48 ms; total charged work 597586817→961593054. Work-limit refusals 7→33. Twenty new recoveries, two selective losses, no B1 losses. Hosted timing is not controlled browser proof. Both configurations miss responsiveness targets. Recommend progressive escalation, resumable kernels, bounded shared budgets, revision guards and validated incumbent retention, subject to owner review and exact corpus non-regression.
