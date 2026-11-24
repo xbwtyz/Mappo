@@ -50,8 +50,11 @@ function b3gcRoutingRoofs(building) {
   return roots?.length > 1 ? roots.map(r => r.ring) : buildingExteriorRingsS10(building);
 }
 
-function b3gcRouteBlocker(city, building, door, roadPoint) {
-  const crosses = ring => b3gcRouteCrossesInterior(door, roadPoint, ring);
+function b3gcRouteBlocker(city, building, door, roadPoint, spend = null) {
+  const crosses = ring => {
+    if(spend)spend(Math.max(1,4*ring.length*ring.length));
+    return b3gcRouteCrossesInterior(door, roadPoint, ring);
+  };
   if (Math.hypot(roadPoint.x-door.x,roadPoint.y-door.y) < B3GC_ACCESS_EPS ||
       b3gcRoutingRoofs(building).some(crosses)) return building;
   for (const other of city.buildings) {
@@ -64,7 +67,7 @@ function b3gcRouteBlocker(city, building, door, roadPoint) {
   return null;
 }
 
-function searchBuildingFrontage(city, building, a, b, allowDiagonal = false, frontage = null, blocked = null) {
+function searchBuildingFrontage(city, building, a, b, allowDiagonal = false, frontage = null, blocked = null, spend = null) {
   if(!a||!b||!building.footprint?.length)return null;
   let best=null;
   for(let i=0;i<building.footprint.length;i++){
@@ -80,7 +83,8 @@ function searchBuildingFrontage(city, building, a, b, allowDiagonal = false, fro
         if(best&&distance>=best.distance)continue;
         if(frontage && !segmentCuts(door,destination,frontage.edgeA,frontage.edgeB)
           .some(cut=>cut>B3GC_ACCESS_EPS&&cut<1-B3GC_ACCESS_EPS))continue;
-        const obstacle=b3gcRouteBlocker(city,building,door,destination);
+        if(spend)spend();
+        const obstacle=b3gcRouteBlocker(city,building,door,destination,spend);
         if(obstacle){
           if(blocked&&obstacle!==building)blocked.set(obstacle.id,(blocked.get(obstacle.id)??0)+1);
           continue;
@@ -99,7 +103,7 @@ export function reattachFrontage(city, building) {
   return searchBuildingFrontage(city,building,nodes.get(road?.a),nodes.get(road?.b));
 }
 
-function retainedBuildingFrontage(city, original, candidate) {
+function retainedBuildingFrontage(city, original, candidate, spend = null) {
   const door = original.entrance;
   const path = original.accessPath;
   if (!door || !path || path.length < 2) return null;
@@ -111,7 +115,7 @@ function retainedBuildingFrontage(city, original, candidate) {
   if (!onWall || !a || !b ||
       Math.hypot(path[0].x - door.x, path[0].y - door.y) > B3GC_ACCESS_EPS ||
       distanceToSegment(path.at(-1), a, b) > B3GC_ACCESS_EPS) return null;
-  if (!path.slice(1).every((point, i) => !b3gcRouteBlocker(city, candidate, path[i], point))) return null;
+  if (!path.slice(1).every((point, i) => !b3gcRouteBlocker(city, candidate, path[i], point, spend))) return null;
   return { entrance: door, accessPath: path, frontageRoadId: original.frontageRoadId };
 }
 
@@ -180,6 +184,39 @@ export function resolveBuildingAccess(city, original, candidate) {
   return {route:null,issue:{code:'access',targetId:original.frontageRoadId,
     blockerId:[...blocked].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0]?.[0],
     message:'No clear route found to the current street or a verified side street.'}};
+}
+
+// Strict B1R adapter: share the existing collision/entrance search, but
+// never explore a side road, never change ownership, and charge shared work.
+// Courtyard-linked occupants are deliberately handled by their own validator.
+export function resolveSameFrontageAccessB1R(city, candidate, {allowRepair=false,allowEntranceMove=false,spend}={}) {
+  if(typeof spend!=='function')throw Error('Shared route budget required.');
+  spend(Math.max(1,city.buildings.length+city.properties.length+city.roads.length+city.nodes.length));
+  if(findCourtyardAccess(city,candidate.id)||candidate.geometry?.courtyardAccess)
+    return {route:null,code:'courtyard-dependency'};
+  if(!candidate.footprint?.length)return {route:null,code:'unsupported-primary-route'};
+  const retained=retainedBuildingFrontage(city,candidate,candidate,spend);
+  if(retained)return {route:retained,changed:false};
+  if(!allowRepair)return {route:null,code:'access-decision-required'};
+  const road=city.roads.find(r=>r.id===candidate.frontageRoadId);
+  const a=city.nodes.find(n=>n.id===road?.a),b=city.nodes.find(n=>n.id===road?.b);
+  if(!a||!b||Math.hypot(b.x-a.x,b.y-a.y)<B3GC_ACCESS_EPS)
+    return {route:null,code:'access-frontage-missing'};
+  const door=candidate.entrance;
+  if(door&&candidate.footprint.some((p,i,ring)=>distanceToSegment(door,p,ring[(i+1)%ring.length])<=B3GC_ACCESS_EPS)){
+    const ends=[b3gcNearestRoadPoint(door,a,b),...[.125,.25,.375,.5,.625,.75,.875].map(t=>b3gcPathPoint(a,b,t))];
+    const sorted=ends.map((p,i)=>({p,i,d:Math.hypot(p.x-door.x,p.y-door.y)})).sort((x,y)=>x.d-y.d||x.i-y.i);
+    for(const {p} of sorted){spend();
+      if(!b3gcRouteBlocker(city,candidate,door,p,spend))
+        return {route:{entrance:{...door},accessPath:[{...door},p],frontageRoadId:road.id},changed:true};
+    }
+  }
+  if(allowEntranceMove){
+    const route=searchBuildingFrontage(city,candidate,a,b,false,null,null,spend)
+      ??searchBuildingFrontage(city,candidate,a,b,true,null,null,spend);
+    if(route)return {route:{...route,frontageRoadId:road.id},changed:true};
+  }
+  return {route:null,code:'access-reflow-blocked'};
 }
 
 // Fast, pure preview check on every pointer frame; no whole-city cloning.

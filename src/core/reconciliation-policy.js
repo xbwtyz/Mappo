@@ -13,11 +13,11 @@ const lareBuildingKeys=['id','blockId','propertyId','plotIds','frontageRoadId','
 // but unknown extensions and courtyard dependencies cannot be moved speculatively.
 function lareKnownBuilding(b){
   const g=b.geometry;
-  return lareKnownKeys(b,lareBuildingKeys)&&g?.version===1&&lareKnownKeys(g,['version','regions'])&&
+  return lareKnownKeys(b,lareBuildingKeys)&&[1,3].includes(g?.version)&&lareKnownKeys(g,['version','regions'])&&
     Array.isArray(g.regions)&&g.regions.length>0&&g.regions.every(r=>
       lareKnownKeys(r,['id','parentId','kind','componentId','ring'])&&Array.isArray(r.ring)&&
       r.ring.length>=3&&r.ring.every(larePoint))&&Array.isArray(b.components)&&b.components.length>0&&
-    b.components.every(c=>lareKnownKeys(c,['id','parentId']))&&larePoint(b.entrance)&&
+    b.components.every(c=>lareKnownKeys(c,['id','parentId','name']))&&larePoint(b.entrance)&&
     Array.isArray(b.accessPath)&&b.accessPath.every(larePoint)&&Number.isFinite(b.orientation);
 }
 const larePropertyKeys=['id','blockId','plotIds','boundary','frontageRoadId','frontage','area','buildingIds',
