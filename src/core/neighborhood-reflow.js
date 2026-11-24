@@ -18,6 +18,8 @@ import { distanceToSegment, segmentCuts } from './boundary.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { hydrateCityS10 } from './building-project-s10.js';
 import { iterateLareRoadGroup } from './reconciliation-road-group.js';
+import { createLareRoadOperation } from './reconciliation-operation.js';
+import { iterateLareStrategies } from './reconciliation-strategies.js';
 
 // A road intent is frozen for cancellation safety and loses non-serialized
 // read-only building projections during structuredClone. Rehydrate a detached
@@ -132,21 +134,40 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
         relatedIds:issue.roadIds??[]}));
     return blocked(issues.length?issues:[c2Issue('road',id,'group-topology','A nonzero move with unchanged road and face topology is required.')]);
   }
-  let analysis;
-  const analyze=()=>analysis??=analyzeNeighborhoodDraft(project,draft);
-  const strictOptions={...options,strictGroup:true};
-  const preserved=prepareNeighborhoodReflow(project,id,draft,false,analyze,strictOptions);
-  let result=preserved;
-  if(!preserved.candidateProject && preserved.unresolved.some(row=>
-    rebuildableLandIssues.has(row.code)||row.code==='parcel-decision-required'||row.code==='parcel-decision-invalid'))
-    result=prepareNeighborhoodReflow(project,id,draft,true,analyze,strictOptions);
-  if(result.candidateProject){
-    const violation=verifyRoadGroupPreservationB1(project,result.candidateProject,draft);
-    if(violation)result=blocked([violation],result);
-  }else result=blocked(result.unresolved,result);
-  const choices=options.parcelChoices instanceof Map?options.parcelChoices:new Map(options.parcelChoices??[]);
-  const adaptive=yield* iterateLareRoadGroup(project,draft,analyze(),result,choices);
-  return {...adaptive,phase:'B1',selectedRoadIds:draft.selectedRoadIds,offset:draft.offset};
+  const analysis = analyzeNeighborhoodDraft(project, draft);
+  const analyze = () => analysis;
+  const strictOptions = { ...options, strictGroup: true };
+  const choices = options.parcelChoices instanceof Map ? options.parcelChoices : new Map(options.parcelChoices ?? []);
+  const operation = createLareRoadOperation(project, draft, analysis, choices, options.acceptedRevision);
+  const operationChoices = new Map(operation.permissions.parcelChoices);
+  strictOptions.parcelChoices = operationChoices;
+  const checked = result => {
+    if (!result.candidateProject) return blocked(result.unresolved, result);
+    const violation = verifyRoadGroupPreservationB1(project, result.candidateProject, draft);
+    return violation ? blocked([violation], result) : result;
+  };
+  const result = yield* iterateLareStrategies(operation, {
+    direct: {
+      canRun: () => true,
+      *run() {
+        return prepareNeighborhoodReflow(project, id, draft, false, analyze, strictOptions);
+      },
+    },
+    strict: {
+      canRun: previous => !previous.candidateProject && previous.unresolved.some(row =>
+        rebuildableLandIssues.has(row.code) || row.code === 'parcel-decision-required' || row.code === 'parcel-decision-invalid'),
+      *run() {
+        return prepareNeighborhoodReflow(project, id, draft, true, analyze, strictOptions);
+      },
+    },
+    'selective-adaptive': {
+      canRun: () => true,
+      *run(previous) {
+        return yield* iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices);
+      },
+    },
+  });
+  return { ...result, phase: 'B1', selectedRoadIds: draft.selectedRoadIds, offset: draft.offset };
 }
 export function prepareRoadGroupReflowB1(project,selectedRoadIds,offset,options={}){
   const iterator=iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options);

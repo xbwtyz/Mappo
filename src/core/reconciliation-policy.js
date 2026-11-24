@@ -51,3 +51,15 @@ export function classifyLareBuilding(b,propertyPolicy,dependent=false){
     dependent?'dependent-structure':!lareKnownBuilding(b)?'unsupported-geometry':null;
   return Object.freeze({provenance,mode:reason?'fixed':'rigid',reason});
 }
+
+const lareCapabilityPolicies = Object.freeze({
+  property: classifyLareProperty,
+  building: classifyLareBuilding,
+});
+const lareUnknownObject = Object.freeze({ provenance: 'unknown', mode: 'fixed', reason: 'unsupported-object' });
+
+export function classifyLareObject(kind, record, ...context) {
+  return Object.hasOwn(lareCapabilityPolicies, kind) && record
+    ? lareCapabilityPolicies[kind](record, ...context)
+    : lareUnknownObject;
+}

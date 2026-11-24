@@ -1,5 +1,7 @@
 # B1R — Controlled demolition counterfactual study
 
+> Historical research record. The [approved production plan](../0.2.24-adaptive-reconciliation-b1r.md) defines current scope, limits and acceptance gates.
+
 **Status: experimental only.** Owner authorized detached research, not production demolition. No change to the existing B1R preservation contract, Schema 10 or portable/workspace format 1. The accepted original project is never edited by the research harness.
 
 ## Method

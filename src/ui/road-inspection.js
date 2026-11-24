@@ -264,6 +264,7 @@ export class RoadInspectionWorkspace {
     });
     this.session = new RoadPreviewSession({
       getProject,
+      getAcceptedRevision: getRevision,
       reconcile,
       reconcileRoad,
       computeJunctionAsync,

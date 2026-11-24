@@ -2614,7 +2614,7 @@ function applyRoadEditB4(session,baselineRevision,current){
       session.acceptedFingerprint!==JSON.stringify(previous) || !session.previewGeometry?.verified)
       return {ok:false,message:'The connected-road preview is not complete and current.'};
     return commit(validateRoadGroupApplyB1(previous,workspace,
-      {selectedRoadIds:group.selectedRoadIds,offset:session.roadIntentOffset,parcelChoices:session.parcelChoices},
+      {selectedRoadIds:group.selectedRoadIds,offset:session.roadIntentOffset,parcelChoices:session.parcelChoices,acceptedRevision:revision},
       session.reconciliation));
   }
   if (session.selection?.kind !== 'junction' || !session.computeJunctionAsync)

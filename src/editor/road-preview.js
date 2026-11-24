@@ -15,6 +15,7 @@ import { makeSelectionSetA1, selectionSingletonA1, selectionTransitionA1, sameSe
 export class RoadPreviewSession {
   constructor({
     getProject,
+    getAcceptedRevision = () => null,
     changed = () => {},
     schedule = (fn, ms) => setTimeout(fn, ms),
     unschedule = (id) => clearTimeout(id),
@@ -26,6 +27,7 @@ export class RoadPreviewSession {
     captureDraftValidation = () => () => true,
   }) {
     Object.assign(this, { getProject, changed, schedule, unschedule, analyze, reconcile, reconcileRoad, computeJunctionAsync });
+    this.getAcceptedRevision = getAcceptedRevision;
     this.selectionAuthority = selectionAuthority;
     this.captureDraftValidation = captureDraftValidation;
     this.localSelectionA1 = makeSelectionSetA1();
@@ -345,10 +347,12 @@ export class RoadPreviewSession {
   }
   evaluateLareGroupSlices(group,revision){
     const project=this.project,fingerprint=JSON.stringify(project),draftIsCurrent=this.captureDraftValidation();
+    const acceptedRevision=this.getAcceptedRevision();
     const choices=new Map([...this.parcelChoices].map(([id,c])=>[id,{...c}]));
-    const iterator=iterateRoadGroupReflowB1(project,group.selectedRoadIds.slice(),{...this.roadIntentOffset},{parcelChoices:choices});
+    const iterator=iterateRoadGroupReflowB1(project,group.selectedRoadIds.slice(),{...this.roadIntentOffset},{parcelChoices:choices,acceptedRevision});
     this.lareIteratorB1R=iterator;
-    const current=()=>this.current()&&draftIsCurrent()&&this.revision===revision&&this.lareIteratorB1R===iterator;
+    const current=()=>this.current()&&draftIsCurrent()&&this.revision===revision&&
+      this.getAcceptedRevision()===acceptedRevision&&this.lareIteratorB1R===iterator;
     const settle=()=>{
       if(!current())return;
       this.lareIteratorB1R=null;this.timer=undefined;this.checking=false;this.changed();
@@ -389,7 +393,7 @@ export class RoadPreviewSession {
           this.evaluateLareGroupSlices(group,revision);return;
         }else if(group) {
           this.reconciliation=prepareRoadGroupReflowB1(this.project,group.selectedRoadIds,this.roadIntentOffset,
-            {parcelChoices:this.parcelChoices});
+            {parcelChoices:this.parcelChoices,acceptedRevision:this.getAcceptedRevision()});
         } else if (this.roadConnectionEdit) {
           this.reconciliation = prepareRoadTopologyReflowC3(this.project, this.selection.id, null,
             this.roadConnectionEdit,this.buildingDecisions,{ownershipChoices:this.ownershipChoices,parcelChoices:this.parcelChoices});

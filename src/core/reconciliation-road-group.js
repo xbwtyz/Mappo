@@ -1,13 +1,12 @@
 import { createLareBudget,LareBudgetExceeded } from './reconciliation-budget.js';
-import { createLareContext } from './reconciliation-context.js';
+import { createLareContext, discoverLareParcelScope } from './reconciliation-context.js';
 import { iterateLareArrangement } from './reconciliation-arrangement.js';
 import { verifyLareGroupPreservation } from './reconciliation-preservation.js';
 import { reconcileLareAccess } from './reconciliation-access.js';
 import { riEqual,riIndex,riReporter,riBudget } from './road-impact-model.js';
-import { inspectRoadDependencies,inspectRoadContextReferences } from './road-impact-dependencies.js';
+import { LARE_CONSTRAINTS } from './reconciliation-constraints.js';
 import { stampRoadGenerated,classifyRoadProvenance } from './road-provenance.js';
 import { hydrateCityS10 } from './building-project-s10.js';
-import { validateStoredProject } from '../data/project-validation.js';
 
 const lareGroupCodes=new Set(['frontage-geometry','block-containment','road-setback','frame-reference',
   'property-containment','access-connection','road-clearance']);
@@ -62,14 +61,6 @@ function lareGroupLedger(before,after,draft,changedBlocks){
   }
   return {changed,ledger};
 }
-function lareGroupNear(a,b,margin,budget){
-  budget.spend(Math.max(1,a.length+b.length));
-  for(const k of ['x','y']){
-    const x=a.map(p=>p[k]),y=b.map(p=>p[k]);
-    if(Math.max(...x)+margin<Math.min(...y)||Math.max(...y)+margin<Math.min(...x))return false;
-  }
-  return true;
-}
 // A complete arrangement is checked without trusting its score or ledger.
 // This adapter receives the already verified planar graph/face analysis.
 export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget()){
@@ -99,25 +90,17 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     const context=createLareContext(project,draft,choices,budget),city=project.city;
     const propertyIndex=riIndex(city.properties),plotIndex=riIndex(city.plots),buildingIndex=riIndex(city.buildings);
     const changedBlocks=new Map(identity.changed.filter(f=>f.kind==='block').map(f=>[f.id,f.record]));
-    const roadsChanged=new Set(draft.changedRoadIds),affected=new Set();
-    for(const issue of impact.issues){
-      if(issue.kind==='property')affected.add(issue.id);
-      else if(issue.kind==='plot'){const p=plotIndex.get(issue.id);if(p)affected.add(p.propertyId);}
-      else if(issue.kind==='building'){const b=buildingIndex.get(issue.id);if(b)affected.add(b.propertyId);}
-    }
-    const primary=context.properties.filter(p=>changedBlocks.has(p.blockId)&&
-      (roadsChanged.has(p.frontageRoadId)||affected.has(p.id)));
+    const roadsChanged=new Set(draft.changedRoadIds);
+    const scope=discoverLareParcelScope(context,city,draft,changedBlocks,impact.issues,budget);
+    const {primary}=scope;
     if(primary.some(p=>p.policy.mode==='decision-required'||p.policy.mode==='invalid-choice'))
       return incumbent?.result??baseline;
     // Portal/compound repair retains the existing explicit B1 path. The
     // generic adapter must not silently change linked or authored access.
     if(primary.some(p=>p.buildings.some(b=>b.reason==='dependent-structure')))
       return incumbent?.result??baseline;
-    const margin=Math.max(1,Math.hypot(draft.offset.x,draft.offset.y)+1);
-    const active=context.properties.filter(p=>changedBlocks.has(p.blockId)&&
-      ['adaptive','authorized-reshape'].includes(p.policy.mode)&&
-      (primary.includes(p)||primary.some(q=>q.blockId===p.blockId&&
-        lareGroupNear(propertyIndex.get(p.id).boundary,propertyIndex.get(q.id).boundary,margin,budget))));
+    const spatial=scope.adapt();
+    const active=spatial.authorized;
     if(!active.length)return incumbent?.result??baseline;
     const activeIds=new Set(active.map(p=>p.id));
     const edgeRoads=new Map(city.roads.map(r=>[[r.a,r.b].sort().join(':'),r]));
@@ -129,7 +112,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
       const source=propertyIndex.get(p.id),edges=blockEdges.get(p.blockId);
       return {property:source,plots:p.plotIds.map(id=>plotIndex.get(id)),mode:p.policy.mode,
         edge:edges.find(e=>e.road?.id===p.frontageRoadId),edges,
-        fixedNeighbors:city.properties.filter(q=>q.blockId===p.blockId&&!activeIds.has(q.id)).map(q=>q.boundary),
+        fixedNeighbors:city.properties.filter(q=>q.blockId===p.blockId&&spatial.role(q.id)!=='authorized').map(q=>q.boundary),
         buildings:p.buildings.map(b=>({source:buildingIndex.get(b.id),permission:b}))};
     });
     const permissions=new Map(context.properties.flatMap(p=>p.buildings.map(b=>[b.id,b])));
@@ -188,12 +171,12 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
         const {emit,items}=riReporter(),impactSpend=riBudget(),spend=(n=1)=>{impactSpend(n);if(n>0)budget.spend(n);};
         const dependencyContext={roadIds:draft.changedRoadIds,junctionIds:draft.proposedNodes.map(n=>n.id),
           changedBlockIds:[...changedBlocks.keys()],acceptedValid:true};
-        inspectRoadDependencies(next,next,dependencyContext,emit,spend);
-        inspectRoadContextReferences(city,next,dependencyContext,emit,spend);
+        LARE_CONSTRAINTS.landDependencies.check(next,next,dependencyContext,emit,spend);
+        LARE_CONSTRAINTS.infrastructure.check(city,next,dependencyContext,emit,spend);
         const remaining=items().filter(i=>i.severity!=='info'&&i.code!=='frontage-geometry'&&
           !(i.kind==='plot'&&i.code==='property-containment'));
         if(remaining.length){lastIssue=remaining[0];return null;}
-        validateStoredProject(candidateProject);
+        LARE_CONSTRAINTS.storedProject.check(candidateProject);
         const {changed,ledger}=lareGroupLedger(project,candidateProject,draft,changedBlocks);
         const score=row.score.slice();score[5]+=accessChanges;
         return {score,key:row.key,result:{phase:'B1',status:'candidate-only',candidateProject,changed,ledger,unresolved:[],

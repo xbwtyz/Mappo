@@ -1,5 +1,7 @@
 # B1R — Reconciliation performance research
 
+> Historical research record. The [approved production plan](../0.2.24-adaptive-reconciliation-b1r.md) defines current scope, limits and acceptance gates.
+
 See [research report](lare-research-report.md) for the experiment ledger and [demolition study](lare-demolition-study.md) for the separate demolition cost. No performance gate has been passed on the integrated production implementation.
 
 ## Measured observations

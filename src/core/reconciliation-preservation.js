@@ -1,9 +1,7 @@
-import { verifyRoadGroupPreservationB1 } from './road-group-preservation-b1.js';
+import { LARE_CONSTRAINTS } from './reconciliation-constraints.js';
 import { riEqual,riIndex } from './road-impact-model.js';
 import { createLareContext } from './reconciliation-context.js';
 import { classifyRoadProvenance } from './road-provenance.js';
-import { verifyLareRigidGeometry } from './reconciliation-buildings.js';
-import { verifyLarePlotDeformation } from './reconciliation-plots.js';
 import { LareBudgetExceeded } from './reconciliation-budget.js';
 
 const lareGateFail=(kind,id,code,message)=>({kind,id,code,message,severity:'needs-review'});
@@ -14,7 +12,7 @@ const lareGateParcelFields=['boundary','frontage','frame','local','area','roadPr
 // scores, ledger, or claimed dispositions. Both the incumbent and every new
 // arrangement must pass this gate before full project validation.
 export function verifyLareGroupPreservation(before,after,draft,choices,budget){
-  const violation=verifyRoadGroupPreservationB1(before,after,draft);
+  const violation=LARE_CONSTRAINTS.identity.check(before,after,draft);
   if(violation)return violation;
   const group=draft.selectedRoadIds?.[0]??'group';
   try{
@@ -54,7 +52,7 @@ export function verifyLareGroupPreservation(before,after,draft,choices,budget){
       if(changed&&entry.policy.provenance==='generated'&&classifyRoadProvenance(b,bp)!=='generated')
         return lareGateFail('property',a.id,'lare-provenance','Generated parcel provenance would become inconsistent.');
       if(!riEqual(a.boundary,b.boundary)||ap.some((p,i)=>!riEqual(p.boundary,bp[i].boundary))){
-        try{verifyLarePlotDeformation(b.boundary,ap,bp,budget);}
+        try{LARE_CONSTRAINTS.plots.check(b.boundary,ap,bp,budget);}
         catch(error){if(error instanceof LareBudgetExceeded)throw error;
           return lareGateFail('property',a.id,'lare-plot-topology',error.message);}
       }
@@ -70,7 +68,7 @@ export function verifyLareGroupPreservation(before,after,draft,choices,budget){
         const original=aBuildings.get(policy.id),candidate=bBuildings.get(policy.id);
         budget.spend();
         const moved=lareGateChanged(original,candidate,['geometry','orientation','area']);
-        if(moved&&(policy.mode!=='rigid'||!verifyLareRigidGeometry(original,candidate,budget)))
+        if(moved&&(policy.mode!=='rigid'||!LARE_CONSTRAINTS.rigidBuilding.check(original,candidate,budget)))
           return lareGateFail('building',policy.id,'lare-rigid-preservation','The building is fixed or its complete geometry is not one rigid transformation.');
         const routeChanged=lareGateChanged(original,candidate,['entrance','accessPath']);
         const approvedCourtyard=courtyardMembers.has(policy.id)&&original.frontageRoadId===a.frontageRoadId;

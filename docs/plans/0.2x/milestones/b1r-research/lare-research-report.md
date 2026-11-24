@@ -1,5 +1,7 @@
 # B1R — Local adaptive reconciliation research report
 
+> Historical research record. The [approved production plan](../0.2.24-adaptive-reconciliation-b1r.md) defines current scope, limits and acceptance gates.
+
 **Status:** detached research, November 24, 2026. This is not production acceptance or permission to merge PR #153. B1 is frozen at `e5f1cf83dcdcc75e52911aa717035955b40569d0`, 0.2.23-dev; B1R source target is 0.2.24-dev, Schema 10, portable/workspace 1. No demolition, regeneration, topology or identity exception is approved for production.
 
 ## Reproduction and evidence
