@@ -9,3 +9,13 @@ export function isMapShortcutEvent(event, activeElement) {
   return !event?.defaultPrevented && !isEditableShortcutTarget(event?.target)
     && !isEditableShortcutTarget(activeElement);
 }
+
+// One ordered dispatcher; DOM-local controls retain native and ARIA behavior.
+export function dispatchInputCommandA2(event,activeElement,commands){
+  if(!event||event.defaultPrevented||event.isComposing)return false;
+  for(const command of commands){
+    if(command.scope==='map'&&!isMapShortcutEvent(event,activeElement))continue;
+    if(command.match(event)&&command.run(event)!==false)return true;
+  }
+  return false;
+}

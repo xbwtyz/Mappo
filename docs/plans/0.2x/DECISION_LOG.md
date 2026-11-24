@@ -83,3 +83,7 @@ P1–P5 implementation separately authorized on a fresh branch from verified mai
 ## 0.2.18-dev A1 — Owner-approved shared selection architecture
 
 A1-01 through A1-10 = A; detailed P1–P5 implementation separately authorized. See [A1 contract](milestones/0.2.18-shared-selection-a1.md). Schema 10, envelope 1, workspace 1 retained. Separate PR merge, release, tag and Pages approval required. A0 manual task-friction evidence remains outstanding.
+
+## 0.2.19-dev A2 — Owner-approved tool and input controller
+
+A2-01 through A2-10 = A; detailed P1–P5 implementation separately authorized. [A2 contract](milestones/0.2.19-shared-input-a2.md). Schema 10, envelope 1, workspace 1 retained. Merge, release, tag and Pages separately gated.

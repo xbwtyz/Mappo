@@ -61,7 +61,7 @@ import {
   rebuildFailureMessage
 } from './core/validation-feedback.js';
 import {
-  isMapShortcutEvent
+  isMapShortcutEvent, dispatchInputCommandA2
 } from './core/shortcut-scope.js';
 import {
   WORKSPACE_DISCLOSURE_IDS
@@ -84,7 +84,7 @@ import {
   renderMap
 } from './renderer/canvas.js';
 import {
-  bindCanvasInteraction
+  bindCanvasInteraction, ToolCoordinatorA2
 } from './ui/controllers.js';
 import {
   OutlineEditor,
@@ -198,6 +198,12 @@ let identityWorkspace;
 let roadWorkspace;
 let desktopPlaceEditor;
 let desktopWorkspace;
+let mainInputA2,comparisonInputA2;
+const toolsA2=new ToolCoordinatorA2();
+function cancelMapGesturesA2(){
+  const main=mainInputA2?.cancel()??false,comparison=comparisonInputA2?.cancel()??false;
+  return main||comparison;
+}
 const workspaceMenus = new WorkspaceMenus({
   getElement: $
 });
@@ -942,6 +948,7 @@ function confirmStructureDiscard3H() {
 function exitStructurePlacement3H() {
   if(!buildingPlacementSession?.isActive)return true;
   if(!confirmStructureDiscard3H())return false;
+  cancelMapGesturesA2();
   buildingPlacementSession.stop();
   // Like footprint editing, leave a clear route back to the Inspector on phones.
   if(Number.isFinite(window.innerWidth) && window.innerWidth<=900
@@ -1214,6 +1221,7 @@ function moveStructureHistory3H(direction) {
 function exitBuildingEditing() {
   if (!buildingEditSession?.isActive) return true;
   if (!confirmBuildingPreviewDiscard()) return false;
+  cancelMapGesturesA2();
   buildingEditSession.stop();
   if (Number.isFinite(window.innerWidth) && window.innerWidth <= 900 && workspaceShell?.state.selection?.kind === 'building'
     && workspaceShell.state.inspectorCollapsed) workspaceShell.dispatch({ type: 'inspector', collapsed: false });
@@ -1223,6 +1231,7 @@ function exitPropertyEditing3I() {
   if (!propertyEditSession?.isActive) return true;
   if (propertyEditSession.isPending && typeof window.confirm === 'function'
       && !window.confirm('Discard your unsaved property boundary and plot preview?'))return false;
+  cancelMapGesturesA2();
   propertyEditSession.stop();
   if (Number.isFinite(window.innerWidth) && window.innerWidth <= 900
       && workspaceShell?.state.inspectorCollapsed)
@@ -1519,6 +1528,7 @@ function desktopGenerationKey(tool) {
 }
 
 function generate({ discardIdentities = false } = {}) {
+  cancelMapGesturesA2();
   roadWorkspace?.exit();
   if (!discardIdentities && identityWorkspace)
     return identityWorkspace.requestRebuild(() => generate({ discardIdentities: true }));
@@ -1700,7 +1710,13 @@ $('seedInput').addEventListener('keydown', e => {
     else generate();
   }
 });
-window.addEventListener('keydown', e => {
+function handleMapCommandA2(e) {
+  if(e.key==='Escape'&&(mainInputA2?.active||comparisonInputA2?.active)){
+    const vertex=buildingEditSession?.drag?.handle.kind==='vertex';
+    cancelMapGesturesA2();
+    if(vertex)$('buildingDirectHandle').focus();
+    e.preventDefault();return;
+  }
   if(propertyMergeE3?.active && e.key==='Escape'){propertyMergeE3.stop();e.preventDefault();return;}
   if(propertySplitE2?.active && e.key==='Escape'){propertySplitE2.stop();e.preventDefault();return;}
   if(propertyCreationSessionE1?.active && e.key==='Escape'){
@@ -1817,6 +1833,22 @@ window.addEventListener('keydown', e => {
     updateViewport();
     e.preventDefault();
   }
+}
+const mapCommandsA2=[
+  {match:e=>(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s',run:e=>{e.preventDefault();files.saveDownload();}},
+  {scope:'map',match:e=>e.code==='Space',run:e=>{
+    const comparison=$('roadComparisonProposed'),focused=document.activeElement;
+    if(focused===comparison&&!comparison.hidden)comparisonInputA2?.setSpace(true);
+    else if(focused?.tagName!=='CANVAS'||focused===canvas)mainInputA2?.setSpace(true);
+    else return false;
+    e.preventDefault();
+  }},
+  {match:e=>e.key==='Escape',run:handleMapCommandA2},
+  {scope:'map',match:()=>true,run:handleMapCommandA2},
+];
+window.addEventListener('keydown',e=>dispatchInputCommandA2(e,document.activeElement,mapCommandsA2));
+window.addEventListener('keyup',e=>{
+  if(e.code==='Space'){mainInputA2?.setSpace(false);comparisonInputA2?.setSpace(false);}
 });
 
 function resize() {
@@ -1972,6 +2004,7 @@ function syncWorkspaceDistrictSelection() {
 }
 
 function stopWorkspaceTools(targetSection = null) {
+  cancelMapGesturesA2();
   roadWorkspace?.exit();
   if (targetSection !== 'city') {buildingEditSession?.stop();buildingPlacementSession?.stop();propertyEditSession?.stop();propertyCreationSessionE1?.stop();propertySplitE2?.stop();propertyMergeE3?.stop();compoundPanelPropertyId=null;compoundResult=null;}
   clearMapHover();
@@ -2381,7 +2414,8 @@ roadWorkspace = new RoadInspectionWorkspace({
     workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive
       ||propertyEditSession?.isActive||propertyCreationSessionE1?.active||propertySplitE2?.active||propertyMergeE3?.active||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
       ?'Finish or cancel the current edit, then choose Pan in City to inspect roads.':'',
-  beforeEnter:()=>{workspaceMenus.close();clearMapHover();},
+  beforeEnter:()=>{cancelMapGesturesA2();workspaceMenus.close();clearMapHover();},
+  beforeExit:cancelMapGesturesA2,
   draw:()=>{$('zoomValue').textContent=`${Math.round(camera.zoom*100)}%`;updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();requestDraw();},
   afterExit:()=>{updateMapIndicators();updateUndoFeedback();syncPropertyDeletionControls4A();}
 });
@@ -2831,29 +2865,41 @@ $('propertyDividerPercent3I').addEventListener('change',()=>{
       ||!session.setDivider(session.selectedDivider,value/100))syncPropertyEditUI3I();
 });
 
-const mapPanEditor = { mode: 'pan', down() {}, move() {}, up() {}, addPoint() {} };
-// An editor cannot receive map input unless its section is visible.
-// Even corrupted/older saved modes cannot activate hidden draft tools.
-const activeMapEditor = () => desktopWorkspace?.mapPreview() ? mapPanEditor : workspaceShell.state.section === 'landscape'
-  ? (terrainPanel.editor.mode !== 'pan' ? terrainPanel.editor : waterPanel.editor.mode !== 'pan' ? waterPanel.editor : mapPanEditor)
-  : workspaceShell.state.section === 'city' ? editor : mapPanEditor;
-const runMapEdit = (method, args) => {
-  const active = activeMapEditor();
-  return active === waterPanel.editor ? waterPanel.run(() => active[method](...args)) : active === terrainPanel.editor ? terrainPanel.run(() => active[method](...args)) : active[method](...args);
+const mapPanEditor = { mode:'pan',down(){},move(){},up(){},addPoint(){} };
+const visibleMapA2=()=>!desktopWorkspace?.mapPreview()&&!roadWorkspace?.comparisonOpen;
+const cityMapA2=()=>visibleMapA2()&&workspaceShell.state.section==='city';
+const landscapeMapA2=()=>visibleMapA2()&&workspaceShell.state.section==='landscape';
+for(const tool of [
+  {id:'generation.preview',group:'passive',active:()=>Boolean(desktopWorkspace?.mapPreview())},
+  {id:'road.compare',group:'passive',active:()=>Boolean(roadWorkspace?.comparisonOpen)},
+  {id:'compound.transform',group:'transform',active:()=>cityMapA2()&&Boolean(c01SelectedGroup())&&
+    !buildingEditSession?.isActive&&!buildingPlacementSession?.isActive&&!propertyEditSession?.isActive&&
+    !propertyMergeE3?.active&&!propertySplitE2?.active&&!roadWorkspace?.active&&!propertyCreationSessionE1?.active},
+  {id:'property.merge',group:'transform',active:()=>cityMapA2()&&Boolean(propertyMergeE3?.active)},
+  {id:'property.split',group:'transform',active:()=>cityMapA2()&&Boolean(propertySplitE2?.active)},
+  {id:'property.create',group:'transform',active:()=>cityMapA2()&&Boolean(propertyCreationSessionE1?.active)},
+  {id:'road.edit',group:'transform',active:()=>visibleMapA2()&&Boolean(roadWorkspace?.active)},
+  {id:'property.edit',group:'transform',active:()=>cityMapA2()&&Boolean(propertyEditSession?.isActive)},
+  {id:'building.place',group:'transform',active:()=>cityMapA2()&&Boolean(buildingPlacementSession?.isActive)},
+  {id:'building.edit',group:'transform',active:()=>cityMapA2()&&Boolean(buildingEditSession?.isActive)},
+  {id:'terrain.edit',group:'direct',active:()=>landscapeMapA2()&&terrainPanel.editor.mode!=='pan',
+    editor:()=>terrainPanel.editor,run:fn=>terrainPanel.run(fn)},
+  {id:'water.edit',group:'direct',active:()=>landscapeMapA2()&&waterPanel.editor.mode!=='pan',
+    editor:()=>waterPanel.editor,run:fn=>waterPanel.run(fn)},
+  {id:'outline.edit',group:'direct',active:()=>cityMapA2()&&editor.mode!=='pan',editor:()=>editor},
+  {id:'map.select',group:'passive',active:()=>visibleMapA2()},
+])toolsA2.register({...tool,canActivate:tool.active});
+const captureMapEditorA2=()=>{
+  const tool=toolsA2.resolve(null,'direct');
+  if(!tool)return mapPanEditor;
+  const target=tool.editor(),run=tool.run??(fn=>fn());
+  return {mode:target.mode,down:(...args)=>run(()=>target.down(...args)),
+    move:(...args)=>run(()=>target.move(...args)),up:(...args)=>target.up(...args),
+    addPoint:(...args)=>target.addPoint(...args)};
 };
-const mapEditor = {
-  get mode() {
-    return activeMapEditor().mode;
-  },
-  down: (...args) => runMapEdit('down', args),
-  move: (...args) => runMapEdit('move', args),
-  up: (...args) => (workspaceShell.state.section === 'landscape' && terrainPanel.editor.dragging ? terrainPanel.editor
-    : workspaceShell.state.section === 'landscape' && waterPanel.editor.dragging ? waterPanel.editor : activeMapEditor()).up(...args),
-  addPoint: (...args) => activeMapEditor().addPoint(...args)
-};
-
-bindCanvasInteraction($('roadComparisonProposed'), camera, requestDraw, updateViewport, mapPanEditor);
-bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, (point,modifiers={}) => {
+const mapEditor={get mode(){return captureMapEditorA2().mode;},capture:captureMapEditorA2};
+comparisonInputA2=bindCanvasInteraction($('roadComparisonProposed'), camera, requestDraw, updateViewport, mapPanEditor);
+mainInputA2=bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, (point,modifiers={}) => {
   if (roadWorkspace?.comparisonOpen || desktopWorkspace?.mapPreview()) return;
   if (desktopWorkspace?.awaitingProperty &&
       desktopWorkspace.chooseBuildingProperty(propertyWorkspace.hit(point, camera.zoom)?.id)) return;
@@ -2950,17 +2996,17 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, (p
   canvas.classList.toggle('feature-hover', Boolean(hit || propertyHit));
 }, {
   begin: (point,zoom,event) => {
-    const group=c01SelectedGroup();
-    if(group&&!buildingEditSession?.isActive&&!buildingPlacementSession?.isActive&&
-        !propertyEditSession?.isActive&&!propertyMergeE3?.active&&!propertySplitE2?.active&&
-        project?.city.buildings.some(b=>group.memberBuildingIds.includes(b.id)&&
+    const tool=toolsA2.resolve(null,'transform');
+    if(!tool)return false;
+    const id=tool.id,group=id==='compound.transform'?c01SelectedGroup():null;
+    if(group&&project?.city.buildings.some(b=>group.memberBuildingIds.includes(b.id)&&
           pointInPolygon(point,b.footprint))) {
       compoundDrag={start:{...point},transform:{...compoundTransform}};
-      return true;
+      return id;
     }
-    if(propertyMergeE3?.active)return false;
-    if(propertySplitE2?.active)return propertySplitE2.begin(point,zoom);
-    if(propertyCreationSessionE1?.active){
+    if(id==='property.merge')return false;
+    if(id==='property.split')return propertySplitE2.begin(point,zoom)?id:false;
+    if(id==='property.create'){
       const draft=propertyCreationSessionE1.draft;
       const outline=propertyCreationSessionE1.preview(project.city);
       if(!draft||!outline||!pointInPolygon(point,outline))return false;
@@ -2968,14 +3014,14 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, (p
       if(!edge)return false;
       const u=(point.x-edge.frame.origin.x)*edge.frame.tangent.x+
         (point.y-edge.frame.origin.y)*edge.frame.tangent.y;
-      propertyCreationSessionE1.drag={startU:u,originalU:draft.u};return true;
+      propertyCreationSessionE1.drag={startU:u,originalU:draft.u};return id;
     }
-    if(roadWorkspace?.active){
+    if(id==='road.edit'){
       const s=roadWorkspace.session;
       if(event?.shiftKey && !s.mergeMode && !s.bendEditor)return false;
-      return !roadWorkspace.comparisonOpen && s.begin(point,zoom,event?.pointerType);
+      return s.begin(point,zoom,event?.pointerType)?id:false;
     }
-    if(propertyEditSession?.flexibleMode){
+    if(id==='property.edit'&&propertyEditSession?.flexibleMode){
       const f=propertyEditSession.flexible;
       for(const which of ['A','B']){
         const p=plot027EndpointPosition(f,which);
@@ -2983,19 +3029,19 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, (p
           propertyEditSession.drag={kind:'plot027',which,original:{edgeA:f.edgeA,edgeB:f.edgeB,
             ratioA:f.ratioA,ratioB:f.ratioB}};
           propertyEditSession.updateFlexible({endpoint:which});
-          return true;
+          return id;
         }
       }
       return false;
     }
-    if(propertyEditSession?.isActive){
+    if(id==='property.edit'){
       const session=propertyEditSession,index=session.hitCorner(project?.city,point,zoom);
       if(session.polygonMode && index===null){
         const center=frontageMidpointSFS(session.boundary),radius=10/Math.max(.18,zoom);
         if(center && Math.hypot(center.x-point.x,center.y-point.y)<=radius){
           const drag=beginPropertyFrontageGestureSFS(project,session,'edge',null,point);
           if(!drag){$('statusMessage').textContent='Frontage road cannot be snapped safely.';return false;}
-          session.drag=drag;syncPropertyEditUI3I();return true;
+          session.drag=drag;syncPropertyEditUI3I();return id;
         }
       }
       if(index===null)return false;
@@ -3005,31 +3051,31 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, (p
         session.drag=drag;
       }else session.drag={index,original:{...session.boundary[index]}};
       session.selectCorner(index);
-      return true;
+      return id;
     }
-    if(buildingPlacementSession?.isActive){
+    if(id==='building.place'){
       const polygon=buildingPlacementSession.active.courtyard?.only ? null
         : buildingPlacementSession.previewFor(project?.city)?.footprint;
       if(polygon?.length && pointInPolygon(point,polygon)){
         const property=buildingPlacementSession.property(project.city);
         buildingPlacementSession.drag={start:buildingLocalPoint3H(property,point),spec:{...buildingPlacementSession.spec}};
-        return true;
+        return id;
       }
       return false;
     }
-    return Boolean(buildingEditSession?.isActive && buildingEditSession.beginGesture(project?.city,layers,point,zoom,event?.pointerType));
+    return id==='building.edit'&&buildingEditSession.beginGesture(project?.city,layers,point,zoom,event?.pointerType)?id:false;
   },
-  move: (point,event) => {
-    if(compoundDrag){
+  move: (point,event,id) => {
+    if(id==='compound.transform'&&compoundDrag){
       compoundTransform.dx=compoundDrag.transform.dx+point.x-compoundDrag.start.x;
       compoundTransform.dy=compoundDrag.transform.dy+point.y-compoundDrag.start.y;
       $('compoundDx').value=String(Number(compoundTransform.dx.toFixed(4)));
       $('compoundDy').value=String(Number(compoundTransform.dy.toFixed(4)));
       c01SyncPanel();requestDraw();return;
     }
-    if(propertyMergeE3?.active)return;
-    if(propertySplitE2?.session.drag){propertySplitE2.move(point);return;}
-    if(propertyCreationSessionE1?.drag){
+    if(id==='property.merge')return;
+    if(id==='property.split'&&propertySplitE2?.session.drag){propertySplitE2.move(point);return;}
+    if(id==='property.create'&&propertyCreationSessionE1?.drag){
       const state=propertyCreationSessionE1,draft=state.draft;
       const edge=propertyFrontagesE1(project.city,draft.blockId).find(x=>x.roadId===draft.roadId);
       if(edge){
@@ -3039,15 +3085,15 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, (p
       }
       return;
     }
-    if(roadWorkspace?.active){roadWorkspace.session.move(point,event);return;}
-    if(propertyEditSession?.drag?.kind==='plot027'){
+    if(id==='road.edit'){roadWorkspace.session.move(point,event);return;}
+    if(id==='property.edit'&&propertyEditSession?.drag?.kind==='plot027'){
       const f=propertyEditSession.flexible,near=plot027NearestEdge(f,point,camera.zoom);
       if(near){
         const which=propertyEditSession.drag.which;
         propertyEditSession.updateFlexible({[which==='A'?'edgeA':'edgeB']:near.edge,
           [which==='A'?'ratioA':'ratioB']:near.ratio});
       }
-    }else if(propertyEditSession?.drag?.kind==='frontage-sfs'){
+    }else if(id==='property.edit'&&propertyEditSession?.drag?.kind==='frontage-sfs'){
       const drag=propertyEditSession.drag;
       const result=proposePropertyFrontageGestureSFS(project,propertyEditSession,drag,point);
       if(result.ok&&result.frontage){
@@ -3058,32 +3104,32 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, (p
         if(result.clamped)$('statusMessage').textContent=result.reason;
         syncPropertyEditUI3I();
       }else if(result.reason)$('statusMessage').textContent=result.reason;
-    }else if(propertyEditSession?.drag){
+    }else if(id==='property.edit'&&propertyEditSession?.drag){
       propertyEditSession.setCorner(propertyEditSession.drag.index,point);
-    }else if(buildingPlacementSession?.drag){
+    }else if(id==='building.place'&&buildingPlacementSession?.drag){
       const property=buildingPlacementSession.property(project.city);
       const now=buildingLocalPoint3H(property,point),drag=buildingPlacementSession.drag;
       if(now && drag.start)buildingPlacementSession.update({
         u:drag.spec.u+now.u-drag.start.u,v:drag.spec.v+now.v-drag.start.v
       });
-    }else buildingEditSession?.moveGesture(point);
+    }else if(id==='building.edit')buildingEditSession?.moveGesture(point);
   },
-  end: (cancelled,event) => {
-    if(compoundDrag){
+  end: (cancelled,event,id) => {
+    if(id==='compound.transform'&&compoundDrag){
       if(cancelled)compoundTransform={...compoundDrag.transform};
       compoundDrag=null;
       $('compoundDx').value=String(Number(compoundTransform.dx.toFixed(4)));
       $('compoundDy').value=String(Number(compoundTransform.dy.toFixed(4)));
       c01SyncPanel();requestDraw();return;
     }
-    if(propertySplitE2?.session.drag){propertySplitE2.end(cancelled);return;}
-    if(propertyCreationSessionE1?.drag){
+    if(id==='property.split'&&propertySplitE2?.session.drag){propertySplitE2.end(cancelled);return;}
+    if(id==='property.create'&&propertyCreationSessionE1?.drag){
       const state=propertyCreationSessionE1,drag=state.drag;state.drag=null;
       if(cancelled)state.update({u:drag.originalU});
       syncPropertyCreationE1();return;
     }
-    if(roadWorkspace?.active){roadWorkspace.session.end(cancelled,event);return;}
-    if(propertyEditSession?.drag){
+    if(id==='road.edit'){roadWorkspace.session.end(cancelled,event);return;}
+    if(id==='property.edit'&&propertyEditSession?.drag){
       const drag=propertyEditSession.drag;
       propertyEditSession.drag=null;
       if(cancelled){
@@ -3092,12 +3138,12 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, (p
         else propertyEditSession.setCorner(drag.index,drag.original);
       }
       syncPropertyEditUI3I();
-    }else if(buildingPlacementSession?.drag){
+    }else if(id==='building.place'&&buildingPlacementSession?.drag){
       const drag=buildingPlacementSession.drag;
       buildingPlacementSession.drag=null;
       if(cancelled)buildingPlacementSession.update(drag.spec);
       syncBuildingStructureUI3H();
-    }else buildingEditSession?.endGesture(cancelled);
+    }else if(id==='building.edit')buildingEditSession?.endGesture(cancelled);
   }
 });
 function clearMapHover() {
@@ -3207,6 +3253,7 @@ function captureWorkspace() {
 }
 
 function applyProjectDocument(document) {
+  cancelMapGesturesA2();
   roadWorkspace?.exit({restore:false});
   propertyEditSession?.stop();
   propertyCreationSessionE1?.stop();
@@ -3455,11 +3502,10 @@ files.start();
 desktopWorkspace = new DesktopWorkspace({
   getElement: $, layout: desktopEditLayout, shell: workspaceShell, road: roadWorkspace,
   landscape: landscapeWorkspace,
-  leaveTools: () => {
+  leaveTools: () => toolsA2.requestLeave(null,()=>{
     if (!exitPropertyEditing3I() || !exitBuildingEditing() || !exitStructurePlacement3H()) return false;
-    stopWorkspaceTools();
-    return true;
-  },
+    stopWorkspaceTools();return true;
+  },cancelMapGesturesA2),
   addProperty: startPropertyCreationE1,
   addBuilding: startStructurePlacement3H,
   prepareGeneration: prepareDesktopGeneration,
@@ -3481,9 +3527,4 @@ window.addEventListener('pagehide', () => {
 if (typeof document.addEventListener === 'function') document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') files.flush().catch(() => {});
 });
-window.addEventListener('keydown', event => {
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
-    event.preventDefault();
-    files.saveDownload();
-  }
-});
+
