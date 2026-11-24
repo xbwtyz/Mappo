@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Living dependency roadmap, reconciled after frontage PRs #128–#129 on November 22, 2026 (Pacific).** Development milestones 0.2.1–0.2.12 and the 0.2.13/0.2.14-dev follow-ups have merged into `main`; the irregular-frontage correction and Smart Frontage Snapping are also merged. Stable published release remains **v0.2.0**. A development merge does **not** publish a new release or deploy Pages.
+> **Living dependency roadmap, reconciled through PR #141 on November 23, 2026 (Pacific).** The development build on `main` is **0.2.17-dev**, with Schema 10. The stable release is **v0.2.0**.
 
 ## Problem and intended outcome
 
@@ -30,8 +30,9 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **Schema 10 S10-B adoption** | Schema 9 to 10 migration, runtime/editor/save compatibility | **Merged [PR #132](https://github.com/xbwtyz/Mappo/pull/132)** at `08b33925cd8e`. [Implementation contract](milestones/schema10-s10b-adoption.md). |
 | **Schema 10 S10-C courtyard access** | Independent courtyard buildings, explicit portals and validated routes [#122](https://github.com/xbwtyz/Mappo/issues/122) | Merged in [PR #133](https://github.com/xbwtyz/Mappo/pull/133) for `0.2.15-dev`. [Contract and acceptance](milestones/schema10-s10c-courtyard-access.md). |
 | **Schema 10 S10-D building components** | One building with separately editable footprints | Merged in [PR #134](https://github.com/xbwtyz/Mappo/pull/134) for `0.2.16-dev`. [Contract and acceptance](milestones/schema10-s10d-building-components.md). |
-| **Schema 10 S10-E footprint joins** | Join two components within one building [#121](https://github.com/xbwtyz/Mappo/issues/121) | Review candidate for `0.2.17-dev`. [Contract and acceptance](milestones/schema10-s10e-join-footprints.md). |
-| **Later Schema 10 milestones** | S10-F stabilization | Each implementation requires separate authorization. A02/A04/A05 remain separate. Other scale and capacity work remains evidence-gated. |
+| **Schema 10 S10-E footprint joins** | Join two components within one building [#121](https://github.com/xbwtyz/Mappo/issues/121) | Merged in [PR #135](https://github.com/xbwtyz/Mappo/pull/135) for `0.2.17-dev`. [Contract and acceptance](milestones/schema10-s10e-join-footprints.md). |
+| **Schema 10 S10-F stabilization** | Mixed-city regressions, adjustment audit, and editor fixes | Merged mixed-city coverage in [PR #136](https://github.com/xbwtyz/Mappo/pull/136), the [1,075-edit audit](../../contributing/adjustment-audit.md) in [PR #139](https://github.com/xbwtyz/Mappo/pull/139), and fixes for irregular splits, multipart split guidance, and courtyard frontage repair in [PR #141](https://github.com/xbwtyz/Mappo/pull/141). Issues [#137](https://github.com/xbwtyz/Mappo/issues/137), [#138](https://github.com/xbwtyz/Mappo/issues/138), and [#140](https://github.com/xbwtyz/Mappo/issues/140) closed as completed. |
+| **0.2.17-dev release readiness** | Offline cross-editor session and export verification | A reproducible Developed city PNG export failure with multipart buildings blocks the release recommendation. See [the readiness pass](#0217-dev-release-readiness-pass). |
 
 ## Progress and intended delivery waves
 
@@ -47,7 +48,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **8 — Evidence-triggered improvements** | D02 frame hitches, D03 capacity, E01a import cap | D03 sampled Large cities and found no road-reflow or import cap hits | Capacity changes deferred pending reproducible need | Small audit → high implementation |
 | **Policy decisions outside this sequence** | A02 disconnected networks, A04 protected edits, A05 true curves | Scope after product decisions; no automatic version promise | Unassigned | Very high or schema-sensitive |
 
-**Latest merged-code gate:** [post-merge CI #45120162341](https://github.com/xbwtyz/Mappo/actions/runs/45120162341) passed on exact `main` commit `1578e3c0a7f504d6510414a419b9374d4b9227ff` after PR #130 (S10-A and documentation cleanup merged). This is development evidence, **not** a release, deployed Pages update or owner hands-on UX signoff.
+**Latest merged-code gate.** [Post-merge CI #45289789689](https://github.com/xbwtyz/Mappo/actions/runs/45289789689) passed on `a4d61f423ccf2c895aaff073c72a6768188685c0` after PR #141. All six runners and the aggregate check passed.
 
 Prioritization is a dependency guide, **not** a commitment to 0.2.2, 0.2.3, etc. We may split high-risk items across multiple 0.2.x releases or defer them if the cost exceeds user value. Preserve a stable, usable editor at each release gate.
 
@@ -86,10 +87,20 @@ flowchart TD
 2. All previews, Cancel and Reset are read-only to accepted data and recovery.
 3. Preserve or explicitly reconcile user-authored identities, unknown metadata, plot/building/road ownership and protected context.
 4. Retain deterministic generation and accurate local change/lineage ledgers.
-5. Maintain current schema 9 / envelope 1 until a separately authorized schema/format change. Future universal legacy-save support is **optional**, but shipped migrations/tests must not be silently removed.
+5. Maintain project schema 10, portable envelope 1, and workspace schema 1 until a separately authorized schema/format change. Future universal legacy-save support is **optional**, but shipped migrations/tests must not be silently removed.
 6. Keep modular source, one dependency-free offline HTML, byte-identical root/dist build and archive retention.
 7. Target Firefox and Chromium desktop/laptop/ultrawide, with keyboard, mouse/trackpad, accessible statuses and numeric editing. No forced walkthroughs.
 8. Run focused tests while developing; six-runner CI (two Node shards, four browser suites) on review-ready PRs and `main`. Opt-in heavy C7 benchmark only where measured comparisons are relevant.
+
+## 0.2.17-dev release readiness pass
+
+An automated offline session in Firefox 142.0.1 at 1440 × 900 checked the merged runtime from PR #141. The session used the repository's [mixed-city fixture](../../../tests/helpers/schema10-mixed-city.js) and the desktop editor in a standalone `file://` copy with test-only observation hooks.
+
+- Moved frontage junction `N-0154` by +0.5 on Y and explicitly selected the courtyard access repair. Changed the divider on `PROP-00011` to 80%, preserving the multipart building with updated plot membership. The building editor blocked a move into the courtyard wall, then applied a valid move.
+- Three Undo and three Redo actions restored every accepted city snapshot in order. The portable download reopened to the same accepted city after reloading the app (959,885 bytes).
+- **Release blocker.** The default **Developed city** export assumes every building has one iterable legacy `footprint`. A valid Schema 10 multipart building has canonical exterior rings and no single legacy footprint, so the export dimensions show an error and PNG download fails. The failure also reproduced on the unmodified standalone immediately after opening the original fixture. **Full survey** framing exported a valid 2,048 × 1,454 PNG for the edited city. Neither replay required HTTP traffic. To reproduce, open the mixed-city fixture and expand **Project → Whole-city PNG** with **Developed city** selected. [Export bounds code](../../../src/data/whole-city-png.js)
+
+The next engineering task is to use canonical exterior rings for developed-city framing and verify dimensions and real PNG downloads for multipart, simple, and survey-framed cities. A02, A04, and A05 remain separate product decisions. Scale and capacity work remains evidence-gated.
 
 ## Milestone release gate (repeat for each 0.2.x)
 
