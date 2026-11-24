@@ -4,115 +4,11 @@
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { reconcileRoadWorkspace } from '../editor/road-workspace.js';
+import { historyWorkspaceForReplay } from './accepted-history-workspace-a5.js';
 
 const d01Same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const d01Bytes=project=>JSON.stringify(project).length*2; // conservative UTF-16 estimate
 
-function d01RecordChanges(before,after,collection) {
-  const a=before?.city?.[collection]??[],b=after?.city?.[collection]??[];
-  if(d01Same(a,b))return [];
-  const initial=new Map(a.map(x=>[x.id,x]));
-  return b.filter(x=>!d01Same(initial.get(x.id),x)).map(x=>x.id)
-    .concat(a.filter(x=>!b.some(y=>y.id===x.id)).map(x=>x.id));
-}
-function d01ChangedKeys(a,b) {
-  const keys=new Set([...Object.keys(a??{}),...Object.keys(b??{})]);
-  return [...keys].filter(key=>!d01Same(a?.[key],b?.[key]));
-}
-function d01OnlyIdentity(before,after) {
-  const cols=['buildings','properties'];
-  if(d01ChangedKeys(before.city,after.city).some(x=>!cols.includes(x)))return null;
-  let changed=[];
-  for(const col of cols) {
-    const a=before.city[col],b=after.city[col];
-    if(a.length!==b.length)return null;
-    for(let i=0;i<a.length;i++) {
-      const original=a[i],next=b[i];
-      if(original.id!==next.id)return null;
-      if(d01Same(original,next))continue;
-      const keys=d01ChangedKeys(original,next);
-      if(keys.some(k=>!['customName','customUse',...(col==='buildings'?['type']:[])].includes(k)))
-        return null;
-      changed.push({id:original.id,kind:col==='buildings'?'building':'property',keys});
-    }
-  }
-  return changed.length?changed:null;
-}
-export function describeAcceptedEditD01(before,after) {
-  if(!before?.city||!after?.city||d01Same(before.city,after.city))return null;
-  // Rebuilding/importing or an unsupported feature must not be mistaken for
-  // an accepted road/property edit merely because city arrays have changed.
-  if(before.seed!==after.seed||!d01Same(before.options,after.options)||
-      before.schemaVersion!==after.schemaVersion||before.generatorVersion!==after.generatorVersion||
-      before.city.id!==after.city.id)
-    return {barrier:true,label:'City replacement cleared session history.'};
-  const modified=d01ChangedKeys(before.city,after.city);
-  const outOfScope=['districtState','districts','fortifications','walls','waterFeatures',
-    'terrainFeatures','terrainFaces','waterFaces','survey'];
-  // A validated road reflow owns all dependent neighborhood records, including
-  // district assignments and face records. Detect the road graph first; a
-  // district-only change remains an explicit unsupported history boundary.
-  const structuralRoad=modified.some(k=>['nodes','roads','blocks','plaza'].includes(k));
-  if(structuralRoad)return {family:'road',operation:'road-reflow',targetIds:d01RecordChanges(before,after,'roads'),
-    label:'Edit road and neighborhood'};
-  if(modified.some(k=>outOfScope.includes(k)))return {
-    barrier:true,label:'An edit outside unified city history cleared session Undo/Redo.'
-  };
-  const identity=d01OnlyIdentity(before,after);
-  if(identity){
-    const row=identity[0];
-    const label=identity.length>1?'Edit identities':
-      row.keys.includes('type')?'Change building use':
-      row.keys.includes('customName')?'Rename '+row.kind:'Edit '+row.kind+' identity';
-    return {family:'identity',operation:'identity-change',targetIds:identity.map(x=>x.id),label};
-  }
-  if(modified.some(k=>!['properties','plots','buildings','openSpaces'].includes(k)))return {
-    barrier:true,label:'An unsupported accepted change cleared session history.'
-  };
-  const oldSites=before.city.properties,newSites=after.city.properties;
-  const oldBuildings=before.city.buildings,newBuildings=after.city.buildings;
-  const plotChanged=!d01Same(before.city.plots,after.city.plots);
-  const siteIds=d01RecordChanges(before,after,'properties');
-  const buildingIds=d01RecordChanges(before,after,'buildings');
-  const propertyDelta=newSites.length-oldSites.length;
-  const buildingDelta=newBuildings.length-oldBuildings.length;
-  if(propertyDelta!==0)return {family:'property',operation:'property-structure',targetIds:siteIds,
-    label:propertyDelta>0?'Create/split property':'Merge/delete property'};
-  if(plotChanged||modified.includes('openSpaces'))return {
-    family:'property',operation:'property-and-plot',targetIds:siteIds,
-    label:'Edit property and plots'
-  };
-  const compoundsChanged=newSites.some(site=>{
-    const original=oldSites.find(x=>x.id===site.id);
-    return original&&!d01Same(original.buildingCompounds,site.buildingCompounds);
-  });
-  if(compoundsChanged) return {family:'compound',operation:'compound-membership',targetIds:siteIds,
-    label:'Edit building compound'};
-  if(buildingDelta!==0) return {family:'building',operation:'building-structure',targetIds:buildingIds,
-    label:buildingDelta>0?'Add buildings':'Remove buildings'};
-  const previousAccess = new Map(oldBuildings.filter(b => b.geometry?.version === 2)
-    .map(b => [b.id, b.geometry.courtyardAccess]));
-  const courtyardAccessChanged = newBuildings.some(building =>
-    (building.geometry?.version === 2 || previousAccess.has(building.id)) &&
-    !d01Same(previousAccess.get(building.id), building.geometry?.courtyardAccess));
-  if (buildingIds.length === 1) {
-    const targetId = buildingIds[0];
-    const next = newBuildings.find(b => b.id === targetId);
-    const original = oldBuildings.find(b => b.id === targetId);
-    if (next?.geometry?.version === 3 || original?.geometry?.version === 3 ||
-        !d01Same(next?.components, original?.components))
-      return {family:'building', operation:'building-structure', targetIds:buildingIds, label:'Edit building components'};
-  }
-  if(courtyardAccessChanged) return {family:'building',operation:'building-structure',targetIds:buildingIds,
-    label:'Edit courtyard access'};
-  if(buildingIds.length>1)return {family:'compound',operation:'compound-transform',targetIds:buildingIds,
-    label:'Transform building compound'};
-  if(buildingIds.length)return {family:'building',operation:'building-geometry',targetIds:buildingIds,
-    label:'Edit building footprint'};
-  if(siteIds.length)return {family:'property',operation:'property-geometry',targetIds:siteIds,
-    label:'Edit property geometry'};
-  return {barrier:true,label:'An unrecognized city edit cleared session history.'};
-}
 export class AcceptedEditHistoryD01 {
   constructor({maxEntries=20,maxBytes=64*1024*1024}={}) {
     if(!Number.isSafeInteger(maxEntries)||maxEntries<1||maxEntries>200||
@@ -130,7 +26,7 @@ export class AcceptedEditHistoryD01 {
     this.past=[];this.future=[];this.baseline=project?copyJson(project):null;
     this.notice=notice;
   }
-  observe(project,describe=describeAcceptedEditD01) {
+  observe(project, transaction) {
     if(!project?.city)return {status:'no-city'};
     if(!this.baseline){this.baseline=copyJson(project);return {status:'baseline'};}
     const before=this.baseline;
@@ -139,29 +35,31 @@ export class AcceptedEditHistoryD01 {
       this.baseline=copyJson(project);
       return {status:'unchanged'};
     }
-    const receipt=describe(before,project);
-    if(!receipt||receipt.barrier){
-      this.clear(project,receipt?.label??'Unclassified city change cleared session history.');
-      return {status:'barrier',reason:this.notice};
+    if (!transaction) {
+      this.clear(project, 'A city change without a history transaction cleared session Undo/Redo.');
+      return { status: 'barrier', reason: this.notice };
     }
-    return this.record(before,project,receipt);
+    return this.record(before, project, transaction);
   }
-  record(before,after,{family,operation,label,targetIds=[]}={}) {
-    if(!before?.city||!after?.city||!family||!label)
-      throw Error('A complete accepted-history receipt is required.');
+  record(before,after,{family,operation,label,targetIds,editorHistory}={}) {
+    if (!before?.city || !after?.city || ![family, operation, label].every(value =>
+      typeof value === 'string' && value.trim()) || !Array.isArray(targetIds) ||
+      !targetIds.every(id => typeof id === 'string' && id))
+      throw Error('An accepted-history transaction requires a family, operation, label, and target IDs.');
     if(d01Same(before,after)){this.baseline=copyJson(after);return {status:'no-op'};}
     if(this.baseline&&!d01Same(this.baseline,before))
       return {status:'stale',reason:'The accepted city changed before history recording.'};
     const from=copyJson(before),to=copyJson(after);
-    const bytes=d01Bytes(from)+d01Bytes(to);
+    const bytes=d01Bytes(from)+d01Bytes(to)+(editorHistory ? d01Bytes(editorHistory) : 0);
     // The accepted edit itself remains valid even if its history does not fit.
     if(bytes>this.maxBytes) {
       this.clear(after,'Last accepted edit exceeded the session history budget. Undo is unavailable.');
       return {status:'oversize',bytes};
     }
     this.future=[]; // A new accepted edit cuts the redo branch.
-    const item={serial:++this.serial,family,operation:operation??family,label,
-      targetIds:targetIds.slice(),from,to,bytes};
+    const item={serial:++this.serial,family,operation,label,
+      targetIds:[...new Set(targetIds)],from,to,bytes,
+      ...(editorHistory ? { editorHistory: copyJson(editorHistory) } : {})};
     this.past.push(item);
     let pruned=0;
     while(this.length>this.maxEntries||this.bytes>this.maxBytes){
@@ -189,8 +87,9 @@ export class AcceptedEditHistoryD01 {
       validateStoredProject(candidate);
       let nextWorkspace=copyJson(workspace);
       // Full road transactions may change face, selection and district IDs.
-      if(item.family==='road')
+      if (item.family === 'road' && !item.editorHistory)
         nextWorkspace=reconcileRoadWorkspace(nextWorkspace,project.city,candidate.city);
+      nextWorkspace = historyWorkspaceForReplay(nextWorkspace, candidate.city, item.editorHistory, direction);
       const ref=nextWorkspace?.ui?.selection;
       if(ref?.kind==='property'&&!candidate.city.properties.some(p=>p.id===ref.id))
         nextWorkspace.ui.selection=null;

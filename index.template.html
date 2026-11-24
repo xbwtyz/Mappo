@@ -271,7 +271,7 @@
             <p id="desktopWorkspaceStatus" class="hint" role="status" aria-live="polite"></p>
             <div id="desktopGenerationActions" class="road-preview-actions">
               <button id="desktopGenerationPreview" type="button" class="tool-button">Preview</button>
-              <button id="desktopGenerationCancel" type="button" class="minor-button" disabled>Cancel preview</button>
+              <button id="desktopGenerationCancel" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" title="Reset preview (Ctrl/Cmd+Shift+Z)" type="button" class="minor-button" disabled>Cancel preview</button>
               <button id="desktopGenerationApply" type="button" class="tool-button" disabled>Rebuild city</button>
             </div>
             <div id="desktopCityRebuildControls"></div>
@@ -450,7 +450,7 @@
             <button id="roadMenuReviewBlocker" type="button" class="minor-button" hidden>Review blocker</button>
             <div class="road-preview-actions">
               <button id="roadApplyB4" type="button" class="tool-button" aria-describedby="roadReportStatus roadApplyStatusB4 roadChangeSummaryD1" disabled>Apply road edit</button>
-              <button id="roadPreviewReset" class="minor-button" disabled>Reset</button>
+              <button id="roadPreviewReset" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" title="Reset preview (Ctrl/Cmd+Shift+Z)" class="minor-button" disabled>Reset</button>
               <button id="roadPreviewCancel" class="minor-button">Cancel</button>
             </div>
           </div>
@@ -484,7 +484,7 @@
           <p id="propertyCreateStatusE1" data-place-status class="building-history-status" role="status" aria-live="polite" aria-atomic="true">Choose a block to begin.</p>
           <div class="road-preview-actions" data-place-actions>
             <button id="propertyCreateApplyE1" type="button" class="tool-button" aria-describedby="propertyCreateStatusE1" disabled>Apply new property</button>
-            <button id="propertyCreateResetE1" type="button" class="minor-button" disabled>Reset</button>
+            <button id="propertyCreateResetE1" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" title="Reset preview (Ctrl/Cmd+Shift+Z)" type="button" class="minor-button" disabled>Reset</button>
             <button id="propertyCreateCancelE1" type="button" class="minor-button">Cancel</button>
           </div>
           <p class="place-review-intro" data-place-review hidden data-place-intro>Review the new property, its frontage, and the validation status.</p>
@@ -511,7 +511,7 @@
           <p id="propertySplitStatusE2" data-place-status class="building-history-status" role="status" aria-live="polite" aria-atomic="true"></p>
           <div class="road-preview-actions" data-place-actions>
             <button id="propertySplitApplyE2" type="button" class="tool-button" aria-describedby="propertySplitStatusE2" disabled>Apply property split</button>
-            <button id="propertySplitResetE2" type="button" class="minor-button" disabled>Reset</button>
+            <button id="propertySplitResetE2" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" title="Reset preview (Ctrl/Cmd+Shift+Z)" type="button" class="minor-button" disabled>Reset</button>
             <button id="propertySplitCancelE2" type="button" class="minor-button">Cancel</button>
           </div>
           <p class="place-review-intro" data-place-review hidden data-place-intro>Review the two properties, plot changes, and any building ownership transfers.</p>
@@ -531,7 +531,7 @@
           <p id="propertyMergeStatusE3" data-place-status class="building-history-status" role="status" aria-live="polite"></p>
           <div class="road-preview-actions" data-place-actions>
             <button id="propertyMergeApplyE3" type="button" class="tool-button" aria-describedby="propertyMergeStatusE3" disabled>Apply property merge</button>
-            <button id="propertyMergeResetE3" type="button" class="minor-button" disabled>Reset</button>
+            <button id="propertyMergeResetE3" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" title="Reset preview (Ctrl/Cmd+Shift+Z)" type="button" class="minor-button" disabled>Reset</button>
             <button id="propertyMergeCancelE3" type="button" class="minor-button">Cancel</button>
           </div>
           <p class="place-review-intro" data-place-review hidden data-place-intro>Review which property keeps its identity and what happens to its plots and buildings.</p>
@@ -607,7 +607,7 @@
           <p class="precision-key-hint-4c">Map focus: arrow keys nudge · Esc cancels · Ctrl/⌘+Z undoes accepted edits.</p>
           <div class="building-transform-actions" data-place-actions>
             <button type="button" id="propertyEditApply3I" disabled title="Available after geometry validation in 3I-C">Apply to City</button>
-            <button type="button" id="propertyEditReset3I">Reset preview</button>
+            <button type="button" id="propertyEditReset3I" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" title="Reset preview (Ctrl/Cmd+Shift+Z)">Reset preview</button>
             <button type="button" id="propertyEditCancel3I">Cancel preview</button>
           </div>
           <div class="building-history-actions" role="group" aria-label="Property geometry history">
@@ -678,7 +678,7 @@
           <p id="buildingFootprintDetails" data-place-review aria-live="polite" hidden></p>
           <div class="building-transform-actions" data-place-actions>
             <button type="button" id="buildingPreviewApply" disabled>Apply footprint</button>
-            <button type="button" id="buildingPreviewReset">Reset preview</button>
+            <button type="button" id="buildingPreviewReset" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" title="Reset preview (Ctrl/Cmd+Shift+Z)">Reset preview</button>
             <button type="button" id="buildingPreviewCancel">Cancel preview</button>
           </div>
           <div class="building-history-actions" role="group" aria-label="Accepted building edit history">
@@ -805,7 +805,7 @@
             </div>
             <div class="building-transform-actions">
               <button id="compoundApply" type="button" disabled>Apply group transform</button>
-              <button id="compoundReset" type="button">Reset transform</button>
+              <button id="compoundReset" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" title="Reset preview (Ctrl/Cmd+Shift+Z)" type="button">Reset transform</button>
               <button id="compoundCancel" type="button">Close compounds</button>
             </div>
           </div>
@@ -820,18 +820,26 @@
         </section>
         <div class="map-controls workspace-map-controls" role="group" aria-label="Map navigation">
           <button id="panButton" title="Click a property, landscape feature or open block to inspect; drag to pan" aria-label="Select / Pan map" aria-pressed="true">Select / Pan</button>
-          <button id="workspaceUndoButton" class="workspace-context-undo" title="No accepted edit to undo" disabled>Undo accepted</button>
-          <button id="workspaceRedoButtonD01" class="workspace-context-undo" type="button" title="No accepted Redo available" disabled>Redo</button>
+          <div class="history-command-a5">
+            <button id="workspaceUndoButton" class="workspace-context-undo" type="button" aria-disabled="true" aria-describedby="workspaceUndoTooltipA5" aria-keyshortcuts="Control+Z Meta+Z">Undo</button>
+            <span id="workspaceUndoTooltipA5" class="history-tooltip-a5 map-edit-diagnostic-4d" role="tooltip" hidden></span>
+          </div>
+          <div class="history-command-a5">
+            <button id="workspaceRedoButtonD01" class="workspace-context-undo" type="button" aria-disabled="true" aria-describedby="workspaceRedoTooltipA5" aria-keyshortcuts="Control+Y Meta+Y">Redo</button>
+            <span id="workspaceRedoTooltipA5" class="history-tooltip-a5 map-edit-diagnostic-4d" role="tooltip" hidden></span>
+          </div>
           <button id="fitButton" title="Fit outline (0)" aria-label="Fit outline">Fit</button>
           <div class="workspace-zoom-controls"><button id="zoomInButton" title="Zoom in (+)" aria-label="Zoom in">+</button><button id="zoomOutButton" title="Zoom out (-)" aria-label="Zoom out">−</button></div>
         </div>
         <details id="workspaceHistoryPanelD01" class="workspace-history-d01"><summary>Accepted edit history · session only</summary>
           <p id="workspaceHistoryStatusD01" role="status" aria-live="polite">No accepted edits in this session.</p>
           <ol id="workspaceHistoryListD01" aria-label="Chronological accepted edits"></ol>
+          <button id="restoreDistrictHistoryA5" type="button" class="minor-button" hidden>Restore saved district edit</button>
+          <button id="restoreDefenseHistoryA5" type="button" class="minor-button" hidden>Restore saved defense edit</button>
         </details>
         <div class="map-legend"><span class="legend-mark"></span><span>CITY BOUNDARY</span><span class="legend-sep">/</span><span class="center-mark">⊙</span><span>TOWN CENTER</span><span class="legend-sep">/</span><span class="roof-mark"></span><span>BUILDINGS</span></div>
       </div>
-      <div class="map-status"><span id="statusMessage" role="status">Generating city plan…</span><span id="workspaceUndoDescription" class="workspace-undo-description">No outline edit to undo.</span><span class="status-readout">ZOOM <strong id="zoomValue">100%</strong></span></div>
+      <div class="map-status"><span id="statusMessage" role="status">Generating city plan…</span><span class="status-readout">ZOOM <strong id="zoomValue">100%</strong></span></div>
     </main>
     <aside id="workspaceInspector" class="sidebar sidebar-right" aria-label="Selection inspector" hidden>
       <div class="sidebar-heading workspace-panel-heading"><span>INSPECTOR</span><div class="workspace-panel-actions"><button id="workspacePinInspector" class="workspace-pin-button" aria-label="Pin inspector open" aria-pressed="false">Pin</button><button id="workspaceCloseInspector" class="workspace-icon-button" aria-label="Collapse inspector" title="Collapse inspector">›</button></div></div>

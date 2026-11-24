@@ -83,6 +83,15 @@ Maintain the canonical Generation/Add/Roads workspace unless an explicitly appro
 
 **Acceptance direction:** existing workflows remain supported; consistent controls and errors; no draft mutation; appropriate keyboard/focus behavior; measured reductions in identified friction; no performance or offline regressions; validated behavior in both desktop engines. Obtain owner approval of actual architecture and milestone gates first.
 
+### A6 — Cross-editor history and save acceptance
+
+Use a deterministic Schema 10 city that has compatible district and defense restore snapshots from an earlier save. Choose one road reflow that reshapes nearby parcels or routes and changes a district dependency. Apply a district edit, a defense edit, and the road reflow. Record the accepted project and affected workspace snapshots after each Apply.
+
+1. Undo the three edits in reverse and redo them in Apply order. Compare the accepted city at every step, including IDs, district membership, walls, gates, towers, parcels and entrance/access routes. The road reflow and its dependent edits count as one transaction.
+2. Compare the saved district snapshot stack on each side of the road edit. When reflow makes a snapshot incompatible, Undo restores that snapshot with the prior topology and Redo restores the compatible stack for the reapplied topology.
+3. Export and reopen the tested state. Verify full project parity and compatible saved district and defense restore actions. Restore each snapshot through the History panel, verify the resulting accepted data, and Undo/Redo that restore in the new session.
+4. Run the scenario from the offline standalone in both desktop browser engines. Report fixture seed and IDs, the first mismatching state if any, and the owner hands-on result separately from browser automation.
+
 ## 6. B — Connected multi-segment road editing
 
 **Owner-requested capability:** Select multiple connected road segments and move them together.
@@ -91,7 +100,7 @@ Design connected subgraph selection (segments, shared junctions, endpoints) and 
 
 Investigate graph connectivity, junction identity, intersections, face lineage, affected property/plot geometry, entrances, courtyard routes, bridges and authored/protected features. Present a bounded first scope, explicit unsupported cases and user-facing conflict handling. No blind full-city regeneration or silent loss of authored work.
 
-**Acceptance direction:** deterministic connected selection, coherent group movement, valid external connections or explicit refusal, independent candidate validation, stable IDs, protected feature preservation, one atomic history transaction, save/reopen and offline Firefox/Chromium coverage. Subsequent road capabilities such as true curves or disconnected networks are not implicitly included.
+**Acceptance direction:** deterministic connected selection, coherent group movement, valid external connections or explicit refusal, independent candidate validation, stable IDs, protected feature preservation, one atomic history transaction, save/reopen and offline Firefox/Chromium coverage. At validated Apply, supply one explicit history transaction with a label and the selected road IDs. It owns every dependent geometry and workspace change from that Apply. Subsequent road capabilities such as true curves or disconnected networks are not implicitly included.
 
 ## 7. C — Water and terrain expansion
 

@@ -128,6 +128,7 @@ export class PropertySplitControlsE2 {
     return true;
   }
   moveHistory(direction){
+    if (this.historyMove) return this.historyMove(direction);
     if(this.active||this.canEnter()!==true)return false;
     const current=this.getProject();
     const receipt=this.history.prepare(direction,current,this.getWorkspace());

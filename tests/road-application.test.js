@@ -126,6 +126,10 @@ test('B4 full accepted Apply and Undo/Redo each change recovery revision once',a
  const result=app.applyRoad(session,road.baseRevision);
  assert.equal(result.ok,true,result.message);
  assert.equal(app.state().files.revision,revision+1,'Apply must issue exactly one recovery revision');
+ const transaction=app.state().acceptedHistoryD01.entry('undo');
+ assert.equal(transaction.operation,'road-reflow');
+ assert.equal(transaction.label,'Move road junction');
+ assert.deepEqual([...transaction.targetIds],[proposal.id]);
  const applied=JSON.stringify(app.state().project);
  assert.notEqual(applied,before);
  assert.equal(app.moveRoadHistory('undo'),true);
@@ -134,6 +138,6 @@ test('B4 full accepted Apply and Undo/Redo each change recovery revision once',a
  assert.equal(app.moveRoadHistory('redo'),true);
  assert.equal(app.state().files.revision,revision+3,'Redo must issue exactly one recovery revision');
  assert.equal(JSON.stringify(app.state().project),applied,'Redo restores complete coupled project');
- assert.equal(app.state().roadHistory.past.length,1);
- assert.equal(app.state().roadHistory.future.length,0);
+ assert.equal(app.state().acceptedHistoryD01.past.length,1);
+ assert.equal(app.state().acceptedHistoryD01.future.length,0);
 });

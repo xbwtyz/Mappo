@@ -227,7 +227,9 @@ test('compiled keyboard, navigation, project replacement and pending timer exits
   key('Delete');
   assert.equal(JSON.stringify(state.project), JSON.stringify(before.project));
   key('z', { ctrlKey: true });
-  assert.equal(road.session.pending, false);
+  assert.equal(road.session.pending, true, 'Accepted Undo leaves the uncommitted road preview intact.');
+  key('z', { ctrlKey: true, shiftKey: true });
+  assert.equal(road.session.pending, false, 'Reset Preview has a dedicated shortcut.');
   key('ArrowLeft');
   app.el('roadProposedX').tagName = 'INPUT';
   app.el('roadProposedX').focus();
