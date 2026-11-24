@@ -77,3 +77,8 @@ Both runs passed 60/60; twelve reduced-input successes each, zero original-input
 - `cooperative-results-45369705005.jsonl`, `cooperative-payloads-45369705005.jsonl`: three linear cases, job 138360485419.
 
 Exact commit d3af286a89ce53fc313f417f6f48def389fb260a. Six complete result summaries and six complete base64 chunk collections, payload hashes emitted but independent verification pending. Both 60/60 Fast Checks. Six reduced-input recoveries, zero original-input recoveries. All exact reduced removal sets and identities matched archived compact failures. Total JSONL files: 38.
+
+
+## Setback contract audit round 4
+
+- `setback-audit-45370355699.jsonl`: two actual geometry observations (original and reduced inputs), one compact case result, exact commit 030bc6dc8f3fa49c25c52818a286c7f762cc6e2f, job 138362761658. 60/60 Fast Checks; no new recovery. Genuine newly introduced non-boundary-road setback conflict outside active block scope; identical old/new reported metrics are not original-source measurements. Total JSONL files: 39.
