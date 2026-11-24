@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { mixedCityFixtureS10 } from './helpers/schema10-mixed-city.js';
 import { planWholeCityPNG } from '../src/data/whole-city-png.js';
 
 function exportCityFixture() {
@@ -43,4 +44,45 @@ test('whole-city export falls back to survey and rejects invalid dimensions befo
   assert.throws(() => planWholeCityPNG(city, 'invalid', 2048), /framing/);
   assert.throws(() => planWholeCityPNG(city, 'survey', 8192), /resolution/);
   assert.throws(() => planWholeCityPNG({ ...city, survey: { boundary: [] } }, 'survey', 2048), /usable map bounds/);
+});
+
+test('developed framing includes every exterior of a valid Schema 10 mixed city', () => {
+  const { project, joinedId } = mixedCityFixtureS10();
+  const city = project.city;
+  const multipart = city.buildings.find(building => building.id === joinedId);
+  assert.ok(!Array.isArray(multipart.footprint));
+  const roots = multipart.geometry.regions.filter(region => region.parentId === null);
+  assert.ok(roots.length > 1);
+  const before = JSON.stringify(city);
+  for (const resolution of [2048, 4096]) {
+    for (const framing of ['developed', 'survey']) {
+      const plan = planWholeCityPNG(city, framing, resolution);
+      assert.equal(Math.max(plan.width, plan.height), resolution);
+      if (framing === 'developed') {
+        for (const building of city.buildings)
+          for (const region of building.geometry.regions.filter(row => row.parentId === null))
+            for (const point of region.ring) {
+              assert.ok(point.x > plan.centerX - plan.spanX / 2 && point.x < plan.centerX + plan.spanX / 2);
+              assert.ok(point.y > plan.centerY - plan.spanY / 2 && point.y < plan.centerY + plan.spanY / 2);
+            }
+      }
+    }
+  }
+  assert.equal(JSON.stringify(city), before);
+});
+
+test('multipart bounds include a distant exterior and preserve simple-footprint framing', () => {
+  const city = exportCityFixture();
+  const rectangle = (x, y) => [{x, y}, {x:x+10, y}, {x:x+10, y:y+10}, {x, y:y+10}];
+  const first = rectangle(45, 15);
+  const second = rectangle(140, 100);
+  city.buildings = [{footprint:first}];
+  const legacy = planWholeCityPNG(city, 'developed', 2048);
+  city.buildings = [{footprint:null, geometry:{regions:[{parentId:null, ring:first}]}}];
+  assert.deepEqual(planWholeCityPNG(city, 'developed', 2048), legacy);
+  city.buildings[0].geometry.regions.push({parentId:null, ring:second});
+  const multipart = planWholeCityPNG(city, 'developed', 2048);
+  assert.ok(multipart.centerX + multipart.spanX / 2 > 150);
+  assert.ok(multipart.centerY + multipart.spanY / 2 > 110);
+  assert.ok(multipart.spanX > legacy.spanX);
 });

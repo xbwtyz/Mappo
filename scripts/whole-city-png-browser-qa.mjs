@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
+import { mixedCityFixtureS10 } from '../tests/helpers/schema10-mixed-city.js';
+import { createProjectDocument } from '../src/data/project-format.js';
 
 const standalone = new URL('../index.html', import.meta.url).href;
 
@@ -114,6 +116,60 @@ for (const [name, engine] of Object.entries({ chromium, firefox })) {
     assert.match(await el('mapExportStatus4F').innerText(), /PNG export failed:.*encode/);
     assert.equal(await el('downloadWholeCityPNG').isEnabled(), true);
     assert.deepEqual(errors, []);
+
+    // New page: use the unmodified standalone and real downloads after the
+    // existing encode-failure test (whose canvas override is page-local).
+    const mixed = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    const mixedErrors = [], requests = [];
+    mixed.on('pageerror', error => mixedErrors.push(error.message));
+    mixed.on('request', request => { if (/^https?:/.test(request.url())) requests.push(request.url()); });
+    await mixed.context().setOffline(true);
+    await mixed.goto(standalone);
+    const m = id => mixed.locator('#' + id);
+    await m('projectMenuButton').click();
+    const fixture = mixedCityFixtureS10();
+    await m('projectFileInput').setInputFiles({
+      name: 'schema10-mixed.mappo.json', mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(createProjectDocument(fixture.project, fixture.workspace)))
+    });
+    await m('loadPreview').waitFor({state:'visible'});
+    await m('openProjectButton').click();
+    await mixed.waitForFunction(() => document.getElementById('fileStatus').textContent.startsWith('Opened '));
+    if (!await m('projectMenu').isVisible()) await m('projectMenuButton').click();
+    const downloadMixed = async id => {
+      const [download] = await Promise.all([mixed.waitForEvent('download', {timeout:30000}), m(id).click()]);
+      return readFile(await download.path());
+    };
+    const mixedBefore = JSON.parse(await downloadMixed('saveProjectButton'));
+    const joined = mixedBefore.project.city.buildings.find(building => building.id === fixture.joinedId);
+    assert.ok(!Array.isArray(joined.footprint));
+    assert.ok(joined.geometry.regions.filter(region => region.parentId === null).length > 1);
+    const mixedHistory = await m('workspaceHistoryListD01').textContent();
+    if (!await m('wholeCityPNGOptions').evaluate(node => node.open))
+      await m('wholeCityPNGOptions').locator('summary').click();
+    assert.equal(await m('wholeCityPNGFraming').inputValue(), 'developed');
+    for (const framing of ['developed', 'survey']) {
+      await m('wholeCityPNGFraming').selectOption(framing);
+      for (const size of [2048, 4096]) {
+        await m('wholeCityPNGSize').selectOption(String(size));
+        const dimensions = (await m('wholeCityPNGDimensions').innerText()).match(/(\d+) × (\d+) pixels/);
+        assert.ok(dimensions, 'Mixed-city export shows valid dimensions');
+        const bytes = await downloadMixed('downloadWholeCityPNG');
+        assert.equal(bytes.subarray(0,8).toString('hex'), '89504e470d0a1a0a');
+        const actual = [bytes.readUInt32BE(16), bytes.readUInt32BE(20)];
+        assert.deepEqual(actual, dimensions.slice(1).map(Number));
+        assert.equal(Math.max(...actual), size);
+        await mixed.waitForFunction(() => document.querySelector('#mapExportStatus4F').textContent.includes('PNG download requested'));
+        console.log(`PASS ${name} Schema 10 mixed city ${framing} ${actual.join(' × ')} PNG`);
+      }
+    }
+    const mixedAfter = JSON.parse(await downloadMixed('saveProjectButton'));
+    assert.deepEqual(mixedAfter.project, mixedBefore.project);
+    assert.deepEqual(mixedAfter.workspace, mixedBefore.workspace);
+    assert.equal(await m('workspaceHistoryListD01').textContent(), mixedHistory);
+    assert.deepEqual(mixedErrors, []);
+    assert.deepEqual(requests, []);
+    await mixed.close();
   } finally {
     await browser.close();
   }
