@@ -1,3 +1,4 @@
+import { syncDraftControls } from './draft-controls.js';
 import { distanceToSegment } from '../core/boundary.js';
 import { PropertySplitSessionE2,PropertySplitHistoryE2,inspectPropertySplitE2,
   preparePropertySplitE2 } from '../editor/property-split-e2.js';
@@ -6,8 +7,8 @@ import { PropertySplitSessionE2,PropertySplitHistoryE2,inspectPropertySplitE2,
 // No separate model/history implementation: E2 uses the same reversible
 // whole-project snapshot rules as E1, and the existing 3I plot primitives.
 export class PropertySplitControlsE2 {
-  constructor({getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove=null,historyCan=null}) {
-    Object.assign(this,{getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove,historyCan});
+  constructor({drafts,getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove=null,historyCan=null}) {
+    Object.assign(this,{drafts,getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove,historyCan});
     this.session=new PropertySplitSessionE2(()=>this.changed());
     this.history=new PropertySplitHistoryE2(20);
     this.boundProject=null;
@@ -23,8 +24,9 @@ export class PropertySplitControlsE2 {
     this.refresh();
     return true;
   }
-  reset(){return this.session.reset();}
+  reset() { return this.drafts.reset('property-split', () => this.session.reset()); }
   stop(){const previous=this.session.stop();this.boundProject=null;this.refresh();return previous;}
+  cancel() { return this.drafts.cancel('property-split', () => this.stop()); }
   clear(){this.stop();this.history.clear();this.refresh();}
   candidate() {
     const project=this.getProject(),result=inspectPropertySplitE2(project,this.session);
@@ -46,7 +48,7 @@ export class PropertySplitControlsE2 {
       $(id).disabled=!available;
       $(id).title=available?'Restore the complete before/after property split.':'No compatible split history.';
     }
-    if(!active)return;
+    if (!active) { this.drafts.close('property-split'); return; }
     const result=this.candidate(),info=result.preview;
     $('propertySplitTargetE2').textContent=session.propertyId;
     if(document.activeElement!==$('propertySplitPercentE2'))$('propertySplitPercentE2').value=String(Number((session.t*100).toFixed(2)));
@@ -72,8 +74,13 @@ export class PropertySplitControlsE2 {
       ?'BLOCKED · Accepted city changed. Cancel and start a new split.'
       :result.ok?'CANDIDATE READY · Apply independently verifies project and saved-data integrity.'
         :'BLOCKED · '+(result.issues[0]?.message??'Please adjust the divider.');
-    $('propertySplitApplyE2').disabled=!result.ok||!!session.drag||
-      this.boundProject!==this.getProject();
+
+    syncDraftControls(this.drafts, 'property-split', {
+      key: session.propertyId, baseline: (this.boundProject ?? this.getProject())?.city,
+      intent: JSON.stringify([session.t, session.flexible, session.exitEdge, session.exitT, [...session.approved], Boolean(session.drag)]),
+      dirty: true, checking: Boolean(session.drag), ready: result.ok, issues: result.issues,
+      target: { kind: 'property', id: session.propertyId },
+    }, $('propertySplitPanelE2'), $('propertySplitApplyE2'));
     $('propertySplitIssuesE2').replaceChildren(...result.issues.map(row=>{
       const li=document.createElement('li');li.textContent=row.message;return li;
     }));
@@ -94,7 +101,10 @@ export class PropertySplitControlsE2 {
       label.append(desc);transfers.append(label);
     }
   }
-  apply(){
+  apply() {
+    return this.drafts.apply('property-split', current => this.commitDraft(current));
+  }
+  commitDraft(current) {
     if(!this.active||this.session.drag)return false;
     const previous=this.getProject(),revision=this.getRevision(),
       signature=JSON.stringify({id:this.session.propertyId,t:this.session.t,
@@ -107,7 +117,7 @@ export class PropertySplitControlsE2 {
       this.getElement('propertySplitStatusE2').textContent=result.issues[0]?.message??'Split was rejected.';
       return false;
     }
-    if(previous!==this.getProject()||revision!==this.getRevision()||
+    if(!current()||previous!==this.getProject()||revision!==this.getRevision()||
       signature!==JSON.stringify({id:this.session.propertyId,t:this.session.t,
         flexible:this.session.flexible,exitEdge:this.session.exitEdge,exitT:this.session.exitT,
         approved:[...this.session.approved].sort()}))
@@ -182,7 +192,7 @@ export class PropertySplitControlsE2 {
       else this.refresh();
     });
     $('propertySplitResetE2').addEventListener('click',()=>this.reset());
-    $('propertySplitCancelE2').addEventListener('click',()=>this.stop());
+    $('propertySplitCancelE2').addEventListener('click', () => this.cancel());
     $('propertySplitApplyE2').addEventListener('click',()=>this.apply());
     $('propertySplitUndoE2').addEventListener('click',()=>this.historyMove?this.historyMove('undo'):this.moveHistory('undo'));
     $('propertySplitRedoE2').addEventListener('click',()=>this.historyMove?this.historyMove('redo'):this.moveHistory('redo'));

@@ -1,9 +1,10 @@
+import { syncDraftControls } from './draft-controls.js';
 import { PropertyMergeSessionE3,PropertyMergeHistoryE3,
   inspectPropertyMergeE3,preparePropertyMergeE3 } from '../editor/property-merge-e3.js';
 
 export class PropertyMergeControlsE3 {
-  constructor({getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove=null,historyCan=null}){
-    Object.assign(this,{getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove,historyCan});
+  constructor({drafts,getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove=null,historyCan=null}){
+    Object.assign(this,{drafts,getElement,getProject,getWorkspace,getRevision,canEnter,onCommit,changed,historyMove,historyCan});
     this.session=new PropertyMergeSessionE3(()=>this.changed());
     this.history=new PropertyMergeHistoryE3(20);
     this.boundProject=null;
@@ -22,8 +23,9 @@ export class PropertyMergeControlsE3 {
     const ok=this.session.choose(this.getProject()?.city,id);
     this.refresh();return ok;
   }
-  reset(){const ok=this.session.reset();this.refresh();return ok;}
+  reset() { return this.drafts.reset('property-merge', () => this.session.reset()); }
   stop(){const ok=this.session.stop();this.boundProject=null;this.refresh();return ok;}
+  cancel() { return this.drafts.cancel('property-merge', () => this.stop()); }
   clear(){this.stop();this.history.clear();this.refresh();}
   candidate(){const r=inspectPropertyMergeE3(this.getProject(),this.session);this.session.validation=r;return r;}
   refresh(){
@@ -33,7 +35,7 @@ export class PropertyMergeControlsE3 {
       $(id).disabled=active||!(this.historyCan?this.historyCan(direction):this.history.can(direction,this.getProject()));
       $(id).title=$(id).disabled?'No compatible merge history.':'Restore the complete property merge.';
     }
-    if(!active)return;
+    if (!active) { this.drafts.close('property-merge'); return; }
     const neighbors=session.neighbors(this.getProject()?.city);
     const select=$('propertyMergeNeighborE3'),previous=select.value;
     select.replaceChildren();
@@ -83,9 +85,18 @@ export class PropertyMergeControlsE3 {
       entries.push(li);
     }
     $('propertyMergeIssuesE3').replaceChildren(...entries);
-    $('propertyMergeApplyE3').disabled=stale||!result.ok;
+    syncDraftControls(this.drafts, 'property-merge', {
+      key: session.primaryId, baseline: (this.boundProject ?? this.getProject())?.city,
+      intent: JSON.stringify([session.secondaryId, session.approved, [...session.approvedBuildings]]),
+      dirty: Boolean(session.secondaryId), checking: false, ready: result.ok, issues: result.issues,
+      target: { kind: 'property', id: session.primaryId },
+    }, $('propertyMergePanelE3'), $('propertyMergeApplyE3'));
+
   }
-  apply(){
+  apply() {
+    return this.drafts.apply('property-merge', current => this.commitDraft(current));
+  }
+  commitDraft(current) {
     if(!this.active||!this.session.secondaryId)return false;
     const before=this.getProject(),rev=this.getRevision(),
       signature=JSON.stringify([this.session.primaryId,this.session.secondaryId,this.session.approved,
@@ -93,7 +104,7 @@ export class PropertyMergeControlsE3 {
     if(before!==this.boundProject)return false;
     const receipt=preparePropertyMergeE3(before,this.getWorkspace(),this.session);
     if(!receipt.ok){this.getElement('propertyMergeStatusE3').textContent=receipt.issues[0]?.message??'Merge rejected.';return false;}
-    if(before!==this.getProject()||rev!==this.getRevision()||
+    if(!current()||before!==this.getProject()||rev!==this.getRevision()||
       signature!==JSON.stringify([this.session.primaryId,this.session.secondaryId,this.session.approved,
         [...this.session.approvedBuildings].sort()]))return false;
     if(!this.history.record(before,receipt.candidate,receipt.retainedId))return false;
@@ -112,7 +123,7 @@ export class PropertyMergeControlsE3 {
     $('propertyMergeNeighborE3').addEventListener('change',()=>this.choose($('propertyMergeNeighborE3').value));
     $('propertyMergeConsentE3').addEventListener('change',()=>{this.session.approve($('propertyMergeConsentE3').checked);this.refresh();});
     $('propertyMergeResetE3').addEventListener('click',()=>this.reset());
-    $('propertyMergeCancelE3').addEventListener('click',()=>this.stop());
+    $('propertyMergeCancelE3').addEventListener('click', () => this.cancel());
     $('propertyMergeApplyE3').addEventListener('click',()=>this.apply());
     $('propertyMergeUndoE3').addEventListener('click',()=>this.historyMove?this.historyMove('undo'):this.moveHistory('undo'));
     $('propertyMergeRedoE3').addEventListener('click',()=>this.historyMove?this.historyMove('redo'):this.moveHistory('redo'));

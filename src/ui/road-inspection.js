@@ -1,3 +1,4 @@
+import { syncDraftControls } from './draft-controls.js';
 import { buildingFrame } from '../core/building-transform.js';
 import { roadRecoveryGuidanceD3, roadRecoveryIssueD3 } from './road-recovery-d3.js';
 import { ROAD_BEND_LIMIT } from '../core/road-shape.js';
@@ -225,6 +226,7 @@ function roadBlockGroupsD1(ledger) {
 
 export class RoadInspectionWorkspace {
   constructor({
+    drafts,
     getElement,
     getProject,
     camera,
@@ -245,6 +247,7 @@ export class RoadInspectionWorkspace {
   }) {
     Object.assign(this, {
       $: getElement,
+      drafts,
       getProject,
       camera,
       shell,
@@ -265,6 +268,10 @@ export class RoadInspectionWorkspace {
       reconcileRoad,
       computeJunctionAsync,
       selectionAuthority: shell.roadSelectionA1,
+      captureDraftValidation: () => {
+        const token = drafts.read('road');
+        return () => drafts.isCurrent('road', token);
+      },
       changed: () => {
         this.render();
         this.draw();
@@ -348,6 +355,7 @@ export class RoadInspectionWorkspace {
   exit({ restore = true, focus = false } = {}) {
     if (!this.transient) return;
     this.beforeExit();
+    this.drafts.close('road');
     this.shell.inspectorA3.release('road');
     const baseline = this.baseline;
     const desktop = this.usesDesktopPanel;
@@ -385,9 +393,29 @@ export class RoadInspectionWorkspace {
   }
   reset() {
     if (!this.active) return;
-    if (this.baseline) Object.assign(this.camera, this.baseline.workspace.view.camera);
-    this.applyError = '';
-    this.session.reset();
+    return this.drafts.reset('road', () => {
+      if (this.baseline) Object.assign(this.camera, this.baseline.workspace.view.camera);
+      this.applyError = '';
+      this.session.reset();
+      return true;
+    });
+  }
+  cancel({ focus = true } = {}) {
+    return this.drafts.cancel('road', () => this.exit({ focus }));
+  }
+  apply() {
+    return this.drafts.apply('road', current => {
+      this.applyError = '';
+      const finish = result => {
+        if (!current()) return;
+        this.applyError = result?.ok ? '' : result?.message ?? 'Road Apply failed without changing the accepted city.';
+        this.applyErrorRevision = this.session.revision;
+      };
+      const result = this.applyEdit(this.session, this.baseRevision, current);
+      if (result?.then) return result.then(finish, error => finish({ message: error.message }));
+      finish(result);
+      return result;
+    }, { onChange: () => this.render() });
   }
   bind() {
     this.$('roadSelectionClearA1').addEventListener('click',()=>this.session.requestSelectionA1(null));
@@ -402,7 +430,7 @@ export class RoadInspectionWorkspace {
     });
     this.$('roadModeButton').addEventListener('click', () => this.start());
     this.$('roadDesktopPreviewG2').addEventListener('click', () => this.start({ desktop: true }));
-    this.$('roadPreviewCancel').addEventListener('click', () => this.exit({ focus: true }));
+    this.$('roadPreviewCancel').addEventListener('click', () => this.cancel());
     this.$('roadLocate').addEventListener('click', () => {
       const d = this.session.details;
       if (!d) return;
@@ -462,24 +490,7 @@ export class RoadInspectionWorkspace {
       target.scrollIntoView({block:'center'});
       target.querySelector('button')?.focus({preventScroll:true});
     });
-    this.$('roadApplyB4').addEventListener('click', () => {
-      if(this.$('roadApplyB4').disabled || !this.session.current())return;
-      const revision = this.session.revision;
-      const finish = result => {
-        if (!this.session.current() || this.session.revision !== revision) return;
-        this.applyingRevision = null;
-        this.applyError = result?.ok ? '' : result?.message ?? 'Road Apply failed without changing the accepted city.';
-        this.applyErrorRevision = revision;
-        this.render();
-      };
-      const result = this.applyEdit(this.session, this.baseRevision);
-      if (result?.then) {
-        this.applyingRevision = revision;
-        this.applyError = '';
-        this.render();
-        result.then(finish, error => finish({message: error.message}));
-      } else finish(result);
-    });
+    this.$('roadApplyB4').addEventListener('click', () => this.apply());
     this.$('roadPreviewMinimize').addEventListener('click', () => {
       const body = this.$('roadPreviewBody');
       body.hidden = !body.hidden;
@@ -557,6 +568,7 @@ export class RoadInspectionWorkspace {
     });
   }
   nudge(direction, multiplier = 1) {
+    if (this.drafts.read('road').status === 'applying') return false;
     const step = Number(this.$('roadNudgeStep').value);
     if (!Number.isFinite(step) || step <= 0) return false;
     return this.session.nudge(
@@ -572,7 +584,7 @@ export class RoadInspectionWorkspace {
     const desktopEntry = this.$('roadDesktopPreviewG2');
     desktopEntry.setAttribute('aria-pressed', String(s.active && Boolean(this.usesDesktopPanel)));
     desktopEntry.disabled = s.active;
-    if (!s.active) {this.shell.inspectorA3.release('road');return;}
+    if (!s.active) { this.drafts.close('road'); this.shell.inspectorA3.release('road'); return; }
     const d = s.details,
       kind = d?.kind ?? 'junction';
     this.$('roadSelectionKind').value = kind;
@@ -727,15 +739,12 @@ export class RoadInspectionWorkspace {
     }
     s.previewGeometry = this.cachedPreviewGeometry;
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
-    const applying = this.applyingRevision === s.revision;
     const verified = Boolean(s.current() && s.pending && !s.checking && !s.drag && !s.error &&
       !s.roadIntentInputError && !s.reconciliationError && s.hasApplyCandidate &&
       s.reconciliation?.status==='candidate-only' && !s.reconciliation.unresolved?.length &&
       s.previewGeometry?.verified && s.settledRevision===s.revision &&
       this.getRevision()===this.baseRevision && s.acceptedFingerprint===JSON.stringify(s.project));
-    const ready = !applying && verified && (kind==='junction' || kind==='road');
     s.roadPreviewVerifiedD1 = verified;
-    this.$('roadApplyB4').disabled = !ready;
     const issue = s.reconciliation?.unresolved?.find(hasRoadBuildingChoice) ?? s.reconciliation?.unresolved?.[0];
     const actionable = !s.checking && !s.drag && hasRoadBuildingChoice(issue);
     const ownershipNeeded = !s.checking && !s.drag && s.reconciliation?.unresolved?.some(
@@ -757,6 +766,18 @@ export class RoadInspectionWorkspace {
     const stale = s.pending && s.settledRevision === s.revision &&
       (this.getRevision() !== this.baseRevision ||
         s.acceptedFingerprint !== JSON.stringify(s.project));
+    const diagnostics = s.reconciliation?.unresolved?.length ? s.reconciliation.unresolved.map(row =>
+      row.code?.endsWith('-decision-required') ? { ...row, severity: 'decision' } : row) : s.proposal?.issues ?? [];
+    const draft = syncDraftControls(this.drafts, 'road', {
+      baseline: s.city, key: s.project, intent: s.revision, dirty: s.selectionDraftLockedA1,
+      checking: Boolean(s.checking || s.drag), stale, ready: verified, validatedIntent: s.settledRevision,
+      issues: verified ? [] : diagnostics.length ? diagnostics : problem ? [{ message: problem }] : [],
+      target: s.selection,
+    }, panel, this.$('roadApplyB4'));
+    const ready = draft.canApply, applying = draft.status === 'applying';
+    this.$('roadPreviewReset').disabled ||= applying;
+    this.$('roadPreviewCancel').disabled = applying;
+    this.$('roadPreviewBody').inert = applying;
     const status = applying ? 'Applying road edit' : this.applyError ? 'Apply failed' : problem ? 'Preview blocked' :
       s.drag ? 'Placement in progress' : s.checking ? 'Checking preview' :
       ready ? 'Preview ready' : stale ? 'Preview out of date' :

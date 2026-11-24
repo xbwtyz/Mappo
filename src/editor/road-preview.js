@@ -22,9 +22,11 @@ export class RoadPreviewSession {
     reconcileRoad = null,
     computeJunctionAsync = null,
     selectionAuthority = null,
+    captureDraftValidation = () => () => true,
   }) {
     Object.assign(this, { getProject, changed, schedule, unschedule, analyze, reconcile, reconcileRoad, computeJunctionAsync });
     this.selectionAuthority = selectionAuthority;
+    this.captureDraftValidation = captureDraftValidation;
     this.localSelectionA1 = makeSelectionSetA1();
     this.active = false;
     this.snapEnabled = true;
@@ -427,7 +429,8 @@ export class RoadPreviewSession {
           ownershipChoices: [...this.ownershipChoices].map(([key, choice])=>[key,{...choice}]),
           parcelChoices: [...this.parcelChoices].map(([key,choice])=>[key,{...choice}]),
         };
-        const current = () => this.current() && revision === this.revision;
+        const draftIsCurrent = this.captureDraftValidation();
+        const current = () => draftIsCurrent() && this.current() && revision === this.revision;
         const settle = () => {
           if (!current()) return;
           this.checking = false;

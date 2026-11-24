@@ -52,6 +52,7 @@ export function describeDefenseUpdate(city, controls) {
 
 export class FortificationPanel {
   constructor({
+    drafts,
     getElement,
     getCity,
     commit,
@@ -59,6 +60,7 @@ export class FortificationPanel {
     activateLayer = () => {}
   }) {
     this.$ = getElement;
+    this.drafts = drafts;
     this.getCity = getCity;
     this.commit = commit;
     this.changed = changed;
@@ -76,6 +78,11 @@ export class FortificationPanel {
   syncPreview() {
     const preview = describeDefenseUpdate(this.getCity(), this.controls());
     const status = this.$('defensePendingMessage');
+    const draft = this.drafts?.sync('defenses', { staged: true, intent: JSON.stringify(this.controls()),
+      dirty: preview.pending, issues: preview.invalid ? [{ code: 'defense-settings', message: preview.text,
+        target: { controlId: defenseInvalidField(preview.text) } }] : [],
+    });
+    if (draft) status.setAttribute?.('data-draft-state', draft.status);
     status.textContent = preview.text;
     status.classList.toggle('error', preview.invalid);
     status.classList.toggle('pending', preview.pending && !preview.invalid);
@@ -105,6 +112,12 @@ export class FortificationPanel {
     this.syncPreview();
   }
   apply() {
+    const preview = this.syncPreview();
+    if (preview.invalid) { this.message(preview.text, true); return false; }
+    return this.drafts ? this.drafts.apply('defenses', current => current() && this.commitDraft(),
+      { validateOnApply: true }) : this.commitDraft();
+  }
+  commitDraft() {
     try {
       const previous = this.getCity(),
         before = previous.fortificationState,
@@ -127,6 +140,8 @@ export class FortificationPanel {
                 : 'Defenses updated. Streets, buildings, districts and landscape were preserved.');
       return true;
     } catch (error) {
+      this.drafts?.sync('defenses', { staged: true, intent: JSON.stringify(this.controls()), dirty: true,
+        issues: [{ code: 'defense-geometry', message: error.message }] });
       this.message(error.message, true);
       return false;
     }

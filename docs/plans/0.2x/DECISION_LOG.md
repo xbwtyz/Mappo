@@ -91,3 +91,7 @@ A2-01 through A2-10 = A; detailed P1–P5 implementation separately authorized. 
 ## 0.2.20-dev A3 — Owner-approved unified inspector
 
 A3-01 through A3-10 = A; detailed P1–P5 implementation separately approved. [A3 contract](milestones/0.2.20-unified-inspector-a3.md). Schema 10 and save/workspace contract retained. Separate merge/release/tag/Pages gates.
+
+## 0.2.21-dev A4 — Shared draft lifecycle and diagnostics
+
+A4-01=B and A4-02 through A4-10=A. The detailed P1–P5 [A4 milestone](milestones/0.2.21-draft-lifecycle-a4.md) records the lifecycle and acceptance criteria. Schema 10, portable envelope 1 and workspace version 1 are retained.
