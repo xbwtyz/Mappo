@@ -26,7 +26,7 @@ function b1GeometryPreserved(before,after) {
       b1Without(after.regions[i],['ring'])));
 }
 
-export function verifyRoadGroupPreservationB1(before,after,draft) {
+export function verifyRoadGroupPreservationB1(before,after,draft,removedIds = new Set()) {
   const id=draft?.selectedRoadIds?.[0]??'group';
   const fail=(code,message,target=id)=>b1Mismatch(code,message,target);
   if(before?.schemaVersion!==10 || after?.schemaVersion!==10 ||
@@ -43,13 +43,19 @@ export function verifyRoadGroupPreservationB1(before,after,draft) {
   const affectedBlocks=new Set(old.blocks.filter(block=>block.vertices.some(v=>moved.has(v))).map(block=>block.id));
   const oldPlots=riIndex(old.plots);
   for(const key of collections) {
-    if(!Array.isArray(old[key]) || !Array.isArray(next[key]) || old[key].length!==next[key].length)
+    const expectedCount = old[key]?.length - (key === 'buildings' ? removedIds.size : 0);
+    if(!Array.isArray(old[key]) || !Array.isArray(next[key]) || expectedCount!==next[key].length)
       return fail('group-identity-change','This movement would create or retire '+key+' records.');
     const indexed=riIndex(next[key]);
-    if(indexed.size!==old[key].length)
+    if(indexed.size!==expectedCount)
       return fail('group-identity-change','This movement would duplicate '+key+' IDs.');
     for(const a of old[key]) {
       const b=indexed.get(a.id);
+      if (key === 'buildings' && removedIds.has(a.id)) {
+        if (b || !affectedBlocks.has(a.blockId))
+          return fail('group-unauthorized-removal','A reviewed removal is outside the affected block or still present.',a.id);
+        continue;
+      }
       if(!b)return fail('group-identity-change','This movement would retire '+a.id+'.',a.id);
       if(key==='nodes') {
         const p=moved.get(a.id);
@@ -62,8 +68,16 @@ export function verifyRoadGroupPreservationB1(before,after,draft) {
         continue;
       }
       let allowed=b1Mutable[key];
-      if(key==='properties' && classifyRoadProvenance(a,a.plotIds.map(pid=>oldPlots.get(pid)))!=='generated')
-        allowed=allowed.filter(field=>field!=='roadProvenance');
+      if (key === 'properties') {
+        const generated = classifyRoadProvenance(a, a.plotIds.map(pid => oldPlots.get(pid))) === 'generated';
+        if (!generated) allowed = allowed.filter(field => field !== 'roadProvenance');
+        const remaining = a.buildingIds.filter(buildingId => !removedIds.has(buildingId));
+        if (remaining.length !== a.buildingIds.length) {
+          if (!generated || !riEqual(remaining, b.buildingIds))
+            return fail('group-demolition-membership','A demolition would change unauthorized property membership.',a.id);
+          allowed = [...allowed,'buildingIds'];
+        }
+      }
       if(key==='buildings') {
         if(classifyRoadProvenance(a)!=='generated')
           allowed=['entrance','accessPath','plotIds'];

@@ -11,8 +11,8 @@ const lareGateParcelFields=['boundary','frontage','frame','local','area','roadPr
 // Recompute all permission and preservation checks independently of search
 // scores, ledger, or claimed dispositions. Both the incumbent and every new
 // arrangement must pass this gate before full project validation.
-export function verifyLareGroupPreservation(before,after,draft,choices,budget){
-  const violation=LARE_CONSTRAINTS.identity.check(before,after,draft);
+export function verifyLareGroupPreservation(before,after,draft,choices,budget,removedIds = new Set()){
+  const violation=LARE_CONSTRAINTS.identity.check(before,after,draft,removedIds);
   if(violation)return violation;
   const group=draft.selectedRoadIds?.[0]??'group';
   try{
@@ -65,6 +65,7 @@ export function verifyLareGroupPreservation(before,after,draft,choices,budget){
           if(occupants.length){courtyardMembers.add(id);for(const o of occupants)courtyardMembers.add(o.buildingId);}
         }
       for(const policy of entry.buildings){
+        if (removedIds.has(policy.id)) continue;
         const original=aBuildings.get(policy.id),candidate=bBuildings.get(policy.id);
         budget.spend();
         const moved=lareGateChanged(original,candidate,['geometry','orientation','area']);

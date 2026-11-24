@@ -33,7 +33,8 @@ export function* iterateLareStrategies(operation, strategies) {
         !implementation.canRun(result)) continue;
     // The operation owns finalization. A strategy receives the existing
     // candidate or refusal and reports its proposed result.
-    result = yield* implementation.run(result);
+    const next = yield* implementation.run(result);
+    if (!result?.lare?.source || !result.candidateProject || next?.candidateProject) result = next;
   }
   return result;
 }

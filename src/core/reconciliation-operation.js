@@ -1,8 +1,8 @@
-import { LARE_STRATEGY_LIMITS } from './reconciliation-budget.js';
+import { LARE_PRESERVATION_LIMITS, LARE_STRATEGY_LIMITS } from './reconciliation-budget.js';
 import { riCompare, riFreeze } from './road-impact-model.js';
 
-export function createLareRoadOperation(project, draft, analysis, choices, acceptedRevision = null, strategy = 'selective-adaptive') {
-  if (!['selective-adaptive', 'enhanced-adaptive'].includes(strategy))
+export function createLareRoadOperation(project, draft, analysis, choices, acceptedRevision = null, strategy = 'progressive') {
+  if (!['progressive', 'selective-adaptive', 'enhanced-adaptive'].includes(strategy))
     throw Error('Unknown preservation strategy.');
   const affectedBlocks = analysis.identity.changed
     .filter(face => face.kind === 'block')
@@ -11,6 +11,8 @@ export function createLareRoadOperation(project, draft, analysis, choices, accep
   const dependencies = analysis.impact.issues
     .filter(issue => issue.kind !== 'road' && issue.kind !== 'junction')
     .map(issue => ({ kind: issue.kind, id: issue.id, code: issue.code }));
+  const adaptive = strategy === 'progressive'
+    ? ['selective-adaptive', 'enhanced-adaptive'] : [strategy];
   // Only copy plain data so that a future worker can receive the intent
   // without editor state, mutable choice maps or the accepted city object.
   return riFreeze({
@@ -26,7 +28,10 @@ export function createLareRoadOperation(project, draft, analysis, choices, accep
       moveGeneratedBuildings: true,
       demolishBuildings: false,
     },
-    strategies: ['direct', 'strict', strategy],
-    limits: LARE_STRATEGY_LIMITS,
+    strategies: ['direct', 'strict', ...adaptive],
+    limits: {
+      ...LARE_STRATEGY_LIMITS,
+      total: strategy === 'progressive' ? LARE_PRESERVATION_LIMITS : LARE_STRATEGY_LIMITS,
+    },
   });
 }

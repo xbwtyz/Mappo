@@ -147,11 +147,29 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     const violation = verifyRoadGroupPreservationB1(project, result.candidateProject, draft);
     return violation ? blocked([violation], result) : result;
   };
+  const parent = createLareBudget(operation.limits.total, {
+    ceiling: operation.limits.total,
+    parent: options.sharedBudget ?? null,
+  });
   const adaptiveStrategy = enhanced => ({
-    canRun: () => true,
+    canRun: previous => !enhanced || options.strategy === 'enhanced-adaptive' || !previous.candidateProject,
     *run(previous) {
-      return yield* iterateLareRoadGroup(project, draft, analysis, checked(previous),
-        operationChoices, createLareBudget(operation.limits), { enhanced });
+      const budget = createLareBudget(operation.limits, { parent });
+      const strategy = enhanced ? 'enhanced-adaptive' : 'selective-adaptive';
+      const iterator = iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices, budget, { enhanced });
+      try {
+        for (;;) {
+          const step = iterator.next();
+          const stats = parent.snapshot();
+          if (step.done) {
+            const adaptive = step.value;
+            return { ...adaptive, lare: { ...adaptive.lare, operationStats: stats } };
+          }
+          yield { ...step.value, strategy, stats };
+        }
+      } finally {
+        iterator.return();
+      }
     },
   });
   const result = yield* iterateLareStrategies(operation, {
@@ -222,7 +240,7 @@ function reconcileRoadIntent(project,roadId,draft,decisions,options = {}) {
     ? rebuilt : adapted;
 }
 
-function analyzeNeighborhoodDraft(project, draft) {
+export function analyzeNeighborhoodDraft(project, draft) {
   const graph = buildRoadGraph(draft.proposedCity);
   const faces = extractRoadFaces(graph, project.city);
   const identity = matchExistingFaces(project.city, faces);
