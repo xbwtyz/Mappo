@@ -17,6 +17,7 @@ import { PROPERTY_SETBACK, STREET_EDGE_WIDTH, STREET_WIDTHS, propertyFits, recta
 import { distanceToSegment, segmentCuts } from './boundary.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { hydrateCityS10 } from './building-project-s10.js';
+import { iterateLareRoadGroup } from './reconciliation-road-group.js';
 
 // A road intent is frozen for cancellation safety and loses non-serialized
 // read-only building projections during structuredClone. Rehydrate a detached
@@ -114,7 +115,7 @@ export function prepareNeighborhoodReflowC3(project, roadId, offset,
 
 // Group movement intentionally does not call reconcileRoadIntent, whose
 // singleton policy can normalize crossings or reconstruct block topology.
-export function prepareRoadGroupReflowB1(project,selectedRoadIds,offset,options={}) {
+export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options={}) {
   const draft=c2HydrateDraftS10(prepareRoadGroupIntentB1(project,selectedRoadIds,offset));
   const id=draft.selectedRoadIds?.[0]??'group';
   const blocked=(issues,source={})=>({...source,phase:'B1',status:'needs-review',
@@ -133,15 +134,23 @@ export function prepareRoadGroupReflowB1(project,selectedRoadIds,offset,options=
   }
   let analysis;
   const analyze=()=>analysis??=analyzeNeighborhoodDraft(project,draft);
-  const preserved=prepareNeighborhoodReflow(project,id,draft,false,analyze,options);
+  const strictOptions={...options,strictGroup:true};
+  const preserved=prepareNeighborhoodReflow(project,id,draft,false,analyze,strictOptions);
   let result=preserved;
   if(!preserved.candidateProject && preserved.unresolved.some(row=>
     rebuildableLandIssues.has(row.code)||row.code==='parcel-decision-required'||row.code==='parcel-decision-invalid'))
-    result=prepareNeighborhoodReflow(project,id,draft,true,analyze,options);
-  if(!result.candidateProject)return blocked(result.unresolved,result);
-  const violation=verifyRoadGroupPreservationB1(project,result.candidateProject,draft);
-  if(violation)return blocked([violation],result);
-  return {...result,phase:'B1',selectedRoadIds:draft.selectedRoadIds,offset:draft.offset};
+    result=prepareNeighborhoodReflow(project,id,draft,true,analyze,strictOptions);
+  if(result.candidateProject){
+    const violation=verifyRoadGroupPreservationB1(project,result.candidateProject,draft);
+    if(violation)result=blocked([violation],result);
+  }else result=blocked(result.unresolved,result);
+  const choices=options.parcelChoices instanceof Map?options.parcelChoices:new Map(options.parcelChoices??[]);
+  const adaptive=yield* iterateLareRoadGroup(project,draft,analyze(),result,choices);
+  return {...adaptive,phase:'B1',selectedRoadIds:draft.selectedRoadIds,offset:draft.offset};
+}
+export function prepareRoadGroupReflowB1(project,selectedRoadIds,offset,options={}){
+  const iterator=iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options);
+  for(;;){const step=iterator.next();if(step.done)return step.value;}
 }
 
 export function prepareJunctionReflowC7(project,junctionId,point,decisions = new Map(), options = {}) {
@@ -373,6 +382,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
         options:[{kind:'reshape',targetId:null,label:c2CourtyardReshapeLabel}]});
       try {
         const mayAdapt = adaptBuildings && ownBuildings.length &&
+          (!options.strictGroup||provenance==='generated') &&
           ownBuildings.every(building => classifyRoadProvenance(building) === 'generated');
         const edges = blockEdges.get(property.blockId);
         let next;
@@ -391,7 +401,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           next = c2Parcel(city, property, road, edges, []);
           const proposedPlots = ownPlots.map((plot, i) => ({ ...plot, boundary: next.plots[i].boundary }));
           const result = reflowGeneratedRoadBuildings(project.seed, property, next.property, proposedPlots,
-            ownBuildings, reservedIds, project.schemaVersion===10);
+            ownBuildings, reservedIds, project.schemaVersion===10,!options.strictGroup);
           next.property.buildingIds = result.buildings.map(building => building.id);
           replacements.set(property.id, result.buildings);
           for (const building of ownBuildings) {
@@ -412,7 +422,7 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           plot.boundary = update.boundary;
           record('plot', plot.id, modified ? 'reshaped' : 'preserved', modified ? ['boundary'] : [], provenance);
         }
-        if(next.flexible && !adapt){
+        if((next.flexible||options.strictGroup) && !adapt){
           for(const building of ownBuildings){
             const occupied=roadBuildingOccupiedPlots(building,ownPlots);
             if(!occupied.length)throw Error('No preserved plot covers '+building.id+'.');

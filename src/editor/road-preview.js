@@ -1,6 +1,6 @@
 import { editableRoadPath, ROAD_BEND_LIMIT } from '../core/road-shape.js';
 import { prepareRoadTopologyReflowC3 } from '../core/road-topology-reflow.js';
-import { prepareNeighborhoodReflowC3, prepareRoadGroupReflowB1 } from '../core/neighborhood-reflow.js';
+import { prepareNeighborhoodReflowC3, prepareRoadGroupReflowB1, iterateRoadGroupReflowB1 } from '../core/neighborhood-reflow.js';
 import { resolveRoadGroupB1 } from '../core/road-group-b1.js';
 import { buildRoadGraph, proposeJunctionMove } from '../core/road-graph.js';
 import { analyzeRoadImpact } from '../core/road-impact.js';
@@ -96,6 +96,7 @@ export class RoadPreviewSession {
     this.workerPreviewGeometry = null;
     if (this.timer !== undefined) this.unschedule(this.timer);
     this.timer = undefined;
+    this.lareIteratorB1R?.return();this.lareIteratorB1R=null;
     // Cancel the actual old worker calculation, not just its UI callback.
     // Ordinary street/bend edits and drag movement also invalidate a pending
     // junction preview, so no stale calculation remains queued.
@@ -342,6 +343,41 @@ export class RoadPreviewSession {
     else this.evaluateRoadDraft(true);
     return true;
   }
+  evaluateLareGroupSlices(group,revision){
+    const project=this.project,fingerprint=JSON.stringify(project),draftIsCurrent=this.captureDraftValidation();
+    const choices=new Map([...this.parcelChoices].map(([id,c])=>[id,{...c}]));
+    const iterator=iterateRoadGroupReflowB1(project,group.selectedRoadIds.slice(),{...this.roadIntentOffset},{parcelChoices:choices});
+    this.lareIteratorB1R=iterator;
+    const current=()=>this.current()&&draftIsCurrent()&&this.revision===revision&&this.lareIteratorB1R===iterator;
+    const settle=()=>{
+      if(!current())return;
+      this.lareIteratorB1R=null;this.timer=undefined;this.checking=false;this.changed();
+    };
+    const slice=()=>{
+      if(!current())return;
+      this.timer=undefined;
+      try{
+        const now=()=>typeof performance!=='undefined'?performance.now():Date.now();
+        const start=now();let step,count=0;
+        do{step=iterator.next();count++;}while(!step.done&&count<32&&now()-start<8);
+        if(!current())return;
+        if(step.done){
+          if(fingerprint!==JSON.stringify(project)){
+            this.error='Accepted project changed during adaptive preview. Start a new draft.';
+          }else{
+            this.reconciliation=step.value;this.settledRevision=revision;this.acceptedFingerprint=fingerprint;
+          }
+          settle();return;
+        }
+        this.timer=this.schedule(slice,0);
+      }catch(error){
+        if(!current())return;
+        iterator.return();
+        this.error='Road adaptation preview unavailable: '+error.message;settle();
+      }
+    };
+    slice();
+  }
   evaluateRoadDraft(defer) {
     const revision = this.revision;
     const run = () => {
@@ -349,7 +385,9 @@ export class RoadPreviewSession {
       this.timer = undefined;
       try {
         const group=this.roadGroupB1;
-        if(group) {
+        if(group&&defer){
+          this.evaluateLareGroupSlices(group,revision);return;
+        }else if(group) {
           this.reconciliation=prepareRoadGroupReflowB1(this.project,group.selectedRoadIds,this.roadIntentOffset,
             {parcelChoices:this.parcelChoices});
         } else if (this.roadConnectionEdit) {

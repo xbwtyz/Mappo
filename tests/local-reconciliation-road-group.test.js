@@ -5,7 +5,10 @@ import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
 import { buildRoadGraph } from '../src/core/road-graph.js';
 import { extractRoadFaces,matchExistingFaces } from '../src/core/road-faces.js';
 import { analyzeRoadImpact } from '../src/core/road-impact.js';
-import { prepareRoadGroupReflowB1 } from '../src/core/neighborhood-reflow.js';
+import { prepareRoadGroupReflowB1,iterateRoadGroupReflowB1 } from '../src/core/neighborhood-reflow.js';
+import { validateRoadGroupApplyB1 } from '../src/editor/road-application.js';
+import { defaultWorkspace } from '../src/data/project-format.js';
+import { AcceptedEditHistoryD01 } from '../src/core/accepted-edit-history-d01.js';
 import { solveLareRoadGroup } from '../src/core/reconciliation-road-group.js';
 import { validateStoredProject } from '../src/data/project-validation.js';
 
@@ -35,4 +38,35 @@ test('B1R adapter never accepts an unverified incumbent on invalid impact',()=>{
   const result=solveLareRoadGroup(project,draft,{graph:{valid:false}},tampered);
   assert.equal(result.candidateProject,null);
   assert.ok(result.unresolved.length);
+});
+
+test('B1R integrated linear refusal recovers without deleting or moving buildings and reproduces Apply',()=>{
+  const project=createProject({seed:'b1-linear',size:'small',morphology:'linear',irregularProperties:true});
+  const ids=['RD-0122','RD-0123'],offset={x:1,y:1},before=JSON.stringify(project);
+  const result=prepareRoadGroupReflowB1(project,ids,offset);
+  assert.ok(result.candidateProject,JSON.stringify(result.unresolved));
+  assert.equal(result.lare.score[0],0);
+  const receipt=validateRoadGroupApplyB1(project,defaultWorkspace(project),{selectedRoadIds:ids,offset},result);
+  assert.ok(receipt.ok,JSON.stringify(receipt.issues));
+  assert.deepEqual(receipt.candidate.city.buildings.map(b=>b.id),project.city.buildings.map(b=>b.id));
+  for(const b of project.city.buildings){
+    const candidate=receipt.candidate.city.buildings.find(x=>x.id===b.id);
+    assert.equal(JSON.stringify(candidate.geometry),JSON.stringify(b.geometry));
+  }
+  const h=new AcceptedEditHistoryD01();h.clear(project);
+  assert.equal(h.record(project,receipt.candidate,receipt.transaction).status,'recorded');
+  const undo=h.prepare('undo',receipt.candidate,receipt.workspace);
+  assert.ok(undo.ok,undo.reason);assert.equal(JSON.stringify(undo.candidate),before);
+  h.accept('undo',undo.entry,undo.candidate);
+  const redo=h.prepare('redo',undo.candidate,undo.workspace);
+  assert.ok(redo.ok,redo.reason);assert.deepEqual(redo.candidate,receipt.candidate);
+  assert.equal(JSON.stringify(project),before);
+});
+test('B1R staged and synchronous integrated group drafts produce the same accepted candidate',()=>{
+  const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+  const ids=['RD-0113','RD-0114'],offset={x:.05,y:0};
+  const direct=prepareRoadGroupReflowB1(project,ids,offset);
+  const iterator=iterateRoadGroupReflowB1(project,ids,offset);let step=iterator.next();
+  while(!step.done)step=iterator.next();
+  assert.deepEqual(step.value,direct);
 });
