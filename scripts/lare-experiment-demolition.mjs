@@ -121,8 +121,9 @@ for(const record of manifest){
  // Archive witness losses separately from original-input recoveries.
  if(best){summary.recovered++;summary.removed+=best.removed.length;summary.area+=best.area;}else summary.refused++;
  const payload=JSON.stringify({...record,strategy,originalResult,eligible:eligible.length,controlWork:control.lare?.stats?.work??0,controlExpansions:control.lare?.stats?.expansions??0,controlIssues:control.unresolved.map(i=>i.code),controlDiagnostic,controlLastRejectedCandidate:control.lare?.lastRejectedCandidate??null,best,trials,totalMs:performance.now()-start});
- const size=12000,count=Math.ceil(payload.length/size);
- for(let i=0;i<count;i++)console.log('LARE_CASE_CHUNK '+JSON.stringify({caseKey:key(record),i,count,data:payload.slice(i*size,(i+1)*size)}));
+ const encoded=Buffer.from(payload,'utf8').toString('base64'),size=4000,count=Math.ceil(encoded.length/size);
+ console.log('LARE_CASE_RESULT '+JSON.stringify({...record,originalResult,controlWork:control.lare?.stats?.work??0,controlExpansions:control.lare?.stats?.expansions??0,controlIssues:control.unresolved.map(i=>i.code),best:best?{fingerprint:best.fingerprint,score:best.score,work:best.work,expansions:best.expansions}:null,trialWork:trials[0]?.work,trialExpansions:trials[0]?.expansions,trialIssues:trials[0]?.issues,payloadHash:hash(payload)}));
+ for(let i=0;i<count;i++)console.log('LARE_CASE_B64 '+JSON.stringify({caseId:hash(key(record)),i,count,data:encoded.slice(i*size,(i+1)*size)}));
 }
 assert.equal(summary.attempted,manifest.length);
 console.log('LARE_DEMOLITION_SUMMARY '+JSON.stringify(summary));
