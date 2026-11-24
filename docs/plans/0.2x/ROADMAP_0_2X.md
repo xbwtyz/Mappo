@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Living dependency roadmap, reconciled through PR #151 on November 23, 2026 (Pacific).** The development build on `main` is **0.2.22-dev**, with Schema 10. The stable release is **v0.2.0**.
+> **Living dependency roadmap, reconciled through PR #151 on November 23, 2026 (Pacific).** The development build on `main` is **0.2.23-dev**, with Schema 10. The stable release is **v0.2.0**.
 
 ## Problem and intended outcome
 
@@ -35,7 +35,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **0.2.17-dev release readiness** | Offline cross-editor session and export verification | The Developed city PNG regression was corrected in [PR #143](https://github.com/xbwtyz/Mappo/pull/143). No known release blocker remains; exact-main CI and owner hands-on release acceptance are separate gates. See [the readiness pass](#0217-dev-release-readiness-pass). |
 | **0.2.21-dev A4 draft lifecycle** | Shared draft state and diagnostics across editors | Merged in [PR #150](https://github.com/xbwtyz/Mappo/pull/150). [Implementation and acceptance criteria](milestones/0.2.21-draft-lifecycle-a4.md). |
 | **0.2.22-dev A5 history and workflow** | Dedicated Reset Preview shortcut and district/defense transactions in accepted history | Merged PR #151. [Implementation and acceptance criteria](milestones/0.2.22-history-workflow-a5.md). |
-| **0.2.23-dev B1 connected road translation** | Connected multi-segment selection, rigid translation and strict local reconciliation | [Owner-approved implementation candidate](milestones/0.2.23-connected-road-groups-b1.md); exact-head CI and review pending. |
+| **0.2.23-dev B1 connected road translation** | Connected multi-segment selection, rigid translation and strict local reconciliation | [Merged B1](milestones/0.2.23-connected-road-groups-b1.md); PR #152 and exact-main CI passed. |
 
 ## Progress and intended delivery waves
 
@@ -158,3 +158,5 @@ Performance item D02 (#107) is **investigation-only**, not evidence that the clo
 ### D01 0.2.11 approved implementation checkpoint
 
 D-031-1–5=A: session-only shared chronological Undo/Redo for roads, properties, plots, buildings, compounds and identities, using existing validators with a 20-entry/64 MiB estimated payload budget. [Milestone plan](milestones/0.2.11-unified-history.md) · [Issue #106](https://github.com/xbwtyz/Mappo/issues/106).
+
+**Approved next prerequisite:** [B1R — 0.2.24-dev Local Adaptive Reconciliation](milestones/0.2.24-adaptive-reconciliation-b1r.md). P1 started; B2 deferred.
