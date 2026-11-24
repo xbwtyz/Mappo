@@ -6,6 +6,71 @@ import {
   workspaceTransition
 } from '../core/workspace-state.js';
 
+// A3 presentation state only: geometry, validation and transactions remain
+// owned by the active domain. The existing physical hosts are adapters.
+export class InspectorPresentationA3 {
+  constructor(getElement) {
+    this.$ = getElement;
+    this.contexts = new Map();
+  }
+  current(owner) { return this.contexts.get(owner) ?? null; }
+  active() {
+    return [...this.contexts.values()].filter(c => c.host && !c.host.hidden &&
+      !c.host.closest?.('[hidden]')).sort((a,b)=>b.priority-a.priority)[0] ?? null;
+  }
+  release(owner) {
+    const c=this.current(owner);
+    if(!c)return;
+    c.host?.removeAttribute?.('data-inspector-view');
+    c.host?.removeAttribute?.('data-inspector-kind');
+    this.contexts.delete(owner);
+  }
+  present(owner,{key,kind,title='',host,views=['Details'],initial='Details',buttons={},factsId=null,rows=[],priority=0,onView=null}) {
+    if(!key||!host||!views.includes(initial)||new Set(views).size!==views.length)
+      throw Error('Invalid inspector presentation context.');
+    const previous=this.current(owner);
+    const view=previous?.key===key&&views.includes(previous.view)?previous.view:initial;
+    const c={owner,key,kind,title,host,views:[...views],view,buttons,factsId,rows,priority,onView};
+    this.contexts.set(owner,c);
+    this.render(c);
+    return c;
+  }
+  render(c) {
+    c.host.setAttribute('data-inspector-view',c.view);
+    c.host.setAttribute('data-inspector-kind',c.kind);
+    for(const [view,id] of Object.entries(c.buttons)){
+      const button=this.$(id);
+      button.hidden=!c.views.includes(view);
+      button.setAttribute('aria-pressed',String(c.view===view));
+    }
+    if(c.factsId){
+      const facts=this.$(c.factsId);
+      // textContent keeps imported names and metadata inert.
+      const value=c.rows.map(([label,value])=>label+': '+value).join('\n')||'No record details available.';
+      if(facts.textContent!==value)facts.textContent=value;
+    }
+  }
+  select(owner,view,{notify=false,key=null}={}) {
+    const c=this.current(owner);
+    if(!c||(key!==null&&key!==c.key)||!c.views.includes(view))return false;
+    if(notify&&this.active()?.owner!==owner)return false;
+    if(c.view===view)return true;
+    c.view=view;this.render(c);
+    if(notify)c.onView?.(view);
+    return true;
+  }
+  bind(owner,view,id) {
+    this.$(id).addEventListener('click',()=>this.select(owner,view,{notify:true}));
+  }
+  view(owner,key,fallback='Edit') {
+    const c=this.current(owner);
+    return c?.key===key?c.view:fallback;
+  }
+}
+export function inspectorFactsA3(descriptor) {
+  return (descriptor?.quickInspector?.facts??descriptor?.sections??[]).flatMap(section=>section.rows??[]);
+}
+
 export class WorkspaceShell {
   constructor({
     getElement,
@@ -24,6 +89,7 @@ export class WorkspaceShell {
     this.onClearSelection = clearSelection;
     this.onInspect = onInspect;
     this.providers = new Map();
+    this.inspectorA3 = new InspectorPresentationA3(getElement);
     this.state = workspaceInitialState();
     // Road inspection temporarily uses the same authoritative runtime set.
     // Its own render callback updates the transient road panel, not the legacy inspector.
@@ -160,7 +226,9 @@ export class WorkspaceShell {
       note.textContent = action.note;
       button.append(note);
     }
+    const owner=this.state.selection?{...this.state.selection}:null;
     button.addEventListener('click', () => {
+      if(button.isConnected===false||!workspaceSelectionEqual(owner,this.state.selection)||!this.descriptor())return;
       action.run();
       if (!compact || !button.isConnected) {
         const heading = this.$('workspaceSelectionName');
@@ -255,10 +323,14 @@ export class WorkspaceShell {
     this.$('workspaceClearSelection').hidden = !descriptor;
     this.renderQuickInspector(quick, inlineControls);
     if (!descriptor) {
+      this.inspectorA3.release('selection');
       this.$('workspaceSelectionSections').replaceChildren();
       this.onInspect(this.state.selection);
       return;
     }
+    const ref=this.state.selection;
+    this.inspectorA3.present('selection',{key:ref.kind+':'+ref.id,kind:ref.kind,title:descriptor.title,
+      host:this.$('workspaceSelectionInspector'),priority:10});
     this.$('workspaceSelectionType').textContent = descriptor.type ?? 'Selection';
     this.$('workspaceSelectionName').textContent = descriptor.title ?? this.state.selection.id;
     this.$('workspaceSelectionDescription').textContent = quick?.subtitle ?? descriptor.description ?? '';

@@ -27,6 +27,7 @@ const baseline=[
   "scripts/h2-save-compatibility-browser-qa.mjs",
   "scripts/h4-recovery-browser-qa.mjs",
   "scripts/input-a2-browser-qa.mjs",
+  "scripts/inspector-a3-browser-qa.mjs",
   "scripts/junction-snap-merge-browser-qa.mjs",
   "scripts/plot-partition-027-browser-qa.mjs",
   "scripts/property-count-e4-browser-qa.mjs",

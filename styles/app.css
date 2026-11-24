@@ -1054,3 +1054,14 @@
 #structureCourtyardAccess select, #structureComponentEditor select {
   max-width: 100%;
 }
+
+/* A3: consistent view controls and compact read-only record facts. Existing
+   editor forms and transaction footers remain mounted, not copied. */
+.inspector-facts-a3{padding:10px 12px;white-space:pre-line;overflow-wrap:anywhere;font-size:13px;line-height:1.6}
+.inspector-facts-a3 h3{margin:0 0 6px;font-size:14px}
+.inspector-facts-a3 p{margin:0}
+#desktopPlaceEditor:not([data-inspector-view="Details"]) #desktopPlaceDetailsPanelA3{display:none}
+#desktopPlaceEditor[data-inspector-view="Details"] #desktopPlaceScroll>:not(#desktopPlaceDetailsPanelA3){display:none}
+#roadPreviewPanel[data-inspector-view="Details"]:not(.inspector-road-group-a3) #roadPreviewBody>:not(#roadInspectorDetailsA3){display:none}
+#roadPreviewPanel[data-inspector-view="Details"]:not(.inspector-road-group-a3) #roadImpactList{display:none}
+#workspaceSelectionInspector[data-inspector-view] .workspace-inspector-title h2{overflow-wrap:anywhere}
