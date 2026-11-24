@@ -4,9 +4,9 @@ import {execFileSync} from 'node:child_process';
 import {mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-const configs={"feature/lare-compact-parcel-planned-experiment":{"branch":"feature/lare-compact-parcel-planned-experiment","strategies":["clear-all"],"mode":"selective","work":4000000,"expansions":16384,"beam":8,"parcels":24,"buildings":24,"combined":false,"ranges":[[0,5,5]]},"feature/lare-compact-parcel-radial-experiment":{"branch":"feature/lare-compact-parcel-radial-experiment","strategies":["clear-all"],"mode":"selective","work":4000000,"expansions":16384,"beam":8,"parcels":24,"buildings":24,"combined":false,"ranges":[[10,5,3]]},"feature/lare-compact-parcel-linear-experiment":{"branch":"feature/lare-compact-parcel-linear-experiment","strategies":["clear-all"],"mode":"selective","work":4000000,"expansions":16384,"beam":8,"parcels":24,"buildings":24,"combined":false,"ranges":[[15,5,5]]}};
+const configs={"feature/lare-setback-contract-audit-experiment":{"branch":"feature/lare-setback-contract-audit-experiment","strategies":["clear-all"],"mode":"selective","work":4000000,"expansions":16384,"beam":8,"parcels":24,"buildings":24,"combined":false,"ranges":[[5,5,1]]}};
 const config=configs[process.env.GITHUB_REF_NAME]??(process.env.MAPPO_LARE_CAPTURE==='1'&&process.env.MAPPO_LARE_INSET_CONFIG?JSON.parse(process.env.MAPPO_LARE_INSET_CONFIG):null);
-test('B1R native frozen baseline and candidate comparison — detached compact parcel cross-morphology replay', {skip: !config || !(process.env.MAPPO_LARE_CAPTURE==='1'||(process.env.GITHUB_ACTIONS==='true'&&process.env.GITHUB_WORKFLOW==='Mappo Fast Checks')),timeout: 600000},()=>{
+test('B1R native frozen baseline and candidate comparison — detached setback contract audit', {skip: !config || !(process.env.MAPPO_LARE_CAPTURE==='1'||(process.env.GITHUB_ACTIONS==='true'&&process.env.GITHUB_WORKFLOW==='Mappo Fast Checks')),timeout: 600000},()=>{
  const root=mkdtempSync(join(tmpdir(),'mappo-lare-'));
  const baseline=join(root,'baseline'),out=join(root,'corpus'),experiment=join(root,'experiment');
  const sha='e5f1cf83dcdcc75e52911aa717035955b40569d0';
@@ -17,6 +17,7 @@ test('B1R native frozen baseline and candidate comparison — detached compact p
   execFileSync(process.execPath,['scripts/lare-experiment-inset-integration.mjs',experiment,JSON.stringify(config)],{stdio:'inherit'});
   execFileSync(process.execPath,['scripts/lare-experiment-parcel-diagnostics.mjs',experiment],{stdio:'inherit'});
   execFileSync(process.execPath,['scripts/lare-experiment-compact-parcels.mjs',experiment],{stdio:'inherit'});
+  execFileSync(process.execPath,['scripts/lare-experiment-setback-audit.mjs',experiment],{stdio:'inherit'});
   for(const [first,count,expected] of config.ranges){
    const corpus=join(out,String(first));
    execFileSync(process.execPath,['scripts/lare-baseline.mjs',baseline,corpus,String(first),String(count)],{stdio:'inherit',timeout:540000});
