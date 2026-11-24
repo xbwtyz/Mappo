@@ -18,6 +18,12 @@ The separate `?workspace=legacy` desktop entrypoint is retired. Narrow-window co
 
 **Note:** Some historical reference instructions below may describe v0.1 behavior or limitations superseded by the published v0.2.0 release. The public Pages site is published manually and might not be the latest `main` build.
 
+## Connected road moves in the 0.2.24-dev preview
+
+In **Roads**, select an ordinary road and Shift-select connected segments. Use **Edit** to move the group, then check **Review**. The preview first looks for a valid move that preserves every building, including when parcels, plots, or eligible generated buildings need to adjust.
+
+Some blocked moves offer **Explore demolition options**. Review the exact list of buildings that would be removed and any survivors that would move. Authorize that list to enable **Apply and demolish**. Changing the move clears the authorization. Cancel leaves the accepted city intact. An applied move is one transaction in the session's Undo/Redo history and can be saved in a portable project.
+
 ## 1. Create a city
 
 1. In **City**, choose a starting outline—rounded, organic, long, rectangular, wedge, twin-core, branching or horseshoe—or draw one with **Freehand** or **Click points**. For click points, use **Close outline** or Enter when finished.

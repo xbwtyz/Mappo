@@ -49,7 +49,10 @@ export function classifyLareBuilding(b,propertyPolicy,dependent=false){
   const reason=provenance!=='generated'?'authored-or-unknown':
     propertyPolicy?.mode!=='adaptive'?'authored-or-fixed-property':
     dependent?'dependent-structure':!lareKnownBuilding(b)?'unsupported-geometry':null;
-  return Object.freeze({provenance,mode:reason?'fixed':'rigid',reason});
+  const fixedFrontageReconnect = propertyPolicy?.mode === 'authorized-reshape' && provenance === 'generated' &&
+    !dependent && lareKnownBuilding(b);
+  return Object.freeze({provenance,mode:reason?'fixed':'rigid',reason,
+    ...(fixedFrontageReconnect ? { fixedFrontageReconnect } : {})});
 }
 
 const lareCapabilityPolicies = Object.freeze({

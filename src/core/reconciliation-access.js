@@ -3,6 +3,12 @@ import { buildingPrimaryRouteViewS10 } from './building-geometry-adapter-s10.js'
 import { classifyRoadProvenance,stampRoadGenerated } from './road-provenance.js';
 import { hydrateBuildingS10 } from './building-project-s10.js';
 
+export function projectLareFrontageEndpoint(entrance, a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const t = ((entrance.x - a.x) * dx + (entrance.y - a.y) * dy) / (dx * dx + dy * dy);
+  return t > 0 && t < 1 ? { x: a.x + t * dx, y: a.y + t * dy } : null;
+}
+
 // Final route checks run against the whole detached arrangement, not the
 // prior locations of other movable buildings. Fixed authored doors/routes
 // are retained only; explicit courtyard repair remains a separate B1 path.

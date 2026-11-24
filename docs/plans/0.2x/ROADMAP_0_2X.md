@@ -159,4 +159,4 @@ Performance item D02 (#107) is **investigation-only**, not evidence that the clo
 
 D-031-1–5=A: session-only shared chronological Undo/Redo for roads, properties, plots, buildings, compounds and identities, using existing validators with a 20-entry/64 MiB estimated payload budget. [Milestone plan](milestones/0.2.11-unified-history.md) · [Issue #106](https://github.com/xbwtyz/Mappo/issues/106).
 
-**Approved next prerequisite:** [B1R — 0.2.24-dev Local Adaptive Reconciliation](milestones/0.2.24-adaptive-reconciliation-b1r.md). P1–P3 verified in draft PR #153. P4 functional checks pass and the 8 ms slice target remains under review. B2 is deferred.
+**Approved next prerequisite:** [B1R — 0.2.24-dev Local Adaptive Reconciliation](milestones/0.2.24-adaptive-reconciliation-b1r.md). P1–P4 functional checks passed in draft PR #153. The owner approved proceeding to P5 with measured slice overruns, and the 8 ms target continues to apply. B2 is deferred.

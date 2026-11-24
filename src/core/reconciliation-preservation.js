@@ -4,10 +4,22 @@ import { riEqual,riIndex } from './road-impact-model.js';
 import { createLareContext } from './reconciliation-context.js';
 import { classifyRoadProvenance } from './road-provenance.js';
 import { LareBudgetExceeded } from './reconciliation-budget.js';
+import { projectLareFrontageEndpoint } from './reconciliation-access.js';
 
 const lareGateFail=(kind,id,code,message)=>({kind,id,code,message,severity:'needs-review'});
 const lareGateChanged=(a,b,keys)=>keys.some(k=>!riEqual(a[k],b[k]));
 const lareGateParcelFields=['boundary','frontage','frame','local','area','roadProvenance'];
+
+function matchesFixedFrontageReconnect(original, candidate, city, draft, budget) {
+  if (!draft.changedRoadIds?.includes(original.frontageRoadId) ||
+      !riEqual(original.entrance, candidate.entrance) || original.accessPath?.length !== 2 ||
+      candidate.accessPath?.length !== 2 || !riEqual(original.accessPath[0], candidate.accessPath[0])) return false;
+  budget.spend(city.roads.length + city.nodes.length);
+  const road = city.roads.find(row => row.id === original.frontageRoadId);
+  const a = city.nodes.find(node => node.id === road?.a), b = city.nodes.find(node => node.id === road?.b);
+  const endpoint = a && b && projectLareFrontageEndpoint(original.entrance, a, b);
+  return Boolean(endpoint && riEqual(endpoint, candidate.accessPath[1]));
+}
 
 // Recompute all permission and preservation checks independently of search
 // scores, ledger, or claimed dispositions. Both the incumbent and every new
@@ -77,7 +89,12 @@ export function* iterateLareGroupPreservation(before,after,draft,choices,budget,
           return lareGateFail('building',policy.id,'lare-rigid-preservation','The building is fixed or its complete geometry is not one rigid transformation.');
         const routeChanged=lareGateChanged(original,candidate,['entrance','accessPath']);
         const approvedCourtyard=courtyardMembers.has(policy.id)&&original.frontageRoadId===a.frontageRoadId;
-        if(routeChanged&&policy.mode!=='rigid'&&!approvedCourtyard)
+        // B1 permits only the same street endpoint reprojection for an
+        // eligible generated child of an explicitly reshaped authored parcel.
+        const approvedEndpoint = routeChanged && policy.fixedFrontageReconnect &&
+          appended.get(a.id) === 'reshape' && original.frontageRoadId === a.frontageRoadId &&
+          matchesFixedFrontageReconnect(original, candidate, next, draft, budget);
+        if(routeChanged&&policy.mode!=='rigid'&&!approvedCourtyard&&!approvedEndpoint)
           return lareGateFail('building',policy.id,'lare-protected-access','A protected entrance or access route would change without authorization.');
         const occupancyChanged=!riEqual(original.plotIds,candidate.plotIds);
         if(policy.provenance==='generated'&&(moved||routeChanged||occupancyChanged)&&
@@ -85,7 +102,7 @@ export function* iterateLareGroupPreservation(before,after,draft,choices,budget,
           return lareGateFail('building',policy.id,'lare-provenance','Updated generated building provenance is inconsistent.');
         if(!riEqual(original.roadProvenance,candidate.roadProvenance)&&
           (policy.provenance!=='generated'||classifyRoadProvenance(candidate)!=='generated'||
-            (policy.mode!=='rigid'&&!approvedCourtyard&&!occupancyChanged)))
+            (policy.mode!=='rigid'&&!approvedCourtyard&&!approvedEndpoint&&!occupancyChanged)))
           return lareGateFail('building',policy.id,'lare-provenance','Protected or inconsistent building provenance would change.');
       }
     }

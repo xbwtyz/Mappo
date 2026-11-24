@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -6,7 +7,13 @@ import { pathToFileURL } from 'node:url';
 import { chromium, firefox } from 'playwright';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 
-const observed = observeBuildingApp(await readFile(new URL('../index.html', import.meta.url), 'utf8'), `
+const bundle = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+const inventoryLookup = '\n    const inventory = buildingCache.get(parcel);';
+assert.equal(bundle.split(inventoryLookup).length, 2, 'Locate the exact arrangement cache lookup');
+const observed = observeBuildingApp(bundle.replace(inventoryLookup, `$&
+    if (globalThis.lareInventoryQA) {
+      globalThis.lareInventoryQA[inventory.has(building) ? 'reused' : 'built']++;
+    }`), `
 globalThis.lareQA = {
   loadWitness() {
     const baseline = createProject({ seed: 'lare-linear-2', morphology: 'linear', size: 'small', irregularProperties: true });
@@ -22,6 +29,17 @@ globalThis.lareQA = {
     applyProjectDocument(decodeProjectDocument(encodeProjectDocument(
       createProjectDocument(project,captureWorkspace().workspace))));
   },
+  reuseWitness() {
+    const project = createProject({ seed: 'lare-linear-2', morphology: 'linear', size:'small', irregularProperties:true });
+    globalThis.lareInventoryQA = { reused: 0, built: 0 };
+    try {
+      const result = prepareRoadGroupReflowB1(project, ['RD-0175','RD-0176'], { x: 4, y: 3 });
+      if (!result.candidateProject) throw Error(JSON.stringify(result.unresolved));
+      return { ...globalThis.lareInventoryQA, work: result.lare?.operationStats?.work };
+    } finally {
+      globalThis.lareInventoryQA = null;
+    }
+  },
   async measure() {
     const fixtures = [
       ['c2-planned','planned',['RD-0113','RD-0114']],
@@ -29,7 +47,7 @@ globalThis.lareQA = {
       ['b1-radial','radial',['RD-0100','RD-0152']],
       ['b1-linear','linear',['RD-0122','RD-0123']],
     ];
-    const lightweight = [], complete = [], slices = [], kernels = [], apply = [], chargedWork = [];
+    const lightweight = [], complete = [], slices = [], kernels = [], apply = [], chargedWork = [], inventory = [];
     for (const [seed,morphology,selectedRoadIds] of fixtures) {
       const fixture = createProject({ seed, morphology, size:'small', irregularProperties:true });
       let tick = 'start';
@@ -43,6 +61,7 @@ globalThis.lareQA = {
         probe.updateRoadIntent(offset, { dragging:true });
         lightweight.push(performance.now()-start);
         tick = 'start';
+        globalThis.lareInventoryQA = { reused: 0, built: 0 };
         const iterator = iterateRoadGroupReflowB1(fixture, selectedRoadIds, offset);
         start = performance.now();
         let step;
@@ -64,6 +83,8 @@ globalThis.lareQA = {
           if (!step.done) await new Promise(resolve => scheduleLareSlice(resolve));
         } while (!step.done);
         complete.push(performance.now()-start);
+        inventory.push(globalThis.lareInventoryQA);
+        globalThis.lareInventoryQA = null;
         if (step.value.candidateProject) {
           const applyStart = performance.now();
           const receipt = validateRoadGroupApplyB1(fixture, defaultWorkspace(fixture), {selectedRoadIds,offset}, step.value);
@@ -73,7 +94,7 @@ globalThis.lareQA = {
         chargedWork.push(step.value.lare?.operationStats?.work ?? 0);
       }
     }
-    return { lightweight, complete, slices, apply, chargedWork,
+    return { lightweight, complete, slices, apply, chargedWork, inventory,
       largestSteps: kernels };
   }
 };`, { legacy: false });
@@ -85,6 +106,18 @@ const engines = { chromium, firefox };
 const p = (samples, q) => samples.slice().sort((a, b) => a - b)[Math.ceil(samples.length * q) - 1];
 const summary = samples => ({ count: samples.length, median: p(samples,.5), p95: p(samples,.95), max: Math.max(...samples) });
 
+function sampleBrowserRss() {
+  if (process.platform !== 'linux') return null;
+  const processes = execFileSync('ps', ['-eo', 'pid=,ppid=,rss=,comm='], { encoding: 'utf8' })
+    .trim().split('\n').map(line => {
+      const [id, parent, rss, command] = line.trim().split(/\s+/);
+      return { id: Number(id), parent: Number(parent), rss: Number(rss), command };
+    });
+  const descendantsRss = pid => processes.filter(item => item.parent === pid && item.command !== 'ps')
+    .reduce((rss, child) => rss + child.rss + descendantsRss(child.id), 0);
+  return descendantsRss(process.pid);
+}
+
 async function exercise(name, engine) {
   const browser = await engine.launch({headless:true});
   try {
@@ -94,11 +127,16 @@ async function exercise(name, engine) {
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(pathToFileURL(file).href + '?seed=lare-ui&size=small');
     await page.waitForFunction(() => __buildingQA.state().files.ready);
-    const bench = async () => {
+    const bench = async cancellationMs => {
+      const beforeRssKiB = sampleBrowserRss();
       const results = await page.evaluate(() => lareQA.measure());
+      const afterRssKiB = sampleBrowserRss();
+      const reuseWitness = await page.evaluate(() => lareQA.reuseWitness());
+      assert.ok(reuseWitness.built > 0 && reuseWitness.reused > 0);
       console.log('LARE_BROWSER '+JSON.stringify({browser:name,version,
         lightweight:summary(results.lightweight), complete:summary(results.complete),
         slices:summary(results.slices), apply:summary(results.apply), chargedWork:results.chargedWork,
+        inventory:results.inventory, reuseWitness, cancellationMs, beforeRssKiB, afterRssKiB,
         largestSteps:results.largestSteps}));
     };
     if (process.env.MAPPO_BENCH_ONLY) {
@@ -130,8 +168,15 @@ async function exercise(name, engine) {
     })));
     await explore.click();
     const stop = button('roadCancelDemolitionB1R');
+    await stop.evaluate(element => element.addEventListener('click', () => {
+      const start = performance.now();
+      requestAnimationFrame(() => { globalThis.lareCancelElapsed = performance.now() - start; });
+    }, { once: true, capture: true }));
     await stop.click();
     await button('roadDemolitionB1R').waitFor({state:'hidden'});
+    await page.waitForFunction(() => Number.isFinite(globalThis.lareCancelElapsed));
+    const cancellationMs = await page.evaluate(() => globalThis.lareCancelElapsed);
+    assert.ok(Number.isFinite(cancellationMs));
     assert.equal(await state(),before);
     await offsets(3.5,3);
     await offsets(4,3);
@@ -166,7 +211,7 @@ async function exercise(name, engine) {
     assert.equal(await state(),after);
     assert.deepEqual(errors,[]);
     console.log('PASS '+name+' offline demolition review, cancellation, stale intent, Apply, Undo/Redo and reopen');
-    if (!process.env.MAPPO_QA_ONLY) await bench();
+    if (!process.env.MAPPO_QA_ONLY) await bench(cancellationMs);
   } finally {
     await browser.close();
   }

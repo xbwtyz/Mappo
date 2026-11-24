@@ -23,6 +23,7 @@ import { describeLareRefusal } from './reconciliation-diagnostics.js';
 import { cloneLareCity } from './reconciliation-city.js';
 import { finishLareSteps } from './reconciliation-steps.js';
 import { createLareBudget } from './reconciliation-budget.js';
+import { projectLareFrontageEndpoint } from './reconciliation-access.js';
 
 // A road intent is frozen for cancellation safety and loses non-serialized
 // read-only building projections during structuredClone. Rehydrate a detached
@@ -557,15 +558,12 @@ function* iterateNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           'A custom or unknown access path needs a decision before reconnection.'));
         continue;
       }
-      const { x, y } = building.entrance;
-      const dx = b.x - a.x, dy = b.y - a.y;
-      const t = ((x - a.x) * dx + (y - a.y) * dy) / (dx * dx + dy * dy);
-      if (t <= 0 || t >= 1) {
+      const end = projectLareFrontageEndpoint(building.entrance, a, b);
+      if (!end) {
         unresolved.push(c2Issue('building', building.id, 'access-reflow-blocked',
           'The fixed entrance no longer projects onto its frontage street.'));
         continue;
       }
-      const end = { x: a.x + t * dx, y: a.y + t * dy };
       const start = building.accessPath[0];
       if (intersectsBuilding(start, end)) {
         unresolved.push(c2Issue('building', building.id, 'access-reflow-blocked',

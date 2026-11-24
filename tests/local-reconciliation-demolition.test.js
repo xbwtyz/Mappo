@@ -125,6 +125,14 @@ test('Independent gate rejects altered protected city records', () => {
   assert.throws(() => verifyLareDemolitionDelta(project, tampered, draft, new Map(), [witness]), /protected|unrelated/i);
 });
 
+test('Independent gate rejects an invalid surviving footprint with the reviewed removals intact', () => {
+  const { project, search, draft, before } = fixture();
+  const tampered = structuredClone(search.candidate.preview.candidateProject);
+  tampered.city.buildings[0].x = Infinity;
+  assert.throws(() => verifyLareDemolitionDelta(project, tampered, draft, new Map(), [witness]));
+  assert.equal(JSON.stringify(project), before);
+});
+
 test('Reviewed demolition Apply allows exact canonical history replay', () => {
   const { project, workspace, search, auth, before } = fixture();
   const receipt = validateRoadGroupDemolitionApplyB1R(project, workspace, intent, search.candidate, auth);
@@ -178,5 +186,19 @@ test('Cancelling the search invalidates authorization without accepted writes', 
   cancelLareDemolition(session);
   assert.throws(() => authorizeLareDemolition(session, search.candidate, project, intent.revision), /review/i);
   assert.equal(validateRoadGroupDemolitionApplyB1R(project, workspace, intent, search.candidate, auth).ok, false);
+  assert.equal(JSON.stringify(project), before);
+});
+
+test('Cancelling an in-progress removal trial prevents candidate publication and retry', () => {
+  const project = structuredClone(fixture().project);
+  const before = JSON.stringify(project);
+  const refusal = prepareRoadGroupReflowB1(project, intent.selectedRoadIds, intent.offset);
+  const session = createLareDemolitionSession(project, intent, refusal);
+  const trial = iterateLareDemolition(session);
+  assert.equal(trial.next().value.stage, 'demolition-subset');
+  assert.equal(trial.next().done, false);
+  cancelLareDemolition(session);
+  assert.equal(trial.return().done, true);
+  assert.throws(() => iterateLareDemolition(session).next(), /no longer available/i);
   assert.equal(JSON.stringify(project), before);
 });
