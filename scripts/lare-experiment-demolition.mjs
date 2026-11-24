@@ -111,7 +111,9 @@ for(const record of manifest){
  summary.attempted++;summary.trialCount+=trials.length;
  assert.ok(best,'Archived witness failed fresh Apply');
  if(best){summary.recovered++;summary.removed+=best.removed.length;summary.area+=best.area;}else summary.refused++;
- console.log('LARE_DEMOLITION_CASE '+JSON.stringify({...record,strategy,eligible:eligible.length,controlWork:control.lare?.stats?.work??0,controlExpansions:control.lare?.stats?.expansions??0,controlIssues:control.unresolved.map(i=>i.code),controlDiagnostic,controlLastRejectedCandidate:control.lare?.lastRejectedCandidate??null,best,trials,totalMs:performance.now()-start}));
+ const payload=JSON.stringify({...record,strategy,eligible:eligible.length,controlWork:control.lare?.stats?.work??0,controlExpansions:control.lare?.stats?.expansions??0,controlIssues:control.unresolved.map(i=>i.code),controlDiagnostic,controlLastRejectedCandidate:control.lare?.lastRejectedCandidate??null,best,trials,totalMs:performance.now()-start});
+ const size=12000,count=Math.ceil(payload.length/size);
+ for(let i=0;i<count;i++)console.log('LARE_CASE_CHUNK '+JSON.stringify({caseKey:key(record),i,count,data:payload.slice(i*size,(i+1)*size)}));
 }
 assert.equal(summary.attempted,manifest.length);
 console.log('LARE_DEMOLITION_SUMMARY '+JSON.stringify(summary));

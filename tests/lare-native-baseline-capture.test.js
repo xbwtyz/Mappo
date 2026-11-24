@@ -4,7 +4,7 @@ import {execFileSync} from 'node:child_process';
 import {mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-const configs={"feature/lare-single-building-witness-experiment":{"branch":"feature/lare-single-building-witness-experiment","strategies":["witness-single"],"mode":"selective","work":4000000,"expansions":16384,"beam":8,"parcels":24,"buildings":24,"combined":false,"ranges":[[0,5,12]]}};
+const configs={"feature/lare-single-witness-chunked-experiment":{"branch":"feature/lare-single-witness-chunked-experiment","strategies":["witness-single"],"mode":"selective","work":4000000,"expansions":16384,"beam":8,"parcels":24,"buildings":24,"combined":false,"ranges":[[0,5,12]]}};
 const config=configs[process.env.GITHUB_REF_NAME]??(process.env.MAPPO_LARE_CAPTURE==='1'&&process.env.MAPPO_LARE_INSET_CONFIG?JSON.parse(process.env.MAPPO_LARE_INSET_CONFIG):null);
 test('B1R native frozen baseline and candidate comparison — detached single-building witness diagnostics', {skip: !config || !(process.env.MAPPO_LARE_CAPTURE==='1'||(process.env.GITHUB_ACTIONS==='true'&&process.env.GITHUB_WORKFLOW==='Mappo Fast Checks')),timeout: 600000},()=>{
  const root=mkdtempSync(join(tmpdir(),'mappo-lare-'));
