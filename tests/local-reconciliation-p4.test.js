@@ -65,3 +65,11 @@ test('B1R inventory exhaustion keeps only an independently verified incumbent',(
     createLareBudget({work:2,stateExpansions:1}));
   assert.equal(result.status,'candidate');assert.equal(result.best.key,'baseline');assert.equal(result.exhausted,'work');
 });
+
+test('B1R stable tie keys grow linearly across large neighborhoods',()=>{
+  const variables=Array.from({length:200},(_,i)=>'P'+i);
+  const result=runLareSearch({variables,choices:()=>[candidate('chosen')],
+    finalize:r=>({score:r.score,key:r.key,assignments:r.assignments})},budget());
+  assert.equal(result.status,'candidate');assert.equal(result.best.assignments.length,200);
+  assert.ok(result.best.key.length<6000);
+});

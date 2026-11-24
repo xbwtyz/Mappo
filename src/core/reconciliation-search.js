@@ -34,7 +34,7 @@ function* lareSearchCore({variables,choices,compatible=()=>true,finalize},budget
         for(const choice of alternatives){
           budget.expand();
           if(typeof choice.key!=='string'||!lareSearchValid(choice.score))throw Error('Invalid search alternative.');
-          const key=JSON.stringify([state.key,variable,choice.key]);
+          const key=state.key+JSON.stringify([variable,choice.key])+';';
           if(!keys.has(key)&&compatible(variable,choice,state)){
             keys.add(key);
             const score=lareSearchAdd(state.score,choice.score);
