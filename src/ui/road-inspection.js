@@ -833,12 +833,15 @@ export class RoadInspectionWorkspace {
     } else if (topologyOnly && !problem && !s.checking && !s.drag) {
       summary = 'Property and building changes are unresolved.';
     }
-    for (const [id,text] of [['roadReportStatus',status],['roadApplyStatusB4',message],['roadChangeSummaryD1',summary]]) {
+    const hideDemolition = stale || applying || Boolean(s.drag);
+    const demolitionProgress = hideDemolition ? '' : demolition?.progress ?? '';
+    for (const [id,text] of [['roadReportStatus',status],['roadApplyStatusB4',message],['roadChangeSummaryD1',summary],
+      ['roadDemolitionStatusB1R',demolitionProgress]]) {
       const element = this.$(id);
       if (element.textContent !== text) element.textContent = text;
       if (element.hidden !== !text) element.hidden = !text;
     }
-    this.renderLareDemolition(demolition, stale || applying || Boolean(s.drag));
+    this.renderLareDemolition(demolition, hideDemolition);
     this.renderImpacts(stale);
     this.renderComparison(stale);
     this.renderOwnershipDecisions023();
@@ -1161,7 +1164,6 @@ export class RoadInspectionWorkspace {
     this.$('roadDemolitionB1R').hidden = !state;
     if (!state) return;
     const review = state.candidate;
-    this.$('roadDemolitionStatusB1R').textContent = state.progress;
     this.$('roadDemolitionRemovalsB1R').textContent = review
       ? 'Remove (' + review.removalIds.length + ') · ' + review.removalIds.join(', ') : '';
     this.$('roadDemolitionRelocationsB1R').textContent = review

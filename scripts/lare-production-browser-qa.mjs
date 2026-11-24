@@ -183,6 +183,9 @@ async function exercise(name, engine) {
     await explore.waitFor({state:'visible',timeout:30000});
     await explore.click();
     await authority.waitFor({state:'visible',timeout:30000});
+    const roadStatus = page.locator('#roadPreviewPanel [role="status"]');
+    assert.equal(await roadStatus.count(), 1);
+    assert.match(await roadStatus.innerText(), /Review the removal set before authorizing Apply/);
     assert.match(await button('roadDemolitionRemovalsB1R').textContent(), /BLD-00153/);
     assert.match(await button('roadDemolitionRelocationsB1R').textContent(), /Relocate \(\d+\)/);
     assert.equal(await apply.isDisabled(),true);
