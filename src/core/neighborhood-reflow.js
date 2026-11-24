@@ -12,6 +12,7 @@ import { inspectRoadDependencies, inspectRoadContextReferences } from './road-im
 import { riBudget, riEqual, riIndex, riReporter } from './road-impact-model.js';
 import { classifyRoadProvenance, stampRoadGenerated } from './road-provenance.js';
 import { propertyDividerFractions3I, propertyGeometryPreview3I } from './property-geometry.js';
+import { reshapeRoadParcelPolygon } from './road-parcel-shape-reflow.js';
 import { PROPERTY_SETBACK, STREET_EDGE_WIDTH, STREET_WIDTHS, propertyFits, rectangleInFrame } from './placement.js';
 import { distanceToSegment, segmentCuts } from './boundary.js';
 import { validateStoredProject } from '../data/project-validation.js';
@@ -36,9 +37,21 @@ const c2Issue = (kind, id, code, message) => ({ kind, id, code, message, severit
 const c2Margin = road => (STREET_WIDTHS[road.kind] + STREET_EDGE_WIDTH) / 2 + PROPERTY_SETBACK;
 
 function c2Parcel(city, property, road, edges, fixed) {
-  const edge = edges.find(e => e.road.id === road.id);
-  if (!edge || property.boundary.length !== 4)
-    throw new Error('This parcel needs a four-corner envelope with frontage on its own block.');
+  const edge = edges?.find(e => e.road?.id === road?.id);
+  if (!road || !edge)
+    throw new Error('The assigned frontage road no longer bounds this parcel’s own block.');
+  const ownPlots=property.plotIds.map(id=>city.plots.find(plot=>plot.id===id&&plot.propertyId===property.id));
+  if(ownPlots.some(plot=>!plot))throw Error('The parcel’s existing plot records are incomplete.');
+  let legacy=false;
+  if(property.boundary.length===4 && ownPlots.every(plot=>plot.boundary.length===4)){
+    try {
+      const ratios=propertyDividerFractions3I(city,property);
+      const reference=propertyGeometryPreview3I(city,property.id,property.boundary,ratios);
+      legacy=ownPlots.every((plot,i)=>plot.boundary.every((pt,j)=>
+        Math.hypot(pt.x-reference.plots[i].boundary[j].x,pt.y-reference.plots[i].boundary[j].y)<1e-6));
+    }catch{/* Flexible plot layouts use the identity-preserving path. */}
+  }
+  if(!legacy)return reshapeRoadParcelPolygon(property,ownPlots,edge,edges,c2Margin(road)+.05,fixed);
   const { a, b } = edge;
   const length = Math.hypot(b.x - a.x, b.y - a.y);
   const tangent = { x: (b.x - a.x) / length, y: (b.y - a.y) / length };
@@ -398,6 +411,18 @@ function prepareNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           const modified = !riEqual(plot.boundary, update.boundary);
           plot.boundary = update.boundary;
           record('plot', plot.id, modified ? 'reshaped' : 'preserved', modified ? ['boundary'] : [], provenance);
+        }
+        if(next.flexible && !adapt){
+          for(const building of ownBuildings){
+            const occupied=roadBuildingOccupiedPlots(building,ownPlots);
+            if(!occupied.length)throw Error('No preserved plot covers '+building.id+'.');
+            if(!riEqual(building.plotIds,occupied)){
+              const source=classifyRoadProvenance(building);
+              building.plotIds=occupied;
+              if(source==='generated')stampRoadGenerated(building);
+              record('building',building.id,'plot-occupancy-updated',['plotIds'],source);
+            }
+          }
         }
         if (provenance === 'generated') stampRoadGenerated(property, ownPlots);
         else if(choice) {

@@ -9,7 +9,6 @@ const file=new URL('mappo.html',dir);
 const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
 await writeFile(file,observeBuildingApp(html,`
 globalThis.groupQA={
-  load:()=>{const p=createProject({seed:'c2-planned',size:'small',morphology:'planned'});applyProjectDocument(createProjectDocument(p,defaultWorkspace(p)));},
   choose:()=>{
     const s=roadWorkspace.session,g=s.graph;
     const pairs=[['RD-0113','RD-0114']];
@@ -33,9 +32,8 @@ for(const name of process.env.MAPPO_QA_ENGINE?[process.env.MAPPO_QA_ENGINE]:Obje
   try{
     const page=await browser.newPage({viewport:{width:1440,height:900},offline:true});
     const errors=[];page.on('pageerror',e=>errors.push(e.message));
-    await page.goto(file.href+'?seed=c2-planned&size=small');
+    await page.goto(file.href+'?seed=c2-planned&size=small&shape=planned');
     await page.waitForFunction(()=>__buildingQA.state().files.ready);
-    await page.evaluate(()=>groupQA.load());
     const el=id=>page.locator('#'+id);
     const city=()=>page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city));
     const entries=()=>page.evaluate(()=>__buildingQA.state().acceptedHistoryD01.summaries());
