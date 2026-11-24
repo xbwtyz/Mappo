@@ -33,7 +33,7 @@ Phase identifiers below are planning labels, **not assigned application version 
 | Phase | Goal | Complexity | Status |
 | --- | --- | --- | --- |
 | A0 | Comprehensive read-only UI/UX audit | Moderate | Source audit completed; hands-on measurements outstanding |
-| A | Usability and interaction foundation | Moderate to high | A1 architecture and implementation plan approved; [review candidate](milestones/0.2.18-shared-selection-a1.md) |
+| A | Usability and interaction foundation | Moderate to high | [A1 merged](milestones/0.2.18-shared-selection-a1.md); [A2 review candidate](milestones/0.2.19-shared-input-a2.md) |
 | B | Connected multi-segment road editing | High | Direction approved; detailed design pending |
 | C | Water and terrain functionality | High to very high | Direction approved; detailed design pending |
 | D | Settlement freedom: optional founder's square and dynamic perimeters | Very high | Direction approved; dependency discovery early |

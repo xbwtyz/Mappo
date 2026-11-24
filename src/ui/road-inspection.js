@@ -232,6 +232,7 @@ export class RoadInspectionWorkspace {
     capture,
     canEnter,
     beforeEnter = () => {},
+    beforeExit = () => {},
     draw,
     reconcile = null,
     reconcileRoad = null,
@@ -250,6 +251,7 @@ export class RoadInspectionWorkspace {
       capture,
       canEnter,
       beforeEnter,
+      beforeExit,
       draw,
       getRevision,
       applyEdit,
@@ -345,6 +347,7 @@ export class RoadInspectionWorkspace {
   }
   exit({ restore = true, focus = false } = {}) {
     if (!this.transient) return;
+    this.beforeExit();
     const baseline = this.baseline;
     const desktop = this.usesDesktopPanel;
     if (this.comparisonOpen) this.clearComparison();
