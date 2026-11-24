@@ -11,7 +11,7 @@ if(process.argv.length!==3||!Object.hasOwn(manifest,suite))throw Error('Expected
 const files=manifest[suite];
 if(!Array.isArray(files)||!files.length)throw Error('Empty browser suite: '+suite);
 const all=Object.values(manifest).flat();
-if(new Set(all).size!==all.length||all.some(file=>typeof file!=='string'||!/^scripts\\/[a-z0-9-]+\\.mjs$/.test(file)||!existsSync(resolve(root,file))))
+if(new Set(all).size!==all.length||all.some(file=>typeof file!=='string'||!file.startsWith('scripts/')||!/^[a-z0-9-]+[.]mjs$/.test(file.slice(8))||!existsSync(resolve(root,file))))
   throw Error('Invalid, duplicate or missing browser script in manifest.');
 const start=performance.now(),results=[];
 for(const file of files){
