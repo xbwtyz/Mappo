@@ -41,6 +41,7 @@ const baseline=[
   "scripts/property-split-025-browser-qa.mjs",
   "scripts/property-split-e2-browser-qa.mjs",
   "scripts/road-browser-qa.mjs",
+  "scripts/road-group-b1-browser-qa.mjs",
   "scripts/road-ownership-023-browser-qa.mjs",
   "scripts/road-parcel-decisions-028-browser-qa.mjs",
   "scripts/selection-a1-browser-qa.mjs",
