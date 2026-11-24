@@ -86,3 +86,24 @@ Exact experiment commit b05c009c48927d55f99fe48faf0165c33662c525. Planned, organ
 The two bounded deep strategies collectively recovered 23 cases; eight additional cases recovered only by clear-all. Best observed outcome per new movement (fewest removals, then area): 647 removed buildings and 123789.20 area across 31 independent counterfactuals. Area is Mappo units squared. The 144 strategy records contain 697 trials and 1278789380 measured preview work units. Clear-all still refused 17/48 cases, all search-exhausted; eight had zero expansions. All 17 used below 4M work and 16,384 expansions. Clear-all removes eligible generated buildings, not necessarily all structures; protected buildings, parcel/plot/access constraints and search limitations remain. These observations motivate terminal parcel/plot candidate diagnostics rather than merely increasing budgets. No proof of infeasibility.
 
 Updated demonstrated union: 739/800 (92.375%), with 34 non-topological cases lacking a demonstrated solution (17 completed failures, 17 pending linear cases) and 27 topology refusals. Excluding clear-all-only additions gives 731/800 (91.375%) observed union. Neither is integrated production acceptance. No runtime changes or demolition authorization.
+
+
+### Deeper-removal complete round
+
+Linear run [45362395263](https://github.com/xbwtyz/Mappo/actions/runs/45362395263), job 138338141994, exact experiment commit b05c009c48927d55f99fe48faf0165c33662c525, passed 60/60 Fast Checks. 17 movements, 51 strategy records, 222 trials; 12 distinct recovered, 10 by bounded deep strategies, two clear-all-only. No invalid outcomes. Linear identities verified against all 664 prior original demolition records: none outside original manifest or among prior wins. Combined four shards cover all 65 remaining original refusals, with 195 records and 919 trials.
+
+| Morphology | Tested | Deep largest | Deep obstruction | Clear all | Distinct recovered |
+|---|---:|---:|---:|---:|---:|
+| Planned | 9 | 1 | 2 | 4 | 4 |
+| Organic | 19 | 4 | 9 | 10 | 10 |
+| Radial | 20 | 2 | 12 | 17 | 17 |
+| Linear | 17 | 5 | 8 | 12 | 12 |
+| Total | 65 | 12 | 31 | 43 | 43 |
+
+| Strategy | Recovered | Buildings removed in successes | Area removed | Trials | Preview work | Trial time p95 (ms) |
+|---|---:|---:|---:|---:|---:|---:|
+| Deep largest | 12 | 147 | 41246.39 | 469 | 860797320 | 7094.30 |
+| Deep obstruction | 31 | 367 | 81068.81 | 385 | 658842948 | 7487.11 |
+| Clear all | 43 | 1359 | 246942.70 | 65 | 67785074 | 1928.54 |
+
+The two deep strategies recovered 33 distinct movements; ten additional cases recovered only by clear-all. Best observed across new recoveries (fewest buildings, then area): 822 removals, 163850.12 area across 43 independent counterfactuals. Work totals 1587425342, preview only. Union 751/800 (93.875%), or 741/800 (92.625%) excluding clear-all-only additions. By morphology: planned 189/200, organic 186/200, radial 197/200, linear 179/200. 22 non-topological cases remain unresolved, plus 27 topology cases. All 22 clear-all refusals are search-exhausted below both configured caps; nine with zero expansions. 19 have offset (-8,-5), two (4,3), one (0,-2). Clear-all removes only eligible generated buildings, not all constraints; no feasibility proof. Next research: instrument terminal inventory and compatibility failures on these 22, with original-input controls. No production integration, schema or demolition authorization.

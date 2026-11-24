@@ -31,3 +31,8 @@ Progressive generation and rank-first pruning remain candidate optimizations: so
 ## Deeper-removal timing — partial round
 
 Three completed shards (planned, organic, radial; 48 cases), 697 trials, 1278789380 measured preview work units. Per-strategy p95 total trial time per case: deep largest 7161.05 ms, deep obstruction 8129.03 ms, clear-all 1928.54 ms. Preview work excludes fresh Apply and unmetered setup; elapsed trial time includes successful fresh Apply. Hosted timings are not controlled browser latency. Linear pending. See [demolition study](lare-demolition-study.md) for exact runs and limitations. No production latency gate passed.
+
+
+## Deeper-removal complete timing round
+
+65 movements, 919 trials, 1587425342 measured preview work units. Per-strategy trial-sequence p95: deep largest 7094.30 ms, deep obstruction 7487.11 ms, clear-all 1928.54 ms. Hosted-runner timings; work excludes fresh Apply and setup. No production performance gate passed. See demolition study for full outcomes.

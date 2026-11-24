@@ -26,3 +26,8 @@ Future updates should append new exact-run records, never replace an older exper
 - `demolition-45362385877.jsonl`: radial, 20 movements, 60 records, 283 trials, [run 45362385877](https://github.com/xbwtyz/Mappo/actions/runs/45362385877), job 138335438360.
 
 All three runs exact commit b05c009c48927d55f99fe48faf0165c33662c525, 60/60 Fast Checks, zero reported invalid outcomes. 144 original case payloads plus run/job IDs, 697 trials. Verified 48 distinct identities against 664 original records, no overlap with 101 prior wins. 31 new distinct recoveries. Linear run 45362395263 pending at this checkpoint; not archived or counted. Earlier evidence unchanged.
+
+
+## Deeper-removal final shard
+
+- `demolition-45362395263.jsonl`: linear, 17 movements, 51 strategy records, 222 trials, [run 45362395263](https://github.com/xbwtyz/Mappo/actions/runs/45362395263), job 138338141994. Exact commit b05c009c48927d55f99fe48faf0165c33662c525; 60/60 Fast Checks; no invalid outcomes. All 65 remaining identities now accounted for, 195 records, 919 trials, 43 distinct recoveries. Prior evidence retained. Total archive: 800 preservation records, 882 demolition records (including hybrid), 6736 demolition trials, 22 JSONL files.
