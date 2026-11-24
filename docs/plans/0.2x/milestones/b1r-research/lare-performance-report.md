@@ -56,3 +56,8 @@ Eleven complete matched cases: original-input work 14972165 to 13364118, expansi
 ## Building-aware parcel lookahead
 
 Twelve matched witness cases, original-input work 16205909 to 24839382, expansions 36677 to 33378; reduced-input work 24749167 to 38380599. One original-input recovery required 3999978 work (near cap), one refusal reached work limit. All twelve reduced-input cases retained acceptance, scores better/tied/worse 0/11/1. Cost increase means this is not a production responsiveness pass.
+
+
+## Rigid feasible-region fallback
+
+Twelve matched cases: original-input work 24839382 to 24879850, expansions 33378 to 33376; reduced-input work 38380599 to 38414980. No incremental recovery or score gain. No production performance pass.

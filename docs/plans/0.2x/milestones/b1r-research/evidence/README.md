@@ -63,3 +63,9 @@ Both runs passed 60/60; twelve reduced-input successes each, zero original-input
 
 - `building-aware-results-45367799995.jsonl`: twelve intact compact result summaries, run 45367799995/job 138353964638, exact commit 2a90d8d99cad8004dbc9661b2c93b5752c3cb6cc; one preservation-only recovery, twelve reduced-input recoveries, 60/60 Fast Checks.
 - `building-aware-payloads-45367799995.jsonl`: eleven complete base64 chunk collections, explicitly incomplete raw/missing chunk entries for one payload. Concatenate chunks then base64-decode UTF-8; verify against summary payloadHash. Transport-complete collections not yet independently hash-checked. Compact result records support measured outcomes regardless of incomplete full trace. Total JSONL files: 32.
+
+
+## Rigid feasible-region round 2
+
+- `rigid-region-results-45368589135.jsonl`: twelve intact result summaries, exact commit a27a468163eae9bb47b03d2cedba4216279cadf3, job 138356658199.
+- `rigid-region-payloads-45368589135.jsonl`: twelve complete base64 chunk collections, emitted payload hashes available in result summaries, hash verification pending. Both datasets from 60/60 Fast Checks, one original-input recovery reproduced, twelve reduced-input recoveries, no incremental recovery. Total JSONL files: 34.
