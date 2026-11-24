@@ -25,6 +25,12 @@ export class WorkspaceShell {
     this.onInspect = onInspect;
     this.providers = new Map();
     this.state = workspaceInitialState();
+    // Road inspection temporarily uses the same authoritative runtime set.
+    // Its own render callback updates the transient road panel, not the legacy inspector.
+    this.roadSelectionA1 = {
+      read: () => this.state.selectionSet,
+      write: set => { this.state=workspaceTransition(this.state,{type:'road-selection-a1',set}); }
+    };
     this.sectionScroll = new Map();
     this.quickInspectorMedia = globalThis.window?.matchMedia?.('(min-width: 1000px)');
     this.quickInspectorMedia?.addEventListener('change', () => this.renderInspector());

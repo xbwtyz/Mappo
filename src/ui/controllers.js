@@ -9,6 +9,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     tapEligible = false,
     travel = 0,
     tapPoint = null,
+    tapModifiers = {},
     activePointer = null,
     transforming = false;
   window.addEventListener('keydown', e => {
@@ -39,7 +40,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
       transform.end?.(cancelled, event);
       transforming = false;
     } else if (!panning) editor.up(camera.zoom, cancelled);
-    else if (!cancelled && tapEligible && travel <= 4) onTap(tapPoint);
+    else if (!cancelled && tapEligible && travel <= 4) onTap(tapPoint,tapModifiers);
     panning = false;
     canvas.classList.remove('is-dragging');
   }
@@ -60,6 +61,7 @@ export function bindCanvasInteraction(canvas, camera, requestDraw, updateViewpor
     travel = 0;
     tapEligible = event.button === 0 && !space && editor.mode === 'pan';
     tapPoint = world(event);
+    tapModifiers={shiftKey:Boolean(event.shiftKey)};
     transforming = event.button === 0 && !space && editor.mode === 'pan' && Boolean(transform.begin?.(tapPoint, camera.zoom, event));
     if (transforming) { panning = false; tapEligible = false; }
     canvas.setPointerCapture(event.pointerId);

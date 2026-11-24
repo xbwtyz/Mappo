@@ -1709,6 +1709,8 @@ window.addEventListener('keydown', e => {
   if(roadWorkspace?.active && e.key==='Escape'){
     if (roadWorkspace.comparisonOpen) roadWorkspace.setComparison(false);
     else if (roadWorkspace.session.cancelMergeMode()) { /* Escape cancels the two-click tool first. */ }
+    else if (roadWorkspace.session.selectionSet.items.length>1 && isMapShortcutEvent(e,document.activeElement))
+      roadWorkspace.session.requestSelectionA1(null);
     else roadWorkspace.exit({focus:true});
     e.preventDefault();return;
   }
@@ -2851,7 +2853,7 @@ const mapEditor = {
 };
 
 bindCanvasInteraction($('roadComparisonProposed'), camera, requestDraw, updateViewport, mapPanEditor);
-bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, point => {
+bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, (point,modifiers={}) => {
   if (roadWorkspace?.comparisonOpen || desktopWorkspace?.mapPreview()) return;
   if (desktopWorkspace?.awaitingProperty &&
       desktopWorkspace.chooseBuildingProperty(propertyWorkspace.hit(point, camera.zoom)?.id)) return;
@@ -2869,7 +2871,7 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
   if(roadWorkspace?.active){
     if (roadWorkspace.session.mergeMode) return; // Two-click selection is owned by pointer begin/end.
     const hit=roadWorkspace.session.hit(point,camera.zoom);
-    if(hit)roadWorkspace.session.select(hit);
+    if(hit || !modifiers.shiftKey)roadWorkspace.session.requestSelectionA1(hit,{toggle:modifiers.shiftKey});
     return;
   }
   if (propertyEditSession?.flexibleMode) {
@@ -2968,7 +2970,11 @@ bindCanvasInteraction(canvas, camera, requestDraw, updateViewport, mapEditor, po
         (point.y-edge.frame.origin.y)*edge.frame.tangent.y;
       propertyCreationSessionE1.drag={startU:u,originalU:draft.u};return true;
     }
-    if(roadWorkspace?.active)return !roadWorkspace.comparisonOpen && roadWorkspace.session.begin(point,zoom,event?.pointerType);
+    if(roadWorkspace?.active){
+      const s=roadWorkspace.session;
+      if(event?.shiftKey && !s.mergeMode && !s.bendEditor)return false;
+      return !roadWorkspace.comparisonOpen && s.begin(point,zoom,event?.pointerType);
+    }
     if(propertyEditSession?.flexibleMode){
       const f=propertyEditSession.flexible;
       for(const which of ['A','B']){
