@@ -57,3 +57,9 @@ Compact runs exact commit 3995ebd062d321d01693a8356be7bc5c3f16c9f7, witness run 
 - `interleaved-45367059266.jsonl`: twelve complete records, exact commit 67103d87b3e563fcda81b6ffd561e629dc6fcfdc, job 138351390240.
 
 Both runs passed 60/60; twelve reduced-input successes each, zero original-input recoveries. Eleven complete matched pairs used for quantitative comparison. Preserve incomplete evidence as such. Total JSONL files: 30.
+
+
+## Building-aware round 1
+
+- `building-aware-results-45367799995.jsonl`: twelve intact compact result summaries, run 45367799995/job 138353964638, exact commit 2a90d8d99cad8004dbc9661b2c93b5752c3cb6cc; one preservation-only recovery, twelve reduced-input recoveries, 60/60 Fast Checks.
+- `building-aware-payloads-45367799995.jsonl`: eleven complete base64 chunk collections, explicitly incomplete raw/missing chunk entries for one payload. Concatenate chunks then base64-decode UTF-8; verify against summary payloadHash. Transport-complete collections not yet independently hash-checked. Compact result records support measured outcomes regardless of incomplete full trace. Total JSONL files: 32.

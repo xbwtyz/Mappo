@@ -51,3 +51,8 @@ Terminal diagnostic run 45365153567 reproduced deterministic reduced-input work/
 ## Interleaved placement pilot
 
 Eleven complete matched cases: original-input work 14972165 to 13364118, expansions 49020 to 27418; reduced-input work 18761198 to 22013687, expansions 57476 to 55445. No original-input acceptance gain; reduced-input score better/tied/worse 4/7/0. One control trace remains incomplete. No production performance gate passed.
+
+
+## Building-aware parcel lookahead
+
+Twelve matched witness cases, original-input work 16205909 to 24839382, expansions 36677 to 33378; reduced-input work 24749167 to 38380599. One original-input recovery required 3999978 work (near cap), one refusal reached work limit. All twelve reduced-input cases retained acceptance, scores better/tied/worse 0/11/1. Cost increase means this is not a production responsiveness pass.
