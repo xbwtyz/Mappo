@@ -195,7 +195,10 @@ export function validateRoadGroupApplyB1(project,workspace,draft,inspected) {
     const decoded=decodeProjectDocument(encodeProjectDocument(createProjectDocument(fresh.candidateProject,nextWorkspace)));
     if(!b4Same(decoded.project,fresh.candidateProject)||!b4Same(decoded.workspace,nextWorkspace))
       return reject('group-roundtrip','Portable save verification changed the connected-road candidate.');
-    return {ok:true,candidate:fresh.candidateProject,workspace:nextWorkspace,changed:fresh.changed,ledger:fresh.ledger,
+    // Commit the verified portable representation, exactly as history replay does.
+    // JSON canonicalizes signed zero; returning the raw draft would make Redo
+    // differ under strict equality even though the persisted geometry is identical.
+    return {ok:true,candidate:decoded.project,workspace:decoded.workspace,changed:fresh.changed,ledger:fresh.ledger,
       transaction:{family:'road',operation:'translate-road-group',
         label:'Move '+fresh.selectedRoadIds.length+' connected road segments',targetIds:fresh.selectedRoadIds.slice()}};
   }catch(error){return reject('apply-validation','Connected road Apply blocked: '+error.message);}

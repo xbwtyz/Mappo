@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createProject} from '../src/core/city-model.js';
 import {prepareRoadGroupReflowB1} from '../src/core/neighborhood-reflow.js';
 import {validateRoadGroupApplyB1} from '../src/editor/road-application.js';
-import {defaultWorkspace} from '../src/data/project-format.js';
+import {copyJson,defaultWorkspace} from '../src/data/project-format.js';
 import {AcceptedEditHistoryD01} from '../src/core/accepted-edit-history-d01.js';
 import {partitionPropertyPolygon024} from '../src/core/property-polygons-024.js';
 import {validatePlotTiling027} from '../src/core/plot-partition-027.js';
@@ -22,6 +22,11 @@ for(const [morphology,seed,ids,parcels] of [
   assert.ok(preview.candidateProject,JSON.stringify(preview.unresolved));
   const receipt=validateRoadGroupApplyB1(project,defaultWorkspace(project),{selectedRoadIds:ids,offset},preview);
   assert.ok(receipt.ok,JSON.stringify(receipt.issues));
+  // Accepted geometry must use the same numeric representation as portable
+  // storage and history (including canonical +0 rather than -0).
+  assert.deepEqual(receipt.candidate,copyJson(receipt.candidate));
+  assert.deepEqual(receipt.workspace,copyJson(receipt.workspace));
+  assert.equal(JSON.stringify(receipt.candidate),JSON.stringify(preview.candidateProject));
   for(const id of parcels){
     const original=project.city.properties.find(p=>p.id===id),next=receipt.candidate.city.properties.find(p=>p.id===id);
     assert.equal(original.boundary.length,5);assert.equal(next.boundary.length,5);
