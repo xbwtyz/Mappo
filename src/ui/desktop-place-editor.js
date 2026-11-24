@@ -10,8 +10,9 @@ const panels = [
 ];
 
 export class DesktopPlaceEditor {
-  constructor({ getElement, layout, getContext, getTitle, document = globalThis.document }) {
-    Object.assign(this, { $: getElement, layout, getContext, getTitle, document });
+  constructor({ getElement, layout, getContext, getTitle, shell, document = globalThis.document }) {
+    Object.assign(this, { $: getElement, layout, getContext, getTitle, shell, document });
+    this.inspectorA3=shell.inspectorA3;
     this.host = this.$('desktopPlaceEditor');
     this.scroll = this.$('desktopPlaceScroll');
     this.media = window.matchMedia?.('(min-width: 1000px)');
@@ -20,14 +21,18 @@ export class DesktopPlaceEditor {
       this.setView('Review');
       this.current?.querySelector('[data-place-review] input[type="checkbox"]:not(:checked):not(:disabled)')?.focus();
     });
-    for (const view of ['Edit', 'Review']) {
+    for (const view of ['Edit','Review']) {
       this.$('desktopPlace' + view).addEventListener('click', () => this.setView(view));
     }
+    this.inspectorA3.bind('place','Details','desktopPlaceDetailsA3');
   }
   setView(view) {
     const review = view === 'Review';
+    this.inspectorA3.select('place',view);
     this.host.classList.toggle('place-review', review);
-    this.$('desktopPlaceEdit').setAttribute('aria-pressed', String(!review));
+    this.host.setAttribute('data-inspector-view',view);
+    this.$('desktopPlaceDetailsA3').setAttribute('aria-pressed',String(view==='Details'));
+    this.$('desktopPlaceEdit').setAttribute('aria-pressed', String(view==='Edit'));
     this.$('desktopPlaceReview').setAttribute('aria-pressed', String(review));
     this.scroll.scrollTop = 0;
     this.updateReviewChoice();
@@ -50,6 +55,14 @@ export class DesktopPlaceEditor {
     this.updateReviewChoice();
     const [id, label, record] = config;
     const title = this.getTitle(id, label);
+    const ref=this.shell.state.selection;
+    const key=id+':'+(ref?.id??'new');
+    const desc=id==='propertyCreatePanelE1'?null:this.shell.descriptor();
+    this.inspectorA3.present('place',{key,kind:ref?.kind??'property-create',title,host:this.host,
+      views:['Details','Edit','Review'],initial:'Edit',priority:30,
+      buttons:{Details:'desktopPlaceDetailsA3',Edit:'desktopPlaceEdit',Review:'desktopPlaceReview'},
+      factsId:'desktopPlaceFactsA3',rows:inspectorFactsA3(desc),
+      onView:view=>this.setView(view)});
     const context = this.getContext(id) || this.$(record).textContent;
     if (this.$('desktopPlaceHeading').textContent !== title)
       this.$('desktopPlaceHeading').textContent = title;
@@ -87,6 +100,7 @@ export class DesktopPlaceEditor {
   }
   release() {
     if (!this.current) return;
+    this.inspectorA3.release('place');
     this.host.hidden = true;
     this.current.querySelector('[data-place-intro]').hidden = true;
     this.$('workspaceApp').classList.remove('place-editor-active');

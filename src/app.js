@@ -2375,7 +2375,7 @@ const desktopEditLayout = new DesktopEditLayout({
   viewport, divider: $('desktopEditDivider'), dockDivider: $('desktopImpactDivider'), onLayout: resize,
 });
 desktopPlaceEditor = new DesktopPlaceEditor({
-  getElement: $, layout: desktopEditLayout,
+  getElement: $, layout: desktopEditLayout, shell: workspaceShell,
   getContext: panelId => {
     const ref = workspaceShell.state.selection;
     if (panelId === 'propertyCreatePanelE1' || !ref) return '';

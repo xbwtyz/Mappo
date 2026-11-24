@@ -348,6 +348,7 @@ export class RoadInspectionWorkspace {
   exit({ restore = true, focus = false } = {}) {
     if (!this.transient) return;
     this.beforeExit();
+    this.shell.inspectorA3.release('road');
     const baseline = this.baseline;
     const desktop = this.usesDesktopPanel;
     if (this.comparisonOpen) this.clearComparison();
@@ -413,6 +414,7 @@ export class RoadInspectionWorkspace {
         (this.camera.width < 900 ? (this.camera.height * 0.22) / this.camera.zoom : 0);
       this.draw();
     });
+    this.shell.inspectorA3.bind('road','Details','roadMenuDetailsA3');
     this.$('roadMenuEdit').addEventListener('click', () => this.setDesktopReview(false));
     this.$('roadMenuReview').addEventListener('click', () => this.setDesktopReview(true));
     this.$('roadMenuReviewBlocker').addEventListener('click', () => this.setDesktopReview(true));
@@ -570,7 +572,7 @@ export class RoadInspectionWorkspace {
     const desktopEntry = this.$('roadDesktopPreviewG2');
     desktopEntry.setAttribute('aria-pressed', String(s.active && Boolean(this.usesDesktopPanel)));
     desktopEntry.disabled = s.active;
-    if (!s.active) return;
+    if (!s.active) {this.shell.inspectorA3.release('road');return;}
     const d = s.details,
       kind = d?.kind ?? 'junction';
     this.$('roadSelectionKind').value = kind;
@@ -817,6 +819,32 @@ export class RoadInspectionWorkspace {
       this.renderReport();
     }
     this.renderSelectionGroupA1();
+    if(this.usesDesktopPanel){
+      const group=s.selectionSet.items.length>1;
+      const key=group?'road-group:'+s.selectionSet.items.map(ref=>ref.id).join('|'):
+        kind+':'+(d?.id??'none');
+      const prior=this.shell.inspectorA3.current('road');
+      const views=group?['Details']:['Details','Edit','Review'];
+      const rows=group?[['Selection',s.selectionSet.items.length+' road segments'],
+        ['Primary',s.selectionSet.primary?.id??'None']]:d?[
+          ['Record',d.id],['Class',d.classes.join(', ')],['Connected roads',d.roadIds.length],
+          ['Protection',d.protected?d.reasons.join(', '):'Ordinary / unprotected']]:[];
+      const c=this.shell.inspectorA3.present('road',{key,kind:group?'road-group':kind,
+        title:group?'Selected road segments':d?.id??'Roads',host:panel,priority:40,views,
+        initial:group?'Details':this.desktopReview?'Review':'Edit',
+        buttons:{Details:'roadMenuDetailsA3',Edit:'roadMenuEdit',Review:'roadMenuReview'},
+        factsId:'roadInspectorFactsA3',rows,onView:view=>{
+          if(view==='Details'){
+            // Leave the comparison layout without touching the draft or its decisions.
+            if(this.desktopReview)this.setDesktopReview(false);
+            this.shell.inspectorA3.select('road','Details');
+            this.$('roadInspectorDetailsA3').hidden=false;
+            this.$('roadMenuDetailsA3').focus({preventScroll:true});
+          }
+        }});
+      this.$('roadInspectorDetailsA3').hidden=group||c.view!=='Details';
+      panel.classList.toggle('inspector-road-group-a3',group);
+    }else this.shell.inspectorA3.release('road');
   }
 
   renderSelectionGroupA1() {
@@ -884,6 +912,7 @@ export class RoadInspectionWorkspace {
       this.$('roadEditControlsD1').open = true;
     }
     this.desktopReview = review;
+    this.shell.inspectorA3.select('road',review?'Review':'Edit');
     this.render();
     this.$('roadPreviewBody').scrollTop = 0;
     this.$(review ? 'roadMenuReview' : 'roadMenuEdit').focus({ preventScroll: true });

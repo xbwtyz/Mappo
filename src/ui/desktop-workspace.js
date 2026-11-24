@@ -51,6 +51,9 @@ export class DesktopWorkspace {
       this.cancelPreview();
     });
     $('desktopGenerationApply').addEventListener('click', () => this.apply());
+    this.shell.inspectorA3.bind('landscape','Details','desktopLandscapeDetailsA3');
+    this.shell.inspectorA3.bind('district','Details','desktopDistrictDetailsA3');
+    this.shell.inspectorA3.bind('district','Edit','desktopDistrictEditA3');
     $('desktopLandscapeEdit').addEventListener('click', () => this.setLandscapeReview(false));
     $('desktopLandscapeReview').addEventListener('click', () => this.setLandscapeReview(true));
     $('desktopDistrictBack').addEventListener('click', () => {
@@ -164,6 +167,7 @@ export class DesktopWorkspace {
 
   setLandscapeReview(reviewing) {
     this.landscapeReviewing = reviewing;
+    this.shell.inspectorA3.select('landscape',reviewing?'Review':'Edit');
     this.sync();
   }
 
@@ -171,7 +175,10 @@ export class DesktopWorkspace {
     const $ = this.$;
     const creating = add && selection?.kind === 'landscape-add';
     const showFeature = add && landscapeSelection;
-    const reviewing = showFeature && this.landscapeReviewing;
+    const key=showFeature?selection.kind+':'+selection.id:null;
+    const presentation=this.shell.inspectorA3;
+    const details=showFeature&&presentation.view('landscape',key)==='Details';
+    const reviewing = showFeature && this.landscapeReviewing && !details;
     const pending = add && (this.landscape.water.editor.dirty || this.landscape.terrain.editor.dirty);
     this.move('landscapeHistoryTools', add ? 'desktopLandscapeHistory' : null);
     this.move('landscapeDraftStatus', showFeature ? 'desktopLandscapeStatus' : null);
@@ -185,9 +192,17 @@ export class DesktopWorkspace {
     if (add) $('landscapeReviewRebuild').hidden = !pending;
     $('desktopLandscapeFooter').hidden = !add;
     $('desktopLandscapeViews').hidden = !showFeature;
-    $('desktopLandscapeEdit').setAttribute('aria-pressed', String(!reviewing));
-    $('desktopLandscapeReview').setAttribute('aria-pressed', String(Boolean(reviewing)));
-    $('desktopAddFeatureControls').hidden = !showFeature || reviewing;
+    if(showFeature){
+      const descriptor=this.shell.descriptor();
+      presentation.present('landscape',{key,kind:selection.kind,title:descriptor?.title,host:$('desktopHomeAdd'),
+        views:['Details','Edit','Review'],initial:reviewing?'Review':'Edit',priority:20,
+        buttons:{Details:'desktopLandscapeDetailsA3',Edit:'desktopLandscapeEdit',Review:'desktopLandscapeReview'},
+        factsId:'desktopLandscapeDetailsFactsA3',rows:inspectorFactsA3(descriptor),
+        onView:view=>{this.landscapeReviewing=view==='Review';this.sync();}});
+    }else presentation.release('landscape');
+    $('desktopLandscapeDetailsPanelA3').hidden=!details;
+    $('desktopAddFeatureControls').hidden = !showFeature || reviewing || details;
+    $('desktopLandscapeActions').dataset.reviewing=String(Boolean(reviewing||details));
     $('desktopLandscapeImpact').hidden = !reviewing;
     if (!reviewing) return;
 
@@ -216,7 +231,16 @@ export class DesktopWorkspace {
     this.move('districtInspectorControls', active ? 'desktopDistrictControls' : null);
     $('desktopDistrictEdit').hidden = !active;
     $('desktopGenerationForms').hidden = active;
-    if (!active) return;
+    const presentation=this.shell.inspectorA3;
+    if (!active) {presentation.release('district');return;}
+    const ref=this.shell.state.selection;
+    const c=presentation.present('district',{key:'district:'+ref.id,kind:'district',title:descriptor?.title,
+      host:$('desktopDistrictEdit'),views:['Details','Edit'],initial:'Edit',priority:20,
+      buttons:{Details:'desktopDistrictDetailsA3',Edit:'desktopDistrictEditA3'},
+      factsId:'desktopDistrictFactsA3',rows:inspectorFactsA3(descriptor),onView:()=>this.sync()});
+    $('desktopDistrictControls').hidden=c.view==='Details';
+    $('desktopDistrictFactsA3').hidden=c.view!=='Details';
+    $('desktopDistrictDetails').hidden=c.view==='Details';
     $('desktopDistrictName').textContent = descriptor?.title ?? 'District';
     $('desktopDistrictFacts').textContent = (descriptor?.sections ?? [])
       .flatMap(section => section.rows ?? []).map(([label, value]) => label + ': ' + value).join(' · ');

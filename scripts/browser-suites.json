@@ -37,6 +37,7 @@
     "scripts/building-performance-f4.mjs",
     "scripts/whole-city-png-browser-qa.mjs",
     "scripts/courtyard-access-browser-qa.mjs",
-    "scripts/building-components-browser-qa.mjs"
+    "scripts/building-components-browser-qa.mjs",
+    "scripts/inspector-a3-browser-qa.mjs"
   ]
 }
