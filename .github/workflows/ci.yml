@@ -82,6 +82,10 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: Browser QA (${{ matrix.suite }})
     runs-on: ubuntu-24.04
+    # Match the JS package and preinstalled browser binaries exactly.
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
     timeout-minutes: 35
     strategy:
       fail-fast: false
@@ -101,24 +105,33 @@ jobs:
       - name: Build standalone HTML for browser QA
         run: npm run build
 
-      - name: Cache test-only Playwright downloads
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ runner.arch }}-node22-1.56.1
+      - name: Install matching test-only Playwright package
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm install --no-save --no-package-lock playwright@1.56.1
 
-      - name: Install test-only Playwright browsers
+      - name: Verify preinstalled browser executables
         run: |
-          npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium firefox
+          node --input-type=module -e "import { chromium, firefox } from 'playwright'; import { existsSync } from 'node:fs'; for (const engine of [chromium, firefox]) { const file = engine.executablePath(); if (!existsSync(file)) throw new Error('Missing preinstalled browser: ' + file); console.log(file); }"
+
+
+      # GitHub's container HOME is /github/home, which can belong to pwuser.
+      # Firefox refuses to launch as root with a different user's HOME.
+      - name: Smoke launch both preinstalled browsers
+        env:
+          HOME: /root
+        run: |
+          node --input-type=module -e "import { chromium, firefox } from 'playwright'; for (const engine of [chromium, firefox]) { const browser = await engine.launch({headless:true}); try { const context = await browser.newContext({offline:true}); const page = await context.newPage(); await page.goto('about:blank'); console.log(engine.name() + ' launch OK'); } finally { await browser.close(); } }"
 
       - name: Run ${{ matrix.suite }} browser regression suite
+        env:
+          HOME: /root
         run: npm run test:browser:${{ matrix.suite }}
 
       - name: C7 desktop browser performance and stale-draft checks
         if: ${{ matrix.suite == 'integration' && github.event_name == 'workflow_dispatch' && inputs.run_c7_benchmark }}
+        env:
+          HOME: /root
         run: node scripts/c7-browser-performance.mjs
 
       - name: Upload browser screenshots and failure evidence
