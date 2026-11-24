@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Living dependency roadmap, reconciled through PR #141 on November 23, 2026 (Pacific).** The development build on `main` is **0.2.17-dev**, with Schema 10. The stable release is **v0.2.0**.
+> **Living dependency roadmap, reconciled through PR #143 on November 23, 2026 (Pacific).** The development build on `main` is **0.2.17-dev**, with Schema 10. The stable release is **v0.2.0**.
 
 ## Problem and intended outcome
 
@@ -32,7 +32,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **Schema 10 S10-D building components** | One building with separately editable footprints | Merged in [PR #134](https://github.com/xbwtyz/Mappo/pull/134) for `0.2.16-dev`. [Contract and acceptance](milestones/schema10-s10d-building-components.md). |
 | **Schema 10 S10-E footprint joins** | Join two components within one building [#121](https://github.com/xbwtyz/Mappo/issues/121) | Merged in [PR #135](https://github.com/xbwtyz/Mappo/pull/135) for `0.2.17-dev`. [Contract and acceptance](milestones/schema10-s10e-join-footprints.md). |
 | **Schema 10 S10-F stabilization** | Mixed-city regressions, adjustment audit, and editor fixes | Merged mixed-city coverage in [PR #136](https://github.com/xbwtyz/Mappo/pull/136), the [1,075-edit audit](../../contributing/adjustment-audit.md) in [PR #139](https://github.com/xbwtyz/Mappo/pull/139), and fixes for irregular splits, multipart split guidance, and courtyard frontage repair in [PR #141](https://github.com/xbwtyz/Mappo/pull/141). Issues [#137](https://github.com/xbwtyz/Mappo/issues/137), [#138](https://github.com/xbwtyz/Mappo/issues/138), and [#140](https://github.com/xbwtyz/Mappo/issues/140) closed as completed. |
-| **0.2.17-dev release readiness** | Offline cross-editor session and export verification | A reproducible Developed city PNG export failure with multipart buildings blocks the release recommendation. See [the readiness pass](#0217-dev-release-readiness-pass). |
+| **0.2.17-dev release readiness** | Offline cross-editor session and export verification | The Developed city PNG regression was corrected in [PR #143](https://github.com/xbwtyz/Mappo/pull/143). No known release blocker remains; exact-main CI and owner hands-on release acceptance are separate gates. See [the readiness pass](#0217-dev-release-readiness-pass). |
 
 ## Progress and intended delivery waves
 
@@ -48,7 +48,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **8 — Evidence-triggered improvements** | D02 frame hitches, D03 capacity, E01a import cap | D03 sampled Large cities and found no road-reflow or import cap hits | Capacity changes deferred pending reproducible need | Small audit → high implementation |
 | **Policy decisions outside this sequence** | A02 disconnected networks, A04 protected edits, A05 true curves | Scope after product decisions; no automatic version promise | Unassigned | Very high or schema-sensitive |
 
-**Latest merged-code gate.** [Post-merge CI #45289789689](https://github.com/xbwtyz/Mappo/actions/runs/45289789689) passed on `a4d61f423ccf2c895aaff073c72a6768188685c0` after PR #141. All six runners and the aggregate check passed.
+**Latest runtime candidate gate.** [PR #143 exact-head CI #45293969133](https://github.com/xbwtyz/Mappo/actions/runs/45293969133) passed all six runners and the aggregate check on `95f684c39597f29e9991e04558c795740fe811fd`. PR #143 merged to `3540c393b42a58555541d3ed98ae9babf1582ef7`; its tree is identical to the tested PR head. [Exact-main post-merge CI #45295533500](https://github.com/xbwtyz/Mappo/actions/runs/45295533500) is the separate required main gate; check its live result before any release recommendation. [PR #142 post-merge CI](https://github.com/xbwtyz/Mappo/actions/runs/45293664168) passed.
 
 Prioritization is a dependency guide, **not** a commitment to 0.2.2, 0.2.3, etc. We may split high-risk items across multiple 0.2.x releases or defer them if the cost exceeds user value. Preserve a stable, usable editor at each release gate.
 
@@ -98,9 +98,28 @@ An automated offline session in Firefox 142.0.1 at 1440 × 900 checked the merge
 
 - Moved frontage junction `N-0154` by +0.5 on Y and explicitly selected the courtyard access repair. Changed the divider on `PROP-00011` to 80%, preserving the multipart building with updated plot membership. The building editor blocked a move into the courtyard wall, then applied a valid move.
 - Three Undo and three Redo actions restored every accepted city snapshot in order. The portable download reopened to the same accepted city after reloading the app (959,885 bytes).
-- **Release blocker.** The default **Developed city** export assumes every building has one iterable legacy `footprint`. A valid Schema 10 multipart building has canonical exterior rings and no single legacy footprint, so the export dimensions show an error and PNG download fails. The failure also reproduced on the unmodified standalone immediately after opening the original fixture. **Full survey** framing exported a valid 2,048 × 1,454 PNG for the edited city. Neither replay required HTTP traffic. To reproduce, open the mixed-city fixture and expand **Project → Whole-city PNG** with **Developed city** selected. [Export bounds code](../../../src/data/whole-city-png.js)
+- **Original release blocker (resolved by PR #143).** The default **Developed city** export assumes every building has one iterable legacy `footprint`. A valid Schema 10 multipart building has canonical exterior rings and no single legacy footprint, so the export dimensions show an error and PNG download fails. The failure also reproduced on the unmodified standalone immediately after opening the original fixture. **Full survey** framing exported a valid 2,048 × 1,454 PNG for the edited city. Neither replay required HTTP traffic. To reproduce, open the mixed-city fixture and expand **Project → Whole-city PNG** with **Developed city** selected. [Export bounds code](../../../src/data/whole-city-png.js)
 
-The next engineering task is to use canonical exterior rings for developed-city framing and verify dimensions and real PNG downloads for multipart, simple, and survey-framed cities. A02, A04, and A05 remain separate product decisions. Scale and capacity work remains evidence-gated.
+### Regression correction and readiness evidence
+
+[PR #143](https://github.com/xbwtyz/Mappo/pull/143) uses the existing canonical exterior-ring helper for developed-city bounds without changing the project schema, UI workflow, or accepted city. [Exact-head CI](https://github.com/xbwtyz/Mappo/actions/runs/45293969133) passed 604/604 Node tests and all six runners plus the aggregate gate; [fast checks](https://github.com/xbwtyz/Mappo/actions/runs/45293919139) passed 59/59 targeted/smoke tests. The official build generated byte-identical root and versioned HTML (2,103,041 bytes).
+
+The unchanged standalone, loaded offline with the real mixed-city portable document, downloaded the following valid PNGs in **both Firefox and Chromium**:
+
+| Framing | 2,048 longest side | 4,096 longest side |
+| --- | --- | --- |
+| Developed city | 2,048 × 1,465 | 4,096 × 2,930 |
+| Full survey | 2,048 × 1,454 | 4,096 × 2,909 |
+
+All eight scenarios passed with unchanged accepted project/workspace/history and no HTTP requests or page errors. The focused export/bounds source audit found no additional confirmed framing blocker; this is not exhaustive runtime coverage.
+
+### Remaining release decisions
+
+- Verify the exact-main CI gate for PR #143 and this documentation change after its separately approved merge.
+- Owner hands-on acceptance of desktop workflows: generation, road/parcel/building edits, courtyard access, multipart components and joins, rejected-edit explanations, chronological history, portable save/reopen, recovery and PNG export. Automated CI does not substitute for owner UX signoff.
+- Review release version and release notes, then obtain separate explicit release authorization. Pages deployment remains independently authorized.
+- [#121](https://github.com/xbwtyz/Mappo/issues/121) and [#122](https://github.com/xbwtyz/Mappo/issues/122) have been reconciled as partially delivered with residual future scope (arbitrary cross-building Boolean operations and deeper courtyard topology respectively). Both remain open; neither is a known release blocker.
+- A02, A04, and A05 remain separate product decisions. Scale and capacity work remains evidence-gated. No new engine expansion or schema change is proposed for this readiness pass.
 
 ## Milestone release gate (repeat for each 0.2.x)
 
