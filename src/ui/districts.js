@@ -8,6 +8,7 @@ import {
 
 export class DistrictPanel {
   constructor({
+    drafts,
     getElement,
     getCity,
     commit,
@@ -16,6 +17,7 @@ export class DistrictPanel {
     document = globalThis.document
   }) {
     this.$ = getElement;
+    this.drafts = drafts;
     this.activateLayers = activateLayers;
     this.getCity = getCity;
     this.commit = commit;
@@ -124,7 +126,29 @@ export class DistrictPanel {
     if (block) this.$('districtPanel').open = true;
     if (block) this.onMapSelect();
   }
-  operation(action, message) {
+  syncDraft(operation, issues = []) {
+    const city = this.getCity();
+    const district = city.districts.find(item => item.id === this.editor.selectedDistrictId);
+    const name = this.$('districtNameInput').value, color = this.$('districtColorInput').value;
+    const target = this.$('districtTargetInput').value;
+    const counts = [this.$('districtNumberInput').value, this.$('districtSeedInput').value];
+    const input = operation === 'generate' ? counts : operation === 'move' ? [this.editor.selectedBlockId, target]
+      : [district?.id, name, color];
+    const dirty = operation === 'generate'
+      ? String(city.districtState.requestedCount ?? 'auto') !== counts[0] || (city.districtState.seed ?? city.id) !== counts[1]
+      : operation === 'move' ? Boolean(target) : Boolean(district && (name !== district.name || color !== district.color));
+    const draft = this.drafts.sync('district-' + operation, { staged: true,
+      intent: JSON.stringify(input), dirty: dirty || issues.length > 0, issues,
+      target: district ? { kind: 'district', id: district.id } : undefined,
+    });
+    this.$('districtPanel').setAttribute('data-draft-' + operation, draft.status);
+  }
+  apply(operation, action, message) {
+    this.syncDraft(operation);
+    return this.drafts.apply('district-' + operation, current => current() && this.operation(action, message, operation),
+      { validateOnApply: true });
+  }
+  operation(action, message, operation) {
     try {
       const city = action();
       this.commit(city);
@@ -138,6 +162,7 @@ export class DistrictPanel {
       this.changed();
       return true;
     } catch (error) {
+      if (operation) this.syncDraft(operation, [{ code: 'district-' + operation, message: error.message }]);
       this.message(error.message, true);
       const id = /color/i.test(error.message) ? 'districtColorInput'
         : /name/i.test(error.message) ? 'districtNameInput'
@@ -150,15 +175,15 @@ export class DistrictPanel {
   bind() {
     this.$('generateDistrictButton').addEventListener('click', () => {
       const unassigned = this.getCity().districtState.status !== 'assigned';
-      const result = this.operation(() => this.editor.generate(this.getCity(), {
+      const result = this.apply('generate', () => this.editor.generate(this.getCity(), {
         count: this.$('districtNumberInput').value,
         seed: this.$('districtSeedInput').value
       }), 'Neighborhoods rebuilt. Streets, properties and buildings were preserved.');
       if (result && unassigned) this.activateLayers();
       return result;
     });
-    this.$('applyDistrictButton').addEventListener('click', () => this.operation(() => this.editor.edit(this.getCity(), this.$('districtNameInput').value, this.$('districtColorInput').value), 'District name and color updated.'));
-    this.$('moveDistrictButton').addEventListener('click', () => this.operation(() => this.editor.move(this.getCity(), this.$('districtTargetInput').value), 'Block moved. Both districts remain connected.'));
+    this.$('applyDistrictButton').addEventListener('click', () => this.apply('identity', () => this.editor.edit(this.getCity(), this.$('districtNameInput').value, this.$('districtColorInput').value), 'District name and color updated.'));
+    this.$('moveDistrictButton').addEventListener('click', () => this.apply('move', () => this.editor.move(this.getCity(), this.$('districtTargetInput').value), 'Block moved. Both districts remain connected.'));
     this.$('undoDistrictButton').addEventListener('click', () => this.operation(() => this.editor.undo(this.getCity()), 'District edit undone.'));
     this.$('districtSelect').addEventListener('change', () => {
       this.editor.selectedDistrictId = this.$('districtSelect').value || null;
@@ -167,8 +192,11 @@ export class DistrictPanel {
       this.changed();
     });
     for (const id of ['districtNumberInput', 'districtSeedInput', 'districtNameInput', 'districtColorInput', 'districtTargetInput']) {
-      this.$(id).addEventListener('change', () => this.changed());
-      this.$(id).addEventListener('input', () => this.changed());
+      const operation = id === 'districtNumberInput' || id === 'districtSeedInput' ? 'generate'
+        : id === 'districtTargetInput' ? 'move' : 'identity';
+      const changed = () => { this.syncDraft(operation); this.changed(); };
+      this.$(id).addEventListener('change', changed);
+      this.$(id).addEventListener('input', changed);
     }
   }
 }

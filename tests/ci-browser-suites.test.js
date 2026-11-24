@@ -21,6 +21,7 @@ const baseline=[
   "scripts/courtyard-access-browser-qa.mjs",
   "scripts/d4-browser-acceptance.mjs",
   "scripts/desktop-three-tabs-browser-qa.mjs",
+  "scripts/draft-lifecycle-a4-browser-qa.mjs",
   "scripts/g3g-desktop-parity-browser-qa.mjs",
   "scripts/g4-cross-editor-browser-qa.mjs",
   "scripts/g4-desktop-acceptance-browser-qa.mjs",
@@ -42,6 +43,7 @@ const baseline=[
   "scripts/road-ownership-023-browser-qa.mjs",
   "scripts/road-parcel-decisions-028-browser-qa.mjs",
   "scripts/selection-a1-browser-qa.mjs",
+  "scripts/staged-drafts-a4-browser-qa.mjs",
   "scripts/whole-city-png-browser-qa.mjs",
   "scripts/workspace-g2-browser-qa.mjs"
 ];

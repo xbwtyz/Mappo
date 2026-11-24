@@ -13,6 +13,7 @@
     "scripts/road-browser-qa.mjs",
     "scripts/selection-a1-browser-qa.mjs",
     "scripts/input-a2-browser-qa.mjs",
+    "scripts/draft-lifecycle-a4-browser-qa.mjs",
     "scripts/c7-p2-browser-qa.mjs",
     "scripts/c7-p3-offline-qa.mjs",
     "scripts/junction-snap-merge-browser-qa.mjs",
@@ -38,6 +39,7 @@
     "scripts/whole-city-png-browser-qa.mjs",
     "scripts/courtyard-access-browser-qa.mjs",
     "scripts/building-components-browser-qa.mjs",
-    "scripts/inspector-a3-browser-qa.mjs"
+    "scripts/inspector-a3-browser-qa.mjs",
+    "scripts/staged-drafts-a4-browser-qa.mjs"
   ]
 }

@@ -8,9 +8,9 @@ const landscapeActions = {
 const landscapeRegeneration = { lake: 'regenerateLakeButton', terrain: 'regenerateTerrainButton' };
 
 export class DesktopWorkspace {
-  constructor({ getElement, layout, shell, road, landscape, leaveTools, addProperty,
+  constructor({ drafts, getElement, layout, shell, road, landscape, leaveTools, addProperty,
     addBuilding, prepareGeneration, generationKey, acceptedProject, redraw, enabled = true }) {
-    Object.assign(this, { $: getElement, layout, shell, road, landscape, leaveTools,
+    Object.assign(this, { drafts, $: getElement, layout, shell, road, landscape, leaveTools,
       addProperty, addBuilding, prepareGeneration, generationKey, acceptedProject, redraw });
     this.mode = 'generation';
     this.tool = 'city';
@@ -254,49 +254,57 @@ export class DesktopWorkspace {
   }
 
   cancelPreview() {
-    this.clearPreview();
-    this.message = '';
-    this.setReview(false);
+    return this.drafts.cancel('generation-preview', () => {
+      this.message = '';
+      this.setReview(false);
+    });
   }
 
   clearPreview() {
-    this.candidate = null;
+    this.drafts.close('generation-preview');
     this.redraw();
   }
 
   preview() {
+    const intent = this.generationKey(this.tool);
+    const details = { staged: true, key: this.tool, intent, dirty: true };
     try {
-      this.candidate = {
-        project: this.prepareGeneration(this.tool),
-        accepted: this.acceptedProject(),
-        key: this.generationKey(this.tool),
-      };
+      const candidate = { project: this.prepareGeneration(this.tool), accepted: this.acceptedProject(), intent };
+      this.drafts.sync('generation-preview', { ...details, candidate, ready: true });
       this.proposed = true;
       this.message = '';
       this.setReview(true);
     } catch (error) {
-      this.clearPreview();
+      this.drafts.sync('generation-preview', { ...details,
+        issues: [{ code: 'generation-preview', message: error.message }] });
       this.message = error.message;
       this.sync();
     }
   }
 
   apply() {
-    if (!this.validPreview()) return;
-    this.clearPreview();
-    this.setReview(false);
-    const control = { city: 'generateButton', districts: 'generateDistrictButton', defenses: 'applyFortificationButton' };
-    this.$(control[this.tool]).click();
+    if (!this.validPreview()) return false;
+    return this.drafts.apply('generation-preview', current => {
+      if (!current()) return false;
+      const controls = { city: 'generateButton', districts: 'generateDistrictButton', defenses: 'applyFortificationButton' };
+      this.$(controls[this.tool]).click();
+      if (this.drafts.read('generation-preview').status === 'stale') {
+        this.clearPreview();
+        this.setReview(false);
+      }
+    });
   }
 
   validPreview() {
-    return this.candidate && this.candidate.accepted === this.acceptedProject()
-      && this.candidate.key === this.generationKey(this.tool);
+    const candidate = this.drafts.read('generation-preview').candidate;
+    if (!candidate || candidate.intent !== this.generationKey(this.tool)) return null;
+    return candidate;
   }
 
   mapPreview() {
-    if (!this.usesGeneration || !this.reviewing || !this.validPreview()) return null;
-    return this.proposed ? this.candidate.project : this.candidate.accepted;
+    if (!this.usesGeneration || !this.reviewing) return null;
+    const candidate = this.validPreview();
+    return this.proposed ? candidate?.project ?? null : candidate?.accepted ?? null;
   }
 
   revealGeneration() {
@@ -396,11 +404,14 @@ export class DesktopWorkspace {
       button.disabled = !['building', 'property'].includes(type) && !this.landscape.available(type);
       button.setAttribute('aria-pressed', String(selection?.kind === 'landscape-add' && selection.id === type));
     }
-    if (this.candidate && !this.validPreview()) {
+    const draft = this.drafts.read('generation-preview');
+    const candidate = this.validPreview();
+    if (!candidate && ['valid', 'stale'].includes(draft.status)) {
       this.clearPreview();
       this.message = 'The inputs changed. Preview again to review the current changes.';
     }
-    const ready = Boolean(this.candidate);
+    const ready = Boolean(candidate);
+    $('desktopGenerationActions').setAttribute('data-draft-state', this.drafts.read('generation-preview').status);
     $('desktopGenerationControls').hidden = this.reviewing;
     $('desktopGenerationImpact').hidden = !this.reviewing;
     $('desktopGenerationEdit').setAttribute('aria-pressed', String(!this.reviewing));
@@ -418,7 +429,7 @@ export class DesktopWorkspace {
       districts: 'This rebuild updates district names and block membership. Streets and buildings stay in place.',
       defenses: 'This update affects walls, gates and towers. The city layout stays in place.',
     };
-    const city = this.candidate?.project.city;
+    const city = candidate?.project.city;
     const counts = city ? {
       city: `${city.blocks.length} blocks · ${city.buildings.length} buildings`,
       districts: `${city.districts.length} districts`,

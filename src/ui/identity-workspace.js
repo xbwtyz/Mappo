@@ -3,8 +3,8 @@ import { IdentityEditor, identityRecord, identityChanges, customizedIdentityCoun
 import { renderBuildingUseOptions } from './building-use.js';
 
 export class IdentityWorkspace {
-  constructor({ getElement, shell, getCity, commit, historyMove = null, historyCan = null, canChangeBuildingUse = () => true, changed = () => {} }) {
-    Object.assign(this, { $: getElement, shell, getCity, commit, historyMove, historyCan, canChangeBuildingUse, changed });
+  constructor({ drafts, getElement, shell, getCity, commit, historyMove = null, historyCan = null, canChangeBuildingUse = () => true, changed = () => {} }) {
+    Object.assign(this, { draftEngine: drafts, $: getElement, shell, getCity, commit, historyMove, historyCan, canChangeBuildingUse, changed });
     this.editor = new IdentityEditor();
     this.drafts = new Map();
     this.mounted = null;
@@ -57,7 +57,7 @@ export class IdentityWorkspace {
     this.stash();
     const ref = this.ref(), record = identityRecord(this.getCity(), ref);
     this.$('identityInspector').hidden = !record;
-    if (!record) { this.mounted = null; return; }
+    if (!record) { this.draftEngine?.close('identity'); this.mounted = null; return; }
     const building = ref.kind === 'building';
     this.$('identityBuildingTypeGroup').hidden = !building;
     if (building) renderBuildingUseOptions(this.$('identityBuildingType'), record.type, true);
@@ -76,10 +76,23 @@ export class IdentityWorkspace {
     this.$('identityOtherUseGroup').hidden = this.$('identityUseInput').value !== 'other';
     this.$('identityUndoButton').disabled = this.historyCan ? !this.historyCan('undo') : !this.editor.history.length;
     if(this.$('identityRedoButtonD01'))this.$('identityRedoButtonD01').disabled = !this.historyCan?.('redo');
-    this.$('identityDraftState').textContent = this.pending(this.fields(), record, ref) ? 'Unapplied changes' : 'Up to date';
+    this.$('identityDraftState').textContent = this.syncDraft()?.dirty ? 'Unapplied changes' : 'Up to date';
     if (this.rebuildAction) this.updateRebuildWarning();
   }
+  syncDraft(issues = []) {
+    const ref = this.ref(), record = identityRecord(this.getCity(), ref), fields = this.fields();
+    const dirty = Boolean(record && this.pending(fields, record, ref));
+    const state = this.draftEngine?.sync('identity', { staged: true, key: this.key(ref),
+      intent: JSON.stringify(fields), dirty: dirty || issues.length > 0, issues, target: ref });
+    this.$('identityInspector').setAttribute('data-draft-state', state?.status ?? (dirty ? 'pending' : 'clean'));
+    return state ?? { dirty };
+  }
   apply() {
+    this.syncDraft();
+    return this.draftEngine ? this.draftEngine.apply('identity', current => current() && this.commitDraft(),
+      { validateOnApply: true }) : this.commitDraft();
+  }
+  commitDraft() {
     try {
       const ref = this.ref();
       if (!ref || this.key(ref) !== this.key(this.mounted)) throw new Error('Select the property or building again before applying.');
@@ -101,6 +114,7 @@ export class IdentityWorkspace {
       this.changed();
       return true;
     } catch (error) {
+      this.syncDraft([{ code: 'identity-edit', message: error.message }]);
       this.showMessage(error.message, true);
       this.$('identityNameInput').setAttribute('aria-invalid', String(/name/i.test(error.message)));
       this.$('identityOtherUseInput').setAttribute('aria-invalid', String(/use|Other/i.test(error.message)));
@@ -157,7 +171,8 @@ export class IdentityWorkspace {
         this.stash(); this.render(); this.showMessage('Unapplied identity changes. Choose Apply identity to save them.'); this.changed();
       });
     this.$('identityApplyButton').addEventListener('click', () => this.apply());
-    this.$('identityDiscardButton').addEventListener('click', () => this.discard());
+    this.$('identityDiscardButton').addEventListener('click', () =>
+      this.draftEngine ? this.draftEngine.cancel('identity', () => this.discard()) : this.discard());
     this.$('identityUndoButton').addEventListener('click', () => this.undo());
     this.$('identityRedoButtonD01')?.addEventListener('click', () => this.historyMove?.('redo'));
     this.$('identityCancelRebuildButton').addEventListener('click', () => {
