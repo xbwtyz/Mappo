@@ -46,3 +46,8 @@ Terminal diagnostic run 45365153567 reproduced deterministic reduced-input work/
 ## Compact cross-morphology replay
 
 22 matched reduced-input cases: original preview work 25258299, compact preview work 34753296, original-input compact work 43225915, compact trial-sequence p95 2370.36 ms, hosted timing only. Eleven reduced-input recoveries, zero original-input recoveries. Additional work is not evidence of improved production responsiveness. Single-building witness pilot completed; two oversized log records truncated, detailed aggregate performance deferred to chunked replay.
+
+
+## Interleaved placement pilot
+
+Eleven complete matched cases: original-input work 14972165 to 13364118, expansions 49020 to 27418; reduced-input work 18761198 to 22013687, expansions 57476 to 55445. No original-input acceptance gain; reduced-input score better/tied/worse 4/7/0. One control trace remains incomplete. No production performance gate passed.

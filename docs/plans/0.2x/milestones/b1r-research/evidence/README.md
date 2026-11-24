@@ -49,3 +49,11 @@ Both Fast Checks passed 60/60. Raw case payloads plus run/job IDs are retained w
 - `single-witness-45365975725.jsonl`: ten intact records plus two explicitly marked incomplete raw truncated log lines, job 138347659665. Summary and 60/60 Fast Checks establish twelve witness reproductions; detailed evidence partial until chunked replay. Do not count the two raw fragments as complete records.
 
 Compact runs exact commit 3995ebd062d321d01693a8356be7bc5c3f16c9f7, witness run a318dc35753d482c249fe5db3b73ad8ca562be26. Earlier datasets retained. All four runs passed 60/60 Fast Checks. Total JSONL files: 28.
+
+
+## Interleaved placement and chunked witness replay
+
+- `single-witness-45367006559.jsonl`: eleven complete records plus explicitly incomplete raw chunk and remaining chunk collection for planned-3; exact commit 85c6fe2aa8e665894adbb3ea8f795803fe27f2ae, job 138351208390.
+- `interleaved-45367059266.jsonl`: twelve complete records, exact commit 67103d87b3e563fcda81b6ffd561e629dc6fcfdc, job 138351390240.
+
+Both runs passed 60/60; twelve reduced-input successes each, zero original-input recoveries. Eleven complete matched pairs used for quantitative comparison. Preserve incomplete evidence as such. Total JSONL files: 30.
