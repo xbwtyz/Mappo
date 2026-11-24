@@ -1,0 +1,28 @@
+# B1R — Reconciliation performance research
+
+See [research report](lare-research-report.md) for the experiment ledger and [demolition study](lare-demolition-study.md) for the separate demolition cost. No performance gate has been passed on the integrated production implementation.
+
+## Measured observations
+
+The first 160-case diagnostic replay used 59,128,627 work units, p95 preview 346.52 ms. Recorded stage totals include first parcel inventory 35,029,432 and second 18,398,582. Early geometry rejection and exact plot caching yielded little deterministic work benefit. Progressive candidates reduced work to 49,153,188; rank-first pruning to 56,660,964; combined to 40,275,361 at the original 1M/2048 caps. At larger budgets, the search expands further, so total work may rise despite improved acceptance. Timing comparisons between hosted runners are noisy and not controlled; no causal latency gain is claimed from cross-run wall times alone.
+
+| 160-case configuration | Accepted | Total work | Preview p95 (ms) | Apply p95 (ms) | Largest iterator step per case p95 (ms) | CI |
+|---|---:|---:|---:|---:|---:|---|
+| Original 2M/4096 | 116 | 95.57M | 910.09 | 974.67 | 244.44 | [45349914532](https://github.com/xbwtyz/Mappo/actions/runs/45349914532) |
+| Original 4M/8192 | 117 | 110.25M | 1334.93 | 1194.49 | 240.20 | [45349918971](https://github.com/xbwtyz/Mappo/actions/runs/45349918971) |
+| Original 8M/16384 | 117 | 115.20M | 1009.69 | 866.34 | 159.87 | [45349924136](https://github.com/xbwtyz/Mappo/actions/runs/45349924136) |
+| Original 16M/32768 | 117 | 115.20M | 992.34 | 848.69 | 160.96 | [45349928115](https://github.com/xbwtyz/Mappo/actions/runs/45349928115) |
+| Original 4M/16384 | 117 | 115.20M | 875.84 | 762.86 | 153.49 | [45351283888](https://github.com/xbwtyz/Mappo/actions/runs/45351283888) |
+| Diagnostic control | 117 | 115.20M | 968.26 | 848.29 | 157.96 | [45353441451](https://github.com/xbwtyz/Mappo/actions/runs/45353441451) |
+| Strict candidate containment | 131 | 107.87M | 725.21 | 819.49 | 157.30 | [45354931673](https://github.com/xbwtyz/Mappo/actions/runs/45354931673) |
+| Selective clearance | 131 | 109.01M | 1170.06 | 1290.95 | 233.51 | [45355805434](https://github.com/xbwtyz/Mappo/actions/runs/45355805434) |
+| Combined clearance 2M | 127 | 59.46M | 551.21 | 656.83 | 204.49 | [45355789087](https://github.com/xbwtyz/Mappo/actions/runs/45355789087) |
+| Combined clearance 4M | 131 | 104.57M | 1370.15 | 1479.39 | 220.39 | [45355798019](https://github.com/xbwtyz/Mappo/actions/runs/45355798019) |
+
+Full selective 800: 597,586,817 work units, 1,527,865 expansions; preview median 226.03 ms, p95 1059.36, max 1826.95; Apply median 307.36 ms, p95 1193.36, max 2045.01 (only candidate-bearing movements); max iterator step per case median 178.14 ms, p95 310.32, max 740.15. P95 is nearest-rank over recorded finite values. P95 on the whole generated corpus is not the designated common-fixture performance test. Four smallest movement vectors had preview p95 386.35, 372.34, 373.73 and 371.69 ms respectively. Seven refused cases exhausted budget, all radial; two accepted cases retained an incumbent despite exhaustion.
+
+## Production performance proposal, not implemented
+
+Original milestone targets: lightweight preview p95 16.7ms, common complete p95 250ms, scheduled slice 8ms. Preserve original deterministic comparison semantics, no elapsed-time-dependent candidate selection. Provisional cumulative staged budgets 1M/2048, 2M/8192, 4M/16384; thresholds are proposed rather than validated. Resume rather than repeat inventory, search and compatibility work; keep an independently verified incumbent. Break long loops within parcel/plot/building generation, compatibility and finalization into bounded resumable steps; same deterministic synchronous consumption for independent Apply. Cancellation and revision checks must prevent stale preview writes. Explicitly distinguish work charged for final validation/impact from search. Compare identical input and candidate fingerprints across slice patterns; verify no lost accepted candidate and no unauthorized mutation. Profile controlled common fixtures in supported browsers and report real p50/p95/max, including long task and cancellation delays. No relaxed validation for latency.
+
+Progressive generation and rank-first pruning remain candidate optimizations: some configurations changed objective quality, so adoption requires comparison against retained verified incumbents. No evidence supports default wider beam or inventories. More demolition trials are not a solution to UI blocking: they repeat expensive search and Apply; a future implementation needs its own shared bounded strategy budget, resumable work and explicit authorization.
