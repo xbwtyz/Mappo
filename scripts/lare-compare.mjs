@@ -3,7 +3,7 @@ import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {performance} from 'node:perf_hooks';
 import assert from 'node:assert/strict';
-import {prepareRoadGroupReflowB1} from '../src/core/neighborhood-reflow.js';
+import {prepareRoadGroupReflowB1,iterateRoadGroupReflowB1} from '../src/core/neighborhood-reflow.js';
 import {validateRoadGroupApplyB1} from '../src/editor/road-application.js';
 import {defaultWorkspace} from '../src/data/project-format.js';
 import {validateStoredProject} from '../src/data/project-validation.js';
@@ -25,7 +25,21 @@ for(const entry of corpus.projects){
  for(const row of corpus.rows.filter(r=>r.projectId===entry.projectId)){
   assert.equal(row.fingerprint,entry.fingerprint);
   const start=performance.now();
-  const preview=prepareRoadGroupReflowB1(project,row.roadIds,row.offset);
+  const stages={},inventory=new Map();
+  const iterator=iterateRoadGroupReflowB1(project,row.roadIds,row.offset);
+  let step,previous={work:0,expansions:0},clock=performance.now(),tier=0,seenInventory=false;
+  for(;;){
+   step=iterator.next();const now=performance.now();
+   if(step.done){const a=stages['return']??={yields:0,ms:0,work:0,expansions:0};a.ms+=now-clock;break;}
+   const v=step.value??{},stage=String(v.stage??'search');
+   if(stage==='parcel-inventory'&&inventory.has(tier+':'+v.id)){tier++;seenInventory=true;}
+   if(stage==='parcel-inventory'){inventory.set(tier+':'+v.id,true);seenInventory=true;}
+   const a=stages[tier+':'+stage]??={yields:0,ms:0,work:0,expansions:0};
+   a.yields++;a.ms+=now-clock;
+   if(v.stats){a.work+=v.stats.work-previous.work;a.expansions+=v.stats.expansions-previous.expansions;previous=v.stats;}
+   clock=now;
+  }
+  const preview=step.value;
   const previewMs=performance.now()-start;
   const receipt=preview.candidateProject?validateRoadGroupApplyB1(project,workspace,{selectedRoadIds:row.roadIds,offset:row.offset},preview):null;
   const accepted=Boolean(receipt?.ok);
@@ -42,7 +56,7 @@ for(const entry of corpus.projects){
   summary.attempted++;if(row.accepted)summary.baselineAccepted++;
   const classification=row.accepted?(accepted?'retained':'regressed'):(accepted?'recovered':'bothRefused');
   summary[classification]++;
-  const record={projectId:entry.projectId,fingerprint:entry.fingerprint,roadIds:row.roadIds,offset:row.offset,baselineAccepted:row.accepted,accepted,classification,invalid,previewMs,issues:(preview.candidateProject?(receipt?.issues??[]):preview.unresolved??[]).map(i=>({code:i.code,message:i.message})),candidateFingerprint:accepted?hash(JSON.stringify(receipt.candidate)):null};
+  const record={projectId:entry.projectId,fingerprint:entry.fingerprint,roadIds:row.roadIds,offset:row.offset,baselineAccepted:row.accepted,accepted,classification,invalid,previewMs,issues:(preview.candidateProject?(receipt?.issues??[]):preview.unresolved??[]).map(i=>({code:i.code,message:i.message})),candidateFingerprint:accepted?hash(JSON.stringify(receipt.candidate)):null,baselineIssues:row.issues,diagnostic:{stages,inventory:[...inventory.keys()],inferredSecondInventory:tier>0,stats:preview.lare?.stats??null,lastRejectedCandidate:preview.lare?.lastRejectedCandidate??null,exhausted:preview.lare?.exhausted??null,score:preview.lare?.score??null,source:preview.lare?.source??null}};
   rows.push(record);
   console.log('LARE_CASE '+JSON.stringify(record));
  }
