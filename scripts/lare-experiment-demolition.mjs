@@ -43,7 +43,15 @@ for(const record of manifest){
  const control=prepareRoadGroupReflowB1(source,row.roadIds,row.offset);
  const controlDiagnostic=globalThis.__lareParcelDiagnostic;
  globalThis.__lareParcelDiagnostic=null;
- assert.ok(!control.candidateProject&&control.unresolved.some(i=>['lare-search-exhausted','lare-work-limit'].includes(i.code)),'Control outcome changed');
+ let originalResult=null;
+ if(control.candidateProject){
+   const receipt=validateRoadGroupApplyB1(source,defaultWorkspace(source),{selectedRoadIds:row.roadIds,offset:row.offset},control);
+   assert.ok(receipt?.ok,'Original-input candidate failed fresh Apply');
+   validateStoredProject(receipt.candidate);
+   assert.equal(verifyLareGroupPreservation(source,receipt.candidate,draft,new Map(),createLareBudget({work:1000000,stateExpansions:2048})),null,'Original-input preservation failure');
+   assert.deepEqual(receipt.candidate.city.buildings.map(b=>b.id).sort(),source.city.buildings.map(b=>b.id).sort(),'Original-input building identity change');
+   originalResult={fingerprint:hash(JSON.stringify(receipt.candidate)),score:control.lare?.score??null};
+ }else assert.ok(control.unresolved.some(i=>['lare-search-exhausted','lare-work-limit'].includes(i.code)),'Unexpected original-input refusal');
  const context=createLareContext(source,draft,new Map(),createLareBudget({work:1000000,stateExpansions:2048}));
  const properties=new Map(source.city.properties.map(p=>[p.id,p]));
  const plots=new Map(source.city.plots.map(p=>[p.id,p]));
@@ -90,10 +98,10 @@ for(const record of manifest){
    globalThis.__lareParcelDiagnostic=null;
    const trial={removed:[...ids].sort(),area:chosen.reduce((s,b)=>s+b.area,0),work:preview.lare?.stats?.work??0,expansions:preview.lare?.stats?.expansions??0,previewMs:performance.now()-t,accepted:false,issues:preview.unresolved?.map(i=>i.code)??[]};
    trial.diagnostic=diagnostic;trial.lastRejectedCandidate=preview.lare?.lastRejectedCandidate??null;
-   assert.ok(!preview.candidateProject,'Previously unresolved diagnostic control changed');
    if(preview.candidateProject){
      const receipt=validateRoadGroupApplyB1(reduced,defaultWorkspace(reduced),{selectedRoadIds:row.roadIds,offset:row.offset},preview);
      trial.accepted=Boolean(receipt?.ok);trial.issues=receipt?.issues?.map(i=>i.code)??[];
+     assert.ok(trial.accepted,'Reduced-input candidate failed fresh Apply');
      if(trial.accepted){
        validateStoredProject(receipt.candidate);
        const reducedDraft=prepareRoadGroupIntentB1(reduced,row.roadIds,row.offset);
@@ -109,7 +117,7 @@ for(const record of manifest){
  assert.equal(JSON.stringify(source),raw,'Original accepted source mutated');
  summary.attempted++;summary.trialCount+=trials.length;
  if(best){summary.recovered++;summary.removed+=best.removed.length;summary.area+=best.area;}else summary.refused++;
- console.log('LARE_DEMOLITION_CASE '+JSON.stringify({...record,strategy,eligible:eligible.length,controlIssues:control.unresolved.map(i=>i.code),controlDiagnostic,controlLastRejectedCandidate:control.lare?.lastRejectedCandidate??null,best,trials,totalMs:performance.now()-start}));
+ console.log('LARE_DEMOLITION_CASE '+JSON.stringify({...record,strategy,eligible:eligible.length,originalResult,controlWork:control.lare?.stats?.work??0,controlExpansions:control.lare?.stats?.expansions??0,controlIssues:control.unresolved.map(i=>i.code),controlDiagnostic,controlLastRejectedCandidate:control.lare?.lastRejectedCandidate??null,best,trials,totalMs:performance.now()-start}));
 }
 assert.equal(summary.attempted,manifest.length);
 console.log('LARE_DEMOLITION_SUMMARY '+JSON.stringify(summary));
