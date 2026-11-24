@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Living dependency roadmap, reconciled through PR #151 on November 23, 2026 (Pacific).** The development build on `main` is **0.2.23-dev**, with Schema 10. The stable release is **v0.2.0**.
+> **Living dependency roadmap, reconciled through PR #153 on November 24, 2026 (Pacific).** The development build on `main` is **0.2.24-dev**, with Schema 10, portable format 1 and workspace schema 1. The stable release is **v0.2.0**.
 
 ## Problem and intended outcome
 
@@ -36,6 +36,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **0.2.21-dev A4 draft lifecycle** | Shared draft state and diagnostics across editors | Merged in [PR #150](https://github.com/xbwtyz/Mappo/pull/150). [Implementation and acceptance criteria](milestones/0.2.21-draft-lifecycle-a4.md). |
 | **0.2.22-dev A5 history and workflow** | Dedicated Reset Preview shortcut and district/defense transactions in accepted history | Merged PR #151. [Implementation and acceptance criteria](milestones/0.2.22-history-workflow-a5.md). |
 | **0.2.23-dev B1 connected road translation** | Connected multi-segment selection, rigid translation and strict local reconciliation | [Merged B1](milestones/0.2.23-connected-road-groups-b1.md); PR #152 and exact-main CI passed. |
+| **0.2.24-dev B1R adaptive reconciliation** | Progressive preservation and explicitly reviewed demolition recovery | [Merged PR #153](https://github.com/xbwtyz/Mappo/pull/153); [exact-main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45493182198). [Milestone and acceptance](milestones/0.2.24-adaptive-reconciliation-b1r.md). |
 
 ## Progress and intended delivery waves
 
@@ -51,7 +52,7 @@ Mappo 0.2.0 is a working, offline 2D city editor. Its remaining constraints most
 | **8 — Evidence-triggered improvements** | D02 frame hitches, D03 capacity, E01a import cap | D03 sampled Large cities and found no road-reflow or import cap hits | Capacity changes deferred pending reproducible need | Small audit → high implementation |
 | **Policy decisions outside this sequence** | A02 disconnected networks, A04 protected edits, A05 true curves | Scope after product decisions; no automatic version promise | Unassigned | Very high or schema-sensitive |
 
-**Latest runtime candidate gate.** [PR #143 exact-head CI #45293969133](https://github.com/xbwtyz/Mappo/actions/runs/45293969133) passed all six runners and the aggregate check on `95f684c39597f29e9991e04558c795740fe811fd`. PR #143 merged to `3540c393b42a58555541d3ed98ae9babf1582ef7`; its tree is identical to the tested PR head. [Exact-main post-merge CI #45295533500](https://github.com/xbwtyz/Mappo/actions/runs/45295533500) is the separate required main gate; check its live result before any release recommendation. [PR #142 post-merge CI](https://github.com/xbwtyz/Mappo/actions/runs/45293664168) passed.
+**Historical 0.2.17-dev runtime candidate gate.** [PR #143 exact-head CI #45293969133](https://github.com/xbwtyz/Mappo/actions/runs/45293969133) passed all six runners and the aggregate check on `95f684c39597f29e9991e04558c795740fe811fd`. PR #143 merged to `3540c393b42a58555541d3ed98ae9babf1582ef7`; its tree is identical to the tested PR head. [Exact-main post-merge CI #45295533500](https://github.com/xbwtyz/Mappo/actions/runs/45295533500) is the separate required main gate; check its live result before any release recommendation. [PR #142 post-merge CI](https://github.com/xbwtyz/Mappo/actions/runs/45293664168) passed.
 
 Prioritization is a dependency guide, **not** a commitment to 0.2.2, 0.2.3, etc. We may split high-risk items across multiple 0.2.x releases or defer them if the cost exceeds user value. Preserve a stable, usable editor at each release gate.
 
@@ -159,4 +160,4 @@ Performance item D02 (#107) is **investigation-only**, not evidence that the clo
 
 D-031-1–5=A: session-only shared chronological Undo/Redo for roads, properties, plots, buildings, compounds and identities, using existing validators with a 20-entry/64 MiB estimated payload budget. [Milestone plan](milestones/0.2.11-unified-history.md) · [Issue #106](https://github.com/xbwtyz/Mappo/issues/106).
 
-**Approved next prerequisite:** [B1R — 0.2.24-dev Local Adaptive Reconciliation](milestones/0.2.24-adaptive-reconciliation-b1r.md). P1–P4 functional checks passed. PR #153 tracks P5 qualification and review. The owner approved proceeding to P5 with measured slice overruns, and the 8 ms target continues to apply. B2 is deferred.
+**B1R closeout:** [0.2.24-dev Local Adaptive Reconciliation](milestones/0.2.24-adaptive-reconciliation-b1r.md) is merged in [PR #153](https://github.com/xbwtyz/Mappo/pull/153). [Exact-head CI](https://github.com/xbwtyz/Mappo/actions/runs/45490760176) passed on `e7a6226c1cb79a07ceb17ee79a4c0a79e0032eb6`; the merged tree is identical. [Exact-main CI](https://github.com/xbwtyz/Mappo/actions/runs/45493182198) passed all six runners and the aggregate gate on `ad2a0f88995fbd6c869fcb38575626ff85cded19` in 6 min 38 sec. Preservation accepted 627/800 moves, retaining all 470 B1 and 607 selective successes. Reviewed demolition recovered 84/141 witnesses; no invalid acceptance or unauthorized removal was observed. All 43 research datasets are retained. The owner accepted measured slice overruns for this milestone; the 8 ms target remains active. A6 owner hands-on acceptance remains pending, and B2 is deferred. No release, tag or Pages deployment is authorized.
