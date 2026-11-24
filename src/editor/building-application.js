@@ -52,7 +52,14 @@ function b3gcRoutingRoofs(building) {
 
 function b3gcRouteBlocker(city, building, door, roadPoint, spend = null) {
   const crosses = ring => {
-    if(spend)spend(Math.max(1,4*ring.length*ring.length));
+    if(spend){
+      spend(Math.max(1,ring.length));
+      const minX=Math.min(door.x,roadPoint.x),maxX=Math.max(door.x,roadPoint.x),
+        minY=Math.min(door.y,roadPoint.y),maxY=Math.max(door.y,roadPoint.y);
+      if(ring.every(p=>p.x<minX)||ring.every(p=>p.x>maxX)||
+         ring.every(p=>p.y<minY)||ring.every(p=>p.y>maxY))return false;
+      spend(Math.max(1,4*ring.length*ring.length));
+    }
     return b3gcRouteCrossesInterior(door, roadPoint, ring);
   };
   if (Math.hypot(roadPoint.x-door.x,roadPoint.y-door.y) < B3GC_ACCESS_EPS ||

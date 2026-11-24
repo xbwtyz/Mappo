@@ -28,6 +28,8 @@ export function verifyLarePlotDeformation(parent,original,next,budget,expectedAd
   if(next.length!==original.length||next.some((p,i)=>p.id!==original[i].id))
     throw Error('Plot identity or order changed.');
   if(new Set(next.map(p=>p.id)).size!==next.length)throw Error('Duplicate plot identity.');
+  if(next.some((p,i)=>p.boundary.length!==original[i].boundary.length))
+    throw Error('Plot vertex count changed; retiling is outside strict deformation.');
   // Charge a conservative bound on containment, convexity and pair checks.
   const corners=next.reduce((n,p)=>n+p.boundary.length,0);
   budget.spend(Math.max(1,corners*corners+corners*parent.length*2+parent.length*parent.length));

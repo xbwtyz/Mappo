@@ -43,6 +43,8 @@ export function verifyLareGroupPreservation(before,after,draft,choices,budget){
       const ap=entry.plotIds.map(id=>aPlots.get(id)),bp=entry.plotIds.map(id=>bPlots.get(id));
       budget.spend(Math.max(1,ap.length+entry.buildings.length));
       const changed=lareGateChanged(a,b,lareGateParcelFields)||ap.some((p,i)=>!riEqual(p,bp[i]));
+      if(entry.policy.mode==='decision-required'&&draft.changedRoadIds?.includes(a.frontageRoadId))
+        return lareGateFail('property',a.id,'lare-decision-required','An authored parcel with changed frontage requires an explicit decision.');
       if(entry.policy.mode==='invalid-choice')
         return lareGateFail('property',a.id,'lare-decision-invalid','The parcel decision does not authorize this edit.');
       if(changed&&!['adaptive','authorized-reshape'].includes(entry.policy.mode))
@@ -74,9 +76,13 @@ export function verifyLareGroupPreservation(before,after,draft,choices,budget){
         const approvedCourtyard=courtyardMembers.has(policy.id)&&original.frontageRoadId===a.frontageRoadId;
         if(routeChanged&&policy.mode!=='rigid'&&!approvedCourtyard)
           return lareGateFail('building',policy.id,'lare-protected-access','A protected entrance or access route would change without authorization.');
+        const occupancyChanged=!riEqual(original.plotIds,candidate.plotIds);
+        if(policy.provenance==='generated'&&(moved||routeChanged||occupancyChanged)&&
+          classifyRoadProvenance(candidate)!=='generated')
+          return lareGateFail('building',policy.id,'lare-provenance','Updated generated building provenance is inconsistent.');
         if(!riEqual(original.roadProvenance,candidate.roadProvenance)&&
           (policy.provenance!=='generated'||classifyRoadProvenance(candidate)!=='generated'||
-            (policy.mode!=='rigid'&&!approvedCourtyard)))
+            (policy.mode!=='rigid'&&!approvedCourtyard&&!occupancyChanged)))
           return lareGateFail('building',policy.id,'lare-provenance','Protected or inconsistent building provenance would change.');
       }
     }

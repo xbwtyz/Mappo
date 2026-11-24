@@ -11,6 +11,10 @@ const lareArrangeDist=(a,b)=>a.reduce((s,p,i)=>s+Math.hypot(p.x-b[i].x,p.y-b[i].
 const lareArrangeIndex=(state,id)=>state.assignments.find(row=>row.variable===id)?.choice.value;
 const lareArrangePlotCost=(before,after)=>before.reduce((sum,p,i)=>sum+lareArrangeDist(p.boundary,after[i].boundary),0);
 function lareArrangeOverlap(a,b,budget){
+  budget.spend(Math.max(1,a.length+b.length));
+  const axis=(ring,k)=>[Math.min(...ring.map(p=>p[k])),Math.max(...ring.map(p=>p[k]))];
+  for(const k of ['x','y']){const x=axis(a,k),y=axis(b,k);
+    if(x[1]<y[0]||y[1]<x[0])return false;}
   budget.spend(Math.max(1,4*a.length*b.length));
   return shapesOverlapInterior(a,b);
 }
