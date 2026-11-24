@@ -20,7 +20,7 @@ Mappo's runtime is dependency-free and the accepted 2D city is the single source
 | `scripts/build.mjs` | Deterministic standalone HTML compilation |
 | `tests/`, `scripts/*qa*.mjs` | Node, Firefox and Chromium verification |
 
-**Modify modular source, never compiled HTML directly.** The build embeds modules and CSS into byte-identical `index.html` and `dist/mappo-<APP_VERSION>.html`. Preserve shipped save migrations, historical distributions, protected data and scoped Undo/Redo. Validate targeted changes before full six-runner CI on the review-ready PR.
+**Modify modular source, never compiled HTML directly.** The build embeds modules and CSS into byte-identical `index.html` and `dist/mappo-<APP_VERSION>.html`. Preserve shipped save migrations, historical distributions, protected data and scoped Undo/Redo. Use GitHub Actions for automated checks wherever it can provide the required evidence. See the [CI Test Policy](ci-policy.md).
 
 For an accurate individual-file listing, consult the [architecture atlas](../architecture/Mappo_Repository_Atlas.md). For the modern desktop workspace, consult the [G3G parity review](../history/0.2/workspace/g3g-parity-review.md) and [G4 acceptance](../history/0.2/workspace/g4-acceptance-report.md).
 
@@ -33,7 +33,7 @@ Properties are primary selected sites; individual buildings are child records wi
 
 ## Build and automated checks
 
-Use **Node.js 20.11 or newer**. Standard build and Node tests do not require `npm install`.
+Use **Node.js 20.11 or newer**. Standard build and Node tests do not require `npm install`. Use these commands when preparing a standalone build or running a focused local check. GitHub Actions provides routine automated verification.
 
 ```bash
 npm run build
@@ -50,7 +50,7 @@ git diff --exit-code -- index.html dist/mappo-0.2.0.html
 
 Use a Windows binary comparison tool if `cmp` is unavailable. Update paths when the release version changes.
 
-Node tests use `node --test tests/*.test.js` and verify geometry, project migrations, editing and simulated compiled-app interactions. GitHub CI splits them into two native Node shards alongside four browser QA suites. Install test-only Playwright 1.56.1 and Chromium/Firefox as described in [current CI](ci-guide.md), then run:
+Node tests use `node --test tests/*.test.js` and verify geometry, project migrations, editing and simulated compiled-app interactions. GitHub CI splits them into two native Node shards alongside four browser QA suites. For focused local browser diagnosis, install test-only Playwright 1.56.1 and Chromium/Firefox as described in [current CI](ci-guide.md) and select the relevant command:
 
 ```bash
 npm run test:browser               # all browser suites

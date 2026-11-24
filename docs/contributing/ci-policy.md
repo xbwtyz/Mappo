@@ -2,9 +2,7 @@
 
 ## Policy
 
-GitHub Actions runs the full automated suite at review and release gates.
-Use focused local tests when reproducing or diagnosing a failure. An incremental pass is **not** accepted for merge
-until the full validation passes for the exact review-ready revision.
+Use GitHub Actions by default whenever a hosted workflow can provide the evidence the task needs. This includes ordinary build and regression verification, browser matrices, long corpus replays and repeat runs. A merge requires the full validation to pass for the exact review-ready revision.
 
 | Event | Checks |
 | --- | --- |
@@ -44,13 +42,11 @@ force it using the existing default-branch workflow.
 The unused previous C7 benchmark workflow tied to the old finalization
 branch has been retired. The script and benchmark data format remain intact.
 
-## Local development
+## Choose where to run a check
 
-Run `npm run build` when preparing checked-in standalone HTML. Open or
-update the review PR to run the full build, Node, and browser checks in GitHub
-Actions. Use targeted local tests for failure diagnosis, such as
-`node --test tests/road-preview.test.js`. Full GitHub CI is the authoritative
-pre-merge acceptance check.
+1. Check the exact candidate SHA for a completed or running Actions job that covers the task. Reuse the result or follow the running job through completion. Inspect the relevant job summaries, logs and artifacts before deciding whether another run is needed.
+2. Use Fast Checks for incremental branch feedback and full Mappo CI for review. For a long replay or benchmark, use an existing hosted workflow or optional dispatch when it can run the requested inputs and record the needed evidence. After a change, verify the new candidate SHA. Repeat a check on the same SHA only when a missing result or a specific diagnostic question calls for it.
+3. Use focused local checks for quick failure diagnosis, for tests that cannot currently run on GitHub, or for measurements that need a controlled machine or a specific browser setup. Run `npm run build` when preparing checked-in standalone HTML. When reporting a local check, say why it was needed and distinguish its results from hosted CI.
 
 ## Resource and safety safeguards
 

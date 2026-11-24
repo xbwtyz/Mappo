@@ -19,7 +19,9 @@ H2 adds frozen 3A.2–3E.5 historical save migration and nonmutation tests to th
 
 H4 adds real IndexedDB-backed browser recovery acceptance in both desktop browsers: two distinct Project-menu imports, successive saved snapshots, actual reload, explicit latest/previous restoration, preserved authored geometry, and portable download/reopen. Run `npm run test:browser:h4` for this focused test. Existing G4 and H2 tests provide cross-editor and historical-save gates, rather than duplicating them.
 
-Node and build do not need npm installation. For local testing:
+Use GitHub Actions for routine automated runs and lengthy replays when a hosted job covers the check. Start with the run, logs and artifacts for the exact revision. See the [CI Test Policy](ci-policy.md) for when to run a check locally.
+
+Node and build do not need npm installation. When a local check is needed, choose the command that covers the case:
 
 ```bash
 npm run build

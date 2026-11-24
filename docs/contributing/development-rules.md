@@ -80,7 +80,7 @@ The table preserves every item in the original development checklist, with the o
 
 | ID | Status | Rule | Operational meaning |
 |---|---|---|---|
-| `DEV-37` | **ON** | Use targeted tests during development | Run focused tests to reproduce and fix changes; do not rerun the full suite at every small edit. |
+| `DEV-37` | **ON** | Use GitHub Actions first for automated validation | Use the applicable hosted run for automated checks, including lengthy replays. Use focused local tests for diagnosis or evidence the hosted run cannot provide. Reuse applicable results for the exact candidate SHA. |
 | `DEV-38` | **ON** | Run full CI on review-ready PRs and main | Use the required comprehensive CI gate before merge/release and after merging; do not treat a narrow smoke test as equivalent. |
 | `DEV-39` | **ON** | Keep six-runner parallel CI | Maintain two Node shards plus desktop/roads/property/integration browser suites and the required aggregate result unless a reviewed CI change is approved. |
 | `DEV-40` | **ON** | Require green CI for the exact review-ready revision | Verify check results match the candidate SHA; later commits require revalidation under the policy. |
@@ -276,7 +276,7 @@ These are consequences of the ON development rules and current repository implem
 
 ### 4.5 CI, quality and support scope
 
-- Local development: focused syntax/Node/browser tests on affected domains. Gate: full required CI on ready-for-review PRs and `main`, with **two Node shards, four browser suites and the combined `Build, Node tests and browser QA` result**.
+- Use the [CI Test Policy](ci-policy.md) to choose a hosted run or a focused local check. Full required CI on review-ready PRs and `main` uses **two Node shards, four browser suites and the combined `Build, Node tests and browser QA` result**.
 - Check deterministic compiled parity, offline `file://`, supported browser engines, representative cross-editor/Undo/save/recovery behavior, and any new schema policy when changed. Test failures must be fixed or explicitly reviewed as policy changes; don't quietly disable checks.
 - Desktop/laptop/ultrawide with mouse/trackpad/keyboard are the support targets; phone/tablet acceptance is OFF by default. Heavy C7 performance benchmarking is manual opt-in. Do not chase benchmarks absent a reproducible user-facing regression.
 - The existing CI suite contains legacy-save tests despite optional future compatibility. **That is not an error in itself:** the shipped version must remain tested to its own published contract until an approved update changes supported behavior.
