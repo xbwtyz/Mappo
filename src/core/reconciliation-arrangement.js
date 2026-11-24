@@ -31,7 +31,7 @@ function lareArrangeRank(entries,parcelCandidates){
 }
 // Pure joint solver over actual parcel/plot and rigid building alternatives.
 // Adapter supplies affected blocks, external obstacles and whole-project finalizer.
-export function* iterateLareArrangement({entries,finalize,incumbent=null},budget){
+export function* iterateLareArrangement({entries,finalize,incumbent=null,enhanced=false},budget){
   if(!Array.isArray(entries)||entries.length>LARE_LIMITS.affectedParcels||
     new Set(entries.map(e=>e.property.id)).size!==entries.length||typeof finalize!=='function')
     throw Error('Invalid local arrangement inventory.');
@@ -43,33 +43,57 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null},budget
       if(verifiedIncumbent)compareLareScore(verifiedIncumbent.score,verifiedIncumbent.score);}
     for(const entry of entries.slice().sort((a,b)=>lareArrangeCompare(a.property.id,b.property.id))){
       const fixedRings=entry.buildings.filter(b=>b.permission.mode!=='rigid').flatMap(b=>buildingExteriorRingsS10(b.source));
-      parcelCandidates.set(entry.property.id,generateLareParcelCandidates({...entry,fixedRings},budget));
+      parcelCandidates.set(entry.property.id,generateLareParcelCandidates({...entry,fixedRings,compactDeformation:enhanced},budget));
       yield {stage:'parcel-inventory',id:entry.property.id,stats:budget.snapshot()};
     }
   }catch(error){
     if(!(error instanceof LareBudgetExceeded))throw error;
     return {status:verifiedIncumbent?'candidate':'work-limit',best:verifiedIncumbent,stage:0,complete:0,stats:budget.snapshot(),exhausted:error.resource};
   }
-  const sorted=lareArrangeRank(entries,parcelCandidates),variables=[];
-  for(const e of sorted){const id='property:'+e.property.id;variables.push(id);byVariable.set(id,{entry:e});}
-  for(const e of sorted){
-    const ordered=e.buildings.slice().sort((a,b)=>(a.permission.mode==='rigid')-(b.permission.mode==='rigid')||
-      b.source.area-a.source.area||lareArrangeCompare(a.source.id,b.source.id));
-    for(const b of ordered){const id='building:'+b.source.id;variables.push(id);byVariable.set(id,{entry:e,building:b});}
-  }
-  const choices=(id,state)=>{
-    const {entry,building}=byVariable.get(id);
-    if(!building)return parcelCandidates.get(entry.property.id).map(c=>({key:String(c.order),value:c,
-      score:[0,0,0,c.score,lareArrangePlotCost(entry.plots,c.plots),0]}));
-    const parcel=lareArrangeIndex(state,'property:'+entry.property.id);
-    if(!parcel)throw Error('Building choice has no selected property.');
-    const key=JSON.stringify([building.source.id,parcel.order]);
-    if(!buildingCache.has(key)){
-      const fixedBuildings=entry.buildings.filter(b=>b.permission.mode!=='rigid'&&b.source.id!==building.source.id).map(b=>b.source);
-      buildingCache.set(key,generateLareBuildingCandidates({source:building.source,permission:building.permission,
-        oldProperty:entry.property,property:parcel.property,plots:parcel.plots,fixedBuildings},budget));
+  const sorted = lareArrangeRank(entries, parcelCandidates), variables = [], largestRigid = new Map();
+  const addParcel = entry => {
+    const id = 'property:' + entry.property.id;
+    variables.push(id);
+    byVariable.set(id, { entry });
+  };
+  if (!enhanced) sorted.forEach(addParcel);
+  for (const entry of sorted) {
+    if (enhanced) addParcel(entry);
+    const ordered = entry.buildings.slice().sort((a, b) => (a.permission.mode === 'rigid') -
+      (b.permission.mode === 'rigid') || b.source.area - a.source.area || lareArrangeCompare(a.source.id, b.source.id));
+    largestRigid.set(entry, ordered.find(building => building.permission.mode === 'rigid'));
+    for (const building of ordered) {
+      const id = 'building:' + building.source.id;
+      variables.push(id);
+      byVariable.set(id, { entry, building });
     }
-    return buildingCache.get(key).map(c=>({key:String(c.order),value:c,score:[c.moved,c.displacement,c.rotation,0,0,0]}));
+  }
+  const buildingInventory = (entry, building, parcel) => {
+    // A parcel candidate and building descriptor belong to this arrangement
+    // only. Retries and different fixed/rigid passes get separate inventories.
+    if (!buildingCache.has(parcel)) buildingCache.set(parcel, new Map());
+    const inventory = buildingCache.get(parcel);
+    if (!inventory.has(building)) {
+      const fixedBuildings = entry.buildings.filter(other => other.permission.mode !== 'rigid' &&
+        other.source.id !== building.source.id).map(other => other.source);
+      inventory.set(building, generateLareBuildingCandidates({ source: building.source,
+        permission: building.permission, oldProperty: entry.property, property: parcel.property,
+        plots: parcel.plots, fixedBuildings }, budget));
+    }
+    return inventory.get(building);
+  };
+  const choices = (id, state) => {
+    const { entry, building } = byVariable.get(id);
+    if (!building) return parcelCandidates.get(entry.property.id).map(candidate => ({
+      key: String(candidate.order), value: candidate,
+      score: [0, 0, 0, candidate.score, lareArrangePlotCost(entry.plots, candidate.plots), 0],
+    }));
+    const parcel = lareArrangeIndex(state, 'property:' + entry.property.id);
+    if (!parcel) throw Error('Building choice has no selected property.');
+    return buildingInventory(entry, building, parcel).map(candidate => ({
+      key: String(candidate.order), value: candidate,
+      score: [candidate.moved, candidate.displacement, candidate.rotation, 0, 0, 0],
+    }));
   };
   const compatible=(id,choice,state)=>{
     const {entry,building}=byVariable.get(id);
@@ -87,6 +111,11 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null},budget
         if(!parcelCandidates.get(neighbor.property.id).some(c=>
           !lareArrangeOverlap(boundary,c.property.boundary,budget)&&
           assigned.every(r=>!lareArrangeOverlap(c.property.boundary,r.choice.value.property.boundary,budget))))return false;
+      }
+      const probe = enhanced ? largestRigid.get(entry) : null;
+      if (probe) {
+        budget.spend();
+        if (!buildingInventory(entry, probe, choice.value).length) return false;
       }
       return true;
     }

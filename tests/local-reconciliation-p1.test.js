@@ -48,7 +48,7 @@ test('B1R budget is shared and cannot be refunded',()=>{
   assert.throws(()=>b.spend(),LareBudgetExceeded);
   assert.throws(()=>b.expand(),LareBudgetExceeded);
   assert.throws(()=>b.spend(-1),/positive integer/);
-  assert.throws(()=>createLareBudget({work:1000001,stateExpansions:2}),/Invalid/);
+  assert.throws(()=>createLareBudget({work:4000001,stateExpansions:2}),/Invalid/);
 });
 test('B1R diagnostics distinguish search exhaustion from obstruction',()=>{
   const i=lareConflict('search-exhausted','no-layout',['P2','P1','P2'],'No supported candidate found.');

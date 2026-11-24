@@ -39,7 +39,7 @@ import {
 import {
   polygonSignedArea,
   pointInPolygon,
-  boundsOf
+  boundsOf, properPolygonEdgeIntersection, polygonRingsProperlyCross
 } from '../core/geometry.js';
 import {
   insideOrOn,
@@ -153,25 +153,12 @@ function strictInside(p, polygon) {
   return pointInPolygon(p, polygon) && clearance(p, polygon) > 1e-6;
 }
 
-function properIntersection(a, b, c, d) {
-  const rx = b.x - a.x,
-    ry = b.y - a.y,
-    sx = d.x - c.x,
-    sy = d.y - c.y,
-    den = rx * sy - ry * sx;
-  if (Math.abs(den) < 1e-8) return false;
-  const qx = c.x - a.x,
-    qy = c.y - a.y,
-    t = (qx * sy - qy * sx) / den,
-    u = (qx * ry - qy * rx) / den;
-  return t > 1e-7 && t < 1 - 1e-7 && u > 1e-7 && u < 1 - 1e-7;
-}
 
 function polygonsOverlapInterior(a, b, spend) {
   for (let i = 0; i < a.length; i++)
     for (let j = 0; j < b.length; j++) {
       spend(1);
-      if (properIntersection(a[i], a[(i + 1) % a.length], b[j], b[(j + 1) % b.length])) return true;
+      if (properPolygonEdgeIntersection(a[i], a[(i + 1) % a.length], b[j], b[(j + 1) % b.length])) return true;
     }
   for (const [own, other] of [
       [a, b],
@@ -197,11 +184,7 @@ function polygonsOverlapInterior(a, b, spend) {
 
 function polygonContained(inner, outer, path, spend) {
   if (!inner.every(p => insideOrOn(p, outer))) throw new Error(`${path} extends outside its parent polygon.`);
-  for (let i = 0; i < inner.length; i++)
-    for (let j = 0; j < outer.length; j++) {
-      spend(1);
-      if (properIntersection(inner[i], inner[(i + 1) % inner.length], outer[j], outer[(j + 1) % outer.length])) throw new Error(`${path} crosses its parent polygon.`);
-    }
+  if (polygonRingsProperlyCross(inner, outer, spend)) throw new Error(`${path} crosses its parent polygon.`);
 }
 
 function indexedRecords(list, path) {

@@ -24,7 +24,7 @@ const lareParcelCmp=(a,b)=>a.score-b.score||a.order-b.order;
 // Returns admissible parcel/plot candidates, never a complete accepted edit.
 // Fixed exterior rings and fixed neighbors constrain the search; movable
 // neighboring properties must be checked later by the cooperative solver.
-export function generateLareParcelCandidates({property,plots,edge,edges,fixedRings=[],fixedNeighbors=[],mode='adaptive'},budget){
+export function generateLareParcelCandidates({property,plots,edge,edges,fixedRings=[],fixedNeighbors=[],mode='adaptive',compactDeformation=false},budget){
   if(!budget?.spend)throw Error('Shared LARE budget required.');
   if(!['adaptive','authorized-reshape','fixed','decision-required','invalid-choice','fixed-unsupported'].includes(mode))
     throw Error('Unknown parcel policy.');
@@ -62,9 +62,9 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
   const blockRear=Math.max(...block.map(p=>projected(p).v));
   const strip=lareParcelStrip(property,plots);
   const found=[],seen=new Set();
-  let order=0,attempts=0;
+  let order=0,attempts=0,attemptLimit=192;
   const tryCandidate=(family,boundary,nextPlots)=>{
-    if(attempts++>=192)return;
+    if(attempts++>=attemptLimit)return;
     const rank=order++,key=JSON.stringify(boundary);
     if(seen.has(key))return;seen.add(key);
     const n=boundary.length;
@@ -91,7 +91,7 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
     }
   };
   const mapped=(family,map)=>{
-    if(attempts>=192)return;
+    if(attempts>=attemptLimit)return;
     tryCandidate(family,original.map(map),mapLarePlotCells(plots,map,budget));
   };
   mapped('world-preserved',p=>({...p}));
@@ -101,7 +101,7 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
   const usableWidth=Math.min(width,length);
   const center=(oldLeft+oldRight)/2;
   const affine=(family,left,right,front,rear,shear=0)=>{
-    if(attempts>=192||right-left<minimumWidth-lareParcelEps||rear-front<=1||
+    if(attempts>=attemptLimit||right-left<minimumWidth-lareParcelEps||rear-front<=1||
        left< -lareParcelEps||right>length+lareParcelEps)return;
     const su=(right-left)/width,sv=(rear-front)/oldDepth;
     mapped(family,p=>{const q=local(p);return world(left+q.u*su+shear*q.v/oldDepth,front+q.v*sv);});
@@ -116,7 +116,7 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
     const base=p=>{const q=local(p);return world(left+q.u*usableWidth/width,front+q.v);};
     const seams=new Set();let eligible=0;
     for(const plot of plots)for(let i=0;i<plot.boundary.length;i++){
-      if(eligible>=8||attempts>=192)return;
+      if(eligible>=8||attempts>=attemptLimit)return;
       const p=plot.boundary[i],q=plot.boundary[(i+1)%plot.boundary.length],len=Math.hypot(q.x-p.x,q.y-p.y);
       if(len<lareParcelEps)continue;
       const key=[p.x+','+p.y,q.x+','+q.y].sort().join('|');
@@ -177,7 +177,7 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
     if(strip!==null){
       for(const delta of [-width*.2,-width*.1,width*.1,width*.2]){
         for(const side of ['left','right']){
-          if(attempts>=192)break;
+          if(attempts>=attemptLimit)break;
           const rearL=nearLeft+(side==='left'?delta:0),rearR=nearRight+(side==='right'?delta:0);
           if(rearR-rearL<=1)continue;
           const boundary=[world(nearLeft,front),world(nearRight,front),world(rearR,rearOld),world(rearL,rearOld)];
@@ -189,6 +189,21 @@ export function generateLareParcelCandidates({property,plots,edge,edges,fixedRin
     }
     for(const left of leftValues)for(const right of rightValues)for(const rear of rearValues)
       affine('independent-combined',left,right,front,rear);
+  }
+  if (compactDeformation) {
+    attemptLimit = attempts + 54;
+    const spans = lareParcelUnique([minimumWidth, (minimumWidth + usableWidth) / 2, usableWidth]);
+    const depths = [.35, .55, .75].map(ratio => Math.max(2, oldDepth * ratio));
+    for (const front of frontValues) {
+      for (const span of spans) {
+        if (span > length || span < minimumWidth) continue;
+        const starts = lareParcelUnique([center - span / 2, oldLeft, oldRight - span]
+          .map(x => lareParcelClamp(x, 0, length - span)));
+        for (const start of starts) {
+          for (const depth of depths) affine('compact-joint', start, start + span, front, front + depth);
+        }
+      }
+    }
   }
   return found.sort(lareParcelCmp);
 }

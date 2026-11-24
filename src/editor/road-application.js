@@ -186,7 +186,7 @@ export function validateRoadGroupApplyB1(project,workspace,draft,inspected) {
       !b4Same(draft.offset,inspected.offset)||!inspected.candidateProject)
       return reject('stale-preview','The connected-road proposal no longer matches the inspected selection.');
     const fresh=prepareRoadGroupReflowB1(project,draft.selectedRoadIds,draft.offset,
-      {parcelChoices:draft.parcelChoices??new Map(),acceptedRevision:draft.acceptedRevision});
+      {parcelChoices:draft.parcelChoices??new Map(),acceptedRevision:draft.acceptedRevision,strategy:draft.strategy});
     if(!fresh.candidateProject)
       return reject('candidate-invalid',fresh.unresolved[0]?.message??'Group reflow failed fresh validation.');
     if(!b4Same(fresh.candidateProject,inspected.candidateProject)||!b4Same(fresh.ledger,inspected.ledger))

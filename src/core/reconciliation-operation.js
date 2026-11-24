@@ -1,7 +1,9 @@
-import { LARE_LIMITS } from './reconciliation-budget.js';
+import { LARE_STRATEGY_LIMITS } from './reconciliation-budget.js';
 import { riCompare, riFreeze } from './road-impact-model.js';
 
-export function createLareRoadOperation(project, draft, analysis, choices, acceptedRevision = null) {
+export function createLareRoadOperation(project, draft, analysis, choices, acceptedRevision = null, strategy = 'selective-adaptive') {
+  if (!['selective-adaptive', 'enhanced-adaptive'].includes(strategy))
+    throw Error('Unknown preservation strategy.');
   const affectedBlocks = analysis.identity.changed
     .filter(face => face.kind === 'block')
     .map(face => face.id)
@@ -24,7 +26,7 @@ export function createLareRoadOperation(project, draft, analysis, choices, accep
       moveGeneratedBuildings: true,
       demolishBuildings: false,
     },
-    strategies: ['direct', 'strict', 'selective-adaptive'],
-    limits: LARE_LIMITS,
+    strategies: ['direct', 'strict', strategy],
+    limits: LARE_STRATEGY_LIMITS,
   });
 }

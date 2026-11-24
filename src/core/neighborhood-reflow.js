@@ -20,6 +20,7 @@ import { hydrateCityS10 } from './building-project-s10.js';
 import { iterateLareRoadGroup } from './reconciliation-road-group.js';
 import { createLareRoadOperation } from './reconciliation-operation.js';
 import { iterateLareStrategies } from './reconciliation-strategies.js';
+import { createLareBudget } from './reconciliation-budget.js';
 
 // A road intent is frozen for cancellation safety and loses non-serialized
 // read-only building projections during structuredClone. Rehydrate a detached
@@ -138,7 +139,7 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
   const analyze = () => analysis;
   const strictOptions = { ...options, strictGroup: true };
   const choices = options.parcelChoices instanceof Map ? options.parcelChoices : new Map(options.parcelChoices ?? []);
-  const operation = createLareRoadOperation(project, draft, analysis, choices, options.acceptedRevision);
+  const operation = createLareRoadOperation(project, draft, analysis, choices, options.acceptedRevision, options.strategy);
   const operationChoices = new Map(operation.permissions.parcelChoices);
   strictOptions.parcelChoices = operationChoices;
   const checked = result => {
@@ -146,6 +147,13 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     const violation = verifyRoadGroupPreservationB1(project, result.candidateProject, draft);
     return violation ? blocked([violation], result) : result;
   };
+  const adaptiveStrategy = enhanced => ({
+    canRun: () => true,
+    *run(previous) {
+      return yield* iterateLareRoadGroup(project, draft, analysis, checked(previous),
+        operationChoices, createLareBudget(operation.limits), { enhanced });
+    },
+  });
   const result = yield* iterateLareStrategies(operation, {
     direct: {
       canRun: () => true,
@@ -160,12 +168,8 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
         return prepareNeighborhoodReflow(project, id, draft, true, analyze, strictOptions);
       },
     },
-    'selective-adaptive': {
-      canRun: () => true,
-      *run(previous) {
-        return yield* iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices);
-      },
-    },
+    'selective-adaptive': adaptiveStrategy(false),
+    'enhanced-adaptive': adaptiveStrategy(true),
   });
   return { ...result, phase: 'B1', selectedRoadIds: draft.selectedRoadIds, offset: draft.offset };
 }

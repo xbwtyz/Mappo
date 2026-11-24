@@ -2,6 +2,9 @@ export const LARE_LIMITS=Object.freeze({
   affectedParcels:256,parcelCandidates:24,buildingCandidates:24,
   beamWidth:8,stateExpansions:2048,work:1000000
 });
+export const LARE_STRATEGY_LIMITS = Object.freeze({
+  ...LARE_LIMITS, work: 4000000, stateExpansions: 16384,
+});
 export class LareBudgetExceeded extends Error{
   constructor(resource){
     super('Local reconciliation exhausted its '+resource+' budget.');
@@ -11,7 +14,7 @@ export class LareBudgetExceeded extends Error{
 // Share across the entire operation; elapsed time never selects geometry.
 export function createLareBudget(limits=LARE_LIMITS){
   for(const k of ['work','stateExpansions'])
-    if(!Number.isSafeInteger(limits[k])||limits[k]<1||limits[k]>LARE_LIMITS[k])
+    if(!Number.isSafeInteger(limits[k])||limits[k]<1||limits[k]>LARE_STRATEGY_LIMITS[k])
       throw Error('Invalid LARE '+k+' budget.');
   const cap={work:limits.work,stateExpansions:limits.stateExpansions};
   let work=0,expansions=0;

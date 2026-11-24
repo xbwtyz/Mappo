@@ -1,3 +1,4 @@
+import { polygonRingsProperlyCross } from './geometry.js';
 import { riEqual } from './road-impact-model.js';
 import { validateBuildingStructureS10 } from './building-components-s10.js';
 import { occupiedAreaS10,occupiedRegionsOverlapS10,occupiedPlotAreaS10 } from './building-occupancy-s10.js';
@@ -79,15 +80,17 @@ export function generateLareBuildingCandidates({source,permission,oldProperty,pr
   if(!budget?.spend||!property?.boundary?.length||property.id!==source.propertyId||
     !plots.length||plots.some(p=>p.propertyId!==undefined&&p.propertyId!==property.id))
     throw Error('Invalid local building context.');
-  const candidates=[],seen=new Set();let order=0,attempts=0;
+  const candidates=[],seen=new Set();let order=0,attempts=0,clearanceRetries=0;
   const sourcePoints=lareBuildingVertices(source),center=lareBuildingCenter(sourcePoints);
   const frame=property.frame??{origin:property.boundary[0],tangent:{x:1,y:0},inward:{x:0,y:1}};
   const project=p=>({x:(p.x-frame.origin.x)*frame.tangent.x+(p.y-frame.origin.y)*frame.tangent.y,
     y:(p.x-frame.origin.x)*frame.inward.x+(p.y-frame.origin.y)*frame.inward.y});
   const world=(u,v)=>({x:frame.tangent.x*u+frame.inward.x*v,y:frame.tangent.y*u+frame.inward.y*v});
   const pb=lareBuildingBounds(property.boundary,project);
-  const tryOne=(dx,dy,angle,family)=>{
-    if(attempts++>=160)return;
+  const tryOne=(dx,dy,angle,family,retry=false)=>{
+    if (retry) {
+      if (clearanceRetries++ >= 160) return;
+    } else if (attempts++ >= 160) return;
     angle=lareBuildingAngle(angle);
     if(Math.abs(angle)<1e-10)angle=0;
     if(Math.abs(dx)<1e-10)dx=0;if(Math.abs(dy)<1e-10)dy=0;
@@ -99,6 +102,7 @@ export function generateLareBuildingCandidates({source,permission,oldProperty,pr
       const rings=buildingExteriorRingsS10(b);
       budget.spend(Math.max(1,rings.reduce((n,r)=>n+r.length,0)*property.boundary.length*3));
       if(rings.some(r=>!shapeContained(r,property.boundary)))return;
+      if(rings.some(r=>polygonRingsProperlyCross(r,property.boundary,budget.spend)))return 'crossing';
       const charge=lareBuildingCharge(b,budget);
       for(const other of fixedBuildings){
         if(other.id===b.id)continue;
@@ -148,7 +152,18 @@ export function generateLareBuildingCandidates({source,permission,oldProperty,pr
     const vs=[clamp(0,minV,maxV),(minV+maxV)/2,minV,maxV];
     for(const [u,v] of [[us[0],vs[0]],[us[1],vs[1]],[us[2],vs[0]],[us[3],vs[0]],
       [us[0],vs[2]],[us[0],vs[3]],[us[2],vs[2]],[us[2],vs[3]],[us[3],vs[2]],[us[3],vs[3]]]){
-      if(attempts>=160)break;const delta=world(u,v);tryOne(delta.x,delta.y,angle,angle===0?'translate':'rotate');
+      if (attempts >= 160) break;
+      const delta = world(u, v);
+      const result = tryOne(delta.x, delta.y, angle, angle === 0 ? 'translate' : 'rotate');
+      if (result === 'crossing') {
+        // Retry only a placement rejected by the strict edge-crossing test.
+        // The correction is rigid and leaves exact-fit axes unmodified.
+        const insetU = Math.min(1e-5, Math.max(0, (maxU - minU) / 4));
+        const insetV = Math.min(1e-5, Math.max(0, (maxV - minV) / 4));
+        const corrected = world(clamp(u, minU + insetU, maxU - insetU),
+          clamp(v, minV + insetV, maxV - insetV));
+        tryOne(corrected.x, corrected.y, angle, 'selective-inset', true);
+      }
     }
   }
   return candidates.sort(lareBuildingOrder);

@@ -34,3 +34,29 @@ export function polygonSignedArea(points) {
   }
   return area / 2;
 }
+
+export function properPolygonEdgeIntersection(a, b, c, d) {
+  const rx = b.x - a.x,
+    ry = b.y - a.y,
+    sx = d.x - c.x,
+    sy = d.y - c.y,
+    den = rx * sy - ry * sx;
+  if (Math.abs(den) < 1e-8) return false;
+  const qx = c.x - a.x,
+    qy = c.y - a.y,
+    t = (qx * sy - qy * sx) / den,
+    u = (qx * ry - qy * rx) / den;
+  return t > 1e-7 && t < 1 - 1e-7 && u > 1e-7 && u < 1 - 1e-7;
+}
+
+// Match the strict edge-crossing test used to validate stored polygon containment.
+export function polygonRingsProperlyCross(inner, outer, spend) {
+  for (let i = 0; i < inner.length; i++) {
+    for (let j = 0; j < outer.length; j++) {
+      spend(1);
+      if (properPolygonEdgeIntersection(inner[i], inner[(i + 1) % inner.length],
+          outer[j], outer[(j + 1) % outer.length])) return true;
+    }
+  }
+  return false;
+}
