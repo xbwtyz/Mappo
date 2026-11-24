@@ -18,8 +18,8 @@ import {verifyLareGroupPreservation} from '../src/core/reconciliation-preservati
 import {validateRoadGroupApplyB1} from '../src/editor/road-application.js';
 import {defaultWorkspace} from '../src/data/project-format.js';
 const [dir,strategy,expectedArg]=process.argv.slice(2);
-assert.ok(['deep-largest','deep-obstructive','clear-all'].includes(strategy));
-const fullManifest=[{"projectId":"planned-0","fingerprint":"9acb40e5cd58d8161a96c7dc267fea946d389391d648e662c4ec96136412a647","roadIds":["RD-0154","RD-0155"],"offset":{"x":-8,"y":-5}},{"projectId":"planned-0","fingerprint":"9acb40e5cd58d8161a96c7dc267fea946d389391d648e662c4ec96136412a647","roadIds":["RD-0154","RD-0155","RD-0158","RD-0226"],"offset":{"x":-8,"y":-5}},{"projectId":"planned-4","fingerprint":"1f8b52960752617603241523c5b2c391777eb2fdb314d02b4b973ad6f8681154","roadIds":["RD-0223","RD-0254"],"offset":{"x":-8,"y":-5}},{"projectId":"planned-4","fingerprint":"1f8b52960752617603241523c5b2c391777eb2fdb314d02b4b973ad6f8681154","roadIds":["RD-0223","RD-0254","RD-0256"],"offset":{"x":-8,"y":-5}},{"projectId":"planned-4","fingerprint":"1f8b52960752617603241523c5b2c391777eb2fdb314d02b4b973ad6f8681154","roadIds":["RD-0223","RD-0226","RD-0256","RD-0341"],"offset":{"x":-8,"y":-5}},{"projectId":"organic-0","fingerprint":"383e9261dc953a6ecc932cf0b186ff5141446dd127856c2e0a72a36b1b6e9e33","roadIds":["RD-0167","RD-0171"],"offset":{"x":4,"y":3}},{"projectId":"organic-0","fingerprint":"383e9261dc953a6ecc932cf0b186ff5141446dd127856c2e0a72a36b1b6e9e33","roadIds":["RD-0168","RD-0169"],"offset":{"x":4,"y":3}},{"projectId":"organic-0","fingerprint":"383e9261dc953a6ecc932cf0b186ff5141446dd127856c2e0a72a36b1b6e9e33","roadIds":["RD-0168","RD-0169"],"offset":{"x":-8,"y":-5}},{"projectId":"organic-1","fingerprint":"45424ea2b6d445236925cc4f8b6403c74fb59634b38171ef549647bc61670c86","roadIds":["RD-0162","RD-0165"],"offset":{"x":-8,"y":-5}},{"projectId":"organic-1","fingerprint":"45424ea2b6d445236925cc4f8b6403c74fb59634b38171ef549647bc61670c86","roadIds":["RD-0162","RD-0163","RD-0166","RD-0230"],"offset":{"x":-8,"y":-5}},{"projectId":"organic-1","fingerprint":"45424ea2b6d445236925cc4f8b6403c74fb59634b38171ef549647bc61670c86","roadIds":["RD-0159","RD-0162"],"offset":{"x":-8,"y":-5}},{"projectId":"organic-3","fingerprint":"91f521cbc9aeb236372ea024f01a0fd2efa820a0a910c83e3f0448cbeea1170c","roadIds":["RD-0167","RD-0189"],"offset":{"x":-8,"y":-5}},{"projectId":"organic-3","fingerprint":"91f521cbc9aeb236372ea024f01a0fd2efa820a0a910c83e3f0448cbeea1170c","roadIds":["RD-0167","RD-0170","RD-0188","RD-0232"],"offset":{"x":0,"y":-2}},{"projectId":"organic-4","fingerprint":"fc53feffce8cc1de2e18c956922f4389496e529fc36fcb0b859110c31dd64303","roadIds":["RD-0227","RD-0228","RD-0353"],"offset":{"x":-8,"y":-5}},{"projectId":"radial-0","fingerprint":"56c49977ee66a90a0f8cc3ca77757f40fe422796a12c385711a634b59805497c","roadIds":["RD-0141","RD-0251"],"offset":{"x":-8,"y":-5}},{"projectId":"radial-1","fingerprint":"d0ccd9d2f524e60dc7f34a512d807e893d0380250ab0cd8279a965a4cbc3e559","roadIds":["RD-0119","RD-0124","RD-0200","RD-0201","RD-0202","RD-0236","RD-0237","RD-0238"],"offset":{"x":-8,"y":-5}},{"projectId":"radial-3","fingerprint":"b42f967670d481e1857a3e0d927f6993385acb445d8411c64fc02cd024fa50ff","roadIds":["RD-0124","RD-0125","RD-0203"],"offset":{"x":-8,"y":-5}},{"projectId":"linear-1","fingerprint":"26c8a9f910c3c531f291b921513f53585fa8067bb4603503fe3a87e7ad8ab75b","roadIds":["RD-0178","RD-0179","RD-0182","RD-0254"],"offset":{"x":-8,"y":-5}},{"projectId":"linear-3","fingerprint":"0c72af89810b379792aeece5b346c67795286bbb88cf9309c922262c22f73372","roadIds":["RD-0163","RD-0164","RD-0167","RD-0260"],"offset":{"x":-8,"y":-5}},{"projectId":"linear-4","fingerprint":"2b50948c2b9a74e536eef56b97e2986f4b815548497007190470efcd5d4abfc0","roadIds":["RD-0256","RD-0381"],"offset":{"x":-8,"y":-5}},{"projectId":"linear-4","fingerprint":"2b50948c2b9a74e536eef56b97e2986f4b815548497007190470efcd5d4abfc0","roadIds":["RD-0256","RD-0259","RD-0294","RD-0381"],"offset":{"x":-8,"y":-5}},{"projectId":"linear-4","fingerprint":"2b50948c2b9a74e536eef56b97e2986f4b815548497007190470efcd5d4abfc0","roadIds":["RD-0256","RD-0380"],"offset":{"x":-8,"y":-5}}];
+assert.ok(strategy==='witness-single');
+const fullManifest=JSON.parse(await readFile(new URL('./lare-single-building-witness-manifest.json',import.meta.url),'utf8'));
 const key=x=>JSON.stringify([x.projectId,x.fingerprint,x.roadIds,x.offset]);
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const clone=x=>JSON.parse(JSON.stringify(x));
@@ -63,10 +63,10 @@ for(const record of manifest){
  const obstruction=b=>1000*(direct.get(b.id)||0)+100*Number(affected.has(b.propertyId))+10*Number(frontage.has(b.frontageRoadId));
  const ranked=eligible.slice().sort((a,b)=>strategy==='deep-largest'?b.area-a.area||cmp(a,b):obstruction(b)-obstruction(a)||b.area-a.area||cmp(a,b));
  const sets=[];
- if(strategy==='clear-all'){
-   // Diagnostic counterfactual only: never a proposed production policy.
-   if(ranked.length)sets.push(ranked);
- }else for(let n=9;n<=Math.min(16,ranked.length);n++)sets.push(ranked.slice(0,n));
+ const witness=eligible.find(b=>b.id===record.witnessBuilding);
+ assert.ok(witness,'Archived witness is not eligible');
+ assert.equal(witness.area,record.witnessArea,'Archived witness area changed');
+ sets.push([witness]);
  const trials=[];let best=null;const start=performance.now();
  for(const chosen of sets){
    const ids=new Set(chosen.map(b=>b.id));assert.equal(ids.size,chosen.length);
@@ -90,7 +90,7 @@ for(const record of manifest){
    globalThis.__lareParcelDiagnostic=null;
    const trial={removed:[...ids].sort(),area:chosen.reduce((s,b)=>s+b.area,0),work:preview.lare?.stats?.work??0,expansions:preview.lare?.stats?.expansions??0,previewMs:performance.now()-t,accepted:false,issues:preview.unresolved?.map(i=>i.code)??[]};
    trial.diagnostic=diagnostic;trial.lastRejectedCandidate=preview.lare?.lastRejectedCandidate??null;
-   assert.ok(!preview.candidateProject,'Previously unresolved diagnostic control changed');
+   assert.ok(preview.candidateProject,'Archived witness no longer produces candidate');
    if(preview.candidateProject){
      const receipt=validateRoadGroupApplyB1(reduced,defaultWorkspace(reduced),{selectedRoadIds:row.roadIds,offset:row.offset},preview);
      trial.accepted=Boolean(receipt?.ok);trial.issues=receipt?.issues?.map(i=>i.code)??[];
@@ -100,6 +100,7 @@ for(const record of manifest){
        assert.equal(verifyLareGroupPreservation(reduced,receipt.candidate,reducedDraft,new Map(),createLareBudget({work:1000000,stateExpansions:2048})),null,'Remaining-record preservation failure');
        assert.deepEqual(receipt.candidate.city.buildings.map(b=>b.id).sort(),source.city.buildings.filter(b=>!ids.has(b.id)).map(b=>b.id).sort(),'Unexpected building identity change');
        trial.score=preview.lare?.score??null;trial.fingerprint=hash(JSON.stringify(receipt.candidate));
+       assert.equal(trial.fingerprint,record.witnessFingerprint,'Witness candidate fingerprint changed');
        best=trial;
      }
    }
@@ -108,8 +109,9 @@ for(const record of manifest){
  }
  assert.equal(JSON.stringify(source),raw,'Original accepted source mutated');
  summary.attempted++;summary.trialCount+=trials.length;
+ assert.ok(best,'Archived witness failed fresh Apply');
  if(best){summary.recovered++;summary.removed+=best.removed.length;summary.area+=best.area;}else summary.refused++;
- console.log('LARE_DEMOLITION_CASE '+JSON.stringify({...record,strategy,eligible:eligible.length,controlIssues:control.unresolved.map(i=>i.code),controlDiagnostic,controlLastRejectedCandidate:control.lare?.lastRejectedCandidate??null,best,trials,totalMs:performance.now()-start}));
+ console.log('LARE_DEMOLITION_CASE '+JSON.stringify({...record,strategy,eligible:eligible.length,controlWork:control.lare?.stats?.work??0,controlExpansions:control.lare?.stats?.expansions??0,controlIssues:control.unresolved.map(i=>i.code),controlDiagnostic,controlLastRejectedCandidate:control.lare?.lastRejectedCandidate??null,best,trials,totalMs:performance.now()-start}));
 }
 assert.equal(summary.attempted,manifest.length);
 console.log('LARE_DEMOLITION_SUMMARY '+JSON.stringify(summary));

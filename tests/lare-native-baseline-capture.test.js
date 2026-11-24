@@ -4,9 +4,9 @@ import {execFileSync} from 'node:child_process';
 import {mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-const configs={"feature/lare-parcel-failure-diagnostics-experiment":{"branch":"feature/lare-parcel-failure-diagnostics-experiment","strategies":["clear-all"],"mode":"selective","work":4000000,"expansions":16384,"beam":8,"parcels":24,"buildings":24,"combined":false,"ranges":[[0,5,5],[5,5,9],[10,5,3],[15,5,5]]}};
+const configs={"feature/lare-single-building-witness-experiment":{"branch":"feature/lare-single-building-witness-experiment","strategies":["witness-single"],"mode":"selective","work":4000000,"expansions":16384,"beam":8,"parcels":24,"buildings":24,"combined":false,"ranges":[[0,5,12]]}};
 const config=configs[process.env.GITHUB_REF_NAME]??(process.env.MAPPO_LARE_CAPTURE==='1'&&process.env.MAPPO_LARE_INSET_CONFIG?JSON.parse(process.env.MAPPO_LARE_INSET_CONFIG):null);
-test('B1R native frozen baseline and candidate comparison — detached terminal parcel diagnostic replay', {skip: !config || !(process.env.MAPPO_LARE_CAPTURE==='1'||(process.env.GITHUB_ACTIONS==='true'&&process.env.GITHUB_WORKFLOW==='Mappo Fast Checks')),timeout: 600000},()=>{
+test('B1R native frozen baseline and candidate comparison — detached single-building witness diagnostics', {skip: !config || !(process.env.MAPPO_LARE_CAPTURE==='1'||(process.env.GITHUB_ACTIONS==='true'&&process.env.GITHUB_WORKFLOW==='Mappo Fast Checks')),timeout: 600000},()=>{
  const root=mkdtempSync(join(tmpdir(),'mappo-lare-'));
  const baseline=join(root,'baseline'),out=join(root,'corpus'),experiment=join(root,'experiment');
  const sha='e5f1cf83dcdcc75e52911aa717035955b40569d0';

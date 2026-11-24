@@ -1,0 +1,694 @@
+[
+  {
+    "projectId": "linear-0",
+    "fingerprint": "5e4ecf8486548ff66a2138ee6ebc770be7bcd26fc13f2365bb06ff0f402be7cf",
+    "roadIds": [
+      "RD-0179",
+      "RD-0180",
+      "RD-0183",
+      "RD-0252"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00113",
+    "witnessArea": 143.70094374102518,
+    "witnessRun": 45360320310,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "0acf36196d0e9de2c01518e0d93883c1b0f2f9cb99ebc7f93dde01f2bd2ac434"
+  },
+  {
+    "projectId": "linear-2",
+    "fingerprint": "1e56a262792283ef97f82e28c81826cf2ec4f1fbe5157af66854155cda793e77",
+    "roadIds": [
+      "RD-0174",
+      "RD-0252"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00153",
+    "witnessArea": 577.1647790491886,
+    "witnessRun": 45360329933,
+    "witnessStrategy": "largest",
+    "witnessFingerprint": "599cbefe53e1be5f0b5de04bdcdfdca588ed42ad66d2989679627c55423d2ae9"
+  },
+  {
+    "projectId": "linear-2",
+    "fingerprint": "1e56a262792283ef97f82e28c81826cf2ec4f1fbe5157af66854155cda793e77",
+    "roadIds": [
+      "RD-0175",
+      "RD-0176"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00134",
+    "witnessArea": 748.196379869195,
+    "witnessRun": 45360329933,
+    "witnessStrategy": "largest",
+    "witnessFingerprint": "c03b5384e8f3c353989f747d4291e5a1e4b19eaee6395e9149cdb6b43171a4b8"
+  },
+  {
+    "projectId": "linear-3",
+    "fingerprint": "0c72af89810b379792aeece5b346c67795286bbb88cf9309c922262c22f73372",
+    "roadIds": [
+      "RD-0176",
+      "RD-0177",
+      "RD-0263"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00165",
+    "witnessArea": 540.1994846402849,
+    "witnessRun": 45360341067,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "10dbe2b2e33ed3b771f2ef6fa5e77952093b5dba26f90e2f5df1eef3c7876c5c"
+  },
+  {
+    "projectId": "linear-4",
+    "fingerprint": "2b50948c2b9a74e536eef56b97e2986f4b815548497007190470efcd5d4abfc0",
+    "roadIds": [
+      "RD-0256",
+      "RD-0380"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00041",
+    "witnessArea": 95.71067720168867,
+    "witnessRun": 45360341067,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "e1dc2f79fd634a69cef9c2224238bcd242fc44e5a04abeaaf398115145283fc0"
+  },
+  {
+    "projectId": "linear-4",
+    "fingerprint": "2b50948c2b9a74e536eef56b97e2986f4b815548497007190470efcd5d4abfc0",
+    "roadIds": [
+      "RD-0257",
+      "RD-0258"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00310",
+    "witnessArea": 64.09807521220023,
+    "witnessRun": 45360341067,
+    "witnessStrategy": "smallest",
+    "witnessFingerprint": "bf222d68692f940e496885b67fa02ffbe2674406645708cdf7fca685cb635a21"
+  },
+  {
+    "projectId": "linear-4",
+    "fingerprint": "2b50948c2b9a74e536eef56b97e2986f4b815548497007190470efcd5d4abfc0",
+    "roadIds": [
+      "RD-0257",
+      "RD-0258"
+    ],
+    "offset": {
+      "x": 0,
+      "y": -2
+    },
+    "witnessBuilding": "BLD-00310",
+    "witnessArea": 64.09807521220023,
+    "witnessRun": 45360341067,
+    "witnessStrategy": "smallest",
+    "witnessFingerprint": "28ff2fbc52de1618c3f552964f6c43e778b3c173a29b320f451a2c588799533f"
+  },
+  {
+    "projectId": "organic-0",
+    "fingerprint": "383e9261dc953a6ecc932cf0b186ff5141446dd127856c2e0a72a36b1b6e9e33",
+    "roadIds": [
+      "RD-0167",
+      "RD-0168",
+      "RD-0171",
+      "RD-0243"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00118",
+    "witnessArea": 149.5607452140339,
+    "witnessRun": 45360258968,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "4bc5af62ae20b33ba25b673b87c21862e226e4e02c3affdd0ab614fdab3f75d3"
+  },
+  {
+    "projectId": "organic-1",
+    "fingerprint": "45424ea2b6d445236925cc4f8b6403c74fb59634b38171ef549647bc61670c86",
+    "roadIds": [
+      "RD-0159",
+      "RD-0162"
+    ],
+    "offset": {
+      "x": 2,
+      "y": 0
+    },
+    "witnessBuilding": "BLD-00102",
+    "witnessArea": 1235.3952209708052,
+    "witnessRun": 45360267848,
+    "witnessStrategy": "largest",
+    "witnessFingerprint": "e4334b6a949e31594a7e3c81a33ee8dbb743211fdfe1078d32ba3a53926b99f8"
+  },
+  {
+    "projectId": "organic-1",
+    "fingerprint": "45424ea2b6d445236925cc4f8b6403c74fb59634b38171ef549647bc61670c86",
+    "roadIds": [
+      "RD-0159",
+      "RD-0162"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00102",
+    "witnessArea": 1235.3952209708052,
+    "witnessRun": 45360267848,
+    "witnessStrategy": "largest",
+    "witnessFingerprint": "f44a65ec949a5fe8fb36a69f135af7edbe4e18397dcd3767f0c69c40bd2b71f7"
+  },
+  {
+    "projectId": "organic-1",
+    "fingerprint": "45424ea2b6d445236925cc4f8b6403c74fb59634b38171ef549647bc61670c86",
+    "roadIds": [
+      "RD-0159",
+      "RD-0163"
+    ],
+    "offset": {
+      "x": 2,
+      "y": 0
+    },
+    "witnessBuilding": "BLD-00110",
+    "witnessArea": 173.61302254641828,
+    "witnessRun": 45360267848,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "6814067d634b4d6208f131ac33b254bcf3cd1c4802d72a7b3a2c1816613a8c3c"
+  },
+  {
+    "projectId": "organic-1",
+    "fingerprint": "45424ea2b6d445236925cc4f8b6403c74fb59634b38171ef549647bc61670c86",
+    "roadIds": [
+      "RD-0159",
+      "RD-0163"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00102",
+    "witnessArea": 1235.3952209708052,
+    "witnessRun": 45360267848,
+    "witnessStrategy": "largest",
+    "witnessFingerprint": "3d3502f2ec49fd2448f837df0f2b4aadb5a05bb0aec90897db8cbea9cf54b0b6"
+  },
+  {
+    "projectId": "organic-1",
+    "fingerprint": "45424ea2b6d445236925cc4f8b6403c74fb59634b38171ef549647bc61670c86",
+    "roadIds": [
+      "RD-0162",
+      "RD-0165"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00060",
+    "witnessArea": 900.1115497790274,
+    "witnessRun": 45360267848,
+    "witnessStrategy": "obstructive",
+    "witnessFingerprint": "53506159d739116c02914ceaf1edb4026b619c8a0280d73cf0bc2f3610055560"
+  },
+  {
+    "projectId": "organic-2",
+    "fingerprint": "6570e92ab1b2a90067cb189c9081d0fa69f139b60ab1aedc7de24f6e493be0b3",
+    "roadIds": [
+      "RD-0176",
+      "RD-0250"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00113",
+    "witnessArea": 105.15084072264494,
+    "witnessRun": 45360267848,
+    "witnessStrategy": "obstructive",
+    "witnessFingerprint": "df65b4baf00942e327855092ff69fba2f2b3b5e43dca996dd7e7225a7fb4de86"
+  },
+  {
+    "projectId": "organic-4",
+    "fingerprint": "fc53feffce8cc1de2e18c956922f4389496e529fc36fcb0b859110c31dd64303",
+    "roadIds": [
+      "RD-0227",
+      "RD-0228",
+      "RD-0353"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00287",
+    "witnessArea": 842.0901414955993,
+    "witnessRun": 45360277532,
+    "witnessStrategy": "largest",
+    "witnessFingerprint": "0db5beecc4ee03ab1d1645ac5cb2451efc108b2aefa7047e949a8a1e9d0a4691"
+  },
+  {
+    "projectId": "organic-4",
+    "fingerprint": "fc53feffce8cc1de2e18c956922f4389496e529fc36fcb0b859110c31dd64303",
+    "roadIds": [
+      "RD-0229",
+      "RD-0232"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00289",
+    "witnessArea": 190.8853579786164,
+    "witnessRun": 45360277532,
+    "witnessStrategy": "obstructive",
+    "witnessFingerprint": "bf0b1a293982bc2b72597a1f64d9f31126747e3444574bb2240ae02b75a6bc56"
+  },
+  {
+    "projectId": "organic-4",
+    "fingerprint": "fc53feffce8cc1de2e18c956922f4389496e529fc36fcb0b859110c31dd64303",
+    "roadIds": [
+      "RD-0229",
+      "RD-0233"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00289",
+    "witnessArea": 190.8853579786164,
+    "witnessRun": 45360277532,
+    "witnessStrategy": "obstructive",
+    "witnessFingerprint": "52d171b8a104f01e782f284872da057997a4901cab0e990354748345e944ebed"
+  },
+  {
+    "projectId": "organic-4",
+    "fingerprint": "fc53feffce8cc1de2e18c956922f4389496e529fc36fcb0b859110c31dd64303",
+    "roadIds": [
+      "RD-0230",
+      "RD-0231"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00287",
+    "witnessArea": 842.0901414955993,
+    "witnessRun": 45360277532,
+    "witnessStrategy": "largest",
+    "witnessFingerprint": "8cacb2fe8c00604628a594b042127eaf627fa559b0a33fd393b8c7b3973ee170"
+  },
+  {
+    "projectId": "planned-0",
+    "fingerprint": "9acb40e5cd58d8161a96c7dc267fea946d389391d648e662c4ec96136412a647",
+    "roadIds": [
+      "RD-0153",
+      "RD-0156",
+      "RD-0174",
+      "RD-0225"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00143",
+    "witnessArea": 184.39720994643926,
+    "witnessRun": 45359497512,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "4a17f37174531785f4f615c781b686e8f75e3d6179da7abf25ee92b85aad3c30"
+  },
+  {
+    "projectId": "planned-0",
+    "fingerprint": "9acb40e5cd58d8161a96c7dc267fea946d389391d648e662c4ec96136412a647",
+    "roadIds": [
+      "RD-0153",
+      "RD-0225"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00143",
+    "witnessArea": 184.39720994643926,
+    "witnessRun": 45359497512,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "e54c5f32e099c2afc443fc3d0b1c7b49db8c2e2dd9e4e05792fb53dbf1485693"
+  },
+  {
+    "projectId": "planned-1",
+    "fingerprint": "aa030277e5cd45139198495a9b0bc93fe63277ec0417e8f2b1320fdc05380e60",
+    "roadIds": [
+      "RD-0159",
+      "RD-0160"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00136",
+    "witnessArea": 233.9801639560111,
+    "witnessRun": 45359497512,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "964b962fa72a5516264b0fe91258279b2c9171ca3b847fbd545f89fe62a0f7a7"
+  },
+  {
+    "projectId": "planned-1",
+    "fingerprint": "aa030277e5cd45139198495a9b0bc93fe63277ec0417e8f2b1320fdc05380e60",
+    "roadIds": [
+      "RD-0159",
+      "RD-0226"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00138",
+    "witnessArea": 334.5864986383831,
+    "witnessRun": 45361879898,
+    "witnessStrategy": "hybrid",
+    "witnessFingerprint": "4827b5cb328f99417511abc473225462449acf9333d8ccfdc4016a479c3b6ab6"
+  },
+  {
+    "projectId": "planned-1",
+    "fingerprint": "aa030277e5cd45139198495a9b0bc93fe63277ec0417e8f2b1320fdc05380e60",
+    "roadIds": [
+      "RD-0159",
+      "RD-0226"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00136",
+    "witnessArea": 233.9801639560111,
+    "witnessRun": 45361879898,
+    "witnessStrategy": "hybrid",
+    "witnessFingerprint": "161a4e79d872fc647561297f5464cfdb9593eff18aaec8b7e201c7c7f75f5270"
+  },
+  {
+    "projectId": "planned-1",
+    "fingerprint": "aa030277e5cd45139198495a9b0bc93fe63277ec0417e8f2b1320fdc05380e60",
+    "roadIds": [
+      "RD-0160",
+      "RD-0163",
+      "RD-0179",
+      "RD-0226"
+    ],
+    "offset": {
+      "x": 0,
+      "y": -2
+    },
+    "witnessBuilding": "BLD-00137",
+    "witnessArea": 67.59879086600836,
+    "witnessRun": 45359497512,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "86118eb6789f18a65686990599a5c1280c7def1461f2eb480532926a6f4f107e"
+  },
+  {
+    "projectId": "planned-1",
+    "fingerprint": "aa030277e5cd45139198495a9b0bc93fe63277ec0417e8f2b1320fdc05380e60",
+    "roadIds": [
+      "RD-0160",
+      "RD-0163",
+      "RD-0179",
+      "RD-0226"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00167",
+    "witnessArea": 241.2752065311688,
+    "witnessRun": 45359497512,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "c0e9529ada7c49ab633b68b629893b3441658ca827241ce284f5c4b89ed0355e"
+  },
+  {
+    "projectId": "planned-1",
+    "fingerprint": "aa030277e5cd45139198495a9b0bc93fe63277ec0417e8f2b1320fdc05380e60",
+    "roadIds": [
+      "RD-0160",
+      "RD-0177"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00046",
+    "witnessArea": 202.03285096673193,
+    "witnessRun": 45361879898,
+    "witnessStrategy": "hybrid",
+    "witnessFingerprint": "cd636396520b33f6365589f8de188f8a239305aa1c5336c4e187ef6ea9c4830a"
+  },
+  {
+    "projectId": "planned-1",
+    "fingerprint": "aa030277e5cd45139198495a9b0bc93fe63277ec0417e8f2b1320fdc05380e60",
+    "roadIds": [
+      "RD-0160",
+      "RD-0177"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00136",
+    "witnessArea": 233.9801639560111,
+    "witnessRun": 45359497512,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "7204030f272b93ab6b5dae553f860b490556e4e5cea44d448b9ba7426843542c"
+  },
+  {
+    "projectId": "planned-2",
+    "fingerprint": "fcff8265263595da5e332a1abf2d0759d52a0c4ddfbb954709be78b16cdfb957",
+    "roadIds": [
+      "RD-0162",
+      "RD-0235"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00138",
+    "witnessArea": 601.9000403529553,
+    "witnessRun": 45359497512,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "dbdcc2d8862e7bd1aee8e64982b1a076b904461540efc35e5a715024c333f8dc"
+  },
+  {
+    "projectId": "planned-3",
+    "fingerprint": "07174c48a6ca6d9bb49d310c9247e14d923bf1bfff1641c71bca7563a34f1df4",
+    "roadIds": [
+      "RD-0153",
+      "RD-0156"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00083",
+    "witnessArea": 72.82493716274993,
+    "witnessRun": 45359497512,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "bd86cec74998d453546e4dd3ac98aeeac3429a53ba91b2967023d05554a724f0"
+  },
+  {
+    "projectId": "planned-4",
+    "fingerprint": "1f8b52960752617603241523c5b2c391777eb2fdb314d02b4b973ad6f8681154",
+    "roadIds": [
+      "RD-0225",
+      "RD-0226",
+      "RD-0341"
+    ],
+    "offset": {
+      "x": -8,
+      "y": -5
+    },
+    "witnessBuilding": "BLD-00336",
+    "witnessArea": 750.4823739385247,
+    "witnessRun": 45360258968,
+    "witnessStrategy": "largest",
+    "witnessFingerprint": "5b376d4c669ea448fa3f96ba7bca8f5e5a76e328d5343e42edb7936b1c428ae0"
+  },
+  {
+    "projectId": "radial-0",
+    "fingerprint": "56c49977ee66a90a0f8cc3ca77757f40fe422796a12c385711a634b59805497c",
+    "roadIds": [
+      "RD-0121",
+      "RD-0125",
+      "RD-0167",
+      "RD-0168",
+      "RD-0169",
+      "RD-0203",
+      "RD-0204",
+      "RD-0205"
+    ],
+    "offset": {
+      "x": 2,
+      "y": 0
+    },
+    "witnessBuilding": "BLD-00112",
+    "witnessArea": 66.69544684742596,
+    "witnessRun": 45360287581,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "3ced796d20e42d8599286d8b322c51a972c7b5530cabe1f2dae4f8c1bc989065"
+  },
+  {
+    "projectId": "radial-0",
+    "fingerprint": "56c49977ee66a90a0f8cc3ca77757f40fe422796a12c385711a634b59805497c",
+    "roadIds": [
+      "RD-0126",
+      "RD-0127",
+      "RD-0241"
+    ],
+    "offset": {
+      "x": 2,
+      "y": 0
+    },
+    "witnessBuilding": "BLD-00115",
+    "witnessArea": 79.28418700736302,
+    "witnessRun": 45360287581,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "64ce046ed1ac5ccf4a85f6f5267a082debbef22839029288a41fa03f092061ab"
+  },
+  {
+    "projectId": "radial-2",
+    "fingerprint": "0fb5ce5e098f4229684589d52411011a81be6486296c47e90d33d50a0adddd2a",
+    "roadIds": [
+      "RD-0123",
+      "RD-0124",
+      "RD-0201"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00119",
+    "witnessArea": 590.5461338481964,
+    "witnessRun": 45360309144,
+    "witnessStrategy": "obstructive",
+    "witnessFingerprint": "b1ba808dac112045738f9264b74f2ceefcc2ca016315db7ff797739afd1eb9ee"
+  },
+  {
+    "projectId": "radial-2",
+    "fingerprint": "0fb5ce5e098f4229684589d52411011a81be6486296c47e90d33d50a0adddd2a",
+    "roadIds": [
+      "RD-0148",
+      "RD-0256"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00069",
+    "witnessArea": 180.71871052583174,
+    "witnessRun": 45360309144,
+    "witnessStrategy": "obstructive",
+    "witnessFingerprint": "fe40906ad16f5055524a2ae3bb9e237bdd655e172733ee1ec7279d1b78e94ae6"
+  },
+  {
+    "projectId": "radial-3",
+    "fingerprint": "b42f967670d481e1857a3e0d927f6993385acb445d8411c64fc02cd024fa50ff",
+    "roadIds": [
+      "RD-0117",
+      "RD-0121",
+      "RD-0198",
+      "RD-0199",
+      "RD-0200",
+      "RD-0234",
+      "RD-0235",
+      "RD-0236"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00113",
+    "witnessArea": 227.69682122628546,
+    "witnessRun": 45360309144,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "48d6d9085e29a71b64dec69ef5d2566f5519828ff5c5f6dc220e8f6219a10e0e"
+  },
+  {
+    "projectId": "radial-3",
+    "fingerprint": "b42f967670d481e1857a3e0d927f6993385acb445d8411c64fc02cd024fa50ff",
+    "roadIds": [
+      "RD-0124",
+      "RD-0125",
+      "RD-0203"
+    ],
+    "offset": {
+      "x": 2,
+      "y": 0
+    },
+    "witnessBuilding": "BLD-00117",
+    "witnessArea": 77.63191003765314,
+    "witnessRun": 45360309144,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "518209d7014ca24d4bb86758cfe62e2fe5c85b7f2e041d81e6d70d9e56d6f6ae"
+  },
+  {
+    "projectId": "radial-3",
+    "fingerprint": "b42f967670d481e1857a3e0d927f6993385acb445d8411c64fc02cd024fa50ff",
+    "roadIds": [
+      "RD-0124",
+      "RD-0125",
+      "RD-0203"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00117",
+    "witnessArea": 77.63191003765314,
+    "witnessRun": 45360309144,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "0af9ba7c0c0eeb5a24165490e192bc66508511fc8d203a7539586e59555263c2"
+  },
+  {
+    "projectId": "radial-3",
+    "fingerprint": "b42f967670d481e1857a3e0d927f6993385acb445d8411c64fc02cd024fa50ff",
+    "roadIds": [
+      "RD-0147",
+      "RD-0254"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00057",
+    "witnessArea": 271.13944253738646,
+    "witnessRun": 45360309144,
+    "witnessStrategy": "minimum",
+    "witnessFingerprint": "2638bebbdf51d42bf43e09762624f06ca3be5e045c66e88d318cf231e5cebc5a"
+  },
+  {
+    "projectId": "radial-4",
+    "fingerprint": "22644535fe006ab563fa3315d698471e9aaaa3fb5e837d5ae347cec19e0c973d",
+    "roadIds": [
+      "RD-0199",
+      "RD-0251"
+    ],
+    "offset": {
+      "x": 4,
+      "y": 3
+    },
+    "witnessBuilding": "BLD-00393",
+    "witnessArea": 36.80380204110497,
+    "witnessRun": 45360320310,
+    "witnessStrategy": "smallest",
+    "witnessFingerprint": "f98c8255767c0f078ccc75c2402b0e3769e5b539108772c57ebf71af1dd20477"
+  }
+]
