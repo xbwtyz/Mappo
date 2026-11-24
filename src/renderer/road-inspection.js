@@ -1,3 +1,4 @@
+import { buildingExteriorRingsS10 } from '../core/building-geometry-adapter-s10.js';
 import { roadReportHighlights } from '../core/road-inspection.js';
 import { waterFeaturePolygon } from '../core/water-geometry.js';
 import { ROAD_IMPACT_COLLECTIONS } from '../core/road-impact-model.js';
@@ -140,6 +141,30 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
         ctx.strokeStyle=color;ctx.lineWidth=focused?5:2.8;
         ctx.setLineDash([7,4]);ctx.stroke();ctx.setLineDash([]);
       }
+    }
+  }
+  const demolition = session.demolition?.candidate;
+  if (demolition && session.previewVisible !== false) {
+    const removed = new Set(demolition.removalIds), relocated = new Set(demolition.relocatedIds);
+    for (const { buildings, ids, color } of [
+      { buildings: city.buildings, ids: removed, color: '#bc2636' },
+      { buildings: demolition.preview.candidateProject.city.buildings, ids: relocated, color: '#266e91' },
+    ]) {
+      for (const building of buildings) {
+        if (!ids.has(building.id)) continue;
+        for (const ring of buildingExteriorRingsS10(building)) {
+          if (!path(ring, true)) continue;
+          ctx.fillStyle = color;
+          ctx.globalAlpha = .32;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 3;
+          ctx.setLineDash([5, 3]);
+          ctx.stroke();
+        }
+      }
+      ctx.setLineDash([]);
     }
   }
   // Highlight a choice target using detached, proven successor geometry.

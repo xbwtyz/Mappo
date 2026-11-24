@@ -138,7 +138,7 @@ import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 import { prepareRoadReconciliationB1 } from './core/road-reconciliation.js';
 // B2 conservative parcel adaptation remains preview-only until B4 Apply.
 import { prepareJunctionReflowC7 } from './core/neighborhood-reflow.js';
-import { checkRoadApplyC2, prepareRoadApplyC2, validateRoadGroupApplyB1 } from './editor/road-application.js';
+import { checkRoadApplyC2, prepareRoadApplyC2, validateRoadGroupApplyB1, validateRoadGroupDemolitionApplyB1R } from './editor/road-application.js';
 import { RoadGeometryHistoryB4 } from './editor/road-history.js';
 import { DraftEngine } from './core/draft-engine.js';
 import { renderDraftControls, syncDraftControls } from './ui/draft-controls.js';
@@ -2611,10 +2611,17 @@ function applyRoadEditB4(session,baselineRevision,current){
     if(!group.eligible || !session.pending || session.drag || session.checking ||
       session.error || session.roadIntentInputError || session.reconciliationError ||
       session.settledRevision!==draftRevision || baselineRevision!==revision ||
-      session.acceptedFingerprint!==JSON.stringify(previous) || !session.previewGeometry?.verified)
+      session.acceptedFingerprint!==JSON.stringify(previous) ||
+      (!session.demolition?.candidate && !session.previewGeometry?.verified))
       return {ok:false,message:'The connected-road preview is not complete and current.'};
+    const demolition = session.demolition;
+    if (demolition?.candidate) {
+      const draft = { selectedRoadIds: group.selectedRoadIds, offset: session.roadIntentOffset,
+        parcelChoices: session.parcelChoices, revision };
+      return commit(validateRoadGroupDemolitionApplyB1R(previous, workspace, draft, demolition.candidate, demolition.authorization));
+    }
     return commit(validateRoadGroupApplyB1(previous,workspace,
-      {selectedRoadIds:group.selectedRoadIds,offset:session.roadIntentOffset,parcelChoices:session.parcelChoices},
+      {selectedRoadIds:group.selectedRoadIds,offset:session.roadIntentOffset,parcelChoices:session.parcelChoices,acceptedRevision:revision},
       session.reconciliation));
   }
   if (session.selection?.kind !== 'junction' || !session.computeJunctionAsync)

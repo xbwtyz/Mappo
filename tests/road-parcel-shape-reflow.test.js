@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import {createProject} from '../src/core/city-model.js';
 import {prepareRoadGroupReflowB1} from '../src/core/neighborhood-reflow.js';
 import {validateRoadGroupApplyB1} from '../src/editor/road-application.js';
+import {prepareRoadGroupIntentB1} from '../src/core/road-intent-c1.js';
+import {verifyLareGroupPreservation} from '../src/core/reconciliation-preservation.js';
+import {createLareBudget} from '../src/core/reconciliation-budget.js';
 import {copyJson,defaultWorkspace} from '../src/data/project-format.js';
 import {AcceptedEditHistoryD01} from '../src/core/accepted-edit-history-d01.js';
 import {partitionPropertyPolygon024} from '../src/core/property-polygons-024.js';
@@ -55,12 +58,25 @@ test('Irregular authored parcel still requires a choice and preserves its name a
   const choices=new Map([[parcel.id,{kind:'reshape'}]]);
   const result=prepareRoadGroupReflowB1(project,ids,offset,{parcelChoices:choices});
   assert.ok(result.candidateProject,JSON.stringify(result.unresolved));
+  const receipt=validateRoadGroupApplyB1(project,defaultWorkspace(project),{
+    selectedRoadIds:ids,offset,parcelChoices:choices,
+  },result);
+  assert.ok(receipt.ok,JSON.stringify(receipt.issues));
   const next=result.candidateProject.city.properties.find(p=>p.id===parcel.id);
   assert.equal(next.customName,parcel.customName);assert.deepEqual(next.plotIds,parcel.plotIds);
   for(const id of parcel.buildingIds){
     const old=project.city.buildings.find(b=>b.id===id),updated=result.candidateProject.city.buildings.find(b=>b.id===id);
     assert.deepEqual(updated.geometry,old.geometry);
+    assert.deepEqual(updated.entrance,old.entrance);
+    assert.deepEqual(updated.accessPath[0],old.accessPath[0]);
+    assert.equal(updated.frontageRoadId,old.frontageRoadId);
   }
+  const reconnected=result.changed.find(row=>row.kind==='building'&&parcel.buildingIds.includes(row.id)&&row.fields.includes('accessPath'));
+  assert.ok(reconnected);
+  const altered=copyJson(result.candidateProject), alteredBuilding=altered.city.buildings.find(row=>row.id===reconnected.id);
+  alteredBuilding.accessPath[1].x+=.01;
+  assert.equal(verifyLareGroupPreservation(project,altered,prepareRoadGroupIntentB1(project,ids,offset),
+    choices,createLareBudget()).code,'lare-protected-access');
   assert.equal(JSON.stringify(project),before);
 });
 test('Concave affine reflow preserves all convex plot cells and refuses an impossible fixed building',()=>{

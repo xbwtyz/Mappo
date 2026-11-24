@@ -5,7 +5,7 @@ import { stampRoadGenerated } from './road-provenance.js';
 import { populateProperty } from '../generators/buildings.js';
 import { adoptNewBuildingS10, writeSimpleBuildingS10 } from './building-project-s10.js';
 
-export function reflowGeneratedRoadBuildings(seed, before, after, plots, original, reservedIds, canonical = false) {
+export function reflowGeneratedRoadBuildings(seed, before, after, plots, original, reservedIds, canonical = false, allowRegeneration = true) {
   const oldFrame = before.frame, newFrame = after.frame;
   const center = local => local.x + local.width / 2;
   const transform = point => {
@@ -41,6 +41,7 @@ export function reflowGeneratedRoadBuildings(seed, before, after, plots, origina
     return { buildings: moved, disposition: 'relocated' };
   }
 
+  if(!allowRegeneration)throw Error('No identity-preserving rigid relocation fits the reshaped property.');
   if (after.local.width < 7 || after.local.depth < 7)
     throw new Error('The reshaped parcel has insufficient room for replacement buildings.');
   const replacements = [];

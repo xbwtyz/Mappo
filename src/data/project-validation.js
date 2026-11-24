@@ -39,12 +39,13 @@ import {
 import {
   polygonSignedArea,
   pointInPolygon,
-  boundsOf
+  boundsOf, properPolygonEdgeIntersection, polygonRingsProperlyCross
 } from '../core/geometry.js';
 import {
   insideOrOn,
   distanceToSegment,
   segmentCuts,
+  appendSegmentCuts,
   clearance
 } from '../core/boundary.js';
 import {
@@ -107,16 +108,13 @@ export function createValidationBudget() {
     if (remaining < 0) throw new Error('This project is too complex for this build to validate safely.');
   };
 }
-export function validateJsonTree(value) {
-  const pending = [{
-    value,
-    depth: 0
-  }];
+export function* iterateJsonTreeValidation(value) {
+  const values = [value], depths = [0];
   let count = 0;
-  while (pending.length) {
-    const item = pending.pop();
-    if (++count > 1200000 || item.depth > 64) throw new Error('Project data is too deeply nested or too large.');
-    const v = item.value;
+  while (values.length) {
+    const v = values.pop(), depth = depths.pop();
+    if (++count > 1200000 || depth > 64) throw new Error('Project data is too deeply nested or too large.');
+    if (count % 256 === 0) yield { stage: 'project-json-data' };
     if (v === null || typeof v === 'string' || typeof v === 'boolean') continue;
     if (typeof v === 'number') {
       if (!Number.isFinite(v)) throw new Error('Project data contains a non-finite number.');
@@ -125,11 +123,15 @@ export function validateJsonTree(value) {
     if (typeof v !== 'object' || (!Array.isArray(v) && Object.prototype.toString.call(v) !== '[object Object]')) throw new Error('Project data must contain JSON values only.');
     for (const key of Object.keys(v)) {
       if (key === '__proto__') throw new Error('Project data contains an unsafe object key.');
-      pending.push({
-        value: v[key],
-        depth: item.depth + 1
-      });
+      values.push(v[key]);
+      depths.push(depth + 1);
     }
+  }
+}
+export function validateJsonTree(value) {
+  const iterator = iterateJsonTreeValidation(value);
+  while (!iterator.next().done) {
+    // Existing persistence callers run authoritative validation synchronously.
   }
 }
 export function validatePolygon(points, path, spend) {
@@ -153,25 +155,12 @@ function strictInside(p, polygon) {
   return pointInPolygon(p, polygon) && clearance(p, polygon) > 1e-6;
 }
 
-function properIntersection(a, b, c, d) {
-  const rx = b.x - a.x,
-    ry = b.y - a.y,
-    sx = d.x - c.x,
-    sy = d.y - c.y,
-    den = rx * sy - ry * sx;
-  if (Math.abs(den) < 1e-8) return false;
-  const qx = c.x - a.x,
-    qy = c.y - a.y,
-    t = (qx * sy - qy * sx) / den,
-    u = (qx * ry - qy * rx) / den;
-  return t > 1e-7 && t < 1 - 1e-7 && u > 1e-7 && u < 1 - 1e-7;
-}
 
 function polygonsOverlapInterior(a, b, spend) {
   for (let i = 0; i < a.length; i++)
     for (let j = 0; j < b.length; j++) {
       spend(1);
-      if (properIntersection(a[i], a[(i + 1) % a.length], b[j], b[(j + 1) % b.length])) return true;
+      if (properPolygonEdgeIntersection(a[i], a[(i + 1) % a.length], b[j], b[(j + 1) % b.length])) return true;
     }
   for (const [own, other] of [
       [a, b],
@@ -197,11 +186,7 @@ function polygonsOverlapInterior(a, b, spend) {
 
 function polygonContained(inner, outer, path, spend) {
   if (!inner.every(p => insideOrOn(p, outer))) throw new Error(`${path} extends outside its parent polygon.`);
-  for (let i = 0; i < inner.length; i++)
-    for (let j = 0; j < outer.length; j++) {
-      spend(1);
-      if (properIntersection(inner[i], inner[(i + 1) % inner.length], outer[j], outer[(j + 1) % outer.length])) throw new Error(`${path} crosses its parent polygon.`);
-    }
+  if (polygonRingsProperlyCross(inner, outer, spend)) throw new Error(`${path} crosses its parent polygon.`);
 }
 
 function indexedRecords(list, path) {
@@ -227,13 +212,14 @@ function references(value, map, path, allowEmpty = false) {
   return value.map(id => reference(map, id, path));
 }
 
-function validateRoadGraph(city, boundary, nodes, spend) {
+function* iterateStoredRoadGraph(city, boundary, nodes, spend) {
   const boxes = boundsOf(boundary),
     cell = Math.max(1, Math.max(boxes.maxX - boxes.minX, boxes.maxY - boxes.minY) / 48);
   const bins = new Map(),
     pairs = new Set(),
     edges = new Set();
   for (const road of city.roads) {
+    yield { stage: 'stored-road-edge', id: road.id };
     const a = reference(nodes, road.a, 'Road endpoint'),
       b = reference(nodes, road.b, 'Road endpoint');
     if (road.a === road.b || Math.hypot(a.x - b.x, a.y - b.y) < 1e-7) throw new Error('Road has zero length.');
@@ -244,7 +230,7 @@ function validateRoadGraph(city, boundary, nodes, spend) {
     const cuts = [0, 1];
     for (let i = 0; i < boundary.length; i++) {
       spend(1);
-      cuts.push(...segmentCuts(a, b, boundary[i], boundary[(i + 1) % boundary.length]));
+      appendSegmentCuts(cuts, a, b, boundary[i], boundary[(i + 1) % boundary.length]);
     }
     cuts.sort((a, b) => a - b);
     for (let i = 1; i < cuts.length; i++) {
@@ -285,7 +271,7 @@ function validateRoadGraph(city, boundary, nodes, spend) {
   return edges;
 }
 
-export function validateStoredProject(project) {
+export function* iterateStoredProjectValidation(project) {
   const spend = createValidationBudget();
   requireRecord(project, 'Project');
   if (project.schemaVersion !== PROJECT_SCHEMA_VERSION) throw new Error('Unsupported project schema. Open this file in a newer Mappo build.');
@@ -311,7 +297,8 @@ export function validateStoredProject(project) {
     requirePoint(n, 'Road junction');
     if (!insideOrOn(n, boundary)) throw new Error('Road junction is outside the city boundary.');
   }
-  const edgeKeys = validateRoadGraph(city, boundary, maps.nodes, spend);
+  yield { stage: 'project-road-validation' };
+  const edgeKeys = yield* iterateStoredRoadGraph(city, boundary, maps.nodes, spend);
   const roadByEdge = new Map(city.roads.map(r => [
     [r.a, r.b].sort().join(':'), r
   ]));
@@ -323,6 +310,7 @@ export function validateStoredProject(project) {
   if (maps.blocks.has(plaza.id)) throw new Error('The main square and a block share an ID.');
   requireText(plaza.name, 'Main square name', 200);
   for (const face of [...city.blocks, plaza, ...city.waterFaces, ...(city.terrainFaces ?? [])]) {
+    yield { stage: 'project-face-validation', id: face.id };
     const points = references(face.vertices, maps.nodes, 'Face vertices').map(p => ({
       x: p.x,
       y: p.y
@@ -341,6 +329,7 @@ export function validateStoredProject(project) {
     if (!Number.isFinite(face.area) || Math.abs(face.area - area) > .02) throw new Error('A block or square has an incorrect area.');
     facePolygons.set(face.id, points);
   }
+  yield { stage: 'project-layout' };
   validateLayout(city, boundary);
   const terminal = terminalCorridors(city);
   const terminalIds = new Set(terminal.map(row => row.id));
@@ -360,6 +349,7 @@ export function validateStoredProject(project) {
     usedCompoundIds = new Set(),
     usedCompoundMembers = new Set();
   for (const property of city.properties) {
+    yield { stage: 'project-parcel-validation', id: property.id };
     reference(maps.blocks, property.blockId, 'Property block');
     reference(maps.roads, property.frontageRoadId, 'Property frontage');
     if (terminalIds.has(property.frontageRoadId))
@@ -489,11 +479,21 @@ export function validateStoredProject(project) {
     reference(maps.blocks, open.blockId, 'Open-space block');
     if (!Number.isFinite(open.area) || open.area < 0) throw new Error('Open-space area is invalid.');
   }
-  validateDistricts(city);
-  validateWaterCity(city);
-  validateTerrainCity(city);
-  validateFortifications(city);
+  for (const [stage, validate] of [
+    ['project-districts', validateDistricts], ['project-water', validateWaterCity],
+    ['project-terrain', validateTerrainCity], ['project-fortifications', validateFortifications],
+  ]) {
+    yield { stage };
+    validate(city);
+  }
   return project;
+}
+
+export function validateStoredProject(project) {
+  const iterator = iterateStoredProjectValidation(project);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
 }
 
 export function validateWorkspace(workspace, project) {

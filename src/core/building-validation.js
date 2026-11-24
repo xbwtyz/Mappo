@@ -39,10 +39,10 @@ export function shapeWellFormed(points) {
 export function shapeContained(inner, outer) {
   if (!inner.length || !outer?.length || !inner.every(p=>insideOrOn(p,outer))) return false;
   for(let i=0;i<inner.length;i++){
-    const [a,b]=b3gcShapeEdge(inner,i);
+    const a = inner[i], b = inner[(i + 1) % inner.length];
     if(!insideOrOn(b3gcShapeMid(a,b),outer)) return false;
     for(let j=0;j<outer.length;j++){
-      const [c,d]=b3gcShapeEdge(outer,j);
+      const c = outer[j], d = outer[(j + 1) % outer.length];
       if(b3gcProperCross(a,b,c,d)) return false;
     }
   }

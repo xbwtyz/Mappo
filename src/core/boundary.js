@@ -26,28 +26,30 @@ export function insideOrOn(p, polygon) {
 // Includes endpoint contacts and collinear overlaps. Both generators and
 // validation use the same segment predicates, with dimensionless parameters.
 export function segmentCuts(a, b, c, d) {
-  const r = {
-      x: b.x - a.x,
-      y: b.y - a.y
-    },
-    s = {
-      x: d.x - c.x,
-      y: d.y - c.y
-    };
-  const q = {
-      x: c.x - a.x,
-      y: c.y - a.y
-    },
-    denominator = cross2(r, s);
+  const cuts = [];
+  appendSegmentCuts(cuts, a, b, c, d);
+  return cuts;
+}
+
+export function appendSegmentCuts(cuts, a, b, c, d) {
+  const rx = b.x - a.x, ry = b.y - a.y;
+  const sx = d.x - c.x, sy = d.y - c.y;
+  const qx = c.x - a.x, qy = c.y - a.y;
+  const denominator = rx * sy - ry * sx;
   if (Math.abs(denominator) > 1e-9) {
-    const t = cross2(q, s) / denominator,
-      u = cross2(q, r) / denominator;
-    return t >= -1e-9 && t <= 1 + 1e-9 && u >= -1e-9 && u <= 1 + 1e-9 ? [Math.max(0, Math.min(1, t))] : [];
+    const t = (qx * sy - qy * sx) / denominator;
+    const u = (qx * ry - qy * rx) / denominator;
+    if (t >= -1e-9 && t <= 1 + 1e-9 && u >= -1e-9 && u <= 1 + 1e-9)
+      cuts.push(Math.max(0, Math.min(1, t)));
+    return;
   }
-  if (Math.abs(cross2(q, r)) > 1e-7) return [];
-  const length2 = r.x * r.x + r.y * r.y;
-  if (length2 < 1e-12) return [];
-  return [c, d].map(p => ((p.x - a.x) * r.x + (p.y - a.y) * r.y) / length2).filter(t => t >= -1e-9 && t <= 1 + 1e-9).map(t => Math.max(0, Math.min(1, t)));
+  if (Math.abs(qx * ry - qy * rx) > 1e-7) return;
+  const length2 = rx * rx + ry * ry;
+  if (length2 < 1e-12) return;
+  const first = (qx * rx + qy * ry) / length2;
+  const second = ((d.x - a.x) * rx + (d.y - a.y) * ry) / length2;
+  if (first >= -1e-9 && first <= 1 + 1e-9) cuts.push(Math.max(0, Math.min(1, first)));
+  if (second >= -1e-9 && second <= 1 + 1e-9) cuts.push(Math.max(0, Math.min(1, second)));
 }
 
 export function validateBoundary(points) {

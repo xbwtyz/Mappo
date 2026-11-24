@@ -61,7 +61,7 @@ function roadGraphSortIssues(issues) {
   return issues.sort((a, b) => roadGraphCompare(a.code, b.code) || roadGraphCompare(JSON.stringify(a.nodeIds), JSON.stringify(b.nodeIds)) || roadGraphCompare(JSON.stringify(a.roadIds), JSON.stringify(b.roadIds)));
 }
 
-export function buildRoadGraph(city) {
+export function* iterateRoadGraph(city) {
   const issues = [], nodes = new Map(), roads = new Map(), adjacency = new Map(), incident = new Map(), classes = new Map();
   const add = (...args) => issues.push(roadGraphIssue(...args));
   const recordsValid = city && Array.isArray(city.nodes) && Array.isArray(city.roads);
@@ -70,9 +70,11 @@ export function buildRoadGraph(city) {
   else if (!withinLimits) add('graph-limit', 'The road graph exceeds supported node or road limits.');
   // Only index unambiguous records. Never let array order decide which copy of
   // a duplicate ID wins. Accepted records are plain validated project data.
-  function indexRecords(records, index, kind) {
+  function* indexRecords(records, index, kind) {
     const grouped = new Map();
-    for (const record of records) {
+    for (let i = 0; i < records.length; i++) {
+      if (i % 64 === 0) yield { stage: 'road-graph-index' };
+      const record = records[i];
       if (!record || typeof record.id !== 'string' || !record.id.length || record.id.length > 200) {
         add(`${kind}-id`, `Every ${kind} needs a nonempty ID of at most 200 characters.`);
         continue;
@@ -80,7 +82,9 @@ export function buildRoadGraph(city) {
       if (!grouped.has(record.id)) grouped.set(record.id, []);
       grouped.get(record.id).push(record);
     }
+    let copied = 0;
     for (const id of [...grouped.keys()].sort(roadGraphCompare)) {
+      if (copied++ % 64 === 0) yield { stage: 'road-graph-copy' };
       const group = grouped.get(id);
       if (group.length !== 1) {
         add(`duplicate-${kind}-id`, `ID ${id} is used by multiple ${kind} records.`, kind === 'node' ? [id] : [], kind === 'road' ? [id] : []);
@@ -88,8 +92,8 @@ export function buildRoadGraph(city) {
     }
   }
   if (withinLimits) {
-    indexRecords(city.nodes, nodes, 'node');
-    indexRecords(city.roads, roads, 'road');
+    yield* indexRecords(city.nodes, nodes, 'node');
+    yield* indexRecords(city.roads, roads, 'road');
   }
   if (withinLimits && !nodes.size) add('empty-graph', 'The road network has no junctions.');
   for (const [id, node] of nodes) {
@@ -99,6 +103,7 @@ export function buildRoadGraph(city) {
   }
   const edges = new Map(), segments = [];
   for (const [id, road] of roads) {
+    yield { stage: 'road-graph-edge', id };
     classes.set(id, classifyRoad(road));
     if (!['primary', 'secondary', 'lane'].includes(road.kind)) add('road-kind', `Road ${id} has an unsupported class.`, [], [id]);
     const endpointIds = [road.a, road.b].filter(id => typeof id === 'string');
@@ -134,6 +139,7 @@ export function buildRoadGraph(city) {
     const a = segments[i];
     for (let j = i + 1; j < segments.length && segments[j].minX <= a.maxX + 1e-6; j++) {
       if (++work > ROAD_GRAPH_LIMITS.work) { limited = true; break outer; }
+      if (work % 64 === 0) yield { stage: 'road-graph-intersections' };
       const b = segments[j];
       if (b.maxY < a.minY - 1e-6 || b.minY > a.maxY + 1e-6) continue;
       const shared = [a.road.a, a.road.b].filter(id => id === b.road.a || id === b.road.b);
@@ -179,6 +185,13 @@ export function buildRoadGraph(city) {
     issues: roadGraphFreeze(roadGraphSortIssues(issues)), valid: issues.length === 0,
     work
   });
+}
+
+export function buildRoadGraph(city) {
+  const iterator = iterateRoadGraph(city);
+  for (let step = iterator.next(); ; step = iterator.next()) {
+    if (step.done) return step.value;
+  }
 }
 
 export function analyzeRoadGraph(city) {

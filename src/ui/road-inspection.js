@@ -2,7 +2,7 @@ import { syncDraftControls } from './draft-controls.js';
 import { buildingFrame } from '../core/building-transform.js';
 import { roadRecoveryGuidanceD3, roadRecoveryIssueD3 } from './road-recovery-d3.js';
 import { ROAD_BEND_LIMIT } from '../core/road-shape.js';
-import { RoadPreviewSession } from '../editor/road-preview.js';
+import { RoadPreviewSession, scheduleLareSlice } from '../editor/road-preview.js';
 import { roadInspectionDetails, roadReconciliationPreviewB3 } from '../core/road-inspection.js';
 
 
@@ -264,6 +264,8 @@ export class RoadInspectionWorkspace {
     });
     this.session = new RoadPreviewSession({
       getProject,
+      getAcceptedRevision: getRevision,
+      scheduleSlice: scheduleLareSlice,
       reconcile,
       reconcileRoad,
       computeJunctionAsync,
@@ -491,6 +493,15 @@ export class RoadInspectionWorkspace {
       target.querySelector('button')?.focus({preventScroll:true});
     });
     this.$('roadApplyB4').addEventListener('click', () => this.apply());
+    this.$('roadExploreDemolitionB1R').addEventListener('click', () => this.session.searchLareDemolition());
+    this.$('roadDeeperDemolitionB1R').addEventListener('click', () => this.session.searchLareDemolition(true));
+    this.$('roadAuthorizeDemolitionB1R').addEventListener('click', () => {
+      if (this.session.confirmLareDemolition()) this.$('roadApplyB4').focus();
+    });
+    this.$('roadCancelDemolitionB1R').addEventListener('click', () => {
+      this.session.stopLareDemolition();
+      this.$('roadPreviewReset').focus();
+    });
     this.$('roadPreviewMinimize').addEventListener('click', () => {
       const body = this.$('roadPreviewBody');
       body.hidden = !body.hidden;
@@ -743,13 +754,17 @@ export class RoadInspectionWorkspace {
     }
     s.previewGeometry = this.cachedPreviewGeometry;
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
+    const demolition = s.demolition;
+    const destructive = Boolean(demolition?.candidate && demolition.authorization);
     const verified = Boolean(s.current() && s.pending && !s.checking && !s.drag && !s.error &&
-      !s.roadIntentInputError && !s.reconciliationError && s.hasApplyCandidate &&
-      s.reconciliation?.status==='candidate-only' && !s.reconciliation.unresolved?.length &&
-      s.previewGeometry?.verified && s.settledRevision===s.revision &&
+      !s.roadIntentInputError && !s.reconciliationError && !demolition?.running &&
+      (destructive || (s.hasApplyCandidate && s.reconciliation?.status==='candidate-only' &&
+        !s.reconciliation.unresolved?.length && s.previewGeometry?.verified)) && s.settledRevision===s.revision &&
       this.getRevision()===this.baseRevision && s.acceptedFingerprint===JSON.stringify(s.project));
     s.roadPreviewVerifiedD1 = verified;
-    const issue = s.reconciliation?.unresolved?.find(hasRoadBuildingChoice) ?? s.reconciliation?.unresolved?.[0];
+    const lastRejected = s.reconciliation?.lare?.lastRejectedCandidate;
+    const issue = s.reconciliation?.unresolved?.find(hasRoadBuildingChoice) ??
+      (lastRejected?.code === 'road-setback' ? lastRejected : s.reconciliation?.unresolved?.[0]);
     const actionable = !s.checking && !s.drag && hasRoadBuildingChoice(issue);
     const ownershipNeeded = !s.checking && !s.drag && s.reconciliation?.unresolved?.some(
       row=>row.code==='ownership-decision-required' || row.code==='ownership-invalid');
@@ -760,7 +775,8 @@ export class RoadInspectionWorkspace {
       const count = new Set(s.reconciliation.unresolved.filter(hasRoadBuildingChoice).map(row => row.id)).size;
       this.$('roadMenuReviewCount').textContent = String(count);
     }
-    this.$('roadApplyB4').textContent = this.usesDesktopPanel && s.roadConnectionEdit?.kind === 'remove'
+    this.$('roadApplyB4').classList.toggle('road-demolition-apply', Boolean(demolition?.candidate));
+    this.$('roadApplyB4').textContent = demolition?.candidate ? 'Apply and demolish' : this.usesDesktopPanel && s.roadConnectionEdit?.kind === 'remove'
       ? 'Apply deletion' : groupB1?'Apply road group':'Apply road edit';
     const problem = this.applyError || s.roadIntentInputError || s.error || s.reconciliationError;
     const topologyOnly = s.previewGeometry?.mode==='topology-only';
@@ -770,11 +786,12 @@ export class RoadInspectionWorkspace {
     const stale = s.pending && s.settledRevision === s.revision &&
       (this.getRevision() !== this.baseRevision ||
         s.acceptedFingerprint !== JSON.stringify(s.project));
-    const diagnostics = s.reconciliation?.unresolved?.length ? s.reconciliation.unresolved.map(row =>
+    let diagnostics = s.reconciliation?.unresolved?.length ? s.reconciliation.unresolved.map(row =>
       row.code?.endsWith('-decision-required') ? { ...row, severity: 'decision' } : row) : s.proposal?.issues ?? [];
+    if (lastRejected?.code === 'road-setback') diagnostics = [...diagnostics, lastRejected];
     const draft = syncDraftControls(this.drafts, 'road', {
       baseline: s.city, key: s.project, intent: s.revision, dirty: s.selectionDraftLockedA1,
-      checking: Boolean(s.checking || s.drag), stale, ready: verified, validatedIntent: s.settledRevision,
+      checking: Boolean(s.checking || s.drag || demolition?.running), stale, ready: verified, validatedIntent: s.settledRevision,
       issues: verified ? [] : diagnostics.length ? diagnostics : problem ? [{ message: problem }] : [],
       target: s.selection ?? (groupB1?s.selectionSet.primary:null),
     }, panel, this.$('roadApplyB4'));
@@ -784,7 +801,7 @@ export class RoadInspectionWorkspace {
     this.$('roadPreviewBody').inert = applying;
     const status = applying ? 'Applying road edit' : this.applyError ? 'Apply failed' : problem ? 'Preview blocked' :
       s.drag ? 'Placement in progress' : s.checking ? 'Checking preview' :
-      ready ? 'Preview ready' : stale ? 'Preview out of date' :
+      ready ? destructive ? 'Demolition authorized' : 'Preview ready' : stale ? 'Preview out of date' :
       actionable ? 'Building choice needed' : ownershipNeeded ? 'Block ownership needed' :
       topologyOnly ? 'Roads and blocks only' : s.pending ? 'Preview blocked' : 'Accepted position';
     const message = applying ? 'Validating the road and neighborhood before Apply…' :
@@ -797,7 +814,9 @@ export class RoadInspectionWorkspace {
         issue?.message || s.proposal?.issues?.[0]?.message ||
         (s.pending ? 'The neighborhood change could not be verified.' : 'Drag a road or junction to preview an edit.'));
     let summary = '';
-    if (ready) {
+    if (destructive) {
+      summary = 'Apply will remove ' + demolition.candidate.removalIds.length + ' reviewed building(s).';
+    } else if (ready) {
       if (this.outcomePreview !== s.previewGeometry) {
         this.outcomePreview = s.previewGeometry;
         this.outcomeSummary = roadOutcomeD1(s.previewGeometry, s.reconciliation.ledger ?? []);
@@ -814,11 +833,15 @@ export class RoadInspectionWorkspace {
     } else if (topologyOnly && !problem && !s.checking && !s.drag) {
       summary = 'Property and building changes are unresolved.';
     }
-    for (const [id,text] of [['roadReportStatus',status],['roadApplyStatusB4',message],['roadChangeSummaryD1',summary]]) {
+    const hideDemolition = stale || applying || Boolean(s.drag);
+    const demolitionProgress = hideDemolition ? '' : demolition?.progress ?? '';
+    for (const [id,text] of [['roadReportStatus',status],['roadApplyStatusB4',message],['roadChangeSummaryD1',summary],
+      ['roadDemolitionStatusB1R',demolitionProgress]]) {
       const element = this.$(id);
       if (element.textContent !== text) element.textContent = text;
       if (element.hidden !== !text) element.hidden = !text;
     }
+    this.renderLareDemolition(demolition, hideDemolition);
     this.renderImpacts(stale);
     this.renderComparison(stale);
     this.renderOwnershipDecisions023();
@@ -1135,6 +1158,23 @@ export class RoadInspectionWorkspace {
     this.$('roadImpactDetailTitle').textContent = selected ? label(selected) : 'Road edit';
     this.$('roadImpactDetailMessage').textContent = selected?.message ?? '';
     if (selected) s.focusKey = selected.key;
+  }
+
+  renderLareDemolition(state, inactive) {
+    this.$('roadDemolitionB1R').hidden = !state;
+    if (!state) return;
+    const review = state.candidate;
+    this.$('roadDemolitionRemovalsB1R').textContent = review
+      ? 'Remove (' + review.removalIds.length + ') · ' + review.removalIds.join(', ') : '';
+    this.$('roadDemolitionRelocationsB1R').textContent = review
+      ? 'Relocate (' + review.relocatedIds.length + ')' +
+        (review.relocatedIds.length ? ' · ' + review.relocatedIds.join(', ') : '') : '';
+    this.$('roadExploreDemolitionB1R').hidden = state.started;
+    this.$('roadDeeperDemolitionB1R').hidden = !state.deeperAvailable || state.running;
+    this.$('roadAuthorizeDemolitionB1R').hidden = !review || state.running || Boolean(state.authorization);
+    this.$('roadCancelDemolitionB1R').hidden = !state.started;
+    for (const id of ['roadExploreDemolitionB1R', 'roadDeeperDemolitionB1R',
+      'roadAuthorizeDemolitionB1R', 'roadCancelDemolitionB1R']) this.$(id).disabled = inactive;
   }
 
   renderReconciliationB3() {
