@@ -104,7 +104,11 @@ export class AcceptedIdentitySession {
         candidateCity,transaction,history:current.history,validateDomain,historyPolicy
       });
       const history=forkAcceptedHistoryD01(current.history);
-      const recorded=history.record(current.project,prepared.project,prepared.transaction);
+      // The prepared project is owned, detached and fully validated. Freeze
+      // before staging history; both historical and new snapshots are now
+      // immutable. The only externally visible exports remain detached.
+      idaSessionFreezeTree(prepared.project);
+      const recorded=history.record(current.project,prepared.project,prepared.transaction,{immutableSnapshots:true});
       if(recorded.status!==prepared.historyStatus)
         throw Error('Accepted identity transaction history recording refused');
       if(JSON.stringify(history.baseline)!==JSON.stringify(prepared.project))
@@ -140,7 +144,10 @@ export class AcceptedIdentitySession {
       const history=forkAcceptedHistoryD01(current.history);
       const receipt=history.prepare(direction,current.project,workspace);
       if(!receipt.ok)throw Error(receipt.reason);
-      history.accept(direction,receipt.entry,receipt.candidate);
+      // Portable verification produced a fresh owned candidate. Reuse its
+      // frozen snapshot as the private replay baseline, not a caller object.
+      idaSessionFreezeTree(receipt.candidate);
+      history.accept(direction,receipt.entry,receipt.candidate,{immutableSnapshot:true});
       const next=idaSessionPublishedState(receipt.candidate,{
         ...current.context,revision:current.context.revision+1
       },history);

@@ -11,6 +11,24 @@ import { historyWorkspaceForReplay } from './accepted-history-workspace-a5.js';
 const d01Same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const d01Bytes=project=>JSON.stringify(project).length*2; // conservative UTF-16 estimate
 
+// The coordinator owns and freezes validated project snapshots before staging
+// its private history. This opt-in is never inferred from a shallow freeze
+// or caller-provided commit metadata. Public D01 still copies by default.
+function d01RequireFrozenProject(project){
+  if(project?.schemaVersion!==11||!project.city)
+    throw Error('Immutable history snapshots require Schema 11 projects.');
+  const stack=[project],seen=new Set();
+  while(stack.length){
+    const value=stack.pop();
+    if(!value||typeof value!=='object'||seen.has(value))continue;
+    seen.add(value);
+    if(!Object.isFrozen(value))throw Error('History snapshot is not deeply frozen.');
+    for(const child of Object.values(value))
+      if(child&&typeof child==='object')stack.push(child);
+  }
+  return project;
+}
+
 // The accepted allocator, not a historical snapshot, owns high-water marks.
 // Compare every historical namespace/counter; do not repair a rollback by
 // guessing from live IDs or by merging untrusted historical counter values.
@@ -85,7 +103,7 @@ export class AcceptedEditHistoryD01 {
     }
     return this.record(before, project, transaction);
   }
-  record(before,after,{family,operation,label,targetIds,editorHistory}={}) {
+  record(before,after,{family,operation,label,targetIds,editorHistory}={}, {immutableSnapshots=false}={}) {
     if (!before?.city || !after?.city || ![family, operation, label].every(value =>
       typeof value === 'string' && value.trim()) || !Array.isArray(targetIds) ||
       !targetIds.every(id => typeof id === 'string' && id))
@@ -100,11 +118,15 @@ export class AcceptedEditHistoryD01 {
       if(this.baseline&&!d01Same(this.baseline,before))
         return {status:'stale',reason:'The accepted city changed before history recording.'};
     }
-    const from=copyJson(before),to=copyJson(after);
+    const from=immutableSnapshots?d01RequireFrozenProject(before):copyJson(before);
+    const to=immutableSnapshots?d01RequireFrozenProject(after):copyJson(after);
     const bytes=d01Bytes(from)+d01Bytes(to)+(editorHistory ? d01Bytes(editorHistory) : 0);
     // The accepted edit itself remains valid even if its history does not fit.
     if(bytes>this.maxBytes) {
-      this.clear(after,'Last accepted edit exceeded the session history budget. Undo is unavailable.');
+      if(immutableSnapshots){
+        this.past=[];this.future=[];this.baseline=to;
+        this.notice='Last accepted edit exceeded the session history budget. Undo is unavailable.';
+      }else this.clear(after,'Last accepted edit exceeded the session history budget. Undo is unavailable.');
       return {status:'oversize',bytes};
     }
     this.future=[]; // A new accepted edit cuts the redo branch.
@@ -118,7 +140,7 @@ export class AcceptedEditHistoryD01 {
       else if(this.future.length){this.future.shift();pruned++;}
       else break;
     }
-    this.baseline=copyJson(after);
+    this.baseline=immutableSnapshots?to:copyJson(after);
     this.notice=pruned?`History capacity reached: ${pruned} oldest transaction(s) expired.`
       :`Accepted: ${label} · session only.`;
     return {status:'recorded',entry:item,pruned};
@@ -158,14 +180,14 @@ export class AcceptedEditHistoryD01 {
       return {ok:true,candidate:decoded.project,workspace:nextWorkspace,entry:item};
     }catch(error){return {ok:false,reason:'History '+direction+' rejected: '+error.message};}
   }
-  accept(direction,item,candidate){
+  accept(direction,item,candidate,{immutableSnapshot=false}={}){
     const from=direction==='undo'?this.past:this.future;
     const into=direction==='undo'?this.future:this.past;
     if(!item||from.at(-1)!==item||!this.can(direction,this.baseline)||
       !d01Same(candidate,d01ReplayTarget(this.baseline,direction==='undo'?item.from:item.to)))
       throw Error('History cursor or candidate changed during replay.');
     // Complete copying before moving the cursor.
-    const baseline=copyJson(candidate);
+    const baseline=immutableSnapshot?d01RequireFrozenProject(candidate):copyJson(candidate);
     from.pop();into.push(item);
     this.baseline=baseline;
     this.notice=(direction==='undo'?'Undid: ':'Redid: ')+item.label+'.';
