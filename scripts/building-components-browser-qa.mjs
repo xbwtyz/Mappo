@@ -8,6 +8,21 @@ import { buildingComponentFixture } from '../tests/helpers/building-component-fi
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 import { prepareBuildingComponents } from '../src/editor/building-component-application.js';
 import { createProjectDocument } from '../src/data/project-format.js';
+import { migrateSchema10ProjectS11 } from '../src/data/migrate-schema11.js';
+
+// Historical geometry-reader fixtures only, never a production downgrade.
+// These scenarios edit existing components without allocating top-level IDs.
+// Require exact re-migration before presenting a synthetic Schema 10 fixture
+// to the archived reader: any allocated identity or metadata loss fails here.
+function legacyGeometryFixture(bytes) {
+  const original = JSON.parse(bytes.toString('utf8'));
+  assert.equal(original.project.schemaVersion, 11);
+  const legacy = structuredClone(original);
+  legacy.project.schemaVersion = 10;
+  delete legacy.project.identityAllocation;
+  assert.deepEqual(migrateSchema10ProjectS11(legacy.project), original.project);
+  return Buffer.from(JSON.stringify(legacy));
+}
 
 const fixture = buildingComponentFixture();
 const directory = await mkdtemp(join(tmpdir(), 'mappo-components-'));
@@ -49,6 +64,15 @@ try {
         await el('openProjectButton').click();
         await page.waitForFunction(() => !__buildingQA.state().files.busy &&
           document.getElementById('fileStatus').textContent.startsWith('Opened '));
+      };
+      const rejectNewerSchema = async content => {
+        const before = await page.evaluate(() => JSON.stringify(__buildingQA.state().project));
+        await putFile(content);
+        await page.waitForFunction(() => !__buildingQA.state().files.busy &&
+          document.getElementById('fileStatus').textContent.startsWith('Could not open project:'));
+        assert.match(await el('fileStatus').innerText(), /newer data schema/i);
+        assert.equal(await el('loadPreview').isHidden(), true);
+        assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)), before);
       };
       const openEditor = async () => {
         await page.evaluate(id => {
@@ -193,19 +217,25 @@ try {
       await enter('buildingOffsetX',.1);
       assert.equal(await el('buildingPreviewApply').isEnabled(),true);
 
+      const legacyMultipartBytes = legacyGeometryFixture(multipartBytes);
+      const legacySingleBytes = legacyGeometryFixture(singleBytes);
       await page.goto(s10d);
       await ready();
-      await putFile(multipartBytes);
+      await rejectNewerSchema(multipartBytes);
+      await rejectNewerSchema(singleBytes);
+      await putFile(legacyMultipartBytes);
       await openPreview();
       assert.equal(await city(),multipartJoin);
-      await putFile(singleBytes);
+      await putFile(legacySingleBytes);
       await openPreview();
       assert.equal(await city(),single);
 
       await page.goto(previous);
       await ready();
+      await rejectNewerSchema(multipartBytes);
+      await rejectNewerSchema(singleBytes);
       const previousCity = await city();
-      await putFile(multipartBytes);
+      await putFile(legacyMultipartBytes);
       await page.waitForFunction(() => !__buildingQA.state().files.busy &&
         document.getElementById('fileStatus').textContent.startsWith('Could not open project:'));
       assert.equal(await el('loadPreview').isHidden(), true);
