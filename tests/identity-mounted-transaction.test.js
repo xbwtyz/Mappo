@@ -59,9 +59,26 @@ test('IDA mounted district refusal restores local history and selection, forward
 });
 test('IDA mounted defense refusal restores local history and forwards actual intent',()=>{
  const f=fixture(),city=f.h.view().project.city,editor=new FortificationEditor(),before=editor.snapshot();
- const options={enabled:true,gateCount:'2',towerSpacing:'24',seed:'rollback'};let received;
- const panel={editor,getCity:()=>city,controls:()=>options,commit:(next,detail)=>{received=detail;throw Error('Refused');},message(){}};
+ const options={enabled:true,gateCount:'3',towerSpacing:'40',seed:'rollback'};let received,staged,message;
+ const panel={editor,getCity:()=>city,controls:()=>options,commit:(next,detail)=>{
+   received=detail;staged={city:next,editor:editor.snapshot()};throw Error('Refused');
+ },message(text){message=text;}};
  const ok=FortificationPanel.prototype.commitDraft.call(panel);
- assert.equal(ok,false);assert.deepEqual(editor.snapshot(),before);
+ assert.equal(ok,false);assert.equal(message,'Refused');
+ assert.ok(received,'The valid defense operation must reach the acceptance callback.');
+ assert.notDeepEqual(staged.editor,before);
+ assert.equal(staged.city.fortificationState.status,'built');
+ assert.deepEqual(editor.snapshot(),before);
  assert.deepEqual(received.intent,{kind:'defense-apply',options});
+});
+
+test('IDA mounted invalid defense input is rejected before the acceptance callback',()=>{
+ const f=fixture(),city=f.h.view().project.city,editor=new FortificationEditor(),before=editor.snapshot();
+ let calls=0,message;
+ const panel={editor,getCity:()=>city,controls:()=>({enabled:true,gateCount:'2',towerSpacing:'24',seed:'rollback'}),
+  commit(){calls++;},message(text){message=text;}};
+ assert.equal(FortificationPanel.prototype.commitDraft.call(panel),false);
+ assert.match(message,/Tower spacing/);assert.equal(calls,0);
+ assert.deepEqual(editor.snapshot(),before);
+ assert.equal(f.h.view().project.city,city);
 });
