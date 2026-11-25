@@ -417,3 +417,36 @@ test('S1-B1 cached availability follows branching and oversize history barriers'
   assert.equal(view.history.can('redo',view.project),false);
   assert.throws(()=>replaySession(tiny,'undo'),/No accepted undo/);
 });
+
+test('S1-D immutable history snapshots preserve exact historical views, budgets and detached exports',()=>{
+  const {session}=fixture(),initial=session.view(),first=session.commit(intent(session));
+  const a=session.view(),entry=a.history.entry('undo');
+  const firstBytes=(JSON.stringify(initial.project).length+JSON.stringify(a.project).length)*2;
+  assert.equal(entry.bytes,firstBytes);assert.equal(a.history.bytes,firstBytes);
+  assert.deepEqual(entry.from,initial.project);assert.deepEqual(entry.to,a.project);
+  const exported=session.copyHistory();
+  exported.baseline.city.name='Changed baseline export';
+  exported.past[0].from.city.name='Changed from export';
+  exported.past[0].to.city.name='Changed to export';
+  first.project.city.name='Changed commit export';
+  assert.equal(session.view(),a);assert.deepEqual(a.history.entry('undo'),entry);
+  const undo=replaySession(session,'undo'),b=session.view();
+  undo.project.city.name='Changed replay export';
+  assert.deepEqual(b.project.city,initial.project.city);
+  assert.deepEqual(a.history.entry('undo'),entry);
+  assert.equal(b.history.bytes,firstBytes);
+  assert.deepEqual(replaySession(session,'redo').project,a.project);
+  assert.deepEqual(session.copyHistory().entry('undo'),entry);
+});
+test('S1-D private immutable snapshot opt-in rejects shallow freezing; ordinary D01 copies stay mutable',()=>{
+  const {project}=fixture(),next=copyJson(project);
+  next.city.buildings[0].customName='New name';
+  const h=new AcceptedEditHistoryD01();h.clear(project);
+  const before=JSON.stringify(h);
+  assert.throws(()=>h.record(Object.freeze(project),Object.freeze(next),transaction,{immutableSnapshots:true}),/deeply frozen/);
+  assert.equal(JSON.stringify(h),before);
+  assert.equal(h.record(project,next,transaction).status,'recorded');
+  h.entry('undo').to.city.name='Independent mutable legacy snapshot';
+  assert.notEqual(h.entry('undo').to.city.name,next.city.name);
+  assert.notEqual(h.baseline.city.name,h.entry('undo').to.city.name);
+});
