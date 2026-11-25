@@ -29,6 +29,14 @@ globalThis.__buildingQA = {
 };
 `;
 
+const historicalBuildingObservation = `
+globalThis.__buildingQA = {
+  state: () => ({ project, camera, editor, layers, workspaceShell, roadWorkspace, buildingWorkspace, buildingEditSession, propertyWorkspace, identityWorkspace,
+    landscapeWorkspace, districtPanel, waterPanel, terrainPanel, fortificationPanel, files, buildingHistory, buildingStructureHistory, acceptedHistoryD01, buildingPlacementSession, propertyEditSession, propertyHistory, propertyDeletionHistory4A, propertyCreationSessionE1, propertyCreationHistoryE1, propertySplitE2, propertyMergeE3, roadHistory }),
+  capture: captureWorkspace, apply: applyProjectDocument, applyRoad: () => roadWorkspace.apply(), moveRoadHistory: moveRoadHistoryB4, draw: requestDraw
+};
+`;
+
 export function observeBuildingApp(html, extraObservation = '', { legacy = true } = {}) {
   // Old compact UI regression tests use this test-only seam. No public desktop override.
   if (legacy) {
@@ -36,7 +44,10 @@ export function observeBuildingApp(html, extraObservation = '', { legacy = true 
     if (!html.includes(desktopCtor)) throw new Error('Desktop QA seam missing');
     html = html.replace(desktopCtor, 'redraw: requestDraw,\n  enabled: false,');
   }
-  return html.replace(/\n\}\)\(\);\s*<\/script>/, `${buildingObservation}\n${extraObservation}\n})();\n</script>`);
+  // Historical compiled artifacts predate the secure host. Keep their original QA boundary.
+  const observation=html.includes('const secureIdentityHost=new SecureIdentityHost();')
+    ?buildingObservation:historicalBuildingObservation;
+  return html.replace(/\n\}\)\(\);\s*<\/script>/, `${observation}\n${extraObservation}\n})();\n</script>`);
 }
 
 // Node's injected structuredClone creates records in the outer Node realm,

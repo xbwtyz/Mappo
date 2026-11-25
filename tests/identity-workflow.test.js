@@ -72,7 +72,7 @@ test('compiled identity save/load is valid and clears only session history/draft
   editIdentity(app, 'x'.repeat(81));
   assert.equal(app.el('identityApplyButton').handlers.click(), false);
   assert.deepEqual(copyIdentity(app.state().project), accepted);
-  const document = app.state().files.captureDocument();
+  const document = copyIdentity(app.state().files.captureDocument());
   const loaded = decodeProjectDocument(encodeProjectDocument(document));
   app.apply(loaded);
   assert.deepEqual(copyIdentity(app.state().project), accepted);

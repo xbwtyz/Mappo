@@ -416,10 +416,10 @@ test('compiled impact reports agree with modular reports without exposing produc
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   let script = html.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
   script = script.slice(0, script.indexOf('// src/app.js')) + 'globalThis.a3={inspectJunctionImpact};\n})();';
-  const context = vm.createContext({});
+  const context = vm.createContext({fixtureJSON: JSON.stringify([base, ordinary, { x: point.x + 0.01, y: point.y + 0.01 }])});
   vm.runInContext(script, context);
   assert.deepEqual(
-    clone(context.a3.inspectJunctionImpact(base, ordinary, { x: point.x + 0.01, y: point.y + 0.01 })),
+    clone(vm.runInContext('a3.inspectJunctionImpact(...JSON.parse(fixtureJSON))', context)),
     clone(move()),
   );
 });

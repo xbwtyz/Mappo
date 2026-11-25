@@ -94,7 +94,7 @@ test('C7 substantial junction drags use local road reflow across all four layout
     assert.equal(JSON.stringify(app.state().project),before);
     app.el('roadApplyB4').handlers.click();
     assert.equal(files.revision,revision+1);
-    assert.deepEqual(app.state().project.city.nodes.find(row=>row.id===id),{id,x:x+dx,y:y+dy});
+    assert.deepEqual(JSON.parse(JSON.stringify(app.state().project.city.nodes.find(row=>row.id===id))),{id,x:x+dx,y:y+dy});
     const after=JSON.stringify(app.state().project);
     assert.equal(app.moveRoadHistory('undo'),true);
     assert.equal(JSON.stringify(app.state().project),before);
