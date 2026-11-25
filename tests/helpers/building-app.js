@@ -1,11 +1,18 @@
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
+import { webcrypto } from 'node:crypto';
 
 // Test-only access to closure state; the distributed app exposes no QA globals.
 export const buildingObservation = `
+// QA-only detached history inspection, no mutable accepted cursor escapes.
+const idaQALedger=new Proxy({}, {get(_target,key){
+  if(key==='toJSON')return ()=>secureIdentityHost.copyHistory();
+  const copy=secureIdentityHost.copyHistory(),value=copy[key];
+  return typeof value==='function'?value.bind(copy):value;
+}});
 globalThis.__buildingQA = {
   state: () => ({ project, camera, editor, layers, workspaceShell, roadWorkspace, buildingWorkspace, buildingEditSession, propertyWorkspace, identityWorkspace,
-    landscapeWorkspace, districtPanel, waterPanel, terrainPanel, fortificationPanel, files, buildingHistory, buildingStructureHistory, acceptedHistoryD01, buildingPlacementSession, propertyEditSession, propertyHistory, propertyDeletionHistory4A, propertyCreationSessionE1, propertyCreationHistoryE1, propertySplitE2, propertyMergeE3, roadHistory }),
+    landscapeWorkspace, districtPanel, waterPanel, terrainPanel, fortificationPanel, files, buildingHistory, buildingStructureHistory, acceptedHistoryD01:idaQALedger, identityView:secureIdentityHost.view(), buildingPlacementSession, propertyEditSession, propertyHistory, propertyDeletionHistory4A, propertyCreationSessionE1, propertyCreationHistoryE1, propertySplitE2, propertyMergeE3, roadHistory }),
   capture: captureWorkspace, apply: applyProjectDocument, applyRoad: () => roadWorkspace.apply(), moveRoadHistory: moveRoadHistoryB4, draw: requestDraw
 };
 `;
@@ -62,7 +69,7 @@ export async function buildingAppHarness() {
     return element;
   }
   const context = {
-    document, console, URL, Uint32Array, TextEncoder, structuredClone, Math, Date, setTimeout, clearTimeout,
+    document, console, URL, Uint32Array, Uint8Array, TextEncoder, structuredClone, Math, Date, setTimeout, clearTimeout, crypto:webcrypto,
     window: {
       location: { href: 'file:///mappo.html?seed=building-selection-qa&size=small' }, devicePixelRatio: 1,
       addEventListener(name, fn) { (globalEvents[name] ??= []).push(fn); }

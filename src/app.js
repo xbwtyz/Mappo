@@ -1,3 +1,7 @@
+import { SecureIdentityHost } from './core/secure-identity-host.js';
+import { stageMountedIdentityEdit,acceptMountedIdentityEdit,cancelMountedIdentityEdit } from './editor/mounted-identity-transaction.js';
+import { beginRoadIdentityApply,commitRoadIdentityApply,cancelRoadIdentityApply } from './editor/road-transaction-bridge.js';
+import { captureLandEditorIntent } from './editor/land-transaction-bridge.js';
 import { stageLocalEditorRecord,checkLocalEditorRecord,publishLocalEditorRecord } from './editor/local-editor-record.js';
 import { canEditBuildingComponents } from './editor/building-component-application.js';
 import { prepareBuildingEditorOperation } from './editor/building-transaction-bridge.js';
@@ -145,7 +149,6 @@ import { checkRoadApplyC2, prepareRoadApplyC2, validateRoadGroupApplyB1, validat
 import { RoadGeometryHistoryB4 } from './editor/road-history.js';
 import { DraftEngine } from './core/draft-engine.js';
 import { renderDraftControls, syncDraftControls } from './ui/draft-controls.js';
-import { AcceptedEditHistoryD01, forkAcceptedHistoryD01, stageAcceptedPublicationD01, stageAcceptedReplayD01, stageAcceptedReplacementD01 } from './core/accepted-edit-history-d01.js';
 import { HISTORY_EDITOR_KEYS, historyWorkspaceForReplay } from './core/accepted-history-workspace-a5.js';
 import { createProjectDocument, encodeProjectDocument } from './data/project-format.js';
 
@@ -197,7 +200,18 @@ const propertyHistory = new PropertyGeometryHistory3I(20);
 const propertyDeletionHistory4A = new PropertyDeletionHistory4A(20);
 const propertyCreationHistoryE1 = new PropertyCreationHistoryE1(20);
 const roadHistory = new RoadGeometryHistoryB4(6);
-const acceptedHistoryD01 = new AcceptedEditHistoryD01({maxEntries:20,maxBytes:64*1024*1024});
+const secureIdentityHost=new SecureIdentityHost();
+// Stable read-only UI adapter; accepted history and project belong only to
+// the host. Before first generation there is no accepted ledger.
+const acceptedHistoryD01=Object.freeze({
+  entry:direction=>secureIdentityHost.adopted?secureIdentityHost.view().history.entry(direction):null,
+  summaries:()=>secureIdentityHost.adopted?secureIdentityHost.view().history.summaries():[],
+  can:(...args)=>secureIdentityHost.adopted&&secureIdentityHost.view().history.can(...args),
+  fits:(...args)=>secureIdentityHost.adopted&&secureIdentityHost.view().history.fits(...args),
+  canRecord:(...args)=>secureIdentityHost.adopted&&secureIdentityHost.view().history.canRecord(...args),
+  get notice(){return secureIdentityHost.adopted?secureIdentityHost.view().history.notice:'';}
+});
+let idaLifecycleActive=false,idaAdoptionUIRevision=0;
 let d01ReplayingHistory=false;
 let pendingHistoryRefresh = false;
 let historyFeedback = null;
@@ -394,20 +408,15 @@ function d01MoveHistory(direction) {
   const action = historyCommandState(direction);
   if (!action.available) return showHistoryFailure(direction, action.reason);
   historyFeedback = null;
-  const receipt=acceptedHistoryD01.prepare(direction,project,captureWorkspace().workspace);
-  if (!receipt.ok) return showHistoryFailure(direction, receipt.reason);
-  // A retired property may return during Undo. Capture it before replacing
-  // the accepted city so the existing Inspector can recover a useful target
-  // when no other live selection survives.
-  const beforeCity = project.city;
-  const returningProperties=receipt.candidate.city.properties.filter(p=>
-    !project.city.properties.some(old=>old.id===p.id)).map(p=>p.id);
-  let staged;
-  try{staged=stageAcceptedReplayD01(acceptedHistoryD01,project,direction,receipt);}
+  const beforeCity=project.city,context=secureIdentityHost.view().context;
+  let receipt;
+  try{receipt=secureIdentityHost.replay({direction,context,workspace:captureWorkspace().workspace});}
   catch(error){return showHistoryFailure(direction,error.message);}
+  const returningProperties=receipt.project.city.properties.filter(p=>
+    !beforeCity.properties.some(old=>old.id===p.id)).map(p=>p.id);
   d01ReplayingHistory=true;
   try{
-    publishAcceptedStateD01(receipt.candidate,staged);
+    publishAcceptedStateD01('replayed');
     // No old per-editor accepted-history cursor may authorize restoration after
     // the chronological ledger has advanced. Draft editor history is separate.
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
@@ -544,26 +553,36 @@ function editorHistoryDeltaA5(family, beforeHistory, afterHistory, afterSavedCou
     after: { history: afterHistory, savedCount: afterSavedCount } };
 }
 
-// Publish the fully prepared D01 cursor and city in the same synchronous
-// boundary, before UI callbacks, dirty signals or recovery capture.
-// Keep the ledger object stable for existing Inspector readers.
-function publishAcceptedStateD01(next,staged) {
-  Object.assign(acceptedHistoryD01,staged.history);
-  project = next;
-  if(['recorded','oversize','barrier','replayed','replaced'].includes(staged.status)){
+// Only the host publishes accepted data. The app pointer is a read-only
+// rendering alias of its exact immutable view, never a candidate authority.
+function publishAcceptedStateD01(status) {
+  project = secureIdentityHost.adopted?secureIdentityHost.view().project:undefined;
+  if(['recorded','oversize','replayed','replaced'].includes(status)){
     pendingHistoryRefresh=true;
     historyFeedback=null;
   }
 }
-function commitAcceptedEdit(candidate, transaction, options) {
-  const localRecord=options?.localRecord;
+function prepareMountedApplyD01(kind,intent){
+  const workspace=captureWorkspace().workspace,revision=files?.revision??0;
+  const stage=stageMountedIdentityEdit(secureIdentityHost,workspace,kind,intent,revision);
+  return {...stage,kind,intent,revision};
+}
+function commitAcceptedEdit(candidate,transaction,{localRecord,stage}={}){
+  if(!stage?.token||JSON.stringify(candidate)!==JSON.stringify(stage.result.candidate))
+    throw Error('A current independently staged editor intent is required.');
   if(localRecord)checkLocalEditorRecord(localRecord);
-  const staged=stageAcceptedPublicationD01(acceptedHistoryD01,project,candidate,transaction,options);
-  publishAcceptedStateD01(candidate,staged);
+  const out=acceptMountedIdentityEdit(secureIdentityHost,stage.token,captureWorkspace().workspace,
+    stage.kind,stage.intent,files?.revision??0,transaction);
+  publishAcceptedStateD01(out.accepted.historyStatus);
   if(localRecord)publishLocalEditorRecord(localRecord);
+  return out;
+}
+function commitNonallocatingD01(candidate,transaction,intent,{localRecord,stage}={}){
+  const prepared=stage??prepareMountedApplyD01('nonallocating',intent);
+  return commitAcceptedEdit(candidate,transaction,{localRecord,stage:prepared});
 }
 
-function commitDomainEditA5(family, city, { operation, beforeHistory }) {
+function commitDomainEditA5(family, city, { operation, beforeHistory,intent }) {
   if (city === project.city || JSON.stringify(city) === JSON.stringify(project.city)) return false;
   const afterHistory = domainEditorA5(family).history;
   const expired = Math.max(0, beforeHistory.length + 1 - afterHistory.length);
@@ -581,7 +600,7 @@ function commitDomainEditA5(family, city, { operation, beforeHistory }) {
     ? (operation === 'generate' ? city.districts.map(record => record.id)
       : [districtPanel.editor.selectedDistrictId, districtPanel.editor.selectedBlockId].filter(Boolean))
     : [...city.walls, ...city.gates, ...city.towers].map(record => record.id);
-  commitAcceptedEdit({ ...project, city }, { family, operation, label, targetIds, editorHistory });
+  commitNonallocatingD01({ ...project, city }, { family, operation, label, targetIds, editorHistory },intent);
   savedHistoryCount[family] = editorHistory.after.savedCount;
   return true;
 }
@@ -629,8 +648,8 @@ function restoreSavedDomainEditA5(family) {
   const editorHistory = editorHistoryDeltaA5(family, beforeHistory, beforeHistory.slice(0, -1), savedHistoryCount[family] - 1);
   try {
     const beforeCity = project.city;
-    const candidate = { ...project, city: applyNonallocatingCityIntent(beforeCity,{
-      kind:family==='districts'?'district-restore':'defense-restore',snapshot:beforeHistory.at(-1)}) };
+    const intent={kind:family==='districts'?'district-restore':'defense-restore',snapshot:beforeHistory.at(-1)};
+    const candidate = { ...project, city: applyNonallocatingCityIntent(beforeCity,intent) };
     const workspace = historyWorkspaceForReplay(captureWorkspace().workspace, candidate.city, editorHistory, 'redo');
     encodeProjectDocument(createProjectDocument(candidate, workspace));
     if (JSON.stringify(candidate.city) === JSON.stringify(project.city)) {
@@ -640,7 +659,7 @@ function restoreSavedDomainEditA5(family) {
       return true;
     }
     const label = localHistoryLabels[family].restore;
-    commitAcceptedEdit(candidate, { family, operation: 'restore', label, targetIds: [], editorHistory });
+    commitNonallocatingD01(candidate, { family, operation: 'restore', label, targetIds: [], editorHistory },intent);
     savedHistoryCount[family] = editorHistory.after.savedCount;
     refreshDomainHistoryA5(family, workspace, beforeCity);
     updateDetails();
@@ -654,13 +673,9 @@ function restoreSavedDomainEditA5(family) {
   }
 }
 function workspaceChanged() {
-  // Ordinary Apply already published its history. Retain the defensive
-  // untracked-change barrier, but never record an accepted edit a second time.
-  if(project&&!d01ReplayingHistory&&JSON.stringify(acceptedHistoryD01.baseline)!==JSON.stringify(project)){
-    const staged=forkAcceptedHistoryD01(acceptedHistoryD01);
-    const observed=staged.observe(project,null);
-    publishAcceptedStateD01(project,{history:staged,status:observed.status});
-  }
+  if(idaLifecycleActive)return;
+  if(project!== (secureIdentityHost.adopted?secureIdentityHost.view().project:undefined))
+    throw Error('Untracked accepted project publication refused.');
   const refresh=pendingHistoryRefresh;
   pendingHistoryRefresh=false;
   if(refresh||d01ReplayingHistory){
@@ -854,8 +869,8 @@ function commitBuildingTransform(current) {
   let received;
   try {
     // Fresh computation. Never trust stale status from an earlier drag frame.
-    received=prepareNonallocatingEditorOperation(previous,captureWorkspace().workspace,
-      {kind:'building-geometry',buildingId,transform,draft:session.draft});
+    const stage=prepareMountedApplyD01('nonallocating',{kind:'building-geometry',buildingId,transform,draft:session.draft??null});
+    received=stage.result;
     if(!received.ok){
       const issues=received.issues??[];
       drafts.reject('building', received.issues);
@@ -893,7 +908,7 @@ function commitBuildingTransform(current) {
       JSON.stringify(received.candidate.city.buildings.find(building => building.id === buildingId)?.geometry?.courtyardAccess);
     commitAcceptedEdit(received.candidate, { family: 'building',
       operation: portalsChanged ? 'building-structure' : 'building-geometry',
-      label: portalsChanged ? 'Edit courtyard access' : label, targetIds: [buildingId] },{localRecord});
+      label: portalsChanged ? 'Edit courtyard access' : label, targetIds: [buildingId] },{localRecord,stage});
     propertyHistory.clear();propertyDeletionHistory4A.clear();
     session.reset(project.city, { keepCourtyard: true });
     updateDetails();
@@ -1032,10 +1047,10 @@ function c01SaveMembership(action) {
   const property=c01ActiveProperty();
   if(!property||!project)return false;
   const previous=project;
-  const receipt=prepareNonallocatingEditorOperation(previous,captureWorkspace().workspace,{kind:'compound-membership',request:{
+  const stage=prepareMountedApplyD01('nonallocating',{kind:'compound-membership',request:{
     action,propertyId:property.id,groupId:compoundGroupId||null,
     name:compoundName,memberBuildingIds:compoundMemberIds
-  }});
+  }}),receipt=stage.result;
   if(!receipt.ok){
     $('compoundStatus').textContent='CANNOT SAVE · '+receipt.issues[0].message;
     return false;
@@ -1046,7 +1061,7 @@ function c01SaveMembership(action) {
   const label = action === 'create' ? 'Create building compound' : action === 'dissolve'
     ? 'Dissolve building compound' : 'Edit building compound';
   commitAcceptedEdit(receipt.candidate, { family: 'compound', operation: 'compound-membership',
-    label, targetIds: [property.id] },{localRecord});
+    label, targetIds: [property.id] },{localRecord,stage});
   buildingHistory.clear();
   propertyWorkspace.refresh();buildingWorkspace.refresh();
   workspaceShell.refresh();updateDetails();workspaceChanged();
@@ -1063,8 +1078,8 @@ function commitCompoundTransform(current) {
   const property=c01ActiveProperty(),group=c01SelectedGroup();
   if(!property||!group||!project)return false;
   const previous=project;
-  const receipt=prepareNonallocatingEditorOperation(previous,captureWorkspace().workspace,
-    {kind:'compound-transform',propertyId:property.id,groupId:group.id,transform:compoundTransform});
+  const stage=prepareMountedApplyD01('nonallocating',
+    {kind:'compound-transform',propertyId:property.id,groupId:group.id,transform:compoundTransform}),receipt=stage.result;
   if (!receipt.ok) {
     drafts.reject('compound', receipt.issues);
     compoundResult = receipt;
@@ -1075,7 +1090,7 @@ function commitCompoundTransform(current) {
   const localRecord=stageLocalEditorRecord(buildingStructureHistory,previous,receipt.candidate,property.id,'compound-transform');
   if(!localRecord)return false;
   commitAcceptedEdit(receipt.candidate, { family: 'compound', operation: 'compound-transform',
-    label: 'Transform building compound', targetIds: [property.id, ...group.memberBuildingIds] },{localRecord});
+    label: 'Transform building compound', targetIds: [property.id, ...group.memberBuildingIds] },{localRecord,stage});
   buildingHistory.clear();
   propertyWorkspace.refresh();buildingWorkspace.refresh();
   workspaceShell.refresh();updateDetails();workspaceChanged();
@@ -1265,8 +1280,7 @@ function commitStructurePlacement3H(current) {
     || (selection.kind==='building' && selection.id!==session.buildingId)
     || !['property','building'].includes(selection.kind))return false;
   const previous=project,request={...session.active,spec:{...session.spec}};
-  const workspace = captureWorkspace().workspace;
-  const result = prepareBuildingEditorOperation(previous,workspace,request,{history:acceptedHistoryD01});
+  const stage=prepareMountedApplyD01('building',request),result=stage.result;
   if(!result.ok){
     session.validation = result;
     drafts.reject('building-placement', result.issues);
@@ -1281,7 +1295,7 @@ function commitStructurePlacement3H(current) {
     const label = action === 'components' ? 'Edit building components' : action === 'courtyard portal changes'
       ? 'Edit courtyard access' : action === 'replace' ? 'Replace building' : 'Place building';
     commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',
-      label, targetIds: [request.buildingId] },{localRecord});
+      label, targetIds: [request.buildingId] },{localRecord,stage});
     propertyHistory.clear();propertyDeletionHistory4A.clear();
     buildingHistory.clear();
     session.stop();
@@ -1294,7 +1308,7 @@ function commitStructurePlacement3H(current) {
     $('statusMessage').textContent = action === 'components' ? 'Applied building component changes.'
       : action === 'courtyard portal changes'
       ? 'Applied courtyard portal changes. Download a project to keep them.'
-      : 'Applied '+request.operation+' for '+request.buildingId+'. Download a project to keep it.';
+      : 'Applied '+request.operation+' for '+(request.operation==='add'?acceptedHistoryD01.entry('undo')?.targetIds[0]??'building':request.buildingId)+'. Download a project to keep it.';
     return true;
   }catch(error){$('statusMessage').textContent='Building Apply rejected: '+error.message;return false;}
 }
@@ -1316,14 +1330,14 @@ function clearPropertyBuildings4E(propertyId) {
   ))return false;
   if(!exitPropertyEditing3I()||!exitStructurePlacement3H()||!exitBuildingEditing())return false;
   const previous=project;
-  const result=prepareBuildingEditorOperation(previous,captureWorkspace().workspace,{operation:'clear',propertyId},{history:acceptedHistoryD01});
+  const stage=prepareMountedApplyD01('building',{operation:'clear',propertyId}),result=stage.result;
   if(!result.ok){$('statusMessage').textContent=result.reason;return false;}
   if(project!==previous||workspaceShell?.state.selection?.id!==propertyId)return false;
   try {
     const localRecord=stageLocalEditorRecord(buildingStructureHistory,previous,result.candidate,propertyId,'clear');
     if(!localRecord)return false;
     commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',
-      label: 'Clear property buildings', targetIds: site.buildingIds },{localRecord});
+      label: 'Clear property buildings', targetIds: site.buildingIds },{localRecord,stage});
     buildingHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     identityWorkspace.reset();
     updateDetails();
@@ -1340,14 +1354,13 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
   if(typeof window.confirm==='function' && !window.confirm('Delete '+buildingId+' from this property? You can Undo this deletion during the session.'))return false;
   if(!exitStructurePlacement3H() || !exitBuildingEditing())return false;
   const previous=project;
-  const result=prepareBuildingEditorOperation(previous,captureWorkspace().workspace,
-    {operation:'delete',propertyId,buildingId},{history:acceptedHistoryD01});
+  const stage=prepareMountedApplyD01('building',{operation:'delete',propertyId,buildingId}),result=stage.result;
   if(!result.ok){$('statusMessage').textContent='Deletion rejected: '+result.issues[0]?.message;return false;}
   try{
     const localRecord=stageLocalEditorRecord(buildingStructureHistory,previous,result.candidate,propertyId,'delete');
     if(!localRecord)return false;
     commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',
-      label: 'Delete building', targetIds: [buildingId] },{localRecord});
+      label: 'Delete building', targetIds: [buildingId] },{localRecord,stage});
     propertyHistory.clear();propertyDeletionHistory4A.clear();
     buildingHistory.clear();
     updateDetails();
@@ -1715,9 +1728,15 @@ function generate({ discardIdentities = false } = {}) {
 }
 
 function commitCityGeneration(current) {
+  let outgoing,checkpoint;
   try {
-    const { project: next, tidied: tidiedWater } = prepareCityGeneration();
+    const { project: prepared, tidied: tidiedWater } = prepareCityGeneration();
     if (!current()) return false;
+    if(project){outgoing={project,workspace:copyJson(captureWorkspace().workspace)};checkpoint=captureProjectAdoptionRollbackD01();}
+    idaLifecycleActive=true;
+    secureIdentityHost.adopt(prepared,{applyView:view=>{
+    idaAdoptionUIRevision++;
+    const next=view.project;
     // Preserve the existing water Undo entry when successful generation tidies handles.
     if (waterPanel.editor.features.some(feature => feature.kind === 'river')) waterPanel.editor.width($('riverWidthInput').value);
     if (tidiedWater.length) waterPanel.editor.tidyWater(editor.boundary);
@@ -1736,8 +1755,7 @@ function commitCityGeneration(current) {
     buildingWorkspace?.refresh({ replaced: true });
     clearMapHover();
     drafts.clear();
-    publishAcceptedStateD01(next,stageAcceptedReplacementD01(acceptedHistoryD01,next,
-      'City generation started a new session history.'));
+    publishAcceptedStateD01('replaced');
     desktopWorkspace?.cancelPreview();
     buildingHistory.clear(); // Rebuilding invalidates every accepted-building history entry.
     roadHistory.clear();
@@ -1765,8 +1783,16 @@ function commitCityGeneration(current) {
     updateViewport();
     $('statusMessage').textContent = `${project.city.buildings.length} buildings · ${project.city.properties.length} properties · ${project.city.properties.filter(p=>p.plotIds.length>1).length} merged sites`;
     updatePendingFeedback();
+    }});
+    idaLifecycleActive=false;
+    if(files)workspaceChanged();
     return true;
   } catch (error) {
+    idaLifecycleActive=false;
+    if(checkpoint&&outgoing){
+      try{restoreProjectAdoptionRollbackD01(outgoing,checkpoint);}
+      catch(rollbackError){$('statusMessage').textContent='Rebuild failed and workspace restoration failed: '+rollbackError.message;return false;}
+    }else publishAcceptedStateD01('replaced');
     const guidance = rebuildFailureMessage(error.message);
     drafts.sync('city-rebuild', { staged: true, intent: desktopGenerationKey('city'), dirty: true,
       issues: [{ code: 'city-rebuild', message: error.message }] });
@@ -2270,10 +2296,12 @@ propertySplitE2 = new PropertySplitControlsE2({
     &&!identityWorkspace?.hasPending()&&!propertyMergeE3?.active),
   historyMove:direction=>d01MoveHistory(direction),
   historyCan:direction=>Boolean(!d01DraftBlocked()&&d01ScopedPropertyAction(direction,'split')),
-  onCommit:(candidate,propertyId,direction,receipt)=>{
+  onCommit:(candidate,propertyId,direction,receipt,intent)=>{
     const revisionBeforeCommit=files?.revision??0;
-    commitAcceptedEdit(candidate, { family: 'property', operation: 'property-split',
-      label: 'Split property', targetIds: [propertyId, receipt.newPropertyId] });
+    const stage=prepareMountedApplyD01('property-split',intent);
+    if(!stage.result.ok)throw Error(stage.result.issues?.[0]?.message??'Split Apply refused.');
+    commitAcceptedEdit(stage.result.candidate, { family: 'property', operation: 'property-split',
+      label: 'Split property', targetIds: [propertyId, stage.result.newPropertyId] },{stage});
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     propertyCreationHistoryE1.clear();buildingHistory.clear();buildingStructureHistory.clear();
     propertyMergeE3?.history.clear();identityWorkspace.reset();
@@ -2302,10 +2330,12 @@ propertyMergeE3 = new PropertyMergeControlsE3({
     &&!propertySplitE2?.active&&!identityWorkspace?.hasPending()),
   historyMove:direction=>d01MoveHistory(direction),
   historyCan:direction=>Boolean(!d01DraftBlocked()&&d01ScopedPropertyAction(direction,'merge')),
-  onCommit:(candidate,propertyId,direction,receipt)=>{
+  onCommit:(candidate,propertyId,direction,receipt,intent)=>{
     const revisionBefore=files?.revision??0;
-    commitAcceptedEdit(candidate, { family: 'property', operation: 'property-merge',
-      label: 'Merge properties', targetIds: [propertyId, receipt.retiredId] });
+    const stage=prepareMountedApplyD01('property-merge',intent);
+    if(!stage.result.ok)throw Error(stage.result.issues?.[0]?.message??'Merge Apply refused.');
+    commitAcceptedEdit(stage.result.candidate, { family: 'property', operation: 'property-merge',
+      label: 'Merge properties', targetIds: [propertyId, stage.result.retiredId] },{stage});
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     propertyCreationHistoryE1.clear();propertySplitE2.history.clear();
     buildingHistory.clear();buildingStructureHistory.clear();identityWorkspace.reset();
@@ -2391,7 +2421,7 @@ function commitPropertyCreationE1(current) {
   const session=propertyCreationSessionE1;
   if(!session?.active||!session.draft||session.drag||!project)return false;
   const before=project,rev=files?.revision??0,draft=copyJson(session.draft);
-  const receipt=prepareLandEditorOperation(before,captureWorkspace().workspace,'property-create',draft);
+  const stage=prepareMountedApplyD01('property-create',captureLandEditorIntent('property-create',draft)),receipt=stage.result;
   if(!receipt.ok){
     session.validation = receipt;
     drafts.reject('property-creation', receipt.issues);
@@ -2403,7 +2433,7 @@ function commitPropertyCreationE1(current) {
   const localRecord=stageLocalEditorRecord(propertyCreationHistoryE1,before,receipt.candidate,receipt.propertyId);
   if(!localRecord)return false;
   commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-create',
-    label: 'Create property', targetIds: [receipt.propertyId] },{localRecord});
+    label: 'Create property', targetIds: [receipt.propertyId] },{localRecord,stage});
   roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
   buildingHistory.clear();buildingStructureHistory.clear();identityWorkspace.reset();
   session.stop();
@@ -2545,11 +2575,11 @@ identityWorkspace = new IdentityWorkspace({
     return Boolean(!d01DraftBlocked()&&entry?.family==='identity'&&ref?.id&&
       entry.targetIds.includes(ref.id)&&acceptedHistoryD01.can(direction,project));
   },
-  commit: (city, { ref, fields }) => {
+  commit: (city, { ref, fields,intent }) => {
     const label = fields.includes('type') ? 'Change building use'
       : fields.includes('customName') ? 'Rename ' + ref.kind : 'Edit ' + ref.kind + ' identity';
-    commitAcceptedEdit({ ...project, city }, { family: 'identity', operation: 'identity-change',
-      label, targetIds: [ref.id] });
+    commitNonallocatingD01({ ...project, city }, { family: 'identity', operation: 'identity-change',
+      label, targetIds: [ref.id] },intent);
     updateDetails(); workspaceShell.refresh(); requestDraw();
   },
   changed: workspaceChanged
@@ -2608,58 +2638,34 @@ function applyRoadEditB4(session,baselineRevision,current){
   const previous=project,revision=files?.revision??0;
   if(!previous||!session?.current())
     return {ok:false,message:'The road preview is stale. Reopen it before Apply.'};
-  const workspace = captureWorkspace().workspace;
-  const draftRevision = session.revision;
-  const group=session.roadGroupB1;
-  const junctionId = session.selection?.id ?? group?.selectedRoadIds[0];
-  const connection = session.roadConnectionEdit?.kind;
-  const label = connection === 'remove' ? 'Delete road' : connection === 'shape' ? 'Reshape road'
-    : connection === 'add' ? 'Add road connection' : connection === 'reconnect' ? 'Reconnect road'
-    : session.targetJunctionId ? 'Merge junctions' : session.selection?.kind === 'junction' ? 'Move road junction' : 'Move road';
-  const transaction = { family: 'road', operation: 'road-reflow', label,
-    targetIds: [junctionId, session.targetJunctionId].filter(Boolean) };
-  const commit = receipt => {
-    if (!receipt.ok) return {ok:false,message:receipt.issues?.[0]?.message??'Road Apply blocked.'};
-    if (!current() || project !== previous || revision !== (files?.revision ?? 0) || !session.current() ||
-        session.revision !== draftRevision || session.settledRevision !== draftRevision)
+  const workspace=captureWorkspace().workspace,draftRevision=session.revision;
+  const junctionId=session.selection?.id??session.roadGroupB1?.selectedRoadIds[0];
+  const asyncWorker=Boolean(!session.roadGroupB1&&session.selection?.kind==='junction'&&session.computeJunctionAsync);
+  let begun;
+  try{begun=beginRoadIdentityApply(secureIdentityHost,workspace,session,baselineRevision,revision,
+    {asyncWorker,savedDistrictCount:savedHistoryCount.districts});}
+  catch(error){return {ok:false,message:error.message};}
+  const finish=workerResult=>{
+    if(!current()||project!==previous||revision!==(files?.revision??0)||!session.current()||
+      session.revision!==draftRevision||session.settledRevision!==draftRevision){
+      cancelRoadIdentityApply(begun.token);
       return {ok:false,message:'Accepted project or preview changed during Apply.'};
-    return commitRoadEditB4(previous, revision, receipt, junctionId, receipt.transaction??transaction);
-  };
-  if(group) {
-    if(!group.eligible || !session.pending || session.drag || session.checking ||
-      session.error || session.roadIntentInputError || session.reconciliationError ||
-      session.settledRevision!==draftRevision || baselineRevision!==revision ||
-      session.acceptedFingerprint!==JSON.stringify(previous) ||
-      (!session.demolition?.candidate && !session.previewGeometry?.verified))
-      return {ok:false,message:'The connected-road preview is not complete and current.'};
-    const demolition = session.demolition;
-    if (demolition?.candidate) {
-      const draft = { selectedRoadIds: group.selectedRoadIds, offset: session.roadIntentOffset,
-        parcelChoices: session.parcelChoices, revision };
-      return commit(validateRoadGroupDemolitionApplyB1R(previous, workspace, draft, demolition.candidate, demolition.authorization));
     }
-    return commit(validateRoadGroupApplyB1(previous,workspace,
-      {selectedRoadIds:group.selectedRoadIds,offset:session.roadIntentOffset,parcelChoices:session.parcelChoices,acceptedRevision:revision},
-      session.reconciliation));
-  }
-  if (session.selection?.kind !== 'junction' || !session.computeJunctionAsync)
-    return commit(prepareRoadApplyC2(previous, workspace, session, baselineRevision, revision));
-
-  const projectJson = JSON.stringify(previous);
-  const check = checkRoadApplyC2(previous, session, baselineRevision, revision, projectJson);
-  if (!check.ok) return commit(check);
-  const { candidateJson, ledger } = session.reconciliation;
-  return session.computeJunctionAsync({
-    operation: 'apply', projectJson, junctionId, workspace,
-    point: { ...session.point }, targetJunctionId: session.targetJunctionId,
-    decisions: [...session.buildingDecisions], ownershipChoices:[...session.ownershipChoices],
-    parcelChoices:[...session.parcelChoices],
-    inspected: { candidateJson, ledger },
-  }).then(receipt => {
-    if (project !== previous || JSON.stringify(project) !== projectJson)
-      return {ok:false,message:'The accepted project changed during Apply.'};
-    return commit(receipt);
-  }, error => ({ok:false,message:'Road Apply failed: ' + error.message}));
+    let accepted;
+    try{accepted=commitRoadIdentityApply(secureIdentityHost,begun.token,captureWorkspace().workspace,session,revision,workerResult);}
+    catch(error){return {ok:false,message:error.message};}
+    // The accepted host has committed. Restore the transient road UI against
+    // the outgoing render alias before switching it to the exact new view.
+    // Suppress dirty callbacks during that synchronous reconciliation.
+    idaLifecycleActive=true;
+    try{roadWorkspace.exit({restore:true,focus:roadWorkspace.usesDesktopPanel});}
+    finally{publishAcceptedStateD01(accepted.historyStatus);idaLifecycleActive=false;}
+    return commitRoadEditB4(accepted,junctionId);
+  };
+  if(!asyncWorker)return finish();
+  return session.computeJunctionAsync(begun.workerRequest).then(finish,error=>{
+    cancelRoadIdentityApply(begun.token);return {ok:false,message:'Road Apply failed: '+error.message};
+  });
 }
 
 function refreshRoadDistrictWorkspace(workspace) {
@@ -2672,52 +2678,21 @@ function refreshRoadDistrictWorkspace(workspace) {
   districtPanel.refresh();
 }
 
-function commitRoadEditB4(previous, revision, { candidate, workspace }, junctionId, transaction) {
-  const group=transaction.operation==='translate-road-group';
-  if(group){
-    // B1 preserves all IDs and protected data. No saved restore point may
-    // be pruned or rewritten by this operation.
-    const beforeWorkspace=captureWorkspace().workspace;
-    for(const key of ['districtEditor','fortificationEditor'])
-      if(JSON.stringify(beforeWorkspace[key]?.history??[])!==JSON.stringify(workspace[key]?.history??[]))
-        return {ok:false,message:'Connected road movement would alter saved restore points.'};
-    if(!acceptedHistoryD01.canRecord(previous,candidate,transaction.editorHistory))
-      return {ok:false,message:'The complete reversible road-group transaction cannot fit the current history or the history is stale.'};
-  }
-  // Exit only transient UI state before accepted data is replaced. No file or
-  // history writes occur until the candidate passes the entire B4 gate.
-  roadWorkspace.exit({restore:true,focus:roadWorkspace.usesDesktopPanel});
-  if(project!==previous||revision!==(files?.revision??0))
-    return {ok:false,message:'The accepted project changed before commit.'};
-  const localRecord=group?null:stageLocalEditorRecord(roadHistory,previous,candidate,junctionId);
-  if(!group&&!localRecord)return {ok:false,message:'Nothing was changed.'};
-  const beforeHistory = districtPanel.editor.history;
-  const afterHistory = workspace.districtEditor?.history ?? beforeHistory;
-  if (afterHistory.length < beforeHistory.length) {
-    const removed = beforeHistory.length - afterHistory.length;
-    transaction = { ...transaction, editorHistory: editorHistoryDeltaA5('districts', beforeHistory, afterHistory,
-      Math.max(0, savedHistoryCount.districts - removed)) };
-  }
-  if(group){
-    if(!acceptedHistoryD01.canRecord(previous,candidate,transaction.editorHistory))
-      return {ok:false,message:'The reversible history changed before group Apply.'};
-  }
-  try{commitAcceptedEdit(candidate, transaction, {requireRecorded:group,localRecord});}
-  catch(error){return {ok:false,message:error.message};}
-  refreshRoadDistrictWorkspace(workspace);
-  buildingHistory.clear();
-  buildingStructureHistory.clear();
-  propertyHistory.clear();
-  propertyDeletionHistory4A.clear();
+function commitRoadEditB4(accepted,junctionId){
+  // No second candidate or history writer. The secure bridge already checked
+  // exact group restore points, permission, independent reconstruction and
+  // canonical chronological history capacity before publication.
+  refreshRoadDistrictWorkspace(accepted.workspace);
+  roadHistory.clear();
+  buildingHistory.clear();buildingStructureHistory.clear();
+  propertyHistory.clear();propertyDeletionHistory4A.clear();
   clearMapHover();
-  propertyWorkspace.refresh({replaced:true});
-  buildingWorkspace.refresh({replaced:true});
-  updateDetails();
-  workspaceShell.refresh();
-  requestDraw();
-  workspaceChanged(); // exactly one file revision / normal recovery notification
-  $('statusMessage').textContent=group?transaction.label+' applied. Undo restores all validated changes.':'Applied road '+junctionId+' and all validated neighborhood changes. Undo road is available.';
-  $('roadHistoryStatusB4').textContent=group?transaction.label+' applied. Undo restores the complete previous city.':'Road '+junctionId+' applied. Undo restores the complete previous city.';
+  propertyWorkspace.refresh({replaced:true});buildingWorkspace.refresh({replaced:true});
+  updateDetails();workspaceShell.refresh();requestDraw();workspaceChanged();
+  const entry=acceptedHistoryD01.entry('undo');
+  const label=entry?.family==='road'?entry.label:'Road '+junctionId;
+  $('statusMessage').textContent=label+' applied. '+acceptedHistoryD01.notice;
+  $('roadHistoryStatusB4').textContent=label+' applied. '+acceptedHistoryD01.notice;
   return {ok:true};
 }
 function moveRoadHistoryB4(direction) {
@@ -2876,13 +2851,13 @@ function deleteProperty4A(propertyId) {
   ))return false;
   if(!exitPropertyEditing3I() || !exitStructurePlacement3H() || !exitBuildingEditing())return false;
   const previous=project;
-  const receipt=prepareLandEditorOperation(previous,captureWorkspace().workspace,'property-delete',{propertyId});
+  const stage=prepareMountedApplyD01('property-delete',{propertyId}),receipt=stage.result;
   if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
   if(project!==previous || workspaceShell.state.selection?.id!==propertyId)return false;
   try{
     const localRecord=stageLocalEditorRecord(propertyDeletionHistory4A,previous,receipt.candidate,propertyId);
     commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-delete',
-      label: 'Delete property', targetIds: [propertyId] },{localRecord});
+      label: 'Delete property', targetIds: [propertyId] },{localRecord,stage});
     buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
     identityWorkspace.reset();
     workspaceShell.select(null,{reveal:false});
@@ -2914,7 +2889,7 @@ function commitPropertyEdit3I(current) {
     ||workspaceShell?.state.selection?.kind!=='property'
     ||workspaceShell.state.selection.id!==session.propertyId)return false;
   const before=project,propertyId=session.propertyId;
-  const received=prepareLandEditorOperation(before,captureWorkspace().workspace,'property-and-plot',session);
+  const stage=prepareMountedApplyD01('property-and-plot',captureLandEditorIntent('property-and-plot',session)),received=stage.result;
   if(!received.ok) {
     drafts.reject('property', received.issues);
     session.validation=received;
@@ -2926,7 +2901,7 @@ function commitPropertyEdit3I(current) {
   if(!localRecord)return false;
   const label = session.flexible?.pending || session.active?.countChange ? 'Edit plot partitions' : 'Edit property and plots';
   commitAcceptedEdit(received.candidate, { family: 'property', operation: 'property-and-plot', label,
-    targetIds: [propertyId] },{localRecord});
+    targetIds: [propertyId] },{localRecord,stage});
   buildingHistory.clear();
   buildingStructureHistory.clear();
   propertyDeletionHistory4A.clear();
@@ -3439,24 +3414,41 @@ function captureWorkspace() {
 }
 
 function captureProjectAdoptionRollbackD01(){
-  return {project,history:forkAcceptedHistoryD01(acceptedHistoryD01),
-    feedback:historyFeedback};
+  return {project,token:secureIdentityHost.captureAdoptionRollback(),uiRevision:idaAdoptionUIRevision,
+    feedback:historyFeedback,savedCounts:{...savedHistoryCount}};
 }
 function restoreProjectAdoptionRollbackD01(document,checkpoint){
-  if(!checkpoint||JSON.stringify(checkpoint.project)!==JSON.stringify(document.project)||
-    JSON.stringify(checkpoint.history.baseline)!==JSON.stringify(document.project))
-    throw Error('Outgoing accepted project/history checkpoint is inconsistent.');
-  applyProjectDocument(document,checkpoint);
+  if(!checkpoint||JSON.stringify(checkpoint.project)!==JSON.stringify(document.project))
+    throw Error('Outgoing accepted project checkpoint is inconsistent.');
+  secureIdentityHost.restoreAdoptionRollback(checkpoint.token);
+  if(secureIdentityHost.view().project!==checkpoint.project)
+    throw Error('Outgoing accepted identity session was not restored.');
+  const restoreUI=checkpoint.uiRevision!==idaAdoptionUIRevision;
+  idaLifecycleActive=true;
+  try{
+    if(restoreUI)applyProjectDocumentView(document,secureIdentityHost.view());
+    else publishAcceptedStateD01('replaced');
+    Object.assign(savedHistoryCount,checkpoint.savedCounts);
+    historyFeedback=checkpoint.feedback;
+  }finally{idaLifecycleActive=false;publishAcceptedStateD01('unchanged');}
 }
-function applyProjectDocument(document,rollback=null) {
-  // Prepare the replacement before clearing live editor state. File-open
-  // rollback supplies the original accepted ledger rather than a new session.
-  const next = rollback?rollback.project:copyJson(document.project),
-    workspace = copyJson(document.workspace),
-    draft = workspace.editor;
-  const staged=rollback?{history:rollback.history,status:'replaced'}:
-    stageAcceptedReplacementD01(acceptedHistoryD01,next,
-      'Opening or recovering a project cleared session history.');
+function applyProjectDocument(document) {
+  const {token}=secureIdentityHost.stageAdoption(document);
+  idaLifecycleActive=true;
+  try{
+    secureIdentityHost.commitAdoption(token,{applyView:(view,workspace)=>{
+      idaAdoptionUIRevision++;
+      applyProjectDocumentView({project:view.project,workspace},view);
+    }});
+  }catch(error){
+    // The host already restored the outgoing session on callback failure.
+    // ProjectFiles owns workspace rollback; never leave the render alias on
+    // an abandoned provisional session.
+    publishAcceptedStateD01('unchanged');throw error;
+  }finally{idaLifecycleActive=false;}
+}
+function applyProjectDocumentView(document,view) {
+  const next=view.project,workspace=copyJson(document.workspace),draft=workspace.editor;
   cancelMapGesturesA2();
   drafts.clear();
   roadWorkspace?.exit({restore:false});
@@ -3476,8 +3468,7 @@ function applyProjectDocument(document,rollback=null) {
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
   clearMapHover();
-  publishAcceptedStateD01(next,staged);
-  if(rollback)historyFeedback=rollback.feedback;
+  publishAcceptedStateD01('replaced');
   buildingHistory.clear(); // History does not travel with portable or recovery files.
   editor.boundary = draft.boundary;
   editor.center = draft.center;
