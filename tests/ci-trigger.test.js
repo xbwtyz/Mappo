@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { classifyCIRequest, routeFullCI, routeFastCI } from '../scripts/ci-trigger.mjs';
+import { classifyCIRequest, routeFullCI, routeFastCI, routeFocusedBenchmarks } from '../scripts/ci-trigger.mjs';
 
 const draft={pull_request:{draft:true}};
 const ready={pull_request:{draft:false}};
@@ -64,4 +64,55 @@ test('full routing remains wired to both matrices, benchmark and fail-closed agg
   assert.match(ci,/name: Build, Node tests and browser QA/);
   assert.match(quick,/run: node scripts\/ci-trigger\.mjs fast/);
   assert.match(quick,/tests\/ci-trigger\.test\.js/);
+});
+
+
+test('focused draft markers select only requested benchmarks and retain Fast Checks',()=>{
+  for(const [message,suites] of [
+    ['',[]],['benchmark-f4',[]],['[benchmark-c7-other]',[]],
+    ['[BENCHMARK-F4]',['f4']],['[benchmark-c7]',['c7']],
+    ['[benchmark-c7] [benchmark-f4] [BENCHMARK-C7]',['f4','c7']]
+  ]) {
+    assert.deepEqual(routeFocusedBenchmarks('pull_request',draft,message),suites);
+    assert.deepEqual(full(draft,message),{full:false,benchmark:false});
+    assert.deepEqual(fast(message,[pr(true)]),{run:true});
+  }
+});
+
+test('focused markers never replace full qualification or alter non-PR events',()=>{
+  for(const marker of ['[benchmark-f4]','[benchmark-c7]','[benchmark-f4] [benchmark-c7]']){
+    assert.deepEqual(routeFocusedBenchmarks('pull_request',ready,marker),[]);
+    assert.deepEqual(full(ready,marker),{full:true,benchmark:false});
+    for(const fullMarker of ['[full-ci]','[full-ci-benchmark]']){
+      const message=marker+' '+fullMarker;
+      assert.deepEqual(routeFocusedBenchmarks('pull_request',draft,message),[]);
+      assert.equal(full(draft,message).full,true);
+      assert.deepEqual(fast(message,[pr(true)]),{run:false});
+    }
+    for(const event of ['push','merge_group','workflow_dispatch'])
+      assert.deepEqual(routeFocusedBenchmarks(event,{},marker),[]);
+  }
+  assert.throws(()=>routeFocusedBenchmarks('pull_request',{},'[benchmark-c7]'),/Missing PR state/);
+});
+
+test('focused benchmark matrix runs exact requested draft scripts with parity and isolated artifacts',()=>{
+  const ci=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8');
+  const focused=ci.slice(ci.indexOf('  focused:'),ci.indexOf('  # Keep this exact job name stable'));
+  assert.match(focused,/needs: route/);
+  assert.match(focused,/needs\.route\.outputs\.full == 'false'/);
+  assert.match(focused,/needs\.route\.outputs\.focused_requested == 'true'/);
+  assert.match(focused,/fromJSON\(needs\.route\.outputs\.focused_suites\)/);
+  assert.match(focused,/github\.event\.pull_request\.head\.sha/);
+  assert.match(focused,/persist-credentials: false/);
+  assert.match(focused,/git -c safe\.directory="\$GITHUB_WORKSPACE" rev-parse HEAD/);
+  assert.match(focused,/git -c safe\.directory="\$GITHUB_WORKSPACE" ls-files --error-unmatch index\.html/);
+  assert.match(focused,/git -c safe\.directory="\$GITHUB_WORKSPACE" diff --exit-code -- index\.html/);
+  assert.doesNotMatch(focused,/safe\.directory[^\n]*\*/);
+  assert.match(focused,/matrix\.suite == 'f4'/);
+  assert.match(focused,/node scripts\/building-performance-f4\.mjs/);
+  assert.match(focused,/matrix\.suite == 'c7'/);
+  assert.match(focused,/node scripts\/c7-browser-performance\.mjs/);
+  assert.match(focused,/mappo-focused-/);
+  assert.doesNotMatch(focused,/npm run test:browser:/);
+  assert.match(ci,/needs: \[route, node, browser\]/);
 });

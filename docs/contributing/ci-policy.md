@@ -11,6 +11,7 @@ until the full validation passes for the exact review-ready revision.
 | Feature/chore/fix/refactor/release branch push | Mappo Fast Checks: changed-JS syntax, reproducible standalone build and byte parity, representative Node smoke tests plus directly modified Node test files |
 | Branch push while an open PR is ready for review | Only a lightweight PR-state lookup on the fast workflow; full Mappo CI handles the substantive tests |
 | Draft PR, ordinary head commit | Full CI skips expensive validation; fast branch checks remain active |
+| Draft PR, head commit message contains `[benchmark-f4]` and/or `[benchmark-c7]` | Only the requested independent benchmark runners plus normal Fast Checks; full regression matrices and required aggregate remain skipped |
 | Draft PR, head commit message contains `[full-ci]` | Full six-runner CI on the exact PR head; skip duplicate fast tests |
 | Draft PR, head commit message contains `[full-ci-benchmark]` | Same full CI plus the heavy C7 benchmark; skip duplicate fast tests |
 | PR opened, updated or changed to ready-for-review status | Mappo CI: all Node tests, standalone reproducibility and Chromium/Firefox browser matrices |
@@ -39,7 +40,7 @@ their releases.
 
 ## C7 performance runs
 
-The heavy C7 browser benchmark is **explicit opt-in only** via the `run_c7_benchmark` manual input or the `[full-ci-benchmark]` marker on the current head commit of an open PR. Ordinary PR validation still runs C7 browser correctness suites and all main regression tests.
+The heavy C7 browser benchmark is **explicit opt-in only** via the `run_c7_benchmark` manual input, the `[full-ci-benchmark]` marker on the current head commit of an open PR, or `[benchmark-c7]` on an ordinary draft PR. Ordinary PR validation still runs C7 browser correctness suites and all main regression tests.
 
 The manual Mappo CI workflow also accepts the **run_c7_benchmark** option to
 force it using the existing default-branch workflow.
@@ -59,6 +60,7 @@ pre-merge acceptance check.
 - Branch and PR runs have independent concurrency groups; stale runs in the
   same group are canceled.
 - A matching exact-head ready PR or explicitly requested draft PR prevents duplicate fast test workloads on its branch pushes. Branches without an open PR (including a marker before opening one), ordinary draft heads, stale PR lookups and lookup failures retain fast checks. Opening or updating a PR evaluates the current head marker.
+- Focused markers `[benchmark-f4]` and `[benchmark-c7]` may be combined on an ordinary draft head. Each selected job verifies exact-head compiled parity and runs its existing script in a separate Playwright runner; normal Fast Checks remain active. Full markers and ready-for-review state take precedence. Focused success is diagnostic only, never full qualification or a release gate. Existing F4 coverage in the full integration suite is retained.
 - Markers are case-insensitive literal tokens in the current commit message, not sticky settings; `[full-ci-benchmark]` takes precedence when both appear. A new ordinary draft head returns to fast checks. Review-ready PRs always run full CI and may opt into the benchmark by marker. Main and merge-group runs remain full, without marker-driven heavy benchmarking.
 - The lightweight routing job must succeed; a routing failure or failed/skipped required matrix cannot produce a passing aggregate. Draft marker runs check out the exact PR head, while ready PRs retain normal merge-ref validation. Markers never change PR state or grant merge or release authorization.
 - If checking for an open ready PR fails, fast tests run instead of silently
