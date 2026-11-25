@@ -1,3 +1,4 @@
+import { webcrypto } from 'node:crypto';
 import {
   waterPathIsOrdered
 } from '../src/core/water-editing.js';
@@ -91,6 +92,8 @@ test('compiled HTML initializes and responds to UI events with stubbed Canvas', 
     return element;
   }
   const context = {
+      crypto: webcrypto,
+      Uint8Array,
     document: {
       getElementById: el,
       createElement: () => ({
@@ -244,6 +247,8 @@ test('compiled drawing workflow handles pointer gestures, center placement, undo
     return element;
   }
   const context = {
+      crypto: webcrypto,
+      Uint8Array,
     document,
     window: {
       location: {
@@ -547,6 +552,8 @@ test('standalone app downloads, previews and restores complete projects and reco
       }
     }
     const context = {
+      crypto: webcrypto,
+      Uint8Array,
       document,
       window: {
         location: {
