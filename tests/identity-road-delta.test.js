@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { prepareNeighborhoodReflowC3 } from '../src/core/neighborhood-reflow.js';
 import { prepareRoadTopologyReflowC3 } from '../src/core/road-topology-reflow.js';
-import { roadIdentityRequests,allocateRoadCandidate } from '../src/core/road-identity-delta.js';
+import { roadIdentityRequests,allocateRoadCandidate,allocateRoadCandidateForHost } from '../src/core/road-identity-delta.js';
 import { SecureIdentityHost } from '../src/core/secure-identity-host.js';
 import { classifyRoadProvenance } from '../src/core/road-provenance.js';
 import { copyJson,defaultWorkspace,createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../src/data/project-format.js';
@@ -40,6 +40,9 @@ for(const f of cases){
   test('IDA road delta allocates only surviving additions: '+f.name,()=>{
     const s=setup(f),before=JSON.stringify(s.fresh),a=allocated(s),b=allocated(s);
     assert.deepEqual(a,b);
+    const {receipt,...combined}=allocateRoadCandidateForHost(s.host,s.view,s.fresh);
+    assert.deepEqual(receipt,s.receipt);
+    assert.deepEqual(combined,a);
     assert.deepEqual([...new Set(s.requests.map(x=>x.type))].sort(),f.types);
     assert.equal(JSON.stringify(s.fresh),before);
     assert.equal(s.host.view(),s.view);
@@ -119,4 +122,37 @@ test('IDA independent adopted copies get disjoint persistent road additions',()=
   assert.deepEqual(a.requests,b.requests);
   const ids=new Set(a.receipt.allocations.map(row=>row.id));
   assert.ok(b.receipt.allocations.every(row=>!ids.has(row.id)));
+});
+
+test('S3-A combined road allocation owns its candidate and metadata across reservation callbacks',()=>{
+  const s=setup(cases[0]),expected=allocated(s),raw=copyJson(s.fresh),reserve=s.host.reserve.bind(s.host);
+  s.host.reserve=requests=>{
+    raw.candidateProject.city.name='Late mutation';
+    raw.ledger.length=0;
+    raw.changed.length=0;
+    return reserve(requests);
+  };
+  const {receipt,...actual}=allocateRoadCandidateForHost(s.host,s.view,raw);
+  assert.deepEqual(receipt,s.receipt);
+  assert.deepEqual(actual,expected);
+  assert.equal(s.host.view(),s.view);
+});
+test('S3-A combined road allocation retains no-addition, stale view and receipt refusals',()=>{
+  const s=setup(cases[0]),reserve=s.host.reserve.bind(s.host);
+  let called=0;
+  s.host.reserve=requests=>{called++;return reserve(requests);};
+  assert.throws(()=>allocateRoadCandidateForHost(s.host,s.view,s.fresh,{allowAdditions:false}),/may not allocate/);
+  assert.throws(()=>allocateRoadCandidateForHost(s.host,{...s.view},s.fresh),/Stale/);
+  assert.equal(called,0);
+  s.host.reserve=requests=>{
+    const receipt=copyJson(reserve(requests));
+    receipt.binding.revision++;
+    return receipt;
+  };
+  assert.throws(()=>allocateRoadCandidateForHost(s.host,s.view,s.fresh),/Stale/);
+  assert.equal(s.host.view(),s.view);
+  const otherView={...s.view};
+  let current=s.view;
+  const fakeHost={view:()=>current,reserve:requests=>{current=otherView;return reserve(requests);}};
+  assert.throws(()=>allocateRoadCandidateForHost(fakeHost,s.view,s.fresh),/Stale/);
 });

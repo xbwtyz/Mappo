@@ -1,6 +1,6 @@
 import { checkRoadApplyC2, validateRoadApplyC2, validateRoadGroupApplyB1,
   validateRoadGroupDemolitionApplyB1R } from './road-application.js';
-import { roadIdentityRequests, allocateRoadCandidate } from '../core/road-identity-delta.js';
+import { roadIdentityRequests, allocateRoadCandidate, allocateRoadCandidateForHost } from '../core/road-identity-delta.js';
 import { reconcileRoadWorkspace } from './road-workspace.js';
 import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
 
@@ -75,11 +75,21 @@ function idaRoadApplyAllocated(state,project,legacy,receipt){
   const phase=state.snapshot.kind==='single'?state.snapshot.inspected.phase:'B1';
   const fresh={phase,status:'candidate-only',candidateProject:legacy.candidate,
     validation:{project:'valid',parcels:'pass'},unresolved:[],ledger:legacy.ledger,changed:legacy.changed};
-  const requests=roadIdentityRequests(project,fresh);
-  if(state.snapshot.kind!=='single')
-    idaRoadApplyRequire(requests.length===0,'Connected-road operations may not allocate new land or buildings.');
-  const issued=receipt??state.host.reserve(requests);
-  const allocated=allocateRoadCandidate(project,fresh,state.view.context,issued);
+  let allocated,issued;
+  if(state.snapshot.kind!=='demolition'&&receipt===undefined&&project===state.view.project){
+    // Independent reconstruction already completed. Reuse only the
+    // private, freshly validated inventory within this allocation call.
+    const {receipt:reserved,...result}=allocateRoadCandidateForHost(state.host,state.view,fresh,
+      {allowAdditions:state.snapshot.kind==='single'});
+    issued=reserved;allocated=result;
+  }else{
+    // Keep the separate reviewed demolition authorization/replay path.
+    const requests=roadIdentityRequests(project,fresh);
+    if(state.snapshot.kind!=='single')
+      idaRoadApplyRequire(requests.length===0,'Connected-road operations may not allocate new land or buildings.');
+    issued=receipt??state.host.reserve(requests);
+    allocated=allocateRoadCandidate(project,fresh,state.view.context,issued);
+  }
   const workspace=reconcileRoadWorkspace(state.workspace,project.city,allocated.candidate.city);
   // Reconciliation is repeated using final persistent IDs, not the worker's
   // workspace or a temporary parcel identity. Preserve exact saved histories
