@@ -195,7 +195,10 @@ jobs:
       - name: Verify candidate checkout
         env:
           CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
-        run: test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+        run: |
+          # Checkout's temporary HOME safe.directory does not persist here.
+          # Trust only this Actions workspace for the explicit Git command.
+          test "$(git -c safe.directory="$GITHUB_WORKSPACE" rev-parse HEAD)" = "$CANDIDATE_SHA"
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -206,9 +209,9 @@ jobs:
           version=$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")
           test -s index.html
           test -s "dist/mappo-$version.html"
-          git ls-files --error-unmatch index.html "dist/mappo-$version.html" > /dev/null
+          git -c safe.directory="$GITHUB_WORKSPACE" ls-files --error-unmatch index.html "dist/mappo-$version.html" > /dev/null
           cmp index.html "dist/mappo-$version.html"
-          git diff --exit-code -- index.html "dist/mappo-$version.html"
+          git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code -- index.html "dist/mappo-$version.html"
       - name: Install matching test-only Playwright package
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'

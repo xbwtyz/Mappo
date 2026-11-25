@@ -104,8 +104,10 @@ test('focused benchmark matrix runs exact requested draft scripts with parity an
   assert.match(focused,/fromJSON\(needs\.route\.outputs\.focused_suites\)/);
   assert.match(focused,/github\.event\.pull_request\.head\.sha/);
   assert.match(focused,/persist-credentials: false/);
-  assert.match(focused,/git rev-parse HEAD/);
-  assert.match(focused,/git diff --exit-code -- index\.html/);
+  assert.match(focused,/git -c safe\.directory="\$GITHUB_WORKSPACE" rev-parse HEAD/);
+  assert.match(focused,/git -c safe\.directory="\$GITHUB_WORKSPACE" ls-files --error-unmatch index\.html/);
+  assert.match(focused,/git -c safe\.directory="\$GITHUB_WORKSPACE" diff --exit-code -- index\.html/);
+  assert.doesNotMatch(focused,/safe\.directory[^\n]*\*/);
   assert.match(focused,/matrix\.suite == 'f4'/);
   assert.match(focused,/node scripts\/building-performance-f4\.mjs/);
   assert.match(focused,/matrix\.suite == 'c7'/);
