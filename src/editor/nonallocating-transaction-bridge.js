@@ -1,4 +1,4 @@
-import { captureEditorApplyEvidence } from './editor-apply-evidence.js';
+import { captureEditorApplyEvidence,prepareMountedEditorCommitResult,finishMountedEditorCommit } from './editor-apply-evidence.js';
 import { prepareBuildingApply } from './building-application.js';
 import { prepareCompoundMembership,prepareCompoundTransform } from './building-compounds-c01.js';
 import { IdentityEditor } from '../core/identity.js';
@@ -46,22 +46,24 @@ export function previewNonallocatingEditorTransaction(host,workspace,intent){
   const {project,context}=host.view(),input=copyJson(intent),receipt=host.reserve([]);
   return {context,receipt,result:prepareNonallocatingEditorOperation(project,workspace,input)};
 }
-export function commitNonallocatingEditorTransaction(host,workspace,intent,transaction,reservation,{preserveLegacyCapacity=false,allowUnchanged=false}={}){
+export function commitNonallocatingEditorTransaction(host,workspace,intent,transaction,reservation,{preserveLegacyCapacity=false,allowUnchanged=false,mountedCandidateJson}={}){
   const view=host.view(),{project,context}=view;
   const bindEvidence=captureEditorApplyEvidence(host,view,workspace,intent);
   if(JSON.stringify(context)!==JSON.stringify(reservation?.context))throw Error('Stale nonallocating editor reservation.');
   const input=copyJson(intent),metadata=idaNonallocatingHistory(input,transaction);
   const result=prepareNonallocatingEditorOperation(project,workspace,input);
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Nonallocating editor Apply refused.');
+  const mountedResult=prepareMountedEditorCommitResult(host,[],reservation.receipt,result,mountedCandidateJson);
   // Mounted identity/district/defense forms may submit unchanged values.
   // Do not publish a new accepted revision or invalidate other previews.
   if(allowUnchanged&&JSON.stringify(result.candidate)===JSON.stringify(project)){
     verifyIdentityReservation(project.identityAllocation,project.city,context,[],reservation.receipt);
-    return {...host.read(),historyStatus:'unchanged'};
+    return finishMountedEditorCommit({...host.read(),historyStatus:'unchanged'},mountedResult);
   }
   const historyPolicy=preserveLegacyCapacity
     ?(input.kind==='building-geometry'&&metadata.operation==='building-structure'?'legacy-ordinary-structure':'legacy-ordinary')
     :'required';
-  return host.commit({requests:[],receipt:reservation.receipt,candidateCity:result.candidate.city,transaction:metadata,historyPolicy,
+  const accepted=host.commit({requests:[],receipt:reservation.receipt,candidateCity:result.candidate.city,transaction:metadata,historyPolicy,
     validateDomain:bindEvidence(result.candidate)});
+  return finishMountedEditorCommit(accepted,mountedResult);
 }

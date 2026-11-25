@@ -34,15 +34,12 @@ export function acceptMountedIdentityEdit(host,token,workspace,kind,intent,revis
   if(host.view()!==staged.view||staged.revision!==revision||staged.kind!==kind||
     !idaMountedSame(staged.intent,intent)||!idaMountedSame(staged.workspace,workspace))
     throw Error('Mounted identity transaction is stale.');
-  const p=idaMountedPreview(host,staged.workspace,kind,staged.intent);
-  if(!p.result.ok||!idaMountedSame(p.receipt,staged.receipt)||JSON.stringify(p.result.candidate)!==staged.candidateJson)
-    throw Error('Mounted identity intent changed during reconstruction.');
-  const options={preserveLegacyCapacity:true,allowUnchanged:true};
-  // Copy the final domain return data before publication. The caller can
-  // update selection/labels from real accepted IDs, not draft-only labels.
-  const result=copyJson(p.result);
-  const accepted=kind==='building'?commitBuildingEditorTransaction(host,staged.workspace,staged.intent,p,options):
-    kind==='nonallocating'?commitNonallocatingEditorTransaction(host,staged.workspace,staged.intent,transaction,p,options):
-    commitLandEditorTransaction(host,staged.workspace,kind,staged.intent,p,options);
-  return {accepted,result};
+  // Each commit bridge independently reconstructs from the bound intent.
+  // Compare that fresh result to the private staging evidence inside the
+  // bridge, before publication, rather than reconstructing twice here.
+  const reservation={context:staged.view.context,receipt:staged.receipt};
+  const options={preserveLegacyCapacity:true,allowUnchanged:true,mountedCandidateJson:staged.candidateJson};
+  return kind==='building'?commitBuildingEditorTransaction(host,staged.workspace,staged.intent,reservation,options):
+    kind==='nonallocating'?commitNonallocatingEditorTransaction(host,staged.workspace,staged.intent,transaction,reservation,options):
+    commitLandEditorTransaction(host,staged.workspace,kind,staged.intent,reservation,options);
 }

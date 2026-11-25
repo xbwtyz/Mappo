@@ -1,4 +1,4 @@
-import { captureEditorApplyEvidence } from './editor-apply-evidence.js';
+import { captureEditorApplyEvidence,prepareMountedEditorCommitResult,finishMountedEditorCommit } from './editor-apply-evidence.js';
 import { preparePropertyCreationE1 } from './property-creation-e1.js';
 import { PropertySplitSessionE2,inspectPropertySplitE2,preparePropertySplitE2,propertySplitIdentityRequestsE2 } from './property-split-e2.js';
 import { PropertyMergeSessionE3,preparePropertyMergeE3 } from './property-merge-e3.js';
@@ -131,14 +131,16 @@ export function previewLandEditorTransaction(host,workspace,kind,intent){
   const receipt=host.reserve(idaMountedLandRequests(project,kind,draft));
   return {context,receipt,result:prepareLandEditorOperation(project,workspace,kind,draft,{identityReservation:{context,receipt}})};
 }
-export function commitLandEditorTransaction(host,workspace,kind,intent,reservation,{preserveLegacyCapacity=false}={}){
+export function commitLandEditorTransaction(host,workspace,kind,intent,reservation,{preserveLegacyCapacity=false,mountedCandidateJson}={}){
   const view=host.view(),{project,context}=view;
   const bindEvidence=captureEditorApplyEvidence(host,view,workspace,intent);
   if(!idaMountedLandSame(context,reservation?.context))throw Error('Stale land editor reservation.');
   const input=copyJson(intent),draft=idaMountedLandDraft(project,kind,input),requests=idaMountedLandRequests(project,kind,draft);
   const receipt=reservation.receipt,result=prepareLandEditorOperation(project,workspace,kind,draft,{identityReservation:{context,receipt}});
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Land editor Apply refused.');
-  return host.commit({requests,receipt,candidateCity:result.candidate.city,
+  const mountedResult=prepareMountedEditorCommitResult(host,requests,receipt,result,mountedCandidateJson);
+  const accepted=host.commit({requests,receipt,candidateCity:result.candidate.city,
     transaction:idaMountedLandTransaction(kind,draft,result,receipt),historyPolicy:preserveLegacyCapacity?'legacy-ordinary':'required',
     validateDomain:bindEvidence(result.candidate)});
+  return finishMountedEditorCommit(accepted,mountedResult);
 }

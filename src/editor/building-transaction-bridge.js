@@ -1,4 +1,4 @@
-import { captureEditorApplyEvidence } from './editor-apply-evidence.js';
+import { captureEditorApplyEvidence,prepareMountedEditorCommitResult,finishMountedEditorCommit } from './editor-apply-evidence.js';
 import { prepareBuildingStructure3H } from './building-structures.js';
 import { prepareBuildingComponents } from './building-component-application.js';
 import { preparePropertyBuildingClear4E } from './property-building-clear-4e.js';
@@ -59,7 +59,7 @@ export function previewBuildingEditorTransaction(host,workspace,request){
   const result=prepareBuildingEditorOperation(project,workspace,input,{history,identityReservation:{context,receipt}});
   return {context,receipt,result};
 }
-export function commitBuildingEditorTransaction(host,workspace,request,reservation,{preserveLegacyCapacity=false}={}){
+export function commitBuildingEditorTransaction(host,workspace,request,reservation,{preserveLegacyCapacity=false,mountedCandidateJson}={}){
   const historyPolicy=preserveLegacyCapacity&&!(request.operation==='components'&&request.componentDraft?.action==='join')
     ?'legacy-ordinary-structure':'required';
   const input=idaEditorBuildingIntent(request),view=host.view(),{project,context,history}=view;
@@ -70,7 +70,9 @@ export function commitBuildingEditorTransaction(host,workspace,request,reservati
   const requests=idaEditorBuildingRequests(input);
   const result=prepareBuildingEditorOperation(project,workspace,input,{history,identityReservation:{context,receipt}});
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Building editor Apply refused.');
-  return host.commit({requests,receipt,candidateCity:result.candidate.city,
+  const mountedResult=prepareMountedEditorCommitResult(host,requests,receipt,result,mountedCandidateJson);
+  const accepted=host.commit({requests,receipt,candidateCity:result.candidate.city,
     transaction:idaEditorBuildingTransaction(project,input,receipt),historyPolicy,
     validateDomain:bindEvidence(result.candidate)});
+  return finishMountedEditorCommit(accepted,mountedResult);
 }
