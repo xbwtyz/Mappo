@@ -1,0 +1,112 @@
+name: Mappo Hosted Standalone Build
+
+# Explicit, isolated build requests only. Normal CI/release/Pages stay unchanged.
+on:
+  push:
+    branches:
+      - 'build/standalone/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mappo-standalone-build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  compile:
+    if: ${{ !github.event.deleted && contains(github.event.head_commit.message, '[standalone-build]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.compile.outputs.version }}
+      digest: ${{ steps.compile.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile and confirm deterministic parity
+        id: compile
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == refs/heads/build/standalone/* ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          version=$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-dev$ ]]
+          dist="dist/mappo-$version.html"
+          npm run build
+          test -s index.html
+          test -s "$dist"
+          cmp index.html "$dist"
+          digest=$(sha256sum index.html | cut -d ' ' -f 1)
+          npm run build
+          cmp index.html "$dist"
+          [[ "$(sha256sum index.html | cut -d ' ' -f 1)" == "$digest" ]]
+          printf 'version=%s\ndigest=%s\n' "$version" "$digest" >> "$GITHUB_OUTPUT"
+      - name: Upload exact-source standalone pair
+        uses: actions/upload-artifact@v4
+        with:
+          name: standalone-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            index.html
+            dist/mappo-${{ steps.compile.outputs.version }}.html
+          if-no-files-found: error
+          retention-days: 14
+
+  record:
+    needs: compile
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      # Do not run repository build code in the write-capable job.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: standalone-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/standalone
+      - name: Record generated files on the same isolated branch
+        shell: bash
+        env:
+          VERSION: ${{ needs.compile.outputs.version }}
+          DIGEST: ${{ needs.compile.outputs.digest }}
+          ARTIFACT_DIR: ${{ runner.temp }}/standalone
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == refs/heads/build/standalone/* ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-dev$ ]]
+          [[ "$DIGEST" =~ ^[a-f0-9]{64}$ ]]
+          grep -Fx "export const APP_VERSION = '$VERSION';" src/core/version.js
+          dist="dist/mappo-$VERSION.html"
+          for path in index.html "$dist"; do
+            test -f "$ARTIFACT_DIR/$path"
+            test ! -L "$ARTIFACT_DIR/$path"
+          done
+          cmp "$ARTIFACT_DIR/index.html" "$ARTIFACT_DIR/$dist"
+          [[ "$(sha256sum "$ARTIFACT_DIR/index.html" | cut -d ' ' -f 1)" == "$DIGEST" ]]
+          test ! -L index.html
+          test ! -L dist
+          test ! -L "$dist"
+          mkdir -p dist
+          cp -- "$ARTIFACT_DIR/index.html" index.html
+          cp -- "$ARTIFACT_DIR/$dist" "$dist"
+          git add -- index.html "$dist"
+          while IFS= read -r -d '' path; do
+            [[ "$path" == index.html || "$path" == "$dist" ]]
+          done < <(git diff --cached --name-only -z)
+          if git diff --cached --quiet; then
+            echo "Already byte-identical; no generated commit needed."
+            exit 0
+          fi
+          [[ "$(git ls-remote origin "$GITHUB_REF" | cut -f 1)" == "$GITHUB_SHA" ]]
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "Build standalone $VERSION from $GITHUB_SHA"
+          git push origin "HEAD:$GITHUB_REF"

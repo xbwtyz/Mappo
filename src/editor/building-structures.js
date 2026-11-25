@@ -1,3 +1,4 @@
+import { verifyIdentityReservation, verifyIdentityAdditions } from '../core/identity-verification.js';
 import { hasSimpleBuildingFootprintS10 } from '../core/building-geometry-adapter-s10.js';
 import { simpleBuildingViewS10 } from '../core/building-transform.js';
 import { editCourtyardPlacement, detachCourtyardBuilding } from './courtyard-placement.js';
@@ -108,7 +109,7 @@ export class BuildingPlacementSession3H {
 }
 // Validation and transaction are performed against fresh independent project
 // objects; no draft or temporary generated building is ever accepted blindly.
-export function prepareBuildingStructure3H(project,workspace,request,{quick=false}={}) {
+export function prepareBuildingStructure3H(project,workspace,request,{quick=false,identityReservation=null}={}) {
   const issue=(code,message,targetId=null)=>({ok:false,status:'invalid',issues:[{code,message,targetId}],candidate:null});
   const {operation,propertyId,buildingId,spec,courtyard}=request??{};
   const portalOnly = operation === 'add' && courtyard?.hostId && courtyard.only;
@@ -116,7 +117,19 @@ export function prepareBuildingStructure3H(project,workspace,request,{quick=fals
   if(!property)return issue('property','Select a valid property first.',propertyId);
   if(!['add','replace','delete'].includes(operation))return issue('operation','Unsupported building action.');
   const existing=project.city.buildings.find(b=>b.id===buildingId);
-  if(operation==='add' && (existing || typeof buildingId!=='string' || !buildingId.startsWith('BLD-MAN-')))
+  let verifiedAllocation=null;
+  const allocationRequests=[{type:'building',key:'manual-building'}];
+  if(identityReservation!==null){
+    if(project.schemaVersion!==11||operation!=='add'||portalOnly||existing)
+      return issue('id','Identity reservation requires a new building on a Schema 11 project.');
+    try{
+      const {context,receipt}=identityReservation;
+      verifiedAllocation=verifyIdentityReservation(project.identityAllocation,project.city,
+        context,allocationRequests,receipt);
+      if(receipt.allocations[0].id!==buildingId)
+        throw Error('Building identity does not match its reservation.');
+    }catch(error){return issue('id',error.message);}
+  }else if(operation==='add' && (existing || typeof buildingId!=='string' || !buildingId.startsWith('BLD-MAN-')))
     return issue('id','New building identifier must be unique.');
   if(operation!=='add' && (!existing || existing.propertyId!==propertyId))
     return issue('target','The target building is not on this property.',buildingId);
@@ -128,6 +141,7 @@ export function prepareBuildingStructure3H(project,workspace,request,{quick=fals
     catch(error){return issue('shape',error.message);}
   }
   const provisional=copyJson(project),site=provisional.city.properties.find(p=>p.id===propertyId);
+  if(verifiedAllocation)provisional.identityAllocation=verifiedAllocation;
   let accessPreview = null;
   if (portalOnly) {
     try { accessPreview = editCourtyardPlacement(provisional.city, propertyId, courtyard); }
@@ -162,14 +176,26 @@ export function prepareBuildingStructure3H(project,workspace,request,{quick=fals
       } catch (error) { return issue('courtyard-access', error.message); }
     } else {
       const result=prepareBuildingApply(provisional,workspace,buildingId,{});
+      if(result.ok&&verifiedAllocation){
+        try{
+          const checked=verifyIdentityAdditions(project.identityAllocation,project.city,
+            identityReservation.context,allocationRequests,identityReservation.receipt,result.candidate.city);
+          if(!h3Same(result.candidate.identityAllocation,checked))
+            throw Error('Building placement changed verified allocation state.');
+        }catch(error){return issue('id',error.message);}
+      }
       return {...result,preview:geometry};
     }
   }
   if(quick)return {ok:true,status:'checking',issues:[],preview:null,candidate:null};
   try{
+    if(verifiedAllocation)verifyIdentityAdditions(project.identityAllocation,project.city,
+      identityReservation.context,allocationRequests,identityReservation.receipt,provisional.city);
     validateStoredProject(provisional);
     const out=decodeProjectDocument(encodeProjectDocument(createProjectDocument(provisional,workspace)));
-    if(!h3Same(out.project.city,provisional.city))throw new Error('Portable save/load changed the city.');
+    if(!h3Same(out.project.city,provisional.city)||
+       (verifiedAllocation&&!h3Same(out.project.identityAllocation,verifiedAllocation)))
+      throw new Error('Portable save/load changed the city or verified allocation.');
     return {ok:true,status:'valid',issues:[],preview:geometry,accessPreview,candidate:out.project};
   }catch(error){return issue('project',error.message);}
 }
