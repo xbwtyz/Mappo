@@ -1,0 +1,24 @@
+# Schema 11 — persistent identity allocation (IDA)
+
+Status: owner approved IDA-01 through IDA-10 and the detailed implementation plan; implementation in small independently reviewable checkpoints. Base main ad2a0f88995fbd6c869fcb38575626ff85cded19 (Schema 10, 0.2.24-dev). B1R-E PR #155 remains a separate draft pending this prerequisite; no merge, publishing or deployment approved.
+
+## Contract and scope
+
+One shared allocator, independent of SRE, with typed IDs, independent monotonic counters per namespace/type and atomic acceptance. Schema 11 introduces project.identityAllocation version 1; portable envelope and workspace remain version 1. Existing geometry and identifiers remain unchanged. Sparse positive counters store highest committed sequence, not active entity counts. No history-derived inference of retired identities. Use fresh cryptographically random 128-bit namespace per adopted editing session, committed only on first accepted allocation. Deterministic reservations given identical inputs and namespace; no random metadata for seeded generation. Offline disconnected copies have probabilistic cross-namespace uniqueness, not a global mathematical guarantee. Counter exhaustion, invalid metadata and unavailable secure namespace generation fail closed. Preserve all existing compatible metadata. Migration must audit preexisting IDs in the reserved syntax before adoption; refuse ambiguous conflicts rather than silently rename.
+
+The implementation uses the generic reserved prefix BLD-IDA / PROP-IDA / PLOT-IDA, rather than the illustrative SRE-specific prefix, because IDA is a shared foundation. Canonical namespace is 32 lowercase hexadecimal characters; positive safe-integer sequences are decimal with at least six digits, no extra leading zeros. Existing entity ID length limit is 128. Initial registered types are building, property and plot; later types require explicit registration and domain integration.
+
+## Checkpoints
+
+- IDA-P1a: detached state validation, canonical typed identifiers and focused unit tests. No runtime import, project schema bump or persistent writes.
+- IDA-P1b: detached reservations, deterministic ordering, independent transition checks, exhaustion, stale and malformed receipt tests; no runtime adoption.
+- IDA-P2: Schema 11 migration and schema-aware source/validation/hydration audit; preserve shipped migration chain, existing IDs and geometry. Validate stored metadata and active ID/counter consistency; safe rejection of newer/invalid data. Separate source and integration checkpoints.
+- IDA-P3: atomic accepted allocation, history preflight, no counter rewind during Undo/Redo, replay comparison exact except independently validated allocation metadata. Integrate building/property/plot allocation paths; prohibit conflicting creation paths before regeneration.
+- IDA-P4: portable save/recovery, project adoption, older backups, divergent copies and separate tabs. Fresh session namespace; no allocation on load. Actual offline Firefox and Chromium verification. Keep namespace history even when undo history is pruned.
+- IDA-P5: SRE candidate delta integration after separate foundation review/merge and rebase/reconciliation of PR #155. Independent checks for new IDs, survivor IDs, geometry and reviewed permissions. Do not activate regeneration prematurely.
+
+Minimum new qualification cases: allocation/determinism 32; malformed/tampering 48; migration/persistence 24; undo/redo/branching 40; backup/copy behavior 24; atomic failure/cancellation 24; regeneration identity 32. Total 224, in addition to existing tests. Count actual distinct executed cases in acceptance report; do not equate assertions with separate cases without accounting. Full exact-head six-runner CI and standalone parity required for review-ready candidate. No weakening historical tests or geometry guards.
+
+## Checkpoint record
+
+P1a introduces detached ID grammar and metadata validation only. Reservations, live inventory audit, transition validation and all runtime wiring remain pending. Existing standalone and schema must remain unchanged at this checkpoint. GitHub-hosted targeted checks first; full CI at review readiness. Roadmap reconciliation and version adoption follow in their respective checkpoints; avoid overlapping edits with PR #155 while it is paused.
