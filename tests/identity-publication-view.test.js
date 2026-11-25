@@ -75,7 +75,13 @@ test('IDA committed history replay publishes the matching detached entry and wor
  assert.deepEqual(b.project.identityAllocation,accepted.project.identityAllocation);
  assert.equal(b.history.can('redo',b.project),true);
  assert.equal(a.history.can('undo',a.project),true);
- undo.entry.from.city.name='Injected';undo.workspace.ui.selection=null;
+ // Default workspace has no required UI selection object. Mutate a required
+ // nested camera field instead, then verify the original workspace and view.
+ const originalWorkspace=copyJson(site.workspace);
+ assert.deepEqual(undo.workspace,originalWorkspace);
+ undo.entry.from.city.name='Injected';undo.workspace.view.camera.x+=123;
+ assert.notEqual(undo.workspace.view.camera.x,site.workspace.view.camera.x);
+ assert.deepEqual(site.workspace,originalWorkspace);
  assert.deepEqual(b.history.entry('redo'),entry);
  const redo=host.replay({direction:'redo',context:b.context,workspace:site.workspace}),c=host.view();
  assert.deepEqual(redo.project,accepted.project);assert.equal(c.context.revision,3);
