@@ -1,0 +1,106 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createProject } from '../src/core/city-model.js';
+import { prepareNeighborhoodReflowC3 } from '../src/core/neighborhood-reflow.js';
+import { prepareRoadTopologyReflowC3 } from '../src/core/road-topology-reflow.js';
+import { roadIdentityRequests,allocateRoadCandidate } from '../src/core/road-identity-delta.js';
+import { SecureIdentityHost } from '../src/core/secure-identity-host.js';
+import { classifyRoadProvenance } from '../src/core/road-provenance.js';
+import { copyJson,defaultWorkspace,createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../src/data/project-format.js';
+import { reconcileRoadWorkspace } from '../src/editor/road-workspace.js';
+
+const cases=[
+  {name:'neighborhood building regeneration',seed:'c2-planned',morphology:'planned',
+    road:'RD-0113',run:p=>prepareNeighborhoodReflowC3(p,'RD-0113',{x:12,y:0}),types:['building']},
+  {name:'crossing topology regeneration',seed:'c2-radial',morphology:'radial',
+    road:'RD-0103',run:p=>prepareNeighborhoodReflowC3(p,'RD-0103',{x:0,y:15}),types:['building','plot','property']},
+  {name:'road removal topology regeneration',seed:'c2-radial',morphology:'radial',
+    road:'RD-0099',run:p=>prepareRoadTopologyReflowC3(p,'RD-0099',null,{kind:'remove'}),types:['building','plot','property']}
+];
+function setup(f,byte=1){
+  const base=createProject({seed:f.seed,size:'small',morphology:f.morphology});
+  const host=new SecureIdentityHost({cryptoSource:{getRandomValues(a){a.fill(byte);return a;}}});
+  host.adopt(base);
+  const view=host.view(),fresh=f.run(copyJson(view.project));
+  assert.ok(fresh.candidateProject,JSON.stringify(fresh.unresolved));
+  const requests=roadIdentityRequests(view.project,fresh),receipt=host.reserve(requests);
+  return {host,view,fresh,requests,receipt};
+}
+function allocated(s){return allocateRoadCandidate(s.view.project,s.fresh,s.view.context,s.receipt);}
+function checkReferences(city){
+  const props=new Map(city.properties.map(row=>[row.id,row])),plots=new Map(city.plots.map(row=>[row.id,row]));
+  const buildings=new Map(city.buildings.map(row=>[row.id,row]));
+  for(const p of props.values()){
+    for(const id of p.plotIds)assert.equal(plots.get(id).propertyId,p.id);
+    for(const id of p.buildingIds)assert.equal(buildings.get(id).propertyId,p.id);
+  }
+  for(const b of buildings.values())for(const id of b.plotIds)assert.equal(plots.get(id).propertyId,b.propertyId);
+}
+for(const f of cases){
+  test('IDA road delta allocates only surviving additions: '+f.name,()=>{
+    const s=setup(f),before=JSON.stringify(s.fresh),a=allocated(s),b=allocated(s);
+    assert.deepEqual(a,b);
+    assert.deepEqual([...new Set(s.requests.map(x=>x.type))].sort(),f.types);
+    assert.equal(JSON.stringify(s.fresh),before);
+    assert.equal(s.host.view(),s.view);
+    assert.deepEqual(s.host.view().project.identityAllocation.namespaces,{});
+    checkReferences(a.candidate.city);
+    const collections={building:'buildings',plot:'plots',property:'properties'};
+    for(const r of s.receipt.allocations){
+      const temporary=r.key.slice(5),key=collections[r.type];
+      assert.ok(a.candidate.city[key].some(row=>row.id===r.id));
+      assert.ok(!a.candidate.city[key].some(row=>row.id===temporary));
+      assert.ok(a.ledger.some(row=>row.kind===r.type&&row.newId===r.id&&row.oldId===null));
+    }
+    const oldPlots=new Map(s.fresh.candidateProject.city.plots.map(p=>[p.id,p]));
+    const newPlots=new Map(a.candidate.city.plots.map(p=>[p.id,p]));
+    for(const r of s.receipt.allocations.filter(row=>row.type==='property')){
+      const old=s.fresh.candidateProject.city.properties.find(p=>p.id===r.key.slice(5));
+      const next=a.candidate.city.properties.find(p=>p.id===r.id);
+      assert.equal(classifyRoadProvenance(next,next.plotIds.map(id=>newPlots.get(id))),
+        classifyRoadProvenance(old,old.plotIds.map(id=>oldPlots.get(id))));
+    }
+    for(const r of s.receipt.allocations.filter(row=>row.type==='building')){
+      const old=s.fresh.candidateProject.city.buildings.find(p=>p.id===r.key.slice(5));
+      const next=a.candidate.city.buildings.find(p=>p.id===r.id);
+      assert.equal(classifyRoadProvenance(next),classifyRoadProvenance(old));
+    }
+    const w=reconcileRoadWorkspace(defaultWorkspace(s.view.project),s.view.project.city,a.candidate.city);
+    const decoded=decodeProjectDocument(encodeProjectDocument(createProjectDocument(a.candidate,w)));
+    assert.deepEqual(decoded.project,a.candidate);
+    assert.deepEqual(decoded.workspace,w);
+  });
+}
+test('IDA road allocation refuses stale reservation, missing creation ledger and tampered counter',()=>{
+  const s=setup(cases[0]);
+  assert.throws(()=>allocateRoadCandidate(s.view.project,s.fresh,{...s.view.context,revision:1},s.receipt),/Stale/);
+  const missing=copyJson(s.fresh);missing.ledger=missing.ledger.filter(row=>row.oldId!==null);
+  assert.throws(()=>roadIdentityRequests(s.view.project,missing),/creation ledger/);
+  const forged=copyJson(s.receipt);forged.nextState.namespaces[s.view.context.namespace].building++;
+  assert.throws(()=>allocateRoadCandidate(s.view.project,s.fresh,s.view.context,forged),/counter mismatch/);
+  assert.equal(s.host.view(),s.view);
+});
+test('IDA road allocation fails closed for an unhandled live temporary reference',()=>{
+  const s=setup(cases[0]),fresh=copyJson(s.fresh);
+  fresh.candidateProject.city.buildings.find(b=>b.id===s.requests[0].key.slice(5)).idaTestExtension={target:s.requests[0].key.slice(5)};
+  assert.throws(()=>allocateRoadCandidate(s.view.project,fresh,s.view.context,s.receipt),/Unsupported road draft identity reference/);
+  assert.equal(s.host.view(),s.view);
+});
+test('IDA detached road transaction commits only independently rebuilt allocated geometry and never rewinds',()=>{
+  const f=cases[0],s=setup(f),a=allocated(s),w=defaultWorkspace(s.view.project);
+  const out=s.host.commit({requests:s.requests,receipt:s.receipt,candidateCity:a.candidate.city,
+    transaction:{family:'road',operation:'move-road',label:'Move road',targetIds:[f.road]},
+    validateDomain:(before,after)=>JSON.stringify(allocateRoadCandidate(before,f.run(copyJson(before)),s.view.context,s.receipt).candidate)===JSON.stringify(after)});
+  assert.deepEqual(out.project,a.candidate);
+  const undo=s.host.replay({direction:'undo',context:s.host.view().context,workspace:w});
+  assert.deepEqual(undo.project.city,s.view.project.city);
+  assert.deepEqual(undo.project.identityAllocation,out.project.identityAllocation);
+  const redo=s.host.replay({direction:'redo',context:s.host.view().context,workspace:w});
+  assert.deepEqual(redo.project,out.project);
+});
+test('IDA independent adopted copies get disjoint persistent road additions',()=>{
+  const a=setup(cases[0],1),b=setup(cases[0],2);
+  assert.deepEqual(a.requests,b.requests);
+  const ids=new Set(a.receipt.allocations.map(row=>row.id));
+  assert.ok(b.receipt.allocations.every(row=>!ids.has(row.id)));
+});
