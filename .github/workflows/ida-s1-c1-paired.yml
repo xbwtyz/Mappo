@@ -1,0 +1,80 @@
+name: IDA S1-C1 paired diagnostic
+on:
+  push:
+    branches: ['build/diagnostics/ida-s1-c1-paired']
+permissions:
+  contents: read
+jobs:
+  paired:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    timeout-minutes: 35
+    steps:
+      - name: Check out exact B3 baseline
+        uses: actions/checkout@v4
+        with:
+          ref: 03f218be77a9c82612313fa3083d20efa6d59eb9
+          path: b3
+          persist-credentials: false
+      - name: Check out exact C1 candidate
+        uses: actions/checkout@v4
+        with:
+          ref: 90b20150cb44c3ba833de2f7b1d059d3c1620e5b
+          path: c1
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact checkouts, build parity and common harness
+        shell: bash
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: |
+          set -euo pipefail
+          for variant in b3 c1; do
+            if [[ "$variant" == b3 ]]; then expected=03f218be77a9c82612313fa3083d20efa6d59eb9; else expected=90b20150cb44c3ba833de2f7b1d059d3c1620e5b; fi
+            (
+              cd "$variant"
+              gitcmd() { git -c safe.directory="$GITHUB_WORKSPACE/$variant" "$@"; }
+              test "$(gitcmd rev-parse HEAD)" = "$expected"
+              npm run build
+              version=$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")
+              test -s index.html
+              test -s "dist/mappo-$version.html"
+              gitcmd ls-files --error-unmatch index.html "dist/mappo-$version.html"
+              cmp index.html "dist/mappo-$version.html"
+              gitcmd diff --exit-code -- index.html "dist/mappo-$version.html"
+              npm install --no-save --no-package-lock playwright@1.56.1
+            )
+          done
+          cmp "b3/scripts/c7-browser-performance.mjs" "c1/scripts/c7-browser-performance.mjs"
+          cmp "b3/tests/helpers/transaction-profile.js" "c1/tests/helpers/transaction-profile.js"
+          cmp "b3/tests/helpers/building-app.js" "c1/tests/helpers/building-app.js"
+          cmp "b3/tests/helpers/road-undo-project.js" "c1/tests/helpers/road-undo-project.js"
+      - name: Run counterbalanced C7 comparisons
+        shell: bash
+        env:
+          HOME: /root
+        run: |
+          set -euo pipefail
+          mkdir -p paired-evidence
+          for slot in 1-b3 2-c1 3-c1 4-b3; do
+            variant="${slot#*-}"
+            echo "PAIRED_RUN_BEGIN $slot"
+            (
+              cd "$variant"
+              node scripts/c7-browser-performance.mjs
+            ) | tee "paired-evidence/$slot.log"
+            cp "$variant/artifacts/c7/performance.json" "paired-evidence/$slot.json"
+            echo "PAIRED_RUN_END $slot"
+          done
+      - name: Upload paired evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ida-s1-c1-paired-${{ github.run_id }}-${{ github.run_attempt }}
+          path: paired-evidence/
+          if-no-files-found: error
+          retention-days: 14
