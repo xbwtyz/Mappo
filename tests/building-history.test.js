@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -102,7 +103,7 @@ test('3G-D2/D4 accepted UI transactions support scoped Undo/Redo and portable pe
   assert.ok(app.state().files.revision>=startRevision+3,'Apply, Undo and Redo mark recovery dirty.');
   const snapshot=app.capture();
   const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(snapshot.project,snapshot.workspace)));
-  assert.equal(portable.project.schemaVersion,10);
+  assert.equal(portable.project.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.equal(portable.workspace.schemaVersion,1);
   assert.equal(JSON.stringify(portable.project.city),acceptedCity);
   assert.doesNotMatch(JSON.stringify(portable),/buildingHistory|buildingEditSession/);

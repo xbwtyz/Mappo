@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildingAppHarness } from './helpers/building-app.js';
@@ -48,7 +49,7 @@ test('3G-A compiled Inspector enters and exits visual-only building context with
   assert.equal(state.buildingEditSession.buildingId, second, 'Other property clicks must not steal edit mode');
   const capture = app.capture();
   const portable = decodeProjectDocument(encodeProjectDocument(createProjectDocument(capture.project, capture.workspace)));
-  assert.equal(portable.project.schemaVersion, 10);
+  assert.equal(portable.project.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.deepEqual(copy(portable.workspace.ui.selection), { kind: 'building', id: second });
   assert.ok(!JSON.stringify(portable.workspace).includes('buildingEditSession'));
   assert.equal(JSON.stringify(state.project.city), before);

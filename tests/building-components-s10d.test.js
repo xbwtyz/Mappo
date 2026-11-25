@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildingComponentFixture } from './helpers/building-component-fixture.js';
@@ -27,7 +28,7 @@ test('S10-D three separate roofs render and select as one building with one rout
   const parts = building(triple);
   assert.equal(triple.city.buildings.length, project.city.buildings.length);
   assert.equal(parts.geometry.version, 3);
-  assert.equal(triple.schemaVersion, 10);
+  assert.equal(triple.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.equal(parts.components.length, 3);
   assert.equal(parts.geometry.regions.length, 3);
   assert.equal(parts.propertyId, original.propertyId);

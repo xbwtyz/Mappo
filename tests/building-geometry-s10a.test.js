@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -200,7 +201,7 @@ test('S10-A P4 deterministic scoped ID reservation does not mutate existing IDs'
   assert.throws(()=>reserveBuildingPartIdS10(used,'other'),/known prefix/);
 });
 
-test('S10-A P4 adapter verifies existing generated schema-9 cities without touching them',()=>{
+test('S10-A P4 adapter verifies current generated cities through the legacy geometry projection without touching them',()=>{
   for(const morphology of ['planned','organic','radial','linear']){
     const project=createProject({seed:'s10a-'+morphology,size:'small',morphology});
     const before=JSON.stringify(project);
@@ -219,7 +220,7 @@ test('S10-A P4 adapter verifies existing generated schema-9 cities without touch
       assert.ok(Math.abs(occupiedAreaS10(adapted.geometry)-building.area)<.02);
     }
     assert.equal(JSON.stringify(project),before);
-    assert.equal(project.schemaVersion,10);
+    assert.equal(project.schemaVersion,PROJECT_SCHEMA_VERSION);
   }
 });
 

@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -25,7 +26,7 @@ const makeCity = () => createProject({seed:'S10-B-raw-renderer-regression', size
 test('S10-B raw serialized project validates while deeply frozen without adding display fields', () => {
   const raw=freezeTree(clone(makeCity()));
   const prior=JSON.stringify(raw);
-  assert.equal(raw.schemaVersion,10);
+  assert.equal(raw.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.equal(Object.hasOwn(raw.city.buildings[0],'footprint'),false);
   assert.equal(validateStoredProject(raw),raw);
   assert.equal(JSON.stringify(raw),prior);

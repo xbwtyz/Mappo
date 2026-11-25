@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildingAppHarness } from './helpers/building-app.js';
@@ -52,7 +53,7 @@ test('3G-C4 validated Apply commits once, preserves IDs and persists schema-9 sa
   const result=app.el('buildingPreviewApply').handlers.click();
   assert.equal(result,true,app.el('buildingPreviewStatus').textContent);
   const updated=app.state().project,changed=updated.city.buildings.find(b=>b.id===entry.building.id);
-  assert.equal(updated.schemaVersion,10);
+  assert.equal(updated.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.equal(updated.city.buildings.length,initial.city.buildings.length);
   assert.equal(updated.city.properties.length,initial.city.properties.length);
   assert.equal(changed.id,originalRecord.id);
@@ -65,7 +66,7 @@ test('3G-C4 validated Apply commits once, preserves IDs and persists schema-9 sa
   const snapshot=app.capture();
   const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(snapshot.project,snapshot.workspace)));
   assert.equal(JSON.stringify(portable.project.city),JSON.stringify(updated.city),'Portable project must preserve exact accepted geometry across Node and browser VM realms');
-  assert.equal(portable.project.schemaVersion,10);
+  assert.equal(portable.project.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.equal(JSON.stringify(portable.workspace).includes('buildingEditSession'),false);
   assert.equal(JSON.stringify(portable.workspace).includes('buildingTransform'),false);
   assert.equal(JSON.stringify(initial.city),original,'The old accepted city object must remain unchanged');

@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { IdentityEditor, normalizeIdentity, validateIdentity, IDENTITY_HISTORY_LIMIT } from '../src/core/identity.js';
@@ -61,7 +62,7 @@ test('optional identities round-trip in schema 9 and malformed imports are rejec
   const city = editor.apply(project.city, { kind: 'property', id: property.id }, { customName: '<img src=x>', customUse: 'Custom guild' });
   const next = { ...project, city }, document = createProjectDocument(next);
   const text = encodeProjectDocument(document), loaded = decodeProjectDocument(text);
-  assert.equal(loaded.project.schemaVersion, 10);
+  assert.equal(loaded.project.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.deepEqual(loaded.project, JSON.parse(JSON.stringify(next)), 'JSON round-trip preserves all serializable values');
   const corrupted = JSON.parse(text);
   corrupted.project.city.properties[0].customUse = { invalid: true };
@@ -99,7 +100,7 @@ test('F3 classifies a legacy building through identity, preserving exact accepte
   assert.equal(JSON.stringify(project), before);
   const accepted = { ...project, city };
   const saved = decodeProjectDocument(encodeProjectDocument(createProjectDocument(accepted)));
-  assert.equal(saved.project.schemaVersion, 10);
+  assert.equal(saved.project.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.equal(JSON.stringify(saved.project), JSON.stringify(accepted));
   assert.deepEqual(editor.undo(city), project.city);
 });

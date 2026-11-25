@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { courtyardFixture } from './helpers/courtyard-fixture.js';
@@ -30,7 +31,7 @@ test('S10-C shares a portal between independent occupants and preserves canonica
   const original = building(fixture.project), host = building(second);
   const access = host.geometry.courtyardAccess;
   assert.equal(host.geometry.version, 2);
-  assert.equal(fixture.project.schemaVersion, 10);
+  assert.equal(fixture.project.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.equal(original.geometry.version, 1);
   assert.deepEqual(host.geometry.regions, original.geometry.regions);
   assert.deepEqual(host.components, original.components);
