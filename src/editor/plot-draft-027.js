@@ -25,12 +25,18 @@ export class FlexiblePlotDraft027 {
     if(!this.selected)throw Error('Choose a plot first.');
     return splitConvexPlot027(this.selected.boundary,this.edgeA,this.ratioA,this.edgeB,this.ratioB);
   }
-  split(city){
+  split(city,{identityDraft=false}={}){
     this.requireSpace();
     const source=this.selected,part=this.cut();
     const used=new Set([...city.plots.map(p=>p.id),...this.plots.map(p=>p.id)]);
     let serial=1,id;
-    do{id='PLOT-'+String(serial++).padStart(5,'0');}while(used.has(id)&&serial<50000);
+    if(identityDraft){
+      // These are journal-local labels, never accepted entity identities.
+      for(const op of this.operations)if(op.kind==='split')used.add(op.createdId);
+      do{id='PLOT-DRAFT-'+this.operations.length+'-'+serial++;}while(used.has(id)&&serial<50000);
+    }else{
+      do{id='PLOT-'+String(serial++).padStart(5,'0');}while(used.has(id)&&serial<50000);
+    }
     if(used.has(id))throw Error('No unused plot identifier available.');
     const index=this.plots.indexOf(source),keep=this.retain==='second'?1:0,before=copyJson(this.plots);
     const proposed=copyJson(this.plots);

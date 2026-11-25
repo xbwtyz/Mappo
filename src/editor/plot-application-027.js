@@ -27,23 +27,34 @@ export function inspectFlexiblePlot027(project,session){
     operations:draft.operations.length,protectedIds};
   return {ok:!issues.length,status:issues.length?'invalid':draft.pending?'valid':'unchanged',issues,preview};
 }
-// This checkpoint supports split-only drafts. Mixed retirement/creation
-// journals require separate qualification before the live host switch.
+// Reserve only new identities that survive the entire bounded journal.
+// A draft-only creation subsequently retired is represented by its local
+// PLOT-DRAFT label in this entry's steps, not by a committed entity ID.
 export function flexibleSubdivisionIdentityRequests027(project,session){
   const draft=session?.flexible;
-  if(!draft?.pending||draft.operations.some(op=>op.kind!=='split'))
-    throw Error('A subdivision-only draft is required.');
-  const existing=new Set(project.city.plots.map(p=>p.id)),created=new Set();
-  const requests=draft.operations.map((op,i)=>{
-    if(existing.has(op.createdId)||created.has(op.createdId)||
-      !draft.plots.some(p=>p.id===op.createdId))
-      throw Error('Subdivision created identity is not a unique surviving draft plot.');
-    created.add(op.createdId);
-    return {type:'plot',key:'subdivision-'+i};
-  });
-  if(draft.plots.some(p=>!existing.has(p.id)&&!created.has(p.id)))
+  if(!draft?.pending)throw Error('A plot partition draft is required.');
+  const property=project.city.properties.find(p=>p.id===draft.propertyId);
+  if(!property)throw Error('Original plot owner disappeared.');
+  const existing=new Set(project.city.plots.map(p=>p.id)),active=new Set(property.plotIds),created=new Map();
+  for(const [i,op] of draft.operations.entries()){
+    if(op.kind==='split'){
+      if(!active.has(op.sourceId)||op.retainedId!==op.sourceId||
+        existing.has(op.createdId)||created.has(op.createdId)||active.has(op.createdId))
+        throw Error('Invalid subdivision identity journal.');
+      created.set(op.createdId,i);active.add(op.createdId);
+    }else if(op.kind==='merge'){
+      if(!Array.isArray(op.sources)||op.sources.length!==2||
+        op.retainedId===op.retiredId||!op.sources.includes(op.retainedId)||
+        !op.sources.includes(op.retiredId)||!active.has(op.retainedId)||!active.has(op.retiredId))
+        throw Error('Invalid plot merge identity journal.');
+      active.delete(op.retiredId);
+    }else throw Error('Unsupported plot partition journal step.');
+  }
+  if(active.size!==draft.plots.length||draft.plots.some(p=>!active.has(p.id)))
     throw Error('Untracked draft plot identity.');
-  return requests;
+  for(const id of created.keys())if(!active.has(id)&&!/^PLOT-DRAFT-\d+-\d+$/.test(id))
+    throw Error('Retired draft plot requires an unambiguous local journal label.');
+  return [...created].filter(([id])=>active.has(id)).map(([,i])=>({type:'plot',key:'subdivision-'+i}));
 }
 export function prepareFlexiblePlot027(project,workspace,session,{identityReservation=null}={}){
   const inspected=inspectFlexiblePlot027(project,session),draft=session?.flexible;
@@ -66,7 +77,9 @@ export function prepareFlexiblePlot027(project,workspace,session,{identityReserv
       const {context,receipt}=identityReservation;
       verifiedAllocation=verifyIdentityReservation(project.identityAllocation,project.city,context,requests,receipt);
       const byKey=new Map(receipt.allocations.map(row=>[row.key,row.id]));
-      draft.operations.forEach((op,i)=>allocated.set(op.createdId,byKey.get('subdivision-'+i)));
+      draft.operations.forEach((op,i)=>{
+        if(op.kind==='split'&&byKey.has('subdivision-'+i))allocated.set(op.createdId,byKey.get('subdivision-'+i));
+      });
       candidate.identityAllocation=verifiedAllocation;
     }
     const mapped=id=>allocated.get(id)??id;
@@ -85,7 +98,9 @@ export function prepareFlexiblePlot027(project,workspace,session,{identityReserv
       operation:'flexible-plot-partition',sourcePlotIds:beforeIds,resultPlotIds:property.plotIds.slice(),
       retiredIds:beforeIds.filter(id=>!afterIds.has(id)),sourceRecords:sources,
       steps:draft.operations.map(({before,...op})=>verifiedAllocation
-        ?{kind:'split',sourceId:mapped(op.sourceId),retainedId:mapped(op.retainedId),createdId:mapped(op.createdId)}
+        ?(op.kind==='split'
+          ?{kind:'split',sourceId:mapped(op.sourceId),retainedId:mapped(op.retainedId),createdId:mapped(op.createdId)}
+          :{kind:'merge',sources:op.sources.map(mapped),retainedId:mapped(op.retainedId),retiredId:mapped(op.retiredId)})
         :copyJson(op)),
       authorizedOriginalIds:draft.authorizations(project.city)
     }];
