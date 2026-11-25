@@ -21462,8 +21462,10 @@ function beginRoadIdentityApply(host,workspace,session,baselineRevision,revision
 function cancelRoadIdentityApply(token){return idaRoadApplyTokens.delete(token);}
 
 // Finish is one-use, even on refusal. Compare the worker's exact result to
-// a fresh local domain reconstruction. The host independently revalidates
-// again at atomic acceptance; no worker reply can publish or mint IDs.
+// a fresh local domain reconstruction. Non-demolition acceptance binds the
+// exact independently verified result to the host's detached inputs; the
+// coordinator independently validates identity, full project and history.
+// Demolition retains its additional object-bound authorization reconstruction.
 function commitRoadIdentityApply(host,token,workspace,session,revision,workerResult){
   const state=idaRoadApplyTokens.get(token);
   idaRoadApplyRequire(state&&state.host===host,'Unknown or cancelled road Apply token.');
@@ -21482,10 +21484,34 @@ function commitRoadIdentityApply(host,token,workspace,session,revision,workerRes
     'Worker road Apply result differs from independent reconstruction.');
   const allocated=idaRoadApplyAllocated(state,view.project,legacy);
   idaRoadApplyRequire(host.view()===view&&session.current(),'Accepted road preview changed before publication.');
+  // Single-use, synchronous, private evidence. Capture strings rather than
+  // retaining a mutable candidate as the authority inside the callback.
+  // Only results produced by the local reconstruction above qualify; a
+  // preview or worker response can never supply this evidence.
+  const evidence=state.snapshot.kind==='demolition'?null:Object.freeze({
+    before:JSON.stringify(view.project),after:JSON.stringify(allocated.candidate),
+    workspace:JSON.stringify(allocated.workspace),transaction:JSON.stringify(allocated.transaction)
+  });
   const committed=host.commit({requests:allocated.requests,receipt:allocated.receipt,
     candidateCity:allocated.candidate.city,transaction:allocated.transaction,
     historyPolicy:state.snapshot.kind==='single'?'legacy-ordinary':'required',
     validateDomain:(before,after)=>{
+      if(evidence){
+        // Fail closed if the mounted intent, original accepted revision or
+        // either detached coordinator input differs. This is not a hash or
+        // a reusable permission receipt. The host still runs its own full
+        // project, inventory, reservation and atomic history checks.
+        return host.view()===view&&session.current()&&
+          session.revision===state.draftRevision&&
+          idaRoadApplySame(workspace,state.workspace)&&
+          idaRoadApplySame(idaRoadApplySnapshot(session,revision),state.snapshot)&&
+          session.demolition?.candidate===state.reviewed&&
+          session.demolition?.authorization===state.authorization&&
+          JSON.stringify(before)===evidence.before&&JSON.stringify(after)===evidence.after&&
+          JSON.stringify(allocated.workspace)===evidence.workspace&&
+          JSON.stringify(allocated.transaction)===evidence.transaction;
+      }
+      // Retain the existing independent authorization recheck for demolition.
       const fresh=idaRoadApplyReconstruct(state,before);
       const checked=idaRoadApplyAllocated(state,before,fresh,allocated.receipt);
       return idaRoadApplySame(checked.candidate,after)&&idaRoadApplySame(checked.workspace,allocated.workspace)&&
