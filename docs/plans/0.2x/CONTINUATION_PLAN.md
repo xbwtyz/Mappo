@@ -34,7 +34,7 @@ Phase identifiers below are planning labels, **not assigned application version 
 | --- | --- | --- | --- |
 | A0 | Comprehensive read-only UI/UX audit | Moderate | Source audit completed; hands-on measurements outstanding |
 | A | Usability and interaction foundation | Moderate to high | [A1 merged](milestones/0.2.18-shared-selection-a1.md); [A2 merged](milestones/0.2.19-shared-input-a2.md); [A3 merged](milestones/0.2.20-unified-inspector-a3.md); A4–A5 merged; A6 automated acceptance reported passed, owner hands-on pending |
-| B | Connected multi-segment road editing | High | [B1 0.2.23-dev](milestones/0.2.23-connected-road-groups-b1.md) merged, exact-main CI green. PR #153 tracks [B1R 0.2.24-dev](milestones/0.2.24-adaptive-reconciliation-b1r.md) P5 qualification and review. |
+| B | Connected multi-segment road editing | High | [B1 0.2.23-dev](milestones/0.2.23-connected-road-groups-b1.md) merged, exact-main CI green. [B1R 0.2.24-dev](milestones/0.2.24-adaptive-reconciliation-b1r.md) merged in PR #153; exact-main CI green. |
 | C | Water and terrain functionality | High to very high | Direction approved; detailed design pending |
 | D | Settlement freedom: optional founder's square and dynamic perimeters | Very high | Direction approved; dependency discovery early |
 | E | Comprehensive UI polish and integrated stabilization | Moderate to high | Direction approved; after remaining core capabilities |
@@ -177,6 +177,8 @@ Follow [AGENTS.md](../../../AGENTS.md), [development rules](../../contributing/d
 
 Read this document, [AGENTS.md](../../../AGENTS.md), [development rules](../../contributing/development-rules.md), [0.2.x roadmap](ROADMAP_0_2X.md) and any newer accepted milestone documents. Verify live repository status rather than treating this snapshot as current truth. Use the decision log for previously approved architecture.
 
-The owner's approved direction is A0 audit → A usability foundation → B connected roads → C water/terrain → D settlement freedom → E final polish, subject to approved dependency refinements. B1 is merged with exact-main CI green. PR #153 records B1R P5 evidence and the P4 timing limitation. A6 owner hands-on acceptance remains pending. B2 is deferred.
+The owner's approved direction is A0 audit → A usability foundation → B connected roads → C water/terrain → D settlement freedom → E final polish, subject to approved dependency refinements. B1 is merged with exact-main CI green. PR #153 merged; exact-main CI green. P4 8ms timing target remains open. A6 owner hands-on acceptance remains pending. B2 is deferred.
 
 Update this document as phases are approved/completed or the owner changes direction. Record links to relevant issue/PR, exact verification evidence and the next approval boundary; keep historical snapshots distinguishable from live state.
+
+Next approved implementation: [B1R-E spatial recovery](milestones/0.2.25-spatial-recovery-b1r-e.md), beginning with E1/P1. B2 deferred and A6 hands-on acceptance separate.

@@ -99,3 +99,7 @@ A4-01=B and A4-02 through A4-10=A. The detailed P1–P5 [A4 milestone](milestone
 ## 0.2.22-dev A5 — History and workflow improvements
 
 Owner approved dedicated Reset Preview on Ctrl/Cmd+Shift+Z, accepted Undo on Ctrl/Cmd+Z, district and defense transactions in the shared history, and hover and keyboard-focus feedback for history errors. The [A5 milestone](milestones/0.2.22-history-workflow-a5.md) records the approved saved-snapshot restoration policy and P1–P5 acceptance.
+
+## 0.2.25-dev B1R-E — Owner-approved spatial recovery
+
+SRE-01=A, SRE-02=A, SRE-03=B, SRE-04=A, SRE-05=A, SRE-06=A, SRE-07=A, SRE-08=A, SRE-09=A, SRE-10=A, SRE-11=A, SRE-12=B. Detailed P1–P5 approved; [binding implementation contract](milestones/0.2.25-spatial-recovery-b1r-e.md). Unified destruction search permission and broad editing-family integration supersede narrower R31 recommendations; exact authorization and protection remain mandatory. Schema 10/portable 1/workspace 1 retained. No merge or publishing authorization.
