@@ -24,7 +24,8 @@ function idaRoadInventory(project,result){
   const candidate=result.candidateProject;
   if(!idaRoadSame(idaRoadRoot(project),idaRoadRoot(candidate)))
     throw Error('Road candidate changed accepted project metadata.');
-  validateStoredProject(copyJson(candidate));
+  const detached=copyJson(candidate);
+  validateStoredProject(detached);
   const additions=[];
   for(const [collection,type,pattern] of idaRoadCollections){
     const before=new Set(project.city[collection].map(row=>row.id));
@@ -38,10 +39,10 @@ function idaRoadInventory(project,result){
       additions.push({type,key:'road/'+row.id});
     }
   }
-  return normalizeIdentityRequests(additions);
+  return {requests:normalizeIdentityRequests(additions),candidate:detached};
 }
 export function roadIdentityRequests(project,result){
-  return idaRoadInventory(project,result);
+  return idaRoadInventory(project,result).requests;
 }
 
 // The supported active ownership fields are explicit, not a global string
@@ -60,14 +61,14 @@ function idaRoadAssertNoUnmapped(value,ids,path='city'){
     idaRoadAssertNoUnmapped(child,ids,path+'.'+key);
   }
 }
-export function allocateRoadCandidate(project,result,context,receipt){
-  const requests=idaRoadInventory(project,result);
+function idaRoadAllocatePrepared(project,result,context,receipt,prepared){
+  const {requests,candidate}=prepared;
   const nextState=verifyIdentityReservation(project.identityAllocation,project.city,context,requests,receipt);
   const maps=new Map(idaRoadCollections.map(([,type])=>[type,new Map()]));
   for(const row of receipt.allocations)maps.get(row.type).set(row.key.slice(5),row.id);
   const propertyIds=maps.get('property'),plotIds=maps.get('plot'),buildingIds=maps.get('building');
   const mapId=(map,id)=>map.get(id)??id;
-  const candidate=copyJson(result.candidateProject),city=candidate.city;
+  const city=candidate.city;
   const originalPlots=new Map(city.plots.map(plot=>[plot.id,plot]));
   // Provenance is a deterministic exact function of the record and its
   // linked plots. Classify only rows whose serialized inputs may change
@@ -119,4 +120,25 @@ export function allocateRoadCandidate(project,result,context,receipt){
   verifyIdentityAdditions(project.identityAllocation,project.city,context,requests,receipt,city);
   validateStoredProject(candidate);
   return {candidate,requests,ledger,changed};
+}
+
+// Public detached allocation retains a fresh inventory validation on every
+// call. The internally validated, owned candidate needs no second clone.
+export function allocateRoadCandidate(project,result,context,receipt){
+  return idaRoadAllocatePrepared(project,result,context,receipt,idaRoadInventory(project,result));
+}
+
+// S3-A: issue and verify a reservation from one freshly validated inventory.
+// This is not Apply authority. Only an exact current host view is accepted;
+// the owned candidate and detached ledger/changed metadata never escape
+// into the reservation callback. Final allocation/project checks remain.
+export function allocateRoadCandidateForHost(host,view,result,{allowAdditions=true}={}){
+  if(host.view()!==view)throw Error('Stale road identity allocation view.');
+  const prepared=idaRoadInventory(view.project,result);
+  if(!allowAdditions&&prepared.requests.length)
+    throw Error('Connected-road operations may not allocate new land or buildings.');
+  const metadata={ledger:copyJson(result.ledger),changed:copyJson(result.changed)};
+  const receipt=host.reserve(prepared.requests);
+  if(host.view()!==view)throw Error('Stale road identity allocation view.');
+  return {...idaRoadAllocatePrepared(view.project,metadata,view.context,receipt,prepared),receipt};
 }
