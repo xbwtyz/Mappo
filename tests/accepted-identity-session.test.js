@@ -360,3 +360,60 @@ test('IDA ordinary capacity policy does not bypass domain refusal or stale recei
  e.validateDomain=()=>true;e.receipt.binding.revision++;
  assert.throws(()=>session.commit(e),/Stale/);assert.equal(snapshot(session),before);
 });
+
+test('S1-B1 history availability memoizes only the exact published revision',()=>{
+  const {session}=fixture();
+  session.commit(intent(session));
+  const first=session.view(),original=AcceptedEditHistoryD01.prototype.can;
+  let calls=0;
+  AcceptedEditHistoryD01.prototype.can=function(...args){calls++;return original.apply(this,args);};
+  try{
+    for(let i=0;i<5;i++){
+      assert.equal(first.history.can('undo',first.project),true);
+      assert.equal(first.history.can('redo',first.project),false);
+    }
+    assert.equal(calls,2,'one original comparison per direction and view');
+    const detached=copyJson(first.project);
+    assert.equal(first.history.can('undo',detached),true);
+    detached.city.name='Different city';
+    assert.equal(first.history.can('undo',detached),false);
+    detached.city.name=first.project.city.name;
+    assert.equal(first.history.can('undo',detached),true);
+    assert.equal(calls,5,'mutable caller-owned input is never cached');
+    const beforeReplay=calls;
+    replaySession(session,'undo');
+    assert.ok(calls>beforeReplay,'actual replay independently checks the ledger');
+    const second=session.view();
+    assert.notEqual(second,first);
+    assert.equal(second.history.can('undo',second.project),false);
+    assert.equal(second.history.can('redo',second.project),true);
+    assert.equal(second.history.can('redo',first.project),false);
+    assert.equal(first.history.can('undo',first.project),true,'historical view remains historical');
+    replaySession(session,'redo');
+    const third=session.view();
+    assert.equal(third.history.can('undo',third.project),true);
+    assert.equal(third.history.can('redo',third.project),false);
+    assert.deepEqual(third.project,first.project);
+  }finally{AcceptedEditHistoryD01.prototype.can=original;}
+});
+
+test('S1-B1 cached availability follows branching and oversize history barriers',()=>{
+  const {session}=fixture({maxEntries:1});
+  session.commit(intent(session));replaySession(session,'undo');
+  const undone=session.view();
+  assert.equal(undone.history.can('redo',undone.project),true);
+  const oldCounter=undone.project.identityAllocation.namespaces[ns].building;
+  session.commit(intent(session));
+  const branched=session.view();
+  assert.equal(branched.history.can('redo',branched.project),false);
+  assert.equal(branched.history.can('undo',branched.project),true);
+  assert.equal(branched.project.identityAllocation.namespaces[ns].building,oldCounter+1);
+  const tiny=fixture({maxBytes:1024}).session,edit=intent(tiny);
+  edit.transaction={family:'property',operation:'property-create',label:'Create property',targetIds:[]};
+  edit.historyPolicy='legacy-ordinary';
+  tiny.commit(edit);
+  const view=tiny.view();
+  assert.equal(view.history.can('undo',view.project),false);
+  assert.equal(view.history.can('redo',view.project),false);
+  assert.throws(()=>replaySession(tiny,'undo'),/No accepted undo/);
+});
