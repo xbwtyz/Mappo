@@ -1,3 +1,4 @@
+import { stageLocalEditorRecord,checkLocalEditorRecord,publishLocalEditorRecord } from './editor/local-editor-record.js';
 import { canEditBuildingComponents } from './editor/building-component-application.js';
 import { prepareBuildingEditorOperation } from './editor/building-transaction-bridge.js';
 import { prepareLandEditorOperation } from './editor/land-transaction-bridge.js';
@@ -555,8 +556,11 @@ function publishAcceptedStateD01(next,staged) {
   }
 }
 function commitAcceptedEdit(candidate, transaction, options) {
+  const localRecord=options?.localRecord;
+  if(localRecord)checkLocalEditorRecord(localRecord);
   const staged=stageAcceptedPublicationD01(acceptedHistoryD01,project,candidate,transaction,options);
   publishAcceptedStateD01(candidate,staged);
+  if(localRecord)publishLocalEditorRecord(localRecord);
 }
 
 function commitDomainEditA5(family, city, { operation, beforeHistory }) {
@@ -878,12 +882,10 @@ function commitBuildingTransform(current) {
     // Commit one already-validated project object, preserving IDs and the
     // existing schema. Record and UI updates cannot affect pre-commit checks.
     if (!current() || project !== previous || session.buildingId !== buildingId) return false;
-    const recorded = received.courtyardRoutesChanged.length
-      ? buildingStructureHistory.record(previous, received.candidate, session.propertyId, 'courtyard access')
-      : buildingHistory.record(previous, received.candidate, buildingId);
-    if (!recorded) return false;
-    propertyHistory.clear();
-    propertyDeletionHistory4A.clear();
+    const localRecord = received.courtyardRoutesChanged.length
+      ? stageLocalEditorRecord(buildingStructureHistory,previous,received.candidate,session.propertyId,'courtyard access')
+      : stageLocalEditorRecord(buildingHistory,previous,received.candidate,buildingId);
+    if (!localRecord) return false;
     const label = session.draft ? 'Edit building footprint' : transform.scaleX !== 1 || transform.scaleY !== 1
       ? 'Resize building' : transform.angle ? 'Rotate building' : 'Move building';
     const portalsChanged = received.courtyardRoutesChanged.length ||
@@ -891,7 +893,8 @@ function commitBuildingTransform(current) {
       JSON.stringify(received.candidate.city.buildings.find(building => building.id === buildingId)?.geometry?.courtyardAccess);
     commitAcceptedEdit(received.candidate, { family: 'building',
       operation: portalsChanged ? 'building-structure' : 'building-geometry',
-      label: portalsChanged ? 'Edit courtyard access' : label, targetIds: [buildingId] });
+      label: portalsChanged ? 'Edit courtyard access' : label, targetIds: [buildingId] },{localRecord});
+    propertyHistory.clear();propertyDeletionHistory4A.clear();
     session.reset(project.city, { keepCourtyard: true });
     updateDetails();
     workspaceShell.refresh();
@@ -1038,11 +1041,12 @@ function c01SaveMembership(action) {
     return false;
   }
   if(project!==previous||c01ActiveProperty()?.id!==property.id)return false;
-  if(!buildingStructureHistory.record(previous,receipt.candidate,property.id,'compound-'+action))return false;
+  const localRecord=stageLocalEditorRecord(buildingStructureHistory,previous,receipt.candidate,property.id,'compound-'+action);
+  if(!localRecord)return false;
   const label = action === 'create' ? 'Create building compound' : action === 'dissolve'
     ? 'Dissolve building compound' : 'Edit building compound';
   commitAcceptedEdit(receipt.candidate, { family: 'compound', operation: 'compound-membership',
-    label, targetIds: [property.id] });
+    label, targetIds: [property.id] },{localRecord});
   buildingHistory.clear();
   propertyWorkspace.refresh();buildingWorkspace.refresh();
   workspaceShell.refresh();updateDetails();workspaceChanged();
@@ -1068,10 +1072,10 @@ function commitCompoundTransform(current) {
     return false;
   }
   if (!current() || project !== previous || c01ActiveProperty()?.id !== property.id) return false;
-  if(!buildingStructureHistory.record(previous,receipt.candidate,property.id,'compound-transform'))
-    return false;
+  const localRecord=stageLocalEditorRecord(buildingStructureHistory,previous,receipt.candidate,property.id,'compound-transform');
+  if(!localRecord)return false;
   commitAcceptedEdit(receipt.candidate, { family: 'compound', operation: 'compound-transform',
-    label: 'Transform building compound', targetIds: [property.id, ...group.memberBuildingIds] });
+    label: 'Transform building compound', targetIds: [property.id, ...group.memberBuildingIds] },{localRecord});
   buildingHistory.clear();
   propertyWorkspace.refresh();buildingWorkspace.refresh();
   workspaceShell.refresh();updateDetails();workspaceChanged();
@@ -1272,13 +1276,13 @@ function commitStructurePlacement3H(current) {
   if (!current() || project !== previous || session.active?.buildingId !== request.buildingId) return false;
   try{
     const action = request.courtyard?.only && request.courtyard.hostId ? 'courtyard portal changes' : request.operation;
-    if(!buildingStructureHistory.record(previous,result.candidate,request.propertyId,action))return false;
-    propertyHistory.clear();
-    propertyDeletionHistory4A.clear();
+    const localRecord=stageLocalEditorRecord(buildingStructureHistory,previous,result.candidate,request.propertyId,action);
+    if(!localRecord)return false;
     const label = action === 'components' ? 'Edit building components' : action === 'courtyard portal changes'
       ? 'Edit courtyard access' : action === 'replace' ? 'Replace building' : 'Place building';
     commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',
-      label, targetIds: [request.buildingId] });
+      label, targetIds: [request.buildingId] },{localRecord});
+    propertyHistory.clear();propertyDeletionHistory4A.clear();
     buildingHistory.clear();
     session.stop();
     updateDetails();
@@ -1316,9 +1320,10 @@ function clearPropertyBuildings4E(propertyId) {
   if(!result.ok){$('statusMessage').textContent=result.reason;return false;}
   if(project!==previous||workspaceShell?.state.selection?.id!==propertyId)return false;
   try {
-    if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'clear'))return false;
+    const localRecord=stageLocalEditorRecord(buildingStructureHistory,previous,result.candidate,propertyId,'clear');
+    if(!localRecord)return false;
     commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',
-      label: 'Clear property buildings', targetIds: site.buildingIds });
+      label: 'Clear property buildings', targetIds: site.buildingIds },{localRecord});
     buildingHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
     identityWorkspace.reset();
     updateDetails();
@@ -1339,11 +1344,11 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
     {operation:'delete',propertyId,buildingId},{history:acceptedHistoryD01});
   if(!result.ok){$('statusMessage').textContent='Deletion rejected: '+result.issues[0]?.message;return false;}
   try{
-    if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'delete'))return false;
-    propertyHistory.clear();
-    propertyDeletionHistory4A.clear();
+    const localRecord=stageLocalEditorRecord(buildingStructureHistory,previous,result.candidate,propertyId,'delete');
+    if(!localRecord)return false;
     commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',
-      label: 'Delete building', targetIds: [buildingId] });
+      label: 'Delete building', targetIds: [buildingId] },{localRecord});
+    propertyHistory.clear();propertyDeletionHistory4A.clear();
     buildingHistory.clear();
     updateDetails();
     workspaceShell.select({kind:'property',id:propertyId});
@@ -2395,9 +2400,10 @@ function commitPropertyCreationE1(current) {
   }
   if (!current() || project !== before || (files?.revision ?? 0) !== rev ||
       JSON.stringify(session.draft) !== JSON.stringify(draft)) return false;
-  if(!propertyCreationHistoryE1.record(before,receipt.candidate,receipt.propertyId))return false;
+  const localRecord=stageLocalEditorRecord(propertyCreationHistoryE1,before,receipt.candidate,receipt.propertyId);
+  if(!localRecord)return false;
   commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-create',
-    label: 'Create property', targetIds: [receipt.propertyId] });
+    label: 'Create property', targetIds: [receipt.propertyId] },{localRecord});
   roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
   buildingHistory.clear();buildingStructureHistory.clear();identityWorkspace.reset();
   session.stop();
@@ -2683,8 +2689,8 @@ function commitRoadEditB4(previous, revision, { candidate, workspace }, junction
   roadWorkspace.exit({restore:true,focus:roadWorkspace.usesDesktopPanel});
   if(project!==previous||revision!==(files?.revision??0))
     return {ok:false,message:'The accepted project changed before commit.'};
-  if(!group&&!roadHistory.record(previous,candidate,junctionId))
-    return {ok:false,message:'Nothing was changed.'};
+  const localRecord=group?null:stageLocalEditorRecord(roadHistory,previous,candidate,junctionId);
+  if(!group&&!localRecord)return {ok:false,message:'Nothing was changed.'};
   const beforeHistory = districtPanel.editor.history;
   const afterHistory = workspace.districtEditor?.history ?? beforeHistory;
   if (afterHistory.length < beforeHistory.length) {
@@ -2696,7 +2702,7 @@ function commitRoadEditB4(previous, revision, { candidate, workspace }, junction
     if(!acceptedHistoryD01.canRecord(previous,candidate,transaction.editorHistory))
       return {ok:false,message:'The reversible history changed before group Apply.'};
   }
-  try{commitAcceptedEdit(candidate, transaction, {requireRecorded:group});}
+  try{commitAcceptedEdit(candidate, transaction, {requireRecorded:group,localRecord});}
   catch(error){return {ok:false,message:error.message};}
   refreshRoadDistrictWorkspace(workspace);
   buildingHistory.clear();
@@ -2874,9 +2880,9 @@ function deleteProperty4A(propertyId) {
   if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
   if(project!==previous || workspaceShell.state.selection?.id!==propertyId)return false;
   try{
-    propertyDeletionHistory4A.record(previous,receipt.candidate,propertyId);
+    const localRecord=stageLocalEditorRecord(propertyDeletionHistory4A,previous,receipt.candidate,propertyId);
     commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-delete',
-      label: 'Delete property', targetIds: [propertyId] });
+      label: 'Delete property', targetIds: [propertyId] },{localRecord});
     buildingHistory.clear();buildingStructureHistory.clear();propertyHistory.clear();
     identityWorkspace.reset();
     workspaceShell.select(null,{reveal:false});
@@ -2916,10 +2922,11 @@ function commitPropertyEdit3I(current) {
     syncPropertyEditUI3I();requestDraw();return false;
   }
   if (!current() || project !== before || session.propertyId !== propertyId) return false;
-  if(!propertyHistory.record(before,received.candidate,propertyId))return false;
+  const localRecord=stageLocalEditorRecord(propertyHistory,before,received.candidate,propertyId);
+  if(!localRecord)return false;
   const label = session.flexible?.pending || session.active?.countChange ? 'Edit plot partitions' : 'Edit property and plots';
   commitAcceptedEdit(received.candidate, { family: 'property', operation: 'property-and-plot', label,
-    targetIds: [propertyId] });
+    targetIds: [propertyId] },{localRecord});
   buildingHistory.clear();
   buildingStructureHistory.clear();
   propertyDeletionHistory4A.clear();
