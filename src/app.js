@@ -565,7 +565,6 @@ function commitDomainEditA5(family, city, { operation, beforeHistory }) {
   const expired = Math.max(0, beforeHistory.length + 1 - afterHistory.length);
   const editorHistory = editorHistoryDeltaA5(family, beforeHistory, afterHistory,
     Math.max(0, savedHistoryCount[family] - expired));
-  savedHistoryCount[family] = editorHistory.after.savedCount;
   let label = localHistoryLabels[family][operation];
   if (family === 'districts' && operation === 'identity') {
     const id = districtPanel.editor.selectedDistrictId;
@@ -579,6 +578,7 @@ function commitDomainEditA5(family, city, { operation, beforeHistory }) {
       : [districtPanel.editor.selectedDistrictId, districtPanel.editor.selectedBlockId].filter(Boolean))
     : [...city.walls, ...city.gates, ...city.towers].map(record => record.id);
   commitAcceptedEdit({ ...project, city }, { family, operation, label, targetIds, editorHistory });
+  savedHistoryCount[family] = editorHistory.after.savedCount;
   return true;
 }
 

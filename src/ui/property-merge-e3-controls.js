@@ -1,4 +1,4 @@
-import { prepareLandEditorOperation } from '../editor/land-transaction-bridge.js';
+import { prepareLandEditorOperation,captureLandEditorIntent } from '../editor/land-transaction-bridge.js';
 import { syncDraftControls } from './draft-controls.js';
 import { PropertyMergeSessionE3,PropertyMergeHistoryE3,
   inspectPropertyMergeE3,preparePropertyMergeE3 } from '../editor/property-merge-e3.js';
@@ -108,8 +108,18 @@ export class PropertyMergeControlsE3 {
     if(!current()||before!==this.getProject()||rev!==this.getRevision()||
       signature!==JSON.stringify([this.session.primaryId,this.session.secondaryId,this.session.approved,
         [...this.session.approvedBuildings].sort()]))return false;
-    if(!this.history.record(before,receipt.candidate,receipt.retainedId))return false;
-    this.onCommit(receipt.candidate,receipt.retainedId,'apply',receipt);
+    const intent=captureLandEditorIntent('property-merge',this.session);
+    // A mounted chronological history owns accepted transactions. Do not
+    // mutate a redundant local history before its authoritative callback.
+    if(!this.historyMove&&!this.history.record(before,receipt.candidate,receipt.retainedId))return false;
+    try{
+      if(this.onCommit(receipt.candidate,receipt.retainedId,'apply',receipt,intent)===false)
+        throw Error('Property Apply was refused.');
+    }catch(error){
+      if(this.getProject()!==before){this.stop();this.changed();return true;}
+      this.getElement('propertyMergeStatusE3').textContent=error.message;
+      return false;
+    }
     this.stop();this.changed();return true;
   }
   moveHistory(direction){

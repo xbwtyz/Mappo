@@ -1,4 +1,4 @@
-import { prepareLandEditorOperation } from '../editor/land-transaction-bridge.js';
+import { prepareLandEditorOperation,captureLandEditorIntent } from '../editor/land-transaction-bridge.js';
 import { syncDraftControls } from './draft-controls.js';
 import { distanceToSegment } from '../core/boundary.js';
 import { PropertySplitSessionE2,PropertySplitHistoryE2,inspectPropertySplitE2,
@@ -123,8 +123,18 @@ export class PropertySplitControlsE2 {
         flexible:this.session.flexible,exitEdge:this.session.exitEdge,exitT:this.session.exitT,
         approved:[...this.session.approved].sort()}))
       return false;
-    if(!this.history.record(previous,result.candidate,result.sourcePropertyId))return false;
-    this.onCommit(result.candidate,result.sourcePropertyId,'apply',result);
+    const intent=captureLandEditorIntent('property-split',this.session);
+    // A mounted chronological history owns accepted transactions. Do not
+    // mutate a redundant local history before its authoritative callback.
+    if(!this.historyMove&&!this.history.record(previous,result.candidate,result.sourcePropertyId))return false;
+    try{
+      if(this.onCommit(result.candidate,result.sourcePropertyId,'apply',result,intent)===false)
+        throw Error('Property Apply was refused.');
+    }catch(error){
+      if(this.getProject()!==previous){this.stop();this.changed();return true;}
+      this.getElement('propertySplitStatusE2').textContent=error.message;
+      return false;
+    }
     this.stop();this.changed();
     return true;
   }

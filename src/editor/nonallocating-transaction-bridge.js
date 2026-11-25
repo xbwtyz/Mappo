@@ -4,6 +4,7 @@ import { IdentityEditor } from '../core/identity.js';
 import { DistrictEditor,restoreDistrictSnapshot } from './districts.js';
 import { FortificationEditor,restoreFortificationSnapshot } from './fortifications.js';
 import { copyJson } from '../data/project-format.js';
+import { verifyIdentityReservation } from '../core/identity-verification.js';
 
 // This dispatcher is shared by the mounted panels and the secure host.
 // A trusted editor supplies an explicit operation intent, never a city delta.
@@ -44,13 +45,22 @@ export function previewNonallocatingEditorTransaction(host,workspace,intent){
   const {project,context}=host.view(),input=copyJson(intent),receipt=host.reserve([]);
   return {context,receipt,result:prepareNonallocatingEditorOperation(project,workspace,input)};
 }
-export function commitNonallocatingEditorTransaction(host,workspace,intent,transaction,reservation){
+export function commitNonallocatingEditorTransaction(host,workspace,intent,transaction,reservation,{preserveLegacyCapacity=false,allowUnchanged=false}={}){
   const {project,context}=host.view();
   if(JSON.stringify(context)!==JSON.stringify(reservation?.context))throw Error('Stale nonallocating editor reservation.');
   const input=copyJson(intent),metadata=idaNonallocatingHistory(input,transaction);
   const result=prepareNonallocatingEditorOperation(project,workspace,input);
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Nonallocating editor Apply refused.');
-  return host.commit({requests:[],receipt:reservation.receipt,candidateCity:result.candidate.city,transaction:metadata,
+  // Mounted identity/district/defense forms may submit unchanged values.
+  // Do not publish a new accepted revision or invalidate other previews.
+  if(allowUnchanged&&JSON.stringify(result.candidate)===JSON.stringify(project)){
+    verifyIdentityReservation(project.identityAllocation,project.city,context,[],reservation.receipt);
+    return {...host.read(),historyStatus:'unchanged'};
+  }
+  const historyPolicy=preserveLegacyCapacity
+    ?(input.kind==='building-geometry'&&metadata.operation==='building-structure'?'legacy-ordinary-structure':'legacy-ordinary')
+    :'required';
+  return host.commit({requests:[],receipt:reservation.receipt,candidateCity:result.candidate.city,transaction:metadata,historyPolicy,
     validateDomain:(before,after)=>{
       const fresh=prepareNonallocatingEditorOperation(before,workspace,input);
       return fresh.ok&&JSON.stringify(fresh.candidate)===JSON.stringify(after);
