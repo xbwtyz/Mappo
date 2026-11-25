@@ -39,6 +39,38 @@ export function observeBuildingApp(html, extraObservation = '', { legacy = true 
   return html.replace(/\n\}\)\(\);\s*<\/script>/, `${buildingObservation}\n${extraObservation}\n})();\n</script>`);
 }
 
+// Node's injected structuredClone creates records in the outer Node realm,
+// unlike a browser's native structuredClone. Preserve native clone semantics
+// (including cycles, shared references, undefined and Map/Set), then restore
+// the cloned graph's standard prototypes inside the simulated browser realm.
+// This is a test-only adapter, not a change to the production validator.
+export function installBrowserStructuredClone(context) {
+  vm.createContext(context);
+  vm.runInContext(`
+    globalThis.structuredClone=((nativeClone)=>(value,options)=>{
+      const cloned=nativeClone(value,options),seen=new WeakSet();
+      function rehome(v){
+        if(v===null||typeof v!=='object'||seen.has(v))return v;
+        seen.add(v);
+        const tag=Object.prototype.toString.call(v).slice(8,-1);
+        const constructors={Object,Array,Map,Set,Date,RegExp,ArrayBuffer,DataView,
+          Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,
+          Int32Array,Uint32Array,Float32Array,Float64Array,BigInt64Array,BigUint64Array};
+        if(!Object.hasOwn(constructors,tag))
+          throw new Error('Unsupported simulated-browser clone type: '+tag);
+        Object.setPrototypeOf(v,constructors[tag].prototype);
+        if(tag==='Map')for(const [key,item] of v){rehome(key);rehome(item);}
+        if(tag==='Set')for(const item of v)rehome(item);
+        if(ArrayBuffer.isView(v))rehome(v.buffer);
+        for(const key of Object.keys(v))rehome(v[key]);
+        return v;
+      }
+      return rehome(cloned);
+    })(structuredClone);
+  `,context);
+  return context;
+}
+
 export async function buildingAppHarness() {
   const html = observeBuildingApp(await readFile(new URL('../../index.html', import.meta.url), 'utf8'));
   const script = html.match(/<script>\s*([\s\S]*?)\s*<\/script>/)[1];
@@ -89,7 +121,8 @@ export async function buildingAppHarness() {
     requestAnimationFrame: cb => cb()
   };
   context.globalThis = context;
-  vm.runInNewContext(script, context);
+  installBrowserStructuredClone(context);
+  vm.runInContext(script, context);
   const qa = context.__buildingQA;
   const fire = (name, point, extra = {}) => el('mapCanvas').handlers[name]({
     pointerId: 1, button: 0, clientX: point.x, clientY: point.y, preventDefault() {}, ...extra

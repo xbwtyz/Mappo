@@ -7,8 +7,28 @@ import { roadIdentityRequests,allocateRoadCandidate } from '../src/core/road-ide
 import { SecureIdentityHost } from '../src/core/secure-identity-host.js';
 import { copyJson,defaultWorkspace,createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../src/data/project-format.js';
 import { reconcileRoadWorkspace } from '../src/editor/road-workspace.js';
-import { buildingAppHarness } from './helpers/building-app.js';
+import vm from 'node:vm';
+import { buildingAppHarness,installBrowserStructuredClone } from './helpers/building-app.js';
 
+test('IDA browser VM clone adapter preserves native clone data and restores same-realm prototypes',()=>{
+ const context=installBrowserStructuredClone({structuredClone});
+ assert.equal(vm.runInContext(`
+   (()=>{
+    const key={id:'key'},input={nested:{values:[undefined,NaN]},map:new Map(),set:new Set()};
+    input.map.set(key,input.nested);input.set.add(key);input.self=input;
+    const out=structuredClone(input);
+    const copiedKey=out.map.keys().next().value;
+    return out!==input&&out.self===out&&out.nested!==input.nested&&
+      Object.getPrototypeOf(out)===Object.prototype&&
+      Object.getPrototypeOf(out.nested)===Object.prototype&&
+      Object.getPrototypeOf(out.nested.values)===Array.prototype&&
+      Object.getPrototypeOf(out.map)===Map.prototype&&
+      Object.getPrototypeOf(out.set)===Set.prototype&&
+      out.map.get(copiedKey)===out.nested&&out.set.has(copiedKey)&&copiedKey!==key&&
+      Object.hasOwn(out.nested.values,0)&&out.nested.values[0]===undefined&&Number.isNaN(out.nested.values[1]);
+   })()
+ `,context),true);
+});
 const namespace='12'.repeat(16),other='34'.repeat(16);
 const cases=[
  {name:'planned development',seed:'c2-planned',morphology:'planned',road:'RD-0113',offset:{x:12,y:0},
