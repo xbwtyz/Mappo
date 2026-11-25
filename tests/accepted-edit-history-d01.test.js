@@ -149,3 +149,41 @@ test('D01 explicit history barriers prevent replay across a replaced city',()=>{
   assert.equal(h.can('undo',c),false);
   assert.equal(c.city.buildings[0].customName,'Kept identity');
 });
+
+test('S1-B3 history preflight retains exact ordered JSON equality and UTF-16 byte limits',()=>{
+  const a=cityFixture(),b=renamed(a,a.city.buildings[0].id,'Name 🏰');
+  const meta={note:'opaque 🏰',entries:[1,2,3]};
+  const bytes=2*(JSON.stringify(a).length+JSON.stringify(b).length+JSON.stringify(meta).length);
+  const exact=new AcceptedEditHistoryD01({maxBytes:bytes});exact.clear(a);
+  assert.equal(exact.fits(a,b,meta),true);
+  assert.equal(exact.canRecord(a,b,meta),true);
+  const tooSmall=new AcceptedEditHistoryD01({maxBytes:bytes-1});tooSmall.clear(a);
+  assert.equal(tooSmall.fits(a,b,meta),false);
+  assert.equal(tooSmall.canRecord(a,b,meta),false);
+  assert.equal(exact.canRecord(a,structuredClone(a)),false);
+  const reordered=Object.fromEntries(Object.entries(a).reverse());
+  assert.notEqual(JSON.stringify(a),JSON.stringify(reordered));
+  assert.equal(exact.canRecord(reordered,b,meta),false);
+  assert.equal(exact.record(reordered,b,identityEdit).status,'stale');
+  const result=exact.record(a,b,{...identityEdit,editorHistory:meta});
+  assert.equal(result.status,'recorded');
+  assert.equal(result.entry.bytes,bytes);
+});
+
+test('S1-B3 replay comparisons never cache mutable project or historical inputs',()=>{
+  const a=cityFixture(),b=renamed(a,a.city.buildings[0].id,'New name');
+  const h=new AcceptedEditHistoryD01();h.clear(a);h.record(a,b,identityEdit);
+  const current=structuredClone(b);
+  assert.equal(h.can('undo',current),true);
+  current.city.buildings[0].customName='Stale';
+  assert.equal(h.can('undo',current),false);
+  current.city.buildings[0].customName='New name';
+  assert.equal(h.can('undo',current),true);
+  const entry=h.entry('undo');
+  entry.to.city.buildings[0].customName='Tampered history';
+  assert.equal(h.can('undo',current),false);
+  entry.to.city.buildings[0].customName='New name';
+  assert.equal(h.can('undo',current),true);
+  const reordered=Object.fromEntries(Object.entries(current).reverse());
+  assert.equal(h.can('undo',reordered),false);
+});

@@ -24,10 +24,10 @@ function d01AllocationCovers(current, historical){
   }
   return true;
 }
-function d01ReplayMatches(current,expected,target){
+function d01ReplayMatches(current,expected,target,currentJson){
   if(current?.schemaVersion!==11)return d01Same(current,expected);
   if(expected?.schemaVersion!==11||target?.schemaVersion!==11)return false;
-  if(!d01Same(current,{...expected,identityAllocation:current.identityAllocation}))
+  if((currentJson??JSON.stringify(current))!==JSON.stringify({...expected,identityAllocation:current.identityAllocation}))
     return false;
   return d01AllocationCovers(current.identityAllocation,expected.identityAllocation)&&
     d01AllocationCovers(current.identityAllocation,target.identityAllocation);
@@ -51,7 +51,19 @@ export class AcceptedEditHistoryD01 {
   get bytes(){return [...this.past,...this.future].reduce((n,x)=>n+x.bytes,0);}
   get length(){return this.past.length+this.future.length;}
   fits(before,after,editorHistory){return d01Bytes(before)+d01Bytes(after)+(editorHistory?d01Bytes(editorHistory):0)<=this.maxBytes;}
-  canRecord(before,after,editorHistory){return Boolean(this.baseline&&d01Same(this.baseline,before)&&!d01Same(before,after)&&this.fits(before,after,editorHistory));}
+  canRecord(before,after,editorHistory){
+    if(before?.schemaVersion!==11||after?.schemaVersion!==11)
+      return Boolean(this.baseline&&d01Same(this.baseline,before)&&!d01Same(before,after)&&this.fits(before,after,editorHistory));
+    if(!this.baseline)return false;
+    // These are synchronous, validated JSON project inputs. Reuse the
+    // exact text within this invocation only; never cache a mutable object.
+    const baselineJson=JSON.stringify(this.baseline),beforeJson=JSON.stringify(before);
+    if(baselineJson!==beforeJson)return false;
+    const afterJson=JSON.stringify(after);
+    if(beforeJson===afterJson)return false;
+    return (beforeJson.length+afterJson.length)*2+
+      (editorHistory?d01Bytes(editorHistory):0)<=this.maxBytes;
+  }
   entry(direction){return direction==='undo'?this.past.at(-1):
     direction==='redo'?this.future.at(-1):null;}
   clear(project=null,notice='Accepted history cleared for this city.') {
@@ -78,9 +90,16 @@ export class AcceptedEditHistoryD01 {
       typeof value === 'string' && value.trim()) || !Array.isArray(targetIds) ||
       !targetIds.every(id => typeof id === 'string' && id))
       throw Error('An accepted-history transaction requires a family, operation, label, and target IDs.');
-    if(d01Same(before,after)){this.baseline=copyJson(after);return {status:'no-op'};}
-    if(this.baseline&&!d01Same(this.baseline,before))
-      return {status:'stale',reason:'The accepted city changed before history recording.'};
+    if(before.schemaVersion===11&&after.schemaVersion===11){
+      const beforeJson=JSON.stringify(before),afterJson=JSON.stringify(after);
+      if(beforeJson===afterJson){this.baseline=copyJson(after);return {status:'no-op'};}
+      if(this.baseline&&JSON.stringify(this.baseline)!==beforeJson)
+        return {status:'stale',reason:'The accepted city changed before history recording.'};
+    }else{
+      if(d01Same(before,after)){this.baseline=copyJson(after);return {status:'no-op'};}
+      if(this.baseline&&!d01Same(this.baseline,before))
+        return {status:'stale',reason:'The accepted city changed before history recording.'};
+    }
     const from=copyJson(before),to=copyJson(after);
     const bytes=d01Bytes(from)+d01Bytes(to)+(editorHistory ? d01Bytes(editorHistory) : 0);
     // The accepted edit itself remains valid even if its history does not fit.
@@ -108,8 +127,10 @@ export class AcceptedEditHistoryD01 {
     const item=this.entry(direction);
     const expected=direction==='undo'?item?.to:item?.from;
     const target=direction==='undo'?item?.from:item?.to;
-    if(!item||!d01Same(this.baseline,project))return false;
-    try{return d01ReplayMatches(project,expected,target);}
+    if(!item)return false;
+    const currentJson=project?.schemaVersion===11?JSON.stringify(project):undefined;
+    if(currentJson!==undefined?JSON.stringify(this.baseline)!==currentJson:!d01Same(this.baseline,project))return false;
+    try{return d01ReplayMatches(project,expected,target,currentJson);}
     catch{return false;}
   }
   prepare(direction,project,workspace){
