@@ -5,44 +5,29 @@ import { ProjectFiles } from '../src/ui/project-files.js';
 const app=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
 const lines=app.split('\n');
 const matching=pattern=>lines.flatMap((line,i)=>pattern.test(line)?[{line:i+1,source:line.trim()}]:[]);
-function report(label,rows){for(const row of rows)console.log(label+' src/app.js:'+row.line+' '+row.source);}
-test('IDA host audit enforces a single direct project publication boundary',()=>{
+test('IDA mounted host is the only accepted project publication authority',()=>{
  const rows=matching(/^\s*project\s*=(?!=)/);
- report('project writer',rows);
- assert.deepEqual(rows.map(x=>x.source),[
-  'project = next;'
- ]);
+ assert.deepEqual(rows.map(x=>x.source),['project = secureIdentityHost.adopted?secureIdentityHost.view().project:undefined;']);
  assert.equal(matching(/^\s*project\.\w+\s*=(?!=)/).length,0);
+ assert.doesNotMatch(app,/new AcceptedEditHistoryD01|stageAcceptedPublicationD01|stageAcceptedReplayD01|stageAcceptedReplacementD01|forkAcceptedHistoryD01/);
+ assert.match(app,/const secureIdentityHost=new SecureIdentityHost\(\)/);
+ assert.match(app,/function workspaceChanged\(\)[\s\S]*?Untracked accepted project publication refused/);
 });
-test('IDA host audit inventories the fifteen direct commitAcceptedEdit call sites',()=>{
- const rows=matching(/^\s*(?:try\{)?commitAcceptedEdit\(/);
- report('accepted edit',rows);
- assert.deepEqual(rows.map(x=>x.source),[
- 'commitAcceptedEdit({ ...project, city }, { family, operation, label, targetIds, editorHistory });',
- "commitAcceptedEdit(candidate, { family, operation: 'restore', label, targetIds: [], editorHistory });",
- "commitAcceptedEdit(received.candidate, { family: 'building',",
- "commitAcceptedEdit(receipt.candidate, { family: 'compound', operation: 'compound-membership',",
- "commitAcceptedEdit(receipt.candidate, { family: 'compound', operation: 'compound-transform',",
- "commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',",
- "commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',",
- "commitAcceptedEdit(result.candidate, { family: 'building', operation: 'building-structure',",
- "commitAcceptedEdit(candidate, { family: 'property', operation: 'property-split',",
- "commitAcceptedEdit(candidate, { family: 'property', operation: 'property-merge',",
- "commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-create',",
- "commitAcceptedEdit({ ...project, city }, { family: 'identity', operation: 'identity-change',",
- "try{commitAcceptedEdit(candidate, transaction, {requireRecorded:group,localRecord});}",
- "commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-delete',",
- "commitAcceptedEdit(received.candidate, { family: 'property', operation: 'property-and-plot', label,"
- ]);
+test('IDA mounted ordinary Apply requires trusted intent and no direct history writer',()=>{
+ assert.match(app,/function commitAcceptedEdit\(candidate,transaction,\{localRecord,stage\}=\{\}\)[\s\S]*?acceptMountedIdentityEdit\(secureIdentityHost,stage.token[\s\S]*?publishAcceptedStateD01\(out.accepted.historyStatus\)[\s\S]*?publishLocalEditorRecord\(localRecord\)/);
+ assert.doesNotMatch(app,/(?:roadHistory|propertyHistory|propertyDeletionHistory4A|propertyCreationHistoryE1|buildingHistory|buildingStructureHistory|acceptedHistoryD01)\.record\(/);
+ const rows=matching(/^\s*(?:commitAcceptedEdit|commitNonallocatingD01)\(/);
+ assert.equal(rows.length,14);
+ for(const kind of ['building','property-create','property-split','property-merge','property-delete','property-and-plot','nonallocating'])
+  assert.ok(app.includes("prepareMountedApplyD01('"+kind+"'"),kind);
 });
-test('IDA host audit prohibits independent D01 mutation and deferred recording in app',()=>{
- const rows=matching(/acceptedHistoryD01\.(?:accept|record|observe|clear)\(/);
- report('D01 writer',rows);assert.deepEqual(rows,[]);
- assert.doesNotMatch(app,/pendingHistoryTransaction/);
- assert.match(app,/function publishAcceptedStateD01\(next,staged\) \{\s*Object\.assign\(acceptedHistoryD01,staged\.history\);\s*project = next;/);
- assert.match(app,/function commitAcceptedEdit\(candidate, transaction, options\) \{[\s\S]*?checkLocalEditorRecord\(localRecord\);\s*const staged=stageAcceptedPublicationD01\(acceptedHistoryD01,project,candidate,transaction,options\);\s*publishAcceptedStateD01\(candidate,staged\);\s*if\(localRecord\)publishLocalEditorRecord\(localRecord\);/);
- assert.doesNotMatch(app,/(?:roadHistory|propertyHistory|propertyDeletionHistory4A|propertyCreationHistoryE1|buildingHistory|buildingStructureHistory)\.record\(/);
- assert.match(app,/staged\.observe\(project,null\)/);
+test('IDA mounted host owns replay and staged project adoption',()=>{
+ assert.match(app,/secureIdentityHost\.replay\(\{direction,context,workspace:/);
+ assert.match(app,/secureIdentityHost\.adopt\(prepared,\{applyView:/);
+ assert.match(app,/secureIdentityHost\.stageAdoption\(document\)/);
+ assert.match(app,/secureIdentityHost\.commitAdoption\(token,\{applyView:/);
+ assert.match(app,/secureIdentityHost\.restoreAdoptionRollback\(checkpoint.token\)/);
+ assert.match(app,/restoreAdoptionRollback: restoreProjectAdoptionRollbackD01/);
 });
 test('IDA host audit distinguishes file dirty revision from accepted city revision',()=>{
  const files=new ProjectFiles({getElement:()=>({}),capture:()=>{throw Error('No city is required for a view-only dirty signal');},apply:()=>{throw Error('No city adoption required');}});
@@ -51,12 +36,9 @@ test('IDA host audit distinguishes file dirty revision from accepted city revisi
  files.applying=true;files.changed();assert.equal(files.revision,2);
  assert.match(app,/function workspaceChanged\(\)[\s\S]*?files\?\.changed\(\);/);
 });
-test('IDA host audit locates adoption and async road stale-check boundaries',()=>{
- assert.match(app,/function prepareCityGeneration\(\)[\s\S]*?createProject\(/);
- assert.match(app,/function commitCityGeneration\(current\)[\s\S]*?publishAcceptedStateD01\(next,stageAcceptedReplacementD01\(acceptedHistoryD01,next,/);
- assert.match(app,/function applyProjectDocument\(document,rollback=null\)[\s\S]*?stageAcceptedReplacementD01\(acceptedHistoryD01,next,[\s\S]*?publishAcceptedStateD01\(next,staged\)/);
- assert.match(app,/restoreAdoptionRollback: restoreProjectAdoptionRollbackD01/);
- assert.match(app,/apply: applyProjectDocument/);
- assert.match(app,/session\.computeJunctionAsync\(\{[\s\S]*?if \(project !== previous \|\| JSON\.stringify\(project\) !== projectJson\)/);
- assert.match(app,/function commitRoadEditB4\([\s\S]*?commitAcceptedEdit\(candidate, transaction, \{requireRecorded:group,localRecord\}\)/);
+test('IDA mounted road Apply binds current draft and worker result to host commit',()=>{
+ assert.match(app,/beginRoadIdentityApply\(secureIdentityHost,workspace,session,baselineRevision,revision/);
+ assert.match(app,/commitRoadIdentityApply\(secureIdentityHost,begun.token,captureWorkspace\(\).workspace,session,revision,workerResult\)/);
+ assert.match(app,/session\.computeJunctionAsync\(begun.workerRequest\)/);
+ assert.doesNotMatch(app,/commitAcceptedEdit\(candidate, transaction, \{requireRecorded:group/);
 });

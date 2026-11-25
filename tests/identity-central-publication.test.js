@@ -57,6 +57,8 @@ test('IDA compiled identity Apply publishes D01 before subsequent workspace refr
  app.el('identityNameInput').handlers.input();
  assert.equal(app.el('identityApplyButton').handlers.click(),true);
  assert.equal(app.state().acceptedHistoryD01,h);assert.equal(h.length,1);
+ assert.equal(app.state().project,app.state().identityView.project);
+ assert.equal(app.state().identityView.context.revision,1);
  assert.deepEqual(JSON.parse(JSON.stringify(h.baseline)),JSON.parse(JSON.stringify(app.state().project)));
  app.state().propertyWorkspace.select({kind:'property',id:property.id});
  assert.equal(h.length,1);

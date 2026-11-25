@@ -89,7 +89,7 @@ test('IDA mounted building bridge rejects unreserved additions and forged empty 
 test('IDA live app uses common mounted building preparation for structure, component, clear and deletion',()=>{
  const source=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
  assert.match(source,/function prepareComponentPlacement[\s\S]*?return prepareBuildingEditorOperation\(/);
- assert.match(source,/function commitStructurePlacement3H[\s\S]*?const result = prepareBuildingEditorOperation\(/);
- assert.match(source,/function clearPropertyBuildings4E[\s\S]*?const result=prepareBuildingEditorOperation\(/);
- assert.match(source,/function deleteStructureBuilding3H[\s\S]*?const result=prepareBuildingEditorOperation\(/);
+ assert.match(source,/function commitStructurePlacement3H[\s\S]*?const stage=prepareMountedApplyD01\('building',request\),result=stage.result/);
+ assert.match(source,/function clearPropertyBuildings4E[\s\S]*?prepareMountedApplyD01\('building',\{operation:'clear',propertyId\}\)/);
+ assert.match(source,/function deleteStructureBuilding3H[\s\S]*?prepareMountedApplyD01\('building',\{operation:'delete',propertyId,buildingId\}\)/);
 });

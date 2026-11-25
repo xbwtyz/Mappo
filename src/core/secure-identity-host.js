@@ -20,12 +20,15 @@ function idaHostFreshNamespace(cryptoSource,excluded){
 
 // No mutable coordinator escapes. Adoption, commit and replay are serialized
 // at this boundary, including callbacks that might attempt reentrant adoption.
-// This is detached infrastructure: app.js does not consume it yet.
+// The mounted application uses this as its sole accepted-state authority.
 export class SecureIdentityHost {
   #state={session:null,used:new Set()};
   #busy=false;
   #crypto;
   #adoptions=new WeakMap();
+  #rollbackTokens=new WeakMap();
+  #adoptionSequence=0;
+  #lastAdoption=null;
   constructor({cryptoSource=globalThis.crypto}={}){
     this.#crypto=cryptoSource;
   }
@@ -61,17 +64,14 @@ export class SecureIdentityHost {
   // namespace excluded privately, so even leaked provisional receipts cannot
   // match a later session. Never persist a namespace merely by adopting.
   #publishAdoption(prepared,result,applyView){
-    if(applyView===undefined){
-      this.#state=prepared.state;
-      return result;
-    }
-    if(typeof applyView!=='function'||Object.prototype.toString.call(applyView)==='[object AsyncFunction]')
+    if(applyView!==undefined&&(typeof applyView!=='function'||Object.prototype.toString.call(applyView)==='[object AsyncFunction]'))
       throw Error('Project adoption requires a synchronous view reconciliation callback.');
     const outgoing=this.#state;
     this.#state=prepared.state;
     try{
-      if(applyView(this.#currentView(),result.workspace===undefined?undefined:copyJson(result.workspace))!==undefined)
+      if(applyView&&applyView(this.#currentView(),result.workspace===undefined?undefined:copyJson(result.workspace))!==undefined)
         throw Error('Project adoption view reconciliation must return undefined synchronously.');
+      this.#lastAdoption={before:outgoing.session,after:this.#currentView(),sequence:++this.#adoptionSequence};
       return result;
     }catch(error){
       this.#state={session:outgoing.session,used:prepared.state.used};
@@ -119,6 +119,31 @@ export class SecureIdentityHost {
       const result={...prepared.result,workspace:copyJson(staged.document.workspace),
         document:copyJson(staged.document)};
       return this.#publishAdoption(prepared,result,applyView);
+    });
+  }
+  // File Open may fail just after its application callback returns. An
+  // opaque one-use checkpoint can restore ONLY the immediately outgoing
+  // session, before any accepted edit or intervening lifecycle transition.
+  captureAdoptionRollback(){
+    return this.#exclusive(()=>{
+      const token=Object.freeze({});
+      this.#rollbackTokens.set(token,{session:this.#state.session,view:this.#currentView(),sequence:this.#adoptionSequence});
+      return token;
+    });
+  }
+  restoreAdoptionRollback(token){
+    return this.#exclusive(()=>{
+      const saved=this.#rollbackTokens.get(token);
+      if(!saved)throw Error('Unknown or consumed adoption rollback checkpoint.');
+      this.#rollbackTokens.delete(token);
+      const current=this.#currentView(),last=this.#lastAdoption;
+      if(saved.sequence===this.#adoptionSequence&&saved.view===current)return false;
+      if(!last||last.sequence!==saved.sequence+1||last.sequence!==this.#adoptionSequence||
+        last.before!==saved.session||last.after!==current)
+        throw Error('Stale adoption rollback checkpoint.');
+      this.#state={session:saved.session,used:this.#state.used};
+      this.#adoptionSequence++;this.#lastAdoption=null;
+      return true;
     });
   }
   read(){return this.#requireSession().read();}

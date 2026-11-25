@@ -67,20 +67,20 @@ function edit(app){
 const json=v=>JSON.stringify(v);
 test('IDA compiled rejected staged load preserves existing D01 history and project reference',async()=>{
  const app=await buildingAppHarness();edit(app);
- const {project,acceptedHistoryD01:h,files}=app.state(),before=json(h),bad=files.captureDocument();
+ const {project,identityView,acceptedHistoryD01:h,files}=app.state(),before=json(h),bad=files.captureDocument();
  bad.project.identityAllocation.namespaces['f'.repeat(32)]={plot:-1};
  files.stageDocument(bad,'file');assert.equal(await files.openPending(),false);
- assert.equal(app.state().project,project);assert.equal(json(h),before);
+ assert.equal(app.state().project,project);assert.equal(app.state().identityView,identityView);assert.equal(json(h),before);
  assert.equal(app.el('workspaceUndoButton').handlers.click(),true);
 });
 test('IDA compiled failed adoption after publication restores accepted project and both history cursors',async()=>{
  const app=await buildingAppHarness();edit(app);
  assert.equal(app.el('workspaceUndoButton').handlers.click(),true);
- const {project,acceptedHistoryD01:h,files}=app.state(),before=json(h),apply=files.apply;
+ const {project,identityView,acceptedHistoryD01:h,files}=app.state(),before=json(h),apply=files.apply;
  const replacement=files.captureDocument();replacement.project.city.name='Replacement city';
  files.apply=d=>{apply(d);throw Error('simulated late UI failure');};
  files.stageDocument(replacement,'file');assert.equal(await files.openPending(),false);
- assert.equal(app.state().project,project);assert.equal(json(h),before);
+ assert.equal(app.state().project,project);assert.equal(app.state().identityView,identityView);assert.equal(json(h),before);
  assert.equal(h.future.length,1);assert.equal(h.past.length,0);
  assert.equal(app.el('workspaceRedoButtonD01').handlers.click(),true);
  assert.equal(h.past.length,1);assert.equal(h.future.length,0);
