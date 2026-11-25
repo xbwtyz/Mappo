@@ -91,4 +91,40 @@ export class AcceptedIdentitySession {
       this.#busy=false;
     }
   }
+  // Replay is a new accepted revision, not a new allocation. A host command
+  // carries its current session binding; never accept a caller-supplied
+  // historical candidate or cursor. D01 prepares the exact target itself.
+  replay({direction,context,workspace}={}){
+    if(this.#busy)throw Error('Reentrant identity transaction refused');
+    this.#busy=true;
+    try{
+      const current=this.#state;
+      if(direction!=='undo'&&direction!=='redo')
+        throw Error('Invalid identity history direction');
+      if(!context||typeof context!=='object'||Array.isArray(context)||
+        Reflect.ownKeys(context).length!==3||
+        Object.keys(current.context).some(key=>!Object.hasOwn(context,key)||
+          context[key]!==current.context[key]))
+        throw Error('Stale or incompatible identity history command');
+      if(current.context.revision===Number.MAX_SAFE_INTEGER)
+        throw Error('Accepted identity transaction revision exhausted');
+      validateJsonTree(workspace);
+      const history=idaSessionForkHistory(current.history);
+      const receipt=history.prepare(direction,current.project,workspace);
+      if(!receipt.ok)throw Error(receipt.reason);
+      history.accept(direction,receipt.entry,receipt.candidate);
+      const next={project:receipt.candidate,history,context:Object.freeze({
+        ...current.context,revision:current.context.revision+1
+      })};
+      if(JSON.stringify(next.project.identityAllocation)!==JSON.stringify(current.project.identityAllocation))
+        throw Error('Identity replay changed allocation high-water marks');
+      // Return workspace as detached data; caller's workspace is unchanged.
+      // All fallible work precedes the same single publication used by Apply.
+      const result={...idaSessionRead(next),workspace:copyJson(receipt.workspace)};
+      this.#state=next;
+      return result;
+    }finally{
+      this.#busy=false;
+    }
+  }
 }

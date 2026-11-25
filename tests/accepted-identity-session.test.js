@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
-import { copyJson } from '../src/data/project-format.js';
+import { copyJson, defaultWorkspace } from '../src/data/project-format.js';
 import { AcceptedEditHistoryD01 } from '../src/core/accepted-edit-history-d01.js';
 import { AcceptedIdentitySession } from '../src/core/accepted-identity-session.js';
 import { formatAllocatedIdentity } from '../src/core/identity-allocation.js';
@@ -152,4 +152,166 @@ test('IDA coordinator refuses exhausted history serial before accepting',()=>{
   const session=new AcceptedIdentitySession({project,context,history}),before=snapshot(session);
   assert.throws(()=>session.commit(intent(session)),/serial exhausted/);
   assert.equal(snapshot(session),before);
+});
+
+function replaySession(session,direction,overrides={}){
+  const {context,project}=session.read();
+  return session.replay({direction,context,workspace:defaultWorkspace(project),...overrides});
+}
+test('IDA atomic replay restores city and history together while retaining allocation',()=>{
+  const {session}=fixture(),before=session.read(),committed=session.commit(intent(session));
+  const undone=replaySession(session,'undo');
+  assert.deepEqual(undone.project.city,before.project.city);
+  assert.deepEqual(undone.project.identityAllocation,committed.project.identityAllocation);
+  assert.equal(undone.context.revision,9);
+  assert.equal(undone.history.entries[0].direction,'redo');
+  assert.deepEqual(session.copyHistory().baseline,undone.project);
+  const redone=replaySession(session,'redo');
+  assert.deepEqual(redone.project,committed.project);
+  assert.equal(redone.context.revision,10);
+  assert.equal(redone.history.entries[0].direction,'undo');
+});
+test('IDA repeated replay never allocates again',()=>{
+  const {session}=fixture(),accepted=session.commit(intent(session));
+  for(let i=0;i<3;i++){
+    replaySession(session,'undo');
+    const result=replaySession(session,'redo');
+    assert.deepEqual(result.project,accepted.project);
+    assert.equal(result.history.serial,1);
+  }
+  assert.equal(session.read().context.revision,14);
+});
+test('IDA replay invalidates pending allocation receipts on undo',()=>{
+  const {session}=fixture();session.commit(intent(session));
+  const stale=intent(session);replaySession(session,'undo');
+  const before=snapshot(session);
+  assert.throws(()=>session.commit(stale),/Stale/);
+  assert.equal(snapshot(session),before);
+});
+test('IDA replay invalidates pending allocation receipts on redo',()=>{
+  const {session}=fixture();session.commit(intent(session));replaySession(session,'undo');
+  const stale=intent(session);replaySession(session,'redo');
+  const before=snapshot(session);
+  assert.throws(()=>session.commit(stale),/Stale/);
+  assert.equal(snapshot(session),before);
+});
+test('IDA new edit after undo cuts redo branch but never reuses its ID',()=>{
+  const {session}=fixture(),first=session.commit(intent(session));
+  replaySession(session,'undo');
+  const next=session.commit(intent(session));
+  assert.notEqual(next.project.city.buildings[0].id,first.project.city.buildings[0].id);
+  assert.equal(next.project.identityAllocation.namespaces[ns].building,2);
+  assert.equal(session.copyHistory().future.length,0);
+  assert.throws(()=>replaySession(session,'redo'),/No accepted redo/);
+});
+test('IDA undo deletion restores an original allocated building without a new reservation',()=>{
+  const {session}=fixture(),created=session.commit(intent(session)),edit=intent(session,false);
+  const building=edit.candidateCity.buildings.shift();
+  const property=edit.candidateCity.properties.find(p=>p.id===building.propertyId);
+  property.buildingIds=property.buildingIds.filter(id=>id!==building.id);
+  session.commit(edit);
+  const undone=replaySession(session,'undo');
+  assert.deepEqual(undone.project,created.project);
+  assert.equal(undone.project.identityAllocation.namespaces[ns].building,1);
+});
+test('IDA redo deletion keeps retired allocation high-water marks',()=>{
+  const {session}=fixture();session.commit(intent(session));
+  const edit=intent(session,false),building=edit.candidateCity.buildings.shift();
+  const property=edit.candidateCity.properties.find(p=>p.id===building.propertyId);
+  property.buildingIds=property.buildingIds.filter(id=>id!==building.id);
+  const deleted=session.commit(edit);
+  replaySession(session,'undo');
+  const again=replaySession(session,'redo');
+  assert.deepEqual(again.project,deleted.project);
+  assert.equal(again.project.identityAllocation.namespaces[ns].building,1);
+});
+test('IDA history expiration limits replay without losing allocation history',()=>{
+  const {session}=fixture({maxEntries:1});session.commit(intent(session));session.commit(intent(session));
+  const undone=replaySession(session,'undo');
+  assert.equal(undone.project.identityAllocation.namespaces[ns].building,2);
+  const before=snapshot(session);
+  assert.throws(()=>replaySession(session,'undo'),/No accepted undo/);
+  assert.equal(snapshot(session),before);
+  assert.equal(session.commit(intent(session)).project.identityAllocation.namespaces[ns].building,3);
+});
+test('IDA replay leaves supplied workspace and returned data detached',()=>{
+  const {session}=fixture();session.commit(intent(session));
+  const workspace=defaultWorkspace(session.read().project),before=JSON.stringify(workspace);
+  const result=replaySession(session,'undo',{workspace}),after=snapshot(session);
+  assert.equal(JSON.stringify(workspace),before);
+  result.workspace.view.camera.zoom=123;
+  result.project.city.name='Tampered';
+  result.context.revision=999;
+  result.history.entries[0].label='Tampered';
+  assert.equal(snapshot(session),after);
+});
+test('IDA replay clears selection of entity removed by undo',()=>{
+  const {session}=fixture(),accepted=session.commit(intent(session));
+  const workspace=defaultWorkspace(accepted.project);
+  workspace.ui={...(workspace.ui??{}),selection:{kind:'building',id:accepted.project.city.buildings[0].id}};
+  const result=replaySession(session,'undo',{workspace});
+  assert.equal(result.workspace.ui.selection,null);
+  assert.equal(workspace.ui.selection.id,accepted.project.city.buildings[0].id);
+});
+for(const [name,alter] of [
+  ['stale revision',c=>({...c,revision:c.revision-1})],
+  ['future revision',c=>({...c,revision:c.revision+1})],
+  ['foreign project',c=>({...c,projectId:'wrong'})],
+  ['foreign namespace',c=>({...c,namespace:other})],
+  ['extra context field',c=>({...c,extra:true})],
+  ['missing context',()=>undefined]
+]){
+  test('IDA replay rejects '+name+' without changing state',()=>{
+    const {session}=fixture();session.commit(intent(session));
+    const before=snapshot(session);
+    assert.throws(()=>replaySession(session,'undo',{context:alter(session.read().context)}),/Stale/);
+    assert.equal(snapshot(session),before);
+  });
+}
+for(const [name,options] of [
+  ['invalid direction',{direction:'rewind'}],
+  ['no workspace',{workspace:undefined}],
+  ['invalid workspace',{workspace:{schemaVersion:99}}],
+  ['non-JSON workspace',{workspace:{invalid:Infinity}}]
+]){
+  test('IDA replay refuses '+name+' atomically',()=>{
+    const {session}=fixture();session.commit(intent(session));
+    const before=snapshot(session);
+    assert.throws(()=>replaySession(session,'undo',options));
+    assert.equal(snapshot(session),before);
+  });
+}
+test('IDA replay refuses reentrant undo inside a domain validator',()=>{
+  const {session}=fixture();session.commit(intent(session));
+  const edit=intent(session),before=snapshot(session);
+  edit.validateDomain=()=>replaySession(session,'undo');
+  assert.throws(()=>session.commit(edit),/Reentrant/);
+  assert.equal(snapshot(session),before);
+});
+test('IDA replay refuses a stale command after a prior undo',()=>{
+  const {session}=fixture();session.commit(intent(session));session.commit(intent(session));
+  const old=session.read().context;replaySession(session,'undo');
+  const before=snapshot(session);
+  assert.throws(()=>replaySession(session,'undo',{context:old}),/Stale/);
+  assert.equal(snapshot(session),before);
+});
+test('IDA replay refuses revision exhaustion without moving the history cursor',()=>{
+  const {session}=fixture(),accepted=session.commit(intent(session));
+  const exhausted=new AcceptedIdentitySession({project:accepted.project,
+    context:{...accepted.context,revision:Number.MAX_SAFE_INTEGER},history:session.copyHistory()});
+  const before=snapshot(exhausted);
+  assert.throws(()=>replaySession(exhausted,'undo'),/revision exhausted/);
+  assert.equal(snapshot(exhausted),before);
+});
+test('IDA replay rejects empty history without creating a new revision',()=>{
+  const {session}=fixture(),before=snapshot(session);
+  assert.throws(()=>replaySession(session,'undo'),/No accepted undo/);
+  assert.equal(snapshot(session),before);
+});
+test('IDA replay preserves original snapshots rather than rewriting their counters',()=>{
+  const {session}=fixture();session.commit(intent(session));session.commit(intent(session));
+  const original=session.copyHistory().past;
+  replaySession(session,'undo');replaySession(session,'undo');
+  assert.deepEqual(session.copyHistory().future.slice().reverse(),original);
+  assert.equal(session.read().project.identityAllocation.namespaces[ns].building,2);
 });
