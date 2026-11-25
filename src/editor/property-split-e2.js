@@ -1,3 +1,4 @@
+import { verifyIdentityReservation, verifyIdentityAdditions } from '../core/identity-verification.js';
 import { buildingExteriorRingsS10 } from '../core/building-geometry-adapter-s10.js';
 import { copyJson,createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
@@ -146,13 +147,29 @@ export function inspectPropertySplitE2(project,session){
 
 // Assemble a fresh clone and pass a second, independent project validation and
 // format-1 / schema-9 encode/decode gate; the caller owns a separate stale-rev check.
-export function preparePropertySplitE2(project,workspace,session){
+export function propertySplitIdentityRequestsE2(project,inspection){
+  if(!inspection?.ok)throw Error('A valid property split is required.');
+  const g=inspection.preview,source=project.city.properties.find(p=>p.id===g.propertyId);
+  return [{type:'property',key:'split-property'},...source.plotIds.flatMap((id,i)=>
+    g.fragments.filter(f=>f.originalId===id).length===2
+      ?[{type:'plot',key:'split-plot-'+i}]:[])];
+}
+export function preparePropertySplitE2(project,workspace,session,{identityReservation=null}={}){
   const inspection=inspectPropertySplitE2(project,session);
   if(!inspection.ok)return {...inspection,candidate:null};
   try{
     const candidate=copyJson(project),city=candidate.city,g=inspection.preview;
     const source=city.properties.find(p=>p.id===g.propertyId);
-    const newPropertyId=e2NextId(city.properties,'PROP-');
+    let verifiedAllocation=null;
+    const requests=propertySplitIdentityRequestsE2(project,inspection),allocated=new Map();
+    if(identityReservation!==null){
+      if(project.schemaVersion!==11)throw Error('Identity reservation requires Schema 11.');
+      const {context,receipt}=identityReservation;
+      verifiedAllocation=verifyIdentityReservation(project.identityAllocation,project.city,context,requests,receipt);
+      for(const row of receipt.allocations)allocated.set(row.key,row.id);
+      candidate.identityAllocation=verifiedAllocation;
+    }
+    const newPropertyId=verifiedAllocation?allocated.get('split-property'):e2NextId(city.properties,'PROP-');
     const existingIds=city.plots.map(p=>p.id);
     const leftPlots=[],rightPlots=[],plotMapping=[];
     for(const oldId of source.plotIds){
@@ -161,7 +178,8 @@ export function preparePropertySplitE2(project,workspace,session){
       const crosses=fragments.length===2;
       for(const fragment of fragments){
         const isRight=fragment.side==='right';
-        const fragmentId=crosses&&isRight?e2NextId(existingIds.map(id=>({id})),'PLOT-'):oldId;
+        const fragmentId=crosses&&isRight
+          ?(verifiedAllocation?allocated.get('split-plot-'+source.plotIds.indexOf(oldId)):e2NextId(existingIds.map(id=>({id})),'PLOT-')):oldId;
         if(crosses&&isRight)existingIds.push(fragmentId);
         const base=crosses&&isRight
           ?{id:fragmentId,blockId:source.blockId,propertyId:newPropertyId,
@@ -210,9 +228,13 @@ export function preparePropertySplitE2(project,workspace,session){
       if(owner.id!==originalId)movements.push({buildingId:building.id,from:originalId,to:owner.id});
     }
     // No recalculation of open-space totals: area is exactly conserved.
+    if(verifiedAllocation)verifyIdentityAdditions(project.identityAllocation,project.city,
+      identityReservation.context,requests,identityReservation.receipt,city);
     validateStoredProject(candidate);
     const restored=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace))).project;
     if(!e2Same(candidate.city,restored.city))throw Error('Portable save/load changed the split project.');
+    if(verifiedAllocation&&!e2Same(restored.identityAllocation,verifiedAllocation))
+      throw Error('Portable save/load changed split allocation state.');
     return {...inspection,ok:true,status:'valid',candidate:restored,
       newPropertyId,sourcePropertyId:source.id,plotMapping,movements,lineage};
   }catch(e){
