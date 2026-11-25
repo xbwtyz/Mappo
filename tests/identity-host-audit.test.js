@@ -30,7 +30,7 @@ test('IDA host audit inventories the fifteen direct commitAcceptedEdit call site
  "commitAcceptedEdit(candidate, { family: 'property', operation: 'property-merge',",
  "commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-create',",
  "commitAcceptedEdit({ ...project, city }, { family: 'identity', operation: 'identity-change',",
- "try{commitAcceptedEdit(candidate, transaction, {requireRecorded:group});}",
+ "try{commitAcceptedEdit(candidate, transaction, {requireRecorded:group,localRecord});}",
  "commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-delete',",
  "commitAcceptedEdit(received.candidate, { family: 'property', operation: 'property-and-plot', label,"
  ]);
@@ -40,7 +40,8 @@ test('IDA host audit prohibits independent D01 mutation and deferred recording i
  report('D01 writer',rows);assert.deepEqual(rows,[]);
  assert.doesNotMatch(app,/pendingHistoryTransaction/);
  assert.match(app,/function publishAcceptedStateD01\(next,staged\) \{\s*Object\.assign\(acceptedHistoryD01,staged\.history\);\s*project = next;/);
- assert.match(app,/function commitAcceptedEdit\(candidate, transaction, options\) \{\s*const staged=stageAcceptedPublicationD01\(acceptedHistoryD01,project,candidate,transaction,options\);\s*publishAcceptedStateD01\(candidate,staged\);/);
+ assert.match(app,/function commitAcceptedEdit\(candidate, transaction, options\) \{[\s\S]*?checkLocalEditorRecord\(localRecord\);\s*const staged=stageAcceptedPublicationD01\(acceptedHistoryD01,project,candidate,transaction,options\);\s*publishAcceptedStateD01\(candidate,staged\);\s*if\(localRecord\)publishLocalEditorRecord\(localRecord\);/);
+ assert.doesNotMatch(app,/(?:roadHistory|propertyHistory|propertyDeletionHistory4A|propertyCreationHistoryE1|buildingHistory|buildingStructureHistory)\.record\(/);
  assert.match(app,/staged\.observe\(project,null\)/);
 });
 test('IDA host audit distinguishes file dirty revision from accepted city revision',()=>{
@@ -57,5 +58,5 @@ test('IDA host audit locates adoption and async road stale-check boundaries',()=
  assert.match(app,/restoreAdoptionRollback: restoreProjectAdoptionRollbackD01/);
  assert.match(app,/apply: applyProjectDocument/);
  assert.match(app,/session\.computeJunctionAsync\(\{[\s\S]*?if \(project !== previous \|\| JSON\.stringify\(project\) !== projectJson\)/);
- assert.match(app,/function commitRoadEditB4\([\s\S]*?commitAcceptedEdit\(candidate, transaction, \{requireRecorded:group\}\)/);
+ assert.match(app,/function commitRoadEditB4\([\s\S]*?commitAcceptedEdit\(candidate, transaction, \{requireRecorded:group,localRecord\}\)/);
 });
