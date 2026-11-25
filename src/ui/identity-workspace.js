@@ -1,3 +1,4 @@
+import { applyNonallocatingCityIntent } from '../editor/nonallocating-transaction-bridge.js';
 import { IdentityEditor, identityRecord, identityChanges, customizedIdentityCounts, IDENTITY_USE_PRESETS } from '../core/identity.js';
 
 import { renderBuildingUseOptions } from './building-use.js';
@@ -104,7 +105,7 @@ export class IdentityWorkspace {
       if (typeChanged && !this.canChangeBuildingUse())
         throw new Error('Finish or cancel the active map edit before applying building use.');
       const fields = identityChanges(record, ref, input).fields;
-      const next = this.editor.apply(city, ref, input);
+      const next = applyNonallocatingCityIntent(city,{kind:'identity',ref,input},this.editor);
       if(this.historyMove)this.editor.reset(); // canonical ledger handles accepted Undo/Redo
       this.drafts.delete(this.key(ref));
       this.mounted = null;
