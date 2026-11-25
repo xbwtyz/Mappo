@@ -68,14 +68,14 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     const cancelled = await page.evaluate(async () => {
       const app = __buildingQA.state(), s = app.roadWorkspace.session;
       const button = document.querySelector('#roadApplyB4');
-      const done = app.roadHistory.past.length;
+      const done = app.identityView.history.length;
       button.click();
       const validating = button.disabled && /Validating/.test(document.querySelector('#roadApplyStatusB4').textContent);
       s.reset();
       await new Promise(resolve => requestAnimationFrame(resolve));
       return {
         validating, disabled: button.disabled, revision: app.files.revision,
-        accepted: JSON.stringify(__buildingQA.state().project), historyUnchanged: app.roadHistory.past.length === done,
+        accepted: JSON.stringify(__buildingQA.state().project), historyUnchanged: app.identityView.history.length === done,
       };
     });
     assert.equal(cancelled.validating,true,'Apply immediately reports validation and disables repeat clicks');
@@ -95,11 +95,19 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     const applied = await page.evaluate(() => {
       const app = __buildingQA.state();
       return { revision: app.files.revision, moved: app.project.city.nodes.find(n=>n.id==='N-0139').y,
-        history: app.roadHistory.past.length };
+        history: app.identityView.history.length, acceptedRevision:app.identityView.context.revision,
+        allocation:app.project.identityAllocation,city:app.project.city };
     });
     assert.equal(applied.revision,before.revision+1);
     assert.equal(applied.moved,project.city.nodes.find(n=>n.id==='N-0139').y+15);
     assert.equal(applied.history,1);
+    assert.equal(applied.acceptedRevision,1);
+    assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
+    const undone=await page.evaluate(()=>__buildingQA.state().project);
+    assert.deepEqual(JSON.parse(JSON.stringify(undone.city)),JSON.parse(JSON.stringify(project.city)));
+    assert.deepEqual(undone.identityAllocation,applied.allocation);
+    assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('redo')),true);
+    assert.deepEqual(await page.evaluate(()=>__buildingQA.state().project.city),applied.city);
     assert.deepEqual(external,[],browserName+': offline HTML attempted a network request');
     assert.deepEqual(errors,[],browserName+': offline JavaScript page errors');
     console.log('C7_OFFLINE '+JSON.stringify({browser:browserName,passed:true,
