@@ -6,7 +6,7 @@ import { prepareRoadTopologyReflowC3 } from '../src/core/road-topology-reflow.js
 import { roadIdentityRequests,allocateRoadCandidate,allocateRoadCandidateForHost } from '../src/core/road-identity-delta.js';
 import { SecureIdentityHost } from '../src/core/secure-identity-host.js';
 import { classifyRoadProvenance } from '../src/core/road-provenance.js';
-import { copyJson,defaultWorkspace,createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../src/data/project-format.js';
+import { copyJson,defaultWorkspace,createProjectDocument,encodeProjectDocument,decodeProjectDocument,roundTripProjectDocument } from '../src/data/project-format.js';
 import { reconcileRoadWorkspace } from '../src/editor/road-workspace.js';
 
 const cases=[
@@ -88,6 +88,11 @@ for(const f of cases){
     const decoded=decodeProjectDocument(encodeProjectDocument(createProjectDocument(a.candidate,w)));
     assert.deepEqual(decoded.project,a.candidate);
     assert.deepEqual(decoded.workspace,w);
+    const optimized=roundTripProjectDocument(a.candidate,w);
+    assert.deepEqual(optimized.project,decoded.project);
+    assert.deepEqual(optimized.workspace,decoded.workspace);
+    assert.ok(Object.getOwnPropertyDescriptor(optimized.project.city.buildings[0],'footprint')?.get);
+    assert.notEqual(optimized.project.city.buildings[0],a.candidate.city.buildings[0]);
   });
 }
 test('IDA road allocation refuses stale reservation, missing creation ledger and tampered counter',()=>{
@@ -155,4 +160,28 @@ test('S3-A combined road allocation retains no-addition, stale view and receipt 
   let current=s.view;
   const fakeHost={view:()=>current,reserve:requests=>{current=otherView;return reserve(requests);}};
   assert.throws(()=>allocateRoadCandidateForHost(fakeHost,s.view,s.fresh),/Stale/);
+});
+
+test('S3-BC portable roundtrip preserves strict validation, opaque metadata and detached hydration',()=>{
+  const s=setup(cases[0]),a=allocated(s),p=a.candidate,w=defaultWorkspace(p);
+  p.opaqueS3={nested:{label:'retained'}};
+  w.opaqueS3={nested:{label:'workspace'}};
+  const before=JSON.stringify({p,w}),fast=roundTripProjectDocument(p,w);
+  assert.equal(JSON.stringify(fast.project),JSON.stringify(p));
+  assert.equal(JSON.stringify(fast.workspace),JSON.stringify(w));
+  assert.ok(Object.isFrozen(fast.project.city.buildings[0].footprint));
+  fast.project.opaqueS3.nested.label='changed';
+  fast.workspace.opaqueS3.nested.label='changed';
+  assert.equal(JSON.stringify({p,w}),before);
+  for(const mutate of [
+    project=>{project.city.buildings[0].area=-1;},
+    project=>{project.city.buildings[0].geometry.regions[0].ring=[];},
+    project=>{Object.defineProperty(project.city.buildings[0],'footprint',{value:[],enumerable:true});},
+    project=>{project.identityAllocation.version=99;}
+  ]){
+    const invalid=copyJson(p);mutate(invalid);
+    assert.throws(()=>roundTripProjectDocument(invalid,w));
+    assert.throws(()=>decodeProjectDocument(encodeProjectDocument(createProjectDocument(invalid,w))));
+  }
+  assert.throws(()=>roundTripProjectDocument(p,{...w,schemaVersion:99}));
 });

@@ -76,6 +76,9 @@ export function defaultWorkspace(project) {
   };
 }
 export function createProjectDocument(project, workspace = defaultWorkspace(project), base = null, now = new Date().toISOString()) {
+  return buildProjectDocumentInternal(project,workspace,base,now,copyJson);
+}
+function buildProjectDocumentInternal(project,workspace,base,now,cloneProject){
   const document = base ? copyJson({ ...base, project: null }) : {
     format: PROJECT_FORMAT,
     formatVersion: CURRENT_FORMAT_VERSION,
@@ -85,7 +88,7 @@ export function createProjectDocument(project, workspace = defaultWorkspace(proj
   };
   document.appVersion = CURRENT_APP_VERSION;
   document.savedAt = now;
-  document.project = copyJson(project);
+  document.project = cloneProject(project);
   // Preserve opaque future workspace fields while replacing known state.
   const previous = document.workspace || {};
   document.workspace = {
@@ -218,6 +221,17 @@ export function decodeProjectDocument(text) {
   validateDocument(document);
   hydrateProjectS10(document.project);
   return document;
+}
+// S3-BC: the intermediate Schema 11 envelope is never exposed. Its
+// persisted project is still detached exactly as before, but has no need
+// for temporary non-enumerable UI accessors. Both full encode and decode
+// validators, migration rules, size limits and decoded hydration remain.
+export function roundTripProjectDocument(project,workspace=defaultWorkspace(project)){
+  if(project?.schemaVersion!==11)
+    return decodeProjectDocument(encodeProjectDocument(createProjectDocument(project,workspace)));
+  const document=buildProjectDocumentInternal(project,workspace,null,new Date().toISOString(),
+    value=>JSON.parse(JSON.stringify(value)));
+  return decodeProjectDocument(encodeProjectDocument(document));
 }
 export function projectFilename(document) {
   const name = document.project.city.name.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'mappo-city';
