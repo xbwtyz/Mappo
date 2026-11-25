@@ -7,6 +7,7 @@ import { chromium, firefox } from 'playwright';
 import { createProject } from '../src/core/city-model.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
+import { assertRoadUndoProject } from '../tests/helpers/road-undo-project.js';
 
 const observePreviewDraws = `
 const measurePreviewDraw = (name, draw) => (...args) => {
@@ -250,11 +251,16 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
                 });
                 function roundInPage(value){return Math.round(value*10)/10;}
               }),before);
-              await page.evaluate(b=>{
+              const replay=await page.evaluate(()=>{
+                const snapshot=()=>JSON.stringify(__buildingQA.state().project);
+                const accepted=snapshot();
                 if(!__buildingQA.moveRoadHistory('undo'))throw Error('Undo failed');
-                if(JSON.stringify(__buildingQA.state().project)!==b.original)throw Error('Undo mismatch');
+                const restored=snapshot();
                 if(!__buildingQA.moveRoadHistory('redo'))throw Error('Redo failed');
-              },before);
+                return {accepted,restored,redone:snapshot()};
+              });
+              assertRoadUndoProject(replay.restored,before.original,replay.accepted);
+              assert.equal(replay.redone,replay.accepted,'Redo must restore the exact accepted project');
             }else{
               await page.evaluate(()=>{
                 const s=__buildingQA.state().roadWorkspace.session;
