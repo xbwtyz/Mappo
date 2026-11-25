@@ -11,7 +11,8 @@ The implementation uses the generic reserved prefix BLD-IDA / PROP-IDA / PLOT-ID
 ## Checkpoints
 
 - IDA-P1a: detached state validation, canonical typed identifiers and focused unit tests. No runtime import, project schema bump or persistent writes.
-- IDA-P1b: detached reservations, deterministic ordering, independent transition checks, exhaustion, stale and malformed receipt tests; no runtime adoption.
+- IDA-P1b: detached reservations, deterministic ordering, bounded batches and exhaustion; no runtime adoption.
+- IDA-P1c: independent transition verification, live inventory consistency, revision binding and stale/malformed receipt tests; no runtime adoption.
 - IDA-P2: Schema 11 migration and schema-aware source/validation/hydration audit; preserve shipped migration chain, existing IDs and geometry. Validate stored metadata and active ID/counter consistency; safe rejection of newer/invalid data. Separate source and integration checkpoints.
 - IDA-P3: atomic accepted allocation, history preflight, no counter rewind during Undo/Redo, replay comparison exact except independently validated allocation metadata. Integrate building/property/plot allocation paths; prohibit conflicting creation paths before regeneration.
 - IDA-P4: portable save/recovery, project adoption, older backups, divergent copies and separate tabs. Fresh session namespace; no allocation on load. Actual offline Firefox and Chromium verification. Keep namespace history even when undo history is pruned.
@@ -22,3 +23,5 @@ Minimum new qualification cases: allocation/determinism 32; malformed/tampering 
 ## Checkpoint record
 
 P1a introduces detached ID grammar and metadata validation only. Reservations, live inventory audit, transition validation and all runtime wiring remain pending. Existing standalone and schema must remain unchanged at this checkpoint. GitHub-hosted targeted checks first; full CI at review readiness. Roadmap reconciliation and version adoption follow in their respective checkpoints; avoid overlapping edits with PR #155 while it is paused.
+
+P1a [exact-head Fast Checks](https://github.com/xbwtyz/Mappo/actions/runs/45530698271) passed 68/68, including all nine IDA tests and byte-identical standalone output. P1b adds pure reservations from a supplied namespace and validated allocation state. Stable globally unique per-batch ASCII request keys (1–128 characters) map to IDs in canonical type/key order; provisional batch limit 4096, no empty persisted namespaces, preflight all counters for overflow, preserve all other namespace counters, freeze detached output and sort metadata keys canonically. Different unaccepted candidates may reserve the same IDs; only committed state advances the allocator. The returned proposed nextState is not a commit receipt or proof of live inventory consistency. P1c must bind the trusted current revision and independently check the exact transition and active inventory; secure namespace creation and runtime adoption remain deferred. No production schema or generated HTML changes in P1b.
