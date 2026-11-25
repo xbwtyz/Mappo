@@ -81,13 +81,13 @@ The table preserves every item in the original development checklist, with the o
 | ID | Status | Rule | Operational meaning |
 |---|---|---|---|
 | `DEV-37` | **ON** | Use targeted tests during development | Run focused tests to reproduce and fix changes; do not rerun the full suite at every small edit. |
-| `DEV-38` | **ON** | Run full CI on review-ready PRs and main | Use the required comprehensive CI gate before merge/release and after merging; do not treat a narrow smoke test as equivalent. |
+| `DEV-38` | **ON** | Run full CI on review-ready PRs and main | Use the required comprehensive CI gate before merge/release and after merging; `[full-ci]` / `[full-ci-benchmark]` may request draft qualification but cannot replace review-ready and exact-main gates. Do not treat a narrow smoke test as equivalent. |
 | `DEV-39` | **ON** | Keep six-runner parallel CI | Maintain two Node shards plus desktop/roads/property/integration browser suites and the required aggregate result unless a reviewed CI change is approved. |
 | `DEV-40` | **ON** | Require green CI for the exact review-ready revision | Verify check results match the candidate SHA; later commits require revalidation under the policy. |
 | `DEV-41` | **ON** | Test standalone and offline behavior | Include deterministic output checks, actual standalone file:// startup, and isolation from required network access. |
 | `DEV-42` | **ON** | Retain old-save and cross-editor regression coverage | Keep already-existing frozen fixtures and relevant regression coverage. Under the separate legacy-compatibility OFF rule, new format support and test expectations may change only by an approved plan; never silently bypass required CI. |
 | `DEV-43` | **OFF** | Run phone and tablet QA | Routine phone/tablet acceptance is outside the current desktop support target. Do not delete historical test assets merely because this default is OFF. |
-| `DEV-44` | **OFF** | Run heavy C7 benchmark on every PR | Keep heavyweight performance benchmarking manually opt-in; retain ordinary road correctness and relevant performance regressions. |
+| `DEV-44` | **OFF** | Run heavy C7 benchmark on every PR | Keep heavyweight performance benchmarking explicitly opt-in via manual dispatch or `[full-ci-benchmark]` on the current PR head; retain ordinary road correctness and relevant performance regressions. |
 
 ### Releases, documentation and project management
 
