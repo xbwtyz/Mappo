@@ -10503,7 +10503,9 @@ function previewBuildingEditorTransaction(host,workspace,request){
   const result=prepareBuildingEditorOperation(project,workspace,input,{history,identityReservation:{context,receipt}});
   return {context,receipt,result};
 }
-function commitBuildingEditorTransaction(host,workspace,request,reservation){
+function commitBuildingEditorTransaction(host,workspace,request,reservation,{preserveLegacyCapacity=false}={}){
+  const historyPolicy=preserveLegacyCapacity&&!(request.operation==='components'&&request.componentDraft?.action==='join')
+    ?'legacy-ordinary-structure':'required';
   const input=idaEditorBuildingIntent(request),{project,context,history}=host.view();
   const receipt=reservation?.receipt;
   if(JSON.stringify(context)!==JSON.stringify(reservation?.context))
@@ -10512,7 +10514,7 @@ function commitBuildingEditorTransaction(host,workspace,request,reservation){
   const result=prepareBuildingEditorOperation(project,workspace,input,{history,identityReservation:{context,receipt}});
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Building editor Apply refused.');
   return host.commit({requests,receipt,candidateCity:result.candidate.city,
-    transaction:idaEditorBuildingTransaction(project,input,receipt),
+    transaction:idaEditorBuildingTransaction(project,input,receipt),historyPolicy,
     validateDomain:(before,after)=>{
       const fresh=prepareBuildingEditorOperation(before,workspace,input,{history,identityReservation:{context,receipt}});
       return fresh.ok&&JSON.stringify(fresh.candidate)===JSON.stringify(after);
@@ -13002,14 +13004,14 @@ function previewLandEditorTransaction(host,workspace,kind,intent){
   const receipt=host.reserve(idaMountedLandRequests(project,kind,draft));
   return {context,receipt,result:prepareLandEditorOperation(project,workspace,kind,draft,{identityReservation:{context,receipt}})};
 }
-function commitLandEditorTransaction(host,workspace,kind,intent,reservation){
+function commitLandEditorTransaction(host,workspace,kind,intent,reservation,{preserveLegacyCapacity=false}={}){
   const {project,context}=host.view();
   if(!idaMountedLandSame(context,reservation?.context))throw Error('Stale land editor reservation.');
   const input=copyJson(intent),draft=idaMountedLandDraft(project,kind,input),requests=idaMountedLandRequests(project,kind,draft);
   const receipt=reservation.receipt,result=prepareLandEditorOperation(project,workspace,kind,draft,{identityReservation:{context,receipt}});
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Land editor Apply refused.');
   return host.commit({requests,receipt,candidateCity:result.candidate.city,
-    transaction:idaMountedLandTransaction(kind,draft,result,receipt),
+    transaction:idaMountedLandTransaction(kind,draft,result,receipt),historyPolicy:preserveLegacyCapacity?'legacy-ordinary':'required',
     validateDomain:(before,after)=>{
       const fresh=idaMountedLandDraft(before,kind,input);
       const checked=prepareLandEditorOperation(before,workspace,kind,fresh,{identityReservation:{context,receipt}});
@@ -13183,6 +13185,7 @@ function prepareCompoundTransform(project,workspace,propertyId,groupId,transform
 
 
 
+
 // This dispatcher is shared by the mounted panels and the secure host.
 // A trusted editor supplies an explicit operation intent, never a city delta.
 function applyNonallocatingCityIntent(city,intent,editor){
@@ -13222,13 +13225,22 @@ function previewNonallocatingEditorTransaction(host,workspace,intent){
   const {project,context}=host.view(),input=copyJson(intent),receipt=host.reserve([]);
   return {context,receipt,result:prepareNonallocatingEditorOperation(project,workspace,input)};
 }
-function commitNonallocatingEditorTransaction(host,workspace,intent,transaction,reservation){
+function commitNonallocatingEditorTransaction(host,workspace,intent,transaction,reservation,{preserveLegacyCapacity=false,allowUnchanged=false}={}){
   const {project,context}=host.view();
   if(JSON.stringify(context)!==JSON.stringify(reservation?.context))throw Error('Stale nonallocating editor reservation.');
   const input=copyJson(intent),metadata=idaNonallocatingHistory(input,transaction);
   const result=prepareNonallocatingEditorOperation(project,workspace,input);
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Nonallocating editor Apply refused.');
-  return host.commit({requests:[],receipt:reservation.receipt,candidateCity:result.candidate.city,transaction:metadata,
+  // Mounted identity/district/defense forms may submit unchanged values.
+  // Do not publish a new accepted revision or invalidate other previews.
+  if(allowUnchanged&&JSON.stringify(result.candidate)===JSON.stringify(project)){
+    verifyIdentityReservation(project.identityAllocation,project.city,context,[],reservation.receipt);
+    return {...host.read(),historyStatus:'unchanged'};
+  }
+  const historyPolicy=preserveLegacyCapacity
+    ?(input.kind==='building-geometry'&&metadata.operation==='building-structure'?'legacy-ordinary-structure':'legacy-ordinary')
+    :'required';
+  return host.commit({requests:[],receipt:reservation.receipt,candidateCity:result.candidate.city,transaction:metadata,historyPolicy,
     validateDomain:(before,after)=>{
       const fresh=prepareNonallocatingEditorOperation(before,workspace,input);
       return fresh.ok&&JSON.stringify(fresh.candidate)===JSON.stringify(after);
@@ -15123,28 +15135,37 @@ class IdentityWorkspace {
       { validateOnApply: true }) : this.commitDraft();
   }
   commitDraft() {
+    let before,checkpoint;
     try {
       const ref = this.ref();
       if (!ref || this.key(ref) !== this.key(this.mounted)) throw new Error('Select the property or building again before applying.');
       const input = this.fields();
       if (input.useChoice === 'other' && !input.customUse.trim()) throw new Error('Enter a descriptive use for Other, or choose no override.');
       const city = this.getCity();
+      before=city;
+      checkpoint={history:this.editor.history.slice(),drafts:new Map(this.drafts),mounted:this.mounted};
       const record = identityRecord(city, ref);
       const typeChanged = Boolean(input.buildingType && input.buildingType !== record?.type);
       if (typeChanged && !this.canChangeBuildingUse())
         throw new Error('Finish or cancel the active map edit before applying building use.');
       const fields = identityChanges(record, ref, input).fields;
-      const next = applyNonallocatingCityIntent(city,{kind:'identity',ref,input},this.editor);
+      const intent={kind:'identity',ref,input};
+      const next = applyNonallocatingCityIntent(city,intent,this.editor);
       if(this.historyMove)this.editor.reset(); // canonical ledger handles accepted Undo/Redo
       this.drafts.delete(this.key(ref));
       this.mounted = null;
-      this.commit(next, { ref, fields });
+      if(this.commit(next, { ref, fields,intent })===false)throw Error('Identity Apply was refused.');
       this.render({ reload: true });
       this.showMessage(typeChanged ? 'Building use applied.' : 'Identity applied.');
       for (const id of ['identityNameInput', 'identityOtherUseInput']) this.$(id).setAttribute('aria-invalid', 'false');
       this.changed();
       return true;
     } catch (error) {
+      if(checkpoint&&this.getCity()===before){
+        this.editor.history=checkpoint.history;
+        this.drafts=checkpoint.drafts;
+        this.mounted=checkpoint.mounted;
+      }
       this.syncDraft([{ code: 'identity-edit', message: error.message }]);
       this.showMessage(error.message, true);
       this.$('identityNameInput').setAttribute('aria-invalid', String(/name/i.test(error.message)));
@@ -16308,15 +16329,17 @@ class FortificationPanel {
       { validateOnApply: true }) : this.commitDraft();
   }
   commitDraft() {
+    const previous=this.getCity(),beforeEditor=this.editor.snapshot();
     try {
-      const previous = this.getCity(),
-        before = previous.fortificationState,
+      const before = previous.fortificationState,
         beforeHistory = this.editor.history.slice(),
         wasUnbuilt = before.status !== 'built',
-        city = applyNonallocatingCityIntent(previous,{kind:'defense-apply',options:this.controls()},this.editor);
-      this.commit(city, { operation: city.fortificationState.enabled !== before.enabled && !wasUnbuilt
+        intent={kind:'defense-apply',options:this.controls()},
+        city = applyNonallocatingCityIntent(previous,intent,this.editor);
+      if(this.commit(city, { operation: city.fortificationState.enabled !== before.enabled && !wasUnbuilt
         ? (city.fortificationState.enabled ? 'enable' : 'disable')
-        : wasUnbuilt ? 'build' : 'rebuild', beforeHistory });
+        : wasUnbuilt ? 'build' : 'rebuild', beforeHistory,intent })===false)
+        throw Error('Defense Apply was refused.');
       this.refresh();
       if (wasUnbuilt && city.fortificationState.status === 'built') this.activateLayer();
       const state = city.fortificationState;
@@ -16333,6 +16356,7 @@ class FortificationPanel {
                 : 'Defenses updated. Streets, buildings, districts and landscape were preserved.');
       return true;
     } catch (error) {
+      if(this.getCity()===previous)this.editor.load(beforeEditor);
       this.drafts?.sync('defenses', { staged: true, intent: JSON.stringify(this.controls()), dirty: true,
         issues: [{ code: 'defense-geometry', message: error.message }] });
       this.message(error.message, true);
@@ -16502,18 +16526,22 @@ class DistrictPanel {
     });
     this.$('districtPanel').setAttribute('data-draft-' + operation, draft.status);
   }
-  apply(operation, action, message) {
+  apply(operation, action, message, makeIntent) {
     this.syncDraft(operation);
-    return this.drafts.apply('district-' + operation, current => current() && this.operation(action, message, operation),
+    return this.drafts.apply('district-' + operation, current => current() && this.operation(action, message, operation,makeIntent),
       { validateOnApply: true });
   }
-  operation(action, message, operation) {
+  applyIntent(operation,makeIntent,message){
+    return this.apply(operation,intent=>applyNonallocatingCityIntent(this.getCity(),intent,this.editor),message,makeIntent);
+  }
+  operation(action, message, operation, makeIntent) {
+    const before=this.getCity(),beforeEditor=this.editor.snapshot();
     try {
-      const before = this.getCity();
-      const beforeHistory = this.editor.history.slice();
-      const city = action();
+      const beforeHistory = this.editor.history.slice(),intent=makeIntent?.();
+      const city = action(intent);
       if (JSON.stringify(before) === JSON.stringify(city)) this.editor.history = beforeHistory;
-      this.commit(city, { operation, beforeHistory });
+      if(this.commit(city, { operation, beforeHistory, intent })===false)
+        throw Error('District Apply was refused.');
       // Refill committed values without clearing independent generation inputs.
       if (this.formDistrictId) this.formCache.delete(this.formDistrictId);
       this.formDistrictId = null;
@@ -16524,6 +16552,7 @@ class DistrictPanel {
       this.changed();
       return true;
     } catch (error) {
+      if(this.getCity()===before)this.editor.load(beforeEditor);
       if (operation) this.syncDraft(operation, [{ code: 'district-' + operation, message: error.message }]);
       this.message(error.message, true);
       const id = /color/i.test(error.message) ? 'districtColorInput'
@@ -16537,17 +16566,17 @@ class DistrictPanel {
   bind() {
     this.$('generateDistrictButton').addEventListener('click', () => {
       const unassigned = this.getCity().districtState.status !== 'assigned';
-      const result = this.apply('generate', () => applyNonallocatingCityIntent(this.getCity(),{kind:'district-generate',options:{
+      const result = this.applyIntent('generate', () => ({kind:'district-generate',options:{
         count: this.$('districtNumberInput').value,
         seed: this.$('districtSeedInput').value
-      }},this.editor), 'Neighborhoods rebuilt. Streets, properties and buildings were preserved.');
+      }}), 'Neighborhoods rebuilt. Streets, properties and buildings were preserved.');
       if (result && unassigned) this.activateLayers();
       return result;
     });
-    this.$('applyDistrictButton').addEventListener('click', () => this.apply('identity', () => applyNonallocatingCityIntent(this.getCity(),{kind:'district-identity',districtId:this.editor.selectedDistrictId,
-      name:this.$('districtNameInput').value,color:this.$('districtColorInput').value},this.editor), 'District name and color updated.'));
-    this.$('moveDistrictButton').addEventListener('click', () => this.apply('move', () => applyNonallocatingCityIntent(this.getCity(),{kind:'district-move',blockId:this.editor.selectedBlockId,
-      target:this.$('districtTargetInput').value},this.editor), 'Block moved. Both districts remain connected.'));
+    this.$('applyDistrictButton').addEventListener('click', () => this.applyIntent('identity', () => ({kind:'district-identity',districtId:this.editor.selectedDistrictId,
+      name:this.$('districtNameInput').value,color:this.$('districtColorInput').value}), 'District name and color updated.'));
+    this.$('moveDistrictButton').addEventListener('click', () => this.applyIntent('move', () => ({kind:'district-move',blockId:this.editor.selectedBlockId,
+      target:this.$('districtTargetInput').value}), 'Block moved. Both districts remain connected.'));
     this.$('undoDistrictButton').addEventListener('click', () => this.undoHistory?.());
     this.$('districtSelect').addEventListener('change', () => {
       this.editor.selectedDistrictId = this.$('districtSelect').value || null;
@@ -20817,8 +20846,18 @@ class PropertySplitControlsE2 {
         flexible:this.session.flexible,exitEdge:this.session.exitEdge,exitT:this.session.exitT,
         approved:[...this.session.approved].sort()}))
       return false;
-    if(!this.history.record(previous,result.candidate,result.sourcePropertyId))return false;
-    this.onCommit(result.candidate,result.sourcePropertyId,'apply',result);
+    const intent=captureLandEditorIntent('property-split',this.session);
+    // A mounted chronological history owns accepted transactions. Do not
+    // mutate a redundant local history before its authoritative callback.
+    if(!this.historyMove&&!this.history.record(previous,result.candidate,result.sourcePropertyId))return false;
+    try{
+      if(this.onCommit(result.candidate,result.sourcePropertyId,'apply',result,intent)===false)
+        throw Error('Property Apply was refused.');
+    }catch(error){
+      if(this.getProject()!==previous){this.stop();this.changed();return true;}
+      this.getElement('propertySplitStatusE2').textContent=error.message;
+      return false;
+    }
     this.stop();this.changed();
     return true;
   }
@@ -21005,8 +21044,18 @@ class PropertyMergeControlsE3 {
     if(!current()||before!==this.getProject()||rev!==this.getRevision()||
       signature!==JSON.stringify([this.session.primaryId,this.session.secondaryId,this.session.approved,
         [...this.session.approvedBuildings].sort()]))return false;
-    if(!this.history.record(before,receipt.candidate,receipt.retainedId))return false;
-    this.onCommit(receipt.candidate,receipt.retainedId,'apply',receipt);
+    const intent=captureLandEditorIntent('property-merge',this.session);
+    // A mounted chronological history owns accepted transactions. Do not
+    // mutate a redundant local history before its authoritative callback.
+    if(!this.historyMove&&!this.history.record(before,receipt.candidate,receipt.retainedId))return false;
+    try{
+      if(this.onCommit(receipt.candidate,receipt.retainedId,'apply',receipt,intent)===false)
+        throw Error('Property Apply was refused.');
+    }catch(error){
+      if(this.getProject()!==before){this.stop();this.changed();return true;}
+      this.getElement('propertyMergeStatusE3').textContent=error.message;
+      return false;
+    }
     this.stop();this.changed();return true;
   }
   moveHistory(direction){
@@ -33180,7 +33229,6 @@ function commitDomainEditA5(family, city, { operation, beforeHistory }) {
   const expired = Math.max(0, beforeHistory.length + 1 - afterHistory.length);
   const editorHistory = editorHistoryDeltaA5(family, beforeHistory, afterHistory,
     Math.max(0, savedHistoryCount[family] - expired));
-  savedHistoryCount[family] = editorHistory.after.savedCount;
   let label = localHistoryLabels[family][operation];
   if (family === 'districts' && operation === 'identity') {
     const id = districtPanel.editor.selectedDistrictId;
@@ -33194,6 +33242,7 @@ function commitDomainEditA5(family, city, { operation, beforeHistory }) {
       : [districtPanel.editor.selectedDistrictId, districtPanel.editor.selectedBlockId].filter(Boolean))
     : [...city.walls, ...city.gates, ...city.towers].map(record => record.id);
   commitAcceptedEdit({ ...project, city }, { family, operation, label, targetIds, editorHistory });
+  savedHistoryCount[family] = editorHistory.after.savedCount;
   return true;
 }
 

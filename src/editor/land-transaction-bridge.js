@@ -130,14 +130,14 @@ export function previewLandEditorTransaction(host,workspace,kind,intent){
   const receipt=host.reserve(idaMountedLandRequests(project,kind,draft));
   return {context,receipt,result:prepareLandEditorOperation(project,workspace,kind,draft,{identityReservation:{context,receipt}})};
 }
-export function commitLandEditorTransaction(host,workspace,kind,intent,reservation){
+export function commitLandEditorTransaction(host,workspace,kind,intent,reservation,{preserveLegacyCapacity=false}={}){
   const {project,context}=host.view();
   if(!idaMountedLandSame(context,reservation?.context))throw Error('Stale land editor reservation.');
   const input=copyJson(intent),draft=idaMountedLandDraft(project,kind,input),requests=idaMountedLandRequests(project,kind,draft);
   const receipt=reservation.receipt,result=prepareLandEditorOperation(project,workspace,kind,draft,{identityReservation:{context,receipt}});
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Land editor Apply refused.');
   return host.commit({requests,receipt,candidateCity:result.candidate.city,
-    transaction:idaMountedLandTransaction(kind,draft,result,receipt),
+    transaction:idaMountedLandTransaction(kind,draft,result,receipt),historyPolicy:preserveLegacyCapacity?'legacy-ordinary':'required',
     validateDomain:(before,after)=>{
       const fresh=idaMountedLandDraft(before,kind,input);
       const checked=prepareLandEditorOperation(before,workspace,kind,fresh,{identityReservation:{context,receipt}});

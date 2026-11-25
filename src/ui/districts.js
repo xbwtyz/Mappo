@@ -148,18 +148,22 @@ export class DistrictPanel {
     });
     this.$('districtPanel').setAttribute('data-draft-' + operation, draft.status);
   }
-  apply(operation, action, message) {
+  apply(operation, action, message, makeIntent) {
     this.syncDraft(operation);
-    return this.drafts.apply('district-' + operation, current => current() && this.operation(action, message, operation),
+    return this.drafts.apply('district-' + operation, current => current() && this.operation(action, message, operation,makeIntent),
       { validateOnApply: true });
   }
-  operation(action, message, operation) {
+  applyIntent(operation,makeIntent,message){
+    return this.apply(operation,intent=>applyNonallocatingCityIntent(this.getCity(),intent,this.editor),message,makeIntent);
+  }
+  operation(action, message, operation, makeIntent) {
+    const before=this.getCity(),beforeEditor=this.editor.snapshot();
     try {
-      const before = this.getCity();
-      const beforeHistory = this.editor.history.slice();
-      const city = action();
+      const beforeHistory = this.editor.history.slice(),intent=makeIntent?.();
+      const city = action(intent);
       if (JSON.stringify(before) === JSON.stringify(city)) this.editor.history = beforeHistory;
-      this.commit(city, { operation, beforeHistory });
+      if(this.commit(city, { operation, beforeHistory, intent })===false)
+        throw Error('District Apply was refused.');
       // Refill committed values without clearing independent generation inputs.
       if (this.formDistrictId) this.formCache.delete(this.formDistrictId);
       this.formDistrictId = null;
@@ -170,6 +174,7 @@ export class DistrictPanel {
       this.changed();
       return true;
     } catch (error) {
+      if(this.getCity()===before)this.editor.load(beforeEditor);
       if (operation) this.syncDraft(operation, [{ code: 'district-' + operation, message: error.message }]);
       this.message(error.message, true);
       const id = /color/i.test(error.message) ? 'districtColorInput'
@@ -183,17 +188,17 @@ export class DistrictPanel {
   bind() {
     this.$('generateDistrictButton').addEventListener('click', () => {
       const unassigned = this.getCity().districtState.status !== 'assigned';
-      const result = this.apply('generate', () => applyNonallocatingCityIntent(this.getCity(),{kind:'district-generate',options:{
+      const result = this.applyIntent('generate', () => ({kind:'district-generate',options:{
         count: this.$('districtNumberInput').value,
         seed: this.$('districtSeedInput').value
-      }},this.editor), 'Neighborhoods rebuilt. Streets, properties and buildings were preserved.');
+      }}), 'Neighborhoods rebuilt. Streets, properties and buildings were preserved.');
       if (result && unassigned) this.activateLayers();
       return result;
     });
-    this.$('applyDistrictButton').addEventListener('click', () => this.apply('identity', () => applyNonallocatingCityIntent(this.getCity(),{kind:'district-identity',districtId:this.editor.selectedDistrictId,
-      name:this.$('districtNameInput').value,color:this.$('districtColorInput').value},this.editor), 'District name and color updated.'));
-    this.$('moveDistrictButton').addEventListener('click', () => this.apply('move', () => applyNonallocatingCityIntent(this.getCity(),{kind:'district-move',blockId:this.editor.selectedBlockId,
-      target:this.$('districtTargetInput').value},this.editor), 'Block moved. Both districts remain connected.'));
+    this.$('applyDistrictButton').addEventListener('click', () => this.applyIntent('identity', () => ({kind:'district-identity',districtId:this.editor.selectedDistrictId,
+      name:this.$('districtNameInput').value,color:this.$('districtColorInput').value}), 'District name and color updated.'));
+    this.$('moveDistrictButton').addEventListener('click', () => this.applyIntent('move', () => ({kind:'district-move',blockId:this.editor.selectedBlockId,
+      target:this.$('districtTargetInput').value}), 'Block moved. Both districts remain connected.'));
     this.$('undoDistrictButton').addEventListener('click', () => this.undoHistory?.());
     this.$('districtSelect').addEventListener('change', () => {
       this.editor.selectedDistrictId = this.$('districtSelect').value || null;

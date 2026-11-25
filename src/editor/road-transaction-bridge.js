@@ -151,6 +151,7 @@ export function commitRoadIdentityApply(host,token,workspace,session,revision,wo
   idaRoadApplyRequire(host.view()===view&&session.current(),'Accepted road preview changed before publication.');
   const committed=host.commit({requests:allocated.requests,receipt:allocated.receipt,
     candidateCity:allocated.candidate.city,transaction:allocated.transaction,
+    historyPolicy:state.snapshot.kind==='single'?'legacy-ordinary':'required',
     validateDomain:(before,after)=>{
       const fresh=idaRoadApplyReconstruct(state,before);
       const checked=idaRoadApplyAllocated(state,before,fresh,allocated.receipt);

@@ -26,6 +26,11 @@ function idaTxnMetadata(transaction){
 // distinguishes a join from ordinary structure work.
 function idaTxnHistoryPolicy(policy,metadata){
   if(policy==='required')return false;
+  // This is selected exclusively by the trusted building/geometry bridge
+  // after distinguishing the actual component intent. Keep the generic
+  // ordinary policy unable to opt a join out of reversible history.
+  if(policy==='legacy-ordinary-structure'&&metadata.family==='building'&&metadata.operation==='building-structure')
+    return true;
   const ordinary={
     property:['property-create','property-split','property-merge','property-delete','property-and-plot'],
     building:['building-geometry'],
@@ -33,7 +38,7 @@ function idaTxnHistoryPolicy(policy,metadata){
     identity:['identity-change'],
     road:['road-reflow'],
     districts:['generate','identity','move','restore'],
-    defenses:['apply','restore']
+    defenses:['apply','restore','build','rebuild','enable','disable']
   };
   if(policy!=='legacy-ordinary'||!Object.hasOwn(ordinary,metadata.family)||
      !ordinary[metadata.family].includes(metadata.operation))
