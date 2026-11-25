@@ -1,6 +1,6 @@
 name: Mappo Fast Checks
 
-# Fast branch feedback. An already review-ready PR owns full CI.
+# Fast branch feedback. A matching ready or explicitly requested draft PR owns full CI.
 on:
   push:
     branches:
@@ -24,38 +24,22 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
-      - name: Skip duplicate tests when a ready PR has full CI
-        id: gate
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          # Draft PRs continue receiving fast checks; ready PRs run full CI.
-          count=$(gh api --method GET \
-            "repos/${GITHUB_REPOSITORY}/pulls?state=open&head=${GITHUB_REPOSITORY_OWNER}:${GITHUB_REF_NAME}&per_page=100" \
-            --jq '[.[] | select(.draft == false)] | length') || {
-            echo "::warning::PR lookup failed; run fast checks to be safe."
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          }
-          if (( count > 0 )); then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Full PR CI is active; avoid duplicate test work."
-          else
-            echo "run=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Check out repository
-        if: steps.gate.outputs.run == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
+          persist-credentials: false
 
       - name: Set up Node.js
-        if: steps.gate.outputs.run == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Skip duplicate tests when a matching PR has full CI
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/ci-trigger.mjs fast
 
       - name: Check changed JavaScript syntax
         if: steps.gate.outputs.run == 'true'
@@ -83,7 +67,7 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         shell: bash
         run: |
-          tests=(tests/build.test.js tests/core.test.js tests/persistence.test.js)
+          tests=(tests/build.test.js tests/core.test.js tests/persistence.test.js tests/ci-trigger.test.js)
           # Core preview and worker cancellation are low-cost, high-value
           # regression guards for every active development branch.
           for core_test in tests/road-preview.test.js tests/c7-junction-preview-worker.test.js tests/c7-p2-worker-cancellation.test.js; do

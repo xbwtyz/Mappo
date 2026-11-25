@@ -1,6 +1,6 @@
 name: Mappo CI
 
-# Parallel review-ready validation. Keep the workflow and final gate job names
+# Parallel review-ready and explicitly requested draft validation. Keep the workflow and final gate job names
 # for release workflow_run compatibility and existing required status checks.
 on:
   push:
@@ -24,8 +24,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route:
+    name: Resolve full CI request
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      full: ${{ steps.route.outputs.full }}
+      benchmark: ${{ steps.route.outputs.benchmark }}
+    steps:
+      - name: Check out exact candidate for routing
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Determine full CI and benchmark selection
+        id: route
+        run: node scripts/ci-trigger.mjs full
+
   node:
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    needs: route
+    if: ${{ needs.route.outputs.full == 'true' }}
     name: Node regression (shard ${{ matrix.shard }}/2)
     runs-on: ubuntu-24.04
     timeout-minutes: 35
@@ -37,6 +59,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Set up Node.js
@@ -79,7 +102,8 @@ jobs:
           retention-days: 14
 
   browser:
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    needs: route
+    if: ${{ needs.route.outputs.full == 'true' }}
     name: Browser QA (${{ matrix.suite }})
     runs-on: ubuntu-24.04
     # Match the JS package and preinstalled browser binaries exactly.
@@ -94,6 +118,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft && github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -129,7 +155,7 @@ jobs:
         run: npm run test:browser:${{ matrix.suite }}
 
       - name: C7 desktop browser performance and stale-draft checks
-        if: ${{ matrix.suite == 'integration' && github.event_name == 'workflow_dispatch' && inputs.run_c7_benchmark }}
+        if: ${{ matrix.suite == 'integration' && needs.route.outputs.benchmark == 'true' }}
         env:
           HOME: /root
         run: node scripts/c7-browser-performance.mjs
@@ -146,17 +172,20 @@ jobs:
   # Keep this exact job name stable for required-status-check configuration.
   # A failed/skipped Node shard or browser suite must never yield a green gate.
   validate:
-    if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    if: ${{ always() && (needs.route.result != 'success' || needs.route.outputs.full == 'true') }}
     name: Build, Node tests and browser QA
-    needs: [node, browser]
+    needs: [route, node, browser]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Require every independent suite to pass
         env:
+          ROUTE_RESULT: ${{ needs.route.result }}
           NODE_RESULT: ${{ needs.node.result }}
           BROWSER_RESULT: ${{ needs.browser.result }}
         run: |
+          echo "Routing: $ROUTE_RESULT"
+          test "$ROUTE_RESULT" = success
           echo "Node regression: $NODE_RESULT"
           echo "Browser regression matrix: $BROWSER_RESULT"
           test "$NODE_RESULT" = success
