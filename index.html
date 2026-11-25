@@ -9886,7 +9886,7 @@ function idaSessionFreezeTree(root){
 }
 function idaSessionPublishedState(project,context,history){
   const accepted=idaSessionFreezeTree(project),binding=Object.freeze({...context});
-  const entries=new Map();
+  const entries=new Map(),availability=new Map();
   const summary=idaSessionFreezeTree(history.summaries());
   const historyView=Object.freeze({
     notice:history.notice,serial:history.serial,bytes:history.bytes,length:history.length,
@@ -9900,7 +9900,17 @@ function idaSessionPublishedState(project,context,history){
       return entries.get(direction);
     },
     summaries:()=>summary,
-    can:(direction,project)=>history.can(direction,project),
+    // Presentation queries repeat against the same immutable accepted view.
+    // Memoize only this exact owned project and ledger revision. Detached
+    // or mutable inputs still undergo the original full D01 comparison.
+    // Actual replay uses private history.prepare/accept, never this cache.
+    can(direction,project){
+      if(project!==accepted||(direction!=='undo'&&direction!=='redo'))
+        return history.can(direction,project);
+      if(!availability.has(direction))
+        availability.set(direction,history.can(direction,accepted));
+      return availability.get(direction);
+    },
     fits:(before,after,editorHistory)=>history.fits(before,after,editorHistory),
     canRecord:(before,after,editorHistory)=>history.canRecord(before,after,editorHistory)
   });
