@@ -158,3 +158,49 @@ export class AcceptedEditHistoryD01 {
     }));
   }
 }
+
+export function forkAcceptedHistoryD01(history,detach=false){
+  if(!(history instanceof AcceptedEditHistoryD01))
+    throw Error('An accepted D01 history is required');
+  if(!Number.isSafeInteger(history.serial)||history.serial<0||
+    !Array.isArray(history.past)||!Array.isArray(history.future))
+    throw Error('Invalid accepted history cursor');
+  const fork=new AcceptedEditHistoryD01({
+    maxEntries:history.maxEntries,maxBytes:history.maxBytes
+  });
+  // Entries are treated as immutable inside the coordinator. record() only
+  // replaces arrays, appends a new entry and replaces baseline/notice.
+  // Import/export boundaries detach entries; staging shares private entries.
+  fork.past=detach?copyJson(history.past):history.past.slice();
+  fork.future=detach?copyJson(history.future):history.future.slice();
+  fork.serial=history.serial;
+  fork.baseline=detach?copyJson(history.baseline):history.baseline;
+  fork.notice=history.notice;
+  return fork;
+}
+
+// Stage the existing D01 policies, not a competing history system. Normal
+// legacy edits retain their existing oversize barrier behavior; road-group
+// transactions still require a complete reversible entry.
+export function stageAcceptedPublicationD01(history,previous,candidate,transaction,{requireRecorded=false}={}){
+  if(!history.baseline||!d01Same(history.baseline,previous))
+    throw Error('Accepted project history baseline changed before publication.');
+  const staged=forkAcceptedHistoryD01(history);
+  const result=staged.observe(candidate,transaction);
+  if(requireRecorded?result.status!=='recorded':!['recorded','unchanged','oversize'].includes(result.status))
+    throw Error('Accepted project transaction could not be recorded: '+result.status);
+  if(!d01Same(staged.baseline,candidate))throw Error('Accepted history publication baseline mismatch.');
+  return {history:staged,status:result.status};
+}
+export function stageAcceptedReplayD01(history,previous,direction,receipt){
+  if(!history.can(direction,previous)||!receipt?.ok)
+    throw Error('Accepted history replay is stale or invalid.');
+  const staged=forkAcceptedHistoryD01(history);
+  staged.accept(direction,receipt.entry,receipt.candidate);
+  return {history:staged,status:'replayed'};
+}
+export function stageAcceptedReplacementD01(history,candidate,notice){
+  const staged=forkAcceptedHistoryD01(history);
+  staged.clear(candidate,notice);
+  return {history:staged,status:'replaced'};
+}

@@ -6,16 +6,16 @@ const app=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
 const lines=app.split('\n');
 const matching=pattern=>lines.flatMap((line,i)=>pattern.test(line)?[{line:i+1,source:line.trim()}]:[]);
 function report(label,rows){for(const row of rows)console.log(label+' src/app.js:'+row.line+' '+row.source);}
-test('IDA host audit inventories all direct project assignments and their adoption/replay/rollback boundaries',()=>{
+test('IDA host audit enforces a single direct project publication boundary',()=>{
  const rows=matching(/^\s*project\s*=(?!=)/);
  report('project writer',rows);
  assert.deepEqual(rows.map(x=>x.source),[
-  'project=receipt.candidate;','project = candidate;','project=previous;','project = next;','project = next;'
+  'project = next;'
  ]);
  assert.equal(matching(/^\s*project\.\w+\s*=(?!=)/).length,0);
 });
 test('IDA host audit inventories the fifteen direct commitAcceptedEdit call sites',()=>{
- const rows=matching(/^\s*commitAcceptedEdit\(/);
+ const rows=matching(/^\s*(?:try\{)?commitAcceptedEdit\(/);
  report('accepted edit',rows);
  assert.deepEqual(rows.map(x=>x.source),[
  'commitAcceptedEdit({ ...project, city }, { family, operation, label, targetIds, editorHistory });',
@@ -30,23 +30,18 @@ test('IDA host audit inventories the fifteen direct commitAcceptedEdit call site
  "commitAcceptedEdit(candidate, { family: 'property', operation: 'property-merge',",
  "commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-create',",
  "commitAcceptedEdit({ ...project, city }, { family: 'identity', operation: 'identity-change',",
- "commitAcceptedEdit(candidate, transaction);",
+ "try{commitAcceptedEdit(candidate, transaction, {requireRecorded:group});}",
  "commitAcceptedEdit(receipt.candidate, { family: 'property', operation: 'property-delete',",
  "commitAcceptedEdit(received.candidate, { family: 'property', operation: 'property-and-plot', label,"
  ]);
 });
-test('IDA host audit identifies independent D01 writers and deferred history publication',()=>{
+test('IDA host audit prohibits independent D01 mutation and deferred recording in app',()=>{
  const rows=matching(/acceptedHistoryD01\.(?:accept|record|observe|clear)\(/);
- report('D01 writer',rows);
- assert.deepEqual(rows.map(x=>x.source),[
-  'acceptedHistoryD01.accept(direction,receipt.entry,project);',
-  'const observed = project && !d01ReplayingHistory ? acceptedHistoryD01.observe(project, transaction) : null;',
-  "acceptedHistoryD01.clear(project,'City generation started a new session history.');",
-  'const recorded=acceptedHistoryD01.record(previous,candidate,transaction);',
-  "acceptedHistoryD01.clear(project,'Opening or recovering a project cleared session history.');"
- ]);
- assert.match(app,/pendingHistoryTransaction = \{ candidate, transaction \};\s*project = candidate;/);
- assert.match(app,/pendingHistoryTransaction = null;\s*const observed = project/);
+ report('D01 writer',rows);assert.deepEqual(rows,[]);
+ assert.doesNotMatch(app,/pendingHistoryTransaction/);
+ assert.match(app,/function publishAcceptedStateD01\(next,staged\) \{\s*Object\.assign\(acceptedHistoryD01,staged\.history\);\s*project = next;/);
+ assert.match(app,/function commitAcceptedEdit\(candidate, transaction, options\) \{\s*const staged=stageAcceptedPublicationD01\(acceptedHistoryD01,project,candidate,transaction,options\);\s*publishAcceptedStateD01\(candidate,staged\);/);
+ assert.match(app,/staged\.observe\(project,null\)/);
 });
 test('IDA host audit distinguishes file dirty revision from accepted city revision',()=>{
  const files=new ProjectFiles({getElement:()=>({}),capture:()=>{throw Error('No city is required for a view-only dirty signal');},apply:()=>{throw Error('No city adoption required');}});
@@ -57,9 +52,9 @@ test('IDA host audit distinguishes file dirty revision from accepted city revisi
 });
 test('IDA host audit locates adoption and async road stale-check boundaries',()=>{
  assert.match(app,/function prepareCityGeneration\(\)[\s\S]*?createProject\(/);
- assert.match(app,/function commitCityGeneration\(current\)[\s\S]*?project = next;[\s\S]*?acceptedHistoryD01\.clear\(project/);
- assert.match(app,/function applyProjectDocument\(document\)[\s\S]*?project = next;[\s\S]*?acceptedHistoryD01\.clear\(project/);
+ assert.match(app,/function commitCityGeneration\(current\)[\s\S]*?publishAcceptedStateD01\(next,stageAcceptedReplacementD01\(acceptedHistoryD01,next,/);
+ assert.match(app,/function applyProjectDocument\(document\)[\s\S]*?publishAcceptedStateD01\(next,stageAcceptedReplacementD01\(acceptedHistoryD01,next,/);
  assert.match(app,/apply: applyProjectDocument/);
  assert.match(app,/session\.computeJunctionAsync\(\{[\s\S]*?if \(project !== previous \|\| JSON\.stringify\(project\) !== projectJson\)/);
- assert.match(app,/function commitRoadEditB4\([\s\S]*?acceptedHistoryD01\.record\(previous,candidate,transaction\)/);
+ assert.match(app,/function commitRoadEditB4\([\s\S]*?commitAcceptedEdit\(candidate, transaction, \{requireRecorded:group\}\)/);
 });
