@@ -101,3 +101,58 @@ test('IDA staged older backup restores exact saved counters and new session reje
  assert.throws(()=>host.commit({requests:[{type:'plot',key:'unused'}],receipt,candidateCity:out.project.city,
   transaction:{family:'property',operation:'test',label:'Test',targetIds:[]},validateDomain:()=>true}),/Stale/);
 });
+
+test('IDA synchronous lifecycle reconciliation sees exact new view and completes adoption',()=>{
+ const {host}=fixture(),before=host.view(),p=host.stageAdoption(doc());
+ let seen;
+ const out=host.commitAdoption(p.token,{applyView(view,workspace){
+  seen=view;assert.equal(host.view(),view);assert.notEqual(view,before);
+  assert.deepEqual(workspace,site.workspace);workspace.view.camera.x+=5;
+  assert.throws(()=>host.adopt(site.project),/Reentrant/);
+  assert.throws(()=>host.replay({direction:'undo',context:view.context,workspace}),/Reentrant/);
+ }});
+ assert.equal(host.view(),seen);assert.deepEqual(out.workspace,site.workspace);
+ assert.deepEqual(out.project.identityAllocation.namespaces,{});
+});
+test('IDA failed lifecycle callback restores exact outgoing view including redo and allocation counters',()=>{
+ const {host}=fixture();const accepted=commit(host);
+ host.replay({direction:'undo',context:accepted.context,workspace:site.workspace});
+ const before=host.view(),snapshot=snap(host),p=host.stageAdoption(doc());let provisional,receipt;
+ assert.throws(()=>host.commitAdoption(p.token,{applyView(view){
+  provisional=view.context.namespace;receipt=host.reserve([{type:'plot',key:'unused'}]);
+  throw Error('UI reconciliation failed');
+ }}),/UI reconciliation failed/);
+ assert.equal(host.view(),before);assert.equal(snap(host),snapshot);assert.equal(before.history.entry('redo').family,'property');
+ assert.throws(()=>host.commitAdoption(p.token),/Unknown or consumed/);
+ const next=host.commitAdoption(host.stageAdoption(doc()).token);
+ assert.notEqual(next.context.namespace,provisional);
+ assert.throws(()=>host.commit({requests:[{type:'plot',key:'unused'}],receipt,candidateCity:next.project.city,
+  transaction:{family:'property',operation:'property-create',label:'Test',targetIds:[]},validateDomain:()=>true}),/Stale/);
+});
+test('IDA lifecycle rollback privately excludes abandoned entropy even if source repeats it',()=>{
+ let n=0;const values=[1,2,2,3];
+ const host=new SecureIdentityHost({cryptoSource:{getRandomValues(a){a.fill(values[n++]);return a;}}});
+ host.adopt(site.project);const before=host.view();
+ assert.throws(()=>host.adopt(site.project,{applyView(){throw Error('UI refused');}}),/UI refused/);
+ assert.equal(host.view(),before);
+ host.adopt(site.project);assert.equal(host.view().context.namespace,'03'.repeat(16));assert.equal(n,4);
+});
+test('IDA initial generation callback failure leaves host unadopted',()=>{
+ const {host}=fixture({adopt:false});
+ assert.throws(()=>host.adopt(site.project,{applyView(){throw Error('UI refused');}}),/UI refused/);
+ assert.equal(host.adopted,false);
+ const out=host.adopt(site.project);
+ assert.equal(out.context.namespace,'02'.repeat(16));assert.deepEqual(out.project.identityAllocation.namespaces,{});
+});
+test('IDA rejects async lifecycle callback and nonundefined callback result without publishing',()=>{
+ const {host}=fixture(),before=host.view();let called=false;
+ assert.throws(()=>host.commitAdoption(host.stageAdoption(doc()).token,{async applyView(){called=true;}}),/synchronous/);
+ assert.equal(called,false);assert.equal(host.view(),before);
+ assert.throws(()=>host.commitAdoption(host.stageAdoption(doc()).token,{applyView(){return true;}}),/undefined synchronously/);
+ assert.equal(host.view(),before);
+});
+test('IDA lifecycle entropy failure occurs before any UI callback',()=>{
+ const {host}=fixture({fail:true}),before=host.view();let called=false;
+ assert.throws(()=>host.commitAdoption(host.stageAdoption(doc()).token,{applyView(){called=true;}}),/entropy denied/);
+ assert.equal(called,false);assert.equal(host.view(),before);
+});

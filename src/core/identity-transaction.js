@@ -19,8 +19,29 @@ function idaTxnMetadata(transaction){
   return copyJson(transaction);
 }
 
+// Strict reversible history remains the default for all IDA callers.
+// The legacy ordinary-edit capacity barrier is opt-in by trusted mounted
+// intent, never a worker receipt. Complete group and join paths stay strict;
+// structure operations are deliberately excluded until the mounted caller
+// distinguishes a join from ordinary structure work.
+function idaTxnHistoryPolicy(policy,metadata){
+  if(policy==='required')return false;
+  const ordinary={
+    property:['property-create','property-split','property-merge','property-delete','property-and-plot'],
+    building:['building-geometry'],
+    compound:['compound-membership','compound-transform'],
+    identity:['identity-change'],
+    road:['road-reflow'],
+    districts:['generate','identity','move','restore'],
+    defenses:['apply','restore']
+  };
+  if(policy!=='legacy-ordinary'||!Object.hasOwn(ordinary,metadata.family)||
+     !ordinary[metadata.family].includes(metadata.operation))
+    throw Error('Unsupported accepted identity history policy for this operation');
+  return true;
+}
 export function prepareAcceptedIdentityTransaction({
-  project,context,requests,receipt,candidateCity,transaction,history,validateDomain
+  project,context,requests,receipt,candidateCity,transaction,history,validateDomain,historyPolicy='required'
 }={}){
   if(project?.schemaVersion!==11||!project.city)
     throw Error('Identity transaction requires an accepted Schema 11 project');
@@ -29,7 +50,7 @@ export function prepareAcceptedIdentityTransaction({
   validateAllocationCounter(context?.revision);
   if(context.revision===Number.MAX_SAFE_INTEGER)
     throw Error('Accepted identity transaction revision exhausted');
-  const metadata=idaTxnMetadata(transaction);
+  const metadata=idaTxnMetadata(transaction),allowOversize=idaTxnHistoryPolicy(historyPolicy,metadata);
   // Validate raw candidate before JSON detachment; do not silently normalize
   // invalid values or accept a worker-supplied project root/allocator.
   validateJsonTree(candidateCity);
@@ -47,7 +68,11 @@ export function prepareAcceptedIdentityTransaction({
   if(validateDomain(domainBefore,domainAfter)!==true||
     !idaTxnSame(domainBefore,before)||!idaTxnSame(domainAfter,candidate))
     throw Error('Independent domain validation refused identity transaction');
-  if(!history.canRecord(before,candidate,metadata.editorHistory))
+  const recordable=history.canRecord(before,candidate,metadata.editorHistory);
+  const oversize=allowOversize&&!recordable&&
+    idaTxnSame(history.baseline,before)&&typeof history.fits==='function'&&
+    !history.fits(before,candidate,metadata.editorHistory);
+  if(!recordable&&!oversize)
     throw Error('Accepted identity transaction history preflight refused');
   // Defensive recheck: the host baseline must not have changed during checks.
   if(!idaTxnSame(project,before))
@@ -56,5 +81,5 @@ export function prepareAcceptedIdentityTransaction({
   // integration checkpoint. Discarding this result consumes nothing.
   return {project:candidate,context:Object.freeze({
     projectId:context.projectId,revision:context.revision+1,namespace:context.namespace
-  }),transaction:metadata};
+  }),transaction:metadata,historyStatus:oversize?'oversize':'recorded'};
 }

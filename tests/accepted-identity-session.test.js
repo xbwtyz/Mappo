@@ -331,3 +331,32 @@ test('IDA replay preserves original snapshots rather than rewriting their counte
   assert.deepEqual(session.copyHistory().future.slice().reverse(),original);
   assert.equal(session.read().project.identityAllocation.namespaces[ns].building,2);
 });
+
+test('IDA explicitly opted-in ordinary oversized edit publishes counters with the existing D01 barrier',()=>{
+ const {session}=fixture({maxBytes:1024});
+ const e=intent(session);e.transaction={family:'property',operation:'property-create',label:'Create property',targetIds:[]};
+ e.historyPolicy='legacy-ordinary';
+ const out=session.commit(e);
+ assert.equal(out.historyStatus,'oversize');assert.equal(out.context.revision,8);
+ assert.equal(out.history.entries.length,0);assert.match(out.history.notice,/exceeded/);
+ assert.equal(out.project.identityAllocation.namespaces[ns].building,1);
+ assert.deepEqual(session.copyHistory().baseline,out.project);
+ assert.equal(session.view().history.can('undo',out.project),false);
+ const next=intent(session);next.transaction=e.transaction;next.historyPolicy=e.historyPolicy;
+ assert.equal(session.commit(next).project.identityAllocation.namespaces[ns].building,2);
+});
+test('IDA legacy oversize policy cannot bypass group, demolition or component history protection',()=>{
+ const {session}=fixture({maxBytes:1024}),before=snapshot(session);
+ for(const [family,operation] of [['road','translate-road-group'],['road','translate-road-group-demolition'],['building','building-structure']]){
+  const e=intent(session);e.transaction={family,operation,label:'Protected',targetIds:[]};e.historyPolicy='legacy-ordinary';
+  assert.throws(()=>session.commit(e),/history policy/);assert.equal(snapshot(session),before);
+ }
+});
+test('IDA ordinary capacity policy does not bypass domain refusal or stale receipt',()=>{
+ const {session}=fixture({maxBytes:1024}),before=snapshot(session);
+ const e=intent(session);e.transaction={family:'identity',operation:'identity-change',label:'Rename',targetIds:[]};
+ e.historyPolicy='legacy-ordinary';e.validateDomain=()=>false;
+ assert.throws(()=>session.commit(e),/domain validation/);assert.equal(snapshot(session),before);
+ e.validateDomain=()=>true;e.receipt.binding.revision++;
+ assert.throws(()=>session.commit(e),/Stale/);assert.equal(snapshot(session),before);
+});

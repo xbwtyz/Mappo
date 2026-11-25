@@ -82,7 +82,7 @@ export class AcceptedIdentitySession {
     const {project,context}=this.#state;
     return issueIdentityReservation(project.identityAllocation,project.city,context,requests);
   }
-  commit({requests,receipt,candidateCity,transaction,validateDomain}={}){
+  commit({requests,receipt,candidateCity,transaction,validateDomain,historyPolicy='required'}={}){
     if(this.#busy)throw Error('Reentrant identity transaction refused');
     this.#busy=true;
     try{
@@ -91,18 +91,18 @@ export class AcceptedIdentitySession {
         throw Error('Accepted history serial exhausted');
       const prepared=prepareAcceptedIdentityTransaction({
         project:current.project,context:current.context,requests,receipt,
-        candidateCity,transaction,history:current.history,validateDomain
+        candidateCity,transaction,history:current.history,validateDomain,historyPolicy
       });
       const history=forkAcceptedHistoryD01(current.history);
       const recorded=history.record(current.project,prepared.project,prepared.transaction);
-      if(recorded.status!=='recorded')
+      if(recorded.status!==prepared.historyStatus)
         throw Error('Accepted identity transaction history recording refused');
       if(JSON.stringify(history.baseline)!==JSON.stringify(prepared.project))
         throw Error('Accepted identity transaction history baseline mismatch');
       const next=idaSessionPublishedState(prepared.project,prepared.context,history);
       // Complete every fallible operation, including detached return data,
       // before replacing the sole accepted state pointer. No callbacks after.
-      const result={...idaSessionRead(next),pruned:recorded.pruned};
+      const result={...idaSessionRead(next),pruned:recorded.pruned??0,historyStatus:recorded.status};
       this.#state=next;
       return result;
     }finally{

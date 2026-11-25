@@ -55,11 +55,33 @@ export class SecureIdentityHost {
     return {state:{session,used},result};
   }
   #currentView(){return this.#state.session?.view()??null;}
-  adopt(project){
+  // The mounted lifecycle may synchronously reconcile UI against the new
+  // immutable view. Reentrant accepted mutations are forbidden throughout.
+  // On failure restore the exact outgoing session and keep the attempted
+  // namespace excluded privately, so even leaked provisional receipts cannot
+  // match a later session. Never persist a namespace merely by adopting.
+  #publishAdoption(prepared,result,applyView){
+    if(applyView===undefined){
+      this.#state=prepared.state;
+      return result;
+    }
+    if(typeof applyView!=='function'||Object.prototype.toString.call(applyView)==='[object AsyncFunction]')
+      throw Error('Project adoption requires a synchronous view reconciliation callback.');
+    const outgoing=this.#state;
+    this.#state=prepared.state;
+    try{
+      if(applyView(this.#currentView(),result.workspace===undefined?undefined:copyJson(result.workspace))!==undefined)
+        throw Error('Project adoption view reconciliation must return undefined synchronously.');
+      return result;
+    }catch(error){
+      this.#state={session:outgoing.session,used:prepared.state.used};
+      throw error;
+    }
+  }
+  adopt(project,{applyView}={}){
     return this.#exclusive(()=>{
       const prepared=this.#prepareSession(project);
-      this.#state=prepared.state;
-      return prepared.result;
+      return this.#publishAdoption(prepared,prepared.result,applyView);
     });
   }
   // Accept an already decoded/migrated portable document. Stage the whole
@@ -81,7 +103,7 @@ export class SecureIdentityHost {
   cancelAdoption(token){
     return this.#exclusive(()=>this.#adoptions.delete(token));
   }
-  commitAdoption(token){
+  commitAdoption(token,{applyView}={}){
     return this.#exclusive(()=>{
       const staged=this.#adoptions.get(token);
       if(!staged)throw Error('Unknown or consumed project adoption token.');
@@ -91,12 +113,12 @@ export class SecureIdentityHost {
         throw Error('Stale project adoption token.');
       const prepared=this.#prepareSession(staged.document.project);
       // Prepare all detached workspace/document return values before the
-      // same sole publication used by direct adoption. UI callbacks do not
-      // execute here; the future live adapter must stage its own UI work.
+      // same sole publication used by direct adoption. The optional trusted
+      // synchronous lifecycle callback may fail; the host rolls back its
+      // session, while the mounted caller restores captured editor state.
       const result={...prepared.result,workspace:copyJson(staged.document.workspace),
         document:copyJson(staged.document)};
-      this.#state=prepared.state;
-      return result;
+      return this.#publishAdoption(prepared,result,applyView);
     });
   }
   read(){return this.#requireSession().read();}
