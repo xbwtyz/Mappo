@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import { legacyCityViewS10 } from './helpers/schema10-legacy-view.js';
 import assert from 'node:assert/strict';
@@ -304,7 +305,7 @@ test('native schema-7 city and shoreline drafts migrate without regenerating any
   assert.equal(raw.project.schemaVersion, 7);
   assert.equal(raw.project.city.waterFeatures.length, 2);
   const loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 10);
+  assert.equal(loaded.project.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.deepEqual(legacyCityViewS10(loaded.project.city), raw.project.city);
   assert.deepEqual(loaded.workspace, raw.workspace);
   const editor = new WaterEditor();

@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -105,7 +106,7 @@ test('3I-C validates and atomically commits small, safe rear-boundary changes',(
     if(trial.ok){property=candidate;receipt=trial;break;}
   }
   assert.ok(receipt?.ok,'At least one safe rear setback should be valid.');
-  assert.equal(receipt.candidate.schemaVersion,10);
+  assert.equal(receipt.candidate.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.equal(receipt.candidate.city.properties.find(p=>p.id===property.id).id,property.id);
   assert.deepEqual(receipt.candidate.city.properties.find(p=>p.id===property.id).plotIds,property.plotIds);
   assert.deepEqual(receipt.candidate.city.properties.find(p=>p.id===property.id).buildingIds,property.buildingIds);
@@ -170,6 +171,6 @@ test('3I-D property-scoped geometry Undo/Redo restores plots without overwriting
   history.accept(redo.entry,'redo');
   assert.equal(history.count('undo',property.id),1);
   assert.equal(history.count('redo',property.id),0);
-  assert.equal(project.schemaVersion,10);
+  assert.equal(project.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.deepEqual(project.city.properties.find(p=>p.id===property.id).boundary,property.boundary);
 });

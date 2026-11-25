@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { copyJson,createProjectDocument,encodeProjectDocument,decodeProjectDocument } from '../src/data/project-format.js';
@@ -24,7 +25,7 @@ test('E1 creates independently validated property + plot on existing open land a
       const before=JSON.stringify(project);
       const result=preparePropertyCreationE1(project,workspace,draft);
       assert.equal(result.ok,true,morphology+'/'+size+': '+JSON.stringify(result.issues));
-      assert.equal(result.candidate.schemaVersion,10);
+      assert.equal(result.candidate.schemaVersion,PROJECT_SCHEMA_VERSION);
       assert.equal(result.candidate.city.properties.length,project.city.properties.length+1);
       assert.equal(result.candidate.city.plots.length,project.city.plots.length+1);
       assert.equal(result.candidate.city.buildings.length,project.city.buildings.length);

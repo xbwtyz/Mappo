@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -64,7 +65,7 @@ test('B2 never mutates buildings or accepted history on a real proposed movement
  if(result.candidateProject){
    assert.equal(result.status,'candidate-only');
    assert.deepEqual(result.candidateProject.city.buildings,input.city.buildings);
-   assert.equal(result.candidateProject.schemaVersion,10);
+   assert.equal(result.candidateProject.schemaVersion,PROJECT_SCHEMA_VERSION);
    assert.doesNotThrow(()=>validateStoredProject(result.candidateProject));
    assert.ok(result.reconciled.every(row=>['property','plot','open-space'].includes(row.kind)));
  } else {

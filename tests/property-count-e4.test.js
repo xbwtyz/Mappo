@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createProject} from '../src/core/city-model.js';
@@ -27,7 +28,7 @@ test('E4 split retains plot ID and originals, assigns unique ID, preserves struc
   const {source,property,session,attempt}=candidate('split');
   const before=JSON.stringify(source.city),oldIds=[...property.plotIds],oldBuildings=source.city.buildings.map(b=>({
     id:b.id,footprint:b.footprint,accessPath:b.accessPath,entrance:b.entrance}));
-  assert.equal(attempt.candidate.schemaVersion,10);
+  assert.equal(attempt.candidate.schemaVersion,PROJECT_SCHEMA_VERSION);
   const changed=attempt.candidate.city.properties.find(p=>p.id===property.id);
   assert.equal(changed.plotIds.length,oldIds.length+1);
   assert.equal(changed.plotIds[0],oldIds[0]);

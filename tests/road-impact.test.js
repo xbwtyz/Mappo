@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -408,7 +409,7 @@ test('reports are frozen, serializable, detached and excluded from saved/recover
   assert.equal(r.city, undefined);
   assert.equal(r.candidate, undefined);
   assert.equal(encodeProjectDocument(document), before);
-  assert.equal(p.schemaVersion, 10);
+  assert.equal(p.schemaVersion, PROJECT_SCHEMA_VERSION);
 });
 
 test('compiled impact reports agree with modular reports without exposing product globals', async () => {
