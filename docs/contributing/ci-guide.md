@@ -6,6 +6,10 @@ The required `Mappo CI` runs full validation on review-ready PRs, explicitly req
 
 On an open draft PR, push a commit with `[full-ci]` in its message to run all six suite runners; use `[full-ci-benchmark]` to add heavy C7 performance and stale-draft checks. A normal commit returns a draft to Fast Checks. A marker on a branch without an open PR still gets Fast Checks until a PR is opened. Ready PRs always get full CI. The markers are case-insensitive and benchmark takes precedence. Manual dispatch remains available. The routing job and aggregate are lightweight support jobs, not extra regression suites. Draft status and the separate merge/release/Pages approvals are unchanged.
 
+## Request a focused benchmark on a draft PR
+
+Use `[benchmark-f4]` for the F4 building benchmark, `[benchmark-c7]` for the C7 road benchmark, or both tokens to run the two benchmark jobs in parallel. Normal Fast Checks still run. Each benchmark checks out the exact draft head, verifies standalone parity, uses the matching Playwright environment, and uploads its own diagnostic artifacts. No other regression suite runs for these markers alone. Full markers or a ready-for-review PR take precedence; ordinary full CI still runs F4 and the existing C7 correctness tests. These diagnostic results cannot replace the required full gate. A branch without an open PR gets normal Fast Checks until a PR opens.
+
 ## Six concurrent full CI jobs
 
 | Runner | Responsibilities |
@@ -43,6 +47,6 @@ Browser setup: `npm install --no-save --no-package-lock playwright@1.56.1`; `npx
 
 CI's Node shard uploads the compiled `index.html` and matching `dist/mappo-<APP_VERSION>.html` (for H5, `dist/mappo-0.2.0.html`); each browser suite uploads independent screenshots and QA evidence, retained 14 days. G4 stores machine context and Small/Large draw and road preview results in `artifacts/g4/desktop-acceptance.json` / `.md`. Wall-clock results on shared CI hardware are comparative diagnostics, not physical-device measurements.
 
-CI uses `contents: read`; it never commits, tags or publishes. The separate `release.yml` is manual-only on `main` and rejects development versions, missing release notes, absent green CI for the exact commit, and existing immutable tags. Passing CI never publishes a release. The separate `pages.yml` uses **manual dispatch on main only**; merging a PR doesn't publish Pages. The optional heavy C7 browser benchmark is run only by selecting `run_c7_benchmark` on a manual Mappo CI dispatch or using the `[full-ci-benchmark]` PR head commit marker.
+CI uses `contents: read`; it never commits, tags or publishes. The separate `release.yml` is manual-only on `main` and rejects development versions, missing release notes, absent green CI for the exact commit, and existing immutable tags. Passing CI never publishes a release. The separate `pages.yml` uses **manual dispatch on main only**; merging a PR doesn't publish Pages. The optional heavy C7 browser benchmark is run only by selecting `run_c7_benchmark` on a manual Mappo CI dispatch using the `[full-ci-benchmark]` PR head commit marker, or using `[benchmark-c7]` on an ordinary draft PR.
 
 See [G4 acceptance](../history/0.2/workspace/g4-acceptance-report.md), [current roadmap](../plans/README.md) and [desktop implementation plan](../history/0.2/workspace/g1-g4-implementation-plan.md).

@@ -31,6 +31,8 @@ jobs:
     outputs:
       full: ${{ steps.route.outputs.full }}
       benchmark: ${{ steps.route.outputs.benchmark }}
+      focused_requested: ${{ steps.route.outputs.focused_requested }}
+      focused_suites: ${{ steps.route.outputs.focused_suites }}
     steps:
       - name: Check out exact candidate for routing
         uses: actions/checkout@v4
@@ -165,6 +167,70 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mappo-browser-${{ matrix.suite }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # Independent draft diagnostics. No required aggregate depends on these
+  # jobs; they cannot satisfy or replace the full review/main gate.
+  focused:
+    needs: route
+    if: ${{ needs.route.outputs.full == 'false' && needs.route.outputs.focused_requested == 'true' }}
+    name: Focused benchmark (${{ matrix.suite }})
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ${{ fromJSON(needs.route.outputs.focused_suites) }}
+    steps:
+      - name: Check out exact draft PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify candidate checkout
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Checkout's temporary HOME safe.directory does not persist here.
+          # Trust only this Actions workspace for the explicit Git command.
+          test "$(git -c safe.directory="$GITHUB_WORKSPACE" rev-parse HEAD)" = "$CANDIDATE_SHA"
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify checked-in standalone parity
+        run: |
+          npm run build
+          version=$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")
+          test -s index.html
+          test -s "dist/mappo-$version.html"
+          git -c safe.directory="$GITHUB_WORKSPACE" ls-files --error-unmatch index.html "dist/mappo-$version.html" > /dev/null
+          cmp index.html "dist/mappo-$version.html"
+          git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code -- index.html "dist/mappo-$version.html"
+      - name: Install matching test-only Playwright package
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Run requested F4 building benchmark
+        if: ${{ matrix.suite == 'f4' }}
+        env:
+          HOME: /root
+        run: node scripts/building-performance-f4.mjs
+      - name: Run requested C7 road benchmark
+        if: ${{ matrix.suite == 'c7' }}
+        env:
+          HOME: /root
+        run: node scripts/c7-browser-performance.mjs
+      - name: Upload focused benchmark evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: mappo-focused-${{ matrix.suite }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts/
           if-no-files-found: ignore
           retention-days: 14
