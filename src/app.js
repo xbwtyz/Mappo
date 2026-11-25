@@ -1,4 +1,5 @@
-import { canEditBuildingComponents, prepareBuildingComponents } from './editor/building-component-application.js';
+import { canEditBuildingComponents } from './editor/building-component-application.js';
+import { prepareBuildingEditorOperation } from './editor/building-transaction-bridge.js';
 import { BuildingComponentControls, initialBuildingComponentDraft } from './ui/building-component-controls.js';
 import { CourtyardPlacementControls } from './ui/courtyard-placement-controls.js';
 // A1 foundation APIs are bundled for the later road inspector; no editor hooks yet.
@@ -104,7 +105,6 @@ import { drawPropertySplitE2 } from './renderer/property-split-e2.js';
 import { PropertySplitControlsE2 } from './ui/property-split-e2-controls.js';
 import { PropertyMergeControlsE3 } from './ui/property-merge-e3-controls.js';
 import { drawPropertyMergeE3 } from './renderer/property-merge-e3.js';
-import { preparePropertyBuildingClear4E } from './editor/property-building-clear-4e.js';
 import { describeStructureChange4E } from './core/structure-history-feedback-4e.js';
 import { pointInPolygon } from './core/geometry.js';
 import { focusCameraOnSelection4B, selectionFocusPoints4B } from './core/selection-focus-4b.js';
@@ -1129,14 +1129,7 @@ function openBuildingComponentEditor(building) {
 }
 
 function prepareComponentPlacement(project, workspace, request, options) {
-  const draft = request.componentDraft;
-  const result = prepareBuildingComponents(project, workspace, request.buildingId, {...draft,
-    transform:{dx:draft.dx, dy:draft.dy, angle:draft.angle * Math.PI / 180,
-      scaleX:draft.scaleX / 100, scaleY:draft.scaleY / 100}},options);
-  if (draft.action === 'join' && result.ok && !acceptedHistoryD01.fits(project,result.candidate))
-    return {...result,ok:false,status:'invalid',candidate:null,
-      issues:[{message:'This join exceeds the session Undo capacity.'}]};
-  return result;
+  return prepareBuildingEditorOperation(project,workspace,request,{...options,history:acceptedHistoryD01});
 }
 
 const buildingComponentControls = new BuildingComponentControls($, () => buildingPlacementSession,
@@ -1266,8 +1259,7 @@ function commitStructurePlacement3H(current) {
     || !['property','building'].includes(selection.kind))return false;
   const previous=project,request={...session.active,spec:{...session.spec}};
   const workspace = captureWorkspace().workspace;
-  const result = request.operation === 'components' ? prepareComponentPlacement(previous,workspace,request)
-    : prepareBuildingStructure3H(previous,workspace,request);
+  const result = prepareBuildingEditorOperation(previous,workspace,request,{history:acceptedHistoryD01});
   if(!result.ok){
     session.validation = result;
     drafts.reject('building-placement', result.issues);
@@ -1317,7 +1309,7 @@ function clearPropertyBuildings4E(propertyId) {
   ))return false;
   if(!exitPropertyEditing3I()||!exitStructurePlacement3H()||!exitBuildingEditing())return false;
   const previous=project;
-  const result=preparePropertyBuildingClear4E(previous,captureWorkspace().workspace,propertyId);
+  const result=prepareBuildingEditorOperation(previous,captureWorkspace().workspace,{operation:'clear',propertyId},{history:acceptedHistoryD01});
   if(!result.ok){$('statusMessage').textContent=result.reason;return false;}
   if(project!==previous||workspaceShell?.state.selection?.id!==propertyId)return false;
   try {
@@ -1340,8 +1332,8 @@ function deleteStructureBuilding3H(propertyId,buildingId) {
   if(typeof window.confirm==='function' && !window.confirm('Delete '+buildingId+' from this property? You can Undo this deletion during the session.'))return false;
   if(!exitStructurePlacement3H() || !exitBuildingEditing())return false;
   const previous=project;
-  const result=prepareBuildingStructure3H(previous,captureWorkspace().workspace,
-    {operation:'delete',propertyId,buildingId});
+  const result=prepareBuildingEditorOperation(previous,captureWorkspace().workspace,
+    {operation:'delete',propertyId,buildingId},{history:acceptedHistoryD01});
   if(!result.ok){$('statusMessage').textContent='Deletion rejected: '+result.issues[0]?.message;return false;}
   try{
     if(!buildingStructureHistory.record(previous,result.candidate,propertyId,'delete'))return false;
