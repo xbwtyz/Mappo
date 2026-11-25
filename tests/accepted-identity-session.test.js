@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
-import { copyJson, defaultWorkspace } from '../src/data/project-format.js';
+import { copyJson, defaultWorkspace, createProjectDocument } from '../src/data/project-format.js';
 import { AcceptedEditHistoryD01 } from '../src/core/accepted-edit-history-d01.js';
 import { AcceptedIdentitySession } from '../src/core/accepted-identity-session.js';
 import { formatAllocatedIdentity } from '../src/core/identity-allocation.js';
@@ -247,11 +247,27 @@ test('IDA replay leaves supplied workspace and returned data detached',()=>{
 });
 test('IDA replay clears selection of entity removed by undo',()=>{
   const {session}=fixture(),accepted=session.commit(intent(session));
-  const workspace=defaultWorkspace(accepted.project);
-  workspace.ui={...(workspace.ui??{}),selection:{kind:'building',id:accepted.project.city.buildings[0].id}};
+  // A real portable workspace includes the standard UI subrecords supplied
+  // by createProjectDocument. Keep the exact roundtrip gate intact.
+  const draft=defaultWorkspace(accepted.project);
+  draft.ui={selection:{kind:'building',id:accepted.project.city.buildings[0].id}};
+  const workspace=createProjectDocument(accepted.project,draft).workspace;
+  const before=JSON.stringify(workspace),expected=copyJson(workspace);
+  expected.ui.selection=null;
   const result=replaySession(session,'undo',{workspace});
   assert.equal(result.workspace.ui.selection,null);
+  assert.deepEqual(result.workspace,expected);
+  assert.equal(JSON.stringify(workspace),before);
   assert.equal(workspace.ui.selection.id,accepted.project.city.buildings[0].id);
+});
+test('IDA replay refuses a noncanonical partial UI workspace without publishing',()=>{
+  const {session}=fixture(),accepted=session.commit(intent(session));
+  const workspace=defaultWorkspace(accepted.project);
+  workspace.ui={selection:{kind:'building',id:accepted.project.city.buildings[0].id}};
+  const before=snapshot(session),workspaceBefore=JSON.stringify(workspace);
+  assert.throws(()=>replaySession(session,'undo',{workspace}),/Portable project verification changed/);
+  assert.equal(snapshot(session),before);
+  assert.equal(JSON.stringify(workspace),workspaceBefore);
 });
 for(const [name,alter] of [
   ['stale revision',c=>({...c,revision:c.revision-1})],
