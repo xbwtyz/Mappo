@@ -1,3 +1,5 @@
+import { validateIdentityAllocationState } from './identity-allocation.js';
+import { validateActiveIdentityInventory } from './identity-verification.js';
 // D01: one bounded, session-only history of accepted city transactions.
 // Exact snapshots deliberately protect cross-editor metadata and identities.
 // Visual-only workspace changes are not transactions.
@@ -8,6 +10,35 @@ import { historyWorkspaceForReplay } from './accepted-history-workspace-a5.js';
 
 const d01Same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const d01Bytes=project=>JSON.stringify(project).length*2; // conservative UTF-16 estimate
+
+// The accepted allocator, not a historical snapshot, owns high-water marks.
+// Compare every historical namespace/counter; do not repair a rollback by
+// guessing from live IDs or by merging untrusted historical counter values.
+function d01AllocationCovers(current, historical){
+  validateIdentityAllocationState(current);
+  validateIdentityAllocationState(historical);
+  for(const [ns,counters] of Object.entries(historical.namespaces)){
+    if(!Object.hasOwn(current.namespaces,ns))return false;
+    for(const [type,value] of Object.entries(counters))
+      if((current.namespaces[ns][type]??0)<value)return false;
+  }
+  return true;
+}
+function d01ReplayMatches(current,expected,target){
+  if(current?.schemaVersion!==11)return d01Same(current,expected);
+  if(expected?.schemaVersion!==11||target?.schemaVersion!==11)return false;
+  if(!d01Same(current,{...expected,identityAllocation:current.identityAllocation}))
+    return false;
+  return d01AllocationCovers(current.identityAllocation,expected.identityAllocation)&&
+    d01AllocationCovers(current.identityAllocation,target.identityAllocation);
+}
+function d01ReplayTarget(current,target){
+  if(current?.schemaVersion!==11)return copyJson(target);
+  // Reject a malformed historical inventory before substituting counters:
+  // current high-water marks must not conceal invalid recorded state.
+  validateActiveIdentityInventory(target.identityAllocation,target.city);
+  return copyJson({...target,identityAllocation:current.identityAllocation});
+}
 
 export class AcceptedEditHistoryD01 {
   constructor({maxEntries=20,maxBytes=64*1024*1024}={}) {
@@ -76,7 +107,10 @@ export class AcceptedEditHistoryD01 {
   can(direction,project){
     const item=this.entry(direction);
     const expected=direction==='undo'?item?.to:item?.from;
-    return Boolean(item&&d01Same(project,expected));
+    const target=direction==='undo'?item?.from:item?.to;
+    if(!item||!d01Same(this.baseline,project))return false;
+    try{return d01ReplayMatches(project,expected,target);}
+    catch{return false;}
   }
   prepare(direction,project,workspace){
     const item=this.entry(direction);
@@ -84,7 +118,7 @@ export class AcceptedEditHistoryD01 {
     if(!this.can(direction,project))
       return {ok:false,reason:'Session history is stale. Undo/Redo cannot overwrite newer city edits.'};
     try{
-      const candidate=copyJson(direction==='undo'?item.from:item.to);
+      const candidate=d01ReplayTarget(project,direction==='undo'?item.from:item.to);
       validateStoredProject(candidate);
       let nextWorkspace=copyJson(workspace);
       // Full road transactions may change face, selection and district IDs.
@@ -97,7 +131,7 @@ export class AcceptedEditHistoryD01 {
       if(ref?.kind==='building'&&!candidate.city.buildings.some(b=>b.id===ref.id))
         nextWorkspace.ui.selection=null;
       const decoded=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,nextWorkspace)));
-      if(!d01Same(decoded.project.city,candidate.city)||
+      if(!d01Same(decoded.project,candidate)||
          !d01Same(decoded.workspace,nextWorkspace))
         throw Error('Portable project verification changed the history restore.');
       return {ok:true,candidate:decoded.project,workspace:nextWorkspace,entry:item};
@@ -106,10 +140,13 @@ export class AcceptedEditHistoryD01 {
   accept(direction,item,candidate){
     const from=direction==='undo'?this.past:this.future;
     const into=direction==='undo'?this.future:this.past;
-    if(from.at(-1)!==item||!d01Same(candidate,direction==='undo'?item.from:item.to))
+    if(!item||from.at(-1)!==item||!this.can(direction,this.baseline)||
+      !d01Same(candidate,d01ReplayTarget(this.baseline,direction==='undo'?item.from:item.to)))
       throw Error('History cursor or candidate changed during replay.');
+    // Complete copying before moving the cursor.
+    const baseline=copyJson(candidate);
     from.pop();into.push(item);
-    this.baseline=copyJson(candidate);
+    this.baseline=baseline;
     this.notice=(direction==='undo'?'Undid: ':'Redid: ')+item.label+'.';
   }
   summaries(){
