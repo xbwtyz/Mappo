@@ -8,6 +8,7 @@ import { createProject } from '../src/core/city-model.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 import { assertRoadUndoProject } from '../tests/helpers/road-undo-project.js';
+import { transactionProfileObservation, requireTransactionPhases, summarizeTransactionProfiles } from '../tests/helpers/transaction-profile.js';
 
 const observePreviewDraws = `
 const measurePreviewDraw = (name, draw) => (...args) => {
@@ -54,7 +55,7 @@ calculateJunctionPreviewP1 = (...args) => {
   });
 }
 const standalone = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-const html = observeBuildingApp(traceWorkerPhases ? observeWorkerPhases(standalone) : standalone, observePreviewDraws);
+const html = observeBuildingApp(traceWorkerPhases ? observeWorkerPhases(standalone) : standalone, transactionProfileObservation + observePreviewDraws);
 const cases = [
   ['small','N-0139','y',15],
   ['large','N-0145','x',8],
@@ -223,21 +224,26 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               }
               return elapsed;
             });
-            let apply = null;
+            let apply = null, replayProfiles = null;
             if(pass==='warm'){
               apply=await page.evaluate(b=>new Promise((resolve,reject)=>{
                 requestAnimationFrame(() => {
+                  __buildingQA.transactionProfile.begin('road-apply');
                   const started=performance.now();
-                  let last=started, frameGapMs=0;
+                  let last=started, frameGapMs=0, largestFrameGap=null;
                   const button=document.querySelector('#roadApplyB4');
                   button.click();
                   const clickMs=performance.now()-started;
                   const frame=()=>{
                     const now=performance.now(), app=__buildingQA.state();
-                    frameGapMs=Math.max(frameGapMs,now-last);
+                    if(now-last>frameGapMs){
+                      frameGapMs=now-last;
+                      largestFrameGap={startMs:last-started,endMs:now-started,visibility:document.visibilityState};
+                    }
                     if(!app.roadWorkspace.active){
                       if(app.files.revision!==b.revision+1)reject(Error('Apply not atomic'));
-                      else resolve({elapsedMs:roundInPage(now-started),clickMs:roundInPage(clickMs),frameGapMs:roundInPage(frameGapMs)});
+                      else resolve({elapsedMs:roundInPage(now-started),clickMs:roundInPage(clickMs),frameGapMs:roundInPage(frameGapMs),
+                        largestFrameGap,profile:__buildingQA.transactionProfile.finish()});
                       return;
                     }
                     if(!button.disabled || now-started>35000){
@@ -251,16 +257,25 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
                 });
                 function roundInPage(value){return Math.round(value*10)/10;}
               }),before);
+              requireTransactionPhases(apply.profile,['commitRoadIdentityApply','idaRoadApplyReconstruct',
+                'AcceptedIdentitySession.commit','prepareAcceptedIdentityTransaction','AcceptedEditHistoryD01.record']);
               const replay=await page.evaluate(()=>{
                 const snapshot=()=>JSON.stringify(__buildingQA.state().project);
                 const accepted=snapshot();
+                __buildingQA.transactionProfile.begin('road-undo');
                 if(!__buildingQA.moveRoadHistory('undo'))throw Error('Undo failed');
+                const undo=__buildingQA.transactionProfile.finish();
                 const restored=snapshot();
+                __buildingQA.transactionProfile.begin('road-redo');
                 if(!__buildingQA.moveRoadHistory('redo'))throw Error('Redo failed');
-                return {accepted,restored,redone:snapshot()};
+                const redo=__buildingQA.transactionProfile.finish();
+                return {accepted,restored,redone:snapshot(),undo,redo};
               });
               assertRoadUndoProject(replay.restored,before.original,replay.accepted);
               assert.equal(replay.redone,replay.accepted,'Redo must restore the exact accepted project');
+              replayProfiles={undo:replay.undo,redo:replay.redo};
+              for(const profile of Object.values(replayProfiles))requireTransactionPhases(profile,
+                ['AcceptedIdentitySession.replay','AcceptedEditHistoryD01.prepare','AcceptedEditHistoryD01.accept']);
             }else{
               await page.evaluate(()=>{
                 const s=__buildingQA.state().roadWorkspace.session;
@@ -291,7 +306,9 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
               timeline:{dispatchAtMs:result.dispatchAtMs,workerSentAtMs:result.workerSentAtMs,
                 replyAtMs:result.replyAtMs,readyAtMs:result.previewMs,drawCompleteAtMs:result.drawCompleteAtMs},
               steadyRenderMs:round(median(steadyRenderMs)),
-              applyMs:apply?.elapsedMs??null,applyClickMs:apply?.clickMs??null,applyFrameGapMs:apply?.frameGapMs??null});
+              applyMs:apply?.elapsedMs??null,applyClickMs:apply?.clickMs??null,applyFrameGapMs:apply?.frameGapMs??null,
+               largestApplyFrameGap:apply?.largestFrameGap??null,
+               transactionProfiles:apply?{apply:apply.profile,...replayProfiles}:null});
           }
         }
       }catch(e){errors.push(name+'/'+viewport.name+': '+e.stack);}
@@ -319,10 +336,18 @@ for(const group of [...new Set(results.map(r=>[r.browser,r.viewport,r.size].join
     maxDeliveryMs:round(Math.max(...rows.map(r=>r.deliveryMs))),
     medianSteadyRenderMs:round(median(rows.map(r=>r.steadyRenderMs)))});
 }
+const transactionProfiles=[];
+for(const group of [...new Set(results.filter(r=>r.transactionProfiles).map(r=>[r.browser,r.viewport,r.size].join('/')))]){
+  const rows=results.filter(r=>r.transactionProfiles&&[r.browser,r.viewport,r.size].join('/')===group);
+  transactionProfiles.push({group,phases:Object.fromEntries(['apply','undo','redo'].map(name=>[name,
+    summarizeTransactionProfiles(rows.map(r=>r.transactionProfiles[name]))])),samples:rows.map(r=>({id:r.id,pass:r.pass,
+    applyMs:r.applyMs,applyClickMs:r.applyClickMs,applyFrameGapMs:r.applyFrameGapMs,largestApplyFrameGap:r.largestApplyFrameGap}))});
+}
 const report={runner:{cpu:os.cpus()[0]?.model,logicalCpus:os.cpus().length,
   memoryGiB:round(os.totalmem()/2**30),platform:process.platform,node:process.version},
-  summary,results,errors};
+  summary,results,errors,transactionProfiles,instrumentation:'S1-A test-only synchronous nested phase timings; Apply/Undo/Redo include profiling overhead; worker and scheduler time are not measured phases'};
 await mkdir(new URL('../artifacts/c7/',import.meta.url),{recursive:true});
 await writeFile(new URL('../artifacts/c7/performance.json',import.meta.url),JSON.stringify(report,null,2));
 console.log('C7_BROWSER_PERFORMANCE '+JSON.stringify({runner:report.runner,summary,errors}));
+console.log('C7_TRANSACTION_PROFILE '+JSON.stringify({transactionProfiles,instrumentation:report.instrumentation}));
 if(errors.length)throw Error('C7 performance/safety harness failed: '+errors.join(' | '));
