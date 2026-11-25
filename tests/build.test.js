@@ -591,6 +591,20 @@ test('standalone app downloads, previews and restores complete projects and reco
   const copy = value => JSON.parse(JSON.stringify(value));
   const first = await app();
   let s = first.state();
+  // Named metadata is imported as an ordinary portable project, not injected
+  // into the host's immutable accepted city. Set up before the real district
+  // edit so the saved district restoration test still has its actual history.
+  assert.ok(Object.isFrozen(s.project.city));
+  assert.throws(()=>{s.project.city.name='Forbidden mutation';},TypeError);
+  const namedFixture=copy(s.files.captureDocument());
+  namedFixture.project.city.name='Exact Saved City';
+  namedFixture.project.city.buildings[0].name='Copper Fox';
+  const namedText=JSON.stringify(namedFixture);
+  await s.files.stageFile({size:Buffer.byteLength(namedText),text:async()=>namedText});
+  assert.equal(await first.el('openProjectButton').handlers.click(),true);
+  s=first.state();
+  assert.equal(s.project.city.name,'Exact Saved City');
+  assert.equal(s.project.city.buildings[0].name,'Copper Fox');
   const selectedDistrict = s.project.city.districts[0];
   first.el('districtSelect').value = selectedDistrict.id;
   first.el('districtSelect').handlers.change();
@@ -599,8 +613,6 @@ test('standalone app downloads, previews and restores complete projects and reco
   first.el('applyDistrictButton').handlers.click();
   s = first.state();
   first.el('districtNameInput').value = 'Unapplied district name';
-  s.project.city.name = 'Exact Saved City';
-  s.project.city.buildings[0].name = 'Copper Fox';
   s.editor.start('points');
   s.editor.down({
     x: 10,
@@ -643,12 +655,19 @@ test('standalone app downloads, previews and restores complete projects and reco
   assert.equal(payload.workspace.ui.landscape.filter, 'water');
   assert.equal(payload.workspace.ui.landscape.formCache.find(x => x.key === 'landscape-add:lake').controls.lakeSeedInput, 'pending lake draft');
   // Staging a file never changes the city. Only Open project commits the import.
-  s.project.city.name = 'Replace this temporary city';
+  const temporary=copy(payload);
+  temporary.project.city.name='Replace this temporary city';
+  const temporaryText=JSON.stringify(temporary);
+  await s.files.stageFile({size:Buffer.byteLength(temporaryText),text:async()=>temporaryText});
+  assert.equal(await first.el('openProjectButton').handlers.click(),true);
+  s=first.state();
+  const temporaryAccepted=s.project;
   s.editor.boundary = [];
   await s.files.stageFile({
     size: file.blob.size,
     text: async () => text
   });
+  assert.equal(first.state().project,temporaryAccepted);
   assert.equal(first.state().project.city.name, 'Replace this temporary city');
   assert.equal(first.el('loadPreview').hidden, false);
   assert.equal(first.el('projectMenu').hidden, false, 'Validated preview is revealed in the shared Project menu');
