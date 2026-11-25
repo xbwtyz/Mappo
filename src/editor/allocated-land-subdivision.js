@@ -36,13 +36,23 @@ function idaLandSubdivision(project,intent){
   if(!property)throw Error('Selected property disappeared.');
   const flexible=new FlexiblePlotDraft027(project.city,property);
   for(const step of intent.steps){
+    if(step?.kind==='merge'){
+      if(!idaLandFields(step,['kind','sourceIndex','otherIndex','retain'])||
+        !Number.isInteger(step.sourceIndex)||!Number.isInteger(step.otherIndex)||
+        !flexible.plots[step.sourceIndex]||!flexible.plots[step.otherIndex]||
+        step.sourceIndex===step.otherIndex||!['first','second'].includes(step.retain))
+        throw Error('Invalid plot merge step.');
+      flexible.selectedId=flexible.plots[step.sourceIndex].id;
+      flexible.otherId=flexible.plots[step.otherIndex].id;
+      flexible.retain=step.retain;flexible.merge();continue;
+    }
     if(!idaLandFields(step,['sourceIndex','edgeA','edgeB','ratioA','ratioB','retain'])||
       !Number.isInteger(step.sourceIndex)||!flexible.plots[step.sourceIndex]||
       !['first','second'].includes(step.retain))
       throw Error('Invalid subdivision step.');
     flexible.selectedId=flexible.plots[step.sourceIndex].id;
     for(const key of ['edgeA','edgeB','ratioA','ratioB','retain'])flexible[key]=step[key];
-    flexible.split(project.city);
+    flexible.split(project.city,{identityDraft:true});
   }
   flexible.approved=intent.approved;
   const draft={propertyId:property.id,boundary:copyJson(property.boundary),flexible};
