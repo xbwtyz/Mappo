@@ -7,7 +7,7 @@ import {Script} from 'node:vm';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 const imports=/^\s*import\s+[^;]+?\s+from\s+['"]([^'"]+)['"];?\s*$/gm;
-const futureModules=['src/core/project-schema-capabilities.js','src/data/migrate-schema11.js'];
+const futureModules=['src/core/project-schema-capabilities.js','src/data/migrate-schema11.js','src/core/identity-transaction.js'];
 
 // Mirror the existing build's flattened module closure. This parse-only
 // diagnostic exposes lexical name collisions before runtime adoption.
