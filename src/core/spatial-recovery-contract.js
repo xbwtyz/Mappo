@@ -46,7 +46,7 @@ export function createSpatialPermissions(input = {}) {
   });
 }
 export function createSpatialOperation(input) {
-  sreRecord(input, ['version', 'family', 'operation', 'projectId', 'revision', 'editedRefs', 'permissions'], 'operation');
+  sreRecord(input, ['version', 'family', 'operation', 'projectId', 'revision', 'editedRefs', 'permissions', 'geometry'], 'operation');
   if (input.version !== SRE_CONTRACT_VERSION || !Object.hasOwn(sreFamilies, input.family))
     throw Error('Unsupported spatial operation version or family.');
   if (!Number.isSafeInteger(input.revision) || input.revision < 0)
@@ -57,11 +57,23 @@ export function createSpatialOperation(input) {
   if (new Set(keys).size !== keys.length || refs.some(ref => !sreFamilies[input.family].includes(ref.collection)))
     throw Error('Duplicate or incompatible spatial targets.');
   refs.sort((a,b) => riCompare(spatialRefKey(a), spatialRefKey(b)));
+  let geometry;
+  if (Object.hasOwn(input,'geometry')) {
+    if (input.family !== 'road' || input.operation !== 'translate-road-group')
+      throw Error('Unsupported spatial geometry contract.');
+    sreRecord(input.geometry,['offset'],'road geometry');
+    sreRecord(input.geometry.offset,['x','y'],'road offset');
+    const {x,y}=input.geometry.offset;
+    if (![x,y].every(n=>Number.isFinite(n)&&Math.abs(n)<=100000) || (x===0&&y===0))
+      throw Error('Invalid spatial road offset.');
+    geometry={offset:{x,y}};
+  }
   return riFreeze({
     version: SRE_CONTRACT_VERSION, family: input.family,
     operation: sreText(input.operation, 'operation name'),
     projectId: sreText(input.projectId, 'project identity'), revision: input.revision,
     editedRefs: refs, permissions: createSpatialPermissions(input.permissions),
+    ...(geometry ? {geometry} : {}),
   });
 }
 // Inventory is detached and read-only; finding a reference does not make it writable.
