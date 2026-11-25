@@ -1,3 +1,4 @@
+import { migrateSchema10ProjectS11 } from '../data/migrate-schema11.js';
 import { stampRoadGenerated } from './road-provenance.js';
 import {
   terrainPrepare
@@ -88,7 +89,7 @@ export function createProject(options = {}) {
   validateDevelopment(layout, development);
   const project = {
     // The generator's existing flat shape output is a transient input to the
-    // pure Schema 10 adapter; no accepted Schema 9 city is published.
+    // pure canonical geometry and identity migrations; no legacy city is published.
     schemaVersion: 9,
     generatorVersion: APP_VERSION,
     seed,
@@ -147,7 +148,7 @@ export function createProject(options = {}) {
   for (const property of project.city.properties)
     stampRoadGenerated(property, property.plotIds.map(id => plots.get(id)));
   for (const building of project.city.buildings) stampRoadGenerated(building);
-  const adopted=hydrateProjectS10(migrateSchema9ProjectS10(project));
+  const adopted=hydrateProjectS10(migrateSchema10ProjectS11(migrateSchema9ProjectS10(project)));
   if (adopted.schemaVersion!==PROJECT_SCHEMA_VERSION)
     throw Error('The generated city was not upgraded to the supported schema.');
   return adopted;

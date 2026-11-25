@@ -60,23 +60,32 @@ export function parseAllocatedIdentity(id) {
   }
   return Object.freeze({ type, namespace, sequence });
 }
-export function validateIdentityAllocationState(value) {
+export function* iterateIdentityAllocationStateValidation(value, spend = () => {}) {
   const state = idaRequireRecord(value, 'identity allocation state');
   idaExactKeys(state, ['version', 'namespaces'], 'identity allocation state');
   if (state.version !== IDENTITY_ALLOCATION_VERSION) {
     throw new Error('Unsupported identity allocation version');
   }
   const namespaces = idaRequireRecord(state.namespaces, 'allocation namespaces');
+  let scanned = 0;
   for (const namespace of Reflect.ownKeys(namespaces)) {
+    spend(1);
+    if (++scanned % 256 === 0) yield { stage: 'project-identity-namespaces' };
     validateAllocationNamespace(namespace);
     const counters = idaRequireRecord(namespaces[namespace], 'allocation counters');
     const keys = Reflect.ownKeys(counters);
     if (keys.length === 0) throw new Error('Empty allocation namespace');
     for (const type of keys) {
+      spend(1);
       validateAllocationType(type);
       validateAllocationCounter(counters[type], 1);
     }
   }
+  return true;
+}
+export function validateIdentityAllocationState(value, spend) {
+  const steps = iterateIdentityAllocationStateValidation(value, spend);
+  while (!steps.next().done) { /* synchronous caller */ }
   return true;
 }
 export function createIdentityAllocationState() {

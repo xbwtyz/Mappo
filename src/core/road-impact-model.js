@@ -1,3 +1,4 @@
+import { validateIdentityAllocationState } from './identity-allocation.js';
 export const ROAD_IMPACT_WORK_LIMIT = 6000000;
 export const ROAD_IMPACT_COLLECTIONS = Object.freeze([
   ['nodes', 'junction'],
@@ -183,9 +184,16 @@ function riNestedGeometry(record, kind, id, emit, spend) {
 }
 export function inspectOpaqueRoadDependencies(project, graph, emit, spend) {
   const city = project.city;
+  let rootFields = 'schemaVersion generatorVersion seed options city';
+  if (project.schemaVersion === 11) {
+    // Recognize only the defined, validated allocator state; all other opaque
+    // project fields still require dependency review.
+    validateIdentityAllocationState(project.identityAllocation, spend);
+    rootFields += ' identityAllocation';
+  }
   riUnknownRecord(
     project,
-    'schemaVersion generatorVersion seed options city',
+    rootFields,
     'city',
     city.id,
     emit,
