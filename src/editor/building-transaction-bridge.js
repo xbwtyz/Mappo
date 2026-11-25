@@ -1,3 +1,4 @@
+import { captureEditorApplyEvidence } from './editor-apply-evidence.js';
 import { prepareBuildingStructure3H } from './building-structures.js';
 import { prepareBuildingComponents } from './building-component-application.js';
 import { preparePropertyBuildingClear4E } from './property-building-clear-4e.js';
@@ -61,7 +62,8 @@ export function previewBuildingEditorTransaction(host,workspace,request){
 export function commitBuildingEditorTransaction(host,workspace,request,reservation,{preserveLegacyCapacity=false}={}){
   const historyPolicy=preserveLegacyCapacity&&!(request.operation==='components'&&request.componentDraft?.action==='join')
     ?'legacy-ordinary-structure':'required';
-  const input=idaEditorBuildingIntent(request),{project,context,history}=host.view();
+  const input=idaEditorBuildingIntent(request),view=host.view(),{project,context,history}=view;
+  const bindEvidence=captureEditorApplyEvidence(host,view,workspace,request);
   const receipt=reservation?.receipt;
   if(JSON.stringify(context)!==JSON.stringify(reservation?.context))
     throw Error('Stale building editor reservation.');
@@ -70,8 +72,5 @@ export function commitBuildingEditorTransaction(host,workspace,request,reservati
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Building editor Apply refused.');
   return host.commit({requests,receipt,candidateCity:result.candidate.city,
     transaction:idaEditorBuildingTransaction(project,input,receipt),historyPolicy,
-    validateDomain:(before,after)=>{
-      const fresh=prepareBuildingEditorOperation(before,workspace,input,{history,identityReservation:{context,receipt}});
-      return fresh.ok&&JSON.stringify(fresh.candidate)===JSON.stringify(after);
-    }});
+    validateDomain:bindEvidence(result.candidate)});
 }

@@ -123,3 +123,54 @@ test('IDA mounted simple replacement preserves top-level building identity and c
  assert.deepEqual(out.project.identityAllocation,component.project.identityAllocation);
  assert.equal(out.project.city.buildings.find(b=>b.id===component.original.id).area,9);
 });
+
+// Test only: simulate a late alteration between trusted local reconstruction
+// and the coordinator's independent acceptance. Each family must refuse
+// without publication, then accept its unchanged intent normally.
+function c2EvidenceCases(){
+  const landHost=hostFor(site.project),landW=copyJson(site.workspace),landIntent=copyJson(site.draft);
+  const landPreview=previewLandEditorTransaction(landHost,landW,'property-create',landIntent);
+  const buildingHost=hostFor(component.project),buildingW=copyJson(component.workspace);
+  const buildingIntent={operation:'replace',propertyId:component.property.id,
+    buildingId:component.original.id,spec:{...defaultBuildingSpec3H(component.property,component.original),width:3,depth:3,preset:'rectangle'}};
+  const buildingPreview=previewBuildingEditorTransaction(buildingHost,buildingW,buildingIntent);
+  const nonHost=hostFor(site.project),nonW=copyJson(site.workspace),ref={kind:'property',id:nonHost.view().project.city.properties[0].id};
+  const nonIntent={kind:'identity',ref,input:{customName:'S1-C2 renamed property',customUse:'',useChoice:''}};
+  const nonPreview=previewNonallocatingEditorTransaction(nonHost,nonW,nonIntent);
+  assert.ok(landPreview.result.ok);assert.ok(buildingPreview.result.ok);assert.ok(nonPreview.result.ok);
+  return [
+    {host:landHost,w:landW,intent:landIntent,apply:()=>commitLandEditorTransaction(landHost,landW,'property-create',landIntent,landPreview)},
+    {host:buildingHost,w:buildingW,intent:buildingIntent,apply:()=>commitBuildingEditorTransaction(buildingHost,buildingW,buildingIntent,buildingPreview)},
+    {host:nonHost,w:nonW,intent:nonIntent,apply:()=>commitNonallocatingEditorTransaction(nonHost,nonW,nonIntent,tx('identity','identity-change',[ref.id]),nonPreview)}
+  ];
+}
+test('S1-C2 each non-road family refuses a valid but different late candidate atomically',()=>{
+  for(const f of c2EvidenceCases()){
+    const before=f.host.view(),snapshot=JSON.stringify(f.host.read()),commit=f.host.commit.bind(f.host);
+    f.host.commit=command=>{
+      const city=copyJson(command.candidateCity);
+      city.buildings[0].customName='Unreviewed authored name';
+      return commit({...command,candidateCity:city});
+    };
+    assert.throws(f.apply,/Independent domain validation/);
+    assert.equal(f.host.view(),before);assert.equal(JSON.stringify(f.host.read()),snapshot);
+    f.host.commit=commit;
+    assert.equal(f.apply().context.revision,1);
+  }
+});
+test('S1-C2 each non-road family refuses changed intent and workspace at acceptance',()=>{
+  for(const f of c2EvidenceCases()){
+    const before=f.host.view(),snapshot=JSON.stringify(f.host.read()),commit=f.host.commit.bind(f.host);
+    for(const [alter,restore] of [
+      [()=>{f.w.view.camera.zoom+=1;},()=>{f.w.view.camera.zoom-=1;}],
+      [()=>{f.intent.s1Tamper=true;},()=>{delete f.intent.s1Tamper;}]
+    ]){
+      f.host.commit=command=>{alter();return commit(command);};
+      assert.throws(f.apply,/Independent domain validation/);
+      assert.equal(f.host.view(),before);assert.equal(JSON.stringify(f.host.read()),snapshot);
+      restore();
+    }
+    f.host.commit=commit;
+    assert.equal(f.apply().context.revision,1);
+  }
+});

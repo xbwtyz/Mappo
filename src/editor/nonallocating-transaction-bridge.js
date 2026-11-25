@@ -1,3 +1,4 @@
+import { captureEditorApplyEvidence } from './editor-apply-evidence.js';
 import { prepareBuildingApply } from './building-application.js';
 import { prepareCompoundMembership,prepareCompoundTransform } from './building-compounds-c01.js';
 import { IdentityEditor } from '../core/identity.js';
@@ -46,7 +47,8 @@ export function previewNonallocatingEditorTransaction(host,workspace,intent){
   return {context,receipt,result:prepareNonallocatingEditorOperation(project,workspace,input)};
 }
 export function commitNonallocatingEditorTransaction(host,workspace,intent,transaction,reservation,{preserveLegacyCapacity=false,allowUnchanged=false}={}){
-  const {project,context}=host.view();
+  const view=host.view(),{project,context}=view;
+  const bindEvidence=captureEditorApplyEvidence(host,view,workspace,intent);
   if(JSON.stringify(context)!==JSON.stringify(reservation?.context))throw Error('Stale nonallocating editor reservation.');
   const input=copyJson(intent),metadata=idaNonallocatingHistory(input,transaction);
   const result=prepareNonallocatingEditorOperation(project,workspace,input);
@@ -61,8 +63,5 @@ export function commitNonallocatingEditorTransaction(host,workspace,intent,trans
     ?(input.kind==='building-geometry'&&metadata.operation==='building-structure'?'legacy-ordinary-structure':'legacy-ordinary')
     :'required';
   return host.commit({requests:[],receipt:reservation.receipt,candidateCity:result.candidate.city,transaction:metadata,historyPolicy,
-    validateDomain:(before,after)=>{
-      const fresh=prepareNonallocatingEditorOperation(before,workspace,input);
-      return fresh.ok&&JSON.stringify(fresh.candidate)===JSON.stringify(after);
-    }});
+    validateDomain:bindEvidence(result.candidate)});
 }
