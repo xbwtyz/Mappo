@@ -13,7 +13,16 @@ const idaQALedger=new Proxy({}, {get(_target,key){
 globalThis.__buildingQA = {
   state: () => ({ project, camera, editor, layers, workspaceShell, roadWorkspace, buildingWorkspace, buildingEditSession, propertyWorkspace, identityWorkspace,
     landscapeWorkspace, districtPanel, waterPanel, terrainPanel, fortificationPanel, files, buildingHistory, buildingStructureHistory, acceptedHistoryD01:idaQALedger, identityView:secureIdentityHost.view(), buildingPlacementSession, propertyEditSession, propertyHistory, propertyDeletionHistory4A, propertyCreationSessionE1, propertyCreationHistoryE1, propertySplitE2, propertyMergeE3, roadHistory }),
-  capture: captureWorkspace, apply: applyProjectDocument,
+  capture: captureWorkspace,
+  // Older browser fixtures pass a project/workspace pair, not a file envelope.
+  // Construct the real portable envelope in the app realm, or decode the
+  // supplied complete envelope. Production adoption remains strictly validated.
+  apply: doc => {
+    const input=JSON.parse(JSON.stringify(doc));
+    const portable=Object.keys(input).length===2&&Object.hasOwn(input,'project')&&Object.hasOwn(input,'workspace')
+      ?createProjectDocument(input.project,input.workspace):input;
+    applyProjectDocument(decodeProjectDocument(JSON.stringify(portable)));
+  },
   // Real file-import boundary for documents created in the outer Node realm.
   // Decode in the app realm; never weaken production plain-record validation.
   applyPortable: text => applyProjectDocument(decodeProjectDocument(text)), applyRoad: () => roadWorkspace.apply(), moveRoadHistory: moveRoadHistoryB4, draw: requestDraw
