@@ -28,6 +28,15 @@ export function routeFullCI(eventName,event,message='') {
   }
 }
 
+// Focused benchmark selection is additive only for ordinary draft heads.
+// The full gate wins on ready PRs or an explicit full marker.
+export function routeFocusedBenchmarks(eventName,event,message='') {
+  if (eventName!=='pull_request') return [];
+  if (routeFullCI(eventName,event,message).full) return [];
+  const text=String(message).toLowerCase();
+  return ['f4','c7'].filter(suite=>text.includes('[benchmark-'+suite+']'));
+}
+
 export function routeFastCI({sha,message,pulls}) {
   // Missing/malformed lookup data never suppresses smoke checks. Match the
   // exact pushed head so a stale API response cannot suppress a new push.
@@ -48,7 +57,9 @@ function runCLI(mode,env=process.env) {
       execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()!==event.pull_request?.head?.sha) {
       throw new Error('Routing checkout does not match exact PR head');
     }
-    result=routeFullCI(env.GITHUB_EVENT_NAME,event,message);
+    const suites=routeFocusedBenchmarks(env.GITHUB_EVENT_NAME,event,message);
+    result={...routeFullCI(env.GITHUB_EVENT_NAME,event,message),
+      focused_requested:suites.length>0,focused_suites:JSON.stringify(suites)};
   } else if (mode==='fast') {
     let pulls;
     try {
