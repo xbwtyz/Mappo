@@ -118,3 +118,46 @@ test('IDA authorized demolition bridge rejects fabricated authorization and comm
   assert.deepEqual(undo.project,f.p);
   cancelLareDemolition(session);
 });
+
+test('S1-C1 trusted road evidence rejects valid but different candidate at atomic acceptance',()=>{
+  const f=road(),before=f.h.view(),snapshot=JSON.stringify(f.h.read()),b=begin(f);
+  const original=f.h.commit.bind(f.h);
+  f.h.commit=command=>{
+    const changed=copyJson(command.candidateCity);
+    changed.buildings[0].customName='Unexpected authored name';
+    return original({...command,candidateCity:changed});
+  };
+  assert.throws(()=>commit(f,b),/Independent domain validation/);
+  assert.equal(f.h.view(),before);
+  assert.equal(JSON.stringify(f.h.read()),snapshot);
+  assert.throws(()=>commit(f,b),/token/);
+  f.h.commit=original;
+  assert.equal(commit(f,begin(f)).context.revision,1);
+});
+
+test('S1-C1 private road evidence rejects intent, workspace and draft revision changes during acceptance',()=>{
+  for(const alter of [
+    f=>{f.s.roadIntentOffset.x+=1;},
+    f=>{f.w.view.camera.zoom+=1;},
+    f=>{f.s.revision+=1;}
+  ]){
+    const f=road(),before=f.h.view(),snapshot=JSON.stringify(f.h.read()),b=begin(f);
+    const original=f.h.commit.bind(f.h);
+    f.h.commit=command=>{alter(f);return original(command);};
+    assert.throws(()=>commit(f,b),/Independent domain validation/);
+    assert.equal(f.h.view(),before);
+    assert.equal(JSON.stringify(f.h.read()),snapshot);
+    assert.throws(()=>commit(f,b),/token/);
+  }
+});
+
+test('S1-C1 local reconstruction remains independent of a candidate with matching worker ledger',()=>{
+  const f=junction(),before=f.h.view(),b=begin(f,true),reply=worker(b.workerRequest);
+  assert.ok(reply.ok);
+  reply.candidate.city.buildings[0].customName='Unreviewed worker edit';
+  assert.throws(()=>commit(f,b,reply),/Worker road Apply result/);
+  assert.equal(f.h.view(),before);
+  assert.equal(f.h.view().history.length,0);
+  const next=begin(f,true);
+  assert.equal(commit(f,next,worker(next.workerRequest)).context.revision,1);
+});
