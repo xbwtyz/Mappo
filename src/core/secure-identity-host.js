@@ -1,6 +1,6 @@
 import { AcceptedIdentitySession } from './accepted-identity-session.js';
 import { validateJsonTree,validateStoredProject } from '../data/project-validation.js';
-import { copyJson } from '../data/project-format.js';
+import { copyJson,encodeProjectDocument,decodeProjectDocument } from '../data/project-format.js';
 
 // Host-only lifecycle boundary. The entropy source is injectable for tests;
 // production uses Web Crypto only, including file:// offline contexts.
@@ -25,6 +25,7 @@ export class SecureIdentityHost {
   #state={session:null,used:new Set()};
   #busy=false;
   #crypto;
+  #adoptions=new WeakMap();
   constructor({cryptoSource=globalThis.crypto}={}){
     this.#crypto=cryptoSource;
   }
@@ -38,23 +39,63 @@ export class SecureIdentityHost {
     try{return run();}finally{this.#busy=false;}
   }
   get adopted(){return this.#state.session!==null;}
+  #prepareSession(project){
+    // Reject malformed input before acquiring entropy or changing history.
+    validateJsonTree(project);
+    const accepted=copyJson(project);
+    if(accepted?.schemaVersion!==11)throw Error('Secure identity host requires Schema 11.');
+    validateStoredProject(accepted);
+    const used=new Set(this.#state.used);
+    const excluded=new Set([...used,...Object.keys(accepted.identityAllocation.namespaces)]);
+    const namespace=idaHostFreshNamespace(this.#crypto,excluded);
+    const context={projectId:'ida-session-'+namespace,revision:0,namespace};
+    const session=new AcceptedIdentitySession({project:accepted,context});
+    const result=session.read();
+    used.add(namespace);
+    return {state:{session,used},result};
+  }
+  #currentView(){return this.#state.session?.view()??null;}
   adopt(project){
     return this.#exclusive(()=>{
-      // Reject malformed input before acquiring entropy or changing history.
-      validateJsonTree(project);
-      const accepted=copyJson(project);
-      if(accepted?.schemaVersion!==11)throw Error('Secure identity host requires Schema 11.');
-      validateStoredProject(accepted);
-      const used=new Set(this.#state.used);
-      const excluded=new Set([...used,...Object.keys(accepted.identityAllocation.namespaces)]);
-      const namespace=idaHostFreshNamespace(this.#crypto,excluded);
-      const context={projectId:'ida-session-'+namespace,revision:0,namespace};
-      const session=new AcceptedIdentitySession({project:accepted,context});
-      const result=session.read();
-      used.add(namespace);
-      // Fresh context and clean history only become visible after all checks.
-      // The namespace is not added to project data until an allocation commits.
-      this.#state={session,used};
+      const prepared=this.#prepareSession(project);
+      this.#state=prepared.state;
+      return prepared.result;
+    });
+  }
+  // Accept an already decoded/migrated portable document. Stage the whole
+  // validated project and workspace without entropy, history resets or
+  // publication. An opaque, host-local token binds the exact outgoing view.
+  // A subsequent commit/replay/adoption invalidates an outstanding token.
+  stageAdoption(document){
+    return this.#exclusive(()=>{
+      const canonical=decodeProjectDocument(encodeProjectDocument(document));
+      if(canonical.project.schemaVersion!==11)
+        throw Error('Secure identity host requires Schema 11.');
+      const token=Object.freeze({});
+      const staged={baseline:this.#currentView(),document:canonical};
+      const preview=copyJson(canonical);
+      this.#adoptions.set(token,staged);
+      return {token,document:preview};
+    });
+  }
+  cancelAdoption(token){
+    return this.#exclusive(()=>this.#adoptions.delete(token));
+  }
+  commitAdoption(token){
+    return this.#exclusive(()=>{
+      const staged=this.#adoptions.get(token);
+      if(!staged)throw Error('Unknown or consumed project adoption token.');
+      // One-shot, including refusal; callers may explicitly stage again.
+      this.#adoptions.delete(token);
+      if(staged.baseline!==this.#currentView())
+        throw Error('Stale project adoption token.');
+      const prepared=this.#prepareSession(staged.document.project);
+      // Prepare all detached workspace/document return values before the
+      // same sole publication used by direct adoption. UI callbacks do not
+      // execute here; the future live adapter must stage its own UI work.
+      const result={...prepared.result,workspace:copyJson(staged.document.workspace),
+        document:copyJson(staged.document)};
+      this.#state=prepared.state;
       return result;
     });
   }
