@@ -59,6 +59,7 @@ export class SecureIdentityHost {
     });
   }
   read(){return this.#requireSession().read();}
+  view(){return this.#requireSession().view();}
   copyHistory(){return this.#requireSession().copyHistory();}
   reserve(requests){return this.#requireSession().reserve(requests);}
   commit(command){return this.#exclusive(()=>this.#requireSession().commit(command));}

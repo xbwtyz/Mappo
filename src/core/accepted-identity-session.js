@@ -26,6 +26,42 @@ function idaSessionForkHistory(history,detach=false){
   fork.notice=history.notice;
   return fork;
 }
+// One immutable, reference-stable render snapshot per accepted revision.
+// Freeze only validated/owned project data. The history facade has no
+// mutators or access to private cursors, and an older view stays historical.
+function idaSessionFreezeTree(root){
+  const stack=[root];
+  while(stack.length){
+    const value=stack.pop();
+    if(!value||typeof value!=='object'||Object.isFrozen(value))continue;
+    for(const child of Object.values(value))if(child&&typeof child==='object')stack.push(child);
+    Object.freeze(value);
+  }
+  return root;
+}
+function idaSessionPublishedState(project,context,history){
+  const accepted=idaSessionFreezeTree(project),binding=Object.freeze({...context});
+  const entries=new Map();
+  const summary=idaSessionFreezeTree(history.summaries());
+  const historyView=Object.freeze({
+    notice:history.notice,serial:history.serial,bytes:history.bytes,length:history.length,
+    maxEntries:history.maxEntries,maxBytes:history.maxBytes,
+    entry(direction){
+      if(direction!=='undo'&&direction!=='redo')return null;
+      if(!entries.has(direction)){
+        const entry=history.entry(direction);
+        entries.set(direction,entry?idaSessionFreezeTree(copyJson(entry)):null);
+      }
+      return entries.get(direction);
+    },
+    summaries:()=>summary,
+    can:(direction,project)=>history.can(direction,project),
+    fits:(before,after,editorHistory)=>history.fits(before,after,editorHistory),
+    canRecord:(before,after,editorHistory)=>history.canRecord(before,after,editorHistory)
+  });
+  const view=Object.freeze({project:accepted,context:binding,history:historyView});
+  return {project:accepted,context:binding,history,view};
+}
 function idaSessionRead(state){
   return {
     project:copyJson(state.project),
@@ -54,9 +90,10 @@ export class AcceptedIdentitySession {
     if(history===undefined)ledger.clear(accepted);
     if(!ledger.baseline||JSON.stringify(ledger.baseline)!==JSON.stringify(accepted))
       throw Error('Accepted history baseline does not match adopted project');
-    this.#state={project:accepted,context:binding,history:ledger};
+    this.#state=idaSessionPublishedState(accepted,binding,ledger);
   }
   read(){return idaSessionRead(this.#state);}
+  view(){return this.#state.view;}
   // Explicit detached ledger export for future host integration/inspection.
   // This is not persisted history and cannot mutate the accepted ledger.
   copyHistory(){return idaSessionForkHistory(this.#state.history,true);}
@@ -81,7 +118,7 @@ export class AcceptedIdentitySession {
         throw Error('Accepted identity transaction history recording refused');
       if(JSON.stringify(history.baseline)!==JSON.stringify(prepared.project))
         throw Error('Accepted identity transaction history baseline mismatch');
-      const next={project:prepared.project,context:prepared.context,history};
+      const next=idaSessionPublishedState(prepared.project,prepared.context,history);
       // Complete every fallible operation, including detached return data,
       // before replacing the sole accepted state pointer. No callbacks after.
       const result={...idaSessionRead(next),pruned:recorded.pruned};
@@ -113,14 +150,14 @@ export class AcceptedIdentitySession {
       const receipt=history.prepare(direction,current.project,workspace);
       if(!receipt.ok)throw Error(receipt.reason);
       history.accept(direction,receipt.entry,receipt.candidate);
-      const next={project:receipt.candidate,history,context:Object.freeze({
+      const next=idaSessionPublishedState(receipt.candidate,{
         ...current.context,revision:current.context.revision+1
-      })};
+      },history);
       if(JSON.stringify(next.project.identityAllocation)!==JSON.stringify(current.project.identityAllocation))
         throw Error('Identity replay changed allocation high-water marks');
       // Return workspace as detached data; caller's workspace is unchanged.
       // All fallible work precedes the same single publication used by Apply.
-      const result={...idaSessionRead(next),workspace:copyJson(receipt.workspace)};
+      const result={...idaSessionRead(next),workspace:copyJson(receipt.workspace),entry:copyJson(receipt.entry)};
       this.#state=next;
       return result;
     }finally{
