@@ -10236,6 +10236,7 @@ class SecureIdentityHost {
 
 
 // src/editor/editor-apply-evidence.js
+
 // S1-C2: bind fresh local domain preparation to one synchronous host commit.
 // Call only inside a trusted editor bridge, never with a caller/preview result.
 // The host independently validates the candidate, allocation and history.
@@ -10254,6 +10255,22 @@ function captureEditorApplyEvidence(host,view,workspace,intent){
         JSON.stringify(after)===afterJson;
     };
   };
+}
+
+// S2-A: a mounted caller supplies an expected serialized candidate, never
+// accepted-state authority. The bridge has already reconstructed the domain
+// operation locally. Independently reissue the reservation and compare exact
+// evidence before returning detached selection data or entering the host.
+function prepareMountedEditorCommitResult(host,requests,receipt,result,expectedCandidateJson){
+  if(expectedCandidateJson===undefined)return null;
+  if(typeof expectedCandidateJson!=='string'||!result.ok||
+    JSON.stringify(result.candidate)!==expectedCandidateJson||
+    JSON.stringify(host.reserve(requests))!==JSON.stringify(receipt))
+    throw Error('Mounted identity intent changed during reconstruction.');
+  return copyJson(result);
+}
+function finishMountedEditorCommit(accepted,mountedResult){
+  return mountedResult===null?accepted:{accepted,result:mountedResult};
 }
 
 
@@ -11273,7 +11290,7 @@ function previewBuildingEditorTransaction(host,workspace,request){
   const result=prepareBuildingEditorOperation(project,workspace,input,{history,identityReservation:{context,receipt}});
   return {context,receipt,result};
 }
-function commitBuildingEditorTransaction(host,workspace,request,reservation,{preserveLegacyCapacity=false}={}){
+function commitBuildingEditorTransaction(host,workspace,request,reservation,{preserveLegacyCapacity=false,mountedCandidateJson}={}){
   const historyPolicy=preserveLegacyCapacity&&!(request.operation==='components'&&request.componentDraft?.action==='join')
     ?'legacy-ordinary-structure':'required';
   const input=idaEditorBuildingIntent(request),view=host.view(),{project,context,history}=view;
@@ -11284,9 +11301,11 @@ function commitBuildingEditorTransaction(host,workspace,request,reservation,{pre
   const requests=idaEditorBuildingRequests(input);
   const result=prepareBuildingEditorOperation(project,workspace,input,{history,identityReservation:{context,receipt}});
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Building editor Apply refused.');
-  return host.commit({requests,receipt,candidateCity:result.candidate.city,
+  const mountedResult=prepareMountedEditorCommitResult(host,requests,receipt,result,mountedCandidateJson);
+  const accepted=host.commit({requests,receipt,candidateCity:result.candidate.city,
     transaction:idaEditorBuildingTransaction(project,input,receipt),historyPolicy,
     validateDomain:bindEvidence(result.candidate)});
+  return finishMountedEditorCommit(accepted,mountedResult);
 }
 
 
@@ -13773,16 +13792,18 @@ function previewLandEditorTransaction(host,workspace,kind,intent){
   const receipt=host.reserve(idaMountedLandRequests(project,kind,draft));
   return {context,receipt,result:prepareLandEditorOperation(project,workspace,kind,draft,{identityReservation:{context,receipt}})};
 }
-function commitLandEditorTransaction(host,workspace,kind,intent,reservation,{preserveLegacyCapacity=false}={}){
+function commitLandEditorTransaction(host,workspace,kind,intent,reservation,{preserveLegacyCapacity=false,mountedCandidateJson}={}){
   const view=host.view(),{project,context}=view;
   const bindEvidence=captureEditorApplyEvidence(host,view,workspace,intent);
   if(!idaMountedLandSame(context,reservation?.context))throw Error('Stale land editor reservation.');
   const input=copyJson(intent),draft=idaMountedLandDraft(project,kind,input),requests=idaMountedLandRequests(project,kind,draft);
   const receipt=reservation.receipt,result=prepareLandEditorOperation(project,workspace,kind,draft,{identityReservation:{context,receipt}});
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Land editor Apply refused.');
-  return host.commit({requests,receipt,candidateCity:result.candidate.city,
+  const mountedResult=prepareMountedEditorCommitResult(host,requests,receipt,result,mountedCandidateJson);
+  const accepted=host.commit({requests,receipt,candidateCity:result.candidate.city,
     transaction:idaMountedLandTransaction(kind,draft,result,receipt),historyPolicy:preserveLegacyCapacity?'legacy-ordinary':'required',
     validateDomain:bindEvidence(result.candidate)});
+  return finishMountedEditorCommit(accepted,mountedResult);
 }
 
 
@@ -13992,24 +14013,26 @@ function previewNonallocatingEditorTransaction(host,workspace,intent){
   const {project,context}=host.view(),input=copyJson(intent),receipt=host.reserve([]);
   return {context,receipt,result:prepareNonallocatingEditorOperation(project,workspace,input)};
 }
-function commitNonallocatingEditorTransaction(host,workspace,intent,transaction,reservation,{preserveLegacyCapacity=false,allowUnchanged=false}={}){
+function commitNonallocatingEditorTransaction(host,workspace,intent,transaction,reservation,{preserveLegacyCapacity=false,allowUnchanged=false,mountedCandidateJson}={}){
   const view=host.view(),{project,context}=view;
   const bindEvidence=captureEditorApplyEvidence(host,view,workspace,intent);
   if(JSON.stringify(context)!==JSON.stringify(reservation?.context))throw Error('Stale nonallocating editor reservation.');
   const input=copyJson(intent),metadata=idaNonallocatingHistory(input,transaction);
   const result=prepareNonallocatingEditorOperation(project,workspace,input);
   if(!result.ok)throw Error(result.reason??result.issues?.[0]?.message??'Nonallocating editor Apply refused.');
+  const mountedResult=prepareMountedEditorCommitResult(host,[],reservation.receipt,result,mountedCandidateJson);
   // Mounted identity/district/defense forms may submit unchanged values.
   // Do not publish a new accepted revision or invalidate other previews.
   if(allowUnchanged&&JSON.stringify(result.candidate)===JSON.stringify(project)){
     verifyIdentityReservation(project.identityAllocation,project.city,context,[],reservation.receipt);
-    return {...host.read(),historyStatus:'unchanged'};
+    return finishMountedEditorCommit({...host.read(),historyStatus:'unchanged'},mountedResult);
   }
   const historyPolicy=preserveLegacyCapacity
     ?(input.kind==='building-geometry'&&metadata.operation==='building-structure'?'legacy-ordinary-structure':'legacy-ordinary')
     :'required';
-  return host.commit({requests:[],receipt:reservation.receipt,candidateCity:result.candidate.city,transaction:metadata,historyPolicy,
+  const accepted=host.commit({requests:[],receipt:reservation.receipt,candidateCity:result.candidate.city,transaction:metadata,historyPolicy,
     validateDomain:bindEvidence(result.candidate)});
+  return finishMountedEditorCommit(accepted,mountedResult);
 }
 
 
@@ -14049,17 +14072,14 @@ function acceptMountedIdentityEdit(host,token,workspace,kind,intent,revision,tra
   if(host.view()!==staged.view||staged.revision!==revision||staged.kind!==kind||
     !idaMountedSame(staged.intent,intent)||!idaMountedSame(staged.workspace,workspace))
     throw Error('Mounted identity transaction is stale.');
-  const p=idaMountedPreview(host,staged.workspace,kind,staged.intent);
-  if(!p.result.ok||!idaMountedSame(p.receipt,staged.receipt)||JSON.stringify(p.result.candidate)!==staged.candidateJson)
-    throw Error('Mounted identity intent changed during reconstruction.');
-  const options={preserveLegacyCapacity:true,allowUnchanged:true};
-  // Copy the final domain return data before publication. The caller can
-  // update selection/labels from real accepted IDs, not draft-only labels.
-  const result=copyJson(p.result);
-  const accepted=kind==='building'?commitBuildingEditorTransaction(host,staged.workspace,staged.intent,p,options):
-    kind==='nonallocating'?commitNonallocatingEditorTransaction(host,staged.workspace,staged.intent,transaction,p,options):
-    commitLandEditorTransaction(host,staged.workspace,kind,staged.intent,p,options);
-  return {accepted,result};
+  // Each commit bridge independently reconstructs from the bound intent.
+  // Compare that fresh result to the private staging evidence inside the
+  // bridge, before publication, rather than reconstructing twice here.
+  const reservation={context:staged.view.context,receipt:staged.receipt};
+  const options={preserveLegacyCapacity:true,allowUnchanged:true,mountedCandidateJson:staged.candidateJson};
+  return kind==='building'?commitBuildingEditorTransaction(host,staged.workspace,staged.intent,reservation,options):
+    kind==='nonallocating'?commitNonallocatingEditorTransaction(host,staged.workspace,staged.intent,transaction,reservation,options):
+    commitLandEditorTransaction(host,staged.workspace,kind,staged.intent,reservation,options);
 }
 
 
