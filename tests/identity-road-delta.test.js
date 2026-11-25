@@ -55,18 +55,20 @@ for(const f of cases){
     const oldPlots=new Map(s.fresh.candidateProject.city.plots.map(p=>[p.id,p]));
     const newPlots=new Map(a.candidate.city.plots.map(p=>[p.id,p]));
     const remap=new Map(s.receipt.allocations.map(r=>[r.key.slice(5),r.id]));
+    // Allocation already uses JSON detachment. Compare the exact persisted
+    // representation, including key order and provenance; JSON maps -0 to 0.
     for(const old of s.fresh.candidateProject.city.properties){
       const next=a.candidate.city.properties.find(row=>row.id===(remap.get(old.id)??old.id));
       assert.equal(classifyRoadProvenance(next,next.plotIds.map(id=>newPlots.get(id))),
         classifyRoadProvenance(old,old.plotIds.map(id=>oldPlots.get(id))));
       if(!remap.has(old.id)&&!old.plotIds.some(id=>remap.has(id)||remap.has(oldPlots.get(id)?.propertyId))&&
-          !old.buildingIds.some(id=>remap.has(id)))assert.deepEqual(next,old);
+          !old.buildingIds.some(id=>remap.has(id)))assert.equal(JSON.stringify(next),JSON.stringify(old));
     }
     for(const old of s.fresh.candidateProject.city.buildings){
       const next=a.candidate.city.buildings.find(row=>row.id===(remap.get(old.id)??old.id));
       assert.equal(classifyRoadProvenance(next),classifyRoadProvenance(old));
       if(!remap.has(old.id)&&!remap.has(old.propertyId)&&!old.plotIds.some(id=>remap.has(id)))
-        assert.deepEqual(next,old);
+        assert.equal(JSON.stringify(next),JSON.stringify(old));
     }
     for(const r of s.receipt.allocations.filter(row=>row.type==='property')){
       const old=s.fresh.candidateProject.city.properties.find(p=>p.id===r.key.slice(5));
