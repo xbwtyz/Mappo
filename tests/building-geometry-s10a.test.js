@@ -272,3 +272,22 @@ test('S2-B batched occupancy still rejects invalid topology, components, plot ri
   assert.throws(()=>measureBuildingOccupancyS10(tree(),components,[plot.slice().reverse()]),/valid CCW/);
   assert.throws(()=>measureBuildingOccupancyS10(geom(solid('r',rect(0,0,1,1))),components,[plot]),/exceed one unit/);
 });
+
+test('S3-BC simple projection preserves exact independently canonicalized occupancy and detached rings',()=>{
+  for(const geometry of [
+    geom(solid('r',rect(0,0,10,12))),
+    geom(solid('r',rect(0,0,20,20).reverse()),voidRegion('h',rect(4,4,4,5),'r')),
+    geom(solid('r',rect(-3.5,-2.5,12.25,14.75)),voidRegion('h',rect(0,0,3,4).reverse(),'r'))
+  ]){
+    const before=JSON.stringify(geometry);
+    const expected=occupiedAreaS10(validateBuildingStructureS10(geometry,components).geometry);
+    const projection=projectSimpleBuildingS10(geometry,components);
+    assert.equal(projection.ok,true);
+    assert.equal(projection.area,expected);
+    projection.footprint[0].x+=100;
+    assert.equal(JSON.stringify(geometry),before);
+  }
+  assert.equal(projectSimpleBuildingS10(tree(),components).ok,false);
+  assert.equal(projectSimpleBuildingS10(geom(solid('r',[])),components).code,'invalid-topology');
+  assert.throws(()=>projectSimpleBuildingS10(geom(solid('r',rect(0,0,1,1))),components),/exceed one unit/);
+});

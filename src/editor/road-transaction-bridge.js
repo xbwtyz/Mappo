@@ -2,7 +2,7 @@ import { checkRoadApplyC2, validateRoadApplyC2, validateRoadGroupApplyB1,
   validateRoadGroupDemolitionApplyB1R } from './road-application.js';
 import { roadIdentityRequests, allocateRoadCandidate, allocateRoadCandidateForHost } from '../core/road-identity-delta.js';
 import { reconcileRoadWorkspace } from './road-workspace.js';
-import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
+import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument, roundTripProjectDocument } from '../data/project-format.js';
 
 // Batch 2, detached bridge for the actual RoadPreviewSession inputs.
 // The future mounted caller supplies trusted workspace/draft revisions and
@@ -107,7 +107,9 @@ function idaRoadApplyAllocated(state,project,legacy,receipt){
       before:{history:copyJson(beforeHistory),savedCount:count},
       after:{history:copyJson(afterHistory),savedCount:Math.max(0,count-(beforeHistory.length-afterHistory.length))}};
   }
-  const decoded=decodeProjectDocument(encodeProjectDocument(createProjectDocument(allocated.candidate,workspace)));
+  const decoded=state.snapshot.kind==='demolition'
+    ?decodeProjectDocument(encodeProjectDocument(createProjectDocument(allocated.candidate,workspace)))
+    :roundTripProjectDocument(allocated.candidate,workspace);
   idaRoadApplyRequire(idaRoadApplySame(decoded.project,allocated.candidate)&&idaRoadApplySame(decoded.workspace,workspace),
     'Portable roundtrip changed allocated road candidate or workspace.');
   return {...allocated,workspace:decoded.workspace,transaction,receipt:issued};
