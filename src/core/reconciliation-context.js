@@ -1,13 +1,14 @@
+import { supportsCanonicalBuildingProjectSchema } from './project-schema-capabilities.js';
 import { classifyLareObject } from './reconciliation-policy.js';
 import { boundsOf } from './geometry.js';
 import { LARE_LIMITS, LareBudgetExceeded } from './reconciliation-budget.js';
 
 // Initial inventory returns frozen descriptors, never writable accepted records.
 export function createLareContext(project,draft,choices,budget){
-  if(project?.schemaVersion!==10||!draft?.group?.eligible||!draft.draftable||
+  if(!supportsCanonicalBuildingProjectSchema(project?.schemaVersion)||!draft?.group?.eligible||!draft.draftable||
     !draft.topologyResolved||!draft.facesResolved||draft.status==='unchanged'||
     draft.issues?.some(i=>i.code==='boundary-escape'))
-    throw Error('LARE requires a nonzero, topology-preserving Schema 10 intent.');
+    throw Error('LARE requires a nonzero, topology-preserving canonical building project intent.');
   if(!(choices instanceof Map)||!budget?.spend)throw Error('Explicit choices and shared budget required.');
   const city=project.city,moved=new Set(draft.proposedNodes.map(n=>n.id));
   const blocks=city.blocks.filter(b=>{budget.spend(1+b.vertices.length);return b.vertices.some(id=>moved.has(id));})

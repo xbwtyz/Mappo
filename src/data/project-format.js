@@ -1,3 +1,4 @@
+import { supportsCanonicalBuildingProjectSchema } from '../core/project-schema-capabilities.js';
 import {
   CURRENT_FORMAT_VERSION,
   CURRENT_APP_VERSION,
@@ -21,8 +22,8 @@ export function copyJson(value) {
   const detached=JSON.parse(JSON.stringify(value));
   // Rehydrate only derived, read-only views; canonical geometry remains the
   // sole persisted/writable source for Schema 10 buildings.
-  if(detached?.schemaVersion===10 && detached.city) hydrateProjectS10(detached);
-  else if(detached?.project?.schemaVersion===10) hydrateProjectS10(detached.project);
+  if(supportsCanonicalBuildingProjectSchema(detached?.schemaVersion) && detached.city) hydrateProjectS10(detached);
+  else if(supportsCanonicalBuildingProjectSchema(detached?.project?.schemaVersion)) hydrateProjectS10(detached.project);
   else if(Array.isArray(detached?.buildings)) hydrateCityS10(detached);
   else if([1, 2, 3].includes(detached?.geometry?.version) && Array.isArray(detached?.components)) hydrateBuildingS10(detached);
   else if(Array.isArray(detached)) detached.forEach(x=>{

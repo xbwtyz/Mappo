@@ -1,3 +1,4 @@
+import { supportsCanonicalBuildingProjectSchema } from './project-schema-capabilities.js';
 import { riEqual, riIndex } from './road-impact-model.js';
 import { classifyRoadProvenance } from './road-provenance.js';
 
@@ -39,9 +40,9 @@ function b1GeometryPreserved(before,after) {
 export function* iterateRoadGroupPreservationB1(before,after,draft,removedIds = new Set()) {
   const id=draft?.selectedRoadIds?.[0]??'group';
   const fail=(code,message,target=id)=>b1Mismatch(code,message,target);
-  if(before?.schemaVersion!==10 || after?.schemaVersion!==10 ||
+  if(!supportsCanonicalBuildingProjectSchema(before?.schemaVersion) || before.schemaVersion!==after?.schemaVersion ||
     !draft?.group?.eligible || !before.city || !after.city)
-    return fail('group-preservation','A verified Schema 10 group draft is required.');
+    return fail('group-preservation','A verified group draft with matching canonical project schemas is required.');
   if(!b1SameProtectedFields(before, after, ['city']))
     return fail('group-project-metadata','The road group would change project metadata.');
   const old=before.city,next=after.city;

@@ -1,7 +1,8 @@
+import { PROJECT_SCHEMA_VERSION } from './version.js';
 import { classifyRoadProvenance } from './road-provenance.js';
 
 export const LARE_POLICY_B1R = Object.freeze({
-  operation:'translate-road-group',schemaVersion:10,allowRegeneration:false,
+  operation:'translate-road-group',schemaVersion:PROJECT_SCHEMA_VERSION,allowRegeneration:false,
   allowOwnershipChange:false,allowTopologyChange:false,allowFrontageChange:false,
   allowAuthoredBuildingMove:false,allowScaling:false,allowReflection:false
 });

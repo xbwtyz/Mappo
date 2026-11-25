@@ -1,5 +1,5 @@
 import { ALLOCATION_TYPES, parseAllocatedIdentity, validateAllocationNamespace,
-  validateAllocationCounter, validateIdentityAllocationState } from './identity-allocation.js';
+  validateAllocationCounter, validateIdentityAllocationState, iterateIdentityAllocationStateValidation } from './identity-allocation.js';
 import { normalizeIdentityRequests, reserveAllocatedIdentities } from './identity-reservations.js';
 
 const idaInventoryCollections=Object.freeze({building:'buildings',property:'properties',plot:'plots'});
@@ -25,14 +25,17 @@ function idaNormalizeContext(input){
 
 // Checks active top-level IDs against the persisted high-water marks.
 // Historical gaps are permitted, but the counter may never be below an active ID.
-function idaIndexInventory(state,city){
-  validateIdentityAllocationState(state);
+function* idaIterateInventory(state,city,spend=()=>{}){
+  yield* iterateIdentityAllocationStateValidation(state,spend);
+  let scanned=0;
   if(!city||typeof city!=='object'||Array.isArray(city))throw Error('Missing identity inventory');
   const index=new Map();
   for(const [type,collection] of Object.entries(idaInventoryCollections)){
     if(!Array.isArray(city[collection]))throw Error('Missing identity inventory collection');
     const ids=new Set();
     for(const row of city[collection]){
+      spend(1);
+      if(++scanned%256===0)yield {stage:'project-identity-inventory'};
       const id=row?.id;
       if(typeof id!=='string'||!id.trim()||id.length>128||ids.has(id))
         throw Error('Invalid or duplicate active identity');
@@ -50,12 +53,24 @@ function idaIndexInventory(state,city){
   for(const collection of idaOtherCollections){
     const rows=city[collection]??[];
     if(!Array.isArray(rows))throw Error('Invalid identity inventory collection');
-    for(const row of rows)if(typeof row?.id==='string'&&idaReservedPattern.test(row.id))
-      throw Error('Reserved identity in unsupported collection');
+    for(const row of rows){
+      spend(1);
+      if(++scanned%256===0)yield {stage:'project-identity-inventory'};
+      if(typeof row?.id==='string'&&idaReservedPattern.test(row.id))
+        throw Error('Reserved identity in unsupported collection');
+    }
   }
   if(typeof city.plaza?.id==='string'&&idaReservedPattern.test(city.plaza.id))
     throw Error('Reserved identity in unsupported collection');
   return index;
+}
+function idaIndexInventory(state,city){
+  const steps=idaIterateInventory(state,city);
+  for(let step=steps.next();;step=steps.next())if(step.done)return step.value;
+}
+export function* iterateActiveIdentityInventory(state,city,spend){
+  yield* idaIterateInventory(state,city,spend);
+  return true;
 }
 export function validateActiveIdentityInventory(state,city){
   idaIndexInventory(state,city);

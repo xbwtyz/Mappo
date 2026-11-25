@@ -29,7 +29,7 @@ function sourceFiles(directory){
 // expectations in test/source scripts. Exclude generated HTML and fixtures.
 test('Schema adoption audit inventories source and test schema references',t=>{
   const groups=['src','scripts','tests'];
-  const pattern=/\bschemaVersion\b|\b(?:CURRENT_PROJECT_SCHEMA|PROJECT_SCHEMA_VERSION)\b|\b(?:Schema|schema)\s*(?:10|11)\b/;
+  const pattern=/\b(?:schemaVersion|generatorVersion|identityAllocation)\b|\b(?:CURRENT_PROJECT_SCHEMA|PROJECT_SCHEMA_VERSION)\b|\b(?:Schema|schema)\s*(?:10|11)\b/;
   const hits=new Map();
   for(const group of groups){
     const files=sourceFiles(join(root,group));

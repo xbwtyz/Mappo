@@ -1,3 +1,4 @@
+import { supportsCanonicalBuildingProjectSchema } from './project-schema-capabilities.js';
 import { mapCourtyardAccess } from './courtyard-access.js';
 // S10-B P1: pure, detached Schema 9 -> Schema 10 building migration.
 // No generator, editor, persistent store, or accepted project is mutated.
@@ -65,7 +66,7 @@ export function hydrateCityS10(city) {
   return city;
 }
 export function hydrateProjectS10(project) {
-  if (project?.schemaVersion===10) hydrateCityS10(project.city);
+  if (supportsCanonicalBuildingProjectSchema(project?.schemaVersion)) hydrateCityS10(project.city);
   return project;
 }
 // Legacy editing is permitted only for one solid root, flat courtyard
