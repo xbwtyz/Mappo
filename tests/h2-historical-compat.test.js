@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -33,7 +34,7 @@ for (const [label, name, schema] of snapshots) {
     const original = JSON.stringify(source);
     assert.equal(project.schemaVersion, schema, 'fixture must describe the expected historical schema');
     const decoded = decodeProjectDocument(bytes);
-    assert.equal(decoded.project.schemaVersion, 10);
+    assert.equal(decoded.project.schemaVersion, PROJECT_SCHEMA_VERSION);
     assert.equal(decoded.formatVersion, 1);
     assert.equal(JSON.stringify(source), original, 'reader must not mutate the fixture source');
     assert.equal(decoded.project.city.name, project.city.name);
@@ -62,7 +63,7 @@ for (const [label, name, schema] of snapshots) {
         assert.deepEqual(decoded.project[key], project[key], label+': '+key+' must survive migration');
     }
     const reopened = decodeProjectDocument(encodeProjectDocument(decoded));
-    assert.deepEqual(reopened, decoded, 'format 1/save schema 10 must round-trip without drift');
+    assert.deepEqual(reopened, decoded, 'format 1/current save schema must round-trip without drift');
     const next = createProjectDocument(decoded.project, decoded.workspace, decoded, '2026-11-21T00:00:00.000Z');
     assert.deepEqual(next.project, decoded.project);
     assert.equal(next.documentId, decoded.documentId);
@@ -72,7 +73,7 @@ for (const [label, name, schema] of snapshots) {
   });
 }
 
-test('H2 current schema 10 saves keep IDs, independent drafts and unknown fields', () => {
+test('H2 current schema saves keep IDs, independent drafts and unknown fields', () => {
   const project = createProject({seed:'h2-current',size:'small',morphology:'planned'});
   const doc = createProjectDocument(project);
   doc.extensions.futureFeature = { id:'test-preserve', enabled:true };
@@ -89,7 +90,7 @@ test('H2 malformed and future native save formats are rejected without mutating 
   const current = createProjectDocument(project);
   const attempts = [
     d => { d.formatVersion = 2; },
-    d => { d.project.schemaVersion = 11; },
+    d => { d.project.schemaVersion = PROJECT_SCHEMA_VERSION + 1; },
     d => { d.workspace.schemaVersion = 2; },
     d => { d.project.city.roads[0].a = 'missing-node'; },
   ];

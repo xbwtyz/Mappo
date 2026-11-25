@@ -16,8 +16,9 @@ const simple=()=>({schemaVersion:10,city:{
 }});
 const ns='0123456789abcdef0123456789abcdef';
 test('S11 migration preserves complete real city JSON and all existing identifiers',()=>{
-  const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
-  validateStoredProject(project);
+  const generated=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+  validateStoredProject(generated);
+  const project=strip(generated);
   const before=JSON.stringify(project),candidate=migrateSchema10ProjectS11(project);
   assert.equal(candidate.schemaVersion,11);
   assert.deepEqual(candidate.identityAllocation,createIdentityAllocationState());
@@ -27,7 +28,9 @@ test('S11 migration preserves complete real city JSON and all existing identifie
   assert.equal(validateActiveIdentityInventory(candidate.identityAllocation,candidate.city),true);
 });
 test('S11 migration preserves mixed courtyard and joined-component geometry exactly',()=>{
-  const {project}=mixedCityFixtureS10();
+  const {project:generated}=mixedCityFixtureS10();
+  validateStoredProject(generated);
+  const project=strip(generated);
   const before=JSON.stringify(project),candidate=migrateSchema10ProjectS11(project);
   assert.equal(JSON.stringify(strip(candidate)),before);
   assert.equal(JSON.stringify(project),before);

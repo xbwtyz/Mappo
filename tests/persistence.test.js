@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -261,6 +262,7 @@ test('legacy schema-1 projects migrate in memory while preserving their source g
       return record;
     });
     raw.schemaVersion = 1;
+    delete raw.identityAllocation;
     raw.generatorVersion = withBuildings ? '0.1-dev.3b' : '0.1-dev.3a2';
     if (!withBuildings) {
       raw.city.buildings = [];
@@ -270,7 +272,7 @@ test('legacy schema-1 projects migrate in memory while preserving their source g
     }
     const text = JSON.stringify(raw),
       loaded = decodeProjectDocument(text);
-    assert.equal(loaded.project.schemaVersion, 10);
+    assert.equal(loaded.project.schemaVersion, PROJECT_SCHEMA_VERSION);
     for (const key of ['nodes', 'roads', 'blocks', 'plaza']) assert.deepEqual(loaded.project.city[key], raw.city[key]);
     assert.equal(loaded.project.generatorVersion, raw.generatorVersion);
     assert.equal(raw.schemaVersion, 1);
@@ -821,7 +823,7 @@ test('frozen projects captured from the released 3A.2 and 3B HTML builds remain 
     const raw = JSON.parse(text),
       document = decodeProjectDocument(text);
     assert.equal(raw.generatorVersion, `0.1-dev.${version}`);
-    assert.equal(document.project.schemaVersion, 10);
+    assert.equal(document.project.schemaVersion, PROJECT_SCHEMA_VERSION);
     for (const key of ['nodes', 'roads', 'blocks', 'plaza', 'buildings'])
       assert.deepEqual(legacyGeometryForComparison(document.project.city)[key], raw.city[key]);
     assert.deepEqual(decodeProjectDocument(encodeProjectDocument(document)), document);
@@ -834,7 +836,7 @@ test('native 3B.1 schema-2 files migrate to unassigned districts without changin
   } = await import('node:fs/promises');
   const raw = JSON.parse(await readFile(new URL('./fixtures/save-3b1-format1-schema2.json', import.meta.url), 'utf8'));
   const loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 10);
+  assert.equal(loaded.project.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.equal(loaded.project.city.districtState.status, 'unassigned');
   const {
     districtState,
@@ -925,7 +927,7 @@ test('additive workspace ui survives native round-trip without regenerating sche
   };
   const decoded=decodeProjectDocument(encodeProjectDocument(source));
   assert.deepEqual(decoded.project.city,city,'accepted city is stored and restored exactly');
-  assert.equal(decoded.project.schemaVersion,10);
+  assert.equal(decoded.project.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.equal(decoded.workspace.schemaVersion,1);
   assert.equal(decoded.workspace.ui.landscape.formCache[0].controls.lakeSeedInput,'custom pending lake');
   assert.equal(decoded.workspace.ui.section,'defenses');
