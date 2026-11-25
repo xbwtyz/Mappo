@@ -1,3 +1,4 @@
+import { prepareLandEditorOperation } from '../editor/land-transaction-bridge.js';
 import { syncDraftControls } from './draft-controls.js';
 import { PropertyMergeSessionE3,PropertyMergeHistoryE3,
   inspectPropertyMergeE3,preparePropertyMergeE3 } from '../editor/property-merge-e3.js';
@@ -102,7 +103,7 @@ export class PropertyMergeControlsE3 {
       signature=JSON.stringify([this.session.primaryId,this.session.secondaryId,this.session.approved,
         [...this.session.approvedBuildings].sort()]);
     if(before!==this.boundProject)return false;
-    const receipt=preparePropertyMergeE3(before,this.getWorkspace(),this.session);
+    const receipt=prepareLandEditorOperation(before,this.getWorkspace(),'property-merge',this.session);
     if(!receipt.ok){this.getElement('propertyMergeStatusE3').textContent=receipt.issues[0]?.message??'Merge rejected.';return false;}
     if(!current()||before!==this.getProject()||rev!==this.getRevision()||
       signature!==JSON.stringify([this.session.primaryId,this.session.secondaryId,this.session.approved,

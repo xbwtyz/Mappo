@@ -1,3 +1,4 @@
+import { prepareLandEditorOperation } from '../editor/land-transaction-bridge.js';
 import { syncDraftControls } from './draft-controls.js';
 import { distanceToSegment } from '../core/boundary.js';
 import { PropertySplitSessionE2,PropertySplitHistoryE2,inspectPropertySplitE2,
@@ -111,7 +112,7 @@ export class PropertySplitControlsE2 {
         flexible:this.session.flexible,exitEdge:this.session.exitEdge,exitT:this.session.exitT,
         approved:[...this.session.approved].sort()});
     if(previous!==this.boundProject)return false;
-    const result=preparePropertySplitE2(previous,this.getWorkspace(),this.session);
+    const result=prepareLandEditorOperation(previous,this.getWorkspace(),'property-split',this.session);
     if(!result.ok){
       this.session.validation=result;
       this.getElement('propertySplitStatusE2').textContent=result.issues[0]?.message??'Split was rejected.';

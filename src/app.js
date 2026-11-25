@@ -1,5 +1,7 @@
 import { canEditBuildingComponents } from './editor/building-component-application.js';
 import { prepareBuildingEditorOperation } from './editor/building-transaction-bridge.js';
+import { prepareLandEditorOperation } from './editor/land-transaction-bridge.js';
+import { prepareNonallocatingEditorOperation,applyNonallocatingCityIntent } from './editor/nonallocating-transaction-bridge.js';
 import { BuildingComponentControls, initialBuildingComponentDraft } from './ui/building-component-controls.js';
 import { CourtyardPlacementControls } from './ui/courtyard-placement-controls.js';
 // A1 foundation APIs are bundled for the later road inspector; no editor hooks yet.
@@ -88,16 +90,16 @@ import {
   OutlineEditor,
   makeStartingOutline
 } from './editor/outline.js';
-import { inspectBuildingPreview, prepareBuildingApply } from './editor/building-application.js';
+import { inspectBuildingPreview } from './editor/building-application.js';
 import { BuildingGeometryHistory } from './editor/building-history.js';
 import { BuildingPlacementSession3H, buildingLocalPoint3H, prepareBuildingStructure3H } from './editor/building-structures.js';
 import { BuildingStructureHistory3H } from './editor/building-structure-history.js';
-import {prepareCompoundMembership,prepareCompoundTransform,previewCompoundTransform} from './editor/building-compounds-c01.js';
+import {prepareCompoundTransform,previewCompoundTransform} from './editor/building-compounds-c01.js';
 import {drawCompoundPreviewC01} from './renderer/building-compounds-c01.js';
 import { PropertyEditSession3I } from './editor/property-edit.js';
-import { inspectPropertyEdit3I, preparePropertyApply3I } from './editor/property-application.js';
+import { inspectPropertyEdit3I } from './editor/property-application.js';
 import { PropertyGeometryHistory3I } from './editor/property-history.js';
-import { preparePropertyDeletion4A, PropertyDeletionHistory4A } from './editor/property-deletion.js';
+import { PropertyDeletionHistory4A } from './editor/property-deletion.js';
 import { PropertyCreationSessionE1,PropertyCreationHistoryE1,propertyFrontagesE1,
   inspectPropertyCreationE1,preparePropertyCreationE1 } from './editor/property-creation-e1.js';
 import { drawPropertyCreationE1 } from './renderer/property-creation-e1.js';
@@ -620,11 +622,11 @@ function restoreSavedDomainEditA5(family) {
   const blocker = acceptedHistoryBlocker({ savedRestore: true });
   if (blocker) return showHistoryFailure('undo', blocker);
   const editor = domainEditorA5(family), beforeHistory = editor.history;
-  const restore = family === 'districts' ? restoreDistrictSnapshot : restoreFortificationSnapshot;
   const editorHistory = editorHistoryDeltaA5(family, beforeHistory, beforeHistory.slice(0, -1), savedHistoryCount[family] - 1);
   try {
     const beforeCity = project.city;
-    const candidate = { ...project, city: restore(beforeCity, beforeHistory.at(-1)) };
+    const candidate = { ...project, city: applyNonallocatingCityIntent(beforeCity,{
+      kind:family==='districts'?'district-restore':'defense-restore',snapshot:beforeHistory.at(-1)}) };
     const workspace = historyWorkspaceForReplay(captureWorkspace().workspace, candidate.city, editorHistory, 'redo');
     encodeProjectDocument(createProjectDocument(candidate, workspace));
     if (JSON.stringify(candidate.city) === JSON.stringify(project.city)) {
@@ -848,7 +850,8 @@ function commitBuildingTransform(current) {
   let received;
   try {
     // Fresh computation. Never trust stale status from an earlier drag frame.
-    received=prepareBuildingApply(previous,captureWorkspace().workspace,buildingId,transform,session.draft);
+    received=prepareNonallocatingEditorOperation(previous,captureWorkspace().workspace,
+      {kind:'building-geometry',buildingId,transform,draft:session.draft});
     if(!received.ok){
       const issues=received.issues??[];
       drafts.reject('building', received.issues);
@@ -1026,10 +1029,10 @@ function c01SaveMembership(action) {
   const property=c01ActiveProperty();
   if(!property||!project)return false;
   const previous=project;
-  const receipt=prepareCompoundMembership(previous,captureWorkspace().workspace,{
+  const receipt=prepareNonallocatingEditorOperation(previous,captureWorkspace().workspace,{kind:'compound-membership',request:{
     action,propertyId:property.id,groupId:compoundGroupId||null,
     name:compoundName,memberBuildingIds:compoundMemberIds
-  });
+  }});
   if(!receipt.ok){
     $('compoundStatus').textContent='CANNOT SAVE · '+receipt.issues[0].message;
     return false;
@@ -1056,8 +1059,8 @@ function commitCompoundTransform(current) {
   const property=c01ActiveProperty(),group=c01SelectedGroup();
   if(!property||!group||!project)return false;
   const previous=project;
-  const receipt=prepareCompoundTransform(previous,captureWorkspace().workspace,
-    property.id,group.id,compoundTransform);
+  const receipt=prepareNonallocatingEditorOperation(previous,captureWorkspace().workspace,
+    {kind:'compound-transform',propertyId:property.id,groupId:group.id,transform:compoundTransform});
   if (!receipt.ok) {
     drafts.reject('compound', receipt.issues);
     compoundResult = receipt;
@@ -2383,7 +2386,7 @@ function commitPropertyCreationE1(current) {
   const session=propertyCreationSessionE1;
   if(!session?.active||!session.draft||session.drag||!project)return false;
   const before=project,rev=files?.revision??0,draft=copyJson(session.draft);
-  const receipt=preparePropertyCreationE1(before,captureWorkspace().workspace,draft);
+  const receipt=prepareLandEditorOperation(before,captureWorkspace().workspace,'property-create',draft);
   if(!receipt.ok){
     session.validation = receipt;
     drafts.reject('property-creation', receipt.issues);
@@ -2867,7 +2870,7 @@ function deleteProperty4A(propertyId) {
   ))return false;
   if(!exitPropertyEditing3I() || !exitStructurePlacement3H() || !exitBuildingEditing())return false;
   const previous=project;
-  const receipt=preparePropertyDeletion4A(previous,captureWorkspace().workspace,propertyId);
+  const receipt=prepareLandEditorOperation(previous,captureWorkspace().workspace,'property-delete',{propertyId});
   if(!receipt.ok){$('statusMessage').textContent=receipt.reason;return false;}
   if(project!==previous || workspaceShell.state.selection?.id!==propertyId)return false;
   try{
@@ -2905,7 +2908,7 @@ function commitPropertyEdit3I(current) {
     ||workspaceShell?.state.selection?.kind!=='property'
     ||workspaceShell.state.selection.id!==session.propertyId)return false;
   const before=project,propertyId=session.propertyId;
-  const received=preparePropertyApply3I(before,captureWorkspace().workspace,session);
+  const received=prepareLandEditorOperation(before,captureWorkspace().workspace,'property-and-plot',session);
   if(!received.ok) {
     drafts.reject('property', received.issues);
     session.validation=received;

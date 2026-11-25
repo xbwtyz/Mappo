@@ -1,3 +1,4 @@
+import { applyNonallocatingCityIntent } from '../editor/nonallocating-transaction-bridge.js';
 import {
   FortificationEditor
 } from '../editor/fortifications.js';
@@ -127,7 +128,7 @@ export class FortificationPanel {
         before = previous.fortificationState,
         beforeHistory = this.editor.history.slice(),
         wasUnbuilt = before.status !== 'built',
-        city = this.editor.apply(previous, this.controls());
+        city = applyNonallocatingCityIntent(previous,{kind:'defense-apply',options:this.controls()},this.editor);
       this.commit(city, { operation: city.fortificationState.enabled !== before.enabled && !wasUnbuilt
         ? (city.fortificationState.enabled ? 'enable' : 'disable')
         : wasUnbuilt ? 'build' : 'rebuild', beforeHistory });

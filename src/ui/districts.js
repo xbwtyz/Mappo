@@ -1,3 +1,4 @@
+import { applyNonallocatingCityIntent } from '../editor/nonallocating-transaction-bridge.js';
 import {
   DistrictEditor
 } from '../editor/districts.js';
@@ -182,15 +183,17 @@ export class DistrictPanel {
   bind() {
     this.$('generateDistrictButton').addEventListener('click', () => {
       const unassigned = this.getCity().districtState.status !== 'assigned';
-      const result = this.apply('generate', () => this.editor.generate(this.getCity(), {
+      const result = this.apply('generate', () => applyNonallocatingCityIntent(this.getCity(),{kind:'district-generate',options:{
         count: this.$('districtNumberInput').value,
         seed: this.$('districtSeedInput').value
-      }), 'Neighborhoods rebuilt. Streets, properties and buildings were preserved.');
+      }},this.editor), 'Neighborhoods rebuilt. Streets, properties and buildings were preserved.');
       if (result && unassigned) this.activateLayers();
       return result;
     });
-    this.$('applyDistrictButton').addEventListener('click', () => this.apply('identity', () => this.editor.edit(this.getCity(), this.$('districtNameInput').value, this.$('districtColorInput').value), 'District name and color updated.'));
-    this.$('moveDistrictButton').addEventListener('click', () => this.apply('move', () => this.editor.move(this.getCity(), this.$('districtTargetInput').value), 'Block moved. Both districts remain connected.'));
+    this.$('applyDistrictButton').addEventListener('click', () => this.apply('identity', () => applyNonallocatingCityIntent(this.getCity(),{kind:'district-identity',districtId:this.editor.selectedDistrictId,
+      name:this.$('districtNameInput').value,color:this.$('districtColorInput').value},this.editor), 'District name and color updated.'));
+    this.$('moveDistrictButton').addEventListener('click', () => this.apply('move', () => applyNonallocatingCityIntent(this.getCity(),{kind:'district-move',blockId:this.editor.selectedBlockId,
+      target:this.$('districtTargetInput').value},this.editor), 'Block moved. Both districts remain connected.'));
     this.$('undoDistrictButton').addEventListener('click', () => this.undoHistory?.());
     this.$('districtSelect').addEventListener('change', () => {
       this.editor.selectedDistrictId = this.$('districtSelect').value || null;
