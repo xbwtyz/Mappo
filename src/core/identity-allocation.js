@@ -5,33 +5,33 @@ export const ALLOCATION_TYPES = Object.freeze({
   property: 'PROP',
   plot: 'PLOT'
 });
-const namespacePattern = /^[0-9a-f]{32}$/;
-const idPattern = /^(BLD|PROP|PLOT)-IDA-([0-9a-f]{32})-([0-9]+)$/;
-const typeByPrefix = Object.freeze(Object.fromEntries(
+const idaNamespacePattern = /^[0-9a-f]{32}$/;
+const idaIdPattern = /^(BLD|PROP|PLOT)-IDA-([0-9a-f]{32})-([0-9]+)$/;
+const idaTypeByPrefix = Object.freeze(Object.fromEntries(
   Object.entries(ALLOCATION_TYPES).map(([type, prefix]) => [prefix, type])
 ));
-const has = (object, key) => Object.hasOwn(object, key);
-const record = (value, label) => {
+const idaStateHas = (object, key) => Object.hasOwn(object, key);
+const idaRequireRecord = (value, label) => {
   if (value === null || typeof value !== 'object' || Array.isArray(value) ||
       ![Object.prototype, null].includes(Object.getPrototypeOf(value))) {
     throw new Error('Invalid ' + label);
   }
   return value;
 };
-const exactKeys = (object, keys, label) => {
+const idaExactKeys = (object, keys, label) => {
   const actual = Reflect.ownKeys(object);
-  if (actual.length !== keys.length || !keys.every(key => has(object, key))) {
+  if (actual.length !== keys.length || !keys.every(key => idaStateHas(object, key))) {
     throw new Error('Invalid ' + label + ' fields');
   }
 };
 export function validateAllocationNamespace(namespace) {
-  if (typeof namespace !== 'string' || !namespacePattern.test(namespace)) {
+  if (typeof namespace !== 'string' || !idaNamespacePattern.test(namespace)) {
     throw new Error('Invalid identity allocation namespace');
   }
   return namespace;
 }
 export function validateAllocationType(type) {
-  if (typeof type !== 'string' || !has(ALLOCATION_TYPES, type)) {
+  if (typeof type !== 'string' || !idaStateHas(ALLOCATION_TYPES, type)) {
     throw new Error('Unsupported identity allocation type');
   }
   return type;
@@ -50,9 +50,9 @@ export function formatAllocatedIdentity(type, namespace, sequence) {
 }
 export function parseAllocatedIdentity(id) {
   if (typeof id !== 'string') throw new Error('Invalid allocated identity');
-  const match = idPattern.exec(id);
+  const match = idaIdPattern.exec(id);
   if (!match) throw new Error('Invalid allocated identity');
-  const type = typeByPrefix[match[1]];
+  const type = idaTypeByPrefix[match[1]];
   const namespace = match[2];
   const sequence = Number(match[3]);
   if (formatAllocatedIdentity(type, namespace, sequence) !== id) {
@@ -61,15 +61,15 @@ export function parseAllocatedIdentity(id) {
   return Object.freeze({ type, namespace, sequence });
 }
 export function validateIdentityAllocationState(value) {
-  const state = record(value, 'identity allocation state');
-  exactKeys(state, ['version', 'namespaces'], 'identity allocation state');
+  const state = idaRequireRecord(value, 'identity allocation state');
+  idaExactKeys(state, ['version', 'namespaces'], 'identity allocation state');
   if (state.version !== IDENTITY_ALLOCATION_VERSION) {
     throw new Error('Unsupported identity allocation version');
   }
-  const namespaces = record(state.namespaces, 'allocation namespaces');
+  const namespaces = idaRequireRecord(state.namespaces, 'allocation namespaces');
   for (const namespace of Reflect.ownKeys(namespaces)) {
     validateAllocationNamespace(namespace);
-    const counters = record(namespaces[namespace], 'allocation counters');
+    const counters = idaRequireRecord(namespaces[namespace], 'allocation counters');
     const keys = Reflect.ownKeys(counters);
     if (keys.length === 0) throw new Error('Empty allocation namespace');
     for (const type of keys) {
