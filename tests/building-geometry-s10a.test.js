@@ -13,7 +13,7 @@ import {
 import {
   occupiedAreaS10, pointOccupancyS10,
   polygonIntersectionAreaS10, occupiedIntersectionAreaS10,
-  occupiedRegionsOverlapS10, occupiedPlotAreaS10
+  occupiedRegionsOverlapS10, occupiedPlotAreaS10, measureBuildingOccupancyS10
 } from '../src/core/building-occupancy-s10.js';
 import {
   legacyBuildingShapeToS10, projectSimpleBuildingS10, reserveBuildingPartIdS10
@@ -250,4 +250,25 @@ test('S10-A P5 nested compatible metadata is deeply detached from canonical outp
 test('S10-A P5 disjoint polygon intersection still rejects invalid input',()=>{
   const invalid=[{x:0,y:0},{x:5,y:5},{x:5,y:0},{x:0,y:5}];
   assert.throws(()=>polygonIntersectionAreaS10(invalid,rect(50,50,5,5)),/valid CCW/);
+});
+
+test('S2-B batched fresh occupancy equals independent canonical occupancy for nested and disjoint structures',()=>{
+  const plots=[rect(0,0,20,20),rect(4,4,12,12),rect(0,0,10,10),rect(22,22,4,4)];
+  for(const geometry of [tree(),geom(solid('a',rect(0,0,8,8)),solid('b',rect(12,0,5,5))),
+    geom(solid('r',rect(0,0,8,8).reverse()))]){
+    geometry.extensions={author:{name:'Preserve'}};
+    const before=JSON.stringify(geometry),result=measureBuildingOccupancyS10(geometry,components,plots);
+    assert.deepEqual(result.geometry,validateBuildingStructureS10(geometry,components).geometry);
+    assert.equal(result.area,occupiedAreaS10(geometry));
+    assert.deepEqual(result.plotAreas,plots.map(ring=>occupiedPlotAreaS10(geometry,ring)));
+    result.geometry.extensions.author.name='Detached';
+    assert.equal(JSON.stringify(geometry),before);
+  }
+});
+test('S2-B batched occupancy still rejects invalid topology, components, plot rings and tiny net area',()=>{
+  const plot=rect(0,0,20,20);
+  assert.throws(()=>measureBuildingOccupancyS10(geom(solid('r',rect(0,0,20,20)),voidRegion('bad',rect(0,3,5,5),'r')),components,[plot]),/strictly inside/);
+  assert.throws(()=>measureBuildingOccupancyS10(tree(),[],[plot]),/components/);
+  assert.throws(()=>measureBuildingOccupancyS10(tree(),components,[plot.slice().reverse()]),/valid CCW/);
+  assert.throws(()=>measureBuildingOccupancyS10(geom(solid('r',rect(0,0,1,1))),components,[plot]),/exceed one unit/);
 });

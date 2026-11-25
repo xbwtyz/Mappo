@@ -3,6 +3,7 @@
 // not sampled bounding boxes or signed-s10OccupancyArea approximations.
 import { polygonSignedArea, pointInPolygon } from './geometry.js';
 import { shapeWellFormed } from './building-validation.js';
+import { validateBuildingStructureS10 } from './building-components-s10.js';
 import {
   canonicalizeBuildingRegionsS10, createS10GeometryBudget,
   pointOnS10Ring, regionDepthS10
@@ -106,12 +107,14 @@ export function polygonIntersectionAreaS10(a,b,budget=createS10GeometryBudget())
   return s10OccupancyRingIntersection(a,b,budget);
 }
 
-export function occupiedAreaS10(geometry,budget=createS10GeometryBudget()) {
-  const valid=canonicalizeBuildingRegionsS10(geometry,budget);
+function s10OccupancyCanonicalArea(valid) {
   const value=valid.regions.reduce((sum,r)=>sum+
     (r.kind==='solid'?1:-1)*polygonSignedArea(r.ring),0);
   if(value<=1)throw Error('S10 building net occupied s10OccupancyArea must exceed one unit.');
   return value;
+}
+export function occupiedAreaS10(geometry,budget=createS10GeometryBudget()) {
+  return s10OccupancyCanonicalArea(canonicalizeBuildingRegionsS10(geometry,budget));
 }
 
 export function pointOccupancyS10(geometry,point,budget=createS10GeometryBudget()) {
@@ -151,9 +154,7 @@ export function occupiedIntersectionAreaS10(first,second,budget=createS10Geometr
 export function occupiedRegionsOverlapS10(first,second,budget=createS10GeometryBudget()) {
   return occupiedIntersectionAreaS10(first,second,budget)>1e-5;
 }
-export function occupiedPlotAreaS10(geometry,plotRing,budget=createS10GeometryBudget()) {
-  if(!shapeWellFormed(plotRing))throw Error('S10 plot requires a valid CCW polygon.');
-  const valid=canonicalizeBuildingRegionsS10(geometry,budget);
+function s10OccupancyCanonicalPlotArea(valid,plotRing,budget) {
   let total=0;
   for(const region of valid.regions) {
     const sign=region.kind==='solid'?1:-1;
@@ -161,4 +162,26 @@ export function occupiedPlotAreaS10(geometry,plotRing,budget=createS10GeometryBu
   }
   if(total<-.02)throw Error('S10 occupied plot s10OccupancyArea is negative.');
   return Math.max(0,total);
+}
+
+export function occupiedPlotAreaS10(geometry,plotRing,budget=createS10GeometryBudget()) {
+  if(!shapeWellFormed(plotRing))throw Error('S10 plot requires a valid CCW polygon.');
+  return s10OccupancyCanonicalPlotArea(canonicalizeBuildingRegionsS10(geometry,budget),plotRing,budget);
+}
+
+// S2-B: one freshly verified canonical structure per building in a single
+// full-project validation. No cached result, caller-supplied proof or public
+// unchecked occupancy path. Each plot retains its own topology work charge
+// and exact intersection checks, including shape validation.
+export function measureBuildingOccupancyS10(geometry,components,plotRings) {
+  const topologyBudget=createS10GeometryBudget();
+  const structure=validateBuildingStructureS10(geometry,components,topologyBudget);
+  const valid=structure.geometry;
+  const plotAreas=plotRings.map(ring=>{
+    if(!shapeWellFormed(ring))throw Error('S10 plot requires a valid CCW polygon.');
+    const budget=createS10GeometryBudget();
+    budget.charge(topologyBudget.spent);
+    return s10OccupancyCanonicalPlotArea(valid,ring,budget);
+  });
+  return {geometry:valid,area:s10OccupancyCanonicalArea(valid),plotAreas};
 }

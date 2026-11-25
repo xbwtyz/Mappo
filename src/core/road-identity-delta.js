@@ -69,9 +69,17 @@ export function allocateRoadCandidate(project,result,context,receipt){
   const mapId=(map,id)=>map.get(id)??id;
   const candidate=copyJson(result.candidateProject),city=candidate.city;
   const originalPlots=new Map(city.plots.map(plot=>[plot.id,plot]));
-  const propertyClasses=new Map(city.properties.map(row=>[row.id,
+  // Provenance is a deterministic exact function of the record and its
+  // linked plots. Classify only rows whose serialized inputs may change
+  // during ID remapping. Unaffected rows and stamps remain byte-identical.
+  const affectedProperties=city.properties.filter(row=>propertyIds.has(row.id)||
+    row.plotIds.some(id=>plotIds.has(id)||propertyIds.has(originalPlots.get(id)?.propertyId))||
+    row.buildingIds.some(id=>buildingIds.has(id)));
+  const affectedBuildings=city.buildings.filter(row=>buildingIds.has(row.id)||
+    propertyIds.has(row.propertyId)||row.plotIds.some(id=>plotIds.has(id)));
+  const propertyClasses=new Map(affectedProperties.map(row=>[row,
     classifyRoadProvenance(row,row.plotIds.map(id=>originalPlots.get(id)))]));
-  const buildingClasses=new Map(city.buildings.map(row=>[row.id,classifyRoadProvenance(row)]));
+  const buildingClasses=new Map(affectedBuildings.map(row=>[row,classifyRoadProvenance(row)]));
   for(const property of city.properties){
     const originalId=property.id;
     property.id=mapId(propertyIds,originalId);
@@ -90,15 +98,12 @@ export function allocateRoadCandidate(project,result,context,receipt){
   // Recompute only genuine generator fingerprints invalidated by remapping.
   // Custom/unknown provenance is preserved, never elevated to generated.
   const newPlots=new Map(city.plots.map(plot=>[plot.id,plot]));
-  const propertySources=new Map([...propertyClasses].map(([id,classification])=>[mapId(propertyIds,id),classification]));
-  const buildingSources=new Map([...buildingClasses].map(([id,classification])=>[mapId(buildingIds,id),classification]));
-  for(const property of city.properties){
-    const plots=property.plotIds.map(id=>newPlots.get(id)),prior=propertySources.get(property.id);
+  for(const [property,prior] of propertyClasses){
+    const plots=property.plotIds.map(id=>newPlots.get(id));
     if(prior==='generated'&&classifyRoadProvenance(property,plots)!=='generated')stampRoadGenerated(property,plots);
     if(classifyRoadProvenance(property,plots)!==prior)throw Error('Road property provenance classification changed.');
   }
-  for(const building of city.buildings){
-    const prior=buildingSources.get(building.id);
+  for(const [building,prior] of buildingClasses){
     if(prior==='generated'&&classifyRoadProvenance(building)!=='generated')stampRoadGenerated(building);
     if(classifyRoadProvenance(building)!==prior)throw Error('Road building provenance classification changed.');
   }
