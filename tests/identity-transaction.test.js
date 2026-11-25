@@ -117,3 +117,56 @@ test('IDA no-op cannot consume a revision or create history',()=>{
   assert.throws(()=>prepareAcceptedIdentityTransaction(f),/no city change/);
   assert.equal(snapshot(f),before);
 });
+
+test('S1-B2 validator snapshots cannot alias the prepared root, geometry or original inputs',()=>{
+  const f=fixture();
+  f.project.opaqueS1={nested:{label:'retained'},items:[1,{tag:'original'}]};
+  f.history.clear(f.project);
+  const baseline=JSON.stringify(f.project),keys=Object.keys(f.project);
+  let oldInput,newInput;
+  f.validateDomain=(before,after)=>{
+    oldInput=before;newInput=after;
+    assert.equal(JSON.stringify(before),baseline);
+    assert.deepEqual(Object.keys(after),keys);
+    assert.notEqual(before.opaqueS1,after.opaqueS1);
+    assert.ok(Object.getOwnPropertyDescriptor(before.city.buildings[0],'footprint')?.get);
+    assert.ok(Object.getOwnPropertyDescriptor(after.city.buildings[0],'footprint')?.get);
+    return true;
+  };
+  const next=prepareAcceptedIdentityTransaction(f),exact=JSON.stringify(next.project);
+  assert.deepEqual(Object.keys(next.project),keys);
+  assert.deepEqual(next.project.opaqueS1,f.project.opaqueS1);
+  assert.notEqual(next.project.opaqueS1,oldInput.opaqueS1);
+  oldInput.opaqueS1.nested.label='retained callback mutated old';
+  oldInput.options.center.x+=1;
+  oldInput.city.buildings[0].geometry.regions[0].ring[0].x+=1;
+  newInput.opaqueS1.items[1].tag='retained callback mutated new';
+  newInput.city.buildings[0].customName='wrong';
+  assert.equal(JSON.stringify(next.project),exact);
+  assert.equal(JSON.stringify(f.project),baseline);
+  assert.equal(JSON.stringify(f.history.baseline),baseline);
+});
+
+test('S1-B2 baseline and opaque root mutation during validation still refuse atomically',()=>{
+  for(const mutate of [
+    before=>{before.options.center.x+=1;},
+    before=>{before.opaqueS1.nested.label='wrong';},
+    before=>{const value=before.opaqueS1;delete before.opaqueS1;before.opaqueS1=value;before.seed='changed';}
+  ]){
+    const f=fixture();
+    f.project.opaqueS1={nested:{label:'retained'}};
+    f.history.clear(f.project);
+    const baseline=snapshot(f);
+    f.validateDomain=before=>{mutate(before);return true;};
+    assert.throws(()=>prepareAcceptedIdentityTransaction(f),/Independent domain validation/);
+    assert.equal(snapshot(f),baseline);
+  }
+});
+
+test('S1-B2 external baseline changes during validation remain independently detected',()=>{
+  const f=fixture();
+  f.validateDomain=()=>{f.project.options.center.x+=1;return true;};
+  const history=JSON.stringify(f.history);
+  assert.throws(()=>prepareAcceptedIdentityTransaction(f),/baseline changed/);
+  assert.equal(JSON.stringify(f.history),history);
+});

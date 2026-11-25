@@ -64,14 +64,20 @@ export function prepareAcceptedIdentityTransaction({
     context,requests,receipt,city);
   if(idaTxnSame(before.city,city))
     throw Error('Identity transaction has no city change');
-  const candidate={...before,city,identityAllocation:nextState};
+  // Keep the original detached baseline for the independent validator.
+  // Copy only its root metadata into the candidate: city is replaced, so
+  // cloning the entire old city again would be wasted. Preserve JSON key
+  // order and opaque root fields, without hydrating an incomplete project.
+  const beforeJson=JSON.stringify(before);
+  const root=JSON.parse(JSON.stringify({...before,city:null}));
+  const candidate={...root,city,identityAllocation:nextState};
   validateJsonTree(candidate);
   validateStoredProject(candidate);
   // The domain validator is a trusted, independent permission/topology/
   // preservation check. Give it detached copies, reject mutation of either.
-  const domainBefore=copyJson(before),domainAfter=copyJson(candidate);
-  if(validateDomain(domainBefore,domainAfter)!==true||
-    !idaTxnSame(domainBefore,before)||!idaTxnSame(domainAfter,candidate))
+  const domainAfter=copyJson(candidate);
+  if(validateDomain(before,domainAfter)!==true||
+    JSON.stringify(before)!==beforeJson||!idaTxnSame(domainAfter,candidate))
     throw Error('Independent domain validation refused identity transaction');
   const recordable=history.canRecord(before,candidate,metadata.editorHistory);
   const oversize=allowOversize&&!recordable&&
@@ -80,7 +86,7 @@ export function prepareAcceptedIdentityTransaction({
   if(!recordable&&!oversize)
     throw Error('Accepted identity transaction history preflight refused');
   // Defensive recheck: the host baseline must not have changed during checks.
-  if(!idaTxnSame(project,before))
+  if(JSON.stringify(project)!==beforeJson||JSON.stringify(before)!==beforeJson)
     throw Error('Accepted identity transaction baseline changed');
   // The host must publish project + revision + history together in a later
   // integration checkpoint. Discarding this result consumes nothing.
