@@ -1,4 +1,5 @@
 import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
+import { assertRoadUndoProject } from './helpers/road-undo-project.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -162,7 +163,7 @@ test('0.2.2 P4 standalone road workspace Apply, Undo/Redo and Cancel are atomic'
   assert.notEqual(after,before);
   assert.equal(app.state().files.revision,revision+1);
   assert.equal(app.moveRoadHistory('undo'),true);
-  assert.equal(JSON.stringify(app.state().project),before);
+  assertRoadUndoProject(JSON.stringify(app.state().project),before,after);
   assert.equal(app.moveRoadHistory('redo'),true);
   assert.equal(JSON.stringify(app.state().project),after);
   const saved=app.capture();

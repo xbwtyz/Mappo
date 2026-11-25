@@ -1,4 +1,5 @@
 import { test } from 'node:test';
+import { assertRoadUndoProject } from './helpers/road-undo-project.js';
 import assert from 'node:assert/strict';
 import { generateRiver } from '../src/generators/water.js';
 import { createProject } from '../src/core/city-model.js';
@@ -82,7 +83,7 @@ test('C4 normal workspace routes bend controls, snapped drag, cancel and redo th
   assert.notEqual(applied,original);
   assert.equal(state.files.revision,revision+1);
   assert.equal(app.moveRoadHistory('undo'),true);
-  assert.equal(JSON.stringify(app.state().project),original);
+  assertRoadUndoProject(JSON.stringify(app.state().project),original,applied);
   assert.equal(app.moveRoadHistory('redo'),true);
   assert.equal(JSON.stringify(app.state().project),applied);
 });
