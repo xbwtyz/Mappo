@@ -18,6 +18,8 @@ export class ProjectFiles {
     getElement,
     capture,
     apply,
+    captureAdoptionRollback = () => null,
+    restoreAdoptionRollback = (document) => apply(document),
     openRecovery = openBrowserRecovery,
     download = downloadProjectText,
     clock = () => new Date().toISOString(),
@@ -28,6 +30,8 @@ export class ProjectFiles {
     this.$ = getElement;
     this.capture = capture;
     this.apply = apply;
+    this.captureAdoptionRollback = captureAdoptionRollback;
+    this.restoreAdoptionRollback = restoreAdoptionRollback;
     this.openRecovery = openRecovery;
     this.download = download;
     this.clock = clock;
@@ -234,20 +238,28 @@ export class ProjectFiles {
     const selected = this.pending;
     this.busy = true;
     this.opening = true;
-    let outgoing, oldBase = this.base;
+    let outgoing, rollback, oldBase = this.base, enteredApply = false, published = false;
+    const wasSuspended=this.suspended, startRevision=this.revision;
     try {
-      outgoing = this.captureDocument();
+      // Validate before capturing or writing recovery, and before any live
+      // editor replacement. A rejected document must not reapply the city.
+      const document = decodeProjectDocument(encodeProjectDocument(selected.document));
       // Make a best-effort recovery of the outgoing workspace before replacing it.
       if (this.store && !this.suspended) {
         try {
           await this.flush();
         } catch {}
       }
-      // Re-validate the immutable staged payload immediately before applying.
-      const document = decodeProjectDocument(encodeProjectDocument(selected.document));
+      if(this.pending!==selected||this.revision!==startRevision)
+        throw Error('The current workspace changed during Open. Review the project and try again.');
+      oldBase=this.base;
+      outgoing=this.captureDocument();
+      rollback=this.captureAdoptionRollback();
       this.suspended = true;
       this.applying = true;
+      enteredApply=true;
       this.apply(document);
+      published=true;
       this.applying = false;
       this.base = document;
       this.pending = null;
@@ -274,19 +286,26 @@ export class ProjectFiles {
       this.status(`Opened ${document.project.city.name}. Saved geometry restored without regeneration.${recoveryDetail}`, Boolean(recoveryError));
       return true;
     } catch (error) {
+      if(published){
+        // Never undo a successfully applied city because a later UI/recovery
+        // notification failed. Its document remains the accepted base.
+        this.status(`Project opened, but follow-up failed: ${error.message}`, true);
+        return true;
+      }
+      let restored=true;
       try {
-        if (outgoing) {
+        if (enteredApply && outgoing) {
           this.applying = true;
-          this.apply(outgoing);
-          this.base = oldBase;
+          this.restoreAdoptionRollback(outgoing,rollback);
         }
-      } catch {}
-      this.status(`Could not apply project: ${error.message} Current city retained.`, true);
+      } catch {restored=false;}
+      if(outgoing)this.base=oldBase;
+      this.status(`Could not apply project: ${error.message} ${restored?'Current city retained.':'Workspace restoration failed; review current city before editing.'}`, true);
       return false;
     } finally {
       this.applying = false;
       this.opening = false;
-      this.suspended = false;
+      this.suspended = published?false:wasSuspended;
       this.busy = false;
     }
   }

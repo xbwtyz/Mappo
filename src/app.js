@@ -3436,7 +3436,25 @@ function captureWorkspace() {
   };
 }
 
-function applyProjectDocument(document) {
+function captureProjectAdoptionRollbackD01(){
+  return {project,history:forkAcceptedHistoryD01(acceptedHistoryD01),
+    feedback:historyFeedback};
+}
+function restoreProjectAdoptionRollbackD01(document,checkpoint){
+  if(!checkpoint||JSON.stringify(checkpoint.project)!==JSON.stringify(document.project)||
+    JSON.stringify(checkpoint.history.baseline)!==JSON.stringify(document.project))
+    throw Error('Outgoing accepted project/history checkpoint is inconsistent.');
+  applyProjectDocument(document,checkpoint);
+}
+function applyProjectDocument(document,rollback=null) {
+  // Prepare the replacement before clearing live editor state. File-open
+  // rollback supplies the original accepted ledger rather than a new session.
+  const next = rollback?rollback.project:copyJson(document.project),
+    workspace = copyJson(document.workspace),
+    draft = workspace.editor;
+  const staged=rollback?{history:rollback.history,status:'replaced'}:
+    stageAcceptedReplacementD01(acceptedHistoryD01,next,
+      'Opening or recovering a project cleared session history.');
   cancelMapGesturesA2();
   drafts.clear();
   roadWorkspace?.exit({restore:false});
@@ -3446,9 +3464,6 @@ function applyProjectDocument(document) {
   propertySplitE2?.clear();
   propertyMergeE3?.clear();
   landscapeWorkspace.restoring = true;
-  const next = copyJson(document.project),
-    workspace = copyJson(document.workspace),
-    draft = workspace.editor;
   buildingEditSession?.stop();
   buildingPlacementSession?.stop();
   buildingStructureHistory.clear();
@@ -3459,8 +3474,8 @@ function applyProjectDocument(document) {
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
   clearMapHover();
-  publishAcceptedStateD01(next,stageAcceptedReplacementD01(acceptedHistoryD01,next,
-    'Opening or recovering a project cleared session history.'));
+  publishAcceptedStateD01(next,staged);
+  if(rollback)historyFeedback=rollback.feedback;
   buildingHistory.clear(); // History does not travel with portable or recovery files.
   editor.boundary = draft.boundary;
   editor.center = draft.center;
@@ -3682,6 +3697,8 @@ files = new ProjectFiles({
   getElement: $,
   capture: captureWorkspace,
   apply: applyProjectDocument,
+  captureAdoptionRollback: captureProjectAdoptionRollbackD01,
+  restoreAdoptionRollback: restoreProjectAdoptionRollbackD01,
   onStatus: state => workspaceMenus.projectStatus(state)
 });
 files.bind();

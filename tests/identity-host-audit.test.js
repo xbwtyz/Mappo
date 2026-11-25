@@ -53,7 +53,8 @@ test('IDA host audit distinguishes file dirty revision from accepted city revisi
 test('IDA host audit locates adoption and async road stale-check boundaries',()=>{
  assert.match(app,/function prepareCityGeneration\(\)[\s\S]*?createProject\(/);
  assert.match(app,/function commitCityGeneration\(current\)[\s\S]*?publishAcceptedStateD01\(next,stageAcceptedReplacementD01\(acceptedHistoryD01,next,/);
- assert.match(app,/function applyProjectDocument\(document\)[\s\S]*?publishAcceptedStateD01\(next,stageAcceptedReplacementD01\(acceptedHistoryD01,next,/);
+ assert.match(app,/function applyProjectDocument\(document,rollback=null\)[\s\S]*?stageAcceptedReplacementD01\(acceptedHistoryD01,next,[\s\S]*?publishAcceptedStateD01\(next,staged\)/);
+ assert.match(app,/restoreAdoptionRollback: restoreProjectAdoptionRollbackD01/);
  assert.match(app,/apply: applyProjectDocument/);
  assert.match(app,/session\.computeJunctionAsync\(\{[\s\S]*?if \(project !== previous \|\| JSON\.stringify\(project\) !== projectJson\)/);
  assert.match(app,/function commitRoadEditB4\([\s\S]*?commitAcceptedEdit\(candidate, transaction, \{requireRecorded:group\}\)/);
