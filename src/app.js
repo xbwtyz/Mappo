@@ -142,7 +142,7 @@ import { checkRoadApplyC2, prepareRoadApplyC2, validateRoadGroupApplyB1, validat
 import { RoadGeometryHistoryB4 } from './editor/road-history.js';
 import { DraftEngine } from './core/draft-engine.js';
 import { renderDraftControls, syncDraftControls } from './ui/draft-controls.js';
-import { AcceptedEditHistoryD01 } from './core/accepted-edit-history-d01.js';
+import { AcceptedEditHistoryD01, forkAcceptedHistoryD01, stageAcceptedPublicationD01, stageAcceptedReplayD01, stageAcceptedReplacementD01 } from './core/accepted-edit-history-d01.js';
 import { HISTORY_EDITOR_KEYS, historyWorkspaceForReplay } from './core/accepted-history-workspace-a5.js';
 import { createProjectDocument, encodeProjectDocument } from './data/project-format.js';
 
@@ -196,7 +196,7 @@ const propertyCreationHistoryE1 = new PropertyCreationHistoryE1(20);
 const roadHistory = new RoadGeometryHistoryB4(6);
 const acceptedHistoryD01 = new AcceptedEditHistoryD01({maxEntries:20,maxBytes:64*1024*1024});
 let d01ReplayingHistory=false;
-let pendingHistoryTransaction = null;
+let pendingHistoryRefresh = false;
 let historyFeedback = null;
 const savedHistoryCount = { districts: 0, defenses: 0 };
 const localHistoryLabels = {
@@ -399,10 +399,12 @@ function d01MoveHistory(direction) {
   const beforeCity = project.city;
   const returningProperties=receipt.candidate.city.properties.filter(p=>
     !project.city.properties.some(old=>old.id===p.id)).map(p=>p.id);
+  let staged;
+  try{staged=stageAcceptedReplayD01(acceptedHistoryD01,project,direction,receipt);}
+  catch(error){return showHistoryFailure(direction,error.message);}
   d01ReplayingHistory=true;
   try{
-    project=receipt.candidate;
-    acceptedHistoryD01.accept(direction,receipt.entry,project);
+    publishAcceptedStateD01(receipt.candidate,staged);
     // No old per-editor accepted-history cursor may authorize restoration after
     // the chronological ledger has advanced. Draft editor history is separate.
     roadHistory.clear();propertyHistory.clear();propertyDeletionHistory4A.clear();
@@ -539,9 +541,20 @@ function editorHistoryDeltaA5(family, beforeHistory, afterHistory, afterSavedCou
     after: { history: afterHistory, savedCount: afterSavedCount } };
 }
 
-function commitAcceptedEdit(candidate, transaction) {
-  pendingHistoryTransaction = { candidate, transaction };
-  project = candidate;
+// Publish the fully prepared D01 cursor and city in the same synchronous
+// boundary, before UI callbacks, dirty signals or recovery capture.
+// Keep the ledger object stable for existing Inspector readers.
+function publishAcceptedStateD01(next,staged) {
+  Object.assign(acceptedHistoryD01,staged.history);
+  project = next;
+  if(['recorded','oversize','barrier','replayed','replaced'].includes(staged.status)){
+    pendingHistoryRefresh=true;
+    historyFeedback=null;
+  }
+}
+function commitAcceptedEdit(candidate, transaction, options) {
+  const staged=stageAcceptedPublicationD01(acceptedHistoryD01,project,candidate,transaction,options);
+  publishAcceptedStateD01(candidate,staged);
 }
 
 function commitDomainEditA5(family, city, { operation, beforeHistory }) {
@@ -635,16 +648,16 @@ function restoreSavedDomainEditA5(family) {
   }
 }
 function workspaceChanged() {
-  // This is the common accepted-project observation boundary. Visual-only
-  // changes do not touch the ledger. Unsupported accepted-city changes become
-  // explicit barriers, never silently replayed with a stale project.
-  const transaction = pendingHistoryTransaction?.candidate === project ? pendingHistoryTransaction?.transaction : null;
-  pendingHistoryTransaction = null;
-  const observed = project && !d01ReplayingHistory ? acceptedHistoryD01.observe(project, transaction) : null;
-  if (['recorded', 'barrier', 'oversize'].includes(observed?.status)) historyFeedback = null;
-  // Journal observation follows other component callbacks; refresh the
-  // actionable local controls after a newly accepted transaction.
-  if(observed?.status==='recorded'||observed?.status==='barrier'||d01ReplayingHistory){
+  // Ordinary Apply already published its history. Retain the defensive
+  // untracked-change barrier, but never record an accepted edit a second time.
+  if(project&&!d01ReplayingHistory&&JSON.stringify(acceptedHistoryD01.baseline)!==JSON.stringify(project)){
+    const staged=forkAcceptedHistoryD01(acceptedHistoryD01);
+    const observed=staged.observe(project,null);
+    publishAcceptedStateD01(project,{history:staged,status:observed.status});
+  }
+  const refresh=pendingHistoryRefresh;
+  pendingHistoryRefresh=false;
+  if(refresh||d01ReplayingHistory){
     syncBuildingHistoryUI();
     syncBuildingStructureUI3H();
     // The property Inspector may render before the accepted transaction has
@@ -884,7 +897,12 @@ function commitBuildingTransform(current) {
     $('statusMessage').textContent='Applied validated footprint to '+buildingId+'. Download a project copy to keep this change.';
     return true;
   } catch(error){
-    project=previous;
+    // Once published, a later UI failure cannot roll back only the city.
+    if(project!==previous){
+      $('statusMessage').textContent='Building edit accepted; interface refresh failed: '+error.message;
+      files?.changed();
+      return true;
+    }
     $('buildingPreviewApply').disabled=true;
     $('buildingPreviewStatus').textContent='APPLY FAILED · Original city preserved. '+error.message;
     requestDraw();
@@ -1718,10 +1736,9 @@ function commitCityGeneration(current) {
     buildingWorkspace?.refresh({ replaced: true });
     clearMapHover();
     drafts.clear();
-    project = next;
+    publishAcceptedStateD01(next,stageAcceptedReplacementD01(acceptedHistoryD01,next,
+      'City generation started a new session history.'));
     desktopWorkspace?.cancelPreview();
-    historyFeedback = null;
-    acceptedHistoryD01.clear(project,'City generation started a new session history.');
     buildingHistory.clear(); // Rebuilding invalidates every accepted-building history entry.
     roadHistory.clear();
     if (waterPanel) {
@@ -2683,11 +2700,9 @@ function commitRoadEditB4(previous, revision, { candidate, workspace }, junction
   if(group){
     if(!acceptedHistoryD01.canRecord(previous,candidate,transaction.editorHistory))
       return {ok:false,message:'The reversible history changed before group Apply.'};
-    const recorded=acceptedHistoryD01.record(previous,candidate,transaction);
-    if(recorded.status!=='recorded')return {ok:false,message:'The reversible group transaction was not recorded.'};
-    historyFeedback=null;
   }
-  commitAcceptedEdit(candidate, transaction);
+  try{commitAcceptedEdit(candidate, transaction, {requireRecorded:group});}
+  catch(error){return {ok:false,message:error.message};}
   refreshRoadDistrictWorkspace(workspace);
   buildingHistory.clear();
   buildingStructureHistory.clear();
@@ -3444,9 +3459,8 @@ function applyProjectDocument(document) {
   propertyWorkspace.refresh({ replaced: true });
   buildingWorkspace.refresh({ replaced: true });
   clearMapHover();
-  project = next;
-  historyFeedback = null;
-  acceptedHistoryD01.clear(project,'Opening or recovering a project cleared session history.');
+  publishAcceptedStateD01(next,stageAcceptedReplacementD01(acceptedHistoryD01,next,
+    'Opening or recovering a project cleared session history.'));
   buildingHistory.clear(); // History does not travel with portable or recovery files.
   editor.boundary = draft.boundary;
   editor.center = draft.center;

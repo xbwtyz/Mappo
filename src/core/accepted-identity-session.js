@@ -1,4 +1,4 @@
-import { AcceptedEditHistoryD01 } from './accepted-edit-history-d01.js';
+import { AcceptedEditHistoryD01, forkAcceptedHistoryD01 } from './accepted-edit-history-d01.js';
 import { prepareAcceptedIdentityTransaction } from './identity-transaction.js';
 import { issueIdentityReservation } from './identity-verification.js';
 import { validateJsonTree, validateStoredProject } from '../data/project-validation.js';
@@ -7,25 +7,6 @@ import { copyJson } from '../data/project-format.js';
 // P3a2: one private session state pointer. Reuse D01's recording/pruning
 // policy on a staged ledger. Neither the caller nor domain validator can
 // obtain a mutable reference to accepted state. No app wiring yet.
-function idaSessionForkHistory(history,detach=false){
-  if(!(history instanceof AcceptedEditHistoryD01))
-    throw Error('An accepted D01 history is required');
-  if(!Number.isSafeInteger(history.serial)||history.serial<0||
-    !Array.isArray(history.past)||!Array.isArray(history.future))
-    throw Error('Invalid accepted history cursor');
-  const fork=new AcceptedEditHistoryD01({
-    maxEntries:history.maxEntries,maxBytes:history.maxBytes
-  });
-  // Entries are treated as immutable inside the coordinator. record() only
-  // replaces arrays, appends a new entry and replaces baseline/notice.
-  // Import/export boundaries detach entries; staging shares private entries.
-  fork.past=detach?copyJson(history.past):history.past.slice();
-  fork.future=detach?copyJson(history.future):history.future.slice();
-  fork.serial=history.serial;
-  fork.baseline=detach?copyJson(history.baseline):history.baseline;
-  fork.notice=history.notice;
-  return fork;
-}
 // One immutable, reference-stable render snapshot per accepted revision.
 // Freeze only validated/owned project data. The history facade has no
 // mutators or access to private cursors, and an older view stays historical.
@@ -86,7 +67,7 @@ export class AcceptedIdentitySession {
     const binding=issueIdentityReservation(
       accepted.identityAllocation,accepted.city,context,[]).binding;
     const ledger=history===undefined?new AcceptedEditHistoryD01():
-      idaSessionForkHistory(history,true);
+      forkAcceptedHistoryD01(history,true);
     if(history===undefined)ledger.clear(accepted);
     if(!ledger.baseline||JSON.stringify(ledger.baseline)!==JSON.stringify(accepted))
       throw Error('Accepted history baseline does not match adopted project');
@@ -96,7 +77,7 @@ export class AcceptedIdentitySession {
   view(){return this.#state.view;}
   // Explicit detached ledger export for future host integration/inspection.
   // This is not persisted history and cannot mutate the accepted ledger.
-  copyHistory(){return idaSessionForkHistory(this.#state.history,true);}
+  copyHistory(){return forkAcceptedHistoryD01(this.#state.history,true);}
   reserve(requests){
     const {project,context}=this.#state;
     return issueIdentityReservation(project.identityAllocation,project.city,context,requests);
@@ -112,7 +93,7 @@ export class AcceptedIdentitySession {
         project:current.project,context:current.context,requests,receipt,
         candidateCity,transaction,history:current.history,validateDomain
       });
-      const history=idaSessionForkHistory(current.history);
+      const history=forkAcceptedHistoryD01(current.history);
       const recorded=history.record(current.project,prepared.project,prepared.transaction);
       if(recorded.status!=='recorded')
         throw Error('Accepted identity transaction history recording refused');
@@ -146,7 +127,7 @@ export class AcceptedIdentitySession {
       if(current.context.revision===Number.MAX_SAFE_INTEGER)
         throw Error('Accepted identity transaction revision exhausted');
       validateJsonTree(workspace);
-      const history=idaSessionForkHistory(current.history);
+      const history=forkAcceptedHistoryD01(current.history);
       const receipt=history.prepare(direction,current.project,workspace);
       if(!receipt.ok)throw Error(receipt.reason);
       history.accept(direction,receipt.entry,receipt.candidate);
