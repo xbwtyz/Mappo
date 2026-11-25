@@ -18039,12 +18039,18 @@ class FlexiblePlotDraft027 {
     if(!this.selected)throw Error('Choose a plot first.');
     return splitConvexPlot027(this.selected.boundary,this.edgeA,this.ratioA,this.edgeB,this.ratioB);
   }
-  split(city){
+  split(city,{identityDraft=false}={}){
     this.requireSpace();
     const source=this.selected,part=this.cut();
     const used=new Set([...city.plots.map(p=>p.id),...this.plots.map(p=>p.id)]);
     let serial=1,id;
-    do{id='PLOT-'+String(serial++).padStart(5,'0');}while(used.has(id)&&serial<50000);
+    if(identityDraft){
+      // These are journal-local labels, never accepted entity identities.
+      for(const op of this.operations)if(op.kind==='split')used.add(op.createdId);
+      do{id='PLOT-DRAFT-'+this.operations.length+'-'+serial++;}while(used.has(id)&&serial<50000);
+    }else{
+      do{id='PLOT-'+String(serial++).padStart(5,'0');}while(used.has(id)&&serial<50000);
+    }
     if(used.has(id))throw Error('No unused plot identifier available.');
     const index=this.plots.indexOf(source),keep=this.retain==='second'?1:0,before=copyJson(this.plots);
     const proposed=copyJson(this.plots);
@@ -18350,23 +18356,34 @@ function inspectFlexiblePlot027(project,session){
     operations:draft.operations.length,protectedIds};
   return {ok:!issues.length,status:issues.length?'invalid':draft.pending?'valid':'unchanged',issues,preview};
 }
-// This checkpoint supports split-only drafts. Mixed retirement/creation
-// journals require separate qualification before the live host switch.
+// Reserve only new identities that survive the entire bounded journal.
+// A draft-only creation subsequently retired is represented by its local
+// PLOT-DRAFT label in this entry's steps, not by a committed entity ID.
 function flexibleSubdivisionIdentityRequests027(project,session){
   const draft=session?.flexible;
-  if(!draft?.pending||draft.operations.some(op=>op.kind!=='split'))
-    throw Error('A subdivision-only draft is required.');
-  const existing=new Set(project.city.plots.map(p=>p.id)),created=new Set();
-  const requests=draft.operations.map((op,i)=>{
-    if(existing.has(op.createdId)||created.has(op.createdId)||
-      !draft.plots.some(p=>p.id===op.createdId))
-      throw Error('Subdivision created identity is not a unique surviving draft plot.');
-    created.add(op.createdId);
-    return {type:'plot',key:'subdivision-'+i};
-  });
-  if(draft.plots.some(p=>!existing.has(p.id)&&!created.has(p.id)))
+  if(!draft?.pending)throw Error('A plot partition draft is required.');
+  const property=project.city.properties.find(p=>p.id===draft.propertyId);
+  if(!property)throw Error('Original plot owner disappeared.');
+  const existing=new Set(project.city.plots.map(p=>p.id)),active=new Set(property.plotIds),created=new Map();
+  for(const [i,op] of draft.operations.entries()){
+    if(op.kind==='split'){
+      if(!active.has(op.sourceId)||op.retainedId!==op.sourceId||
+        existing.has(op.createdId)||created.has(op.createdId)||active.has(op.createdId))
+        throw Error('Invalid subdivision identity journal.');
+      created.set(op.createdId,i);active.add(op.createdId);
+    }else if(op.kind==='merge'){
+      if(!Array.isArray(op.sources)||op.sources.length!==2||
+        op.retainedId===op.retiredId||!op.sources.includes(op.retainedId)||
+        !op.sources.includes(op.retiredId)||!active.has(op.retainedId)||!active.has(op.retiredId))
+        throw Error('Invalid plot merge identity journal.');
+      active.delete(op.retiredId);
+    }else throw Error('Unsupported plot partition journal step.');
+  }
+  if(active.size!==draft.plots.length||draft.plots.some(p=>!active.has(p.id)))
     throw Error('Untracked draft plot identity.');
-  return requests;
+  for(const id of created.keys())if(!active.has(id)&&!/^PLOT-DRAFT-\d+-\d+$/.test(id))
+    throw Error('Retired draft plot requires an unambiguous local journal label.');
+  return [...created].filter(([id])=>active.has(id)).map(([,i])=>({type:'plot',key:'subdivision-'+i}));
 }
 function prepareFlexiblePlot027(project,workspace,session,{identityReservation=null}={}){
   const inspected=inspectFlexiblePlot027(project,session),draft=session?.flexible;
@@ -18389,7 +18406,9 @@ function prepareFlexiblePlot027(project,workspace,session,{identityReservation=n
       const {context,receipt}=identityReservation;
       verifiedAllocation=verifyIdentityReservation(project.identityAllocation,project.city,context,requests,receipt);
       const byKey=new Map(receipt.allocations.map(row=>[row.key,row.id]));
-      draft.operations.forEach((op,i)=>allocated.set(op.createdId,byKey.get('subdivision-'+i)));
+      draft.operations.forEach((op,i)=>{
+        if(op.kind==='split'&&byKey.has('subdivision-'+i))allocated.set(op.createdId,byKey.get('subdivision-'+i));
+      });
       candidate.identityAllocation=verifiedAllocation;
     }
     const mapped=id=>allocated.get(id)??id;
@@ -18408,7 +18427,9 @@ function prepareFlexiblePlot027(project,workspace,session,{identityReservation=n
       operation:'flexible-plot-partition',sourcePlotIds:beforeIds,resultPlotIds:property.plotIds.slice(),
       retiredIds:beforeIds.filter(id=>!afterIds.has(id)),sourceRecords:sources,
       steps:draft.operations.map(({before,...op})=>verifiedAllocation
-        ?{kind:'split',sourceId:mapped(op.sourceId),retainedId:mapped(op.retainedId),createdId:mapped(op.createdId)}
+        ?(op.kind==='split'
+          ?{kind:'split',sourceId:mapped(op.sourceId),retainedId:mapped(op.retainedId),createdId:mapped(op.createdId)}
+          :{kind:'merge',sources:op.sources.map(mapped),retainedId:mapped(op.retainedId),retiredId:mapped(op.retiredId)})
         :copyJson(op)),
       authorizedOriginalIds:draft.authorizations(project.city)
     }];
@@ -18499,6 +18520,7 @@ function editedFrontageAlignedSFS(boundary,guide){
 
 
 // src/editor/property-application.js
+
 
 
 
@@ -18623,15 +18645,33 @@ function inspectPropertyEdit3I(project,session){
 
 // Apply is one transaction: entire project cloned; parent, plots, building-to-
 // plot links and open-space area reconciled; schema+portable checks gate commit.
-function preparePropertyApply3I(project,workspace,session){
-  if(session?.flexibleMode)return prepareFlexiblePlot027(project,workspace,session);
+function propertyEditIdentityRequests3I(project,inspection){
+  if(!inspection?.ok)throw Error('A valid property geometry edit is required.');
+  const current=new Set(project.city.plots.map(p=>p.id));
+  return inspection.preview.plots.flatMap((row,i)=>current.has(row.id)?[]:[{type:'plot',key:'edit-plot-'+i}]);
+}
+function preparePropertyApply3I(project,workspace,session,{identityReservation=null}={}){
+  if(session?.flexibleMode)return prepareFlexiblePlot027(project,workspace,session,{identityReservation});
   const inspected=inspectPropertyEdit3I(project,session);
   if(!inspected.ok)return {...inspected,candidate:null};
   if(!session.isPending)return {ok:false,status:'unchanged',issues:[{code:'unchanged',message:'The property preview has no changes to apply.'}],preview:inspected.preview,candidate:null};
   try{
     const candidate=copyJson(project),city=candidate.city;
     const original=city.properties.find(p=>p.id===session.propertyId);
-    const preview=inspected.preview;
+    let preview=inspected.preview,verifiedAllocation=null,requests=[];
+    const allocated=new Map();
+    if(identityReservation!==null){
+      if(project.schemaVersion!==11)throw Error('Identity reservation requires Schema 11.');
+      requests=propertyEditIdentityRequests3I(project,inspected);
+      const {context,receipt}=identityReservation;
+      verifiedAllocation=verifyIdentityReservation(project.identityAllocation,project.city,context,requests,receipt);
+      const byKey=new Map(receipt.allocations.map(row=>[row.key,row.id]));
+      preview.plots.forEach((row,i)=>{if(byKey.has('edit-plot-'+i))allocated.set(row.id,byKey.get('edit-plot-'+i));});
+      candidate.identityAllocation=verifiedAllocation;
+    }
+    const mapped=id=>allocated.get(id)??id;
+    if(verifiedAllocation)preview={...preview,plots:preview.plots.map(row=>({...row,id:mapped(row.id)})),
+      ...(preview.plotIds?{plotIds:preview.plotIds.map(mapped)}:{})};
     original.boundary=copyJson(preview.boundary);
     original.frontage=copyJson([preview.boundary[0],preview.boundary[1]]);
     original.area=polygonSignedArea(preview.boundary);
@@ -18669,7 +18709,7 @@ function preparePropertyApply3I(project,workspace,session){
       const oldSource=city.plots.find(p=>p.id===sourceId&&p.propertyId===original.id);
       if(!oldSource)throw new Error('Original plot identity changed.');
       const receipt={operation:change.kind,retainedId:change.kind==='split'?change.sourceId:change.retainedId,
-        newId:change.kind==='split'?change.newId:null,
+        newId:change.kind==='split'?mapped(change.newId):null,
         retiredId:change.kind==='merge'?change.retiredId:null,
         sourceRecord:copyJson(oldSource),previousPlotIds:copyJson(original.plotIds)};
       original.plotCountHistoryE4=[...(history??[]),receipt];
@@ -18678,10 +18718,10 @@ function preparePropertyApply3I(project,workspace,session){
       }else{
         const source=city.plots.find(p=>p.id===change.sourceId);
         if(!source)throw new Error('Split plot identity changed.');
-        city.plots.push({id:change.newId,propertyId:original.id,blockId:source.blockId,
+        city.plots.push({id:mapped(change.newId),propertyId:original.id,blockId:source.blockId,
           frontageRoadId:source.frontageRoadId,boundary:[]});
       }
-      original.plotIds=[...session.plotIds];
+      original.plotIds=session.plotIds.map(mapped);
     }
     for(const row of preview.plots){
       const plot=city.plots.find(p=>p.id===row.id);
@@ -18697,9 +18737,13 @@ function preparePropertyApply3I(project,workspace,session){
     const block=city.blocks.find(record=>record.id===original.blockId);
     if(open&&block)
       open.area=Math.max(0,block.area-city.properties.filter(p=>p.blockId===block.id).reduce((sum,p)=>sum+p.area,0));
+    if(verifiedAllocation)verifyIdentityAdditions(project.identityAllocation,project.city,
+      identityReservation.context,requests,identityReservation.receipt,city);
     validateStoredProject(candidate);
     const saved=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
     if(!giSame(candidate.city,saved.project.city))throw new Error('Portable project round-trip altered the accepted geometry.');
+    if(verifiedAllocation&&!giSame(saved.project.identityAllocation,verifiedAllocation))
+      throw Error('Portable save changed property edit allocation state.');
     return {ok:true,status:'valid',issues:[],preview,candidate:saved.project};
   }catch(error){
     return {ok:false,status:'invalid',issues:[{code:'project',message:'Property edit rejected: '+error.message}],preview:inspected.preview,candidate:null};
