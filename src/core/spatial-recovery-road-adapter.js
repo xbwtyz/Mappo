@@ -239,3 +239,59 @@ export async function searchSpatialConcessionRoadGroup(project,input,budget,{sca
   const ledger=inspectSpatialConcessionLedger(snapshot,operation,verified,budget);
   return riFreeze({status:'verified-witness',operation,delta,ledger,stages,issues:[],stats:budget.snapshot()});
 }
+
+// Detached progressive coordinator qualification. The earlier independent
+// strategies remain available. This path never resets the caller's budget,
+// never accepts a candidate without independent reconstruction and verification,
+// and never grants Apply authority. No new permission defaults.
+export async function searchSpatialNondestructiveRoadGroup(project,input,budget){
+  const operation=sreStrictRoadOperation(input,true);
+  const p=operation.permissions;
+  if(!p.alternativeFrontage&&!p.uniformScaling)
+    return searchSpatialPackingRoadGroupReuseFixed(project,operation,budget);
+  const attempts=[],stages={};let tier='ordinary',phase='inventory',iterator=null,result=null;
+  const refusal=(issues,exhausted=null)=>riFreeze({status:'refused',operation,delta:null,ledger:null,cost:null,
+    tier,phase,attempts,stages,issues,exhausted,stats:budget.snapshot()});
+  try{
+    createSpatialInventory(project,operation,budget);
+    const snapshot=copyJson(project);
+    budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
+    phase='search';
+    iterator=iterateRoadGroupReflowB1(snapshot,operation.editedRefs.map(ref=>ref.id),operation.geometry.offset,{
+      acceptedRevision:operation.revision,sharedBudget:budget,strategy:'progressive',
+      packingFallback:true,packingReuseFixedRefusal:true,detachedProgressiveConcessions:operation
+    });
+    for(;;){
+      budget.spend();const step=iterator.next();
+      if(step.done){result=step.value;break;}
+      const v=step.value??{},stage=v.stage??'other';stages[stage]=(stages[stage]??0)+1;
+      if(stage==='sre-progressive-packing-tier'){
+        tier='packing';attempts.push({tier,stats:budget.snapshot()});
+      }else if(stage==='sre-progressive-concession-tier'){
+        tier=v.tier;attempts.push({tier,scale:v.scale,stats:budget.snapshot()});
+      }else if(stage==='sre-progressive-concession-result'){
+        attempts.push({tier:v.tier,scale:v.scale,accepted:v.accepted,stats:budget.snapshot()});
+      }
+    }
+    iterator.return();iterator=null;
+    if(!result?.candidateProject)return refusal((result?.unresolved??[]).map(i=>({code:String(i.code??'unknown'),message:String(i.message??'Road recovery refused.')})));
+    phase='delta';
+    const delta=await createSpatialDelta(snapshot,result.candidateProject,operation,1,budget);
+    phase='verification';
+    const verified=await verifySpatialConcessionRoadWitness(snapshot,operation,delta,budget);
+    const ledger=inspectSpatialConcessionLedger(snapshot,operation,verified,budget);
+    if((tier==='ordinary'||tier==='packing')&&(ledger.frontageSwitches.length||ledger.scaledBuildings.length))
+      throw Error('Unauthorized concession in ordinary preservation tier.');
+    if(tier==='alternative-frontage'&&ledger.scaledBuildings.length)
+      throw Error('Unauthorized scaling in frontage-only tier.');
+    const last=attempts.findLast(a=>a.tier===tier&&Number.isFinite(a.scale));
+    if(last&&ledger.scaledBuildings.some(b=>b.factor<last.scale-1e-6))
+      throw Error('Concession exceeded attempted tier scale.');
+    phase='score';
+    const cost=!ledger.frontageSwitches.length&&!ledger.scaledBuildings.length?scoreSpatialPreservation(snapshot,verified,budget):null;
+    return riFreeze({status:'verified-witness',operation,delta,ledger,cost,tier,phase:'verified',attempts,stages,issues:[],stats:budget.snapshot()});
+  }catch(error){
+    if(error instanceof LareBudgetExceeded)return refusal([{code:'lare-work-limit',message:error.message}],error.resource);
+    throw error;
+  }finally{iterator?.return();}
+}
