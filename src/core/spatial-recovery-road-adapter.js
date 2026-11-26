@@ -116,7 +116,7 @@ function sreFinishMetered(iterator,budget) {
 // authoritative for candidate production; it receives the operation-wide
 // budget as parent. Never publish a candidate or trust its reported ledger.
 // No worker scheduling or relaxed strategy activation is introduced here.
-async function sreSearchPreservingRoadGroup(project,input,budget,packing=false,strategy='enhanced-adaptive') {
+async function sreSearchPreservingRoadGroup(project,input,budget,packing=false,strategy='enhanced-adaptive',packingFallback=false) {
   const operation=sreStrictRoadOperation(input);
   createSpatialInventory(project,operation,budget);
   // Detach the complete accepted snapshot, including its allocator and opaque
@@ -125,7 +125,7 @@ async function sreSearchPreservingRoadGroup(project,input,budget,packing=false,s
   const bytes=new TextEncoder().encode(JSON.stringify(snapshot)).length;
   budget.spend(Math.max(1,Math.ceil(bytes/64)));
   const iterator=iterateRoadGroupReflowB1(snapshot,operation.editedRefs.map(ref=>ref.id),
-    operation.geometry.offset,{acceptedRevision:operation.revision,sharedBudget:budget,...(packing?{strategy,packing:true}:{})});
+    operation.geometry.offset,{acceptedRevision:operation.revision,sharedBudget:budget,...(packing?{strategy,packing:true}:packingFallback?{strategy:'progressive',packingFallback:true}:{})});
   let result;
   try {
     for (;;) {
@@ -186,4 +186,12 @@ export async function searchSpatialPackingRoadGroupSinglePass(project,input,budg
       return riFreeze({...selected,stats:budget.snapshot(),fallbackExhausted:true});
     throw error;
   }
+}
+
+// Ordinary-first alternative for qualification. Keep the complete ordinary
+// progressive result exactly when successful. Packing is a refusal fallback,
+// not a replacement for ordinary enhanced search. One detached operation,
+// one parent budget and one independent transport verification.
+export async function searchSpatialPackingRoadGroupStrictFirst(project,input,budget) {
+  return sreSearchPreservingRoadGroup(project,input,budget,false,'progressive',true);
 }

@@ -153,12 +153,12 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     ceiling: operation.limits.total,
     parent: options.sharedBudget ?? null,
   });
-  const adaptiveStrategy = enhanced => ({
+  const adaptiveStrategy = (enhanced, usePacking=enhanced&&options.packing===true) => ({
     canRun: previous => !enhanced || options.strategy === 'enhanced-adaptive' || !previous.candidateProject,
     *run(previous) {
       const budget = createLareBudget(operation.limits, { parent });
       const strategy = enhanced ? 'enhanced-adaptive' : 'selective-adaptive';
-      const iterator = iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices, budget, { enhanced, packing: enhanced&&options.packing===true });
+      const iterator = iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices, budget, { enhanced, packing: usePacking });
       try {
         for (;;) {
           const step = iterator.next();
@@ -174,7 +174,7 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
       }
     },
   });
-  const result = yield* iterateLareStrategies(operation, {
+  let result = yield* iterateLareStrategies(operation, {
     direct: {
       canRun: () => true,
       *run() {
@@ -191,6 +191,19 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     'selective-adaptive': adaptiveStrategy(false),
     'enhanced-adaptive': adaptiveStrategy(true),
   });
+  // Detached opt-in qualification: do not replace a successful ordinary
+  // enhanced result with a more disruptive packing result. Reuse the same
+  // intent, impact and operation-wide parent; the packing fallback is
+  // bounded by remaining shared work and its normal strategy cap.
+  if(options.packingFallback===true&&!result.candidateProject&&
+    parent.snapshot().remainingWork>0&&parent.snapshot().remainingExpansions>0){
+    const prior=result;
+    result=yield* adaptiveStrategy(true,true).run(prior);
+    if(!result.candidateProject&&prior.unresolved?.length&&
+      result.unresolved?.some(i=>i.code==='lare-work-limit')){
+      result={...result,lare:{...result.lare,ordinaryRefusal:prior.unresolved.map(i=>i.code)}};
+    }
+  }
   const unresolved = result.unresolved.map(describeLareRefusal);
   return { ...result, unresolved, phase: 'B1', selectedRoadIds: draft.selectedRoadIds, offset: draft.offset };
 }
