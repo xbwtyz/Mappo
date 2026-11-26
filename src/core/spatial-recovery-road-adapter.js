@@ -7,7 +7,7 @@ import { LareBudgetExceeded } from './reconciliation-budget.js';
 import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, scoreSpatialConcessions, compareSpatialConcessionCost } from './spatial-recovery-score.js';
 import { copyJson } from '../data/project-format.js';
 import { createLareContext } from './reconciliation-context.js';
-import { iterateLareSpatialRetirementEligibility } from './reconciliation-demolition.js';
+import { iterateLareSpatialRetirementEligibility, iterateLareSpatialBuildingRetirementTrials, iterateLareVerifySpatialBuildingRetirement } from './reconciliation-demolition.js';
 import { iterateLareGroupPreservation } from './reconciliation-preservation.js';
 import { riBudget, riCompare, riFreeze, riReporter } from './road-impact-model.js';
 
@@ -97,6 +97,62 @@ export function discoverSpatialRoadRetirementEligibility(project,input,budget){
     sreFinishMetered(iterateLareSpatialRetirementEligibility(project,draft,budget),budget):
     {buildingRefs:[],propertyGroups:[]};
   return riFreeze({operation,...eligible});
+}
+
+// Building-only detached destruction. Concession and property retirement
+// combination are not implemented in this first step. Never authorize Apply.
+function sreBuildingRetirementContext(project,input,budget){
+  const operation=createSpatialOperation(input);
+  const p=operation.permissions;
+  if(!p.destruction||p.regeneration||p.alternativeFrontage||p.uniformScaling)
+    throw Error('Explicit building-only destruction permission required.');
+  const preserving=createSpatialOperation({...operation,permissions:{...p,destruction:false}});
+  const {draft}=sreStrictRoadContext(project,preserving,budget);
+  return {operation,draft};
+}
+export async function verifySpatialBuildingRetirementWitness(project,input,delta,budget){
+  const {operation,draft}=sreBuildingRetirementContext(project,input,budget);
+  const candidate=await reconstructSpatialDelta(project,operation,1,delta,budget);
+  if(delta.added.length||!delta.retired.length||delta.retired.some(r=>r.collection!=='buildings'))
+    throw Error('Only exact building retirement membership is supported.');
+  const ids=delta.retired.map(r=>r.id).sort(riCompare);
+  // Legacy gate independently derives actual scope, protects references,
+  // checks exact missing IDs, surviving geometry and stored-project validity.
+  sreFinishMetered(iterateLareVerifySpatialBuildingRetirement(project,candidate,draft,ids,budget),budget);
+  return candidate;
+}
+export async function searchSpatialBuildingRetirementRoadGroup(project,input,budget){
+  const operation=createSpatialOperation(input);
+  const attempts=[];let iterator=null;
+  const refusal=exhausted=>riFreeze({status:'refused',operation,delta:null,ledger:null,attempts,exhausted,stats:budget.snapshot()});
+  try{
+    const snapshot=copyJson(project);
+    budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
+    const {draft}=sreBuildingRetirementContext(snapshot,operation,budget);
+    iterator=iterateLareSpatialBuildingRetirementTrials(snapshot,draft,operation.revision,budget);
+    for(;;){
+      budget.spend();const step=iterator.next();if(step.done)break;
+      const row=step.value;
+      if(row.stage==='sre-building-retirement-subset')attempts.push({ids:row.ids,stats:budget.snapshot()});
+      if(row.stage!=='sre-building-retirement-proposal')continue;
+      const delta=await createSpatialDelta(snapshot,row.candidate,operation,1,budget);
+      const verified=await verifySpatialBuildingRetirementWitness(snapshot,operation,delta,budget);
+      const retired=delta.retired.map(r=>({...r}));
+      const index=new Map(snapshot.city.buildings.map(b=>[b.id,b]));
+      budget.spend(Math.max(1,index.size));
+      let footprintLoss=0;
+      for(const ref of retired){budget.spend();footprintLoss+=index.get(ref.id).area;}
+      // Derive membership and cost only after independent verification.
+      if(verified.city.buildings.length!==snapshot.city.buildings.length-retired.length)
+        throw Error('Verified retirement membership mismatch.');
+      return riFreeze({status:'verified-witness',operation,delta,
+        ledger:{retired,demolishedFootprint:footprintLoss},attempts,exhausted:null,stats:budget.snapshot()});
+    }
+    return refusal(null);
+  }catch(error){
+    if(error instanceof LareBudgetExceeded)return refusal(error.resource);
+    throw error;
+  }finally{iterator?.return();}
 }
 
 // Detached strict witness verification only. No editor hooks, no Apply

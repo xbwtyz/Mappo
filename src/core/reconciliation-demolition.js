@@ -225,6 +225,43 @@ function lareDemolitionSubsets(eligible, issues, changedRoads, depth, deeper, la
   return subsets.map(ids => ids.sort(riCompare));
 }
 
+// Detached building-only search primitives. Reuse the existing bounded
+// enumeration, removal and independent B1R verification; never expose a
+// legacy UI session or authorization. All work uses the caller's parent.
+export function* iterateLareSpatialBuildingRetirementTrials(project,draft,revision,budget){
+  const {eligible,issues}=yield* lareDemolitionScope(project,draft,new Map(),budget);
+  const seen=new Set();
+  const subsets=lareDemolitionSubsets(eligible,issues,draft.changedRoadIds,
+    LARE_DEMOLITION_LIMITS.depth,false,null);
+  let tried=0;
+  for(const ids of subsets){
+    budget.spend();
+    const key=JSON.stringify(ids);
+    if(seen.has(key))continue;
+    if(tried>=LARE_DEMOLITION_LIMITS.subsets)break;
+    seen.add(key);tried++;
+    const subset=createLareBudget(LARE_STRATEGY_LIMITS,{parent:budget});
+    yield {stage:'sre-building-retirement-subset',ids:ids.slice(),tried};
+    try{
+      const reduced=yield* lareRemoveForTrial(project,ids,subset);
+      const preview=yield* iterateRoadGroupReflowB1(reduced,draft.selectedRoadIds,draft.offset,{
+        parcelChoices:new Map(),acceptedRevision:revision,strategy:'selective-adaptive',sharedBudget:subset});
+      if(preview?.candidateProject){
+        // This is an untrusted proposal. The adapter must independently
+        // reconstruct and verify the exact delta against original input.
+        yield {stage:'sre-building-retirement-proposal',ids:ids.slice(),candidate:preview.candidateProject};
+      }
+    }catch(error){
+      if(!(error instanceof LareBudgetExceeded))throw error;
+      yield {stage:'sre-building-retirement-limit',resource:error.resource};
+      if(!budget.snapshot().remainingWork||!budget.snapshot().remainingExpansions)break;
+    }
+  }
+}
+export function* iterateLareVerifySpatialBuildingRetirement(project,candidate,draft,ids,budget){
+  yield* lareRequireDemolitionDelta(project,candidate,draft,new Map(),ids,budget);
+}
+
 function lareDemolitionCompare(first, second) {
   for (let i = 0; i < first.score.length; i++) {
     const order = riCompare(first.score[i], second.score[i]);

@@ -1,6 +1,6 @@
 import { ROAD_IMPACT_COLLECTIONS, riCompare, riFreeze } from './road-impact-model.js';
 import { iterateActiveIdentityInventory } from './identity-verification.js';
-import { createLareBudget, LARE_PRESERVATION_LIMITS } from './reconciliation-budget.js';
+import { createLareBudget, LARE_PRESERVATION_LIMITS, LARE_DEMOLITION_LIMITS } from './reconciliation-budget.js';
 
 // Transient contract only. This is not an Apply authorization or a solver.
 export const SRE_CONTRACT_VERSION = 1;
@@ -103,4 +103,11 @@ export function createSpatialInventory(project, operation, budget) {
 // Reuse existing deterministic accounting. Relaxed search limits are not set here.
 export function createSpatialPreservationBudget(limits = LARE_PRESERVATION_LIMITS) {
   return createLareBudget(limits, { ceiling: LARE_PRESERVATION_LIMITS });
+}
+
+
+// Existing B1R demolition limits, not an increase or an automatic second
+// allowance. Detached qualification only; integration will share one parent.
+export function createSpatialDestructionBudget(limits=LARE_DEMOLITION_LIMITS){
+  return createLareBudget(limits,{ceiling:LARE_DEMOLITION_LIMITS});
 }
