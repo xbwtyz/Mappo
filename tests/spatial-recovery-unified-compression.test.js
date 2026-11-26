@@ -150,3 +150,48 @@ for(const irregularProperties of [false,true])test('SRE grouped-first scheduling
   assert.equal(summary.cases,9);assert.equal(summary.verified+summary.lost,9);
   console.log('SRE_GROUPED_FIRST_SUMMARY '+JSON.stringify(summary));
 });
+
+
+// Measure a second challenger only on the eight destructive baseline
+// scenarios. The nondestructive phase and early-return path are identical.
+const groupedFirstRetired={
+  regular:{'-0.5':[13,18,13],'-1':[16,22,16]},
+  irregular:{1:[12,18,18],.75:[12,18,18],.5:[12,18,18],.25:[11,17,17],'-0.5':[13,24,13],'-1':[16,28,16]}
+};
+for(const irregularProperties of [false,true])test('SRE diversified empowered restoration challenger '+(irregularProperties?'irregular':'regular'),{timeout:600000},async()=>{
+  const family=irregularProperties?'irregular':'regular';
+  const project=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
+  const before=hash(project),summary={family,cases:0,verified:0,lost:0,better:0,equal:0,worse:0,retired:{properties:0,plots:0,buildings:0}};
+  const collections=['properties','plots','buildings'];
+  for(const scale of scales.filter(s=>Object.hasOwn(groupedFirstRetired[family],s))){
+    const op=normalizeSpatialRoadGroup(project,1,roads,{x:offset.x*scale,y:offset.y*scale},permissions);
+    const shared=budget(),result=await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:'diversified-restoration'});
+    assert.deepEqual(result.stats,shared.snapshot());assert.ok(result.stats.work<=32000000&&result.stats.expansions<=131072);
+    summary.cases++;
+    const counts={properties:0,plots:0,buildings:0};let fingerprint=null,comparison=null;
+    if(result.status==='verified-witness'){
+      const actual=await verifySpatialUnifiedRoadWitness(project,op,result,budget());
+      validateStoredProject(actual);fingerprint=hash(actual);
+      assert.equal(fingerprint,result.delta.candidateFingerprint);assert.equal(result.kind,'retirement');
+      assert.deepEqual(actual.identityAllocation,project.identityAllocation);assert.deepEqual(result.delta.added,[]);
+      assert.deepEqual(result.delta.retired,result.ledger.retired);
+      for(const key of collections){
+        const ids=new Set(actual.city[key].map(r=>r.id));
+        const missing=project.city[key].filter(r=>!ids.has(r.id)).map(r=>r.id);
+        assert.deepEqual(missing.slice().sort(),result.delta.retired.filter(r=>r.collection===key).map(r=>r.id).sort());
+        counts[key]=missing.length;summary.retired[key]+=missing.length;
+        assert.deepEqual(actual.city[key].map(r=>r.id),project.city[key].filter(r=>ids.has(r.id)).map(r=>r.id));
+      }
+      summary.verified++;
+      const prior=groupedFirstRetired[family][scale],now=collections.map(k=>counts[k]);
+      comparison=now.some((v,i)=>v>prior[i])?'worse':now.some((v,i)=>v<prior[i])?'better':'equal';
+      summary[comparison]++;
+    }else{assert.equal(result.status,'refused');assert.equal(result.delta,null);summary.lost++;}
+    assert.equal(hash(project),before);
+    console.log('SRE_DIVERSIFIED_CASE '+JSON.stringify({family,scale,status:result.status,counts,baseline:groupedFirstRetired[family][scale],comparison,fingerprint,demolishedFootprint:result.ledger?.demolishedFootprint??null,scaleLoss:result.ledger?.concessions?.footprintLoss??null,attempts:result.attempts,stats:result.stats}));
+  }
+  assert.equal(summary.cases,Object.keys(groupedFirstRetired[family]).length);
+  assert.equal(summary.verified+summary.lost,summary.cases);
+  console.log('SRE_DIVERSIFIED_SUMMARY '+JSON.stringify(summary));
+});

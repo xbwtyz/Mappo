@@ -340,7 +340,8 @@ export async function searchSpatialGroupedRetirementRoadGroup(project,input,budg
 // Restore exact original records by deriving every trial anew from accepted
 // input. Restoring land alone leaves its originally retired children absent.
 // No new retirement or identity allocation; no accepted-project mutation.
-export async function restoreSpatialRoadRetirements(project,input,seedDelta,budget){
+export async function restoreSpatialRoadRetirements(project,input,seedDelta,budget,{proposalPolicy='baseline'}={}){
+  if(!['baseline','diversified'].includes(proposalPolicy))throw Error('Unsupported restoration proposal policy.');
   const operation=createSpatialOperation(input),attempts=[],restored=[];
   let incumbent=null,exhausted=null;
   const finish=()=>riFreeze({status:incumbent?'verified-witness':'refused',operation,
@@ -373,7 +374,23 @@ export async function restoreSpatialRoadRetirements(project,input,seedDelta,budg
       seen.add(key);
       const row={tier,requested:current.length-remaining.length,status:'refused',stats:budget.snapshot()};
       attempts.push(row);
-      const result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,remaining,budget);
+      let result;
+      if(proposalPolicy==='diversified'){
+        const p=operation.permissions;
+        const scale=p.alternativeFrontage?(p.uniformScaling?1-p.maxLinearReduction:1):null;
+        row.scale=scale;
+        const left=budget.snapshot();
+        if(left.remainingWork<1||left.remainingExpansions<1)return;
+        const bounded=createLareBudget({work:Math.min(5000000,left.remainingWork),
+          stateExpansions:Math.min(16384,left.remainingExpansions)},
+          {parent:budget,ceiling:LARE_PRESERVATION_LIMITS});
+        try{result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,remaining,bounded,scale);}
+        catch(error){
+          if(!(error instanceof LareBudgetExceeded))throw error;
+          row.exhausted=error.resource;row.trialWork=bounded.snapshot().work;return;
+        }
+        row.trialWork=bounded.snapshot().work;
+      }else result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,remaining,budget);
       row.status=result.status;row.exhausted=result.exhausted??null;
       if(result.status!=='verified-witness')return;
       const actual=new Set(result.delta.retired.map(spatialRefKey));
@@ -391,9 +408,29 @@ export async function restoreSpatialRoadRetirements(project,input,seedDelta,budg
     // parent work/expansion cap is shared with the original search.
     const currentGroups=()=>groups.filter(({group})=>incumbent.delta.retired.some(r=>r.collection==='properties'&&r.id===group.propertyId));
     const blocks=[...new Set(currentGroups().map(row=>row.block))].sort(riCompare);
-    for(const block of blocks.slice(0,2))await trial('block',currentGroups().filter(row=>row.block===block).flatMap(row=>row.group.refs));
-    for(const {group} of currentGroups().slice(0,6))await trial('whole-property',group.refs);
-    for(const {group} of currentGroups().slice(0,6))await trial('property-shell',group.refs.filter(r=>r.collection!=='buildings'));
+    if(proposalPolicy==='baseline'){
+      for(const block of blocks.slice(0,2))await trial('block',currentGroups().filter(row=>row.block===block).flatMap(row=>row.group.refs));
+      for(const {group} of currentGroups().slice(0,6))await trial('whole-property',group.refs);
+      for(const {group} of currentGroups().slice(0,6))await trial('property-shell',group.refs.filter(r=>r.collection!=='buildings'));
+    }else{
+      // R27-inspired coarse-to-fine, class-interleaved restoration.
+      // Derive all proposals from current verified retirements, never
+      // from research fixture answers. Try one empowered solver per set.
+      const shells=rows=>rows.flatMap(r=>r.group.refs.filter(ref=>ref.collection!=='buildings'));
+      const whole=rows=>rows.flatMap(r=>r.group.refs);
+      const inBlock=block=>currentGroups().filter(r=>r.block===block);
+      for(const block of blocks.slice(0,2)){
+        await trial('block',whole(inBlock(block)));
+        await trial('block-shell',shells(inBlock(block)));
+      }
+      for(const size of [4,2,1]){
+        for(const block of blocks.slice(0,2)){
+          const rows=inBlock(block).slice(0,size);
+          await trial('whole-batch-'+size,whole(rows));
+          await trial('shell-batch-'+size,shells(inBlock(block).slice(0,size)));
+        }
+      }
+    }
     return finish();
   }catch(error){
     if(error instanceof LareBudgetExceeded){exhausted=error.resource;return finish();}
