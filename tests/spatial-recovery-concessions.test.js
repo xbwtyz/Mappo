@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
-import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, discoverSpatialRoadRetirementEligibility, searchSpatialBuildingRetirementRoadGroup, verifySpatialBuildingRetirementWitness, searchSpatialPropertyRetirementRoadGroup, verifySpatialRetirementWitness, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, discoverSpatialRoadRetirementEligibility, searchSpatialBuildingRetirementRoadGroup, verifySpatialBuildingRetirementWitness, searchSpatialPropertyRetirementRoadGroup, searchSpatialGroupedRetirementRoadGroup, searchSpatialRetirementSubsetRoadGroup, verifySpatialRetirementWitness, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialDestructionBudget, createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals, createSpatialConcessionProposalSource } from '../src/core/spatial-recovery-concessions.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
@@ -588,4 +588,56 @@ test('detached whole-property retirement preserves exact group membership and va
   await assert.rejects(()=>verifySpatialRetirementWitness(source,{...op,permissions:{}},result.delta,budget()),/permission/);
   assert.equal(JSON.stringify(source),before);
   console.log('SRE_PROPERTY_RETIREMENT '+JSON.stringify({group:group.propertyId,ledger:result.ledger,attempts:result.attempts,stats:result.stats}));
+});
+
+
+test('detached grouped retirement searches real compression without preselected witness sets',{timeout:300000},async()=>{
+  const source=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties:false});
+  const before=JSON.stringify(source),ids=['RD-0184','RD-0186'];
+  const offset={x:-3.005274072121821*-.5,y:-37.39896113564458*-.5};
+  const op=normalizeSpatialRoadGroup(source,1,ids,offset,{destruction:true,alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2});
+  const eligibility=discoverSpatialRoadRetirementEligibility(source,op,budget());
+  const result=await searchSpatialGroupedRetirementRoadGroup(source,op,createSpatialDestructionBudget());
+  assert.ok(result.stats.work<=32000000&&result.stats.expansions<=131072);
+  assert.ok(result.attempts.length<=2);
+  assert.equal(result.status,'verified-witness',JSON.stringify(result.attempts));
+  const retiredGroups=result.delta.retired.filter(r=>r.collection==='properties');
+  assert.ok(retiredGroups.length>1);
+  const keys=refs=>refs.map(r=>JSON.stringify([r.collection,r.id])).sort();
+  const expected=eligibility.propertyGroups.filter(g=>retiredGroups.some(r=>r.id===g.propertyId)).flatMap(g=>g.refs);
+  assert.deepEqual(keys(result.delta.retired),keys(expected));assert.deepEqual(result.delta.added,[]);
+  const actual=await verifySpatialRetirementWitness(source,op,result.delta,createSpatialDestructionBudget());
+  assert.deepEqual(actual.identityAllocation,source.identityAllocation);
+  assert.equal(JSON.stringify(source),before);
+  console.log('SRE_GROUPED_RETIREMENT '+JSON.stringify({ledger:result.ledger,attempts:result.attempts,stats:result.stats}));
+});
+
+test('detached mixed retirement and actual concessions independently replay under separate permissions',{timeout:300000},async()=>{
+  const source=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties:false});
+  const before=JSON.stringify(source),ids=['RD-0184','RD-0186'],
+    offset={x:-3.005274072121821*.25,y:-37.39896113564458*.25};
+  const op=normalizeSpatialRoadGroup(source,1,ids,offset,{destruction:true,alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2});
+  const eligible=discoverSpatialRoadRetirementEligibility(source,op,budget());
+  const shared=createSpatialDestructionBudget();
+  let result=null;
+  // Small deterministic diagnostic sample; no prescribed witness IDs.
+  for(const group of eligible.propertyGroups.filter(g=>g.refs.some(r=>r.collection==='buildings')).slice(0,3)){
+    const trial=await searchSpatialRetirementSubsetRoadGroup(source,op,group.refs,shared,{diagnosticScale:.8});
+    if(trial.status==='verified-witness'&&trial.ledger.concessions.frontageSwitches.length&&trial.ledger.concessions.scaledBuildings.length){result=trial;break;}
+  }
+  assert.ok(result,'must demonstrate actual retirement, frontage and scaling together');
+  assert.ok(result.delta.retired.length&&result.ledger.concessions.footprintLoss>0);
+  assert.deepEqual(result.delta.added,[]);
+  const actual=await verifySpatialRetirementWitness(source,op,result.delta,createSpatialDestructionBudget());
+  assert.deepEqual(actual.identityAllocation,source.identityAllocation);
+  for(const permissions of [{destruction:true,alternativeFrontage:true},{destruction:true,uniformScaling:true,maxLinearReduction:.2},
+    {destruction:true,alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.05}]){
+    const denied=normalizeSpatialRoadGroup(source,1,ids,offset,permissions);
+    const rebound=await createSpatialDelta(source,actual,denied,1,budget());
+    await assert.rejects(()=>verifySpatialRetirementWitness(source,denied,rebound,createSpatialDestructionBudget()));
+  }
+  assert.equal(JSON.stringify(source),before);
+  console.log('SRE_MIXED_RETIREMENT_CONCESSIONS '+JSON.stringify({ledger:result.ledger,stats:shared.snapshot()}));
 });

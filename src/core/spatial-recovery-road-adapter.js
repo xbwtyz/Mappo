@@ -3,7 +3,7 @@ import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-
 import { describeSpatialCapability, spatialConstraint } from './spatial-recovery-registry.js';
 import { prepareRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent-c1.js';
 import { iterateRoadGroupReflowB1 } from './neighborhood-reflow.js';
-import { LareBudgetExceeded } from './reconciliation-budget.js';
+import { LareBudgetExceeded, createLareBudget, LARE_PRESERVATION_LIMITS, LARE_DEMOLITION_LIMITS } from './reconciliation-budget.js';
 import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, scoreSpatialConcessions, compareSpatialConcessionCost } from './spatial-recovery-score.js';
 import { copyJson } from '../data/project-format.js';
 import { stampRoadGenerated } from './road-provenance.js';
@@ -163,9 +163,9 @@ function sreRetirementContext(project,input,budget){
   const operation=createSpatialOperation(input),p=operation.permissions;
   if(!p.destruction||p.regeneration)throw Error('Explicit destruction permission required; regeneration not integrated.');
   const preserving=createSpatialOperation({...operation,permissions:{...p,destruction:false}});
-  const {draft}=sreStrictRoadContext(project,preserving,budget,true);
+  const {draft,topology}=sreStrictRoadContext(project,preserving,budget,true);
   const eligibility=sreFinishMetered(iterateLareSpatialRetirementEligibility(project,draft,budget),budget);
-  return {operation,preserving,eligibility};
+  return {operation,preserving,eligibility,topology};
 }
 function sreReducedRetirementBase(project,refs,eligibility,budget){
   const keys=new Set(refs.map(spatialRefKey));
@@ -248,6 +248,86 @@ export async function searchSpatialPropertyRetirementRoadGroup(project,input,bud
       const delta=await createSpatialDelta(snapshot,candidate,operation,1,budget);
       const {ledger}=await sreVerifyRetirement(snapshot,operation,delta,budget);
       return riFreeze({status:'verified-witness',operation,delta,ledger,attempts,exhausted:null,stats:budget.snapshot()});
+    }
+    return refusal(null);
+  }catch(error){
+    if(error instanceof LareBudgetExceeded)return refusal(error.resource);
+    throw error;
+  }
+}
+
+// Shared trial primitive for future restoration. The original eligibility
+// and complete membership are rederived before candidate verification.
+// A forced scale is an explicit detached diagnostic, never a default policy.
+async function sreTrialRetirementSubset(project,operation,preserving,eligibility,refs,budget,diagnosticScale=null){
+  const reduced=sreReducedRetirementBase(project,refs,eligibility,budget);
+  const trialBudget=createLareBudget(LARE_PRESERVATION_LIMITS,{parent:budget,ceiling:LARE_PRESERVATION_LIMITS});
+  let trial;
+  try{
+    trial=diagnosticScale===null?
+      await searchSpatialNondestructiveRoadGroup(reduced,preserving,trialBudget,{reusePackingInventory:true}):
+      await searchSpatialConcessionRoadGroup(reduced,preserving,trialBudget,{scale:diagnosticScale,relaxedOnlyDiagnostic:true});
+  }catch(error){
+    if(error instanceof LareBudgetExceeded)return {status:'refused',exhausted:error.resource};
+    throw error;
+  }
+  if(trial.status!=='verified-witness')return {status:'refused',exhausted:trial.exhausted??null};
+  const candidate=await reconstructSpatialDelta(reduced,preserving,1,trial.delta,budget);
+  const delta=await createSpatialDelta(project,candidate,operation,1,budget);
+  const {ledger}=await sreVerifyRetirement(project,operation,delta,budget);
+  return {status:'verified-witness',delta,ledger};
+}
+export async function searchSpatialRetirementSubsetRoadGroup(project,input,refs,budget,{diagnosticScale=null}={}){
+  const operation=createSpatialOperation(input);
+  const refusal=exhausted=>riFreeze({status:'refused',operation,delta:null,ledger:null,exhausted,stats:budget.snapshot()});
+  try{
+    if(!Array.isArray(refs))throw Error('Missing retirement membership.');
+    const snapshot=copyJson(project);
+    budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
+    const {preserving,eligibility}=sreRetirementContext(snapshot,operation,budget);
+    const selected=refs.map(createSpatialRef).sort((a,b)=>riCompare(spatialRefKey(a),spatialRefKey(b)));
+    const result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,selected,budget,diagnosticScale);
+    if(result.status!=='verified-witness')return refusal(result.exhausted);
+    return riFreeze({...result,operation,exhausted:null,stats:budget.snapshot()});
+  }catch(error){
+    if(error instanceof LareBudgetExceeded)return refusal(error.resource);
+    throw error;
+  }
+}
+// R19-inspired broad group discovery: use actual compressed block geometry,
+// then all eligible groups. No preselected witness sets or fixture answers.
+// Only detached scope-authorized groups are eligible; this is not a new
+// topology or destruction permission and does not replace the single path.
+export async function searchSpatialGroupedRetirementRoadGroup(project,input,budget){
+  const operation=createSpatialOperation(input),attempts=[];
+  const refusal=exhausted=>riFreeze({status:'refused',operation,delta:null,ledger:null,attempts,exhausted,stats:budget.snapshot()});
+  try{
+    const snapshot=copyJson(project);
+    budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
+    const {preserving,eligibility,topology}=sreRetirementContext(snapshot,operation,budget);
+    const blocks=new Map(snapshot.city.blocks.map(b=>[b.id,b]));
+    const properties=new Map(snapshot.city.properties.map(p=>[p.id,p]));
+    budget.spend(Math.max(1,blocks.size+properties.size));
+    const compressed=new Set();
+    for(const face of topology.identity.changed){
+      budget.spend();
+      if(face.kind==='block'&&face.record?.area<blocks.get(face.id)?.area-1e-6)compressed.add(face.id);
+    }
+    const groups=eligibility.propertyGroups.slice().sort((a,b)=>{budget.spend();return riCompare(a.propertyId,b.propertyId);});
+    const seen=new Set();
+    for(const [tier,selected] of [['compressed-blocks',groups.filter(g=>compressed.has(properties.get(g.propertyId)?.blockId))],['all-eligible',groups]]){
+      budget.spend(Math.max(1,groups.length));
+      if(!selected.length)continue;
+      const ids=selected.map(g=>g.propertyId),key=JSON.stringify(ids);
+      if(seen.has(key))continue;
+      seen.add(key);
+      if(attempts.length>=LARE_DEMOLITION_LIMITS.subsets)break;
+      const refs=selected.flatMap(g=>g.refs);
+      budget.spend(Math.max(1,refs.length));
+      const row={tier,propertyIds:ids,stats:budget.snapshot()};attempts.push(row);
+      const result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,refs,budget);
+      row.status=result.status;row.exhausted=result.exhausted??null;
+      if(result.status==='verified-witness')return riFreeze({...result,operation,attempts,exhausted:null,stats:budget.snapshot()});
     }
     return refusal(null);
   }catch(error){
