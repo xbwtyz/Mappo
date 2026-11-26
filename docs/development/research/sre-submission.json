@@ -1,11 +1,9 @@
 {
   "version": 1,
-  "targetRevision": "2caf6c41a37c00d66c9d45e3e8cf2e68f2933bb2",
+  "targetRevision": "4820dd6f697cf24bdfc395b2edefb86fcc40ed74",
   "schedules": [
-    "budget-32m",
-    "budget-64m",
-    "budget-128m",
-    "budget-256m"
+    "budget-256m",
+    "iterative-256m"
   ],
   "cases": [
     {
