@@ -1,9 +1,10 @@
 import { ROAD_IMPACT_COLLECTIONS, riFreeze } from './road-impact-model.js';
 import { createSpatialOperation, createSpatialInventory, createSpatialRef, spatialRefKey } from './spatial-recovery-contract.js';
+import { verifyIdentityAdditions } from './identity-verification.js';
 import { copyJson } from '../data/project-format.js';
 import { iterateJsonTreeValidation } from '../data/project-validation.js';
 
-export const SRE_DELTA_VERSION = 1;
+export const SRE_DELTA_VERSION = 2;
 const sreDeltaCollections = ROAD_IMPACT_COLLECTIONS.map(([key])=>key);
 const sreDevelopmentCollections = new Set(['properties','plots','buildings']);
 const sreDeltaFields = ['version','projectId','revision','acceptedFingerprint','intentFingerprint','policyFingerprint',
@@ -27,7 +28,8 @@ async function sreFingerprint(value,budget) {
 }
 function sreSameJson(a,b) { return JSON.stringify(a)===JSON.stringify(b); }
 function sreOutsideCollections(project) {
-  return {...project,city:Object.fromEntries(Object.entries(project.city).filter(([key])=>!sreDeltaCollections.includes(key)))};
+  const {identityAllocation: _allocation, ...root}=project;
+  return {...root,city:Object.fromEntries(Object.entries(project.city).filter(([key])=>!sreDeltaCollections.includes(key)))};
 }
 function sreIndexDelta(project, budget) {
   const index=new Map();
@@ -54,17 +56,37 @@ function sreDeltaMembership(ref,permission,action) {
     !(action==='retire'?permission.destruction:permission.regeneration))
     throw Error('Unauthorized spatial membership change.');
 }
+// Allocation authorization is a separate host-supplied context and request list.
+// A receipt alone is not authorization; never derive requests from a delta.
+function sreVerifyAllocation(accepted,candidate,operation,authorization,budget) {
+  const before=accepted.identityAllocation;
+  if (!authorization) {
+    if (!sreSameJson(before,candidate.identityAllocation)) throw Error('Unauthorized spatial allocation change.');
+    for (const key of sreDevelopmentCollections) {
+      const old=new Set(accepted.city[key].map(row=>row.id));
+      for (const row of candidate.city[key]) { budget.spend(); if (!old.has(row.id)) throw Error('Unreserved spatial identity addition.'); }
+    }
+    return;
+  }
+  const {context,requests,receipt}=authorization;
+  if (!operation.permissions.regeneration || context?.projectId!==operation.projectId || context?.revision!==operation.revision)
+    throw Error('Unauthorized or stale spatial allocation context.');
+  // Account for the inventory passes in the shared operation budget.
+  for (const city of [accepted.city,candidate.city]) for (const rows of Object.values(city)) if (Array.isArray(rows)) budget.spend(rows.length || 1);
+  const next=verifyIdentityAdditions(before,accepted.city,context,requests,receipt,candidate.city);
+  if (!sreSameJson(next,candidate.identityAllocation)) throw Error('Spatial allocation transition mismatch.');
+}
 // Structural diff only. It must never be used as geometry/provenance
 // validation or as authority to Apply; that gate belongs to later P1/P2 work.
 // v1 deliberately refuses collection reorder, non-collection changes, and
 // inserting new identities anywhere but the end of the collection.
-export async function createSpatialDelta(accepted,candidate,input,strategyVersion,budget) {
+export async function createSpatialDelta(accepted,candidate,input,strategyVersion,budget,authorization) {
   const operation=createSpatialOperation(input);
   sreRequireStrategy(strategyVersion);
   const acceptedFingerprint=await sreFingerprint(accepted,budget);
   const candidateFingerprint=await sreFingerprint(candidate,budget);
   createSpatialInventory(accepted,operation,budget);
-  if (candidate?.schemaVersion!==10 || !sreSameJson(sreOutsideCollections(accepted),sreOutsideCollections(candidate)))
+  if (candidate?.schemaVersion!==11 || !sreSameJson(sreOutsideCollections(accepted),sreOutsideCollections(candidate)))
     throw Error('Unsupported non-collection spatial change.');
   const before=sreIndexDelta(accepted,budget), after=sreIndexDelta(candidate,budget);
   const modified=[],retired=[],added=[];
@@ -87,6 +109,7 @@ export async function createSpatialDelta(accepted,candidate,input,strategyVersio
       added.push({ref,record:copyJson(row)});
     }
   }
+  sreVerifyAllocation(accepted,candidate,operation,authorization,budget);
   return riFreeze({version:SRE_DELTA_VERSION,projectId:operation.projectId,revision:operation.revision,
     acceptedFingerprint,intentFingerprint:await sreFingerprint(operation,budget),
     policyFingerprint:await sreFingerprint(operation.permissions,budget),strategyVersion,
@@ -94,7 +117,7 @@ export async function createSpatialDelta(accepted,candidate,input,strategyVersio
 }
 // The caller supplies the CURRENT trusted operation and revision, not the
 // operation echoed by a worker. This checks transport consistency only.
-export async function reconstructSpatialDelta(accepted,input,strategyVersion,delta,budget) {
+export async function reconstructSpatialDelta(accepted,input,strategyVersion,delta,budget,authorization) {
   const operation=createSpatialOperation(input);
   sreRequireStrategy(strategyVersion);
   sreExactKeys(delta,sreDeltaFields);
@@ -136,11 +159,17 @@ export async function reconstructSpatialDelta(accepted,input,strategyVersion,del
     records.set(ref.id,copyJson(item.record));
   }
   for (const [collection,records] of index) candidate.city[collection]=[...records.values()];
+  if (authorization) {
+    const {context,requests,receipt}=authorization;
+    if (!operation.permissions.regeneration || context?.projectId!==operation.projectId || context?.revision!==operation.revision)
+      throw Error('Unauthorized or stale spatial allocation context.');
+    candidate.identityAllocation=verifyIdentityAdditions(accepted.identityAllocation,accepted.city,context,requests,receipt,candidate.city);
+  }
   const result=copyJson(candidate);
   if (delta.candidateFingerprint!==await sreFingerprint(result,budget)) throw Error('Spatial candidate fingerprint mismatch.');
   // Recompute the full structural ledger rather than trusting the worker's
   // classification or order. The ledger still needs independent policy checks.
-  const rebuilt=await createSpatialDelta(accepted,result,operation,strategyVersion,budget);
+  const rebuilt=await createSpatialDelta(accepted,result,operation,strategyVersion,budget,authorization);
   if (!sreSameJson(rebuilt,delta)) throw Error('Spatial delta differs from reconstructed ledger.');
   return result;
 }

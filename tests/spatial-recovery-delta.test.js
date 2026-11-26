@@ -1,12 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
+import { issueIdentityReservation } from '../src/core/identity-verification.js';
 import { discoverSpatialDependencies } from '../src/core/spatial-recovery-dependencies.js';
 import { createSpatialDelta, reconstructSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 const budget=()=>createSpatialPreservationBudget();
 const intent={version:1,family:'road',operation:'translate-road-group',projectId:'city-1',revision:3,
   editedRefs:[{collection:'roads',id:'R'}]};
-const original={schemaVersion:10,city:{id:'city-1',nodes:[{id:'N1',x:0,y:0},{id:'N2',x:1,y:1}],
+const original={schemaVersion:11,identityAllocation:{version:1,namespaces:{}},city:{id:'city-1',nodes:[{id:'N1',x:0,y:0},{id:'N2',x:1,y:1}],
   roads:[{id:'R',a:'N1',b:'N2'}],blocks:[{id:'B',vertices:['N1','N2']}],
   properties:[{id:'P',blockId:'B',frontageRoadId:'R',plotIds:['Q'],buildingIds:[],extra:{keep:true}}],
   plots:[{id:'Q',propertyId:'P',blockId:'B',frontageRoadId:'R'}],buildings:[],waterFeatures:[{id:'W'}],
@@ -62,12 +63,31 @@ test('spatial delta membership requires separate permissions and never permits i
   const addition=structuredClone(original);addition.city.plots.push({id:'Q2'});
   await assert.rejects(createSpatialDelta(original,addition,destructive,1,budget()),/Unauthorized/);
   const regen={...destructive,permissions:{destruction:true,regeneration:true}};
-  const a=await createSpatialDelta(original,addition,regen,1,budget());
-  assert.equal(JSON.stringify(await reconstructSpatialDelta(original,regen,1,a,budget())),JSON.stringify(addition));
+  await assert.rejects(createSpatialDelta(original,addition,regen,1,budget()),/Unreserved/);
+  const context={projectId:intent.projectId,revision:intent.revision,namespace:'0123456789abcdef0123456789abcdef'};
+  const requests=[{type:'plot',key:'new-plot'}];
+  const receipt=issueIdentityReservation(original.identityAllocation,original.city,context,requests);
+  const authorization={context,requests,receipt};
+  addition.city.plots[1].id=receipt.allocations[0].id;
+  addition.identityAllocation=receipt.nextState;
+  const a=await createSpatialDelta(original,addition,regen,1,budget(),authorization);
+  assert.equal(JSON.stringify(await reconstructSpatialDelta(original,regen,1,a,budget(),authorization)),JSON.stringify(addition));
+  await assert.rejects(reconstructSpatialDelta(original,regen,1,a,budget()),/fingerprint|Unreserved/);
+  await assert.rejects(createSpatialDelta(original,addition,regen,1,budget(),{...authorization,context:{...context,revision:4}}),/stale/);
 });
 test('spatial delta refuses unsupported root or array order changes',async()=>{
   const c=structuredClone(original);c.city.name='new';
   await assert.rejects(createSpatialDelta(original,c,intent,1,budget()),/non-collection/);
   const order=structuredClone(original);order.city.nodes.reverse();
   await assert.rejects(createSpatialDelta(original,order,intent,1,budget()),/order/);
+});
+
+test('SRE delta rejects allocator-only changes and retired identity reuse',async()=>{
+  const namespace='0123456789abcdef0123456789abcdef';
+  const before=structuredClone(original);before.identityAllocation.namespaces[namespace]={plot:1};
+  const candidate=structuredClone(before);candidate.city.plots.push({id:'PLOT-IDA-'+namespace+'-000001'});
+  const regen={...intent,permissions:{regeneration:true}};
+  await assert.rejects(createSpatialDelta(before,candidate,regen,1,budget()),/Unreserved/);
+  const counter=structuredClone(before);counter.identityAllocation.namespaces[namespace].plot=2;
+  await assert.rejects(createSpatialDelta(before,counter,regen,1,budget()),/allocation change/);
 });

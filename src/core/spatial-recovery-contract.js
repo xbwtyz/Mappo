@@ -1,4 +1,5 @@
 import { ROAD_IMPACT_COLLECTIONS, riCompare, riFreeze } from './road-impact-model.js';
+import { iterateActiveIdentityInventory } from './identity-verification.js';
 import { createLareBudget, LARE_PRESERVATION_LIMITS } from './reconciliation-budget.js';
 
 // Transient contract only. This is not an Apply authorization or a solver.
@@ -79,9 +80,10 @@ export function createSpatialOperation(input) {
 // Inventory is detached and read-only; finding a reference does not make it writable.
 export function createSpatialInventory(project, operation, budget) {
   const descriptor = createSpatialOperation(operation);
-  if (project?.schemaVersion !== 10 || (project.id ?? project.city?.id) !== descriptor.projectId)
+  if (project?.schemaVersion !== 11 || (project.id ?? project.city?.id) !== descriptor.projectId)
     throw Error('Spatial project identity or schema mismatch.');
   if (!budget?.spend) throw Error('Shared spatial budget required.');
+  for (const _ of iterateActiveIdentityInventory(project.identityAllocation, project.city, n => budget.spend(n))) { /* detached validation */ }
   const seen = new Set(), refs = [];
   for (const collection of Object.keys(sreCollections)) {
     const records = project.city[collection] ?? [];
