@@ -1,48 +1,26 @@
 {
   "version": 1,
-  "targetRevision": "e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7",
+  "targetRevision": "2caf6c41a37c00d66c9d45e3e8cf2e68f2933bb2",
   "schedules": [
-    "baseline",
-    "diversified-restoration"
+    "budget-32m",
+    "budget-64m",
+    "budget-128m",
+    "budget-256m"
   ],
   "cases": [
     {
-      "id": "regular-preservation",
+      "id": "regular-severe-reverse",
       "partition": "development",
       "irregularProperties": false,
-      "scale": 0.5,
-      "expectation": "known-preservation"
+      "scale": -1,
+      "expectation": "exploratory"
     },
     {
-      "id": "irregular-compression",
+      "id": "irregular-severe-reverse",
       "partition": "development",
       "irregularProperties": true,
-      "scale": 0.25,
-      "expectation": "known-compression"
-    },
-    {
-      "id": "held-out-linear",
-      "partition": "held-out",
-      "irregularProperties": true,
-      "scale": 0.04,
-      "expectation": "exploratory",
-      "fixture": {
-        "seed": "dev-opt-holdout-linear-01",
-        "size": "small",
-        "morphology": "linear"
-      }
-    },
-    {
-      "id": "held-out-radial",
-      "partition": "held-out",
-      "irregularProperties": false,
-      "scale": -0.08,
-      "expectation": "exploratory",
-      "fixture": {
-        "seed": "dev-opt-holdout-radial-01",
-        "size": "small",
-        "morphology": "radial"
-      }
+      "scale": -1,
+      "expectation": "exploratory"
     }
   ]
 }

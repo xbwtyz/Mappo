@@ -5,7 +5,7 @@ import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {performance} from 'node:perf_hooks';
 import {digest} from './contract.mjs';
-import {targetRevision,schedules,gates} from './sre-pilot.mjs';
+import {targetRevision,schedules,gates,budgetWork} from './sre-pilot.mjs';
 const task=JSON.parse(readFileSync(0,'utf8')),m=task.manifest,root=process.argv[2],start=performance.now();
 const load=p=>import(pathToFileURL(join(root,p)).href);
 try{
@@ -15,6 +15,9 @@ try{
   const {normalizeSpatialRoadGroup}=await load('src/core/spatial-recovery-road-adapter.js');
   const {createSpatialDestructionBudget}=await load('src/core/spatial-recovery-contract.js');
   const {searchSpatialUnifiedRoadGroup,verifySpatialUnifiedRoadWitness}=await load('src/core/spatial-recovery-coordinator.js');
+  const experimental=Object.hasOwn(budgetWork,task.schedule),workLimit=experimental?budgetWork[task.schedule]:m.budget.work;
+  const research=experimental?await load('src/core/spatial-recovery-budget-research.js'):null;
+  const {createLareBudget,LARE_DEMOLITION_LIMITS}=await load('src/core/reconciliation-budget.js');
   const {validateStoredProject}=await load('src/data/project-validation.js');
   const {buildRoadGraph}=await load('src/core/road-graph.js');
   const {proposeRoadGroupNodesB1}=await load('src/core/road-group-b1.js');
@@ -41,13 +44,14 @@ try{
     const offset={x:m.offset.x*c.scale,y:m.offset.y*c.scale};
     const roadIds=c.fixture?selectRoads(project,offset):m.roadIds;
     const op=normalizeSpatialRoadGroup(project,1,roadIds,offset,m.permissions),operationFingerprint=digest(op);
-    const shared=createSpatialDestructionBudget();
-    const result=await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:task.schedule});
+    const shared=experimental?createLareBudget({work:workLimit,stateExpansions:131072},{ceiling:{...LARE_DEMOLITION_LIMITS,work:256000000}}):createSpatialDestructionBudget();
+    const result=experimental?await research.searchSpatialBudgetResearch(project,op,shared,{workLimit}):await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:task.schedule});
     assert.deepEqual(result.stats,shared.snapshot());
-    assert.ok(result.stats.work<=m.budget.work&&result.stats.expansions<=m.budget.expansions);
+    assert.ok(result.stats.work<=workLimit&&result.stats.expansions<=m.budget.expansions);
+    if(experimental&&workLimit===32000000)assert.equal(result.status,'verified-witness','32M parity control refused');
     if(result.status==='refused'&&c.expectation==='exploratory'){
       assert.equal(result.delta,null);assert.equal(result.basisDelta,null);assert.equal(digest(project),before);
-      return {status:'refused',inputFingerprint:before,operationFingerprint,roadIds,offset,candidateFingerprint:null,kind:null,counts:null,demolishedFootprint:null,scaleLoss:null,stats:result.stats,attempts:result.attempts};
+      return {status:'refused',workLimit,inputFingerprint:before,operationFingerprint,roadIds,offset,candidateFingerprint:null,kind:null,counts:null,demolishedFootprint:null,scaleLoss:null,stats:result.stats,attempts:result.attempts};
     }
     assert.equal(result.status,'verified-witness','Known pilot movement refused');
     assert.ok(['nondestructive','retirement'].includes(result.kind));
@@ -71,8 +75,13 @@ try{
       const expected=task.schedule==='baseline'?[19,29,25]:[5,9,9];
       assert.deepEqual(Object.values(counts),expected);
     }
+    if(experimental&&workLimit===32000000){
+      assert.equal(c.scale,-1,'Unexpected budget control fixture');
+      assert.deepEqual(Object.values(counts),c.irregularProperties?[16,28,16]:[16,22,16]);
+      assert.equal(digest(actual),c.irregularProperties?'1a364cabbf23ecc9ff96e772de572119b784137f444adb9d2c958f92d53b225d':'3dc567b4c2cac07f7c48c779de9b3093fcc06a07e30985f9fe604422bbfb67a1');
+    }
     assert.equal(digest(project),before);
-    return {status:'verified',inputFingerprint:before,operationFingerprint,roadIds,offset,candidateFingerprint:digest(actual),kind:result.kind,counts,demolishedFootprint:result.ledger.demolishedFootprint,scaleLoss:result.ledger.concessions?.footprintLoss??0,stats:result.stats};
+    return {status:'verified',workLimit,inputFingerprint:before,operationFingerprint,roadIds,offset,candidateFingerprint:digest(actual),kind:result.kind,counts,demolishedFootprint:result.ledger.demolishedFootprint,scaleLoss:result.ledger.concessions?.footprintLoss??0,stats:result.stats,attempts:result.attempts};
   }
   const a=await solve(),b=await solve();assert.deepEqual(a,b,'Nondeterministic SRE replay');
   console.log(JSON.stringify({...a,elapsedMs:performance.now()-start,peakRssKiB:process.resourceUsage().maxRSS,gates:Object.fromEntries((a.status==='verified'?gates:['nonmutation','deterministicReplay','budget']).map(g=>[g,true]))}));
