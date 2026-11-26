@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
-import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, discoverSpatialRoadRetirementEligibility, searchSpatialBuildingRetirementRoadGroup, verifySpatialBuildingRetirementWitness, searchSpatialPropertyRetirementRoadGroup, searchSpatialGroupedRetirementRoadGroup, searchSpatialRetirementSubsetRoadGroup, verifySpatialRetirementWitness, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, discoverSpatialRoadRetirementEligibility, searchSpatialBuildingRetirementRoadGroup, verifySpatialBuildingRetirementWitness, searchSpatialPropertyRetirementRoadGroup, searchSpatialGroupedRetirementRoadGroup, searchSpatialRetirementSubsetRoadGroup, restoreSpatialRoadRetirements, verifySpatialRetirementWitness, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialDestructionBudget, createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals, createSpatialConcessionProposalSource } from '../src/core/spatial-recovery-concessions.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
@@ -563,7 +563,8 @@ test('detached whole-property retirement preserves exact group membership and va
   const op=normalizeSpatialRoadGroup(source,5,ids,offset,{destruction:true,alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.1});
   const eligibility=discoverSpatialRoadRetirementEligibility(source,op,budget());
   assert.ok(eligibility.propertyGroups.length);
-  const result=await searchSpatialPropertyRetirementRoadGroup(source,op,createSpatialDestructionBudget());
+  const shared=createSpatialDestructionBudget();
+  const result=await searchSpatialPropertyRetirementRoadGroup(source,op,shared);
   assert.ok(result.stats.work<=32000000&&result.stats.expansions<=131072);
   assert.ok(result.attempts.length<=16);
   assert.equal(result.status,'verified-witness',JSON.stringify(result.attempts));
@@ -588,6 +589,21 @@ test('detached whole-property retirement preserves exact group membership and va
   await assert.rejects(()=>verifySpatialRetirementWitness(source,{...op,permissions:{}},result.delta,budget()),/permission/);
   assert.equal(JSON.stringify(source),before);
   console.log('SRE_PROPERTY_RETIREMENT '+JSON.stringify({group:group.propertyId,ledger:result.ledger,attempts:result.attempts,stats:result.stats}));
+  const optimized=await restoreSpatialRoadRetirements(source,op,result.delta,shared);
+  assert.equal(optimized.status,'verified-witness');
+  assert.deepEqual(optimized.delta.retired,[{collection:'buildings',id:'BLD-00153'}]);
+  assert.deepEqual(keys(optimized.restored),keys(group.refs.filter(r=>r.collection!=='buildings')));
+  assert.ok(optimized.attempts.some(r=>r.tier==='property-shell'&&r.status==='verified-witness'));
+  const restoredCandidate=await verifySpatialRetirementWitness(source,op,optimized.delta,createSpatialDestructionBudget());
+  assert.deepEqual(restoredCandidate.identityAllocation,source.identityAllocation);
+  assert.deepEqual(restoredCandidate.city.properties.map(p=>p.id),source.city.properties.map(p=>p.id));
+  assert.deepEqual(restoredCandidate.city.plots.map(p=>p.id),source.city.plots.map(p=>p.id));
+  assert.equal(JSON.stringify(source),before);
+  const tiny=await restoreSpatialRoadRetirements(source,op,result.delta,createSpatialDestructionBudget({work:1,stateExpansions:1}));
+  assert.equal(tiny.status,'refused');assert.equal(tiny.delta,null);
+  const forged=clone(result.delta);forged.retired.pop();
+  await assert.rejects(()=>restoreSpatialRoadRetirements(source,op,forged,createSpatialDestructionBudget()));
+  console.log('SRE_SHELL_RESTORATION '+JSON.stringify({before:result.delta.retired,after:optimized.delta.retired,restored:optimized.restored,attempts:optimized.attempts,stats:optimized.stats}));
 });
 
 
@@ -598,7 +614,8 @@ test('detached grouped retirement searches real compression without preselected 
   const offset={x:-3.005274072121821*-.5,y:-37.39896113564458*-.5};
   const op=normalizeSpatialRoadGroup(source,1,ids,offset,{destruction:true,alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2});
   const eligibility=discoverSpatialRoadRetirementEligibility(source,op,budget());
-  const result=await searchSpatialGroupedRetirementRoadGroup(source,op,createSpatialDestructionBudget());
+  const shared=createSpatialDestructionBudget();
+  const result=await searchSpatialGroupedRetirementRoadGroup(source,op,shared);
   assert.ok(result.stats.work<=32000000&&result.stats.expansions<=131072);
   assert.ok(result.attempts.length<=2);
   assert.equal(result.status,'verified-witness',JSON.stringify(result.attempts));
@@ -611,6 +628,18 @@ test('detached grouped retirement searches real compression without preselected 
   assert.deepEqual(actual.identityAllocation,source.identityAllocation);
   assert.equal(JSON.stringify(source),before);
   console.log('SRE_GROUPED_RETIREMENT '+JSON.stringify({ledger:result.ledger,attempts:result.attempts,stats:result.stats}));
+  const optimized=await restoreSpatialRoadRetirements(source,op,result.delta,shared);
+  assert.equal(optimized.status,'verified-witness');
+  const retired=new Set(keys(optimized.delta.retired)),original=new Set(keys(result.delta.retired));
+  assert.ok([...retired].every(key=>original.has(key)));
+  assert.deepEqual(keys(optimized.restored),[...original].filter(key=>!retired.has(key)).sort());
+  assert.deepEqual(optimized.delta.added,[]);
+  assert.ok(optimized.attempts.length<=14);
+  assert.ok(optimized.stats.work<=32000000&&optimized.stats.expansions<=131072);
+  const restoredCandidate=await verifySpatialRetirementWitness(source,op,optimized.delta,createSpatialDestructionBudget());
+  assert.deepEqual(restoredCandidate.identityAllocation,source.identityAllocation);
+  assert.equal(JSON.stringify(source),before);
+  console.log('SRE_GROUP_RESTORATION '+JSON.stringify({before:result.delta.retired,after:optimized.delta.retired,restored:optimized.restored,attempts:optimized.attempts,stats:optimized.stats,exhausted:optimized.exhausted}));
 });
 
 test('detached mixed retirement and actual concessions independently replay under separate permissions',{timeout:300000},async()=>{

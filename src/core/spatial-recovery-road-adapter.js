@@ -336,6 +336,70 @@ export async function searchSpatialGroupedRetirementRoadGroup(project,input,budg
   }
 }
 
+// Monotone restoration from a verified detached retirement incumbent.
+// Restore exact original records by deriving every trial anew from accepted
+// input. Restoring land alone leaves its originally retired children absent.
+// No new retirement or identity allocation; no accepted-project mutation.
+export async function restoreSpatialRoadRetirements(project,input,seedDelta,budget){
+  const operation=createSpatialOperation(input),attempts=[],restored=[];
+  let incumbent=null,exhausted=null;
+  const finish=()=>riFreeze({status:incumbent?'verified-witness':'refused',operation,
+    delta:incumbent?.delta??null,ledger:incumbent?.ledger??null,attempts,restored,exhausted,stats:budget.snapshot()});
+  try{
+    const snapshot=copyJson(project);
+    budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
+    const {preserving,eligibility}=sreRetirementContext(snapshot,operation,budget);
+    const verified=await sreVerifyRetirement(snapshot,operation,seedDelta,budget);
+    incumbent={delta:copyJson(seedDelta),ledger:verified.ledger};
+    const properties=new Map(snapshot.city.properties.map(p=>[p.id,p]));
+    const buildings=new Map(snapshot.city.buildings.map(b=>[b.id,b]));
+    budget.spend(Math.max(1,properties.size+buildings.size));
+    const groups=eligibility.propertyGroups.map(group=>{
+      budget.spend(1+group.refs.length);
+      const footprint=group.refs.filter(r=>r.collection==='buildings').reduce((n,r)=>n+buildings.get(r.id).area,0);
+      return {group,block:properties.get(group.propertyId).blockId,footprint};
+    }).sort((a,b)=>{budget.spend();return b.footprint-a.footprint||riCompare(a.group.propertyId,b.group.propertyId);});
+    const seen=new Set();
+    const trial=async(tier,refs)=>{
+      budget.spend(1+refs.length);
+      const current=incumbent.delta.retired;
+      const restoreKeys=new Set(refs.map(spatialRefKey));
+      const remaining=current.filter(ref=>{budget.spend();return !restoreKeys.has(spatialRefKey(ref));});
+      // The nondestructive zero-retirement transition is a distinct path.
+      // Do not manufacture an empty destructive witness in this checkpoint.
+      if(!remaining.length||remaining.length===current.length)return;
+      const key=JSON.stringify(remaining.map(spatialRefKey).sort(riCompare));
+      if(seen.has(key)||attempts.length>=LARE_DEMOLITION_LIMITS.subsets)return;
+      seen.add(key);
+      const row={tier,requested:current.length-remaining.length,status:'refused',stats:budget.snapshot()};
+      attempts.push(row);
+      const result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,remaining,budget);
+      row.status=result.status;row.exhausted=result.exhausted??null;
+      if(result.status!=='verified-witness')return;
+      const actual=new Set(result.delta.retired.map(spatialRefKey));
+      const expected=new Set(remaining.map(spatialRefKey));
+      if(actual.size!==expected.size||result.delta.retired.length!==expected.size||
+        [...actual].some(k=>!expected.has(k))||result.delta.added.length)
+        throw Error('Restoration would change unapproved retirement membership.');
+      const returned=current.filter(ref=>!actual.has(spatialRefKey(ref)));
+      for(const ref of returned){budget.spend();restored.push({...ref});}
+      incumbent={delta:result.delta,ledger:result.ledger};
+    };
+    // Whole blocks first (at most two), then individual groups, then land
+    // shells. Each phase has its own bounded proposal inventory; the same
+    // parent work/expansion cap is shared with the original search.
+    const currentGroups=()=>groups.filter(({group})=>incumbent.delta.retired.some(r=>r.collection==='properties'&&r.id===group.propertyId));
+    const blocks=[...new Set(currentGroups().map(row=>row.block))].sort(riCompare);
+    for(const block of blocks.slice(0,2))await trial('block',currentGroups().filter(row=>row.block===block).flatMap(row=>row.group.refs));
+    for(const {group} of currentGroups().slice(0,6))await trial('whole-property',group.refs);
+    for(const {group} of currentGroups().slice(0,6))await trial('property-shell',group.refs.filter(r=>r.collection!=='buildings'));
+    return finish();
+  }catch(error){
+    if(error instanceof LareBudgetExceeded){exhausted=error.resource;return finish();}
+    throw error;
+  }
+}
+
 // Detached strict witness verification only. No editor hooks, no Apply
 // authorization, no search rerun. Existing B1R constraints remain authoritative.
 export async function verifySpatialStrictRoadWitness(project,input,delta,budget) {
