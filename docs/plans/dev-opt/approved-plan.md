@@ -1,0 +1,152 @@
+# DEV-OPT — Development Pipeline Optimization
+
+**Status:** Owner-approved architecture, phased plans and acceptance criteria; implementation deferred.
+**Approval date:** 2026-11-25 (America/Los_Angeles).
+**Scope:** Development infrastructure only. This record does not authorize implementation, merging, releasing, tagging, publishing Pages, changing schemas or weakening tests.
+
+## Owner decision
+
+The owner selected DEV-OPT-01, 02, 03, 04, 05, 06, 07, 10, 11 and 12, approved phases P0–P5 and SAFE-01–SAFE-15, and explicitly deferred implementation until appropriate verified checkpoints and separate authorization. OPT-08 (parallel feature workstreams) and OPT-09 (higher-performance runners) remain outside scope. On 2026-11-25 the owner separately authorized adding this documentation to the current development branch with no CI run for this documentation-only commit. The next qualifying code revision still requires normal exact-revision checks; this commit is not a qualification or merge authorization.
+
+## Purpose and existing foundations
+
+Reduce repeated work, CI feedback time, research turnaround, approval interruptions and context-transfer effort without reducing correctness, safety or owner control. Retain modular offline single-HTML architecture, deterministic compilation, two Node shards and four browser runners, Firefox/Chromium, independent inventory checks, full review-ready and post-merge CI, the existing required aggregate check, GitHub-first validation and explicit publishing gates.
+
+References: [development rules](../../contributing/development-rules.md), [CI policy](../../contributing/ci-policy.md), [CI guide](../../contributing/ci-guide.md), [SRE PR #155](https://github.com/xbwtyz/Mappo/pull/155), [GitHub-first policy PR #154](https://github.com/xbwtyz/Mappo/pull/154), [hosted build PR #157](https://github.com/xbwtyz/Mappo/pull/157). PR #157 reports successful isolated no-op and changed-output qualification but is a separate unmerged draft at planning time; verify current state and evidence before reuse. Do not treat historical PR descriptions as current qualification.
+
+## Phased plan and acceptance gates
+
+### P0 — Baseline and safe checkpoint (Low)
+
+Trigger: next verified development checkpoint, with separate implementation authorization. Verify branch, source revision, approvals and CI evidence; inventory workflows, scripts, tests, fixtures and research infrastructure; measure historical CI durations, failures, duplicated workloads and research throughput; record coverage and preservation guarantees; identify conflicts and rollback points. Do not interrupt an active recovery experiment or treat a skipped check as a passing check.
+
+Acceptance:
+- [ ] Current development state and existing test inventory accurately recorded.
+- [ ] Evidence-based baseline performance report and rollback points completed.
+- [ ] No unresolved conflict with active SRE development; no application behavior change.
+
+### P1 — Workflow optimization (Low–medium)
+
+Trigger: P0 complete; safe checkpoint and separate authorization. Suggested packaging: policy PR and, if substantial, a separate tooling PR.
+
+**OPT-01 Intelligent implementation batching:** classify tasks by dependencies, affected systems and risk. Low risk: typically 3–5 compatible tasks; medium: 2–3 closely related tasks; high: independent implementation and validation; critical: separate approval and dedicated testing. Sizes are adaptive, not quotas. Schema, preservation, topology and destructive operations require special care. Use targeted checks during development; retain full CI at review and main.
+
+**OPT-02 Bounded implementation approval:** define exact scope, tasks, acceptance criteria, permissions and stop conditions. Within an explicitly authorized sequence, routine implementation, related tests, in-scope fixes, CI diagnosis, documentation and subsequent approved tasks can proceed. Stop for architecture/schema changes, scope expansion, weakened safeguards, destructive policy changes, PR merges, releases/tags/deployment or material ambiguity. Authorization expires at completion or a mandatory stop; it never grants unattended execution, new scope or automatic publishing.
+
+**OPT-03 Persistent checkpoints:** versioned, independently validated machine-readable records containing milestone/version, branch/source revision, approval scope, completed/pending tasks, CI/artifact evidence, decisions, regressions/blockers, rollback and next authorized action. Detect stale checkpoints by checking GitHub independently; checkpoint text is not new authorization. Avoid self-referential commit hashes by identifying the verified source revision separately from the checkpoint commit.
+
+**OPT-11 Performance tracking:** use actual GitHub evidence to track median and p90 full CI duration, runs per batch, failures, duplicated workloads, runner minutes, research scenarios/minute, approval interruptions and handoff/acceptance effort where measurable. Distinguish missing, canceled and incomplete evidence; compare comparable workloads/environments and record methodology.
+
+Acceptance:
+- [ ] Risk classifications, batching and approval boundaries documented and compatible with existing rules.
+- [ ] Checkpoint schema independently validated, stale-state rejection demonstrated and fresh-session reconstruction verified.
+- [ ] Baseline metrics generated from real evidence; no unnecessary duplicate CI runs.
+- [ ] No application or save-format changes.
+
+### P2 — Hosted build infrastructure (Medium)
+
+Trigger: isolated infrastructure qualification, separately authorized; may progress independently of P1. Reuse PR #157, not a second build system. Review and reconcile with verified main; qualify permissions and branch restrictions, stale-source/concurrent-change rejection, artifact integrity, deterministic compilation, generated commits and CI triggering; document operation/fallback. Read-only build job and separately restricted recorder; only authorized generated paths on authorized branch, exact source SHA, no force push. Explicitly qualify workflow-token event suppression so generated commits cannot bypass required CI.
+
+Acceptance:
+- [ ] Two identical-source builds match; root and versioned HTML byte-identical.
+- [ ] Only permitted generated files committed; no unnecessary no-op commit.
+- [ ] Stale/concurrent branch changes, incorrect versions and artifact hashes rejected safely.
+- [ ] Historical distributions retained; generated commits receive required exact-revision CI.
+- [ ] No release/Pages authority; local compilation fallback documented and usable.
+
+### P3 — Research harness and failure diagnostics (High)
+
+Trigger: natural SRE research boundary, after relevant P1 foundations; separate authorization. Suggested PRs: research contract/runner, distributed execution/reporting, diagnostics.
+
+**OPT-04 Automated research harness:** versioned manifests define source revision, strategy/version, fixture/corpus, seed, parameters, environment, execution budget and concurrency. Run independent candidate experiments in isolated jobs; aggregate completeness, evidence and results. Support SRE, roads, parcels, buildings, terrain, generation and eventually worker/3D experiments without bundling development tools into production. Use held-out fixtures to detect overfitting. Mandatory independent gates: topology/geometry validity, accepted-city nonmutation, permission compliance, deterministic outcomes and authored-data preservation. Only qualifying candidates may be compared on recovery success, generated-geometry preservation, time, search effort and memory. No automatic production adoption; missing/canceled/timeout results are not successes.
+
+**OPT-07 Automated CI diagnostics:** preserve original assertion, stack/location, fixture, parameters, environment, exit status and log/artifact links; classify probable regression, environment/setup failure, timeout, nondeterminism or incomplete evidence. Root-cause conclusions remain provisional until reproduced/verified. Diagnostics must not turn failures into success or automatically alter code.
+
+Acceptance:
+- [ ] Multiple strategies in one submission; deterministic replay from recorded inputs.
+- [ ] Invalid candidates rejected before comparative ranking; accepted city and production algorithms unmodified.
+- [ ] Held-out fixtures, execution budgets and concurrency limits verified.
+- [ ] Missing, canceled, failed and timed-out experiments reported accurately; reproducible evidence retained.
+- [ ] Failure reports retain original errors/status; diagnostic failure cannot mask test failure.
+- [ ] Separate production-integration authorization remains mandatory.
+
+### P4 — CI optimization (Medium–high)
+
+Trigger: SRE merged by separate authorization, full main CI verified, and P1 metrics available. Separate focused-workflow and balancing PRs.
+
+**OPT-05 Subsystem-focused checks:** extend existing Fast Checks and focused benchmark routing with profiles for geometry, SRE, roads, properties, buildings, schema, serialization, UI and build. Dependency mapping selects relevant profiles; shared core/validators/contracts or uncertain dependencies escalate to broader checks. Existing full CI is not replaced. Preserve trigger precedence, cancellation behavior, exact candidate/merge-ref validation and required aggregate check identity.
+
+**OPT-06 Timing-based workload balancing:** use existing per-script browser timing artifacts and comparable historical runs to propose assignments among four browser runners, retaining two Node shards. Suggestions reviewed and committed as reproducible manifest changes, not dynamic uncontrolled rewrites. Preserve independence, browser environment, fixtures and inventory; consider Node redistribution only with evidence and independent inventory validation. Measure critical path, median/p90 and runner-minutes before/after.
+
+Acceptance:
+- [ ] Complete mandatory test inventory preserved; missing/duplicate tests detected.
+- [ ] Unknown dependencies escalate; focused checks cannot satisfy full qualification.
+- [ ] Firefox/Chromium, offline standalone, deterministic build and exact-revision coverage preserved.
+- [ ] Full six-runner CI on review-ready PRs and main; required aggregate name/release compatibility unchanged.
+- [ ] Failed, missing, canceled or skipped mandatory jobs cannot yield a qualifying pass.
+- [ ] Measurements justify redistribution; demonstrable improvement without unacceptable resource increases.
+- [ ] Prior configuration recoverable.
+
+### P5 — Manual acceptance automation and final qualification (Medium)
+
+Trigger: supporting infrastructure stable, separately authorized. **OPT-10:** create candidate-specific downloadable acceptance packages containing exact standalone HTML, deterministic sample city fixtures, checklist, expected behavior/known limitations, bug-report template and manifest of version/source SHA/artifact hashes. Supply prepared SRE movement scenarios rather than requiring the owner to reconstruct test cities. Maintain actual manual acceptance distinct from automation; never mark it passed automatically.
+
+Acceptance:
+- [ ] Exact candidate and artifact integrity verified; fixtures load and are reproducible.
+- [ ] Instructions include expected behavior, limitations and applicable Firefox/desktop/ultrawide scenarios.
+- [ ] No private data; manual results clearly distinguishable and never automatically passed.
+- [ ] All ten selected improvements jointly qualified; final baseline comparison and rollback procedures documented.
+
+## Dependency matrix
+
+| ID | Dependencies |
+| --- | --- |
+| OPT-01 / OPT-02 | P0 |
+| OPT-03 | OPT-01, OPT-02 |
+| OPT-04 | OPT-03, OPT-11 |
+| OPT-05 | OPT-03, OPT-11 |
+| OPT-06 | OPT-11 and existing timing artifacts |
+| OPT-07 | OPT-03 and OPT-04 reporting contract |
+| OPT-10 | OPT-03 and verified builds |
+| OPT-11 | P0 |
+| OPT-12 | Existing hosted-build PR #157 |
+
+P0/P1 at the next verified checkpoint; P2 can be isolated; P3 at an SRE research boundary; P4 after SRE merge and verified main; P5 after stabilization. Each phase should deliver independent value rather than delaying feature development indefinitely. Inspect existing structure before introducing proposed locations such as docs/plans/dev-opt/, docs/development/checkpoints/, scripts/development/{checkpoint,metrics,diagnostics,acceptance}/, scripts/research/ or additional workflows. No application version bump is implied by this infrastructure milestone.
+
+## Mandatory safety contracts (approved)
+
+| ID | Contract |
+| --- | --- |
+| SAFE-01 | No unapproved application behavior changes. |
+| SAFE-02 | No reduction in mandatory test coverage. |
+| SAFE-03 | No weakened geometry or topology validation. |
+| SAFE-04 | No modification of preservation guarantees. |
+| SAFE-05 | No unapproved schema or data-format changes. |
+| SAFE-06 | No automatic merges, releases or deployments. |
+| SAFE-07 | No fabricated or inferred test successes. |
+| SAFE-08 | No stale CI results accepted for newer revisions. |
+| SAFE-09 | No uncontrolled workflow write permissions. |
+| SAFE-10 | No production adoption of research candidates without approval. |
+| SAFE-11 | No unnecessary repetition of hosted test workloads. |
+| SAFE-12 | No modification or destruction of historical builds and fixtures. |
+| SAFE-13 | No development-only infrastructure bundled into production unnecessarily. |
+| SAFE-14 | Every phase has a documented rollback procedure. |
+| SAFE-15 | Missing or inconclusive evidence cannot satisfy acceptance gates. |
+
+## Proposed performance targets (not measured or guaranteed)
+
+| Metric | Initial target |
+| --- | --- |
+| Full CI duration reduction | 15–30% |
+| Unnecessary full CI runs reduction | 40–60% |
+| Routine approval interruptions reduction | 50–75% |
+| Handoff preparation effort reduction | 60–80% |
+| Manual acceptance preparation reduction | 40–60% |
+| Research throughput | 2–5× |
+| Mandatory test coverage retained | 100% |
+
+Revisit targets after P0 establishes a reliable baseline. Compare repeated comparable runs; disclose resource tradeoffs and uncertainty. Do not weaken tests to reach a target. If no measurable improvement, report that result and retain or restore the safer configuration.
+
+## Authorization and closeout
+
+Planning approval is not implementation approval. Verify current exact development checkpoint and obtain separate authorization before executing each applicable scope. Preserve explicit PR merge approval, exact-head review qualification, exact-main post-merge CI, separate release/tag/Pages authorization and existing development rules. A documentation-only skip marker does not change these requirements. All implementation acceptance boxes remain unchecked; no DEV-OPT implementation is authorized by this record.
