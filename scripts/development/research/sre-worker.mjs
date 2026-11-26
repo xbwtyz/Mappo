@@ -45,7 +45,7 @@ try{
     const roadIds=c.fixture?selectRoads(project,offset):m.roadIds;
     const op=normalizeSpatialRoadGroup(project,1,roadIds,offset,m.permissions),operationFingerprint=digest(op);
     const shared=experimental?createLareBudget({work:workLimit,stateExpansions:131072},{ceiling:{...LARE_DEMOLITION_LIMITS,work:256000000}}):createSpatialDestructionBudget();
-    const result=experimental?await research.searchSpatialBudgetResearch(project,op,shared,{workLimit,iterative:task.schedule==='iterative-256m'}):await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:task.schedule});
+    const result=experimental?await research.searchSpatialBudgetResearch(project,op,shared,{workLimit,iterative:['iterative-256m','child-priority-256m'].includes(task.schedule),childPriority:task.schedule==='child-priority-256m'}):await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:task.schedule});
     assert.deepEqual(result.stats,shared.snapshot());
     assert.ok(result.stats.work<=workLimit&&result.stats.expansions<=m.budget.expansions);
     if(experimental&&workLimit===32000000)assert.equal(result.status,'verified-witness','32M parity control refused');
@@ -74,6 +74,11 @@ try{
       assert.equal(result.kind,'retirement');
       const expected=task.schedule==='baseline'?[19,29,25]:[5,9,9];
       assert.deepEqual(Object.values(counts),expected);
+    }
+    if(task.schedule==='iterative-256m'){
+      assert.equal(c.scale,-1);
+      assert.deepEqual(Object.values(counts),c.irregularProperties?[10,19,15]:[10,13,15]);
+      assert.equal(digest(actual),c.irregularProperties?'a9b261397108df07c9ec3632089118ac9f77615c44f80d089392fc4d9ae39ac2':'5d6aace39754dba0ac1e85d9b3f11198e7b5c92cdd31365439348d0e73e96118');
     }
     if(task.schedule==='budget-256m'){
       assert.equal(c.scale,-1);
