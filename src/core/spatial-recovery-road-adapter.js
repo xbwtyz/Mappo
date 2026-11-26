@@ -3,7 +3,8 @@ import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-
 import { describeSpatialCapability, spatialConstraint } from './spatial-recovery-registry.js';
 import { prepareRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent-c1.js';
 import { iterateRoadGroupReflowB1 } from './neighborhood-reflow.js';
-import { scoreSpatialPreservation } from './spatial-recovery-score.js';
+import { LareBudgetExceeded } from './reconciliation-budget.js';
+import { scoreSpatialPreservation, preferVerifiedSpatialPreservation } from './spatial-recovery-score.js';
 import { copyJson } from '../data/project-format.js';
 import { createLareContext } from './reconciliation-context.js';
 import { iterateLareGroupPreservation } from './reconciliation-preservation.js';
@@ -115,7 +116,7 @@ function sreFinishMetered(iterator,budget) {
 // authoritative for candidate production; it receives the operation-wide
 // budget as parent. Never publish a candidate or trust its reported ledger.
 // No worker scheduling or relaxed strategy activation is introduced here.
-export async function searchSpatialPreservingRoadGroup(project,input,budget) {
+async function sreSearchPreservingRoadGroup(project,input,budget,packing=false) {
   const operation=sreStrictRoadOperation(input);
   createSpatialInventory(project,operation,budget);
   // Detach the complete accepted snapshot, including its allocator and opaque
@@ -124,7 +125,7 @@ export async function searchSpatialPreservingRoadGroup(project,input,budget) {
   const bytes=new TextEncoder().encode(JSON.stringify(snapshot)).length;
   budget.spend(Math.max(1,Math.ceil(bytes/64)));
   const iterator=iterateRoadGroupReflowB1(snapshot,operation.editedRefs.map(ref=>ref.id),
-    operation.geometry.offset,{acceptedRevision:operation.revision,sharedBudget:budget});
+    operation.geometry.offset,{acceptedRevision:operation.revision,sharedBudget:budget,...(packing?{strategy:'enhanced-adaptive',packing:true}:{})});
   let result;
   try {
     for (;;) {
@@ -143,4 +144,25 @@ export async function searchSpatialPreservingRoadGroup(project,input,budget) {
   const cost=scoreSpatialPreservation(snapshot,verified,budget);
   // Explicitly return transport, not a second complete city or Apply authority.
   return riFreeze({status:'verified-witness',operation,delta,cost,issues:[],stats:budget.snapshot()});
+}
+
+// Strict progressive result is independently verified before packing can
+// challenge it. Both searches use one host-owned budget; no worker scheduling.
+export async function searchSpatialPreservingRoadGroup(project,input,budget) {
+  return sreSearchPreservingRoadGroup(project,input,budget);
+}
+export async function searchSpatialPackingRoadGroup(project,input,budget) {
+  const incumbent=await sreSearchPreservingRoadGroup(project,input,budget);
+  if(incumbent.status==='verified-witness'&&incumbent.cost.movedBuildings===0)return incumbent;
+  try{
+    const challenger=await sreSearchPreservingRoadGroup(project,input,budget,true);
+    const selected=preferVerifiedSpatialPreservation(
+      incumbent.status==='verified-witness'?incumbent:null,
+      challenger.status==='verified-witness'?challenger:null)??incumbent;
+    return riFreeze({...selected,stats:budget.snapshot()});
+  }catch(error){
+    if(error instanceof LareBudgetExceeded&&incumbent.status==='verified-witness')
+      return riFreeze({...incumbent,stats:budget.snapshot(),packingExhausted:true});
+    throw error;
+  }
 }

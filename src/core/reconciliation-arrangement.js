@@ -32,7 +32,7 @@ function lareArrangeRank(entries,parcelCandidates){
 }
 // Pure joint solver over actual parcel/plot and rigid building alternatives.
 // Adapter supplies affected blocks, external obstacles and whole-project finalizer.
-export function* iterateLareArrangement({entries,finalize,incumbent=null,enhanced=false},budget){
+export function* iterateLareArrangement({entries,finalize,incumbent=null,enhanced=false,packing=false},budget){
   if(!Array.isArray(entries)||entries.length>LARE_LIMITS.affectedParcels||
     new Set(entries.map(e=>e.property.id)).size!==entries.length||typeof finalize!=='function')
     throw Error('Invalid local arrangement inventory.');
@@ -44,7 +44,7 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
       if(verifiedIncumbent)compareLareScore(verifiedIncumbent.score,verifiedIncumbent.score);}
     for(const entry of entries.slice().sort((a,b)=>lareArrangeCompare(a.property.id,b.property.id))){
       const fixedRings=entry.buildings.filter(b=>b.permission.mode!=='rigid').flatMap(b=>buildingExteriorRingsS10(b.source));
-      const candidates = yield* iterateLareParcelCandidates({ ...entry, fixedRings, compactDeformation: enhanced }, budget);
+      const candidates = yield* iterateLareParcelCandidates({ ...entry, fixedRings, compactDeformation: enhanced, packing }, budget);
       parcelCandidates.set(entry.property.id, candidates);
       yield {stage:'parcel-inventory',id:entry.property.id,stats:budget.snapshot()};
     }
@@ -80,7 +80,7 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
         other.source.id !== building.source.id).map(other => other.source);
       const candidates = yield* iterateLareBuildingCandidates({ source: building.source,
         permission: building.permission, oldProperty: entry.property, property: parcel.property,
-        plots: parcel.plots, fixedBuildings }, budget);
+        plots: parcel.plots, fixedBuildings, seedTransforms: parcel.buildingSeeds?.filter(seed=>seed.id===building.source.id)??[] }, budget);
       inventory.set(building, candidates);
     }
     return inventory.get(building);

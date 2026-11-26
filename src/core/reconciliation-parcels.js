@@ -1,3 +1,4 @@
+import { iterateSpatialPackingSeeds } from './spatial-recovery-packing.js';
 import { finishLareSteps } from './reconciliation-steps.js';
 import { polygonSignedArea } from './geometry.js';
 import { shapeWellFormed,shapeContained,shapesOverlapInterior } from './building-validation.js';
@@ -25,7 +26,7 @@ const lareParcelCmp=(a,b)=>a.score-b.score||a.order-b.order;
 // Returns admissible parcel/plot candidates, never a complete accepted edit.
 // Fixed exterior rings and fixed neighbors constrain the search; movable
 // neighboring properties must be checked later by the cooperative solver.
-export function* iterateLareParcelCandidates({property,plots,edge,edges,fixedRings=[],fixedNeighbors=[],mode='adaptive',compactDeformation=false},budget){
+export function* iterateLareParcelCandidates({property,plots,edge,edges,fixedRings=[],fixedNeighbors=[],mode='adaptive',compactDeformation=false,packing=false,policy,buildings=[]},budget){
   if(!budget?.spend)throw Error('Shared LARE budget required.');
   if(!['adaptive','authorized-reshape','fixed','decision-required','invalid-choice','fixed-unsupported'].includes(mode))
     throw Error('Unknown parcel policy.');
@@ -64,9 +65,9 @@ export function* iterateLareParcelCandidates({property,plots,edge,edges,fixedRin
   const strip=lareParcelStrip(property,plots);
   const found=[],seen=new Set();
   let order=0,attempts=0,attemptLimit=192;
-  const tryCandidate = function* (family, boundary, nextPlots) {
+  const tryCandidate = function* (family, boundary, nextPlots, buildingSeeds=null) {
     if(attempts++>=attemptLimit)return;
-    const rank=order++,key=JSON.stringify(boundary);
+    const rank=order++,key=JSON.stringify(buildingSeeds?[boundary,buildingSeeds]:boundary);
     if(seen.has(key))return;seen.add(key);
     yield { stage: 'parcel-candidate', id: property.id };
     const n=boundary.length;
@@ -83,7 +84,7 @@ export function* iterateLareParcelCandidates({property,plots,edge,edges,fixedRin
     const next={...property,boundary,frontage:boundary.slice(0,2),frame,area:polygonSignedArea(boundary)};
     next.local=propertyLocalBounds3I(next,boundary);
     const score=lareParcelDist(original,boundary);
-    found.push({family,property:next,plots:nextPlots,score,order:rank});
+    found.push({family,property:next,plots:nextPlots,score,order:rank,...(buildingSeeds?{buildingSeeds}:{})});
     found.sort(lareParcelCmp);
     // Keep at least one candidate from each discovered family for diversity.
     if(found.length>LARE_LIMITS.parcelCandidates){
@@ -206,6 +207,24 @@ export function* iterateLareParcelCandidates({property,plots,edge,edges,fixedRin
         }
       }
     }
+  }
+  // Additional opt-in rigid packing family. Keep ordinary inventory intact
+  // until proposals are validated by the same parcel/plot gate.
+  if(packing&&compactDeformation&&!fixedRings.length){
+    const ordinary=found.splice(0);
+    attemptLimit=attempts+24;
+    const seeds=yield* iterateSpatialPackingSeeds({property,policy,buildings,edge},budget);
+    for(const proposal of seeds){
+      const boundary=proposal.boundary;
+      const l=projected(boundary[0]),r=projected(boundary[1]);
+      const span=r.u-l.u,newDepth=Math.max(...boundary.map(p=>projected(p).v))-l.v;
+      const map=p=>{const q=local(p);return world(l.u+q.u*span/width,l.v+q.v*newDepth/oldDepth);};
+      yield* tryCandidate('building-first-packed',boundary,mapLarePlotCells(plots,map,budget),proposal.seeds);
+    }
+    // Reserve at most half the inventory for the new family. Ordinary
+    // progressive search remains available as the separate strict incumbent.
+    const packed=found.splice(0).sort(lareParcelCmp).slice(0,12);
+    found.push(...ordinary.slice(0,LARE_LIMITS.parcelCandidates-packed.length),...packed);
   }
   return found.sort(lareParcelCmp);
 }

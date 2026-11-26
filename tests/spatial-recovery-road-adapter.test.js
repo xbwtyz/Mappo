@@ -5,7 +5,7 @@ import { createSpatialPreservationBudget, createSpatialOperation } from '../src/
 import { createSpatialDelta, reconstructSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 import { describeSpatialStrategy, describeSpatialCapability, spatialConstraint } from '../src/core/spatial-recovery-registry.js';
 import { LARE_CONSTRAINTS } from '../src/core/reconciliation-constraints.js';
-import { normalizeSpatialRoadGroup, discoverSpatialRoadScope, verifySpatialStrictRoadWitness, searchSpatialPreservingRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, discoverSpatialRoadScope, verifySpatialStrictRoadWitness, searchSpatialPreservingRoadGroup, searchSpatialPackingRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
 import { prepareRoadGroupReflowB1 } from '../src/core/neighborhood-reflow.js';
 import { copyJson } from '../src/data/project-format.js';
 const budget=()=>createSpatialPreservationBudget();
@@ -82,5 +82,15 @@ test('SRE E2 search bridge refuses relaxed permissions and exhausted work withou
     await assert.rejects(searchSpatialPreservingRoadGroup(project,{...op,permissions},budget()),/not integrated/);
   await assert.rejects(searchSpatialPreservingRoadGroup(project,op,
     createSpatialPreservationBudget({work:1,stateExpansions:1})),/budget/);
+  assert.equal(JSON.stringify(project),before);
+});
+
+test('SRE opt-in packing path retains independently verified preserving incumbent',async()=>{
+  const before=JSON.stringify(project),op=operation();
+  const baseline=await searchSpatialPreservingRoadGroup(project,op,budget());
+  const packed=await searchSpatialPackingRoadGroup(project,op,budget());
+  assert.equal(packed.status,'verified-witness');
+  assert.ok(packed.cost.movedBuildings<=baseline.cost.movedBuildings);
+  await verifySpatialStrictRoadWitness(project,op,packed.delta,budget());
   assert.equal(JSON.stringify(project),before);
 });
