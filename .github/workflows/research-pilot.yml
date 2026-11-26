@@ -1,0 +1,79 @@
+name: Mappo Research Pilot
+
+# Explicit, isolated DEV-OPT qualification only; never replaces Fast Checks/full CI.
+on:
+  push:
+    branches:
+      - chore/dev-opt-p0-p1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mappo-research-pilot-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  shards:
+    if: contains(github.event.head_commit.message, '[research-pilot]')
+    name: Research shard ${{ matrix.shard }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [0, 1]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run assigned research tasks
+        env:
+          RESEARCH_SHARD: ${{ matrix.shard }}
+        run: node scripts/development/research/shards.mjs shard "$RESEARCH_SHARD" "$RUNNER_TEMP/research-shard"
+      - name: Retain original shard evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-shard-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: ${{ runner.temp }}/research-shard/shard.json
+          if-no-files-found: error
+          retention-days: 14
+
+  aggregate:
+    if: always() && contains(github.event.head_commit.message, '[research-pilot]')
+    name: Research completeness and validation
+    needs: shards
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download same-attempt evidence
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: research-shard-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/research-evidence
+      - name: Check complete inventory and independent gates
+        env:
+          RESEARCH_MATRIX_RESULT: ${{ needs.shards.result }}
+        run: node scripts/development/research/shards.mjs aggregate "$RUNNER_TEMP/research-evidence" "$RUNNER_TEMP/research-report"
+      - name: Retain aggregate report and manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-report-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/research-report/
+          if-no-files-found: error
+          retention-days: 14

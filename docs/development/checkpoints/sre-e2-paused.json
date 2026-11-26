@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "repository": "xbwtyz/Mappo",
+  "milestone": "SRE E2 road recovery — destruction-quality experiments",
+  "appVersion": "0.2.25-dev",
+  "targetVersion": "0.2.26-dev",
+  "source": {
+    "branch": "feature/b1r-e-spatial-recovery-e1",
+    "sha": "e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7",
+    "baseSha": "ec8d66205cfc30f60bc565b482f2ee97e59b172b",
+    "pr": 155
+  },
+  "state": "paused",
+  "scope": {
+    "approved": [
+      "SRE E2 implementation and qualification",
+      "DEV-OPT P0/P1 development infrastructure"
+    ],
+    "prohibited": [
+      "merge",
+      "release",
+      "tag",
+      "Pages deployment",
+      "unapproved schema or safety change",
+      "DEV-OPT P2–P5 implementation"
+    ],
+    "stopConditions": [
+      "unapproved scope or policy change",
+      "invalid or stale evidence",
+      "owner authorization to resume after DEV-OPT review"
+    ]
+  },
+  "evidence": {
+    "fast": {
+      "runId": 45772991075,
+      "jobId": 139749822699,
+      "head": "e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7",
+      "tests": 70,
+      "passed": 70,
+      "failed": 0,
+      "durationSeconds": 149
+    },
+    "full": {
+      "runId": 45772998545,
+      "head": "e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7",
+      "qualification": "routing-only"
+    },
+    "artifacts": [
+      {
+        "path": "index.html",
+        "blob": "013832e573c5c4f1651a1139ccec25daf153457e"
+      },
+      {
+        "path": "dist/mappo-0.2.25-dev.html",
+        "blob": "013832e573c5c4f1651a1139ccec25daf153457e"
+      }
+    ]
+  },
+  "completed": [
+    "10/18 exact nondestructive and 18/18 total verified at baseline head 5e7b5969a8441f901fe9426ea4c6c14efbd1f6f3",
+    "Grouped-first 105/163/129 retired; diversified 81/131/97; small-shell 99/161/139 (properties/plots/buildings)",
+    "Detached shell and complete-property regeneration qualified separately",
+    "44 earlier compression cases retained by test partition; focused run 2m29s"
+  ],
+  "pending": [
+    "Improve severe compression and initial retirement selection; compare area concessions",
+    "Full 18-case requalification, historical 627 preservation and 84 demolition successes",
+    "Positive integrated regeneration and repeated allocation/history checks",
+    "E3 property/building, later E4/E5/derived 3D, worker and manual acceptance"
+  ],
+  "decisions": [
+    "Baseline scheduler remains default; diversified has best aggregate retirement counts but higher scale loss; small-shell not adopted",
+    "No live activation, production or schema changes in DEV-OPT P0/P1",
+    "SRE PR remains paused; DEV-OPT isolated on fresh main-based branch"
+  ],
+  "blockers": [
+    "Quality target <=13/17/26 unmet",
+    "Full exact-head SRE CI and historical qualification outstanding"
+  ],
+  "rollback": {
+    "sourceSha": "e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7",
+    "policy": "Keep paused SRE branch unchanged; revert DEV-OPT commits through reviewable PR if needed; no force push or historical deletion"
+  },
+  "nextAction": "Complete DEV-OPT P0/P1 focused verification and review, then request authorization for next phase or resume SRE quality work."
+}

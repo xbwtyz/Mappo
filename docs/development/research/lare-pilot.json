@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "adapter": "lare-road-preservation-v1",
+  "budget": {
+    "timeoutMs": 60000,
+    "concurrency": 2
+  },
+  "strategies": [
+    "production",
+    "selective-adaptive"
+  ],
+  "cases": [
+    {
+      "id": "planned-smoke",
+      "partition": "development",
+      "project": {
+        "seed": "c2-planned",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "roadIds": [
+        "RD-0113",
+        "RD-0114"
+      ],
+      "offset": {
+        "x": 0.05,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-holdout",
+      "partition": "held-out",
+      "project": {
+        "seed": "b1-linear",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": true
+      },
+      "roadIds": [
+        "RD-0122",
+        "RD-0123"
+      ],
+      "offset": {
+        "x": 1,
+        "y": 1
+      }
+    }
+  ]
+}

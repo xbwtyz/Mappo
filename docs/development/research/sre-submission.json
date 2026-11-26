@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "targetRevision": "e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7",
+  "schedules": [
+    "baseline",
+    "diversified-restoration"
+  ],
+  "cases": [
+    {
+      "id": "regular-preservation",
+      "partition": "development",
+      "irregularProperties": false,
+      "scale": 0.5,
+      "expectation": "known-preservation"
+    },
+    {
+      "id": "irregular-compression",
+      "partition": "development",
+      "irregularProperties": true,
+      "scale": 0.25,
+      "expectation": "known-compression"
+    },
+    {
+      "id": "held-out-linear",
+      "partition": "held-out",
+      "irregularProperties": true,
+      "scale": 0.04,
+      "expectation": "exploratory",
+      "fixture": {
+        "seed": "dev-opt-holdout-linear-01",
+        "size": "small",
+        "morphology": "linear"
+      }
+    },
+    {
+      "id": "held-out-radial",
+      "partition": "held-out",
+      "irregularProperties": false,
+      "scale": -0.08,
+      "expectation": "exploratory",
+      "fixture": {
+        "seed": "dev-opt-holdout-radial-01",
+        "size": "small",
+        "morphology": "radial"
+      }
+    }
+  ]
+}
