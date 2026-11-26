@@ -7,7 +7,7 @@ import {digest} from './contract.mjs';
 import {classifyFailure} from './diagnostics.mjs';
 const need=(ok,msg)=>{if(!ok)throw Error(msg);};
 export const targetRevision='e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7';
-export const budgetWork=Object.freeze({'budget-32m':32000000,'budget-64m':64000000,'budget-128m':128000000,'budget-256m':256000000,'iterative-256m':256000000,'child-priority-256m':256000000,'solver-selection-256m':256000000});
+export const budgetWork=Object.freeze({'budget-32m':32000000,'budget-64m':64000000,'budget-128m':128000000,'budget-256m':256000000,'iterative-256m':256000000,'child-priority-256m':256000000,'solver-selection-256m':256000000,'combined-256m':256000000});
 export const schedules=['baseline','grouped-first','diversified-restoration','shell-first-restoration',...Object.keys(budgetWork)];
 export const cases=[{id:'regular-preservation',partition:'development',irregularProperties:false,scale:.5,expectation:'known-preservation'},{id:'irregular-compression',partition:'development',irregularProperties:true,scale:.25,expectation:'known-compression'}];
 export const researchConcurrency=4;
@@ -34,7 +34,7 @@ export function validateSubmission(s){
   }
   need(s.cases.some(c=>c.partition==='development'),'Missing development cases.');
   const experimental=s.schedules.some(x=>Object.hasOwn(budgetWork,x));
-  if(experimental)need(s.targetRevision==='35d84f7738e0b43b93fb467d1803812f72f04fb2'&&s.schedules.every(x=>Object.hasOwn(budgetWork,x))&&s.cases.every(c=>c.expectation==='exploratory'&&c.partition==='development'&&!c.fixture),'Invalid isolated budget sensitivity submission.');
+  if(experimental)need(s.targetRevision==='fe4b3c9306bde3b110b5f77b292521320ec5f6d2'&&s.schedules.every(x=>Object.hasOwn(budgetWork,x))&&s.cases.every(c=>c.expectation==='exploratory'&&c.partition==='development'&&!c.fixture),'Invalid isolated budget sensitivity submission.');
   return s;
 }
 export function manifest(identity,submission={version:1,targetRevision,schedules:['baseline','diversified-restoration'],cases}){

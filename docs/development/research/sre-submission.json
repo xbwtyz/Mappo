@@ -1,9 +1,10 @@
 {
   "version": 1,
-  "targetRevision": "35d84f7738e0b43b93fb467d1803812f72f04fb2",
+  "targetRevision": "fe4b3c9306bde3b110b5f77b292521320ec5f6d2",
   "schedules": [
     "child-priority-256m",
-    "solver-selection-256m"
+    "solver-selection-256m",
+    "combined-256m"
   ],
   "cases": [
     {

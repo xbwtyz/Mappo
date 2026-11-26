@@ -45,7 +45,7 @@ try{
     const roadIds=c.fixture?selectRoads(project,offset):m.roadIds;
     const op=normalizeSpatialRoadGroup(project,1,roadIds,offset,m.permissions),operationFingerprint=digest(op);
     const shared=experimental?createLareBudget({work:workLimit,stateExpansions:131072},{ceiling:{...LARE_DEMOLITION_LIMITS,work:256000000}}):createSpatialDestructionBudget();
-    const result=experimental?await research.searchSpatialBudgetResearch(project,op,shared,{workLimit,iterative:['iterative-256m','child-priority-256m','solver-selection-256m'].includes(task.schedule),childPriority:['child-priority-256m','solver-selection-256m'].includes(task.schedule),solverSelection:task.schedule==='solver-selection-256m'}):await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:task.schedule});
+    const result=experimental?await research.searchSpatialBudgetResearch(project,op,shared,{workLimit,iterative:['iterative-256m','child-priority-256m','solver-selection-256m','combined-256m'].includes(task.schedule),childPriority:['child-priority-256m','solver-selection-256m','combined-256m'].includes(task.schedule),solverSelection:task.schedule==='solver-selection-256m',finalRefinement:task.schedule==='combined-256m'}):await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:task.schedule});
     assert.deepEqual(result.stats,shared.snapshot());
     assert.ok(result.stats.work<=workLimit&&result.stats.expansions<=m.budget.expansions);
     if(experimental&&workLimit===32000000)assert.equal(result.status,'verified-witness','32M parity control refused');
@@ -74,6 +74,11 @@ try{
       assert.equal(result.kind,'retirement');
       const expected=task.schedule==='baseline'?[19,29,25]:[5,9,9];
       assert.deepEqual(Object.values(counts),expected);
+    }
+    if(task.schedule==='solver-selection-256m'){
+      assert.equal(c.scale,-1);
+      assert.deepEqual(Object.values(counts),c.irregularProperties?[10,19,14]:[10,13,14]);
+      assert.equal(digest(actual),c.irregularProperties?'54807c4cd28986fb9eb7cccdd7d1d9329b55e86b24b110030c4311c3fad41b8d':'cd747ddbe66afdc9e8ffaf280cbdef597d659a1fcb7893d3520a06f3afd909c1');
     }
     if(task.schedule==='child-priority-256m'){
       assert.equal(c.scale,-1);
