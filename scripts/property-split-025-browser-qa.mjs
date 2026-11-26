@@ -97,7 +97,8 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
     await page.waitForFunction(()=>!__buildingQA.state().propertySplitE2.active);
     const after=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city));
     assert.notEqual(after,before);
-    assert.equal(await page.evaluate(()=>__buildingQA.state().propertySplitE2.history.past.length),1);
+    assert.equal(await page.evaluate(()=>__buildingQA.state().acceptedHistoryD01.past.length),1);
+    assert.equal(await page.evaluate(()=>__buildingQA.state().acceptedHistoryD01.entry('undo')?.operation),'property-split');
     await page.locator('#propertySplitUndoE2').click();
     assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),before);
     await page.locator('#propertySplitRedoE2').click();

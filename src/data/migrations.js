@@ -1,3 +1,4 @@
+import { migrateSchema10ProjectS11 } from './migrate-schema11.js';
 import {
   waterDryState
 } from '../core/water-geometry.js';
@@ -61,6 +62,7 @@ export function migrateProjectData(project) {
   if (project.schemaVersion === 7) project.schemaVersion = 8;
   // Terrain is optional: retain older city and workspace records exactly.
   if (project.schemaVersion === 8) project.schemaVersion = 9;
-  if (project.schemaVersion === 9) return migrateSchema9ProjectS10(project);
+  if (project.schemaVersion === 9) project = migrateSchema9ProjectS10(project);
+  if (project.schemaVersion === 10) return migrateSchema10ProjectS11(project);
   return project;
 }

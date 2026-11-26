@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 // H4 desktop release acceptance: actual recovery storage survives a reload,
 // exposes current and previous snapshots, and restores authored geometry on
 // explicit user choice. This is not a mock RecoveryStore or compact UI.
@@ -108,7 +109,7 @@ for (const [engineName, engine] of [['chromium', chromium], ['firefox', firefox]
     const raw = await readFile(await downloaded.path(), 'utf8');
     const document = JSON.parse(raw);
     assert.equal(document.formatVersion, 1);
-    assert.equal(document.project.schemaVersion, 10);
+    assert.equal(document.project.schemaVersion, PROJECT_SCHEMA_VERSION);
     assert.equal(JSON.stringify(document.project.city), JSON.stringify(archive.city));
     await el('projectFileInput').setInputFiles({
       name: 'h4-recovery-reopened.mappo.json',

@@ -1,3 +1,4 @@
+import { iterateActiveIdentityInventory } from '../core/identity-verification.js';
 import { validateCourtyardAccess } from '../core/courtyard-access.js';
 import {
   TERRAIN_LIMIT
@@ -59,8 +60,7 @@ import {
   validateLayout
 } from '../core/validate-layout.js';
 import { terminalCorridors, polygonIntrudesTerminalCorridor } from '../core/road-terminal-corridors.js';
-import { validateBuildingStructureS10 } from '../core/building-components-s10.js';
-import { occupiedAreaS10, occupiedPlotAreaS10, occupiedRegionsOverlapS10 } from '../core/building-occupancy-s10.js';
+import { measureBuildingOccupancyS10, occupiedRegionsOverlapS10 } from '../core/building-occupancy-s10.js';
 
 export const MAX_PROJECT_BYTES = 20 * 1024 * 1024;
 export const MAX_VALIDATION_WORK = 6000000;
@@ -291,6 +291,7 @@ export function* iterateStoredProjectValidation(project) {
   if (!insideOrOn(project.options.center, boundary)) throw new Error('Town center is outside the city boundary.');
   const maps = {};
   for (const [name, max] of Object.entries(LIMITS)) maps[name] = indexedRecords(requireList(name.startsWith('terrain') ? (city[name] ?? []) : city[name], name, max), name);
+  yield* iterateActiveIdentityInventory(project.identityAllocation, city, spend);
   for (const record of [...city.properties, ...city.buildings]) validateIdentity(record);
   if (!city.nodes.length || !city.roads.length || !city.blocks.length) throw new Error('The city is missing its street plan.');
   for (const n of city.nodes) {
@@ -440,7 +441,8 @@ export function* iterateStoredProjectValidation(project) {
           Object.prototype.propertyIsEnumerable.call(building,'holes'))
         throw new Error('Schema 10 building contains competing writable footprint/holes geometry.');
       // Canonical topology is the only authoritative stored building shape.
-      const {geometry}=validateBuildingStructureS10(building.geometry,building.components);
+      const {geometry,area,plotAreas}=measureBuildingOccupancyS10(
+        building.geometry,building.components,ownPlots.map(plot=>plot.boundary));
       const solids=geometry.regions.filter(r=>r.kind==='solid');
       for (const root of geometry.regions.filter(r=>r.parentId===null)) {
         validatePolygon(root.ring,'Building exterior region',spend);
@@ -456,12 +458,10 @@ export function* iterateStoredProjectValidation(project) {
       const buildingPlots=references(building.plotIds,maps.plots,'Building plots');
       if (buildingPlots.some(p=>p.propertyId!==property.id))
         throw new Error('A building refers to another property’s plot.');
-      const occupiedPlots=ownPlots.filter(plot=>
-        occupiedPlotAreaS10(geometry,plot.boundary)>1e-5).map(p=>p.id);
+      const occupiedPlots=ownPlots.filter((plot,index)=>plotAreas[index]>1e-5).map(p=>p.id);
       if (occupiedPlots.length!==building.plotIds.length ||
           occupiedPlots.some(id=>!building.plotIds.includes(id)))
         throw new Error('Building plot references do not match actual canonical occupancy.');
-      const area=occupiedAreaS10(geometry);
       if (!Number.isFinite(building.area) || Math.abs(area-building.area)>.02)
         throw new Error('Building area is invalid.');
 

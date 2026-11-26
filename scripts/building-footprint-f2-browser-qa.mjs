@@ -28,9 +28,7 @@ globalThis.__c01QA = {
       const candidate=createProject({seed,size:'medium',morphology:'organic'});
       property=candidate.city.properties.find(p=>p.buildingIds.length>=2);
       if(property) {
-        project=candidate;
-        workspaceShell.refresh();
-        requestDraw();
+        __buildingQA.apply({project:candidate,workspace:defaultWorkspace(candidate)});
         return property.id;
       }
     }
@@ -39,9 +37,9 @@ globalThis.__c01QA = {
 };
 
 globalThis.__d01QA = {
-  reset: () => { acceptedHistoryD01.clear(project,'QA fixture baseline'); updateUndoFeedback(); },
+  reset: () => { __buildingQA.apply(__buildingQA.capture()); },
   summaries: () => acceptedHistoryD01.summaries(),
-  length: () => acceptedHistoryD01.length,
+  length: () => __buildingQA.state().acceptedHistoryD01.length,
   move: direction => d01MoveHistory(direction),
   can: direction => acceptedHistoryD01.can(direction,project),
   blocked: () => d01DraftBlocked(),
@@ -379,6 +377,7 @@ async function exerciseD01(name,engine) {
       __buildingQA.state().propertyWorkspace.select({kind:'property',id});
       return id;
     });
+    assert.equal(await page.evaluate(()=>__d01QA.length()),0,'Adoption establishes an empty accepted history');
     const original=JSON.stringify(await readCity(page));
     await openIdentity(page);
     await page.locator('#identityNameInput').fill('Briar Estate');

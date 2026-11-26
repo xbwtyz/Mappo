@@ -243,7 +243,7 @@ test('compiled keyboard, navigation, project replacement and pending timer exits
   state.workspaceShell.navigate('city');
   road.start();
   road.session.nudge(0.5, 0);
-  app.apply(createProjectDocument(before.project, before.workspace));
+  app.applyPortable(encodeProjectDocument(createProjectDocument(before.project, before.workspace)));
   assert.equal(road.active, false);
   await new Promise((resolve) => setTimeout(resolve, 250));
   assert.equal(road.session.report, null);

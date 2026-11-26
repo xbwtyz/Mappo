@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { assertRoadUndoProject } from '../tests/helpers/road-undo-project.js';
 import {readFile,mkdir} from 'node:fs/promises';
 import {chromium,firefox} from 'playwright';
 import {createProject} from '../src/core/city-model.js';
@@ -67,7 +68,7 @@ for(const [name,engine] of [['chromium',chromium],['firefox',firefox]]){
       const after=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
       assert.notEqual(after,before);
       assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
-      assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),before);
+      assertRoadUndoProject(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),before,after);
       assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('redo')),true);
       assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),after);
     }

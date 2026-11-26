@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -91,7 +92,7 @@ test('3G-C2 candidate project survives schema-9 portable roundtrip without mutat
   assert.ok(passing,'Generated city should allow at least one small safe edit');
   const receipt=prepareBuildingApply(project,workspace,passing.id,passing.shift);
   assert.equal(receipt.ok,true,JSON.stringify(receipt.issues));
-  assert.equal(receipt.candidate.schemaVersion,10);
+  assert.equal(receipt.candidate.schemaVersion,PROJECT_SCHEMA_VERSION);
   const changed=receipt.candidate.city.buildings.find(b=>b.id===passing.id);
   assert.notDeepEqual(changed.footprint,project.city.buildings.find(b=>b.id===passing.id).footprint);
   assert.ok(changed.plotIds.length);

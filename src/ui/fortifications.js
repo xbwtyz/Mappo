@@ -1,3 +1,4 @@
+import { applyNonallocatingCityIntent } from '../editor/nonallocating-transaction-bridge.js';
 import {
   FortificationEditor
 } from '../editor/fortifications.js';
@@ -122,15 +123,17 @@ export class FortificationPanel {
       { validateOnApply: true }) : this.commitDraft();
   }
   commitDraft() {
+    const previous=this.getCity(),beforeEditor=this.editor.snapshot();
     try {
-      const previous = this.getCity(),
-        before = previous.fortificationState,
+      const before = previous.fortificationState,
         beforeHistory = this.editor.history.slice(),
         wasUnbuilt = before.status !== 'built',
-        city = this.editor.apply(previous, this.controls());
-      this.commit(city, { operation: city.fortificationState.enabled !== before.enabled && !wasUnbuilt
+        intent={kind:'defense-apply',options:this.controls()},
+        city = applyNonallocatingCityIntent(previous,intent,this.editor);
+      if(this.commit(city, { operation: city.fortificationState.enabled !== before.enabled && !wasUnbuilt
         ? (city.fortificationState.enabled ? 'enable' : 'disable')
-        : wasUnbuilt ? 'build' : 'rebuild', beforeHistory });
+        : wasUnbuilt ? 'build' : 'rebuild', beforeHistory,intent })===false)
+        throw Error('Defense Apply was refused.');
       this.refresh();
       if (wasUnbuilt && city.fortificationState.status === 'built') this.activateLayer();
       const state = city.fortificationState;
@@ -147,6 +150,7 @@ export class FortificationPanel {
                 : 'Defenses updated. Streets, buildings, districts and landscape were preserved.');
       return true;
     } catch (error) {
+      if(this.getCity()===previous)this.editor.load(beforeEditor);
       this.drafts?.sync('defenses', { staged: true, intent: JSON.stringify(this.controls()), dirty: true,
         issues: [{ code: 'defense-geometry', message: error.message }] });
       this.message(error.message, true);

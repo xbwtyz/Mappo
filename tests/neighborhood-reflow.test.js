@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { assertRoadUndoProject } from './helpers/road-undo-project.js';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { prepareNeighborhoodReflowC2, prepareNeighborhoodReflowC3 } from '../src/core/neighborhood-reflow.js';
@@ -134,7 +135,7 @@ test('C3 automatically adapts generated buildings for a 12-unit street move thro
   assert.notEqual(applied, before);
   assert.equal(state.files.revision, revision + 1);
   assert.equal(app.moveRoadHistory('undo'), true);
-  assert.equal(JSON.stringify(app.state().project), before);
+  assertRoadUndoProject(JSON.stringify(app.state().project),before,applied);
   assert.equal(app.moveRoadHistory('redo'), true);
   assert.equal(JSON.stringify(app.state().project), applied);
   const saved = app.capture();

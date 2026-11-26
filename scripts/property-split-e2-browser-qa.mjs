@@ -95,8 +95,9 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         // not the structural transaction counter. A split must notify recovery,
         // but exactly one whole-city history entry is the atomicity invariant.
         assert.ok(accepted.revision>=revision+1,'Accepted split must update file/recovery revision');
-        assert.equal(await page.evaluate(()=>__buildingQA.state().propertySplitE2.history.past.length),1,
+        assert.equal(await page.evaluate(()=>__buildingQA.state().acceptedHistoryD01.past.length),1,
           'One Apply must create one structural split history transaction');
+        assert.equal(await page.evaluate(()=>__buildingQA.state().acceptedHistoryD01.entry('undo')?.operation),'property-split');
 
         await page.locator('#propertySplitUndoE2').click();
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),before);
@@ -106,7 +107,7 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         const saved=await page.evaluate(()=>__buildingQA.capture());
         await page.evaluate(doc=>__buildingQA.apply(doc),saved);
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),accepted.city);
-        assert.equal(await page.evaluate(()=>__buildingQA.state().propertySplitE2.history.can('undo',__buildingQA.state().project)),false);
+        assert.equal(await page.evaluate(()=>__buildingQA.state().acceptedHistoryD01.can('undo',__buildingQA.state().project)),false);
         assert.deepEqual(errors,[]);
         console.log('PASS E2 '+label+' preview/reset/cancel/Apply/Undo/Redo/save');
       }catch(error){

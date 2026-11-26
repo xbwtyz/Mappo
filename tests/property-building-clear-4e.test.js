@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -21,7 +22,7 @@ test('Dev 4e clear is atomic, preserves plots/road/neighbors, and passes schema-
   const cleared=preparePropertyBuildingClear4E(project,workspace,property.id);
   assert.equal(cleared.ok,true,cleared.reason);
   assert.equal(cleared.count,before);
-  assert.equal(cleared.candidate.schemaVersion,10);
+  assert.equal(cleared.candidate.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.equal(JSON.stringify(project.city),old,'Input city must remain unchanged');
   assert.deepEqual(cleared.candidate.city.properties.find(p=>p.id===property.id).buildingIds,[]);
   assert.deepEqual(cleared.candidate.city.plots,project.city.plots);
@@ -87,6 +88,6 @@ test('Dev 4e Inspector bulk clear, one-click Undo/Redo and disabled empty action
   assert.equal(app.el('structureUndo').handlers.click(),true);
   assert.equal(app.state().project.city.buildings.filter(b=>b.propertyId===prop.id).length,count);
   const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(app.capture().project,app.capture().workspace)));
-  assert.equal(portable.project.schemaVersion,10);
+  assert.equal(portable.project.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.doesNotMatch(JSON.stringify(portable),/buildingStructureHistory/);
 });

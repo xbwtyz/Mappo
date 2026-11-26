@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 // Phase 7C browser smoke checks. Only a test-time Playwright dependency;
 // the distributed HTML remains free of external scripts and styles.
 import assert from 'node:assert/strict';
@@ -151,7 +152,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         const portable = Buffer.concat(chunks);
         const document = JSON.parse(portable.toString('utf8'));
         assert.equal(document.format, 'mappo-project');
-        assert.equal(document.project.schemaVersion, 10);
+        assert.equal(document.project.schemaVersion, PROJECT_SCHEMA_VERSION);
         assert.equal(document.workspace.schemaVersion, 1);
         assert.equal(document.project.city.waterFeatures.length, 0, 'Reviewing a rebuild keeps the accepted city');
         assert.equal(document.workspace.waterEditor.dirty, true, 'The download preserves the landscape draft');

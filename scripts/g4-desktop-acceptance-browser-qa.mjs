@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 // G4 acceptance: exercise the shipped desktop entrypoint, never the compact QA seam.
 // Domain-specific split/merge/courtyard Apply tests remain in their permanent suites.
 import assert from 'node:assert/strict';
@@ -72,7 +73,7 @@ async function runCase(browser, engine, viewport) {
     assert.equal(await el('desktopWorkspaceTabs').isVisible(), true);
     assert.equal(await page.locator('.legacy-workspace-tabs').isVisible(), false);
     assert.ok((await el('mapCanvas').boundingBox()).width > 250);
-    assert.equal(await page.evaluate(() => __buildingQA.state().project.schemaVersion), 10);
+    assert.equal(await page.evaluate(() => __buildingQA.state().project.schemaVersion), PROJECT_SCHEMA_VERSION);
 
     // Focused form keys never steer the map. The navigation test uses real input events.
     const oldCamera = await page.evaluate(() => ({
@@ -187,7 +188,7 @@ async function runCase(browser, engine, viewport) {
         nodes: __buildingQA.state().project.city.nodes.map(n => [n.id, n.x, n.y]),
         roads: __buildingQA.state().project.city.roads.map(r => r.id),
       }));
-      assert.equal(migrated.schema, 10, 'Historical project must migrate to schema 10');
+      assert.equal(migrated.schema, PROJECT_SCHEMA_VERSION, 'Historical project must migrate to the current schema');
       assert.deepEqual(migrated.nodes, oldSave.project.city.nodes.map(n => [n.id, n.x, n.y]),
         'Loading an older save may not regenerate street geometry');
       assert.deepEqual(migrated.roads, oldSave.project.city.roads.map(r => r.id));
@@ -201,7 +202,7 @@ async function runCase(browser, engine, viewport) {
       const downloadStatus = await el('fileStatus').innerText();
       assert.ok(download, 'Historical save re-export produced no download. Status: ' + downloadStatus);
       const exported = JSON.parse(await readFile(await download.path(), 'utf8'));
-      assert.equal(exported.project.schemaVersion, 10);
+      assert.equal(exported.project.schemaVersion, PROJECT_SCHEMA_VERSION);
       assert.equal(exported.formatVersion, 1);
       assert.equal(exported.project.city.nodes.length, migrated.nodes.length);
       record.legacySave = true;

@@ -1,4 +1,5 @@
 import { test } from 'node:test';
+import { assertRoadUndoProject } from './helpers/road-undo-project.js';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { prepareNeighborhoodReflowC3 } from '../src/core/neighborhood-reflow.js';
@@ -99,7 +100,7 @@ test('C5 standalone clears decisions on a new road position and keeps Apply and 
   const portable=decodeProjectDocument(encodeProjectDocument(createProjectDocument(captured.project,captured.workspace)));
   assert.equal(JSON.stringify(portable.project),applied);
   assert.equal(app.moveRoadHistory('undo'),true);
-  assert.equal(JSON.stringify(app.state().project),before);
+  assertRoadUndoProject(JSON.stringify(app.state().project),before,applied);
   assert.equal(app.moveRoadHistory('redo'),true);
   assert.equal(JSON.stringify(app.state().project),applied);
 });

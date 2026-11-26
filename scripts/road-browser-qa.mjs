@@ -13,6 +13,16 @@ const viewports = [
   { name: 'ultrawide', width: 5120, height: 1440 },
 ];
 const failures = [];
+// The city/root must be exactly restored, while allocation high-water marks
+// remain at the last accepted value even when generated entities are undone.
+async function assertRoadUndo(page,before,accepted){
+  const restored=JSON.parse(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)));
+  const expected=JSON.parse(before),committed=JSON.parse(accepted);
+  assert.deepEqual(restored.identityAllocation,committed.identityAllocation);
+  expected.identityAllocation=committed.identityAllocation;
+  assert.deepEqual(restored,expected);
+}
+const acceptedProject=page=>page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
 for (const [name, type] of [
   ['chromium', chromium],
   ['firefox', firefox],
@@ -507,7 +517,8 @@ for (const [name, type] of [
       assert.equal(await page.evaluate(() => __buildingQA.state().files.revision === __buildingQA.c2Revision + 1), true);
       assert.notEqual(applied, await page.evaluate(() => __buildingQA.c2Before));
       assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')), true);
-      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project) === __buildingQA.c2Before), true);
+      await assertRoadUndo(page,await page.evaluate(()=>__buildingQA.c2Before),applied);
+      assert.ok(JSON.parse(applied).city.buildings.some(b=>b.id.startsWith('BLD-IDA-')));
       assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('redo')), true);
       assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)), applied);
       if (viewport.name === 'desktop') {
@@ -531,7 +542,11 @@ for (const [name, type] of [
           await details.click();
           await page.locator('#roadApplyB4').click();
           assert.equal(await page.evaluate(() => __buildingQA.state().project.city.blocks.length), radial.city.blocks.length + delta);
+          const acceptedTopology=await acceptedProject(page);
+          for(const collection of ['buildings','properties','plots'])
+            assert.ok(JSON.parse(acceptedTopology).city[collection].some(x=>x.id.includes('-IDA-')),collection);
           assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')), true);
+          await assertRoadUndo(page,JSON.stringify(radial),acceptedTopology);
           assert.equal(await page.evaluate(() => __buildingQA.state().project.city.blocks.length), radial.city.blocks.length);
         }
       }
@@ -565,8 +580,9 @@ for (const [name, type] of [
       const committed=await page.evaluate(() => __buildingQA.state().project.city.nodes.find(node=>node.id.startsWith('N-BEND-')));
       assert.equal(committed?.x,target.x);
       assert.equal(committed?.y,target.y);
+      const acceptedBend=await acceptedProject(page);
       assert.equal(await page.evaluate(() => __buildingQA.moveRoadHistory('undo')),true);
-      assert.equal(await page.evaluate(() => JSON.stringify(__buildingQA.state().project)),bendBaseline);
+      await assertRoadUndo(page,bendBaseline,acceptedBend);
       if (viewport.name === 'desktop') {
         const custom=structuredClone(project);
         custom.city.buildings.find(building=>building.id==='BLD-00061').customName='Market Hall';
@@ -596,8 +612,9 @@ for (const [name, type] of [
         await page.locator('#roadApplyB4').click();
         const placed=await page.evaluate(()=>__buildingQA.state().project.city.buildings.find(building=>building.id==='BLD-00061'));
         assert.equal(placed.customName,'Market Hall');
+        const acceptedCustom=await acceptedProject(page);
         assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
-        assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),original);
+        await assertRoadUndo(page,original,acceptedCustom);
       }
       if (viewport.name === 'desktop') {
         // C7 release acceptance: real user controls, all four developed layouts.
@@ -628,7 +645,7 @@ for (const [name, type] of [
           const accepted=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project));
           assert.notEqual(accepted,before);
           assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
-          assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),before);
+          await assertRoadUndo(page,before,accepted);
           assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('redo')),true);
           assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),accepted);
           const saved=await page.evaluate(()=>__buildingQA.capture());
@@ -659,8 +676,9 @@ for (const [name, type] of [
         await page.waitForFunction(() => !__buildingQA.state().roadWorkspace.active);
         assert.equal(await page.evaluate(()=>__buildingQA.state().project.city.buildings
           .find(b=>b.id==='BLD-00048').customName),'Market Hall');
+        const acceptedCustomJunction=await acceptedProject(page);
         assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
-        assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),beforeCustom);
+        await assertRoadUndo(page,beforeCustom,acceptedCustomJunction);
       }
       assert.equal(errors.length, 0, errors.join('; '));
       console.log(

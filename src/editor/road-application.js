@@ -1,7 +1,7 @@
 import { reconcileRoadWorkspace } from './road-workspace.js';
 import { prepareRoadTopologyReflowC3 } from '../core/road-topology-reflow.js';
 import { prepareJunctionReflowC7, prepareNeighborhoodReflowC3, prepareRoadGroupReflowB1 } from '../core/neighborhood-reflow.js';
-import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument } from '../data/project-format.js';
+import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDocument, roundTripProjectDocument } from '../data/project-format.js';
 import { validateStoredProject } from '../data/project-validation.js';
 import { buildRoadGraph } from '../core/road-graph.js';
 import { extractRoadFaces, matchExistingFaces } from '../core/road-faces.js';
@@ -163,7 +163,7 @@ export function validateRoadApplyC2(project, workspace, draft, inspected) {
     if (JSON.stringify(fresh.candidateProject) !== inspectedJson || !b4Same(fresh.ledger, inspected.ledger))
       return reject('candidate-changed', 'The reconstruction differs from the inspected proposal.');
     const nextWorkspace = reconcileRoadWorkspace(workspace, project.city, fresh.candidateProject.city);
-    const roundtrip = decodeProjectDocument(encodeProjectDocument(createProjectDocument(fresh.candidateProject, nextWorkspace)));
+    const roundtrip = roundTripProjectDocument(fresh.candidateProject, nextWorkspace);
     if (!b4Same(roundtrip.project, fresh.candidateProject) || !b4Same(roundtrip.workspace, nextWorkspace))
       throw new Error('Portable save/load changed the candidate or workspace.');
     return { ok: true, candidate: fresh.candidateProject, workspace: nextWorkspace, changed: fresh.changed, ledger: fresh.ledger };
@@ -193,7 +193,7 @@ export function validateRoadGroupApplyB1(project,workspace,draft,inspected) {
     if(!b4Same(fresh.candidateProject,inspected.candidateProject)||!b4Same(fresh.ledger,inspected.ledger))
       return reject('candidate-changed','The reconstructed connected-road proposal differs from the inspected preview.');
     const nextWorkspace=reconcileRoadWorkspace(workspace,project.city,fresh.candidateProject.city);
-    const decoded=decodeProjectDocument(encodeProjectDocument(createProjectDocument(fresh.candidateProject,nextWorkspace)));
+    const decoded=roundTripProjectDocument(fresh.candidateProject,nextWorkspace);
     if(!b4Same(decoded.project,fresh.candidateProject)||!b4Same(decoded.workspace,nextWorkspace))
       return reject('group-roundtrip','Portable save verification changed the connected-road candidate.');
     // Commit the verified portable representation, exactly as history replay does.

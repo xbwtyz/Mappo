@@ -1,6 +1,6 @@
 name: Mappo CI
 
-# Parallel review-ready validation. Keep the workflow and final gate job names
+# Parallel review-ready and explicitly requested draft validation. Keep the workflow and final gate job names
 # for release workflow_run compatibility and existing required status checks.
 on:
   push:
@@ -24,8 +24,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route:
+    name: Resolve full CI request
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      full: ${{ steps.route.outputs.full }}
+      benchmark: ${{ steps.route.outputs.benchmark }}
+      focused_requested: ${{ steps.route.outputs.focused_requested }}
+      focused_suites: ${{ steps.route.outputs.focused_suites }}
+    steps:
+      - name: Check out exact candidate for routing
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Determine full CI and benchmark selection
+        id: route
+        run: node scripts/ci-trigger.mjs full
+
   node:
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    needs: route
+    if: ${{ needs.route.outputs.full == 'true' }}
     name: Node regression (shard ${{ matrix.shard }}/2)
     runs-on: ubuntu-24.04
     timeout-minutes: 35
@@ -37,6 +61,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Set up Node.js
@@ -79,7 +104,8 @@ jobs:
           retention-days: 14
 
   browser:
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    needs: route
+    if: ${{ needs.route.outputs.full == 'true' }}
     name: Browser QA (${{ matrix.suite }})
     runs-on: ubuntu-24.04
     # Match the JS package and preinstalled browser binaries exactly.
@@ -94,6 +120,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft && github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -129,7 +157,7 @@ jobs:
         run: npm run test:browser:${{ matrix.suite }}
 
       - name: C7 desktop browser performance and stale-draft checks
-        if: ${{ matrix.suite == 'integration' && github.event_name == 'workflow_dispatch' && inputs.run_c7_benchmark }}
+        if: ${{ matrix.suite == 'integration' && needs.route.outputs.benchmark == 'true' }}
         env:
           HOME: /root
         run: node scripts/c7-browser-performance.mjs
@@ -143,20 +171,87 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+  # Independent draft diagnostics. No required aggregate depends on these
+  # jobs; they cannot satisfy or replace the full review/main gate.
+  focused:
+    needs: route
+    if: ${{ needs.route.outputs.full == 'false' && needs.route.outputs.focused_requested == 'true' }}
+    name: Focused benchmark (${{ matrix.suite }})
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ${{ fromJSON(needs.route.outputs.focused_suites) }}
+    steps:
+      - name: Check out exact draft PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify candidate checkout
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Checkout's temporary HOME safe.directory does not persist here.
+          # Trust only this Actions workspace for the explicit Git command.
+          test "$(git -c safe.directory="$GITHUB_WORKSPACE" rev-parse HEAD)" = "$CANDIDATE_SHA"
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify checked-in standalone parity
+        run: |
+          npm run build
+          version=$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")
+          test -s index.html
+          test -s "dist/mappo-$version.html"
+          git -c safe.directory="$GITHUB_WORKSPACE" ls-files --error-unmatch index.html "dist/mappo-$version.html" > /dev/null
+          cmp index.html "dist/mappo-$version.html"
+          git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code -- index.html "dist/mappo-$version.html"
+      - name: Install matching test-only Playwright package
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Run requested F4 building benchmark
+        if: ${{ matrix.suite == 'f4' }}
+        env:
+          HOME: /root
+        run: node scripts/building-performance-f4.mjs
+      - name: Run requested C7 road benchmark
+        if: ${{ matrix.suite == 'c7' }}
+        env:
+          HOME: /root
+        run: node scripts/c7-browser-performance.mjs
+      - name: Upload focused benchmark evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: mappo-focused-${{ matrix.suite }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
+
   # Keep this exact job name stable for required-status-check configuration.
   # A failed/skipped Node shard or browser suite must never yield a green gate.
   validate:
-    if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    if: ${{ always() && (needs.route.result != 'success' || needs.route.outputs.full == 'true') }}
     name: Build, Node tests and browser QA
-    needs: [node, browser]
+    needs: [route, node, browser]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Require every independent suite to pass
         env:
+          ROUTE_RESULT: ${{ needs.route.result }}
           NODE_RESULT: ${{ needs.node.result }}
           BROWSER_RESULT: ${{ needs.browser.result }}
         run: |
+          echo "Routing: $ROUTE_RESULT"
+          test "$ROUTE_RESULT" = success
           echo "Node regression: $NODE_RESULT"
           echo "Browser regression matrix: $BROWSER_RESULT"
           test "$NODE_RESULT" = success

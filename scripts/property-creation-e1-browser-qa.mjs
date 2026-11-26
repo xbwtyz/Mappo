@@ -1,7 +1,7 @@
 // E1 end-to-end acceptance on the compiled offline HTML, Chromium and Firefox.
 // Only test-origin page serving and the existing test-only QA observer are injected.
 import assert from 'node:assert/strict';
-import { readFile,mkdir } from 'node:fs/promises';
+import { readFile,mkdir,writeFile } from 'node:fs/promises';
 import { chromium,firefox } from 'playwright';
 import { createProject } from '../src/core/city-model.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
@@ -29,6 +29,8 @@ const fixture=vacantFixture();
 const html=observeBuildingApp(await readFile(new URL('../index.html',import.meta.url),'utf8'));
 const output=new URL('../artifacts/e1/',import.meta.url);
 await mkdir(output,{recursive:true});
+const offlineFile=new URL('schema11-e1-offline.html',output);
+await writeFile(offlineFile,html);
 const failures=[];
 for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
   const browser=await engine.launch({headless:true});
@@ -40,12 +42,16 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
       const errors=[];
       page.on('pageerror',err=>errors.push(err.message));
       try{
-        await page.route('**/*',route=>route.request().url()==='http://mappo.test/index.html'
-          ?route.fulfill({contentType:'text/html',body:html}):route.abort());
-        await page.goto('http://mappo.test/index.html',{waitUntil:'domcontentloaded'});
+        const external=[];
+        page.on('request',request=>{if(/^https?:/i.test(request.url()))external.push(request.url());});
+        await page.route('**/*',route=>/^https?:/i.test(route.request().url())?route.abort():route.continue());
+        await page.goto(offlineFile.href,{waitUntil:'domcontentloaded'});
         await page.waitForFunction(()=>__buildingQA.state().files.ready);
         await page.evaluate(doc=>__buildingQA.apply(doc),{project:fixture.project,workspace:fixture.workspace});
         const cityBefore=await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city));
+        const initial=await page.evaluate(()=>({context:__buildingQA.state().identityView.context,
+          allocation:__buildingQA.state().project.identityAllocation}));
+        assert.equal(initial.context.revision,0);assert.deepEqual(initial.allocation.namespaces,{});
         await page.locator('#propertyCreateStartE1').scrollIntoViewIfNeeded();
         await page.locator('#propertyCreateStartE1').click();
         assert.equal(await page.locator('#propertyCreatePanelE1').isVisible(),true);
@@ -93,7 +99,9 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         const accepted=await page.evaluate(()=>({
           city:JSON.stringify(__buildingQA.state().project.city),
           revision:__buildingQA.state().files.revision,
-          newSite:__buildingQA.state().project.city.properties.at(-1)
+          newSite:__buildingQA.state().project.city.properties.at(-1),
+          context:__buildingQA.state().identityView.context,
+          allocation:__buildingQA.state().project.identityAllocation
         }));
         assert.notEqual(accepted.city,cityBefore);
         // Workspace changes can also advance the file revision. History counts city edits.
@@ -102,14 +110,25 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
           historyCount+1,'One Apply creates one property-creation history entry');
         assert.equal(accepted.newSite.usage,'undeveloped');
         assert.deepEqual(accepted.newSite.buildingIds,[]);
+        assert.equal(accepted.context.revision,1);
+        const ns=initial.context.namespace;
+        assert.equal(accepted.newSite.id,'PROP-IDA-'+ns+'-000001');
+        assert.deepEqual(accepted.newSite.plotIds,['PLOT-IDA-'+ns+'-000001']);
+        assert.deepEqual(accepted.allocation.namespaces[ns],{property:1,plot:1});
         await page.locator('#propertyCreateUndoE1').click();
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),cityBefore);
+        assert.deepEqual(await page.evaluate(()=>__buildingQA.state().project.identityAllocation),accepted.allocation);
         await page.locator('#propertyCreateRedoE1').click();
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),accepted.city);
         const saved=await page.evaluate(()=>__buildingQA.capture());
         await page.evaluate(doc=>__buildingQA.apply(doc),saved);
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),accepted.city);
         assert.equal(await page.evaluate(()=>__buildingQA.state().propertyCreationHistoryE1.can('undo',__buildingQA.state().project)),false);
+        const reopened=await page.evaluate(()=>({context:__buildingQA.state().identityView.context,
+          allocation:__buildingQA.state().project.identityAllocation,history:__buildingQA.state().identityView.history.length}));
+        assert.notEqual(reopened.context.namespace,ns);assert.equal(reopened.context.revision,0);
+        assert.deepEqual(reopened.allocation,accepted.allocation);assert.equal(reopened.history,0);
+        assert.deepEqual(external,[]);
         assert.deepEqual(errors,[]);
         console.log('PASS E1 '+label+' click-to-preview, cancel/reset, Apply, Undo/Redo, save/reopen');
       }catch(error){
@@ -121,4 +140,4 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
   }finally{await browser.close();}
 }
 if(failures.length)throw Error('E1 browser acceptance failed:\n'+failures.join('\n'));
-console.log('E1 browser QA: 4/4 accepted browser/viewport scenarios');
+console.log('E1 browser QA: 2/2 offline browser scenarios, persistent allocation and reopen qualified');
