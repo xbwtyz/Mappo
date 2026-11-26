@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - chore/dev-opt-p0-p1
+      - 'research/sre/**'
 permissions:
   contents: read
 jobs:
