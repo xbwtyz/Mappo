@@ -1,4 +1,4 @@
-import { inspectSpatialConcessionLedger, verifySpatialFrontageAlignment } from './spatial-recovery-concessions.js';
+import { inspectAndVerifySpatialConcessionLedger } from './spatial-recovery-concessions.js';
 import { finishLareSteps } from './reconciliation-steps.js';
 import { LARE_CONSTRAINTS } from './reconciliation-constraints.js';
 import { riEqual,riIndex } from './road-impact-model.js';
@@ -25,13 +25,12 @@ function matchesFixedFrontageReconnect(original, candidate, city, draft, budget)
 // Recompute all permission and preservation checks independently of search
 // scores, ledger, or claimed dispositions. Both the incumbent and every new
 // arrangement must pass this gate before full project validation.
-export function* iterateLareGroupPreservation(before,after,draft,choices,budget,removedIds = new Set(), concessionOperation = null){
+export function* iterateLareGroupPreservation(before,after,draft,choices,budget,removedIds = new Set(), concessionOperation = null, reportConcessionLedger = null){
   yield { stage: 'identity-preservation' };
-  let frontages=null,scaled=null;
+  let frontages=null,scaled=null,ledger=null;
   if(concessionOperation){
     if(removedIds.size||choices.size)throw Error('Concession verification does not support removal or authored choices.');
-    const ledger=inspectSpatialConcessionLedger(before,concessionOperation,after,budget);
-    verifySpatialFrontageAlignment(before,concessionOperation,after,ledger,budget);
+    ledger=inspectAndVerifySpatialConcessionLedger(before,concessionOperation,after,budget);
     frontages=new Set(ledger.frontageSwitches.map(row=>row.propertyId));
     scaled=new Set(ledger.scaledBuildings.map(row=>row.buildingId));
   }
@@ -116,6 +115,9 @@ export function* iterateLareGroupPreservation(before,after,draft,choices,budget,
           return lareGateFail('building',policy.id,'lare-provenance','Protected or inconsistent building provenance would change.');
       }
     }
+    // Output only, after the complete preservation pass succeeds.
+    // This is never a caller-provided ledger or permission bypass.
+    if(ledger&&reportConcessionLedger)reportConcessionLedger(ledger);
     return null;
   }catch(error){
     if(error instanceof LareBudgetExceeded)throw error;

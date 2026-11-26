@@ -41,15 +41,14 @@ function sreConcessionDerive(project,input,budget){
 export function listSpatialAdjacentFrontages(project,input,propertyId,budget){
   return sreConcessionAdjacentFrontages(project,sreConcessionDerive(project,input,budget),propertyId,budget);
 }
-function sreConcessionAdjacentFrontages(project,{op,context,changed,graph},propertyId,budget){
+function sreConcessionAdjacentFrontages(project,{op,context,changed,graph},propertyId,budget,roadIndex=null){
   if(!op.permissions.alternativeFrontage)return Object.freeze([]);
   const entry=context.properties.find(p=>p.id===propertyId);
   if(!entry||entry.policy.mode!=='adaptive'||entry.policy.provenance!=='generated'||
     entry.buildings.some(b=>b.mode!=='rigid'||b.provenance!=='generated'))return Object.freeze([]);
   const block=changed.get(entry.blockId);
   if(!block)return Object.freeze([]);
-  const roads=new Map();
-  for(const r of project.city.roads){budget.spend();roads.set([r.a,r.b].sort(riCompare).join(':'),r);}
+  const roads=roadIndex??sreConcessionRoadIndex(project,budget);
   const edges=block.vertices.map((id,i)=>{
     budget.spend();const other=block.vertices[(i+1)%block.vertices.length];
     return {road:roads.get([id,other].sort(riCompare).join(':')),a:graph.nodesById.get(id),b:graph.nodesById.get(other)};
@@ -60,6 +59,11 @@ function sreConcessionAdjacentFrontages(project,{op,context,changed,graph},prope
     .filter(e=>e.road.id!==entry.frontageRoadId&&Math.hypot(e.b.x-e.a.x,e.b.y-e.a.y)>sreConcessionEps)
     .map(e=>e.road.id);
   return Object.freeze([...new Set(out)].sort(riCompare));
+}
+function sreConcessionRoadIndex(project,budget){
+  const roads=new Map();
+  for(const r of project.city.roads){budget.spend();roads.set([r.a,r.b].sort(riCompare).join(':'),r);}
+  return roads;
 }
 // Independently infer a single positive similarity from corresponding
 // canonical vertices. Caller does not supply the factor, angle or ledger.
@@ -115,7 +119,12 @@ function sreConcessionInspectSimilarity(project,{op,context,changed},buildingId,
 // dependencies, access and stored-project gates still MUST be run. Never
 // treat the ledger, even if empty, as acceptance or Apply authority.
 export function inspectSpatialConcessionLedger(project,input,candidate,budget){
-  const derived=sreConcessionDerive(project,input,budget),{op,context,changed}=derived;
+  return sreConcessionLedgerFromDerived(project,sreConcessionDerive(project,input,budget),candidate,budget);
+}
+// A single synchronous validation pass owns its context and edge index.
+// No context/ledger from a search result or external caller is accepted.
+function sreConcessionLedgerFromDerived(project,derived,candidate,budget){
+  const {op,context,changed}=derived;
   if(candidate?.schemaVersion!==project.schemaVersion||
     (candidate.id??candidate.city?.id)!==op.projectId||
     !riEqual(project.identityAllocation,candidate.identityAllocation))
@@ -138,13 +147,14 @@ export function inspectSpatialConcessionLedger(project,input,candidate,budget){
     if(!riEqual([...old[key].keys()],[...next[key].keys()]))
       throw Error('Concession candidate membership changed.');
   const scope=new Map(context.properties.map(p=>[p.id,p])),frontageSwitches=[],scaledBuildings=[];
-  const switched=new Set();
+  const switched=new Set();let roadIndex=null;
   for(const [id,a] of old.properties){
     budget.spend();const b=next.properties.get(id),entry=scope.get(id);
     if(!riEqual(a.plotIds,b.plotIds)||!riEqual(a.buildingIds,b.buildingIds)||a.blockId!==b.blockId||
       a.districtId!==b.districtId)throw Error('Concession property ownership changed.');
     if(a.frontageRoadId===b.frontageRoadId)continue;
-    if(!sreConcessionAdjacentFrontages(project,derived,id,budget).includes(b.frontageRoadId))
+    roadIndex??=sreConcessionRoadIndex(project,budget);
+    if(!sreConcessionAdjacentFrontages(project,derived,id,budget,roadIndex).includes(b.frontageRoadId))
       throw Error('Unauthorized alternative frontage.');
     const ap=a.plotIds.map(pid=>old.plots.get(pid)),bp=b.plotIds.map(pid=>next.plots.get(pid));
     if(!entry||ap.some(p=>!p||p.propertyId!==id||p.frontageRoadId!==a.frontageRoadId)||
@@ -196,7 +206,17 @@ export function inspectSpatialConcessionLedger(project,input,candidate,budget){
 // Verify geometry of each independently identified switched street frontage.
 // This is in addition to, not instead of, whole-project and access checks.
 export function verifySpatialFrontageAlignment(project,input,candidate,ledger,budget){
-  const {changed,graph}=sreConcessionDerive(project,input,budget);
+  return sreConcessionAlignmentFromDerived(project,sreConcessionDerive(project,input,budget),candidate,ledger,budget);
+}
+// Combined gate shares only an independently derived, call-local context.
+// Both complete ledger and frontage alignment checks still execute.
+export function inspectAndVerifySpatialConcessionLedger(project,input,candidate,budget){
+  const derived=sreConcessionDerive(project,input,budget);
+  const ledger=sreConcessionLedgerFromDerived(project,derived,candidate,budget);
+  sreConcessionAlignmentFromDerived(project,derived,candidate,ledger,budget);
+  return ledger;
+}
+function sreConcessionAlignmentFromDerived(project,{changed,graph},candidate,ledger,budget){
   const properties=new Map(candidate.city.properties.map(p=>[p.id,p]));
   const originals=new Map(project.city.properties.map(p=>[p.id,p]));
   const roads=new Map(project.city.roads.map(r=>[r.id,r]));

@@ -350,7 +350,7 @@ for(const irregularProperties of [false,true])test('SRE unified operation-local 
       assert.equal(metrics.scaled,0);assert.equal(metrics.loss,0);
     }
     assert.equal(hash(project),before);
-    console.log('SRE_INVENTORY_REUSE_CASE '+JSON.stringify({irregularProperties,scale,status:result.status,tier:result.tier,phase:result.phase,attempts:result.attempts,stats,hits,metrics}));
+    console.log('SRE_INVENTORY_REUSE_CASE '+JSON.stringify({irregularProperties,scale,status:result.status,tier:result.tier,phase:result.phase,attempts:result.attempts,stats,hits,metrics,verificationWork:result.verificationWork}));
   }
   assert.ok(summary.cacheHits>0,'operation-local cache must be exercised');
   console.log('SRE_INVENTORY_REUSE_SUMMARY '+JSON.stringify({irregularProperties,...summary}));
