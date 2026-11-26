@@ -5,14 +5,15 @@ import { iterateRoadGroupReflowB1 } from '../src/core/neighborhood-reflow.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
 import { verifyLareGroupPreservation } from '../src/core/reconciliation-preservation.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
-import { scoreSpatialPreservation, preferVerifiedSpatialPreservation } from '../src/core/spatial-recovery-score.js';
+import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, compareSpatialPreservationCost } from '../src/core/spatial-recovery-score.js';
 import { validateStoredProject } from '../src/data/project-validation.js';
-import { normalizeSpatialRoadGroup, searchSpatialPackingRoadGroup, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, searchSpatialPackingRoadGroup, searchSpatialPackingRoadGroupSinglePass, searchSpatialPreservingRoadGroup, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { LareBudgetExceeded } from '../src/core/reconciliation-budget.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 import { createSpatialInventory } from '../src/core/spatial-recovery-contract.js';
 import { copyJson } from '../src/data/project-format.js';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 const roadIds=['RD-0184','RD-0186'];
 const offset0={x:-3.005274072121821,y:-37.39896113564458};
 const scales=[1,.75,.5,.25,.125,.025,-.25,-.5,-1];
@@ -155,4 +156,53 @@ for(const irregularProperties of [false,true])test('SRE single-pass scheduling d
     console.log('SRE_SCHEDULE_CASE '+JSON.stringify({irregularProperties,scale,knownRaw,progressive,enhanced}));
   }
   console.log('SRE_SCHEDULE_SUMMARY '+JSON.stringify({irregularProperties,...summary}));
+});
+
+async function qualifyCoordinator(project,op,search){
+  const budget=createSpatialPreservationBudget();
+  let result;
+  try{result=await search(project,op,budget);}
+  catch(error){if(!(error instanceof LareBudgetExceeded))throw error;return {status:'exhausted',resource:error.resource,stats:budget.snapshot()};}
+  const stats=budget.snapshot();
+  assert.ok(stats.work<=8000000&&stats.expansions<=32768);
+  if(result.status!=='verified-witness')return {status:result.status,stats,issues:result.issues};
+  const candidate=await verifySpatialStrictRoadWitness(project,op,result.delta,createSpatialPreservationBudget());
+  validateStoredProject(candidate);
+  assert.deepEqual(candidate.identityAllocation,project.identityAllocation);
+  assert.deepEqual(scoreSpatialPreservation(project,candidate,createSpatialPreservationBudget()),result.cost);
+  return {status:result.status,cost:result.cost,fingerprint:hash(candidate),stats};
+}
+for(const irregularProperties of [false,true])test('SRE candidate single-pass transport retains all known compression witnesses '+(irregularProperties?'irregular':'regular'),{timeout:300000},async()=>{
+  const project=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
+  const before=hash(project);
+  for(const scale of [.025,.125,-.25]){
+    const op=normalizeSpatialRoadGroup(project,1,roadIds,{x:offset0.x*scale,y:offset0.y*scale});
+    const actual=await qualifyCoordinator(project,op,searchSpatialPackingRoadGroupSinglePass);
+    console.log('SRE_SINGLE_PASS_CASE '+JSON.stringify({irregularProperties,scale,actual}));
+    assert.equal(actual.status,'verified-witness','known compression recovery lost');
+    assert.equal(hash(project),before);
+  }
+});
+const historical=JSON.parse(readFileSync(new URL('./fixtures/lare-preservation-research.json',import.meta.url)));
+test('SRE candidate single-pass transport historical preservation comparison',{timeout:300000},async()=>{
+  const projects=new Map(),summary={cases:0,ordinaryVerified:0,candidateVerified:0,lost:0,worseCost:0,improvedCost:0,newRecoveries:0};
+  for(const row of historical.cases){
+    if(!projects.has(row.projectId))projects.set(row.projectId,createProject(historical.projects[row.projectId]));
+    const project=projects.get(row.projectId),before=hash(project);
+    const op=normalizeSpatialRoadGroup(project,1,row.roadIds,row.offset);
+    const ordinary=await qualifyCoordinator(project,op,searchSpatialPreservingRoadGroup);
+    const candidate=await qualifyCoordinator(project,op,searchSpatialPackingRoadGroupSinglePass);
+    const a=ordinary.status==='verified-witness',b=candidate.status==='verified-witness';
+    const cmp=a&&b?compareSpatialPreservationCost(candidate.cost,ordinary.cost):null;
+    summary.cases++;summary.ordinaryVerified+=Number(a);summary.candidateVerified+=Number(b);
+    summary.lost+=Number(a&&!b);summary.worseCost+=Number(cmp===1);summary.improvedCost+=Number(cmp===-1);summary.newRecoveries+=Number(!a&&b);
+    assert.equal(hash(project),before);
+    console.log('SRE_SINGLE_PASS_HISTORICAL '+JSON.stringify({projectId:row.projectId,roadIds:row.roadIds,offset:row.offset,ordinary,candidate,cmp}));
+  }
+  console.log('SRE_SINGLE_PASS_HISTORICAL_SUMMARY '+JSON.stringify(summary));
+  // Candidate-only qualification: report gaps rather than silently replacing
+  // the existing coordinator. Activation requires zero lost/worse witnesses.
+  assert.equal(summary.cases,historical.cases.length);
+  assert.ok(summary.ordinaryVerified>0,'historical comparison did not exercise baseline');
 });

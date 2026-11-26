@@ -116,7 +116,7 @@ function sreFinishMetered(iterator,budget) {
 // authoritative for candidate production; it receives the operation-wide
 // budget as parent. Never publish a candidate or trust its reported ledger.
 // No worker scheduling or relaxed strategy activation is introduced here.
-async function sreSearchPreservingRoadGroup(project,input,budget,packing=false) {
+async function sreSearchPreservingRoadGroup(project,input,budget,packing=false,strategy='enhanced-adaptive') {
   const operation=sreStrictRoadOperation(input);
   createSpatialInventory(project,operation,budget);
   // Detach the complete accepted snapshot, including its allocator and opaque
@@ -125,7 +125,7 @@ async function sreSearchPreservingRoadGroup(project,input,budget,packing=false) 
   const bytes=new TextEncoder().encode(JSON.stringify(snapshot)).length;
   budget.spend(Math.max(1,Math.ceil(bytes/64)));
   const iterator=iterateRoadGroupReflowB1(snapshot,operation.editedRefs.map(ref=>ref.id),
-    operation.geometry.offset,{acceptedRevision:operation.revision,sharedBudget:budget,...(packing?{strategy:'enhanced-adaptive',packing:true}:{})});
+    operation.geometry.offset,{acceptedRevision:operation.revision,sharedBudget:budget,...(packing?{strategy,packing:true}:{})});
   let result;
   try {
     for (;;) {
@@ -163,6 +163,27 @@ export async function searchSpatialPackingRoadGroup(project,input,budget) {
   }catch(error){
     if(error instanceof LareBudgetExceeded&&incumbent.status==='verified-witness')
       return riFreeze({...incumbent,stats:budget.snapshot(),packingExhausted:true});
+    throw error;
+  }
+}
+
+// Qualification candidate only: the ordinary coordinator above remains
+// available until historical strict recovery and cost gates are reviewed.
+// Direct, strict and selective-adaptive retain their existing priority;
+// packing joins the enhanced pass instead of repeating the entire pipeline.
+// If that path refuses, ordinary progressive search may still recover a
+// witness using only the remaining operation-wide budget. Never reset it.
+export async function searchSpatialPackingRoadGroupSinglePass(project,input,budget) {
+  const selected=await sreSearchPreservingRoadGroup(project,input,budget,true,'progressive');
+  if(selected.status==='verified-witness')return selected;
+  if(!budget.snapshot().remainingWork||!budget.snapshot().remainingExpansions)return selected;
+  try{
+    const fallback=await sreSearchPreservingRoadGroup(project,input,budget);
+    return riFreeze({...preferVerifiedSpatialPreservation(null,
+      fallback.status==='verified-witness'?fallback:null)??selected,stats:budget.snapshot()});
+  }catch(error){
+    if(error instanceof LareBudgetExceeded)
+      return riFreeze({...selected,stats:budget.snapshot(),fallbackExhausted:true});
     throw error;
   }
 }
