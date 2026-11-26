@@ -227,7 +227,8 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     for(const {scale,tier} of tiers){
       if(result.candidateProject||!parent.snapshot().remainingWork||!parent.snapshot().remainingExpansions)break;
       yield {stage:'sre-progressive-concession-tier',tier,scale,stats:parent.snapshot()};
-      result=yield* adaptiveStrategy(true,true,enhancedFixedRefused,{operation:concessionOperation,scale}).run(result);
+      result=yield* adaptiveStrategy(true,true,enhancedFixedRefused,{operation:concessionOperation,scale,
+        rankProposalOrder:options.detachedRankConcessionProposals===true}).run(result);
       yield {stage:'sre-progressive-concession-result',tier,scale,accepted:Boolean(result.candidateProject),stats:parent.snapshot()};
     }
   }
