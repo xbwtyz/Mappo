@@ -7,7 +7,8 @@ import {digest} from './contract.mjs';
 import {classifyFailure} from './diagnostics.mjs';
 const need=(ok,msg)=>{if(!ok)throw Error(msg);};
 export const targetRevision='e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7';
-export const schedules=['baseline','grouped-first','diversified-restoration','shell-first-restoration'];
+export const budgetWork=Object.freeze({'budget-32m':32000000,'budget-64m':64000000,'budget-128m':128000000,'budget-256m':256000000,'iterative-256m':256000000,'child-priority-256m':256000000,'solver-selection-256m':256000000});
+export const schedules=['baseline','grouped-first','diversified-restoration','shell-first-restoration',...Object.keys(budgetWork)];
 export const cases=[{id:'regular-preservation',partition:'development',irregularProperties:false,scale:.5,expectation:'known-preservation'},{id:'irregular-compression',partition:'development',irregularProperties:true,scale:.25,expectation:'known-compression'}];
 export const researchConcurrency=4;
 export const gates=['independentWitness','storedProject','nonmutation','permissions','identity','deterministicReplay','budget'];
@@ -32,6 +33,8 @@ export function validateSubmission(s){
     if(c.partition==='held-out')need(c.expectation==='exploratory'&&(c.fixture||![1,.75,.5,.25,.125,.025,-.25,-.5,-1].includes(c.scale)),'Held-out movement overlaps historical grid.');
   }
   need(s.cases.some(c=>c.partition==='development'),'Missing development cases.');
+  const experimental=s.schedules.some(x=>Object.hasOwn(budgetWork,x));
+  if(experimental)need(s.targetRevision==='35d84f7738e0b43b93fb467d1803812f72f04fb2'&&s.schedules.every(x=>Object.hasOwn(budgetWork,x))&&s.cases.every(c=>c.expectation==='exploratory'&&c.partition==='development'&&!c.fixture),'Invalid isolated budget sensitivity submission.');
   return s;
 }
 export function manifest(identity,submission={version:1,targetRevision,schedules:['baseline','diversified-restoration'],cases}){
@@ -41,7 +44,7 @@ export function manifest(identity,submission={version:1,targetRevision,schedules
     environment:{nodeMajor:22,platform:'linux'},permissions:{destruction:true,alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2},
     project:{seed:'mappo-001',size:'medium',morphology:'organic',shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44}},
     roadIds:['RD-0184','RD-0186'],offset:{x:-3.005274072121821,y:-37.39896113564458},
-    budget:{work:32000000,expansions:131072,timeoutMs:180000,concurrency:researchConcurrency}};
+    budget:{work:submission.schedules.some(x=>Object.hasOwn(budgetWork,x))?Math.max(...submission.schedules.map(x=>budgetWork[x])):32000000,expansions:131072,timeoutMs:submission.schedules.some(x=>Object.hasOwn(budgetWork,x))?360000:180000,concurrency:researchConcurrency}};
 }
 export function tasks(m,index){
   need(Number.isInteger(index)&&index>=0&&index<researchConcurrency&&m.budget.concurrency===researchConcurrency,'Invalid shard.');
@@ -60,6 +63,8 @@ export function aggregate(m,envelopes,matrix){
       rows.push(row);
       const refused=row.status==='refused'&&task.case.expectation==='exploratory'&&row.candidateFingerprint===null&&['nonmutation','deterministicReplay','budget'].every(g=>row.gates?.[g]===true)&&row.counts===null&&row.demolishedFootprint===null&&row.scaleLoss===null;
       const verified=row.status==='verified'&&fingerprint(row.candidateFingerprint)&&gates.every(g=>row.gates?.[g]===true)&&['properties','plots','buildings'].every(k=>Number.isSafeInteger(row.counts?.[k])&&row.counts[k]>=0)&&Number.isFinite(row.demolishedFootprint)&&row.demolishedFootprint>=0&&Number.isFinite(row.scaleLoss)&&row.scaleLoss>=0;
+      const workLimit=budgetWork[task.schedule]??m.budget.work;
+      if(Object.hasOwn(budgetWork,task.schedule)&&(row.workLimit!==workLimit||row.stats?.work>workLimit||(workLimit===32000000&&!verified)))faults.push('Invalid budget comparison '+row.key);
       if((!refused&&!verified)||!fingerprint(row.inputFingerprint)||!fingerprint(row.operationFingerprint)||!Number.isFinite(row.elapsedMs)||row.elapsedMs<0||!Number.isSafeInteger(row.stats?.work)||row.stats.work<0||row.stats.work>m.budget.work||!Number.isSafeInteger(row.stats?.expansions)||row.stats.expansions<0||row.stats.expansions>m.budget.expansions)faults.push('Unqualified task '+row.key);
     }
   }
