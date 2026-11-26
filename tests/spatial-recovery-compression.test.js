@@ -382,11 +382,12 @@ for(const irregularProperties of [false,true])test('SRE unified operation-local 
     // operation retry. Never combine witnesses or claim a shared-budget win.
     const rankedBudget=createSpatialPreservationBudget();
     const ranked=await searchSpatialNondestructiveRoadGroup(project,op,rankedBudget,
-      {reusePackingInventory:true,rankConcessionProposals:true});
+      {reusePackingInventory:true,rankConcessionProposals:'within-frontage'});
     const rankedStats=rankedBudget.snapshot();
     assert.ok(rankedStats.work<=8000000&&rankedStats.expansions<=32768);
     rankedSummary.cases++;
-    rankedSummary.rankedInventories+=ranked.stages?.['sre-concession-ranked-proposals']??0;
+    assert.equal(ranked.stages?.['sre-concession-ranked-proposals']??0,0,'cross-frontage ranking must not run');
+    rankedSummary.rankedInventories+=ranked.stages?.['sre-concession-within-frontage-ranked']??0;
     let rankedCost=null,fingerprint=null,comparison=null;
     if(ranked.status==='verified-witness'){
       const candidate=await verifySpatialConcessionRoadWitness(project,op,ranked.delta,createSpatialPreservationBudget());
@@ -415,16 +416,16 @@ for(const irregularProperties of [false,true])test('SRE unified operation-local 
       assert.equal(comparison,0);
     }
     assert.equal(hash(project),before);
-    console.log('SRE_RANKED_PROGRESSIVE_CASE '+JSON.stringify({irregularProperties,scale,
+    console.log('SRE_WITHIN_FRONTAGE_CASE '+JSON.stringify({irregularProperties,scale,
       baseline:{status:result.status,tier:result.tier,cost:baselineRank,fingerprint:metrics?.fingerprint??null,work:stats.work},
       ranked:{status:ranked.status,tier:ranked.tier,phase:ranked.phase,cost:rankedCost,fingerprint,stats:rankedStats},
-      comparison,rankedInventories:ranked.stages?.['sre-concession-ranked-proposals']??0}));
+      comparison,rankedInventories:ranked.stages?.['sre-concession-within-frontage-ranked']??0}));
   }
   assert.equal(rankedSummary.cases,scales.length);
   assert.ok(rankedSummary.rankedInventories>0);
   assert.equal(rankedSummary.verified,rankedSummary.retained+rankedSummary.added);
   assert.equal(rankedSummary.retained,rankedSummary.better+rankedSummary.equal+rankedSummary.worse);
-  console.log('SRE_RANKED_PROGRESSIVE_SUMMARY '+JSON.stringify({irregularProperties,...rankedSummary}));
+  console.log('SRE_WITHIN_FRONTAGE_SUMMARY '+JSON.stringify({irregularProperties,...rankedSummary}));
   assert.ok(summary.cacheHits>0,'operation-local cache must be exercised');
   assert.ok(summary.verified>=(irregularProperties?3:7),'qualified unified nondestructive recovery floor regressed');
   console.log('SRE_INVENTORY_REUSE_SUMMARY '+JSON.stringify({irregularProperties,...summary}));

@@ -137,7 +137,8 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
         if(domain[i]&&result.length<24)result.push(domain[i]);
       // Detached challenger only: reorder the same bounded sample. These
       // local estimates are search hints, never a verified cost or permission.
-      if(concessions.rankProposalOrder===true){
+      const withinFrontage=concessions.rankProposalOrder==='within-frontage'&&concessions.scale===1;
+      if(concessions.rankProposalOrder===true||withinFrontage){
         const originals=new Map(entry.buildings.map(b=>[b.source.id,b.source]));
         const ranked=result.map((bundle,index)=>{
           let loss=0,moved=0,displacement=0,rotation=0;
@@ -158,11 +159,31 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
           return {bundle,index,cost:[Number(bundle.frontageRoadId!==entry.property.frontageRoadId),
             loss,moved,displacement,rotation,lareGroupRingCost(entry.property.boundary,bundle.property.boundary),plotCost]};
         });
-        ranked.sort((a,b)=>{
+        const compare=(a,b)=>{
           budget.spend();
           for(let i=0;i<a.cost.length;i++)if(a.cost[i]!==b.cost[i])return a.cost[i]<b.cost[i]?-1:1;
           return a.index-b.index;
-        });
+        };
+        if(withinFrontage){
+          // Preserve the exact round-robin frontage slots and membership.
+          // Reorder only bundles targeting the same street, at full size.
+          const byFrontage=new Map();
+          for(const row of ranked){
+            budget.spend();
+            const key=row.bundle.frontageRoadId;
+            if(!byFrontage.has(key))byFrontage.set(key,{rows:[],index:0});
+            byFrontage.get(key).rows.push(row);
+          }
+          for(const domain of byFrontage.values())domain.rows.sort(compare);
+          const reordered=ranked.map(row=>{
+            budget.spend();
+            const domain=byFrontage.get(row.bundle.frontageRoadId);
+            return domain.rows[domain.index++].bundle;
+          });
+          yield {stage:'sre-concession-within-frontage-ranked',id:entry.property.id,count:ranked.length};
+          return reordered;
+        }
+        ranked.sort(compare);
         yield {stage:'sre-concession-ranked-proposals',id:entry.property.id,count:ranked.length};
         return ranked.map(row=>row.bundle);
       }
