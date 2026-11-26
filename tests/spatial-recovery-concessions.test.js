@@ -5,7 +5,7 @@ import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
 import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
-import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals } from '../src/core/spatial-recovery-concessions.js';
+import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals, createSpatialConcessionProposalSource } from '../src/core/spatial-recovery-concessions.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 import { stampRoadGenerated } from '../src/core/road-provenance.js';
 const budget=()=>createSpatialPreservationBudget();
@@ -174,6 +174,19 @@ test('detached SRE adjacent frontage and scaled packing produce locally verified
   }
   const again=collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,op,entry.id,budget(),{frontageRoadId:road,scale:.8}));
   assert.deepEqual(again,actual);
+  // Repeated proposal source calls must match isolated results exactly,
+  // even across different scale permissions within this detached source.
+  const sharedBudget=budget(),isolatedBudget=budget();
+  const shared=createSpatialConcessionProposalSource(project,op,sharedBudget);
+  for(const scale of [.8,1]){
+    assert.deepEqual(shared.frontages(entry.id),listSpatialAdjacentFrontages(project,op,entry.id,isolatedBudget));
+    const reused=collectConcessionProposals(shared.proposals(entry.id,{frontageRoadId:road,scale}));
+    const isolated=collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,op,entry.id,isolatedBudget,{frontageRoadId:road,scale}));
+    assert.deepEqual(reused,isolated);
+    if(scale===.8)assert.deepEqual(reused,actual);
+  }
+  assert.ok(sharedBudget.snapshot().work<isolatedBudget.snapshot().work,'shared source must reduce repeated index work');
+  assert.throws(()=>collectConcessionProposals(shared.proposals(entry.id,{frontageRoadId:road,scale:.7})),/Unauthorized scaling/);
   assert.throws(()=>collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,operation({uniformScaling:true,maxLinearReduction:.2}),entry.id,budget(),{frontageRoadId:road,scale:.8})),/Unauthorized alternative frontage/);
   assert.throws(()=>collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,operation({alternativeFrontage:true}),entry.id,budget(),{frontageRoadId:road,scale:.8})),/Unauthorized scaling/);
   assert.throws(()=>collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,op,entry.id,budget(),{frontageRoadId:road,scale:.7})),/Unauthorized scaling/);
