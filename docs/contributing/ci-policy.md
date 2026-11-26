@@ -55,6 +55,12 @@ Actions. Use targeted local tests for failure diagnosis, such as
 `node --test tests/road-preview.test.js`. Full GitHub CI is the authoritative
 pre-merge acceptance check.
 
+## Incremental standalone reuse (owner-approved November 25, 2026)
+
+For ordinary draft development, retain the existing checked-in standalone pair when changes are demonstrably or reasonably expected to leave compiled output unchanged (documentation, tests, or detached source not included in the bundle). Commit the focused source/test changes directly to the draft branch; the existing Fast Checks build, byte-parity and clean-diff checks remain mandatory and authoritative for the exact head. Do not create a separate hosted compilation branch solely to reconfirm likely unchanged output. This is a workflow-cadence choice, not a cache-based substitute for compilation, a CI waiver, or permission to merge a mismatched artifact.
+
+When source, template, style, worker bundling, build tooling or version changes are expected to affect generated HTML, produce the deterministic standalone pair before committing the reviewable candidate. If Fast Checks detects unexpected compiled drift, stop further implementation, generate the pair through the existing hosted build path, commit only the verified output from that exact source, and revalidate the exact new head. Never disable or weaken build, parity, clean-diff or test checks. Pure documentation-only updates follow existing CI policy and any separately authorized no-CI instructions. Full review-ready, main, release and offline validation gates remain unchanged. No workflow YAML or schema changes are authorized by this cadence improvement.
+
 ## Resource and safety safeguards
 
 - Branch and PR runs have independent concurrency groups; stale runs in the
@@ -74,3 +80,10 @@ pre-merge acceptance check.
 ## Historical P1 / performance issue status
 
 This CI change was originally developed alongside the junction worker in [PR #45](https://github.com/xbwtyz/Mappo/pull/45). [Issues #44 and #46](../history/0.2/release/h3-performance-audit.md) were subsequently closed after the measured H3 review. Heavy C7 benchmarking remains opt-in, and connected dead-end road editing is tracked separately as [#79](https://github.com/xbwtyz/Mappo/issues/79).
+
+
+## Incremental research comparison partitioning (owner-approved November 25, 2026)
+
+Keep expensive independently measured research schedules in separate top-level `tests/*.test.js` files, rather than appending every new experiment to one ever-growing directly modified file. For the SRE road compression work, retain the original 18-case baseline in `tests/spatial-recovery-compression-baseline.test.js`, the 18-case grouped-first comparison in `tests/spatial-recovery-compression-grouped-first.test.js`, and the current eight-case diversified comparison in `tests/spatial-recovery-unified-compression.test.js`. Preserve exact test bodies, scenario inventories, fingerprint locks, independent verification, comparison assertions and diagnostic reporting. The first partition commit runs all moved tests because all three files are changed. Subsequent focused challenger commits modify their own test file only, using existing Fast Checks smoke and changed-test selection. New research schedules should have their own separate test files. No workflow selector, skip flag, exclusion, altered expectation or coverage deletion is introduced.
+
+If shared engine behavior, a previously qualified scheduler or a common validation contract changes, explicitly requalify affected comparisons at a suitable verified checkpoint, using the existing full-CI gate when needed; a focused experimental result does not qualify earlier schedules on the new exact head. Do not treat old CI results as a substitute for exact-head full coverage. All partitioned files remain automatically included in `npm test` and the two full Node shards; keep the complete six-runner review-ready/main gates and aggregate unchanged. Request complete qualification before adoption, review-ready status, merge or release. This approval concerns only incremental test organization and cadence; the wider DEV-OPT plan remains deferred pending separate authorization.

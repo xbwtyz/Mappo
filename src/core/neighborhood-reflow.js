@@ -153,12 +153,21 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     ceiling: operation.limits.total,
     parent: options.sharedBudget ?? null,
   });
-  const adaptiveStrategy = enhanced => ({
+  // Private to this generator, same detached project/draft/analysis/choices.
+  // A capped or skipped fixed pass is not a completed refusal.
+  let enhancedFixedRefused=false;
+  // Operation-local, never transported, never reused across intents.
+  const sharedPackingInventory=options.detachedPackingInventoryReuse===true?
+    {parcels:new Map(),ordinary:new WeakSet(),buildings:new WeakMap()}:null;
+  const adaptiveStrategy = (enhanced, usePacking=enhanced&&options.packing===true, reuseFixedRefusal=false,
+    concessionTier=enhanced?options.detachedConcessions??null:null) => ({
     canRun: previous => !enhanced || options.strategy === 'enhanced-adaptive' || !previous.candidateProject,
     *run(previous) {
       const budget = createLareBudget(operation.limits, { parent });
       const strategy = enhanced ? 'enhanced-adaptive' : 'selective-adaptive';
-      const iterator = iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices, budget, { enhanced });
+      const iterator = iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices, budget, { enhanced, packing: usePacking, concessions: concessionTier,
+        reuseFixedRefusal,sharedPackingInventory:usePacking?sharedPackingInventory:null,
+        onFixedPass:enhanced&&!usePacking&&!concessionTier?e=>{enhancedFixedRefused=e.refused;}:null });
       try {
         for (;;) {
           const step = iterator.next();
@@ -174,7 +183,7 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
       }
     },
   });
-  const result = yield* iterateLareStrategies(operation, {
+  let result = yield* iterateLareStrategies(operation, {
     direct: {
       canRun: () => true,
       *run() {
@@ -191,6 +200,39 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     'selective-adaptive': adaptiveStrategy(false),
     'enhanced-adaptive': adaptiveStrategy(true),
   });
+  // Detached opt-in qualification: do not replace a successful ordinary
+  // enhanced result with a more disruptive packing result. Reuse the same
+  // intent, impact and operation-wide parent; the packing fallback is
+  // bounded by remaining shared work and its normal strategy cap.
+  if(options.packingFallback===true&&!result.candidateProject&&
+    parent.snapshot().remainingWork>0&&parent.snapshot().remainingExpansions>0){
+    const prior=result;
+    if(options.detachedProgressiveConcessions)yield {stage:'sre-progressive-packing-tier',stats:parent.snapshot()};
+    result=yield* adaptiveStrategy(true,true,options.packingReuseFixedRefusal===true&&enhancedFixedRefused).run(prior);
+    if(!result.candidateProject&&prior.unresolved?.length&&
+      result.unresolved?.some(i=>i.code==='lare-work-limit')){
+      result={...result,lare:{...result.lare,ordinaryRefusal:prior.unresolved.map(i=>i.code)}};
+    }
+  }
+  // Qualification-only progressive concessions. Preserve the ordinary or
+  // packing incumbent unchanged. All fallback tiers share this generator's
+  // existing parent, accepted snapshot and intent; no reset or new allowance.
+  if(options.detachedProgressiveConcessions&&!result.candidateProject){
+    const concessionOperation=options.detachedProgressiveConcessions;
+    const policy=concessionOperation.permissions;
+    const tiers=[];
+    if(policy.alternativeFrontage)tiers.push({scale:1,tier:'alternative-frontage'});
+    if(policy.uniformScaling)for(const reduction of [.05,.1,.2])
+      if(reduction<=policy.maxLinearReduction)tiers.push({scale:1-reduction,tier:'uniform-scale-'+Math.round(reduction*100)});
+    for(const {scale,tier} of tiers){
+      if(result.candidateProject||!parent.snapshot().remainingWork||!parent.snapshot().remainingExpansions)break;
+      yield {stage:'sre-progressive-concession-tier',tier,scale,stats:parent.snapshot()};
+      result=yield* adaptiveStrategy(true,true,enhancedFixedRefused,{operation:concessionOperation,scale,
+        rankProposalOrder:options.detachedRankConcessionProposals==='within-frontage'?
+          'within-frontage':options.detachedRankConcessionProposals===true}).run(result);
+      yield {stage:'sre-progressive-concession-result',tier,scale,accepted:Boolean(result.candidateProject),stats:parent.snapshot()};
+    }
+  }
   const unresolved = result.unresolved.map(describeLareRefusal);
   return { ...result, unresolved, phase: 'B1', selectedRoadIds: draft.selectedRoadIds, offset: draft.offset };
 }
