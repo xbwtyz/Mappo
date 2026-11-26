@@ -153,12 +153,17 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     ceiling: operation.limits.total,
     parent: options.sharedBudget ?? null,
   });
-  const adaptiveStrategy = (enhanced, usePacking=enhanced&&options.packing===true) => ({
+  // Private to this generator, same detached project/draft/analysis/choices.
+  // A capped or skipped fixed pass is not a completed refusal.
+  let enhancedFixedRefused=false;
+  const adaptiveStrategy = (enhanced, usePacking=enhanced&&options.packing===true, reuseFixedRefusal=false) => ({
     canRun: previous => !enhanced || options.strategy === 'enhanced-adaptive' || !previous.candidateProject,
     *run(previous) {
       const budget = createLareBudget(operation.limits, { parent });
       const strategy = enhanced ? 'enhanced-adaptive' : 'selective-adaptive';
-      const iterator = iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices, budget, { enhanced, packing: usePacking, concessions: enhanced?options.detachedConcessions??null:null });
+      const iterator = iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices, budget, { enhanced, packing: usePacking, concessions: enhanced?options.detachedConcessions??null:null,
+        reuseFixedRefusal,
+        onFixedPass:enhanced&&!usePacking&&!options.detachedConcessions?e=>{enhancedFixedRefused=e.refused;}:null });
       try {
         for (;;) {
           const step = iterator.next();
@@ -198,7 +203,7 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
   if(options.packingFallback===true&&!result.candidateProject&&
     parent.snapshot().remainingWork>0&&parent.snapshot().remainingExpansions>0){
     const prior=result;
-    result=yield* adaptiveStrategy(true,true).run(prior);
+    result=yield* adaptiveStrategy(true,true,options.packingReuseFixedRefusal===true&&enhancedFixedRefused).run(prior);
     if(!result.candidateProject&&prior.unresolved?.length&&
       result.unresolved?.some(i=>i.code==='lare-work-limit')){
       result={...result,lare:{...result.lare,ordinaryRefusal:prior.unresolved.map(i=>i.code)}};
