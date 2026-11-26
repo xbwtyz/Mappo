@@ -9712,8 +9712,10 @@ class AcceptedEditHistoryD01 {
       typeof value === 'string' && value.trim()) || !Array.isArray(targetIds) ||
       !targetIds.every(id => typeof id === 'string' && id))
       throw Error('An accepted-history transaction requires a family, operation, label, and target IDs.');
+    let exactSnapshotBytes;
     if(before.schemaVersion===11&&after.schemaVersion===11){
       const beforeJson=JSON.stringify(before),afterJson=JSON.stringify(after);
+      if(immutableSnapshots)exactSnapshotBytes=(beforeJson.length+afterJson.length)*2;
       if(beforeJson===afterJson){this.baseline=copyJson(after);return {status:'no-op'};}
       if(this.baseline&&JSON.stringify(this.baseline)!==beforeJson)
         return {status:'stale',reason:'The accepted city changed before history recording.'};
@@ -9724,7 +9726,10 @@ class AcceptedEditHistoryD01 {
     }
     const from=immutableSnapshots?d01RequireFrozenProject(before):copyJson(before);
     const to=immutableSnapshots?d01RequireFrozenProject(after):copyJson(after);
-    const bytes=d01Bytes(from)+d01Bytes(to)+(editorHistory ? d01Bytes(editorHistory) : 0);
+    // Frozen owned snapshots retain the exact text measured above; the
+    // public detached path continues to measure its actual copied values.
+    const bytes=(exactSnapshotBytes??(d01Bytes(from)+d01Bytes(to)))+
+      (editorHistory ? d01Bytes(editorHistory) : 0);
     // The accepted edit itself remains valid even if its history does not fit.
     if(bytes>this.maxBytes) {
       if(immutableSnapshots){
@@ -10064,7 +10069,9 @@ class AcceptedIdentitySession {
       const recorded=history.record(current.project,prepared.project,prepared.transaction,{immutableSnapshots:true});
       if(recorded.status!==prepared.historyStatus)
         throw Error('Accepted identity transaction history recording refused');
-      if(JSON.stringify(history.baseline)!==JSON.stringify(prepared.project))
+      // Both recorded and oversize immutable paths must install this exact
+      // owned snapshot. Reference identity is stronger than JSON equality.
+      if(history.baseline!==prepared.project)
         throw Error('Accepted identity transaction history baseline mismatch');
       const next=idaSessionPublishedState(prepared.project,prepared.context,history);
       // Complete every fallible operation, including detached return data,
@@ -21574,12 +21581,25 @@ function idaRoadApplyAllocated(state,project,legacy,receipt){
       before:{history:copyJson(beforeHistory),savedCount:count},
       after:{history:copyJson(afterHistory),savedCount:Math.max(0,count-(beforeHistory.length-afterHistory.length))}};
   }
-  const decoded=state.snapshot.kind==='demolition'
-    ?decodeProjectDocument(encodeProjectDocument(createProjectDocument(allocated.candidate,workspace)))
-    :roundTripProjectDocument(allocated.candidate,workspace);
-  idaRoadApplyRequire(idaRoadApplySame(decoded.project,allocated.candidate)&&idaRoadApplySame(decoded.workspace,workspace),
-    'Portable roundtrip changed allocated road candidate or workspace.');
-  return {...allocated,workspace:decoded.workspace,transaction,receipt:issued};
+  // S4: the independently reconstructed ordinary candidate already passed
+  // both portable validators and exact persisted equality. Reuse that
+  // evidence only when final allocation is empty AND both persisted values
+  // are exactly unchanged. Changed allocator order, geometry or workspace
+  // must take the full final roundtrip. Never use worker/preview evidence.
+  let verifiedWorkspace;
+  if(state.snapshot.kind!=='demolition'&&allocated.requests.length===0&&
+     idaRoadApplySame(legacy.candidate,allocated.candidate)&&
+     idaRoadApplySame(legacy.workspace,workspace)){
+    verifiedWorkspace=JSON.parse(JSON.stringify(workspace));
+  }else{
+    const decoded=state.snapshot.kind==='demolition'
+      ?decodeProjectDocument(encodeProjectDocument(createProjectDocument(allocated.candidate,workspace)))
+      :roundTripProjectDocument(allocated.candidate,workspace);
+    idaRoadApplyRequire(idaRoadApplySame(decoded.project,allocated.candidate)&&idaRoadApplySame(decoded.workspace,workspace),
+      'Portable roundtrip changed allocated road candidate or workspace.');
+    verifiedWorkspace=decoded.workspace;
+  }
+  return {...allocated,workspace:verifiedWorkspace,transaction,receipt:issued};
 }
 
 // Begin captures only trusted mounted intent and reviewed result, not a
