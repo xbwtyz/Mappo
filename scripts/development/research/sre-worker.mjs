@@ -16,16 +16,38 @@ try{
   const {createSpatialDestructionBudget}=await load('src/core/spatial-recovery-contract.js');
   const {searchSpatialUnifiedRoadGroup,verifySpatialUnifiedRoadWitness}=await load('src/core/spatial-recovery-coordinator.js');
   const {validateStoredProject}=await load('src/data/project-validation.js');
+  const {buildRoadGraph}=await load('src/core/road-graph.js');
+  const {proposeRoadGroupNodesB1}=await load('src/core/road-group-b1.js');
+  const {prepareRoadGroupIntentB1}=await load('src/core/road-intent-c1.js');
+  function selectRoads(project,offset){
+    const graph=buildRoadGraph(project.city);assert.ok(graph.valid,'Generated graph invalid');
+    const pairs=new Map();
+    for(const [,incident] of graph.incidentRoads){
+      const ids=[...incident].filter(id=>!graph.roadClasses.get(id)?.protected).sort();
+      for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){const pair=[ids[i],ids[j]];pairs.set(pair.join(':'),pair);}
+    }
+    // Fixed pre-search selection, independent of strategy or solver outcome.
+    for(const key of [...pairs.keys()].sort().slice(0,128)){
+      const ids=pairs.get(key);
+      if(!proposeRoadGroupNodesB1(graph,ids,offset).draftable)continue;
+      const draft=prepareRoadGroupIntentB1(project,ids,offset);
+      if(draft.group?.eligible&&draft.draftable&&draft.topologyResolved&&draft.facesResolved&&draft.status!=='unchanged'&&!draft.issues?.some(i=>i.code==='boundary-escape'))return ids;
+    }
+    throw Error('No eligible held-out road pair within fixed 128-pair selection bound.');
+  }
   async function solve(){
-    const c=task.case,project=createProject({...m.project,irregularProperties:c.irregularProperties}),before=digest(project);
-    const op=normalizeSpatialRoadGroup(project,1,m.roadIds,{x:m.offset.x*c.scale,y:m.offset.y*c.scale},m.permissions);
+    const c=task.case,project=createProject({...m.project,...(c.fixture??{}),irregularProperties:c.irregularProperties}),before=digest(project);
+    validateStoredProject(project);
+    const offset={x:m.offset.x*c.scale,y:m.offset.y*c.scale};
+    const roadIds=c.fixture?selectRoads(project,offset):m.roadIds;
+    const op=normalizeSpatialRoadGroup(project,1,roadIds,offset,m.permissions),operationFingerprint=digest(op);
     const shared=createSpatialDestructionBudget();
     const result=await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:task.schedule});
     assert.deepEqual(result.stats,shared.snapshot());
     assert.ok(result.stats.work<=m.budget.work&&result.stats.expansions<=m.budget.expansions);
     if(result.status==='refused'&&c.expectation==='exploratory'){
       assert.equal(result.delta,null);assert.equal(result.basisDelta,null);assert.equal(digest(project),before);
-      return {status:'refused',inputFingerprint:before,candidateFingerprint:null,kind:null,counts:null,demolishedFootprint:null,scaleLoss:null,stats:result.stats,attempts:result.attempts};
+      return {status:'refused',inputFingerprint:before,operationFingerprint,roadIds,offset,candidateFingerprint:null,kind:null,counts:null,demolishedFootprint:null,scaleLoss:null,stats:result.stats,attempts:result.attempts};
     }
     assert.equal(result.status,'verified-witness','Known pilot movement refused');
     assert.ok(['nondestructive','retirement'].includes(result.kind));
@@ -50,7 +72,7 @@ try{
       assert.deepEqual(Object.values(counts),expected);
     }
     assert.equal(digest(project),before);
-    return {status:'verified',inputFingerprint:before,candidateFingerprint:digest(actual),kind:result.kind,counts,demolishedFootprint:result.ledger.demolishedFootprint,scaleLoss:result.ledger.concessions?.footprintLoss??0,stats:result.stats};
+    return {status:'verified',inputFingerprint:before,operationFingerprint,roadIds,offset,candidateFingerprint:digest(actual),kind:result.kind,counts,demolishedFootprint:result.ledger.demolishedFootprint,scaleLoss:result.ledger.concessions?.footprintLoss??0,stats:result.stats};
   }
   const a=await solve(),b=await solve();assert.deepEqual(a,b,'Nondeterministic SRE replay');
   console.log(JSON.stringify({...a,elapsedMs:performance.now()-start,peakRssKiB:process.resourceUsage().maxRSS,gates:Object.fromEntries((a.status==='verified'?gates:['nonmutation','deterministicReplay','budget']).map(g=>[g,true]))}));

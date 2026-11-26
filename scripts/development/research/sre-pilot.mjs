@@ -4,6 +4,7 @@ import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {digest} from './contract.mjs';
+import {classifyFailure} from './diagnostics.mjs';
 const need=(ok,msg)=>{if(!ok)throw Error(msg);};
 export const targetRevision='e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7';
 export const schedules=['baseline','grouped-first','diversified-restoration','shell-first-restoration'];
@@ -17,13 +18,17 @@ export function validateSubmission(s){
   need(fields(s,['version','targetRevision','schedules','cases'])&&s.version===1&&sha(s.targetRevision),'Invalid submission identity.');
   need(Array.isArray(s.schedules)&&s.schedules.length>=2&&s.schedules.length<=4&&new Set(s.schedules).size===s.schedules.length&&s.schedules.every(x=>schedules.includes(x)),'Invalid schedules.');
   need(Array.isArray(s.cases)&&s.cases.length>=2&&s.cases.length<=4,'Invalid case inventory.');
-  const ids=new Set(),inputs=new Set();
+  const ids=new Set(),inputs=new Set(),heldOutSeeds=new Set();
   for(const c of s.cases){
-    need(fields(c,['id','partition','irregularProperties','scale','expectation'])&&typeof c.id==='string'&&/^[a-z][a-z0-9-]{0,63}$/.test(c.id)&&!ids.has(c.id)&&['development','held-out'].includes(c.partition)&&typeof c.irregularProperties==='boolean'&&typeof c.scale==='number'&&Number.isFinite(c.scale)&&c.scale!==0&&Math.abs(c.scale)<=1&&['known-preservation','known-compression','exploratory'].includes(c.expectation),'Invalid case.');
-    const key=JSON.stringify([c.irregularProperties,c.scale]);need(!inputs.has(key),'Duplicate movement across partitions.');ids.add(c.id);inputs.add(key);
+    need(fields(c,['id','partition','irregularProperties','scale','expectation',...(Object.hasOwn(c,'fixture')?['fixture']:[])])&&typeof c.id==='string'&&/^[a-z][a-z0-9-]{0,63}$/.test(c.id)&&!ids.has(c.id)&&['development','held-out'].includes(c.partition)&&typeof c.irregularProperties==='boolean'&&typeof c.scale==='number'&&Number.isFinite(c.scale)&&c.scale!==0&&Math.abs(c.scale)<=1&&['known-preservation','known-compression','exploratory'].includes(c.expectation),'Invalid case.');
+    if(Object.hasOwn(c,'fixture')){
+      need(c.expectation==='exploratory'&&c.partition==='held-out'&&fields(c.fixture,['seed','size','morphology'])&&typeof c.fixture.seed==='string'&&/^dev-opt-holdout-[a-z0-9-]{1,64}$/.test(c.fixture.seed)&&['small','medium'].includes(c.fixture.size)&&['linear','organic','radial','planned'].includes(c.fixture.morphology),'Invalid independent city fixture.');
+      need(!heldOutSeeds.has(c.fixture.seed),'Duplicate held-out city seed.');heldOutSeeds.add(c.fixture.seed);
+    }
+    const key=JSON.stringify([c.fixture??null,c.irregularProperties,c.scale]);need(!inputs.has(key),'Duplicate movement across partitions.');ids.add(c.id);inputs.add(key);
     if(c.expectation==='known-preservation')need(!c.irregularProperties&&c.scale===.5&&c.partition==='development','Wrong preservation control.');
     if(c.expectation==='known-compression')need(c.irregularProperties&&c.scale===.25&&c.partition==='development'&&s.schedules.every(x=>['baseline','diversified-restoration'].includes(x)),'Wrong compression control.');
-    if(c.partition==='held-out')need(c.expectation==='exploratory'&&![1,.75,.5,.25,.125,.025,-.25,-.5,-1].includes(c.scale),'Held-out movement overlaps historical grid.');
+    if(c.partition==='held-out')need(c.expectation==='exploratory'&&(c.fixture||![1,.75,.5,.25,.125,.025,-.25,-.5,-1].includes(c.scale)),'Held-out movement overlaps historical grid.');
   }
   need(s.cases.some(c=>c.partition==='development'),'Missing development cases.');
   return s;
@@ -54,18 +59,19 @@ export function aggregate(m,envelopes,matrix){
       rows.push(row);
       const refused=row.status==='refused'&&task.case.expectation==='exploratory'&&row.candidateFingerprint===null&&['nonmutation','deterministicReplay','budget'].every(g=>row.gates?.[g]===true)&&row.counts===null&&row.demolishedFootprint===null&&row.scaleLoss===null;
       const verified=row.status==='verified'&&fingerprint(row.candidateFingerprint)&&gates.every(g=>row.gates?.[g]===true)&&['properties','plots','buildings'].every(k=>Number.isSafeInteger(row.counts?.[k])&&row.counts[k]>=0)&&Number.isFinite(row.demolishedFootprint)&&row.demolishedFootprint>=0&&Number.isFinite(row.scaleLoss)&&row.scaleLoss>=0;
-      if((!refused&&!verified)||!fingerprint(row.inputFingerprint)||!Number.isFinite(row.elapsedMs)||row.elapsedMs<0||!Number.isSafeInteger(row.stats?.work)||row.stats.work<0||row.stats.work>m.budget.work||!Number.isSafeInteger(row.stats?.expansions)||row.stats.expansions<0||row.stats.expansions>m.budget.expansions)faults.push('Unqualified task '+row.key);
+      if((!refused&&!verified)||!fingerprint(row.inputFingerprint)||!fingerprint(row.operationFingerprint)||!Number.isFinite(row.elapsedMs)||row.elapsedMs<0||!Number.isSafeInteger(row.stats?.work)||row.stats.work<0||row.stats.work>m.budget.work||!Number.isSafeInteger(row.stats?.expansions)||row.stats.expansions<0||row.stats.expansions>m.budget.expansions)faults.push('Unqualified task '+row.key);
     }
   }
   for(let i=0;i<2;i++)if(!seen.has(i))faults.push('Missing shard '+i);
   if(matrix!=='success')faults.push('Matrix '+matrix);
   for(const c of m.cases){
     const pair=rows.filter(r=>r.key.startsWith(c.id+':'));
-    if(pair.length!==m.schedules.length||new Set(pair.map(r=>r.inputFingerprint)).size!==1)faults.push('Incomplete or different input '+c.id);
+    if(pair.length!==m.schedules.length||new Set(pair.map(r=>r.inputFingerprint)).size!==1||new Set(pair.map(r=>r.operationFingerprint)).size!==1)faults.push('Incomplete or different input '+c.id);
   }
   const complete=faults.length===0&&rows.length===m.cases.length*m.schedules.length;
   const summary=m.schedules.map(schedule=>({schedule,verified:rows.filter(r=>r.key.endsWith(':'+schedule)&&r.status==='verified').length,refused:rows.filter(r=>r.key.endsWith(':'+schedule)&&r.status==='refused').length,heldOutVerified:rows.filter(r=>r.key.endsWith(':'+schedule)&&r.status==='verified'&&m.cases.some(c=>c.partition==='held-out'&&r.key.startsWith(c.id+':'))).length}));
-  return {version:1,manifest:m,manifestDigest:digest(m),complete,faults,rows,summary,eligibleForComparison:complete,productionAdoptionAuthorized:false};
+  const diagnostics=rows.filter(r=>!['verified','refused'].includes(r.status)).map(r=>({key:r.key,status:r.status,...classifyFailure(r.status,JSON.stringify(r.diagnostic??r)),provisional:true,original:r,task:[...tasks(m,0),...tasks(m,1)].find(t=>t.key===r.key)}));
+  return {version:1,manifest:m,manifestDigest:digest(m),complete,faults,rows,summary,diagnostics,eligibleForComparison:complete,productionAdoptionAuthorized:false};
 }
 function checkCheckout(dir,revision){
   const git=args=>execFileSync('git',['-C',dir,...args],{encoding:'utf8'}).trim();

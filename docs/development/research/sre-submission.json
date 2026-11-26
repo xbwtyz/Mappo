@@ -21,18 +21,28 @@
       "expectation": "known-compression"
     },
     {
-      "id": "irregular-off-grid",
+      "id": "held-out-linear",
       "partition": "held-out",
       "irregularProperties": true,
-      "scale": 0.375,
-      "expectation": "exploratory"
+      "scale": 0.04,
+      "expectation": "exploratory",
+      "fixture": {
+        "seed": "dev-opt-holdout-linear-01",
+        "size": "small",
+        "morphology": "linear"
+      }
     },
     {
-      "id": "regular-reverse-off-grid",
+      "id": "held-out-radial",
       "partition": "held-out",
       "irregularProperties": false,
-      "scale": -0.375,
-      "expectation": "exploratory"
+      "scale": -0.08,
+      "expectation": "exploratory",
+      "fixture": {
+        "seed": "dev-opt-holdout-radial-01",
+        "size": "small",
+        "morphology": "radial"
+      }
     }
   ]
 }
