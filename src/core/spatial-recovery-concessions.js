@@ -3,6 +3,8 @@ import { prepareRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent
 import { createLareContext } from './reconciliation-context.js';
 import { occupiedAreaS10 } from './building-occupancy-s10.js';
 import { validateBuildingStructureS10 } from './building-components-s10.js';
+import { STREET_WIDTHS, STREET_EDGE_WIDTH, PROPERTY_SETBACK } from './placement.js';
+import { propertyLocalBounds3I } from './property-geometry.js';
 import { verifyLareRigidGeometry } from './reconciliation-buildings.js';
 import { verifyLarePlotDeformation } from './reconciliation-plots.js';
 import { classifyRoadProvenance } from './road-provenance.js';
@@ -184,4 +186,43 @@ export function inspectSpatialConcessionLedger(project,input,candidate,budget){
   scaledBuildings.sort((a,b)=>riCompare(a.buildingId,b.buildingId));
   return riFreeze({frontageSwitches,scaledBuildings,
     footprintLoss:scaledBuildings.reduce((sum,row)=>sum+row.footprintLoss,0)});
+}
+
+// Verify geometry of each independently identified switched street frontage.
+// This is in addition to, not instead of, whole-project and access checks.
+export function verifySpatialFrontageAlignment(project,input,candidate,ledger,budget){
+  const {changed,graph}=derive(project,input,budget);
+  const properties=new Map(candidate.city.properties.map(p=>[p.id,p]));
+  const originals=new Map(project.city.properties.map(p=>[p.id,p]));
+  const roads=new Map(project.city.roads.map(r=>[r.id,r]));
+  budget.spend(properties.size+originals.size+roads.size);
+  const near=(a,b)=>finitePoint(a)&&finitePoint(b)&&Math.hypot(a.x-b.x,a.y-b.y)<=1e-5;
+  for(const row of ledger.frontageSwitches){
+    budget.spend();const old=originals.get(row.propertyId),p=properties.get(row.propertyId);
+    if(!old||!p||p.frontageRoadId!==row.to||old.frontageRoadId!==row.from)
+      throw Error('Concession frontage witness mismatch.');
+    const block=changed.get(old.blockId),road=roads.get(row.to);
+    if(!block||!road||road.waterBoundary||road.terrainBoundary||!Number.isFinite(STREET_WIDTHS[road.kind]))
+      throw Error('Concession frontage is not a usable street.');
+    const index=block.vertices.findIndex((v,i)=>[road.a,road.b].includes(v)&&
+      [road.a,road.b].includes(block.vertices[(i+1)%block.vertices.length]));
+    if(index<0)throw Error('Concession frontage is outside the block.');
+    const a=graph.nodesById.get(block.vertices[index]),b=graph.nodesById.get(block.vertices[(index+1)%block.vertices.length]);
+    const length=Math.hypot(b.x-a.x,b.y-a.y),tangent={x:(b.x-a.x)/length,y:(b.y-a.y)/length};
+    const inward={x:-tangent.y,y:tangent.x};
+    if(!Number.isFinite(length)||length<=eps||!p.frame||!near(p.frame.origin,a)||
+      !near(p.frame.tangent,tangent)||!near(p.frame.inward,inward)||
+      !Array.isArray(p.frontage)||p.frontage.length!==2||!near(p.frontage[0],p.boundary[0])||
+      !near(p.frontage[1],p.boundary[1]))throw Error('Concession frontage frame or edge mismatch.');
+    const uv=q=>({u:(q.x-a.x)*tangent.x+(q.y-a.y)*tangent.y,v:(q.x-a.x)*inward.x+(q.y-a.y)*inward.y});
+    const l=uv(p.frontage[0]),r=uv(p.frontage[1]);
+    const width=Math.hypot(old.boundary[1].x-old.boundary[0].x,old.boundary[1].y-old.boundary[0].y);
+    const setback=(STREET_WIDTHS[road.kind]+STREET_EDGE_WIDTH)/2+PROPERTY_SETBACK;
+    if(![l.u,l.v,r.u,r.v,width].every(Number.isFinite)||l.u< -eps||r.u>length+eps||
+      r.u-l.u<Math.min(7,width)-eps||Math.abs(l.v-r.v)>1e-5||l.v<setback-eps)
+      throw Error('Concession frontage alignment or setback refused.');
+    const local=propertyLocalBounds3I(p,p.boundary);
+    if(!p.local||Object.keys(local).some(k=>!Number.isFinite(p.local[k])||Math.abs(local[k]-p.local[k])>1e-5))
+      throw Error('Concession frontage local bounds mismatch.');
+  }
 }

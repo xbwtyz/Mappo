@@ -17,19 +17,19 @@ export function normalizeSpatialRoadGroup(project,revision,selectedRoadIds,offse
     editedRefs:selectedRoadIds.map(id=>({collection:'roads',id})),permissions,geometry:{offset}});
 }
 
-function sreStrictRoadOperation(input) {
+function sreStrictRoadOperation(input,allowConcessions=false) {
   const operation=createSpatialOperation(input);
   if(operation.family!=='road'||operation.operation!=='translate-road-group'||!operation.geometry||
     operation.editedRefs.some(ref=>ref.collection!=='roads'))
     throw Error('Unsupported spatial road operation.');
   const p=operation.permissions;
-  if(p.alternativeFrontage||p.uniformScaling||p.destruction||p.regeneration)
+  if((!allowConcessions&&(p.alternativeFrontage||p.uniformScaling))||p.destruction||p.regeneration)
     throw Error('Relaxed spatial road verification is not integrated.');
   return operation;
 }
 
-function sreStrictRoadContext(project,input,budget) {
-  const operation=sreStrictRoadOperation(input);
+function sreStrictRoadContext(project,input,budget,allowConcessions=false) {
+  const operation=sreStrictRoadOperation(input,allowConcessions);
   createSpatialInventory(project,operation,budget);
   // Independently derive the accepted geometry intent, never receive
   // proposed junctions or affected blocks from an untrusted candidate.
@@ -87,10 +87,17 @@ export function discoverSpatialRoadScope(project,input,budget) {
 // Detached strict witness verification only. No editor hooks, no Apply
 // authorization, no search rerun. Existing B1R constraints remain authoritative.
 export async function verifySpatialStrictRoadWitness(project,input,delta,budget) {
-  const result=sreStrictRoadContext(project,input,budget);
+  return sreVerifyRoadWitness(project,input,delta,budget,false);
+}
+// Detached verifier only; does not authorize Apply or initiate search.
+export async function verifySpatialConcessionRoadWitness(project,input,delta,budget) {
+  return sreVerifyRoadWitness(project,input,delta,budget,true);
+}
+async function sreVerifyRoadWitness(project,input,delta,budget,allowConcessions) {
+  const result=sreStrictRoadContext(project,input,budget,allowConcessions);
   const candidate=await reconstructSpatialDelta(project,result.operation,1,delta,budget);
   const {draft,topology}=result;
-  const violation=await sreFinishMetered(iterateLareGroupPreservation(project,candidate,draft,new Map(),budget),budget);
+  const violation=await sreFinishMetered(iterateLareGroupPreservation(project,candidate,draft,new Map(),budget,new Set(),allowConcessions?result.operation:null),budget);
   if(violation)throw Error('Spatial preservation refused: '+violation.message);
   const {emit,items}=riReporter(),impactSpend=riBudget();
   const spend=(n=1)=>{impactSpend(n);if(n>0)budget.spend(n);};

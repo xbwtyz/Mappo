@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
-import { normalizeSpatialRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
-import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger } from '../src/core/spatial-recovery-concessions.js';
+import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment } from '../src/core/spatial-recovery-concessions.js';
+import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 import { stampRoadGenerated } from '../src/core/road-provenance.js';
 const budget=()=>createSpatialPreservationBudget();
 const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
@@ -100,6 +101,7 @@ test('detached candidate concession ledger derives exact switches and scale loss
   assert.equal(ledger.scaledBuildings[0].buildingId,first.id);
   assert.ok(Math.abs(ledger.scaledBuildings[0].factor-.95)<1e-6);
   assert.ok(ledger.footprintLoss>0);
+  assert.throws(()=>verifySpatialFrontageAlignment(project,op,candidate,ledger,budget()),/frontage/);
   assert.deepEqual(inspectSpatialConcessionLedger(project,op,candidate,budget()),ledger);
   assert.throws(()=>inspectSpatialConcessionLedger(project,operation({uniformScaling:true}),candidate,budget()),/Unauthorized alternative frontage/);
   assert.throws(()=>inspectSpatialConcessionLedger(project,operation({alternativeFrontage:true}),candidate,budget()),/not permitted/);
@@ -115,5 +117,24 @@ test('detached candidate concession ledger derives exact switches and scale loss
   }
   const unchanged=inspectSpatialConcessionLedger(project,operation({}),project,budget());
   assert.deepEqual(unchanged,{frontageSwitches:[],scaledBuildings:[],footprintLoss:0});
+  assert.equal(JSON.stringify(project),before);
+});
+
+test('detached concession transport verifies a real ordinary road witness, refuses wrong intent and unauthorized geometry',async()=>{
+  const before=JSON.stringify(project),strict=operation({});
+  const ordinary=await searchSpatialPreservingRoadGroup(project,strict,budget());
+  assert.equal(ordinary.status,'verified-witness');
+  const candidate=await verifySpatialStrictRoadWitness(project,strict,ordinary.delta,budget());
+  const op=operation({alternativeFrontage:true,uniformScaling:true});
+  const delta=await createSpatialDelta(project,candidate,op,1,budget());
+  const verified=await verifySpatialConcessionRoadWitness(project,op,delta,budget());
+  assert.deepEqual(verified,candidate);
+  await assert.rejects(()=>verifySpatialStrictRoadWitness(project,op,delta,budget()),/not integrated/);
+  await assert.rejects(()=>verifySpatialConcessionRoadWitness(project,operation({uniformScaling:true}),delta,budget()),/Stale or incompatible/);
+  const altered=clone(candidate),building=altered.city.buildings[0];
+  building.geometry.regions[0].ring[2].x+=.1;
+  stampRoadGenerated(building);
+  const malformed=await createSpatialDelta(project,altered,op,1,budget());
+  await assert.rejects(()=>verifySpatialConcessionRoadWitness(project,op,malformed,budget()));
   assert.equal(JSON.stringify(project),before);
 });
