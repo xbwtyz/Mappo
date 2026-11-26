@@ -12,10 +12,10 @@ import { riCompare, riEqual, riFreeze } from './road-impact-model.js';
 
 // Detached concession primitives only. No solver, candidate acceptance,
 // geometry permission bypass, runtime wiring or Apply authority.
-const eps=1e-6;
-const without=(row,keys)=>Object.fromEntries(Object.entries(row).filter(([k])=>!keys.includes(k)));
-const finitePoint=p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y);
-function derive(project,input,budget){
+const sreConcessionEps=1e-6;
+const sreConcessionWithout=(row,keys)=>Object.fromEntries(Object.entries(row).filter(([k])=>!keys.includes(k)));
+const sreConcessionFinitePoint=p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y);
+function sreConcessionDerive(project,input,budget){
   const op=createSpatialOperation(input);
   if(op.family!=='road'||op.operation!=='translate-road-group'||!op.geometry||
     op.editedRefs.some(r=>r.collection!=='roads')||op.permissions.destruction||op.permissions.regeneration)
@@ -34,9 +34,9 @@ function derive(project,input,budget){
 // The future full verifier must also prove authorized scope, fit, plot
 // topology, reciprocal references, generated provenance and access.
 export function listSpatialAdjacentFrontages(project,input,propertyId,budget){
-  return adjacentFrontages(project,derive(project,input,budget),propertyId,budget);
+  return sreConcessionAdjacentFrontages(project,sreConcessionDerive(project,input,budget),propertyId,budget);
 }
-function adjacentFrontages(project,{op,context,changed,graph},propertyId,budget){
+function sreConcessionAdjacentFrontages(project,{op,context,changed,graph},propertyId,budget){
   if(!op.permissions.alternativeFrontage)return Object.freeze([]);
   const entry=context.properties.find(p=>p.id===propertyId);
   if(!entry||entry.policy.mode!=='adaptive'||entry.policy.provenance!=='generated'||
@@ -50,9 +50,9 @@ function adjacentFrontages(project,{op,context,changed,graph},propertyId,budget)
     return {road:roads.get([id,other].sort(riCompare).join(':')),a:graph.nodesById.get(id),b:graph.nodesById.get(other)};
   });
   const original=edges.findIndex(e=>e.road?.id===entry.frontageRoadId);
-  if(original<0||edges.some(e=>!e.road||!finitePoint(e.a)||!finitePoint(e.b)))return Object.freeze([]);
+  if(original<0||edges.some(e=>!e.road||!sreConcessionFinitePoint(e.a)||!sreConcessionFinitePoint(e.b)))return Object.freeze([]);
   const out=[edges[(original+edges.length-1)%edges.length],edges[(original+1)%edges.length]]
-    .filter(e=>e.road.id!==entry.frontageRoadId&&Math.hypot(e.b.x-e.a.x,e.b.y-e.a.y)>eps)
+    .filter(e=>e.road.id!==entry.frontageRoadId&&Math.hypot(e.b.x-e.a.x,e.b.y-e.a.y)>sreConcessionEps)
     .map(e=>e.road.id);
   return Object.freeze([...new Set(out)].sort(riCompare));
 }
@@ -60,9 +60,9 @@ function adjacentFrontages(project,{op,context,changed,graph},propertyId,budget)
 // canonical vertices. Caller does not supply the factor, angle or ledger.
 // This local check does not authorize changing frontage or access.
 export function inspectSpatialUniformSimilarity(project,input,buildingId,candidate,budget){
-  return inspectSimilarity(project,derive(project,input,budget),buildingId,candidate,budget);
+  return sreConcessionInspectSimilarity(project,sreConcessionDerive(project,input,budget),buildingId,candidate,budget);
 }
-function inspectSimilarity(project,{op,context,changed},buildingId,candidate,budget){
+function sreConcessionInspectSimilarity(project,{op,context,changed},buildingId,candidate,budget){
   if(!op.permissions.uniformScaling)throw Error('Uniform scaling is not permitted.');
   const entry=context.properties.find(p=>p.buildings.some(b=>b.id===buildingId));
   const policy=entry?.buildings.find(b=>b.id===buildingId);
@@ -72,45 +72,45 @@ function inspectSimilarity(project,{op,context,changed},buildingId,candidate,bud
   const fail=()=>{throw Error('Uniform similarity verification refused.');};
   if(!candidate||!original||![1,3].includes(original.geometry?.version)||
     original.geometry.courtyardAccess||!riEqual(original.components,candidate.components)||
-    !candidate.geometry||!riEqual(without(original.geometry,['regions']),without(candidate.geometry,['regions']))||
-    !riEqual(without(original,['geometry','orientation','entrance','accessPath','plotIds','roadProvenance','area']),
-      without(candidate,['geometry','orientation','entrance','accessPath','plotIds','roadProvenance','area'])))fail();
+    !candidate.geometry||!riEqual(sreConcessionWithout(original.geometry,['regions']),sreConcessionWithout(candidate.geometry,['regions']))||
+    !riEqual(sreConcessionWithout(original,['geometry','orientation','entrance','accessPath','plotIds','roadProvenance','area']),
+      sreConcessionWithout(candidate,['geometry','orientation','entrance','accessPath','plotIds','roadProvenance','area'])))fail();
   const a=original.geometry.regions,b=candidate.geometry.regions;
   if(!Array.isArray(a)||!Array.isArray(b)||!a.length||a.length!==b.length)fail();
   for(let i=0;i<a.length;i++){
     budget.spend();const p=a[i],q=b[i];
     if(!q||!Array.isArray(p.ring)||!Array.isArray(q.ring)||p.ring.length<3||
-      p.ring.length!==q.ring.length||!riEqual(without(p,['ring']),without(q,['ring']))||
-      !p.ring.every(finitePoint)||!q.ring.every(finitePoint))fail();
+      p.ring.length!==q.ring.length||!riEqual(sreConcessionWithout(p,['ring']),sreConcessionWithout(q,['ring']))||
+      !p.ring.every(sreConcessionFinitePoint)||!q.ring.every(sreConcessionFinitePoint))fail();
   }
   const [p,q]=a[0].ring,[r,s]=b[0].ring;
   const u={x:q.x-p.x,y:q.y-p.y},v={x:s.x-r.x,y:s.y-r.y};
   const len=Math.hypot(u.x,u.y),other=Math.hypot(v.x,v.y),factor=other/len;
-  if(len<=eps||!Number.isFinite(factor)||factor<=0||
-    factor<1-op.permissions.maxLinearReduction-eps||factor>1+eps)fail();
+  if(len<=sreConcessionEps||!Number.isFinite(factor)||factor<=0||
+    factor<1-op.permissions.maxLinearReduction-sreConcessionEps||factor>1+sreConcessionEps)fail();
   const angle=Math.atan2(u.x*v.y-u.y*v.x,u.x*v.x+u.y*v.y),co=Math.cos(angle),si=Math.sin(angle);
   for(let i=0;i<a.length;i++)for(let j=0;j<a[i].ring.length;j++){
     budget.spend();const x=a[i].ring[j].x-p.x,y=a[i].ring[j].y-p.y;
     const z=b[i].ring[j];
-    if(Math.hypot(r.x+factor*(x*co-y*si)-z.x,r.y+factor*(x*si+y*co)-z.y)>eps)fail();
+    if(Math.hypot(r.x+factor*(x*co-y*si)-z.x,r.y+factor*(x*si+y*co)-z.y)>sreConcessionEps)fail();
   }
   const delta=candidate.orientation-original.orientation-angle;
-  if(!Number.isFinite(delta)||Math.abs(Math.atan2(Math.sin(delta),Math.cos(delta)))>eps)fail();
+  if(!Number.isFinite(delta)||Math.abs(Math.atan2(Math.sin(delta),Math.cos(delta)))>sreConcessionEps)fail();
   const charge={charge:(n=1)=>{if(n>0)budget.spend(n);}};
   validateBuildingStructureS10(candidate.geometry,candidate.components,charge);
   const areaBefore=occupiedAreaS10(original.geometry,charge),areaAfter=occupiedAreaS10(candidate.geometry,charge);
   if(!Number.isFinite(candidate.area)||!Number.isFinite(original.area)||original.area<=0||candidate.area<=0||
-    Math.abs(areaAfter-areaBefore*factor*factor)>eps*Math.max(1,areaBefore)||
-    Math.abs(candidate.area-original.area*factor*factor)>eps*Math.max(1,original.area))fail();
+    Math.abs(areaAfter-areaBefore*factor*factor)>sreConcessionEps*Math.max(1,areaBefore)||
+    Math.abs(candidate.area-original.area*factor*factor)>sreConcessionEps*Math.max(1,original.area))fail();
   return riFreeze({buildingId,factor,angle,footprintLoss:Math.max(0,areaBefore-areaAfter)});
 }
 
-// Independently derive a candidate-wide concession inventory. This is a
+// Independently sreConcessionDerive a candidate-wide concession inventory. This is a
 // partial gate: the ordinary road intent, exact metadata, geometry fit,
 // dependencies, access and stored-project gates still MUST be run. Never
 // treat the ledger, even if empty, as acceptance or Apply authority.
 export function inspectSpatialConcessionLedger(project,input,candidate,budget){
-  const derived=derive(project,input,budget),{op,context,changed}=derived;
+  const derived=sreConcessionDerive(project,input,budget),{op,context,changed}=derived;
   if(candidate?.schemaVersion!==project.schemaVersion||
     (candidate.id??candidate.city?.id)!==op.projectId||
     !riEqual(project.identityAllocation,candidate.identityAllocation))
@@ -139,7 +139,7 @@ export function inspectSpatialConcessionLedger(project,input,candidate,budget){
     if(!riEqual(a.plotIds,b.plotIds)||!riEqual(a.buildingIds,b.buildingIds)||a.blockId!==b.blockId||
       a.districtId!==b.districtId)throw Error('Concession property ownership changed.');
     if(a.frontageRoadId===b.frontageRoadId)continue;
-    if(!adjacentFrontages(project,derived,id,budget).includes(b.frontageRoadId))
+    if(!sreConcessionAdjacentFrontages(project,derived,id,budget).includes(b.frontageRoadId))
       throw Error('Unauthorized alternative frontage.');
     const ap=a.plotIds.map(pid=>old.plots.get(pid)),bp=b.plotIds.map(pid=>next.plots.get(pid));
     if(!entry||ap.some(p=>!p||p.propertyId!==id||p.frontageRoadId!==a.frontageRoadId)||
@@ -178,8 +178,8 @@ export function inspectSpatialConcessionLedger(project,input,candidate,budget){
     // Do not rewrite the candidate or normalize any other metadata.
     const normalized=changedFrontage?{...b,frontageRoadId:a.frontageRoadId}:b;
     if(verifyLareRigidGeometry(a,normalized,budget))continue;
-    const result=inspectSimilarity(project,derived,id,normalized,budget);
-    if(result.factor>=1-eps)throw Error('Non-rigid geometry without positive footprint reduction.');
+    const result=sreConcessionInspectSimilarity(project,derived,id,normalized,budget);
+    if(result.factor>=1-sreConcessionEps)throw Error('Non-rigid geometry sreConcessionWithout positive footprint reduction.');
     scaledBuildings.push(result);
   }
   frontageSwitches.sort((a,b)=>riCompare(a.propertyId,b.propertyId));
@@ -191,12 +191,12 @@ export function inspectSpatialConcessionLedger(project,input,candidate,budget){
 // Verify geometry of each independently identified switched street frontage.
 // This is in addition to, not instead of, whole-project and access checks.
 export function verifySpatialFrontageAlignment(project,input,candidate,ledger,budget){
-  const {changed,graph}=derive(project,input,budget);
+  const {changed,graph}=sreConcessionDerive(project,input,budget);
   const properties=new Map(candidate.city.properties.map(p=>[p.id,p]));
   const originals=new Map(project.city.properties.map(p=>[p.id,p]));
   const roads=new Map(project.city.roads.map(r=>[r.id,r]));
   budget.spend(properties.size+originals.size+roads.size);
-  const near=(a,b)=>finitePoint(a)&&finitePoint(b)&&Math.hypot(a.x-b.x,a.y-b.y)<=1e-5;
+  const near=(a,b)=>sreConcessionFinitePoint(a)&&sreConcessionFinitePoint(b)&&Math.hypot(a.x-b.x,a.y-b.y)<=1e-5;
   for(const row of ledger.frontageSwitches){
     budget.spend();const old=originals.get(row.propertyId),p=properties.get(row.propertyId);
     if(!old||!p||p.frontageRoadId!==row.to||old.frontageRoadId!==row.from)
@@ -210,7 +210,7 @@ export function verifySpatialFrontageAlignment(project,input,candidate,ledger,bu
     const a=graph.nodesById.get(block.vertices[index]),b=graph.nodesById.get(block.vertices[(index+1)%block.vertices.length]);
     const length=Math.hypot(b.x-a.x,b.y-a.y),tangent={x:(b.x-a.x)/length,y:(b.y-a.y)/length};
     const inward={x:-tangent.y,y:tangent.x};
-    if(!Number.isFinite(length)||length<=eps||!p.frame||!near(p.frame.origin,a)||
+    if(!Number.isFinite(length)||length<=sreConcessionEps||!p.frame||!near(p.frame.origin,a)||
       !near(p.frame.tangent,tangent)||!near(p.frame.inward,inward)||
       !Array.isArray(p.frontage)||p.frontage.length!==2||!near(p.frontage[0],p.boundary[0])||
       !near(p.frontage[1],p.boundary[1]))throw Error('Concession frontage frame or edge mismatch.');
@@ -218,8 +218,8 @@ export function verifySpatialFrontageAlignment(project,input,candidate,ledger,bu
     const l=uv(p.frontage[0]),r=uv(p.frontage[1]);
     const width=Math.hypot(old.boundary[1].x-old.boundary[0].x,old.boundary[1].y-old.boundary[0].y);
     const setback=(STREET_WIDTHS[road.kind]+STREET_EDGE_WIDTH)/2+PROPERTY_SETBACK;
-    if(![l.u,l.v,r.u,r.v,width].every(Number.isFinite)||l.u< -eps||r.u>length+eps||
-      r.u-l.u<Math.min(7,width)-eps||Math.abs(l.v-r.v)>1e-5||l.v<setback-eps)
+    if(![l.u,l.v,r.u,r.v,width].every(Number.isFinite)||l.u< -sreConcessionEps||r.u>length+sreConcessionEps||
+      r.u-l.u<Math.min(7,width)-sreConcessionEps||Math.abs(l.v-r.v)>1e-5||l.v<setback-sreConcessionEps)
       throw Error('Concession frontage alignment or setback refused.');
     const local=propertyLocalBounds3I(p,p.boundary);
     if(!p.local||Object.keys(local).some(k=>!Number.isFinite(p.local[k])||Math.abs(local[k]-p.local[k])>1e-5))
