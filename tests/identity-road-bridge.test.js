@@ -5,7 +5,9 @@ import {SecureIdentityHost} from '../src/core/secure-identity-host.js';
 import {prepareNeighborhoodReflowC3,prepareJunctionReflowC7,prepareRoadGroupReflowB1} from '../src/core/neighborhood-reflow.js';
 import {prepareRoadTopologyReflowC3} from '../src/core/road-topology-reflow.js';
 import {createLareDemolitionSession,iterateLareDemolition,authorizeLareDemolition,cancelLareDemolition} from '../src/core/reconciliation-demolition.js';
-import {validateRoadApplyC2} from '../src/editor/road-application.js';
+import {validateRoadApplyC2,validateRoadGroupApplyB1} from '../src/editor/road-application.js';
+import {roadIdentityRequests,allocateRoadCandidate} from '../src/core/road-identity-delta.js';
+import {reconcileRoadWorkspace} from '../src/editor/road-workspace.js';
 import {junctionPreviewMessage,calculateJunctionPreviewP1} from '../src/worker/junction-preview-worker.js';
 import {beginRoadIdentityApply,commitRoadIdentityApply,cancelRoadIdentityApply} from '../src/editor/road-transaction-bridge.js';
 import {copyJson,defaultWorkspace,roundTripProjectDocument} from '../src/data/project-format.js';
@@ -162,17 +164,55 @@ test('S1-C1 local reconstruction remains independent of a candidate with matchin
   assert.equal(commit(f,next,worker(next.workerRequest)).context.revision,1);
 });
 
-test('S4 nonallocating junction acceptance exactly matches independent portable result and replay',()=>{
-  const f=junction(),b=begin(f,true),reply=worker(b.workerRequest);
-  assert.ok(reply.ok);
-  const expected=roundTripProjectDocument(reply.candidate,reply.workspace);
-  const out=commit(f,b,reply);
-  assert.equal(JSON.stringify(out.project),JSON.stringify(expected.project));
+test('S4 nonallocating connected-road acceptance exactly matches independent portable result and replay',()=>{
+  const f=setup('c2-planned','planned'),s=f.s;
+  s.roadGroupB1={eligible:true,selectedRoadIds:['RD-0113','RD-0114']};
+  s.roadIntentOffset={x:.05,y:0};
+  s.reconciliation=prepareRoadGroupReflowB1(f.p,s.roadGroupB1.selectedRoadIds,s.roadIntentOffset,{acceptedRevision:5});
+  assert.ok(s.reconciliation.candidateProject);
+  const fresh=validateRoadGroupApplyB1(copyJson(f.p),f.w,{
+    selectedRoadIds:s.roadGroupB1.selectedRoadIds,offset:s.roadIntentOffset,
+    parcelChoices:new Map(),revision:5,acceptedRevision:5
+  },s.reconciliation);
+  assert.ok(fresh.ok,JSON.stringify(fresh.issues));
+  const domain={phase:'B1',status:'candidate-only',candidateProject:fresh.candidate,
+    validation:{project:'valid',parcels:'pass'},unresolved:[],ledger:fresh.ledger,changed:fresh.changed};
+  const requests=roadIdentityRequests(f.p,domain);
+  assert.deepEqual(requests,[]);
+  const allocation=allocateRoadCandidate(f.p,domain,f.h.view().context,f.h.reserve(requests));
+  const expected=roundTripProjectDocument(allocation.candidate,
+    reconcileRoadWorkspace(f.w,f.p.city,allocation.candidate.city));
+  // Prove this fixture actually qualifies for the S4 evidence reuse path.
+  assert.equal(JSON.stringify(fresh.candidate)===JSON.stringify(allocation.candidate),true);
+  assert.equal(JSON.stringify(fresh.workspace)===JSON.stringify(expected.workspace),true);
+  const out=commit(f,begin(f));
+  assert.deepEqual(out.project,expected.project);
   assert.deepEqual(out.workspace,expected.workspace);
   assert.deepEqual(out.project.identityAllocation,f.p.identityAllocation);
   assert.notEqual(out.workspace,f.w);
   const undo=f.h.replay({direction:'undo',context:f.h.view().context,workspace:out.workspace});
   assert.deepEqual(undo.project,f.p);
+  const redo=f.h.replay({direction:'redo',context:f.h.view().context,workspace:undo.workspace});
+  assert.deepEqual(redo.project,out.project);
+});
+
+test('S4 allocating junction acceptance matches independent allocation and final portable result',()=>{
+  const f=junction(),b=begin(f,true),reply=worker(b.workerRequest);
+  assert.ok(reply.ok);
+  const domain={phase:f.s.reconciliation.phase,status:'candidate-only',candidateProject:reply.candidate,
+    validation:{project:'valid',parcels:'pass'},unresolved:[],ledger:reply.ledger,changed:reply.changed};
+  const requests=roadIdentityRequests(f.p,domain);
+  assert.ok(requests.length>0,'fixture regenerates entities');
+  const allocation=allocateRoadCandidate(f.p,domain,f.h.view().context,f.h.reserve(requests));
+  const expected=roundTripProjectDocument(allocation.candidate,
+    reconcileRoadWorkspace(f.w,f.p.city,allocation.candidate.city));
+  const out=commit(f,b,reply);
+  assert.deepEqual(out.project,expected.project);
+  assert.deepEqual(out.workspace,expected.workspace);
+  assert.deepEqual(out.ledger,allocation.ledger);
+  assert.deepEqual(out.changed,allocation.changed);
+  const undo=f.h.replay({direction:'undo',context:f.h.view().context,workspace:out.workspace});
+  assert.deepEqual(undo.project,{...f.p,identityAllocation:out.project.identityAllocation});
   const redo=f.h.replay({direction:'redo',context:f.h.view().context,workspace:undo.workspace});
   assert.deepEqual(redo.project,out.project);
 });
