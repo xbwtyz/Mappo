@@ -72,7 +72,7 @@ export async function verifySpatialUnifiedRoadWitness(project,input,witness,budg
 // external operation before spending on optional improvements.
 // Research-only child-first pass. Search derives candidate sets from the
 // current independently verified incumbent, not from old fixture answers.
-async function searchResearchChildRestoration(project,operation,seed,budget,seen){
+async function searchResearchChildRestoration(project,operation,seed,budget,seen,solverSelection=false){
   let incumbent={delta:seed.basisDelta,ledger:seed.ledger},exhausted=null;
   const attempts=[];
   const finish=()=>({status:'verified-witness',...incumbent,attempts,exhausted});
@@ -96,15 +96,20 @@ async function searchResearchChildRestoration(project,operation,seed,budget,seen
         const keys=new Set(rows.slice(i,i+size).map(spatialRefKey));
         const remaining=incumbent.delta.retired.filter(r=>{budget.spend();return !keys.has(spatialRefKey(r));});
         if(!remaining.length||remaining.length===incumbent.delta.retired.length)continue;
-        const key=JSON.stringify([remaining.map(spatialRefKey).sort(riCompare),scale]);
+        // Prefer the least disruptive direct solver first, then the existing
+        // maximally permitted concession. Both consume the same shared phase.
+        const scales=solverSelection&&scale!==null&&scale<1?[1,scale]:[scale];
+        for(const trialScale of scales){
+        if(attempts.length>=12)return finish();
+        const key=JSON.stringify([remaining.map(spatialRefKey).sort(riCompare),trialScale]);
         if(seen.has(key))continue;
         const trialBudget=sreChild(budget,5000000,16384,20000);
         if(!trialBudget)return finish();
         seen.add(key);
-        const row={size,restoring:incumbent.delta.retired.length-remaining.length,status:'refused',selected:false};
+        const row={size,restoring:incumbent.delta.retired.length-remaining.length,status:'refused',selected:false,...(solverSelection?{scale:trialScale}:{})};
         attempts.push(row);
         try{
-          const result=await searchSpatialRetirementSubsetRoadGroup(project,operation,remaining,trialBudget,{diagnosticScale:scale});
+          const result=await searchSpatialRetirementSubsetRoadGroup(project,operation,remaining,trialBudget,{diagnosticScale:trialScale});
           row.status=result.status;row.exhausted=result.exhausted??null;
           if(result.status!=='verified-witness')continue;
           const expected=new Set(remaining.map(spatialRefKey));
@@ -112,11 +117,13 @@ async function searchResearchChildRestoration(project,operation,seed,budget,seen
             result.delta.retired.some(r=>!expected.has(spatialRefKey(r))))throw Error('Unexpected research child retirement membership.');
           if(improvesSpatialRetirementCost(measureSpatialRetirementCost(result.ledger,trialBudget),measureSpatialRetirementCost(incumbent.ledger,trialBudget))){
             incumbent={delta:result.delta,ledger:result.ledger};row.selected=true;
+            if(solverSelection)break;
           }
         }catch(error){
           if(!(error instanceof LareBudgetExceeded))throw error;
           row.exhausted=error.resource;
         }finally{row.work=trialBudget.snapshot().work;}
+        }
       }
     }
     return finish();
@@ -125,7 +132,8 @@ async function searchResearchChildRestoration(project,operation,seed,budget,seen
     exhausted=error.resource;return finish();
   }
 }
-export async function searchSpatialBudgetResearch(project,input,callerBudget,{workLimit,iterative=false,childPriority=false}={}){
+export async function searchSpatialBudgetResearch(project,input,callerBudget,{workLimit,iterative=false,childPriority=false,solverSelection=false}={}){
+  if(typeof solverSelection!=='boolean'||(solverSelection&&!childPriority))throw Error('Unsupported solver selection research setting.');
   if(typeof childPriority!=='boolean'||(childPriority&&!iterative))throw Error('Unsupported child priority research setting.');
   if(typeof iterative!=='boolean'||(iterative&&workLimit!==256000000))throw Error('Unsupported iterative research setting.');
   if(![32000000,64000000,128000000,256000000].includes(workLimit))throw Error('Unsupported research work limit.');
@@ -241,7 +249,7 @@ export async function searchSpatialBudgetResearch(project,input,callerBudget,{wo
         if(await improve(restored))changed=true;
         const optimized=childPriority?
           await phase('iterative-child-'+pass,32000000,
-            b=>searchResearchChildRestoration(project,retirement,incumbent,b,childSeen),{reserve:bindReserve}):
+            b=>searchResearchChildRestoration(project,retirement,incumbent,b,childSeen,solverSelection),{reserve:bindReserve}):
           await phase('iterative-optimization-'+pass,32000000,
             b=>optimizeSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b),{reserve:bindReserve});
         if(await improve(optimized))changed=true;
