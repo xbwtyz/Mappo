@@ -4,6 +4,7 @@ import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {validateResearchManifest,expandResearchManifest,aggregateResearch,digest} from './contract.mjs';
 import {assertResearchSource,executeResearchTask} from './runner.mjs';
+import {diagnoseResearchReport} from './diagnostics.mjs';
 const need=(ok,msg)=>{if(!ok)throw Error(msg);};
 const validRun=x=>typeof x==='string'&&/^[1-9][0-9]{0,19}$/.test(x);
 export const shardCount=2;
@@ -87,6 +88,11 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
       writeFileSync(join(out,'manifest.json'),JSON.stringify(m,null,2)+'\n',{flag:'wx'});
       writeFileSync(join(out,'report.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});
       console.log('DEV_OPT_DISTRIBUTED_RESEARCH '+JSON.stringify(report));
+      // Persist original result before diagnostics; a diagnostic exception must fail closed.
+      const diagnosis=diagnoseResearchReport(m,report);
+      writeFileSync(join(out,'diagnostics.json'),JSON.stringify(diagnosis,null,2)+'\n',{flag:'wx'});
+      console.log('DEV_OPT_RESEARCH_DIAGNOSTICS '+JSON.stringify(diagnosis));
+      if(diagnosis.failures.length)process.exitCode=1;
       if(!report.complete||report.results.some(r=>r.status!=='verified'))process.exitCode=1; // known-valid pilot
     }else throw Error('Unknown pilot mode.');
   }catch(e){console.error(e.stack);process.exitCode=1;}
