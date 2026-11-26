@@ -3,6 +3,7 @@ import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-
 import { describeSpatialCapability, spatialConstraint } from './spatial-recovery-registry.js';
 import { prepareRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent-c1.js';
 import { iterateRoadGroupReflowB1 } from './neighborhood-reflow.js';
+import { scoreSpatialPreservation } from './spatial-recovery-score.js';
 import { copyJson } from '../data/project-format.js';
 import { createLareContext } from './reconciliation-context.js';
 import { iterateLareGroupPreservation } from './reconciliation-preservation.js';
@@ -138,7 +139,8 @@ export async function searchSpatialPreservingRoadGroup(project,input,budget) {
         message:String(row.message??'Road recovery refused.')})),stats:budget.snapshot()});
   }
   const delta=await createSpatialDelta(snapshot,result.candidateProject,operation,1,budget);
-  await verifySpatialStrictRoadWitness(snapshot,operation,delta,budget);
+  const verified=await verifySpatialStrictRoadWitness(snapshot,operation,delta,budget);
+  const cost=scoreSpatialPreservation(snapshot,verified,budget);
   // Explicitly return transport, not a second complete city or Apply authority.
-  return riFreeze({status:'verified-witness',operation,delta,issues:[],stats:budget.snapshot()});
+  return riFreeze({status:'verified-witness',operation,delta,cost,issues:[],stats:budget.snapshot()});
 }
