@@ -8,7 +8,7 @@ const worker=fileURLToPath(new URL('./lare-worker.mjs',import.meta.url));
 const git=args=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
 export function assertResearchSource(m){
   if(git(['rev-parse','HEAD'])!==m.sourceRevision)throw Error('Research source revision mismatch.');
-  if(git(['status','--porcelain','--untracked-files=all','--','src','scripts','tests','package.json']))throw Error('Research source is dirty.');
+  if(git(['status','--porcelain','--untracked-files=all','--','src','scripts','tests','package.json','docs/development/research']))throw Error('Research source is dirty.');
   if(Number(process.versions.node.split('.')[0])!==m.environment.nodeMajor||process.platform!==m.environment.platform)throw Error('Research environment mismatch.');
 }
 export function executeResearchTask(task,timeoutMs){
