@@ -7,7 +7,7 @@ import {digest} from './contract.mjs';
 import {classifyFailure} from './diagnostics.mjs';
 const need=(ok,msg)=>{if(!ok)throw Error(msg);};
 export const targetRevision='e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7';
-export const schedules=['baseline','grouped-first','diversified-restoration','shell-first-restoration'];
+export const schedules=['baseline','grouped-first','diversified-restoration','shell-first-restoration','area-deficit-seed'];
 export const cases=[{id:'regular-preservation',partition:'development',irregularProperties:false,scale:.5,expectation:'known-preservation'},{id:'irregular-compression',partition:'development',irregularProperties:true,scale:.25,expectation:'known-compression'}];
 export const gates=['independentWitness','storedProject','nonmutation','permissions','identity','deterministicReplay','budget'];
 const sha=x=>typeof x==='string'&&/^[a-f0-9]{40}$/.test(x);

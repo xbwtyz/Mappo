@@ -72,7 +72,7 @@ try{
       assert.deepEqual(Object.values(counts),expected);
     }
     assert.equal(digest(project),before);
-    return {status:'verified',inputFingerprint:before,operationFingerprint,roadIds,offset,candidateFingerprint:digest(actual),kind:result.kind,counts,demolishedFootprint:result.ledger.demolishedFootprint,scaleLoss:result.ledger.concessions?.footprintLoss??0,stats:result.stats};
+    return {status:'verified',inputFingerprint:before,operationFingerprint,roadIds,offset,candidateFingerprint:digest(actual),kind:result.kind,counts,demolishedFootprint:result.ledger.demolishedFootprint,scaleLoss:result.ledger.concessions?.footprintLoss??0,stats:result.stats,attempts:result.attempts};
   }
   const a=await solve(),b=await solve();assert.deepEqual(a,b,'Nondeterministic SRE replay');
   console.log(JSON.stringify({...a,elapsedMs:performance.now()-start,peakRssKiB:process.resourceUsage().maxRSS,gates:Object.fromEntries((a.status==='verified'?gates:['nonmutation','deterministicReplay','budget']).map(g=>[g,true]))}));
