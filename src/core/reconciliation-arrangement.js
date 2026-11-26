@@ -32,7 +32,7 @@ function lareArrangeRank(entries,parcelCandidates){
 }
 // Pure joint solver over actual parcel/plot and rigid building alternatives.
 // Adapter supplies affected blocks, external obstacles and whole-project finalizer.
-export function* iterateLareArrangement({entries,finalize,incumbent=null,enhanced=false,packing=false,concessionSource=null},budget){
+export function* iterateLareArrangement({entries,finalize,incumbent=null,enhanced=false,packing=false,concessionSource=null,sharedPackingInventory=null},budget){
   if(!Array.isArray(entries)||entries.length>LARE_LIMITS.affectedParcels||
     new Set(entries.map(e=>e.property.id)).size!==entries.length||typeof finalize!=='function')
     throw Error('Invalid local arrangement inventory.');
@@ -44,7 +44,29 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
       if(verifiedIncumbent)compareLareScore(verifiedIncumbent.score,verifiedIncumbent.score);}
     for(const entry of entries.slice().sort((a,b)=>lareArrangeCompare(a.property.id,b.property.id))){
       const fixedRings=entry.buildings.filter(b=>b.permission.mode!=='rigid').flatMap(b=>buildingExteriorRingsS10(b.source));
-      const candidates = yield* iterateLareParcelCandidates({ ...entry, fixedRings, compactDeformation: enhanced, packing }, budget);
+      const request={...entry,fixedRings,compactDeformation:enhanced,packing};
+      // Only cache complete ordinary packing inventories inside this one
+      // detached operation. Exact request equality includes the scope,
+      // geometry, permissions, fixed obstacles and ordering. Concession
+      // insertion must never mutate the cached ordinary list.
+      let candidates,cacheKey=null;
+      if(sharedPackingInventory&&packing&&enhanced){
+        cacheKey=JSON.stringify(request);
+        budget.spend(Math.max(1,Math.ceil(cacheKey.length/64)));
+        const prior=sharedPackingInventory.parcels.get(entry.property.id);
+        if(prior?.key===cacheKey){
+          budget.spend(Math.max(1,prior.candidates.length));
+          candidates=prior.candidates.slice();
+          yield {stage:'sre-packing-parcel-cache-hit',id:entry.property.id,count:candidates.length};
+        }
+      }
+      if(!candidates){
+        candidates=yield* iterateLareParcelCandidates(request,budget);
+        if(cacheKey!==null){
+          sharedPackingInventory.parcels.set(entry.property.id,{key:cacheKey,candidates:candidates.slice()});
+          for(const candidate of candidates)sharedPackingInventory.ordinary.add(candidate);
+        }
+      }
       if(concessionSource&&enhanced&&!fixedRings.length&&entry.mode==='adaptive'){
         const extra=yield* concessionSource(entry);
         // Bound the joint inventory, retaining ordinary and concession
@@ -104,10 +126,27 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
           rotation:Math.abs(Math.atan2(Math.sin(candidate.orientation-building.source.orientation),Math.cos(candidate.orientation-building.source.orientation)))}]:[]);
         return inventory.get(building);
       }
-      const candidates = yield* iterateLareBuildingCandidates({ source: building.source,
-        permission: building.permission, oldProperty: entry.property, property: parcel.property,
-        plots: parcel.plots, fixedBuildings, seedTransforms: parcel.buildingSeeds?.filter(seed=>seed.id===building.source.id)??[] }, budget);
-      inventory.set(building, candidates);
+      const request={source:building.source,permission:building.permission,oldProperty:entry.property,
+        property:parcel.property,plots:parcel.plots,fixedBuildings,
+        seedTransforms:parcel.buildingSeeds?.filter(seed=>seed.id===building.source.id)??[]};
+      let candidates,shared=null,key=null;
+      if(sharedPackingInventory?.ordinary.has(parcel)){
+        key=JSON.stringify(request);
+        budget.spend(Math.max(1,Math.ceil(key.length/64)));
+        if(!sharedPackingInventory.buildings.has(parcel))sharedPackingInventory.buildings.set(parcel,new Map());
+        shared=sharedPackingInventory.buildings.get(parcel);
+        const prior=shared.get(building.source.id);
+        if(prior?.key===key){
+          budget.spend(Math.max(1,prior.candidates.length));
+          candidates=prior.candidates.slice();
+          yield {stage:'sre-packing-building-cache-hit',id:building.source.id,count:candidates.length};
+        }
+      }
+      if(!candidates){
+        candidates=yield* iterateLareBuildingCandidates(request,budget);
+        if(shared)shared.set(building.source.id,{key,candidates:candidates.slice()});
+      }
+      inventory.set(building,candidates);
     }
     return inventory.get(building);
   };

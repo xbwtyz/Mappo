@@ -156,6 +156,9 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
   // Private to this generator, same detached project/draft/analysis/choices.
   // A capped or skipped fixed pass is not a completed refusal.
   let enhancedFixedRefused=false;
+  // Operation-local, never transported, never reused across intents.
+  const sharedPackingInventory=options.detachedPackingInventoryReuse===true?
+    {parcels:new Map(),ordinary:new WeakSet(),buildings:new WeakMap()}:null;
   const adaptiveStrategy = (enhanced, usePacking=enhanced&&options.packing===true, reuseFixedRefusal=false,
     concessionTier=enhanced?options.detachedConcessions??null:null) => ({
     canRun: previous => !enhanced || options.strategy === 'enhanced-adaptive' || !previous.candidateProject,
@@ -163,7 +166,7 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
       const budget = createLareBudget(operation.limits, { parent });
       const strategy = enhanced ? 'enhanced-adaptive' : 'selective-adaptive';
       const iterator = iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices, budget, { enhanced, packing: usePacking, concessions: concessionTier,
-        reuseFixedRefusal,
+        reuseFixedRefusal,sharedPackingInventory:usePacking?sharedPackingInventory:null,
         onFixedPass:enhanced&&!usePacking&&!concessionTier?e=>{enhancedFixedRefused=e.refused;}:null });
       try {
         for (;;) {
