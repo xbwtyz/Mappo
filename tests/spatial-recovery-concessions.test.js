@@ -5,7 +5,7 @@ import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
 import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
-import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment } from '../src/core/spatial-recovery-concessions.js';
+import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals } from '../src/core/spatial-recovery-concessions.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 import { stampRoadGenerated } from '../src/core/road-provenance.js';
 const budget=()=>createSpatialPreservationBudget();
@@ -137,4 +137,46 @@ test('detached concession transport verifies a real ordinary road witness, refus
   const malformed=await createSpatialDelta(project,altered,op,1,budget());
   await assert.rejects(()=>verifySpatialConcessionRoadWitness(project,op,malformed,budget()));
   assert.equal(JSON.stringify(project),before);
+});
+
+function collectConcessionProposals(iterator){
+  try{for(;;){const step=iterator.next();if(step.done)return step.value;}}
+  finally{iterator.return();}
+}
+test('detached SRE adjacent frontage and scaled packing produce locally verified parcel bundles',()=>{
+  const before=JSON.stringify(project),op=operation({alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2});
+  let actual=null,entry=null,road=null;
+  for(const e of context.properties){
+    if(!e.buildings.length||e.buildings.some(b=>b.mode!=='rigid'))continue;
+    for(const target of listSpatialAdjacentFrontages(project,op,e.id,budget())){
+      const result=collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,op,e.id,budget(),{frontageRoadId:target,scale:.8}));
+      if(result.length){actual=result;entry=e;road=target;break;}
+    }
+    if(actual)break;
+  }
+  assert.ok(actual?.length,'fixture must exercise a genuine combined local proposal');
+  assert.ok(actual.length<=24);
+  const original=project.city.properties.find(p=>p.id===entry.id);
+  for(const bundle of actual){
+    assert.equal(bundle.property.id,original.id);
+    assert.equal(bundle.property.frontageRoadId,road);
+    assert.deepEqual(bundle.property.plotIds,original.plotIds);
+    assert.deepEqual(bundle.plots.map(p=>p.id),original.plotIds);
+    assert.ok(bundle.plots.every(p=>p.propertyId===original.id&&p.frontageRoadId===road));
+    assert.deepEqual(bundle.buildings.map(b=>b.id).sort(),original.buildingIds.slice().sort());
+    assert.ok(bundle.requiresAccessRepair);
+    for(const b of bundle.buildings){
+      const source=project.city.buildings.find(x=>x.id===b.id);
+      assert.equal(b.frontageRoadId,road);
+      const result=inspectSpatialUniformSimilarity(project,op,b.id,{...b,frontageRoadId:source.frontageRoadId},budget());
+      assert.ok(Math.abs(result.factor-.8)<1e-6);
+    }
+  }
+  const again=collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,op,entry.id,budget(),{frontageRoadId:road,scale:.8}));
+  assert.deepEqual(again,actual);
+  assert.throws(()=>collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,operation({uniformScaling:true,maxLinearReduction:.2}),entry.id,budget(),{frontageRoadId:road,scale:.8})),/Unauthorized alternative frontage/);
+  assert.throws(()=>collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,operation({alternativeFrontage:true}),entry.id,budget(),{frontageRoadId:road,scale:.8})),/Unauthorized scaling/);
+  assert.throws(()=>collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,op,entry.id,budget(),{frontageRoadId:road,scale:.7})),/Unauthorized scaling/);
+  assert.equal(JSON.stringify(project),before);
+  console.log('SRE_CONCESSION_LOCAL_PROPOSALS '+JSON.stringify({propertyId:entry.id,road,scale:.8,count:actual.length}));
 });
