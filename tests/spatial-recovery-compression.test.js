@@ -13,16 +13,18 @@ const offset0={x:-3.005274072121821,y:-37.39896113564458};
 const scales=[1,.75,.5,.25,.125,.025,-.25,-.5,-1];
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 function run(project,offset,packing){
-  const stages={},iterator=iterateRoadGroupReflowB1(project,roadIds,offset,packing?{strategy:'enhanced-adaptive',packing:true}:{});
+  const stages={},blocks=[],inventories=[],iterator=iterateRoadGroupReflowB1(project,roadIds,offset,packing?{strategy:'enhanced-adaptive',packing:true}:{});
   let step;
   try{
     while(!(step=iterator.next()).done){
       const name=step.value?.stage??'other';
       stages[name]=(stages[name]??0)+1;
+      if(name==='block-result')blocks.push(step.value);
+      if(name==='packing-inventory')inventories.push(step.value);
     }
   }finally{iterator.return();}
   const result=step.value,candidate=result.candidateProject;
-  if(!candidate)return {witness:null,stages,issues:result.unresolved.map(i=>i.code)};
+  if(!candidate)return {witness:null,stages,blocks,inventories:inventories.reduce((a,r)=>({proposals:a.proposals+r.proposals,accepted:a.accepted+r.accepted,retained:a.retained+r.retained}),{proposals:0,accepted:0,retained:0}),issues:result.unresolved.map(i=>i.code),lastRejected:result.lare?.lastRejectedCandidate??null};
   validateStoredProject(candidate);
   const draft=prepareRoadGroupIntentB1(project,roadIds,offset),budget=createSpatialPreservationBudget();
   assert.equal(verifyLareGroupPreservation(project,candidate,draft,new Map(),budget),null);
