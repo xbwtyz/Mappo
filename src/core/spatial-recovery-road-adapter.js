@@ -313,7 +313,8 @@ export async function searchSpatialNondestructiveRoadGroup(project,input,budget,
       acceptedRevision:operation.revision,sharedBudget:budget,strategy:'progressive',
       packingFallback:true,packingReuseFixedRefusal:true,detachedProgressiveConcessions:operation,
       detachedPackingInventoryReuse:reusePackingInventory===true,
-      detachedRankConcessionProposals:rankConcessionProposals===true
+      detachedRankConcessionProposals:rankConcessionProposals==='within-frontage'?
+        'within-frontage':rankConcessionProposals===true
     });
     for(;;){
       budget.spend();const step=iterator.next();
