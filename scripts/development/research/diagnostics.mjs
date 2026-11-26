@@ -5,9 +5,9 @@ import {expandResearchManifest,digest} from './contract.mjs';
 const need=(ok,msg)=>{if(!ok)throw Error(msg);};
 const copy=v=>JSON.parse(JSON.stringify(v));
 const nonempty=v=>typeof v==='string'&&v.trim().length>0;
-const statuses=['success','failure','cancelled','timed_out','skipped','incomplete','action_required'];
+const statuses=['success','failure','cancelled','timed_out','skipped','incomplete','action_required','neutral','stale','startup_failure'];
 export function classifyFailure(status,message=''){
-  if(['missing','incomplete','cancelled','skipped','invalid-evidence','action_required'].includes(status))
+  if(['missing','incomplete','cancelled','skipped','invalid-evidence','action_required','neutral','stale'].includes(status))
     return {category:'incomplete-evidence',reason:'Required execution or evidence is missing, canceled, skipped or invalid.'};
   if(['timeout','timed_out'].includes(status)||/ERR_TEST_TIMEOUT|test timed out|exceeded (?:the )?time limit/i.test(message))
     return {category:'timeout',reason:'Explicit timeout status or timeout diagnostic.'};

@@ -1,0 +1,57 @@
+name: Mappo Diagnostics Pilot
+
+# Explicit historical failure replay; never changes original CI status.
+on:
+  push:
+    branches:
+      - chore/dev-opt-p0-p1
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  diagnose:
+    if: contains(github.event.head_commit.message, '[diagnostics-pilot]')
+    name: Retrieve and verify historical CI failure
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Retrieve failed CI evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set +e
+          node scripts/development/research/ci-diagnostics.mjs 45775429431 ec9158be87a81f5e11ab7b3e52838a59434a1002 1 "$RUNNER_TEMP/diagnostic-pilot"
+          result=$?
+          set -e
+          test "$result" = 1
+          node --input-type=module -e '
+            import assert from "node:assert/strict";
+            import {readFileSync} from "node:fs";
+            const r=JSON.parse(readFileSync(process.argv[1],"utf8"));
+            assert.equal(r.originalConclusion,"failure");
+            assert.equal(r.evidenceComplete,true);
+            const j=r.jobs.find(x=>x.id===139757827123);
+            assert.ok(j?.diagnostics);
+            assert.equal(j.diagnostics.originalExitCode,1);
+            assert.match(j.diagnostics.originalLog,/Unknown preservation strategy/);
+            assert.ok(j.diagnostics.failures.some(f=>f.category==="probable-regression"));
+            console.log("DEV_OPT_HISTORICAL_FAILURE_VERIFIED",r.runId,j.id);
+          ' "$RUNNER_TEMP/diagnostic-pilot/report.json"
+      - name: Retain original diagnostic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-ci-diagnostics-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/diagnostic-pilot/report.json
+          if-no-files-found: error
+          retention-days: 14
