@@ -81,7 +81,7 @@ jobs:
         run: npm run build
 
       - name: Run native Node test shard ${{ matrix.shard }}/2
-        run: npm run test:node:shard:${{ matrix.shard }}
+        run: node scripts/ci-node-timing.mjs run ${{ matrix.shard }} 2
 
       - name: Verify checked-in compiled distribution
         run: |
@@ -90,6 +90,15 @@ jobs:
           git ls-files --error-unmatch index.html "dist/mappo-$VERSION.html" > /dev/null
           cmp index.html "dist/mappo-$VERSION.html"
           git diff --exit-code -- index.html "dist/mappo-$VERSION.html"
+
+      - name: Upload Node timing evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: mappo-node-timing-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/ci-timings/node-${{ matrix.shard }}.*
+          if-no-files-found: warn
+          retention-days: 14
 
       # Keep exactly one versioned standalone download per workflow.
       - name: Upload standalone HTML artifacts

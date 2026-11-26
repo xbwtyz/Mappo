@@ -1,0 +1,71 @@
+name: Mappo Node Timing Pilot
+# Isolated diagnostic only; never a required aggregate or release qualification.
+on:
+  push:
+    branches: ['chore/dev-opt-focused-ci']
+permissions:
+  contents: read
+concurrency:
+  group: mappo-node-timing-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  measure:
+    if: contains(github.event.head_commit.message, '[node-timing-pilot]')
+    name: Node timing (shard ${{ matrix.shard }}/4)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact revision and compile standalone
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          npm run build
+          git diff --exit-code -- index.html dist/
+      - name: Measure native Node file summaries
+        run: node scripts/ci-node-timing.mjs run ${{ matrix.shard }} 4
+      - name: Retain measured report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-timing-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: artifacts/ci-timings/node-${{ matrix.shard }}.json
+          if-no-files-found: error
+          retention-days: 14
+  complete:
+    needs: measure
+    if: contains(github.event.head_commit.message, '[node-timing-pilot]')
+    name: Node timing completeness
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: node-timing-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: timing-input
+          merge-multiple: true
+      - name: Verify complete same-attempt inventory and propose two-shard assignment
+        run: node scripts/ci-node-timing.mjs aggregate timing-input 4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: node-timing-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/ci-timings/node-timing-evidence.json
+          if-no-files-found: error
+          retention-days: 14
