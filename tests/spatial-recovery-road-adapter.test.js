@@ -5,7 +5,7 @@ import { createSpatialPreservationBudget, createSpatialOperation } from '../src/
 import { createSpatialDelta, reconstructSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 import { describeSpatialStrategy, describeSpatialCapability, spatialConstraint } from '../src/core/spatial-recovery-registry.js';
 import { LARE_CONSTRAINTS } from '../src/core/reconciliation-constraints.js';
-import { normalizeSpatialRoadGroup, discoverSpatialRoadScope, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, discoverSpatialRoadScope, verifySpatialStrictRoadWitness, searchSpatialPreservingRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
 import { prepareRoadGroupReflowB1 } from '../src/core/neighborhood-reflow.js';
 import { copyJson } from '../src/data/project-format.js';
 const budget=()=>createSpatialPreservationBudget();
@@ -59,4 +59,28 @@ test('SRE strict road witness round-trips a real B1R candidate and rejects fresh
   const forgedDelta=await createSpatialDelta(project,forged,op,1,budget());
   await assert.rejects(verifySpatialStrictRoadWitness(project,op,forgedDelta,budget()),/preservation refused/);
   assert.equal(JSON.stringify(project),original);
+});
+
+test('SRE E2 search bridge reuses progressive LARE and returns a verified detached delta',async()=>{
+  const before=JSON.stringify(project),op=operation();
+  const baseline=prepareRoadGroupReflowB1(project,ids,offset);
+  const witness=await searchSpatialPreservingRoadGroup(project,op,budget());
+  assert.equal(witness.status,'verified-witness');
+  assert.ok(witness.delta);assert.ok(Object.isFrozen(witness));
+  assert.equal(Object.hasOwn(witness,'candidateProject'),false);
+  assert.equal(JSON.stringify(await reconstructSpatialDelta(project,op,1,witness.delta,budget())),
+    JSON.stringify(baseline.candidateProject));
+  const repeated=await searchSpatialPreservingRoadGroup(project,
+    normalizeSpatialRoadGroup(project,1,ids.slice().reverse(),offset),budget());
+  assert.deepEqual(repeated.delta,witness.delta);
+  assert.deepEqual(repeated.stats,witness.stats);
+  assert.equal(JSON.stringify(project),before);
+});
+test('SRE E2 search bridge refuses relaxed permissions and exhausted work without mutation',async()=>{
+  const before=JSON.stringify(project),op=operation();
+  for(const permissions of [{destruction:true},{regeneration:true},{uniformScaling:true},{alternativeFrontage:true}])
+    await assert.rejects(searchSpatialPreservingRoadGroup(project,{...op,permissions},budget()),/not integrated/);
+  await assert.rejects(searchSpatialPreservingRoadGroup(project,op,
+    createSpatialPreservationBudget({work:1,stateExpansions:1})),/budget/);
+  assert.equal(JSON.stringify(project),before);
 });

@@ -1,7 +1,9 @@
 import { createSpatialOperation, createSpatialInventory, createSpatialRef, spatialRefKey } from './spatial-recovery-contract.js';
-import { reconstructSpatialDelta } from './spatial-recovery-delta.js';
+import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-delta.js';
 import { describeSpatialCapability, spatialConstraint } from './spatial-recovery-registry.js';
 import { prepareRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent-c1.js';
+import { iterateRoadGroupReflowB1 } from './neighborhood-reflow.js';
+import { copyJson } from '../data/project-format.js';
 import { createLareContext } from './reconciliation-context.js';
 import { iterateLareGroupPreservation } from './reconciliation-preservation.js';
 import { riBudget, riCompare, riFreeze, riReporter } from './road-impact-model.js';
@@ -13,7 +15,7 @@ export function normalizeSpatialRoadGroup(project,revision,selectedRoadIds,offse
     editedRefs:selectedRoadIds.map(id=>({collection:'roads',id})),permissions,geometry:{offset}});
 }
 
-function sreStrictRoadContext(project,input,budget) {
+function sreStrictRoadOperation(input) {
   const operation=createSpatialOperation(input);
   if(operation.family!=='road'||operation.operation!=='translate-road-group'||!operation.geometry||
     operation.editedRefs.some(ref=>ref.collection!=='roads'))
@@ -21,6 +23,11 @@ function sreStrictRoadContext(project,input,budget) {
   const p=operation.permissions;
   if(p.alternativeFrontage||p.uniformScaling||p.destruction||p.regeneration)
     throw Error('Relaxed spatial road verification is not integrated.');
+  return operation;
+}
+
+function sreStrictRoadContext(project,input,budget) {
+  const operation=sreStrictRoadOperation(input);
   createSpatialInventory(project,operation,budget);
   // Independently derive the accepted geometry intent, never receive
   // proposed junctions or affected blocks from an untrusted candidate.
@@ -101,4 +108,37 @@ function sreFinishMetered(iterator,budget) {
     budget.spend();
     if(step.done)return step.value;
   }
+}
+
+// E2-A detached search bridge. Existing LARE progressive search remains
+// authoritative for candidate production; it receives the operation-wide
+// budget as parent. Never publish a candidate or trust its reported ledger.
+// No worker scheduling or relaxed strategy activation is introduced here.
+export async function searchSpatialPreservingRoadGroup(project,input,budget) {
+  const operation=sreStrictRoadOperation(input);
+  createSpatialInventory(project,operation,budget);
+  // Detach the complete accepted snapshot, including its allocator and opaque
+  // metadata. copyJson rehydrates read-only canonical building projections.
+  const snapshot=copyJson(project);
+  const bytes=new TextEncoder().encode(JSON.stringify(snapshot)).length;
+  budget.spend(Math.max(1,Math.ceil(bytes/64)));
+  const iterator=iterateRoadGroupReflowB1(snapshot,operation.editedRefs.map(ref=>ref.id),
+    operation.geometry.offset,{acceptedRevision:operation.revision,sharedBudget:budget});
+  let result;
+  try {
+    for (;;) {
+      budget.spend();
+      const step=iterator.next();
+      if(step.done){result=step.value;break;}
+    }
+  } finally { iterator.return(); }
+  if(!result?.candidateProject) {
+    return riFreeze({status:'refused',operation,delta:null,
+      issues:(result?.unresolved??[]).map(row=>({code:String(row.code??'unknown'),
+        message:String(row.message??'Road recovery refused.')})),stats:budget.snapshot()});
+  }
+  const delta=await createSpatialDelta(snapshot,result.candidateProject,operation,1,budget);
+  await verifySpatialStrictRoadWitness(snapshot,operation,delta,budget);
+  // Explicitly return transport, not a second complete city or Apply authority.
+  return riFreeze({status:'verified-witness',operation,delta,issues:[],stats:budget.snapshot()});
 }
