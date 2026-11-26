@@ -67,7 +67,78 @@ function* lareDemolitionScope(project, draft, choices, budget) {
     }
   }
   yield* lareProtectReferencedBuildings(project, eligible, budget);
-  return { eligible, issues, blocks: [...blocks.keys()] };
+  return { eligible, issues, blocks: [...blocks.keys()], authorized:scope.authorized };
+}
+
+// Detached SRE eligibility only. Reuse B1R's actual impact-derived writable
+// neighborhood and protected-building scan. No removal, reservation or Apply.
+export function* iterateLareSpatialRetirementEligibility(project,draft,budget){
+  const {eligible,authorized=[]}=yield* lareDemolitionScope(project,draft,new Map(),budget);
+  const groups=new Map(),members=new Map(),blocked=new Set();
+  const properties=riIndex(project.city.properties);
+  for(const parcel of authorized){
+    budget.spend();
+    if(parcel.policy.mode!=='adaptive'||parcel.policy.provenance!=='generated'||
+      parcel.buildings.some(b=>!eligible.has(b.id)))continue;
+    const record=properties.get(parcel.id);
+    if(!record||record.buildingCompounds?.length)continue;
+    const refs=[{collection:'properties',id:parcel.id},
+      ...parcel.plotIds.map(id=>({collection:'plots',id})),
+      ...parcel.buildings.map(b=>({collection:'buildings',id:b.id}))];
+    groups.set(parcel.id,refs);
+    for(const ref of refs){
+      budget.spend();
+      if(!members.has(ref.id))members.set(ref.id,[]);
+      members.get(ref.id).push({group:parcel.id,...ref});
+    }
+  }
+  // Only exact known internal ownership links are exempt. Unknown metadata
+  // containing an exact member ID (as key or value) protects the whole group.
+  // As with the legacy scan, this is not a claim of arbitrary opaque
+  // encoding detection. Full dependency/domain verification remains required.
+  const inspect=(id,owner,field,isKey)=>{
+    for(const member of members.get(id)??[]){
+      budget.spend();
+      const same=owner&&members.get(owner.id)?.some(r=>r.group===member.group&&r.collection===owner.collection);
+      const internal=!isKey&&same&&(
+        (field==='id'&&owner.collection===member.collection&&owner.id===id)||
+        (owner.collection==='properties'&&((field==='plotIds'&&member.collection==='plots')||
+          (field==='buildingIds'&&member.collection==='buildings')) )||
+        (['plots','buildings'].includes(owner.collection)&&field==='propertyId'&&member.collection==='properties')||
+        (owner.collection==='buildings'&&field==='plotIds'&&member.collection==='plots'));
+      if(!internal)blocked.add(member.group);
+    }
+  };
+  const walk=function*(root,owner=null){
+    const stack=[{value:root,field:null}];let steps=0;
+    while(stack.length){
+      if(steps++%1024===0)yield {stage:'sre-retirement-reference-check'};
+      const {value,field}=stack.pop();budget.spend();
+      if(typeof value==='string'){inspect(value,owner,field,false);continue;}
+      if(!value||typeof value!=='object')continue;
+      for(const [key,child] of Object.entries(value)){
+        budget.spend();inspect(key,owner,null,true);
+        // Carry a direct field name only into arrays of scalar IDs; nested
+        // objects may not masquerade as recognized ownership fields.
+        stack.push({value:child,field:Array.isArray(value)?field:
+          value===root?key:null});
+      }
+    }
+  };
+  for(const [key,value] of Object.entries(project)){
+    budget.spend();inspect(key,null,null,true);
+    if(key!=='city'){yield* walk(value);continue;}
+    for(const [collection,records] of Object.entries(value)){
+      budget.spend();inspect(collection,null,null,true);
+      if(Array.isArray(records)){
+        for(const record of records)yield* walk(record,{collection,id:record?.id});
+      }else yield* walk(records);
+    }
+  }
+  const propertyGroups=[...groups.entries()].filter(([id])=>!blocked.has(id))
+    .map(([propertyId,refs])=>({propertyId,refs}));
+  return riFreeze({buildingRefs:[...eligible.keys()].sort(riCompare).map(id=>({collection:'buildings',id})),
+    propertyGroups});
 }
 
 function* lareRequireDemolitionDelta(original, candidate, draft, choices, removalIds, budget) {
