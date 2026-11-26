@@ -1,4 +1,3 @@
-import { inspectSpatialConcessionLedger } from './spatial-recovery-concessions.js';
 import { createSpatialOperation, createSpatialInventory, createSpatialRef, spatialRefKey } from './spatial-recovery-contract.js';
 import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-delta.js';
 import { describeSpatialCapability, spatialConstraint } from './spatial-recovery-registry.js';
@@ -88,29 +87,40 @@ export function discoverSpatialRoadScope(project,input,budget) {
 // Detached strict witness verification only. No editor hooks, no Apply
 // authorization, no search rerun. Existing B1R constraints remain authoritative.
 export async function verifySpatialStrictRoadWitness(project,input,delta,budget) {
-  return sreVerifyRoadWitness(project,input,delta,budget,false);
+  return (await sreVerifyRoadWitness(project,input,delta,budget,false)).candidate;
 }
 // Detached verifier only; does not authorize Apply or initiate search.
 export async function verifySpatialConcessionRoadWitness(project,input,delta,budget) {
-  return sreVerifyRoadWitness(project,input,delta,budget,true);
+  return (await sreVerifyRoadWitness(project,input,delta,budget,true)).candidate;
 }
-async function sreVerifyRoadWitness(project,input,delta,budget,allowConcessions) {
+async function sreVerifyRoadWitness(project,input,delta,budget,allowConcessions,report=null) {
+  report?.('context');
   const result=sreStrictRoadContext(project,input,budget,allowConcessions);
+  report?.('reconstruction');
   const candidate=await reconstructSpatialDelta(project,result.operation,1,delta,budget);
   const {draft,topology}=result;
-  const violation=await sreFinishMetered(iterateLareGroupPreservation(project,candidate,draft,new Map(),budget,new Set(),allowConcessions?result.operation:null),budget);
+  let ledger=null;
+  report?.('preservation');
+  const violation=await sreFinishMetered(iterateLareGroupPreservation(project,candidate,draft,new Map(),budget,new Set(),allowConcessions?result.operation:null,allowConcessions?value=>{ledger=value;}:null),budget);
   if(violation)throw Error('Spatial preservation refused: '+violation.message);
+  if(allowConcessions&&!ledger)throw Error('Missing independently derived concession ledger.');
+  report?.('dependencies');
   const {emit,items}=riReporter(),impactSpend=riBudget();
   const spend=(n=1)=>{impactSpend(n);if(n>0)budget.spend(n);};
   const dependencyContext={roadIds:draft.changedRoadIds,junctionIds:draft.proposedNodes.map(n=>n.id),
     changedBlockIds:topology.identity.changed.filter(f=>f.kind==='block').map(f=>f.id),acceptedValid:true};
   await sreFinishMetered(spatialConstraint('landDependencies').iterate(candidate.city,candidate.city,dependencyContext,emit,spend,project.city),budget);
+  report?.('infrastructure');
   spatialConstraint('infrastructure').check(project.city,candidate.city,dependencyContext,emit,spend);
   const issue=items().find(i=>i.severity!=='info'&&i.code!=='frontage-geometry'&&
     !(i.kind==='plot'&&i.code==='property-containment'));
   if(issue)throw Error('Spatial dependency refused: '+issue.message);
+  report?.('storedProject');
   await sreFinishMetered(spatialConstraint('storedProject').iterate(candidate),budget);
-  return candidate;
+  report?.('complete');
+  // The ledger came from the independent preservation pass, not search.
+  // Neither candidate nor ledger escapes before the full gate succeeds.
+  return {candidate,ledger};
 }
 
 function sreFinishMetered(iterator,budget) {
@@ -235,8 +245,7 @@ export async function searchSpatialConcessionRoadGroup(project,input,budget,{sca
     issues:(result?.unresolved??[]).map(row=>({code:String(row.code??'unknown'),message:String(row.message??'Road recovery refused.')})),
     stats:budget.snapshot()});
   const delta=await createSpatialDelta(snapshot,result.candidateProject,operation,1,budget);
-  const verified=await verifySpatialConcessionRoadWitness(snapshot,operation,delta,budget);
-  const ledger=inspectSpatialConcessionLedger(snapshot,operation,verified,budget);
+  const {ledger}=await sreVerifyRoadWitness(snapshot,operation,delta,budget,true);
   return riFreeze({status:'verified-witness',operation,delta,ledger,stages,issues:[],stats:budget.snapshot()});
 }
 
@@ -249,9 +258,9 @@ export async function searchSpatialNondestructiveRoadGroup(project,input,budget,
   const p=operation.permissions;
   if(!p.alternativeFrontage&&!p.uniformScaling)
     return searchSpatialPackingRoadGroupReuseFixed(project,operation,budget);
-  const attempts=[],stages={};let tier='ordinary',phase='inventory',iterator=null,result=null;
+  const attempts=[],stages={},verificationWork={};let tier='ordinary',phase='inventory',iterator=null,result=null;
   const refusal=(issues,exhausted=null)=>riFreeze({status:'refused',operation,delta:null,ledger:null,cost:null,
-    tier,phase,attempts,stages,issues,exhausted,stats:budget.snapshot()});
+    tier,phase,attempts,stages,verificationWork,issues,exhausted,stats:budget.snapshot()});
   try{
     createSpatialInventory(project,operation,budget);
     const snapshot=copyJson(project);
@@ -277,10 +286,11 @@ export async function searchSpatialNondestructiveRoadGroup(project,input,budget,
     iterator.return();iterator=null;
     if(!result?.candidateProject)return refusal((result?.unresolved??[]).map(i=>({code:String(i.code??'unknown'),message:String(i.message??'Road recovery refused.')})));
     phase='delta';
+    verificationWork.delta=budget.snapshot().work;
     const delta=await createSpatialDelta(snapshot,result.candidateProject,operation,1,budget);
     phase='verification';
-    const verified=await verifySpatialConcessionRoadWitness(snapshot,operation,delta,budget);
-    const ledger=inspectSpatialConcessionLedger(snapshot,operation,verified,budget);
+    const {candidate:verified,ledger}=await sreVerifyRoadWitness(snapshot,operation,delta,budget,true,
+      stage=>{verificationWork[stage]=budget.snapshot().work;});
     if((tier==='ordinary'||tier==='packing')&&(ledger.frontageSwitches.length||ledger.scaledBuildings.length))
       throw Error('Unauthorized concession in ordinary preservation tier.');
     if(tier==='alternative-frontage'&&ledger.scaledBuildings.length)
@@ -290,7 +300,7 @@ export async function searchSpatialNondestructiveRoadGroup(project,input,budget,
       throw Error('Concession exceeded attempted tier scale.');
     phase='score';
     const cost=!ledger.frontageSwitches.length&&!ledger.scaledBuildings.length?scoreSpatialPreservation(snapshot,verified,budget):null;
-    return riFreeze({status:'verified-witness',operation,delta,ledger,cost,tier,phase:'verified',attempts,stages,issues:[],stats:budget.snapshot()});
+    return riFreeze({status:'verified-witness',operation,delta,ledger,cost,tier,phase:'verified',attempts,stages,verificationWork,issues:[],stats:budget.snapshot()});
   }catch(error){
     if(error instanceof LareBudgetExceeded)return refusal([{code:'lare-work-limit',message:error.message}],error.resource);
     throw error;
