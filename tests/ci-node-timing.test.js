@@ -47,18 +47,21 @@ test('native reporter preserves TAP and records real per-file summaries under No
   const dir=mkdtempSync(resolve(tmpdir(),'mappo-node-timing-'));
   try {
     mkdirSync(resolve(dir,'tests'));
-    for(const p of files.slice(0,2)) writeFileSync(resolve(dir,p),"import('node:test').then(({test})=>test('fixture',()=>{}));\n");
+    // Nested CLI must not inherit the parent test runner's child IPC mode.
+    const env={...process.env};
+    delete env.NODE_TEST_CONTEXT;
+    for(const p of files.slice(0,2)) writeFileSync(resolve(dir,p),"const {test}=require('node:test'); test('fixture',()=>{});\n");
     const reporter=fileURLToPath(new URL('../scripts/ci-node-timing-reporter.mjs',import.meta.url));
     const raw=resolve(dir,'timing.ndjson');
     const r=spawnSync(process.execPath,['--test','--test-reporter=tap','--test-reporter-destination=stdout',
-      '--test-reporter='+reporter,'--test-reporter-destination='+raw,...files.slice(0,2)],{cwd:dir,encoding:'utf8'});
-    assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/# pass 2/);
+      '--test-reporter='+reporter,'--test-reporter-destination='+raw,...files.slice(0,2)],{cwd:dir,encoding:'utf8',env});
+    assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/# pass 2/,r.stderr);
     const p=parseTiming(readFileSync(raw,'utf8'),dir,files.slice(0,2));
     assert.equal(p.files.length,2);assert.equal(p.total.counts.tests,2);
     assert.equal(p.files.reduce((n,x)=>n+x.counts.tests,0),2);
-    writeFileSync(resolve(dir,files[0]),"import('node:test').then(({test})=>test('bad',()=>{throw Error('fixture failure')}));\n");
+    writeFileSync(resolve(dir,files[0]),"const {test}=require('node:test'); test('bad',()=>{throw Error('fixture failure')});\n");
     const bad=spawnSync(process.execPath,['--test','--test-reporter=tap','--test-reporter-destination=stdout',
-      '--test-reporter='+reporter,'--test-reporter-destination='+raw,files[0]],{cwd:dir,encoding:'utf8'});
+      '--test-reporter='+reporter,'--test-reporter-destination='+raw,files[0]],{cwd:dir,encoding:'utf8',env});
     assert.notEqual(bad.status,0);assert.match(bad.stdout,/fixture failure/);
   }finally {rmSync(dir,{recursive:true,force:true});}
 });
