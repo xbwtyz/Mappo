@@ -1,3 +1,5 @@
+import { shapesOverlapInterior } from './building-validation.js';
+import { createSpatialConcessionProposalSource } from './spatial-recovery-concessions.js';
 import { describeLareRefusal } from './reconciliation-diagnostics.js';
 import { createLareBudget,LareBudgetExceeded } from './reconciliation-budget.js';
 import { createLareContext, discoverLareParcelScope } from './reconciliation-context.js';
@@ -64,7 +66,7 @@ function lareGroupLedger(before,after,draft,changedBlocks){
 }
 // A complete arrangement is checked without trusting its score or ledger.
 // This adapter receives the already verified planar graph/face analysis.
-export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget(),{enhanced=false}={}){
+export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget(),{enhanced=false,packing=false,concessions=null,onFixedPass=null,reuseFixedRefusal=false,sharedPackingInventory=null}={}){
   const group=draft.selectedRoadIds?.[0]??'group';
   const refused=(issue)=>({...baseline,candidateProject:null,changed:[],ledger:[],status:'needs-review',
     unresolved:[issue],lare:{stats:budget.snapshot()}});
@@ -111,13 +113,82 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     }))]));
     const entries=active.map(p=>{
       const source=propertyIndex.get(p.id),edges=blockEdges.get(p.blockId);
-      return {property:source,plots:p.plotIds.map(id=>plotIndex.get(id)),mode:p.policy.mode,
+      return {property:source,plots:p.plotIds.map(id=>plotIndex.get(id)),mode:p.policy.mode,policy:p.policy,
         edge:edges.find(e=>e.road?.id===p.frontageRoadId),edges,
         fixedNeighbors:city.properties.filter(q=>q.blockId===p.blockId&&spatial.role(q.id)!=='authorized').map(q=>q.boundary),
         buildings:p.buildings.map(b=>({source:buildingIndex.get(b.id),permission:b}))};
     });
     const permissions=new Map(context.properties.flatMap(p=>p.buildings.map(b=>[b.id,b])));
     const parcelPermissions=new Map(context.properties.map(p=>[p.id,p.policy]));
+    const concessionSource=concessions?createSpatialConcessionProposalSource(project,concessions.operation,budget):null;
+    const concessionInventory=concessionSource?function*(entry){
+      const ids=concessions.operation.permissions.alternativeFrontage?concessionSource.frontages(entry.property.id):[entry.property.frontageRoadId];
+      const domains=[];
+      for(const frontageRoadId of ids){
+        const proposals=yield* concessionSource.proposals(entry.property.id,{frontageRoadId,scale:concessions.scale});
+        domains.push(proposals.filter(bundle=>!entry.fixedNeighbors.some(ring=>{
+          budget.spend(ring.length*bundle.property.boundary.length*4);
+          return shapesOverlapInterior(ring,bundle.property.boundary);
+        })));
+      }
+      // Round-robin alternatives across adjacent streets under the existing cap.
+      const result=[];
+      for(let i=0;i<24&&result.length<24;i++)for(const domain of domains)
+        if(domain[i]&&result.length<24)result.push(domain[i]);
+      // Detached challenger only: reorder the same bounded sample. These
+      // local estimates are search hints, never a verified cost or permission.
+      const withinFrontage=concessions.rankProposalOrder==='within-frontage'&&concessions.scale===1;
+      if(concessions.rankProposalOrder===true||withinFrontage){
+        const originals=new Map(entry.buildings.map(b=>[b.source.id,b.source]));
+        const ranked=result.map((bundle,index)=>{
+          let loss=0,moved=0,displacement=0,rotation=0;
+          for(const next of bundle.buildings){
+            const old=originals.get(next.id);
+            budget.spend(Math.max(1,old.geometry.regions.reduce((n,r)=>n+r.ring.length,0)+
+              next.geometry.regions.reduce((n,r)=>n+r.ring.length,0)));
+            loss+=Math.max(0,old.area-next.area);
+            if(!riEqual(old.geometry,next.geometry)||old.orientation!==next.orientation){
+              moved++;const p=lareGroupCenter(old),q=lareGroupCenter(next);
+              displacement+=Math.hypot(q.x-p.x,q.y-p.y);
+              rotation+=Math.abs(Math.atan2(Math.sin(next.orientation-old.orientation),Math.cos(next.orientation-old.orientation)));
+            }
+          }
+          budget.spend(Math.max(1,entry.property.boundary.length+
+            entry.plots.reduce((n,p)=>n+p.boundary.length,0)));
+          const plotCost=entry.plots.reduce((n,p,i)=>n+lareGroupRingCost(p.boundary,bundle.plots[i].boundary),0);
+          return {bundle,index,cost:[Number(bundle.frontageRoadId!==entry.property.frontageRoadId),
+            loss,moved,displacement,rotation,lareGroupRingCost(entry.property.boundary,bundle.property.boundary),plotCost]};
+        });
+        const compare=(a,b)=>{
+          budget.spend();
+          for(let i=0;i<a.cost.length;i++)if(a.cost[i]!==b.cost[i])return a.cost[i]<b.cost[i]?-1:1;
+          return a.index-b.index;
+        };
+        if(withinFrontage){
+          // Preserve the exact round-robin frontage slots and membership.
+          // Reorder only bundles targeting the same street, at full size.
+          const byFrontage=new Map();
+          for(const row of ranked){
+            budget.spend();
+            const key=row.bundle.frontageRoadId;
+            if(!byFrontage.has(key))byFrontage.set(key,{rows:[],index:0});
+            byFrontage.get(key).rows.push(row);
+          }
+          for(const domain of byFrontage.values())domain.rows.sort(compare);
+          const reordered=ranked.map(row=>{
+            budget.spend();
+            const domain=byFrontage.get(row.bundle.frontageRoadId);
+            return domain.rows[domain.index++].bundle;
+          });
+          yield {stage:'sre-concession-within-frontage-ranked',id:entry.property.id,count:ranked.length};
+          return reordered;
+        }
+        ranked.sort(compare);
+        yield {stage:'sre-concession-ranked-proposals',id:entry.property.id,count:ranked.length};
+        return ranked.map(row=>row.bundle);
+      }
+      return result;
+    }:null;
     let lastIssue=null;
     const finalize = function* (row, old) {
       if(old)return incumbent?.result?incumbent:null;
@@ -155,7 +226,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
           if(!permission||(!activeIds.has(b.propertyId)&&!roadsChanged.has(b.frontageRoadId)))continue;
           if(permission.reason==='dependent-structure')return null;
           yield { stage: 'building-access', id: b.id };
-          const repaired=reconcileLareAccess(next,original,b,permission,budget);
+          const repaired=reconcileLareAccess(next,original,b,permission,budget,{allowAlternativeFrontage:concessions?.operation.permissions.alternativeFrontage===true});
           if(!repaired.ok){lastIssue=lareGroupIssue(group,repaired.code,'No authorized route to the existing frontage was found.','geometric-obstruction',[b.id]);return null;}
           const candidate=repaired.building;
           if(permission.provenance==='generated'&&!riEqual(original.plotIds,candidate.plotIds))
@@ -169,7 +240,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
         for(const space of next.openSpaces)if(changedBlocks.has(space.blockId))
           space.area=Math.max(0,changedBlocks.get(space.blockId).area-(areaByBlock.get(space.blockId)??0));
         const candidateProject={...lareGroupClone({...project,city:null}),city:next};
-        const violation=yield* iterateLareGroupPreservation(project,candidateProject,draft,choices,budget);
+        const violation=yield* iterateLareGroupPreservation(project,candidateProject,draft,choices,budget,new Set(),concessions?.operation??null);
         if(violation){lastIssue=violation;return null;}
         const {emit,items}=riReporter(),impactSpend=riBudget(),spend=(n=1)=>{impactSpend(n);if(n>0)budget.spend(n);};
         const dependencyContext={roadIds:draft.changedRoadIds,junctionIds:draft.proposedNodes.map(n=>n.id),
@@ -198,10 +269,21 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     // Zero relocation tier first; if it fails, allow only the individually
     // authorized generated rigid transformations under the same budget.
     const fixed=entries.map(e=>({...e,buildings:e.buildings.map(b=>({...b,permission:{...b.permission,mode:'fixed'}}))}));
-    let outcome=yield* iterateLareArrangement({entries:fixed,finalize,incumbent,enhanced},budget);
-    if(outcome.best)incumbent=outcome.best;
+    // Explicit detached qualification only: isolate the relaxed tier's
+    // work without rerunning the zero-relocation arrangement. Do not infer
+    // a prior fixed refusal or change ordinary production ordering.
+    const relaxedOnly=concessions?.relaxedOnlyDiagnostic===true;
+    let outcome;
+    if(relaxedOnly||reuseFixedRefusal){
+      yield {stage:relaxedOnly?'concession-relaxed-only-diagnostic':'packing-fixed-refusal-reused',stats:budget.snapshot()};
+      outcome={best:incumbent,exhausted:null};
+    }else{
+      outcome=yield* iterateLareArrangement({entries:fixed,finalize,incumbent,enhanced},budget);
+      if(outcome.best)incumbent=outcome.best;
+      onFixedPass?.({refused:!outcome.best&&!outcome.exhausted});
+    }
     if(!outcome.exhausted&&(!incumbent||incumbent.score[0]>0)){
-      outcome=yield* iterateLareArrangement({entries,finalize,incumbent,enhanced},budget);
+      outcome=yield* iterateLareArrangement({entries,finalize,incumbent,enhanced,packing,concessionSource:concessionInventory,sharedPackingInventory},budget);
       if(outcome.best)incumbent=outcome.best;
     }
     if(incumbent)return {...incumbent.result,lare:{source:incumbent.key==='baseline'?'verified-baseline':'adaptive',

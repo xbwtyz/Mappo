@@ -1,3 +1,4 @@
+import { inspectAndVerifySpatialConcessionLedger } from './spatial-recovery-concessions.js';
 import { finishLareSteps } from './reconciliation-steps.js';
 import { LARE_CONSTRAINTS } from './reconciliation-constraints.js';
 import { riEqual,riIndex } from './road-impact-model.js';
@@ -24,9 +25,16 @@ function matchesFixedFrontageReconnect(original, candidate, city, draft, budget)
 // Recompute all permission and preservation checks independently of search
 // scores, ledger, or claimed dispositions. Both the incumbent and every new
 // arrangement must pass this gate before full project validation.
-export function* iterateLareGroupPreservation(before,after,draft,choices,budget,removedIds = new Set()){
+export function* iterateLareGroupPreservation(before,after,draft,choices,budget,removedIds = new Set(), concessionOperation = null, reportConcessionLedger = null){
   yield { stage: 'identity-preservation' };
-  const violation=yield* LARE_CONSTRAINTS.identity.iterate(before,after,draft,removedIds);
+  let frontages=null,scaled=null,ledger=null;
+  if(concessionOperation){
+    if(removedIds.size||choices.size)throw Error('Concession verification does not support removal or authored choices.');
+    ledger=inspectAndVerifySpatialConcessionLedger(before,concessionOperation,after,budget);
+    frontages=new Set(ledger.frontageSwitches.map(row=>row.propertyId));
+    scaled=new Set(ledger.scaledBuildings.map(row=>row.buildingId));
+  }
+  const violation=yield* LARE_CONSTRAINTS.identity.iterate(before,after,draft,removedIds,frontages);
   if(violation)return violation;
   const group=draft.selectedRoadIds?.[0]??'group';
   try{
@@ -55,7 +63,7 @@ export function* iterateLareGroupPreservation(before,after,draft,choices,budget,
       const a=aProps.get(entry.id),b=bProps.get(entry.id);
       const ap=entry.plotIds.map(id=>aPlots.get(id)),bp=entry.plotIds.map(id=>bPlots.get(id));
       budget.spend(Math.max(1,ap.length+entry.buildings.length));
-      const changed=lareGateChanged(a,b,lareGateParcelFields)||ap.some((p,i)=>!riEqual(p,bp[i]));
+      const changed=lareGateChanged(a,b,lareGateParcelFields)||a.frontageRoadId!==b.frontageRoadId||ap.some((p,i)=>!riEqual(p,bp[i]));
       if(entry.policy.mode==='decision-required'&&draft.changedRoadIds?.includes(a.frontageRoadId))
         return lareGateFail('property',a.id,'lare-decision-required','An authored parcel with changed frontage requires an explicit decision.');
       if(entry.policy.mode==='invalid-choice')
@@ -85,7 +93,8 @@ export function* iterateLareGroupPreservation(before,after,draft,choices,budget,
         const original=aBuildings.get(policy.id),candidate=bBuildings.get(policy.id);
         budget.spend();
         const moved=lareGateChanged(original,candidate,['geometry','orientation','area']);
-        if(moved&&(policy.mode!=='rigid'||!LARE_CONSTRAINTS.rigidBuilding.check(original,candidate,budget)))
+        const rigidCandidate=frontages?.has(a.id)?{...candidate,frontageRoadId:original.frontageRoadId}:candidate;
+        if(moved&&(policy.mode!=='rigid'||(!scaled?.has(policy.id)&&!LARE_CONSTRAINTS.rigidBuilding.check(original,rigidCandidate,budget))))
           return lareGateFail('building',policy.id,'lare-rigid-preservation','The building is fixed or its complete geometry is not one rigid transformation.');
         const routeChanged=lareGateChanged(original,candidate,['entrance','accessPath']);
         const approvedCourtyard=courtyardMembers.has(policy.id)&&original.frontageRoadId===a.frontageRoadId;
@@ -106,6 +115,9 @@ export function* iterateLareGroupPreservation(before,after,draft,choices,budget,
           return lareGateFail('building',policy.id,'lare-provenance','Protected or inconsistent building provenance would change.');
       }
     }
+    // Output only, after the complete preservation pass succeeds.
+    // This is never a caller-provided ledger or permission bypass.
+    if(ledger&&reportConcessionLedger)reportConcessionLedger(ledger);
     return null;
   }catch(error){
     if(error instanceof LareBudgetExceeded)throw error;

@@ -77,7 +77,7 @@ const lareBuildingBounds=(points,project)=>{const ps=points.map(project);
   return {minX:Math.min(...ps.map(p=>p.x)),maxX:Math.max(...ps.map(p=>p.x)),
     minY:Math.min(...ps.map(p=>p.y)),maxY:Math.max(...ps.map(p=>p.y))};};
 const lareBuildingOrder=(a,b)=>a.moved-b.moved||a.displacement-b.displacement||a.rotation-b.rotation||a.order-b.order;
-export function* iterateLareBuildingCandidates({source,permission,oldProperty,property,plots,fixedBuildings=[]},budget){
+export function* iterateLareBuildingCandidates({source,permission,oldProperty,property,plots,fixedBuildings=[],seedTransforms=[]},budget){
   if(!budget?.spend||!property?.boundary?.length||property.id!==source.propertyId||
     !plots.length||plots.some(p=>p.propertyId!==undefined&&p.propertyId!==property.id))
     throw Error('Invalid local building context.');
@@ -122,14 +122,15 @@ export function* iterateLareBuildingCandidates({source,permission,oldProperty,pr
         displacement:Math.hypot(dx,dy),rotation:Math.abs(angle),order:rank});
       candidates.sort(lareBuildingOrder);
       if(candidates.length>LARE_LIMITS.buildingCandidates){
-        const groups=new Map();for(const c of candidates){const k=c.rotation===0?'translation':'rotation';groups.set(k,(groups.get(k)??0)+1);}
-        let drop=candidates.length-1;while(drop>0&&groups.get(candidates[drop].rotation===0?'translation':'rotation')===1)drop--;
+        const groups=new Map();for(const c of candidates){const k=c.family==='packed-seed'?'packed-seed':c.rotation===0?'translation':'rotation';groups.set(k,(groups.get(k)??0)+1);}
+        let drop=candidates.length-1;while(drop>0&&groups.get(candidates[drop].family==='packed-seed'?'packed-seed':candidates[drop].rotation===0?'translation':'rotation')===1)drop--;
         candidates.splice(drop,1);
       }
     }catch(error){if(error instanceof LareBudgetExceeded)throw error;}
   };
   yield* tryOne(0,0,0,'world-preserved');
   if(permission?.mode!=='rigid')return candidates;
+  for(const seed of seedTransforms)yield* tryOne(seed.dx,seed.dy,seed.angle,'packed-seed');
   const old=oldProperty?.frame;
   if(old&&oldProperty.local&&property.local){
     const u=(center.x-old.origin.x)*old.tangent.x+(center.y-old.origin.y)*old.tangent.y+

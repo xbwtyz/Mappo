@@ -37,7 +37,7 @@ function b1GeometryPreserved(before,after) {
     before.regions.every((region,i)=>b1SameProtectedFields(region, after.regions[i], ['ring']));
 }
 
-export function* iterateRoadGroupPreservationB1(before,after,draft,removedIds = new Set()) {
+export function* iterateRoadGroupPreservationB1(before,after,draft,removedIds = new Set(),verifiedFrontages = null) {
   const id=draft?.selectedRoadIds?.[0]??'group';
   const fail=(code,message,target=id)=>b1Mismatch(code,message,target);
   if(!supportsCanonicalBuildingProjectSchema(before?.schemaVersion) || before.schemaVersion!==after?.schemaVersion ||
@@ -115,6 +115,11 @@ export function* iterateRoadGroupPreservationB1(before,after,draft,removedIds = 
         else if(!riEqual(a.geometry,b.geometry) && !b1GeometryPreserved(a.geometry,b.geometry))
           return fail('group-building-structure','Generated relocation would alter building structure or metadata.',a.id);
       }
+      // The higher-level gate independently derives this set. Strict callers
+      // omit it and retain the original protected-field policy.
+      const frontageParent=key==='properties'?a.id:a.propertyId;
+      if(['properties','plots','buildings'].includes(key)&&verifiedFrontages?.has(frontageParent))
+        allowed=[...allowed,'frontageRoadId'];
       if(!b1SameProtectedFields(a, b, allowed))
         return fail('group-record-change','This movement would change protected metadata or ownership.',a.id);
     }

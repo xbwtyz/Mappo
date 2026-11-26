@@ -99,3 +99,16 @@ A4-01=B and A4-02 through A4-10=A. The detailed P1–P5 [A4 milestone](milestone
 ## 0.2.22-dev A5 — History and workflow improvements
 
 Owner approved dedicated Reset Preview on Ctrl/Cmd+Shift+Z, accepted Undo on Ctrl/Cmd+Z, district and defense transactions in the shared history, and hover and keyboard-focus feedback for history errors. The [A5 milestone](milestones/0.2.22-history-workflow-a5.md) records the approved saved-snapshot restoration policy and P1–P5 acceptance.
+
+## 0.2.25-dev B1R-E — Owner-approved spatial recovery
+
+SRE-01=A, SRE-02=A, SRE-03=B, SRE-04=A, SRE-05=A, SRE-06=A, SRE-07=A, SRE-08=A, SRE-09=A, SRE-10=A, SRE-11=A, SRE-12=B. Detailed P1–P5 approved; [binding implementation contract](milestones/0.2.25-spatial-recovery-b1r-e.md). Unified destruction search permission and broad editing-family integration supersede narrower R31 recommendations; exact authorization and protection remain mandatory. Schema 10/portable 1/workspace 1 retained. No merge or publishing authorization.
+
+
+### Schema 11 prerequisite completed — SRE resumed
+
+PR #156 merged after owner acceptance; exact-main CI run 45731699500 passed at ec8d66205cfc30f60bc565b482f2ee97e59b172b. Schema 11 supersedes the original Schema 10 preservation baseline for SRE; portable 1/workspace 1 unchanged. Target SRE version 0.2.26-dev. No regeneration activation or merge authorization follows from branch reconciliation.
+
+### Owner-approved multithreading readiness (November 25, 2026)
+
+Prepare SRE for future parallel execution through deterministic detached computations, explicit serializable contracts, immutable snapshots, operation-wide budgets, centralized Schema 11 acceptance and independent validation. Retain existing approved offline SRE worker work. Do not introduce a general worker pool, shared writable memory or a broad parallel rewrite now. Finish SRE, profile the real bottlenecks, then separately propose and approve bounded worker-pool implementation and selective parallel workloads. See [binding SRE readiness direction](milestones/0.2.25-spatial-recovery-b1r-e.md#owner-approved-parallel-execution-readiness). Documentation and current-scope readiness only; no separate implementation, merge or publishing authorization.
