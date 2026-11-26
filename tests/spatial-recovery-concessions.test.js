@@ -5,7 +5,8 @@ import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
 import { normalizeSpatialRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
-import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity } from '../src/core/spatial-recovery-concessions.js';
+import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger } from '../src/core/spatial-recovery-concessions.js';
+import { stampRoadGenerated } from '../src/core/road-provenance.js';
 const budget=()=>createSpatialPreservationBudget();
 const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
 const ids=['RD-0113','RD-0114'],offset={x:.05,y:0};
@@ -68,5 +69,51 @@ test('detached SRE scaling derives uniform factors, preserves canonical structur
     const candidate=scaled(source,.95);tamper(candidate);
     assert.throws(()=>inspectSpatialUniformSimilarity(project,op,source.id,candidate,budget()),/refused/);
   }
+  assert.equal(JSON.stringify(project),before);
+});
+
+test('detached candidate concession ledger derives exact switches and scale loss, never grants edit authority',()=>{
+  const before=JSON.stringify(project),op=operation({alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.1});
+  let selected;
+  for(const entry of context.properties){
+    if(!entry.buildings.length)continue;
+    const options=listSpatialAdjacentFrontages(project,op,entry.id,budget());
+    if(options.length){selected={entry,to:options[0]};break;}
+  }
+  assert.ok(selected,'fixture must exercise eligible switched property and building');
+  const {entry,to}=selected;
+  // Synthetic reference and similarity witness only: this intentionally does
+  // not claim that old parcel geometry fits the new frontage or road intent.
+  const candidate=clone(project),p=candidate.city.properties.find(r=>r.id===entry.id);
+  const from=p.frontageRoadId;
+  p.frontageRoadId=to;
+  const plots=p.plotIds.map(id=>candidate.city.plots.find(r=>r.id===id));
+  for(const plot of plots)plot.frontageRoadId=to;
+  const children=p.buildingIds.map(id=>candidate.city.buildings.find(r=>r.id===id));
+  const first=children[0],b=scaled(first,.95);
+  Object.assign(first,b);
+  for(const child of children){child.frontageRoadId=to;stampRoadGenerated(child);}
+  stampRoadGenerated(p,plots);
+  const ledger=inspectSpatialConcessionLedger(project,op,candidate,budget());
+  assert.deepEqual(ledger.frontageSwitches,[{propertyId:p.id,from,to}]);
+  assert.equal(ledger.scaledBuildings.length,1);
+  assert.equal(ledger.scaledBuildings[0].buildingId,first.id);
+  assert.ok(Math.abs(ledger.scaledBuildings[0].factor-.95)<1e-6);
+  assert.ok(ledger.footprintLoss>0);
+  assert.deepEqual(inspectSpatialConcessionLedger(project,op,candidate,budget()),ledger);
+  assert.throws(()=>inspectSpatialConcessionLedger(project,operation({uniformScaling:true}),candidate,budget()),/Unauthorized alternative frontage/);
+  assert.throws(()=>inspectSpatialConcessionLedger(project,operation({alternativeFrontage:true}),candidate,budget()),/not permitted/);
+  for(const tamper of [
+    c=>c.city.plots.find(r=>r.id===plots[0].id).frontageRoadId=from,
+    c=>c.city.buildings.find(r=>r.id===first.id).frontageRoadId=from,
+    c=>c.city.buildings.find(r=>r.id===first.id).propertyId='wrong',
+    c=>c.city.buildings.pop(),
+    c=>c.city.properties.find(r=>r.id===p.id).frontageRoadId='wrong'
+  ]){
+    const altered=clone(candidate);tamper(altered);
+    assert.throws(()=>inspectSpatialConcessionLedger(project,op,altered,budget()));
+  }
+  const unchanged=inspectSpatialConcessionLedger(project,operation({}),project,budget());
+  assert.deepEqual(unchanged,{frontageSwitches:[],scaledBuildings:[],footprintLoss:0});
   assert.equal(JSON.stringify(project),before);
 });

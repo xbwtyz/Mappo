@@ -3,6 +3,9 @@ import { prepareRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent
 import { createLareContext } from './reconciliation-context.js';
 import { occupiedAreaS10 } from './building-occupancy-s10.js';
 import { validateBuildingStructureS10 } from './building-components-s10.js';
+import { verifyLareRigidGeometry } from './reconciliation-buildings.js';
+import { verifyLarePlotDeformation } from './reconciliation-plots.js';
+import { classifyRoadProvenance } from './road-provenance.js';
 import { riCompare, riEqual, riFreeze } from './road-impact-model.js';
 
 // Detached concession primitives only. No solver, candidate acceptance,
@@ -29,7 +32,9 @@ function derive(project,input,budget){
 // The future full verifier must also prove authorized scope, fit, plot
 // topology, reciprocal references, generated provenance and access.
 export function listSpatialAdjacentFrontages(project,input,propertyId,budget){
-  const {op,context,changed,graph}=derive(project,input,budget);
+  return adjacentFrontages(project,derive(project,input,budget),propertyId,budget);
+}
+function adjacentFrontages(project,{op,context,changed,graph},propertyId,budget){
   if(!op.permissions.alternativeFrontage)return Object.freeze([]);
   const entry=context.properties.find(p=>p.id===propertyId);
   if(!entry||entry.policy.mode!=='adaptive'||entry.policy.provenance!=='generated'||
@@ -53,7 +58,9 @@ export function listSpatialAdjacentFrontages(project,input,propertyId,budget){
 // canonical vertices. Caller does not supply the factor, angle or ledger.
 // This local check does not authorize changing frontage or access.
 export function inspectSpatialUniformSimilarity(project,input,buildingId,candidate,budget){
-  const {op,context,changed}=derive(project,input,budget);
+  return inspectSimilarity(project,derive(project,input,budget),buildingId,candidate,budget);
+}
+function inspectSimilarity(project,{op,context,changed},buildingId,candidate,budget){
   if(!op.permissions.uniformScaling)throw Error('Uniform scaling is not permitted.');
   const entry=context.properties.find(p=>p.buildings.some(b=>b.id===buildingId));
   const policy=entry?.buildings.find(b=>b.id===buildingId);
@@ -94,4 +101,87 @@ export function inspectSpatialUniformSimilarity(project,input,buildingId,candida
     Math.abs(areaAfter-areaBefore*factor*factor)>eps*Math.max(1,areaBefore)||
     Math.abs(candidate.area-original.area*factor*factor)>eps*Math.max(1,original.area))fail();
   return riFreeze({buildingId,factor,angle,footprintLoss:Math.max(0,areaBefore-areaAfter)});
+}
+
+// Independently derive a candidate-wide concession inventory. This is a
+// partial gate: the ordinary road intent, exact metadata, geometry fit,
+// dependencies, access and stored-project gates still MUST be run. Never
+// treat the ledger, even if empty, as acceptance or Apply authority.
+export function inspectSpatialConcessionLedger(project,input,candidate,budget){
+  const derived=derive(project,input,budget),{op,context,changed}=derived;
+  if(candidate?.schemaVersion!==project.schemaVersion||
+    (candidate.id??candidate.city?.id)!==op.projectId||
+    !riEqual(project.identityAllocation,candidate.identityAllocation))
+    throw Error('Concession candidate identity or allocation changed.');
+  const indexes=(city)=>{
+    const result={};
+    for(const collection of ['properties','plots','buildings']){
+      const map=new Map();
+      for(const row of city[collection]){
+        budget.spend();
+        if(map.has(row.id))throw Error('Duplicate concession candidate identity.');
+        map.set(row.id,row);
+      }
+      result[collection]=map;
+    }
+    return result;
+  };
+  const old=indexes(project.city),next=indexes(candidate.city);
+  for(const key of Object.keys(old))
+    if(!riEqual([...old[key].keys()],[...next[key].keys()]))
+      throw Error('Concession candidate membership changed.');
+  const scope=new Map(context.properties.map(p=>[p.id,p])),frontageSwitches=[],scaledBuildings=[];
+  const switched=new Set();
+  for(const [id,a] of old.properties){
+    budget.spend();const b=next.properties.get(id),entry=scope.get(id);
+    if(!riEqual(a.plotIds,b.plotIds)||!riEqual(a.buildingIds,b.buildingIds)||a.blockId!==b.blockId||
+      a.districtId!==b.districtId)throw Error('Concession property ownership changed.');
+    if(a.frontageRoadId===b.frontageRoadId)continue;
+    if(!adjacentFrontages(project,derived,id,budget).includes(b.frontageRoadId))
+      throw Error('Unauthorized alternative frontage.');
+    const ap=a.plotIds.map(pid=>old.plots.get(pid)),bp=b.plotIds.map(pid=>next.plots.get(pid));
+    if(!entry||ap.some(p=>!p||p.propertyId!==id||p.frontageRoadId!==a.frontageRoadId)||
+      bp.some(p=>!p||p.propertyId!==id||p.frontageRoadId!==b.frontageRoadId)||
+      b.buildingIds.some(bid=>old.buildings.get(bid)?.frontageRoadId!==a.frontageRoadId||
+        next.buildings.get(bid)?.frontageRoadId!==b.frontageRoadId))
+      throw Error('Concession frontage references are inconsistent.');
+    if(classifyRoadProvenance(b,bp)!=='generated')throw Error('Concession property provenance changed.');
+    verifyLarePlotDeformation(b.boundary,ap,bp,budget);
+    switched.add(id);frontageSwitches.push({propertyId:id,from:a.frontageRoadId,to:b.frontageRoadId});
+  }
+  for(const [id,a] of old.plots){
+    budget.spend();const b=next.plots.get(id),parent=next.properties.get(a.propertyId);
+    if(!parent||!parent.plotIds.includes(id)||a.propertyId!==b.propertyId||a.blockId!==b.blockId)
+      throw Error('Concession plot ownership changed.');
+    if(a.frontageRoadId!==b.frontageRoadId&&(!switched.has(a.propertyId)||b.frontageRoadId!==parent.frontageRoadId))
+      throw Error('Unauthorized plot frontage change.');
+  }
+  for(const [id,a] of old.buildings){
+    budget.spend();const b=next.buildings.get(id),parent=next.properties.get(a.propertyId);
+    if(!parent||!parent.buildingIds.includes(id)||a.propertyId!==b.propertyId||a.blockId!==b.blockId||
+      a.districtId!==b.districtId||!Array.isArray(b.plotIds)||!b.plotIds.length||
+      new Set(b.plotIds).size!==b.plotIds.length||b.plotIds.some(pid=>!parent.plotIds.includes(pid)))
+      throw Error('Concession building ownership changed.');
+    const changedFrontage=a.frontageRoadId!==b.frontageRoadId;
+    if(changedFrontage&&(!switched.has(a.propertyId)||b.frontageRoadId!==parent.frontageRoadId))
+      throw Error('Unauthorized building frontage change.');
+    const entry=scope.get(a.propertyId),policy=entry?.buildings.find(row=>row.id===id);
+    const moved=!riEqual(a.geometry,b.geometry)||a.orientation!==b.orientation||a.area!==b.area;
+    if(!moved&&!changedFrontage)continue;
+    if(!entry||!changed.has(entry.blockId)||entry.policy.mode!=='adaptive'||
+      policy?.mode!=='rigid'||policy.provenance!=='generated'||classifyRoadProvenance(b)!=='generated')
+      throw Error('Concession building is protected or outside changed scope.');
+    // Frontage was checked independently above. Normalize that single
+    // verified reference for the existing rigid/similarity comparison.
+    // Do not rewrite the candidate or normalize any other metadata.
+    const normalized=changedFrontage?{...b,frontageRoadId:a.frontageRoadId}:b;
+    if(verifyLareRigidGeometry(a,normalized,budget))continue;
+    const result=inspectSimilarity(project,derived,id,normalized,budget);
+    if(result.factor>=1-eps)throw Error('Non-rigid geometry without positive footprint reduction.');
+    scaledBuildings.push(result);
+  }
+  frontageSwitches.sort((a,b)=>riCompare(a.propertyId,b.propertyId));
+  scaledBuildings.sort((a,b)=>riCompare(a.buildingId,b.buildingId));
+  return riFreeze({frontageSwitches,scaledBuildings,
+    footprintLoss:scaledBuildings.reduce((sum,row)=>sum+row.footprintLoss,0)});
 }
