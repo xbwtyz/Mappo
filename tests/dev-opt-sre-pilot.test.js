@@ -4,12 +4,13 @@ import {readFileSync} from 'node:fs';
 import {manifest,tasks,aggregate,gates,targetRevision,validateSubmission} from '../scripts/development/research/sre-pilot.mjs';
 import {digest} from '../scripts/development/research/contract.mjs';
 const m=manifest({harnessRevision:'a'.repeat(40),runId:'123',attempt:'1'});
-const evidence=()=>[0,1].map(index=>({index,manifestDigest:digest(m),targetRevision,harnessRevision:m.harnessRevision,runId:m.runId,attempt:m.attempt,rows:tasks(m,index).map(t=>({key:t.key,inputDigest:digest(t),inputFingerprint:digest(t.case),operationFingerprint:digest(['op',t.case]),candidateFingerprint:'b'.repeat(64),status:'verified',elapsedMs:1,stats:{work:300,expansions:5},counts:{properties:0,plots:0,buildings:0},demolishedFootprint:0,scaleLoss:0,gates:Object.fromEntries(gates.map(g=>[g,true]))}))}));
+const allTasks=m=>[0,1,2,3].flatMap(i=>tasks(m,i));
+const evidence=()=>[0,1,2,3].map(index=>({index,manifestDigest:digest(m),targetRevision,harnessRevision:m.harnessRevision,runId:m.runId,attempt:m.attempt,rows:tasks(m,index).map(t=>({key:t.key,inputDigest:digest(t),inputFingerprint:digest(t.case),operationFingerprint:digest(['op',t.case]),candidateFingerprint:'b'.repeat(64),status:'verified',elapsedMs:1,stats:{work:300,expansions:5},counts:{properties:0,plots:0,buildings:0},demolishedFootprint:0,scaleLoss:0,gates:Object.fromEntries(gates.map(g=>[g,true]))}))}));
 test('DEV-OPT SRE cross-revision pilot pins source, permission scope and budgets',()=>{
   assert.notEqual(m.targetRevision,m.harnessRevision);assert.equal(m.targetRevision,targetRevision);
-  assert.equal(m.budget.work,32000000);assert.equal(m.budget.expansions,131072);assert.equal(m.budget.concurrency,2);
-  assert.equal(m.permissions.regeneration,undefined);assert.equal(new Set([...tasks(m,0),...tasks(m,1)].map(t=>t.key)).size,4);
-  assert.throws(()=>tasks(m,2));
+  assert.equal(m.budget.work,32000000);assert.equal(m.budget.expansions,131072);assert.equal(m.budget.concurrency,4);
+  assert.equal(m.permissions.regeneration,undefined);assert.equal(new Set(allTasks(m).map(t=>t.key)).size,4);
+  assert.throws(()=>tasks(m,4));
 });
 test('DEV-OPT SRE cross-revision evidence cannot qualify stale, incomplete or invalid outcomes',()=>{
   const ok=aggregate(m,evidence(),'success');assert.equal(ok.complete,true);assert.equal(ok.productionAdoptionAuthorized,false);
@@ -22,7 +23,7 @@ test('DEV-OPT SRE cross-revision evidence cannot qualify stale, incomplete or in
 test('DEV-OPT reusable SRE submission validates unseen movement partition, bounded schedules and source',()=>{
   const s=JSON.parse(readFileSync(new URL('../docs/development/research/sre-submission.json',import.meta.url),'utf8'));
   const full=manifest({harnessRevision:'a'.repeat(40),runId:'123',attempt:'1'},s);
-  assert.equal(new Set([...tasks(full,0),...tasks(full,1)].map(t=>t.key)).size,8);
+  assert.equal(new Set(allTasks(full).map(t=>t.key)).size,8);
   assert.equal(s.cases.filter(c=>c.partition==='held-out').length,2);
   for(const edit of [x=>x.targetRevision='main',x=>x.schedules.push('arbitrary'),x=>{delete x.cases[2].fixture;x.cases[2].scale=.5;},x=>x.cases[2].fixture.seed='mappo-001',x=>x.cases[3].fixture.seed=x.cases[2].fixture.seed,x=>x.cases[3].scale=2,x=>x.cases[3]={...x.cases[2],id:'duplicate'}]){
     const bad=JSON.parse(JSON.stringify(s));edit(bad);assert.throws(()=>validateSubmission(bad));
@@ -34,5 +35,5 @@ test('DEV-OPT held-out city submission has separate seeds and deterministic fixt
   const full=manifest({harnessRevision:'a'.repeat(40),runId:'123',attempt:'1'},s);
   const held=full.cases.filter(c=>c.partition==='held-out');assert.equal(held.length,2);
   assert.equal(new Set(held.map(c=>c.fixture.seed)).size,2);assert.notEqual(held[0].fixture.morphology,held[1].fixture.morphology);
-  assert.equal(tasks(full,0).find(t=>t.case.id===held[0].id).case.fixture.seed,held[0].fixture.seed);
+  assert.equal(allTasks(full).find(t=>t.case.id===held[0].id).case.fixture.seed,held[0].fixture.seed);
 });
