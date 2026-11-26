@@ -242,6 +242,50 @@ test('detached cooperative concession transport compression diagnostic',{timeout
         assert.deepEqual(actual.identityAllocation,source.identityAllocation);
         assert.equal(Object.hasOwn(result,'candidateProject'),false);
         assert.ok(result.ledger.frontageSwitches.length&&result.ledger.scaledBuildings.length);
+        assert.deepEqual(result.delta.retired,[]);assert.deepEqual(result.delta.added,[]);
+        for(const key of ['properties','plots','buildings','roads','nodes','blocks'])
+          assert.deepEqual(actual.city[key].map(r=>r.id),source.city[key].map(r=>r.id));
+        if(!irregularProperties&&scaleOffset===.25){
+          // A3: genuine combined witness, not merely a synthetic ledger.
+          const originalDelta=JSON.stringify(result.delta),originalCandidate=JSON.stringify(actual);
+          const replay=await verifySpatialConcessionRoadWitness(source,op,result.delta,budget());
+          assert.deepEqual(replay,actual);
+          assert.notEqual(replay,actual);
+          const rerun=await searchSpatialConcessionRoadGroup(source,op,budget(),{scale:.8});
+          assert.equal(rerun.status,'verified-witness');
+          assert.deepEqual(rerun.delta,result.delta);assert.deepEqual(rerun.ledger,result.ledger);
+          const intent=permissions=>normalizeSpatialRoadGroup(source,1,roadIds,op.geometry.offset,permissions);
+          for(const policy of [{alternativeFrontage:true},{uniformScaling:true,maxLinearReduction:.2},
+            {alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.05}]){
+            const denied=intent(policy);
+            await assert.rejects(()=>verifySpatialConcessionRoadWitness(source,denied,result.delta,budget()),/Stale or incompatible/);
+            // A freshly rebound transport must still fail the domain gate.
+            const rebound=await createSpatialDelta(source,actual,denied,1,budget());
+            await assert.rejects(()=>verifySpatialConcessionRoadWitness(source,denied,rebound,budget()));
+          }
+          const staleRevision=normalizeSpatialRoadGroup(source,2,roadIds,op.geometry.offset,op.permissions);
+          await assert.rejects(()=>verifySpatialConcessionRoadWitness(source,staleRevision,result.delta,budget()),/Stale or incompatible/);
+          const alteredOffset=normalizeSpatialRoadGroup(source,1,roadIds,
+            {x:op.geometry.offset.x+.01,y:op.geometry.offset.y},op.permissions);
+          await assert.rejects(()=>verifySpatialConcessionRoadWitness(source,alteredOffset,result.delta,budget()));
+          for(const key of ['acceptedFingerprint','intentFingerprint','policyFingerprint','candidateFingerprint']){
+            const forged=clone(result.delta);forged[key]='0'.repeat(64);
+            await assert.rejects(()=>verifySpatialConcessionRoadWitness(source,op,forged,budget()));
+          }
+          const duplicate=clone(result.delta);duplicate.modified.push(duplicate.modified[0]);
+          await assert.rejects(()=>verifySpatialConcessionRoadWitness(source,op,duplicate,budget()),/Duplicate/);
+          const omitted=clone(result.delta);omitted.modified.pop();
+          await assert.rejects(()=>verifySpatialConcessionRoadWitness(source,op,omitted,budget()),/fingerprint/);
+          const tiny=createSpatialPreservationBudget({work:1,stateExpansions:1});
+          await assert.rejects(()=>verifySpatialConcessionRoadWitness(source,op,result.delta,tiny),
+            error=>error.name==='LareBudgetExceeded');
+          assert.equal(JSON.stringify(result.delta),originalDelta);
+          assert.equal(JSON.stringify(actual),originalCandidate);
+          assert.equal(JSON.stringify(source),before);
+          console.log('SRE_CONCESSION_TRANSPORT_CONTRACT '+JSON.stringify({replay:true,deterministic:true,
+            deniedPolicies:3,staleRevision:true,alteredIntent:true,forgedDigests:4,duplicate:true,omitted:true,
+            exhausted:true,identityUnchanged:true}));
+        }
         successful.push([irregularProperties,scaleOffset]);
       }else if(result){assert.equal(result.status,'refused');assert.equal(result.delta,null);}
       exercised+=Number(Boolean(result?.stages?.['concession-inventory']));
