@@ -124,7 +124,7 @@ function sreFinishMetered(iterator,budget) {
 // authoritative for candidate production; it receives the operation-wide
 // budget as parent. Never publish a candidate or trust its reported ledger.
 // No worker scheduling or relaxed strategy activation is introduced here.
-async function sreSearchPreservingRoadGroup(project,input,budget,packing=false,strategy='enhanced-adaptive',packingFallback=false) {
+async function sreSearchPreservingRoadGroup(project,input,budget,packing=false,strategy='enhanced-adaptive',packingFallback=false,packingReuseFixedRefusal=false) {
   const operation=sreStrictRoadOperation(input);
   createSpatialInventory(project,operation,budget);
   // Detach the complete accepted snapshot, including its allocator and opaque
@@ -133,7 +133,7 @@ async function sreSearchPreservingRoadGroup(project,input,budget,packing=false,s
   const bytes=new TextEncoder().encode(JSON.stringify(snapshot)).length;
   budget.spend(Math.max(1,Math.ceil(bytes/64)));
   const iterator=iterateRoadGroupReflowB1(snapshot,operation.editedRefs.map(ref=>ref.id),
-    operation.geometry.offset,{acceptedRevision:operation.revision,sharedBudget:budget,...(packing?{strategy,packing:true}:packingFallback?{strategy:'progressive',packingFallback:true}:{})});
+    operation.geometry.offset,{acceptedRevision:operation.revision,sharedBudget:budget,...(packing?{strategy,packing:true}:packingFallback?{strategy:'progressive',packingFallback:true,packingReuseFixedRefusal}:{})});
   let result;
   try {
     for (;;) {
@@ -202,6 +202,11 @@ export async function searchSpatialPackingRoadGroupSinglePass(project,input,budg
 // one parent budget and one independent transport verification.
 export async function searchSpatialPackingRoadGroupStrictFirst(project,input,budget) {
   return sreSearchPreservingRoadGroup(project,input,budget,false,'progressive',true);
+}
+// Detached ordinary-first comparison: reuse only an actually completed
+// enhanced fixed-pass refusal within the same generator operation.
+export async function searchSpatialPackingRoadGroupReuseFixed(project,input,budget){
+  return sreSearchPreservingRoadGroup(project,input,budget,false,'progressive',true,true);
 }
 
 // Explicit detached strategy qualification. Not a replacement for the

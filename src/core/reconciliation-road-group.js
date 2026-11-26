@@ -66,7 +66,7 @@ function lareGroupLedger(before,after,draft,changedBlocks){
 }
 // A complete arrangement is checked without trusting its score or ledger.
 // This adapter receives the already verified planar graph/face analysis.
-export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget(),{enhanced=false,packing=false,concessions=null}={}){
+export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget(),{enhanced=false,packing=false,concessions=null,onFixedPass=null,reuseFixedRefusal=false}={}){
   const group=draft.selectedRoadIds?.[0]??'group';
   const refused=(issue)=>({...baseline,candidateProject:null,changed:[],ledger:[],status:'needs-review',
     unresolved:[issue],lare:{stats:budget.snapshot()}});
@@ -222,12 +222,13 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     // a prior fixed refusal or change ordinary production ordering.
     const relaxedOnly=concessions?.relaxedOnlyDiagnostic===true;
     let outcome;
-    if(relaxedOnly){
-      yield {stage:'concession-relaxed-only-diagnostic',stats:budget.snapshot()};
+    if(relaxedOnly||reuseFixedRefusal){
+      yield {stage:relaxedOnly?'concession-relaxed-only-diagnostic':'packing-fixed-refusal-reused',stats:budget.snapshot()};
       outcome={best:incumbent,exhausted:null};
     }else{
       outcome=yield* iterateLareArrangement({entries:fixed,finalize,incumbent,enhanced},budget);
       if(outcome.best)incumbent=outcome.best;
+      onFixedPass?.({refused:!outcome.best&&!outcome.exhausted});
     }
     if(!outcome.exhausted&&(!incumbent||incumbent.score[0]>0)){
       outcome=yield* iterateLareArrangement({entries,finalize,incumbent,enhanced,packing,concessionSource:concessionInventory},budget);

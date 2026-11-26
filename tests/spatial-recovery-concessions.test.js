@@ -284,7 +284,7 @@ test('detached relaxed-only concession tier measures repeated fixed-pass overhea
   const offset0={x:-3.005274072121821,y:-37.39896113564458},roadIds=['RD-0184','RD-0186'];
   const cases=[{irregularProperties:false,offset:.25,scale:1},{irregularProperties:false,offset:.5,scale:1},
     ...[.25,.5].flatMap(offset=>[1,.95,.9,.8].map(scale=>({irregularProperties:true,offset,scale})))];
-  let exercised=0;
+  let exercised=0,verifiedCount=0;
   for(const irregularProperties of [false,true]){
     const source=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
       shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
@@ -301,6 +301,7 @@ test('detached relaxed-only concession tier measures repeated fixed-pass overhea
       const stats=shared.snapshot();assert.ok(stats.work<=8000000&&stats.expansions<=32768);
       if(result?.stages?.['concession-relaxed-only-diagnostic'])exercised++;
       let metrics=null;
+      if(result?.status==='verified-witness')verifiedCount++;
       if(result?.status==='verified-witness'){
         const actual=await verifySpatialConcessionRoadWitness(source,op,result.delta,budget());
         const ledger=inspectSpatialConcessionLedger(source,op,actual,budget());
@@ -318,4 +319,5 @@ test('detached relaxed-only concession tier measures repeated fixed-pass overhea
     }
   }
   assert.ok(exercised,'relaxed-only diagnostic must exercise its intended branch');
+  assert.equal(verifiedCount,cases.length,'retain all ten independently verified relaxed-only witnesses');
 });
