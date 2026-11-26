@@ -305,3 +305,42 @@ test('SRE unified no-concession route retains exact historical ordinary fingerpr
   assert.equal(retained,historical.cases.length);
   console.log('SRE_UNIFIED_HISTORICAL '+JSON.stringify({retained}));
 });
+
+// Compare the opt-in inventory reuse path against previously qualified
+// ordinary/packing fingerprints and all 18 shared-budget cases.
+for(const irregularProperties of [false,true])test('SRE unified operation-local packing inventory reuse '+(irregularProperties?'irregular':'regular'),{timeout:600000},async()=>{
+  const project=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
+  const before=hash(project),summary={cases:0,verified:0,knownRetained:0,cacheHits:0};
+  for(const scale of scales){
+    const op=normalizeSpatialRoadGroup(project,1,roadIds,{x:offset0.x*scale,y:offset0.y*scale},
+      {alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2});
+    const budget=createSpatialPreservationBudget();
+    const result=await searchSpatialNondestructiveRoadGroup(project,op,budget,{reusePackingInventory:true});
+    const stats=budget.snapshot();assert.ok(stats.work<=8000000&&stats.expansions<=32768);
+    const hits={parcel:result.stages?.['sre-packing-parcel-cache-hit']??0,building:result.stages?.['sre-packing-building-cache-hit']??0};
+    summary.cases++;summary.cacheHits+=hits.parcel+hits.building;
+    let metrics=null;
+    if(result.status==='verified-witness'){
+      const candidate=await verifySpatialConcessionRoadWitness(project,op,result.delta,createSpatialPreservationBudget());
+      validateStoredProject(candidate);
+      assert.deepEqual(candidate.identityAllocation,project.identityAllocation);
+      for(const key of ['properties','plots','buildings'])assert.deepEqual(candidate.city[key].map(r=>r.id),project.city[key].map(r=>r.id));
+      const ledger=inspectSpatialConcessionLedger(project,op,candidate,createSpatialPreservationBudget());
+      assert.deepEqual(ledger,result.ledger);
+      if([.025,.125,-.25].includes(scale)){
+        const strict=normalizeSpatialRoadGroup(project,1,roadIds,op.geometry.offset);
+        const reference=await qualifyCoordinator(project,strict,searchSpatialPackingRoadGroupReuseFixed);
+        assert.equal(reference.status,'verified-witness');assert.equal(hash(candidate),reference.fingerprint);
+        assert.deepEqual(result.cost,reference.cost);
+      }
+      metrics={switches:ledger.frontageSwitches.length,scaled:ledger.scaledBuildings.length,loss:ledger.footprintLoss,fingerprint:hash(candidate)};
+      summary.verified++;summary.knownRetained+=Number([.025,.125,-.25,.25,.5].includes(scale));
+    }else{assert.equal(result.status,'refused');assert.equal(result.delta,null);}
+    if([.025,.125,-.25].includes(scale))assert.equal(result.status,'verified-witness','established strict/packing witness lost');
+    assert.equal(hash(project),before);
+    console.log('SRE_INVENTORY_REUSE_CASE '+JSON.stringify({irregularProperties,scale,status:result.status,tier:result.tier,phase:result.phase,attempts:result.attempts,stats,hits,metrics}));
+  }
+  assert.ok(summary.cacheHits>0,'operation-local cache must be exercised');
+  console.log('SRE_INVENTORY_REUSE_SUMMARY '+JSON.stringify({irregularProperties,...summary}));
+});

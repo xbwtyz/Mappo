@@ -66,7 +66,7 @@ function lareGroupLedger(before,after,draft,changedBlocks){
 }
 // A complete arrangement is checked without trusting its score or ledger.
 // This adapter receives the already verified planar graph/face analysis.
-export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget(),{enhanced=false,packing=false,concessions=null,onFixedPass=null,reuseFixedRefusal=false}={}){
+export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget(),{enhanced=false,packing=false,concessions=null,onFixedPass=null,reuseFixedRefusal=false,sharedPackingInventory=null}={}){
   const group=draft.selectedRoadIds?.[0]??'group';
   const refused=(issue)=>({...baseline,candidateProject:null,changed:[],ledger:[],status:'needs-review',
     unresolved:[issue],lare:{stats:budget.snapshot()}});
@@ -231,7 +231,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
       onFixedPass?.({refused:!outcome.best&&!outcome.exhausted});
     }
     if(!outcome.exhausted&&(!incumbent||incumbent.score[0]>0)){
-      outcome=yield* iterateLareArrangement({entries,finalize,incumbent,enhanced,packing,concessionSource:concessionInventory},budget);
+      outcome=yield* iterateLareArrangement({entries,finalize,incumbent,enhanced,packing,concessionSource:concessionInventory,sharedPackingInventory},budget);
       if(outcome.best)incumbent=outcome.best;
     }
     if(incumbent)return {...incumbent.result,lare:{source:incumbent.key==='baseline'?'verified-baseline':'adaptive',
