@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "targetRevision": "b9591e1754436eedda064cef205cedd987007a57",
+  "targetRevision": "4c9d5744248329b92e0a7e3676144a687f6724e1",
   "schedules": [
-    "iterative-256m",
-    "child-priority-256m"
+    "child-priority-256m",
+    "child-exchange-256m"
   ],
   "cases": [
     {
