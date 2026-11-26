@@ -1,0 +1,79 @@
+// Run only the fixed SRE pilot against an independently checked-out target revision.
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {join} from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {performance} from 'node:perf_hooks';
+import {digest} from './contract.mjs';
+import {targetRevision,schedules,gates} from './sre-pilot.mjs';
+const task=JSON.parse(readFileSync(0,'utf8')),m=task.manifest,root=process.argv[2],start=performance.now();
+const load=p=>import(pathToFileURL(join(root,p)).href);
+try{
+  assert.match(m.targetRevision,/^[a-f0-9]{40}$/);assert.ok(schedules.includes(task.schedule));
+  assert.equal(task.manifestDigest,digest(m));
+  const {createProject}=await load('src/core/city-model.js');
+  const {normalizeSpatialRoadGroup}=await load('src/core/spatial-recovery-road-adapter.js');
+  const {createSpatialDestructionBudget}=await load('src/core/spatial-recovery-contract.js');
+  const {searchSpatialUnifiedRoadGroup,verifySpatialUnifiedRoadWitness}=await load('src/core/spatial-recovery-coordinator.js');
+  const {validateStoredProject}=await load('src/data/project-validation.js');
+  const {buildRoadGraph}=await load('src/core/road-graph.js');
+  const {proposeRoadGroupNodesB1}=await load('src/core/road-group-b1.js');
+  const {prepareRoadGroupIntentB1}=await load('src/core/road-intent-c1.js');
+  function selectRoads(project,offset){
+    const graph=buildRoadGraph(project.city);assert.ok(graph.valid,'Generated graph invalid');
+    const pairs=new Map();
+    for(const [,incident] of graph.incidentRoads){
+      const ids=[...incident].filter(id=>!graph.roadClasses.get(id)?.protected).sort();
+      for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){const pair=[ids[i],ids[j]];pairs.set(pair.join(':'),pair);}
+    }
+    // Fixed pre-search selection, independent of strategy or solver outcome.
+    for(const key of [...pairs.keys()].sort().slice(0,128)){
+      const ids=pairs.get(key);
+      if(!proposeRoadGroupNodesB1(graph,ids,offset).draftable)continue;
+      const draft=prepareRoadGroupIntentB1(project,ids,offset);
+      if(draft.group?.eligible&&draft.draftable&&draft.topologyResolved&&draft.facesResolved&&draft.status!=='unchanged'&&!draft.issues?.some(i=>i.code==='boundary-escape'))return ids;
+    }
+    throw Error('No eligible held-out road pair within fixed 128-pair selection bound.');
+  }
+  async function solve(){
+    const c=task.case,project=createProject({...m.project,...(c.fixture??{}),irregularProperties:c.irregularProperties}),before=digest(project);
+    validateStoredProject(project);
+    const offset={x:m.offset.x*c.scale,y:m.offset.y*c.scale};
+    const roadIds=c.fixture?selectRoads(project,offset):m.roadIds;
+    const op=normalizeSpatialRoadGroup(project,1,roadIds,offset,m.permissions),operationFingerprint=digest(op);
+    const shared=createSpatialDestructionBudget();
+    const result=await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:task.schedule});
+    assert.deepEqual(result.stats,shared.snapshot());
+    assert.ok(result.stats.work<=m.budget.work&&result.stats.expansions<=m.budget.expansions);
+    if(result.status==='refused'&&c.expectation==='exploratory'){
+      assert.equal(result.delta,null);assert.equal(result.basisDelta,null);assert.equal(digest(project),before);
+      return {status:'refused',inputFingerprint:before,operationFingerprint,roadIds,offset,candidateFingerprint:null,kind:null,counts:null,demolishedFootprint:null,scaleLoss:null,stats:result.stats,attempts:result.attempts};
+    }
+    assert.equal(result.status,'verified-witness','Known pilot movement refused');
+    assert.ok(['nondestructive','retirement'].includes(result.kind));
+    const actual=await verifySpatialUnifiedRoadWitness(project,op,result,createSpatialDestructionBudget());
+    validateStoredProject(actual);
+    assert.equal(digest(actual),result.delta.candidateFingerprint);
+    assert.deepEqual(actual.identityAllocation,project.identityAllocation);assert.deepEqual(result.delta.added,[]);
+    assert.deepEqual(result.delta.retired,result.ledger.retired);
+    const counts={};
+    for(const k of ['properties','plots','buildings']){
+      const ids=new Set(actual.city[k].map(r=>r.id)),missing=project.city[k].filter(r=>!ids.has(r.id)).map(r=>r.id);
+      assert.deepEqual(missing.slice().sort(),result.delta.retired.filter(r=>r.collection===k).map(r=>r.id).sort());
+      assert.deepEqual(actual.city[k].map(r=>r.id),project.city[k].filter(r=>ids.has(r.id)).map(r=>r.id));
+      counts[k]=missing.length;
+    }
+    if(c.expectation==='known-preservation'){
+      assert.equal(result.kind,'nondestructive');assert.deepEqual(counts,{properties:0,plots:0,buildings:0});
+      assert.equal(digest(actual),'29be178022ec22688c465c5f9bb77451c29a697b3a5ef05088f9e9d6ce991581');
+    }else if(c.expectation==='known-compression'){
+      assert.equal(result.kind,'retirement');
+      const expected=task.schedule==='baseline'?[19,29,25]:[5,9,9];
+      assert.deepEqual(Object.values(counts),expected);
+    }
+    assert.equal(digest(project),before);
+    return {status:'verified',inputFingerprint:before,operationFingerprint,roadIds,offset,candidateFingerprint:digest(actual),kind:result.kind,counts,demolishedFootprint:result.ledger.demolishedFootprint,scaleLoss:result.ledger.concessions?.footprintLoss??0,stats:result.stats};
+  }
+  const a=await solve(),b=await solve();assert.deepEqual(a,b,'Nondeterministic SRE replay');
+  console.log(JSON.stringify({...a,elapsedMs:performance.now()-start,peakRssKiB:process.resourceUsage().maxRSS,gates:Object.fromEntries((a.status==='verified'?gates:['nonmutation','deterministicReplay','budget']).map(g=>[g,true]))}));
+}catch(e){console.error(e.stack);process.exitCode=1;}

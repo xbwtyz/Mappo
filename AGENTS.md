@@ -12,6 +12,10 @@
 4. Existing GitHub documentation and workflow contracts remain operative until changed by an expressly approved repository change. Historical milestone notes are evidence, not evergreen instructions; verify current `main` before stating the state of the project.
 5. When a new request conflicts with existing code/CI/repository safeguards, explain the conflict and obtain explicit implementation approval. **Do not secretly alter tests or guards to make a preferred policy appear implemented.**
 
+## Development work-cycle policy
+
+Use the [DEV-OPT bounded work-cycle policy](docs/contributing/dev-opt-work-cycle.md) for risk-based batching, explicitly bounded approvals, versioned development checkpoints and measured performance. Before resuming a paused milestone, locate its checkpoint in `docs/development/checkpoints/` and independently verify the branch, PR, CI evidence and artifact identity against GitHub. A checkpoint is historical evidence, never new authority. Preserve the existing explicit approval, full CI, merge and publishing gates. Where a checkpoint format does not support the current state, stop relying on it and reconstruct from live evidence instead.
+
 ## Permission and GitHub boundaries
 
 - **Analysis, planning, audits, and document drafts are read-only by default.** Do not create branches, commits, PRs, issues or releases unless the request authorizes that work.

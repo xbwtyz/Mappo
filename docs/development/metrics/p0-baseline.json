@@ -1,0 +1,616 @@
+{
+  "version": 1,
+  "repository": "xbwtyz/Mappo",
+  "selection": "Eight latest main Mappo CI runs and nine latest SRE Fast Checks as observed at the paused checkpoint; mixed revisions and workloads, descriptive only. Full mandatory job conclusions checked independently. Job timing only captured for latest full main run; others explicitly missing. Fast job conclusions beyond the observed workflow results not captured in this baseline.",
+  "runs": [
+    {
+      "runId": 45731699500,
+      "head": "ec8d66205cfc30f60bc565b482f2ee97e59b172b",
+      "kind": "full-main",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-26T00:51:22Z",
+      "updatedAt": "2026-11-26T00:56:52Z",
+      "jobs": [
+        {
+          "name": "Resolve full CI request",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-26T00:51:25Z",
+          "completedAt": "2026-11-26T00:51:43Z"
+        },
+        {
+          "name": "Browser QA (integration)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-26T00:51:46Z",
+          "completedAt": "2026-11-26T00:55:27Z"
+        },
+        {
+          "name": "Browser QA (property)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-26T00:51:45Z",
+          "completedAt": "2026-11-26T00:55:12Z"
+        },
+        {
+          "name": "Browser QA (roads)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-26T00:51:46Z",
+          "completedAt": "2026-11-26T00:56:44Z"
+        },
+        {
+          "name": "Browser QA (desktop)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-26T00:51:46Z",
+          "completedAt": "2026-11-26T00:56:05Z"
+        },
+        {
+          "name": "Node regression (shard 1/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-26T00:51:46Z",
+          "completedAt": "2026-11-26T00:56:46Z"
+        },
+        {
+          "name": "Node regression (shard 2/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-26T00:51:46Z",
+          "completedAt": "2026-11-26T00:55:53Z"
+        },
+        {
+          "name": "Build, Node tests and browser QA",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-26T00:56:48Z",
+          "completedAt": "2026-11-26T00:56:51Z"
+        }
+      ]
+    },
+    {
+      "runId": 45569607918,
+      "head": "1e7c9d317723f6e122c76ba195b63a3c36ab029d",
+      "kind": "full-main",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-25T07:37:35Z",
+      "updatedAt": "2026-11-25T07:42:37Z",
+      "jobs": [
+        {
+          "name": "Node regression (shard 1/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Node regression (shard 2/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (desktop)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (roads)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (property)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (integration)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Build, Node tests and browser QA",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "runId": 45561292537,
+      "head": "dfeed6f8209189f1075c575296779fa886a10a1a",
+      "kind": "full-main",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-25T06:31:57Z",
+      "updatedAt": "2026-11-25T06:37:04Z",
+      "jobs": [
+        {
+          "name": "Node regression (shard 1/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Node regression (shard 2/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (desktop)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (roads)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (property)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (integration)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Build, Node tests and browser QA",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "runId": 45493182198,
+      "head": "ad2a0f88995fbd6c869fcb38575626ff85cded19",
+      "kind": "full-main",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-24T21:38:45Z",
+      "updatedAt": "2026-11-24T21:45:23Z",
+      "jobs": [
+        {
+          "name": "Node regression (shard 1/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Node regression (shard 2/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (desktop)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (roads)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (property)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (integration)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Build, Node tests and browser QA",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "runId": 45337793050,
+      "head": "e5f1cf83dcdcc75e52911aa717035955b40569d0",
+      "kind": "full-main",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-24T06:04:58Z",
+      "updatedAt": "2026-11-24T06:10:08Z",
+      "jobs": [
+        {
+          "name": "Node regression (shard 1/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Node regression (shard 2/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (desktop)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (roads)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (property)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (integration)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Build, Node tests and browser QA",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "runId": 45327425647,
+      "head": "978e50eaff3988f0d0792c8dd021de7519dce794",
+      "kind": "full-main",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-24T04:35:17Z",
+      "updatedAt": "2026-11-24T04:40:01Z",
+      "jobs": [
+        {
+          "name": "Node regression (shard 1/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Node regression (shard 2/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (desktop)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (roads)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (property)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (integration)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Build, Node tests and browser QA",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "runId": 45320332821,
+      "head": "5692ab04a6cbea6609c7ef90d9583b5a6efec0a3",
+      "kind": "full-main",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-24T03:33:25Z",
+      "updatedAt": "2026-11-24T03:38:39Z",
+      "jobs": [
+        {
+          "name": "Node regression (shard 1/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Node regression (shard 2/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (desktop)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (roads)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (property)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (integration)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Build, Node tests and browser QA",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "runId": 45315493125,
+      "head": "6fdebec66bd627b99dc09d4201907bc47ab229db",
+      "kind": "full-main",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-24T02:52:17Z",
+      "updatedAt": "2026-11-24T02:57:06Z",
+      "jobs": [
+        {
+          "name": "Node regression (shard 1/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Node regression (shard 2/2)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (desktop)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (roads)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (property)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Browser QA (integration)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        },
+        {
+          "name": "Build, Node tests and browser QA",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "runId": 45772991075,
+      "head": "e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7",
+      "kind": "fast-draft",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-26T07:07:26Z",
+      "updatedAt": "2026-11-26T07:09:55Z",
+      "jobs": [
+        {
+          "name": "Build, syntax and targeted Node smoke tests",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": null,
+          "completedAt": null
+        }
+      ]
+    },
+    {
+      "runId": 45772115322,
+      "head": "f2d3bfdfc6d9b716e88e64f166c68b19016e1951",
+      "kind": "fast-draft",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-26T07:00:18Z",
+      "updatedAt": "2026-11-26T07:06:10Z",
+      "jobs": null
+    },
+    {
+      "runId": 45771116802,
+      "head": "d3eae430cd0856eb49730c26bd2a32baae5e1b47",
+      "kind": "fast-draft",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-26T06:51:33Z",
+      "updatedAt": "2026-11-26T06:58:21Z",
+      "jobs": null
+    },
+    {
+      "runId": 45770235100,
+      "head": "eda6956a4376717028270a1609ab69ff7d944e21",
+      "kind": "fast-draft",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-26T06:44:02Z",
+      "updatedAt": "2026-11-26T06:48:41Z",
+      "jobs": null
+    },
+    {
+      "runId": 45769661449,
+      "head": "5e7b5969a8441f901fe9426ea4c6c14efbd1f6f3",
+      "kind": "fast-draft",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-26T06:39:06Z",
+      "updatedAt": "2026-11-26T06:42:36Z",
+      "jobs": null
+    },
+    {
+      "runId": 45769101995,
+      "head": "3d0db8416756196cf856291bccb3ee8439c434b0",
+      "kind": "fast-draft",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-26T06:34:14Z",
+      "updatedAt": "2026-11-26T06:35:49Z",
+      "jobs": null
+    },
+    {
+      "runId": 45768624269,
+      "head": "e2a1358ac6b193ac5ab9c5dec3b9a5247e62741f",
+      "kind": "fast-draft",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-26T06:30:11Z",
+      "updatedAt": "2026-11-26T06:31:32Z",
+      "jobs": null
+    },
+    {
+      "runId": 45768293013,
+      "head": "ca119a38fe8365671113f213df5a2b04035ca749",
+      "kind": "fast-draft",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-26T06:27:13Z",
+      "updatedAt": "2026-11-26T06:28:22Z",
+      "jobs": null
+    },
+    {
+      "runId": 45768015918,
+      "head": "b719cb72b6e65a408f770ae0f1204999c4bc3dfd",
+      "kind": "fast-draft",
+      "status": "completed",
+      "conclusion": "failure",
+      "createdAt": "2026-11-26T06:24:49Z",
+      "updatedAt": "2026-11-26T06:26:24Z",
+      "jobs": null
+    }
+  ],
+  "comparisons": [
+    {
+      "runId": 45771116802,
+      "compressionCases": 44,
+      "nodeMilliseconds": 394210.102447
+    },
+    {
+      "runId": 45772115322,
+      "compressionCases": 44,
+      "nodeMilliseconds": 339601.253386
+    },
+    {
+      "runId": 45772991075,
+      "compressionCases": 8,
+      "nodeMilliseconds": 129413.104863
+    }
+  ],
+  "unmeasured": [
+    "approval interruption count",
+    "handoff preparation effort",
+    "duplicate workload outside sampled runs",
+    "comparable time-of-day effects",
+    "manual acceptance effort"
+  ]
+}
