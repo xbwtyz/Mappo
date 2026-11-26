@@ -1,4 +1,5 @@
 import { riEqual, riFreeze } from './road-impact-model.js';
+import { inspectSpatialConcessionLedger } from './spatial-recovery-concessions.js';
 
 // Detached scoring only. The caller must independently verify the witness
 // before ranking it. This preservation tier cannot compare destructive or
@@ -28,9 +29,12 @@ function srePairs(before,after,key,budget){
   });
 }
 export function scoreSpatialPreservation(before,after,budget){
+  return sreMeasurePreservation(before,after,budget,false);
+}
+function sreMeasurePreservation(before,after,budget,allowConcessions){
   const cost=Object.fromEntries(sreMetricKeys.map(key=>[key,0]));
   for(const [a,b] of srePairs(before,after,'buildings',budget)){
-    if(a.frontageRoadId!==b.frontageRoadId||Math.abs(a.area-b.area)>1e-6)
+    if(!allowConcessions&&(a.frontageRoadId!==b.frontageRoadId||Math.abs(a.area-b.area)>1e-6))
       throw Error('Unexpected preserving concession.');
     if(!riEqual(a.geometry,b.geometry)||a.orientation!==b.orientation){
       budget.spend(Math.max(1,a.geometry.regions.reduce((n,r)=>n+r.ring.length,0)+b.geometry.regions.reduce((n,r)=>n+r.ring.length,0)));
@@ -42,7 +46,7 @@ export function scoreSpatialPreservation(before,after,budget){
   }
   for(const [collection,metric] of [['properties','propertyDeformation'],['plots','plotDeformation']]){
     for(const [a,b] of srePairs(before,after,collection,budget)){
-      if(a.frontageRoadId!==b.frontageRoadId)throw Error('Unexpected preserving frontage.');
+      if(!allowConcessions&&a.frontageRoadId!==b.frontageRoadId)throw Error('Unexpected preserving frontage.');
       cost[metric]+=sreRingCost(a.boundary,b.boundary,budget);
     }
   }
@@ -63,4 +67,46 @@ export function preferVerifiedSpatialPreservation(incumbent,challenger){
   if(!challenger)return incumbent;
   if(!incumbent)return challenger;
   return compareSpatialPreservationCost(challenger.cost,incumbent.cost)<0?challenger:incumbent;
+}
+
+
+// A2 detached measurements. These do not certify an accepted edit: callers
+// must separately reconstruct and fully verify each witness before ranking.
+// Re-derive the permission/identity/geometry ledger from original records;
+// never accept a claimed ledger or arbitrary area reduction from search.
+export function scoreSpatialConcessions(before,input,after,budget){
+  const ledger=inspectSpatialConcessionLedger(before,input,after,budget);
+  let maxLinearReduction=0;
+  for(const row of ledger.scaledBuildings){
+    budget.spend();
+    maxLinearReduction=Math.max(maxLinearReduction,1-row.factor);
+  }
+  const cost={frontageSwitches:ledger.frontageSwitches.length,
+    scaledBuildings:ledger.scaledBuildings.length,footprintLoss:ledger.footprintLoss,
+    maxLinearReduction,...sreMeasurePreservation(before,after,budget,true)};
+  sreValidateConcessionCost(cost);
+  return riFreeze(cost);
+}
+const sreConcessionMetricKeys=['frontageSwitches','scaledBuildings','footprintLoss','maxLinearReduction',...sreMetricKeys];
+function sreValidateConcessionCost(cost){
+  if(sreConcessionMetricKeys.some(key=>!Number.isFinite(cost?.[key])||cost[key]<0)||
+    !['frontageSwitches','scaledBuildings','movedBuildings','accessChanges'].every(key=>Number.isSafeInteger(cost[key]))||
+    cost.scaledBuildings>cost.movedBuildings||cost.maxLinearReduction>1||
+    (!cost.scaledBuildings&&(cost.footprintLoss!==0||cost.maxLinearReduction!==0))||
+    (cost.scaledBuildings&&(cost.footprintLoss<=0||cost.maxLinearReduction<=0)))
+    throw Error('Invalid spatial concession cost.');
+}
+const sreConcessionTier=cost=>cost.scaledBuildings?2:cost.frontageSwitches?1:0;
+// Candidate policy for detached qualification only: strict/packing before
+// frontage-only before scaling; smaller maximum reduction before other
+// costs within the scaling tier. Then fewer switches, less lost footprint,
+// fewer scaled buildings, and the unchanged preservation priority.
+// Exact ties retain the earlier verified incumbent at the selection site.
+export function compareSpatialConcessionCost(a,b){
+  sreValidateConcessionCost(a);sreValidateConcessionCost(b);
+  const tier=sreConcessionTier(a)-sreConcessionTier(b);
+  if(tier)return Math.sign(tier);
+  for(const key of ['maxLinearReduction','frontageSwitches','footprintLoss','scaledBuildings'])
+    if(a[key]!==b[key])return a[key]<b[key]?-1:1;
+  return compareSpatialPreservationCost(a,b);
 }

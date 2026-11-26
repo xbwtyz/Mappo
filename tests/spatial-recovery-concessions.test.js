@@ -7,6 +7,7 @@ import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpat
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals, createSpatialConcessionProposalSource } from '../src/core/spatial-recovery-concessions.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
+import { scoreSpatialConcessions,compareSpatialConcessionCost,scoreSpatialPreservation } from '../src/core/spatial-recovery-score.js';
 import { stampRoadGenerated } from '../src/core/road-provenance.js';
 const budget=()=>createSpatialPreservationBudget();
 const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
@@ -15,6 +16,28 @@ const operation=permissions=>normalizeSpatialRoadGroup(project,1,ids,offset,perm
 const draft=prepareRoadGroupIntentB1(project,ids,offset);
 const context=createLareContext(project,draft,new Map(),budget());
 const clone=x=>JSON.parse(JSON.stringify(x));
+test('detached concession cost preserves tier priority and deterministic multidimensional ordering',()=>{
+  const zero={frontageSwitches:0,scaledBuildings:0,footprintLoss:0,maxLinearReduction:0,
+    movedBuildings:0,displacement:0,rotation:0,propertyDeformation:0,plotDeformation:0,accessChanges:0};
+  const strict={...zero,movedBuildings:100,displacement:1000};
+  const frontage={...zero,frontageSwitches:2,movedBuildings:3};
+  const scaled={...zero,frontageSwitches:1,scaledBuildings:1,footprintLoss:10,maxLinearReduction:.05,movedBuildings:1};
+  const rows=[strict,frontage,scaled];
+  for(let i=0;i<rows.length;i++)for(let j=0;j<rows.length;j++)
+    assert.equal(compareSpatialConcessionCost(rows[i],rows[j]),Math.sign(i-j));
+  assert.equal(compareSpatialConcessionCost(scaled,{...scaled,maxLinearReduction:.1,footprintLoss:1}),-1);
+  assert.equal(compareSpatialConcessionCost(frontage,{...frontage,frontageSwitches:3,movedBuildings:0}),-1);
+  assert.equal(compareSpatialConcessionCost(scaled,{...scaled,footprintLoss:11}),-1);
+  for(const key of ['movedBuildings','displacement','rotation','propertyDeformation','plotDeformation','accessChanges'])
+    assert.equal(compareSpatialConcessionCost(frontage,{...frontage,[key]:frontage[key]+1}),-1);
+  assert.throws(()=>compareSpatialConcessionCost(scaled,{...scaled,footprintLoss:NaN}),/Invalid spatial concession cost/);
+  assert.throws(()=>compareSpatialConcessionCost(zero,{...zero,footprintLoss:1}),/Invalid spatial concession cost/);
+  assert.throws(()=>compareSpatialConcessionCost(frontage,{...frontage,frontageSwitches:-1}),/Invalid spatial concession cost/);
+  const op=operation({});
+  const measured=scoreSpatialConcessions(project,op,project,budget());
+  assert.deepEqual(measured,{...zero,...scoreSpatialPreservation(project,project,budget())});
+  assert.ok(Object.isFrozen(measured));
+});
 test('detached SRE frontage options require permission, same-block adjacency and eligible generated children',()=>{
   const before=JSON.stringify(project),op=operation({alternativeFrontage:true});
   const eligible=context.properties.filter(p=>p.policy.mode==='adaptive'&&p.buildings.every(b=>b.mode==='rigid'));
@@ -280,6 +303,13 @@ test('detached concession tier comparison measures least-disruptive available re
             plotDeformation:actual.city.plots.reduce((n,p)=>n+ringCost(priorPlots.get(p.id).boundary,p.boundary),0),
             accessChanges:actual.city.buildings.filter(b=>JSON.stringify([b.entrance,b.accessPath])!==JSON.stringify([prior.get(b.id).entrance,prior.get(b.id).accessPath])).length};
           assert.ok(Object.values(metrics).every(n=>Number.isFinite(n)&&n>=0));
+          // Independent legacy diagnostic calculation is an oracle for the
+          // new common scorer, not a source of rank or permission.
+          const ranked=scoreSpatialConcessions(source,op,actual,budget());
+          for(const key of Object.keys(metrics))
+            assert.ok(Math.abs(metrics[key]-ranked[key])<1e-6,'concession metric mismatch: '+key);
+          assert.equal(ranked.maxLinearReduction,Math.max(0,...ledger.scaledBuildings.map(b=>1-b.factor)));
+          metrics=ranked;
         }else if(result){assert.equal(result.status,'refused');assert.equal(result.delta,null);}
         assert.equal(JSON.stringify(source),before);
         rows.push({scale,status:result?.status??'exhausted',exhausted,stats,metrics,
@@ -288,7 +318,15 @@ test('detached concession tier comparison measures least-disruptive available re
           accessChecks:result?.stages['building-access']??0,
           unions:result?.stages['block-union']??0});
       }
-      console.log('SRE_CONCESSION_TIER_COMPARISON '+JSON.stringify({irregularProperties,scaleOffset,rows}));
+      // Independent trial ranking is evidence only. Each trial used its own
+      // qualification budget; it cannot justify resetting a live operation.
+      const verified=rows.filter(row=>row.status==='verified-witness');
+      let preferred=null;
+      for(const row of verified)
+        if(!preferred||compareSpatialConcessionCost(row.metrics,preferred.metrics)<0)preferred=row;
+      if(verified.some(row=>row.metrics.scaledBuildings===0))
+        assert.equal(preferred.metrics.scaledBuildings,0);
+      console.log('SRE_CONCESSION_TIER_COMPARISON '+JSON.stringify({irregularProperties,scaleOffset,rows,preferred:preferred?.scale??null}));
     }
   }
 });
