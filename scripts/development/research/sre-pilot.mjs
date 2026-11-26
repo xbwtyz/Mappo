@@ -34,7 +34,7 @@ export function validateSubmission(s){
   }
   need(s.cases.some(c=>c.partition==='development'),'Missing development cases.');
   const experimental=s.schedules.some(x=>Object.hasOwn(budgetWork,x));
-  if(experimental)need(s.targetRevision==='fe4b3c9306bde3b110b5f77b292521320ec5f6d2'&&s.schedules.every(x=>Object.hasOwn(budgetWork,x))&&s.cases.every(c=>c.expectation==='exploratory'&&c.partition==='development'&&!c.fixture),'Invalid isolated budget sensitivity submission.');
+  if(experimental)need(s.targetRevision==='fe4b3c9306bde3b110b5f77b292521320ec5f6d2'&&s.schedules.length===2&&s.schedules.includes('budget-32m')&&s.schedules.includes('combined-256m')&&s.cases.every(c=>c.expectation==='exploratory'&&c.partition==='development'&&!c.fixture&&[1,.75,.5,.25,.125,.025,-.25,-.5,-1].includes(c.scale)),'Invalid isolated budget sensitivity submission.');
   return s;
 }
 export function manifest(identity,submission={version:1,targetRevision,schedules:['baseline','diversified-restoration'],cases}){
