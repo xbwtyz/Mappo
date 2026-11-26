@@ -296,7 +296,7 @@ export async function searchSpatialRankedConcessionRoadGroup(project,input,budge
 // strategies remain available. This path never resets the caller's budget,
 // never accepts a candidate without independent reconstruction and verification,
 // and never grants Apply authority. No new permission defaults.
-export async function searchSpatialNondestructiveRoadGroup(project,input,budget,{reusePackingInventory=false}={}){
+export async function searchSpatialNondestructiveRoadGroup(project,input,budget,{reusePackingInventory=false,rankConcessionProposals=false}={}){
   const operation=sreStrictRoadOperation(input,true);
   const p=operation.permissions;
   if(!p.alternativeFrontage&&!p.uniformScaling)
@@ -312,7 +312,8 @@ export async function searchSpatialNondestructiveRoadGroup(project,input,budget,
     iterator=iterateRoadGroupReflowB1(snapshot,operation.editedRefs.map(ref=>ref.id),operation.geometry.offset,{
       acceptedRevision:operation.revision,sharedBudget:budget,strategy:'progressive',
       packingFallback:true,packingReuseFixedRefusal:true,detachedProgressiveConcessions:operation,
-      detachedPackingInventoryReuse:reusePackingInventory===true
+      detachedPackingInventoryReuse:reusePackingInventory===true,
+      detachedRankConcessionProposals:rankConcessionProposals===true
     });
     for(;;){
       budget.spend();const step=iterator.next();

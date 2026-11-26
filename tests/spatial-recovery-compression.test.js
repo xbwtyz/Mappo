@@ -5,7 +5,7 @@ import { iterateRoadGroupReflowB1 } from '../src/core/neighborhood-reflow.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
 import { verifyLareGroupPreservation } from '../src/core/reconciliation-preservation.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
-import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, compareSpatialPreservationCost } from '../src/core/spatial-recovery-score.js';
+import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, compareSpatialPreservationCost, scoreSpatialConcessions, compareSpatialConcessionCost } from '../src/core/spatial-recovery-score.js';
 import { validateStoredProject } from '../src/data/project-validation.js';
 import { normalizeSpatialRoadGroup, searchSpatialPackingRoadGroup, searchSpatialPackingRoadGroupSinglePass, searchSpatialPackingRoadGroupStrictFirst, searchSpatialPackingRoadGroupReuseFixed, searchSpatialNondestructiveRoadGroup, searchSpatialPreservingRoadGroup, verifySpatialStrictRoadWitness, verifySpatialConcessionRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { LareBudgetExceeded } from '../src/core/reconciliation-budget.js';
@@ -312,6 +312,7 @@ for(const irregularProperties of [false,true])test('SRE unified operation-local 
   const project=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
     shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
   const before=hash(project),summary={cases:0,verified:0,knownRetained:0,cacheHits:0};
+  const rankedSummary={cases:0,verified:0,retained:0,lost:0,added:0,better:0,equal:0,worse:0,rankedInventories:0};
   // Exact already-qualified concessions must survive transport optimization.
   const establishedConcessions=irregularProperties?{}:{
     .25:'704fbb3ae8a6d05d96f8ed6f85ca9b59da6fc14a1299dd22c248285c5227ba07',
@@ -339,9 +340,10 @@ for(const irregularProperties of [false,true])test('SRE unified operation-local 
       prior=trace[key];
     }
     if(result.status==='verified-witness')assert.deepEqual(keys,stages);
-    let metrics=null;
+    let metrics=null,baselineRank=null;
     if(result.status==='verified-witness'){
       const candidate=await verifySpatialConcessionRoadWitness(project,op,result.delta,createSpatialPreservationBudget());
+      baselineRank=scoreSpatialConcessions(project,op,candidate,createSpatialPreservationBudget());
       validateStoredProject(candidate);
       assert.deepEqual(candidate.identityAllocation,project.identityAllocation);
       for(const key of ['properties','plots','buildings'])assert.deepEqual(candidate.city[key].map(r=>r.id),project.city[key].map(r=>r.id));
@@ -376,7 +378,53 @@ for(const irregularProperties of [false,true])test('SRE unified operation-local 
     }
     assert.equal(hash(project),before);
     console.log('SRE_INVENTORY_REUSE_CASE '+JSON.stringify({irregularProperties,scale,status:result.status,tier:result.tier,phase:result.phase,attempts:result.attempts,stats,hits,metrics,verificationWork:result.verificationWork}));
+    // Separate qualification trial with the same hard limits, not an in-
+    // operation retry. Never combine witnesses or claim a shared-budget win.
+    const rankedBudget=createSpatialPreservationBudget();
+    const ranked=await searchSpatialNondestructiveRoadGroup(project,op,rankedBudget,
+      {reusePackingInventory:true,rankConcessionProposals:true});
+    const rankedStats=rankedBudget.snapshot();
+    assert.ok(rankedStats.work<=8000000&&rankedStats.expansions<=32768);
+    rankedSummary.cases++;
+    rankedSummary.rankedInventories+=ranked.stages?.['sre-concession-ranked-proposals']??0;
+    let rankedCost=null,fingerprint=null,comparison=null;
+    if(ranked.status==='verified-witness'){
+      const candidate=await verifySpatialConcessionRoadWitness(project,op,ranked.delta,createSpatialPreservationBudget());
+      validateStoredProject(candidate);
+      assert.deepEqual(candidate.identityAllocation,project.identityAllocation);
+      for(const key of ['properties','plots','buildings'])
+        assert.deepEqual(candidate.city[key].map(r=>r.id),project.city[key].map(r=>r.id));
+      assert.deepEqual(inspectSpatialConcessionLedger(project,op,candidate,createSpatialPreservationBudget()),ranked.ledger);
+      fingerprint=hash(candidate);
+      rankedCost=scoreSpatialConcessions(project,op,candidate,createSpatialPreservationBudget());
+      rankedSummary.verified++;
+      if(baselineRank){
+        rankedSummary.retained++;
+        comparison=compareSpatialConcessionCost(rankedCost,baselineRank);
+        rankedSummary[comparison<0?'better':comparison>0?'worse':'equal']++;
+      }else rankedSummary.added++;
+    }else{
+      assert.equal(ranked.status,'refused');assert.equal(ranked.delta,null);
+      if(baselineRank)rankedSummary.lost++;
+    }
+    // Ordinary/packing successes never reach the new proposal ordering.
+    if([.025,.125,-.25].includes(scale)){
+      assert.equal(ranked.status,'verified-witness');
+      assert.equal(fingerprint,metrics.fingerprint);
+      assert.deepEqual(ranked.cost,result.cost);
+      assert.equal(comparison,0);
+    }
+    assert.equal(hash(project),before);
+    console.log('SRE_RANKED_PROGRESSIVE_CASE '+JSON.stringify({irregularProperties,scale,
+      baseline:{status:result.status,tier:result.tier,cost:baselineRank,fingerprint:metrics?.fingerprint??null,work:stats.work},
+      ranked:{status:ranked.status,tier:ranked.tier,phase:ranked.phase,cost:rankedCost,fingerprint,stats:rankedStats},
+      comparison,rankedInventories:ranked.stages?.['sre-concession-ranked-proposals']??0}));
   }
+  assert.equal(rankedSummary.cases,scales.length);
+  assert.ok(rankedSummary.rankedInventories>0);
+  assert.equal(rankedSummary.verified,rankedSummary.retained+rankedSummary.added);
+  assert.equal(rankedSummary.retained,rankedSummary.better+rankedSummary.equal+rankedSummary.worse);
+  console.log('SRE_RANKED_PROGRESSIVE_SUMMARY '+JSON.stringify({irregularProperties,...rankedSummary}));
   assert.ok(summary.cacheHits>0,'operation-local cache must be exercised');
   assert.ok(summary.verified>=(irregularProperties?3:7),'qualified unified nondestructive recovery floor regressed');
   console.log('SRE_INVENTORY_REUSE_SUMMARY '+JSON.stringify({irregularProperties,...summary}));

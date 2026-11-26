@@ -402,6 +402,15 @@ test('detached ranked concession challenger uses one budget and retains the bett
       }else assert.equal(selection,'baseline');
     }else assert.equal(selection,'baseline');
     const winner=selection==='challenger'?challenger:baseline;
+    // Freeze the two independently qualified improvements; a later
+    // candidate may replace them only with separately reviewed evidence.
+    assert.equal(selection,'challenger');
+    assert.equal(winner.fingerprint,irregularProperties?
+      '0d59707e544bd784e6cf67ff2577deb5aec4fee86bae3a44397122f28eccf451':
+      'bf2cae8b09db08c74976fa0771df6a1464c976e7b9679abd703f3becc48a07a4');
+    assert.equal(winner.cost.frontageSwitches,irregularProperties?22:23);
+    assert.equal(winner.cost.scaledBuildings,0);
+    assert.equal(winner.cost.footprintLoss,0);
     assert.equal(result.delta.candidateFingerprint,winner.fingerprint);
     const actual=await verifySpatialConcessionRoadWitness(source,op,result.delta,budget());
     assert.deepEqual(scoreSpatialConcessions(source,op,actual,budget()),winner.cost);
