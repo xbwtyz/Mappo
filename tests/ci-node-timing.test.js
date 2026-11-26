@@ -75,23 +75,44 @@ test('timing pilot is isolated from full CI and full workflow retains two native
 });
 
 test('compression partition keeps the fifteen original independent test registrations',()=>{
+  // Frozen exact registration lines from the original file, including names,
+  // parameterization, timeouts and async flags. Do not derive from new files.
   const partition={
-    'spatial-recovery-compression.test.js':['SRE cooperative compression diagnostic','SRE shared-budget packing transport','SRE single-pass scheduling diagnostic','SRE candidate single-pass transport retains all known compression witnesses'],
-    'spatial-recovery-compression-single-pass-history.test.js':['SRE candidate single-pass transport historical preservation comparison'],
-    'spatial-recovery-compression-fixed-reuse.test.js':['SRE packing fallback fixed-refusal reuse qualification'],
-    'spatial-recovery-compression-unified-progressive.test.js':['SRE unified nondestructive progressive compression'],
-    'spatial-recovery-compression-unified-history.test.js':['SRE unified no-concession route retains exact historical ordinary fingerprints'],
-    'spatial-recovery-compression-inventory-reuse.test.js':['SRE unified operation-local packing inventory reuse']
+    "spatial-recovery-compression.test.js": [
+      "for(const irregularProperties of [false,true])test('SRE cooperative compression diagnostic '+(irregularProperties?'irregular':'regular'),{timeout:300000},()=>{",
+      "for(const irregularProperties of [false,true])test('SRE shared-budget packing transport '+(irregularProperties?'irregular':'regular'),{timeout:300000},async()=>{",
+      "for(const irregularProperties of [false,true])test('SRE single-pass scheduling diagnostic '+(irregularProperties?'irregular':'regular'),{timeout:300000},async()=>{",
+      "for(const irregularProperties of [false,true])test('SRE candidate single-pass transport retains all known compression witnesses '+(irregularProperties?'irregular':'regular'),{timeout:300000},async()=>{"
+    ],
+    "spatial-recovery-compression-single-pass-history.test.js": [
+      "test('SRE candidate single-pass transport historical preservation comparison',{timeout:300000},async()=>{"
+    ],
+    "spatial-recovery-compression-fixed-reuse.test.js": [
+      "test('SRE packing fallback fixed-refusal reuse qualification',{timeout:600000},async()=>{"
+    ],
+    "spatial-recovery-compression-unified-progressive.test.js": [
+      "for(const irregularProperties of [false,true])test('SRE unified nondestructive progressive compression '+(irregularProperties?'irregular':'regular'),{timeout:600000},async()=>{"
+    ],
+    "spatial-recovery-compression-unified-history.test.js": [
+      "test('SRE unified no-concession route retains exact historical ordinary fingerprints',{timeout:600000},async()=>{"
+    ],
+    "spatial-recovery-compression-inventory-reuse.test.js": [
+      "for(const irregularProperties of [false,true])test('SRE unified operation-local packing inventory reuse '+(irregularProperties?'irregular':'regular'),{timeout:600000},async()=>{"
+    ]
   };
   let count=0;
-  for(const [file,names] of Object.entries(partition)){
+  for(const [file,expected] of Object.entries(partition)){
     const source=readFileSync(new URL(file,import.meta.url),'utf8');
     const starts=source.split('\n').filter(line=>/^(for\(const irregularProperties.*\)test\(|test\()/.test(line));
-    assert.equal(starts.length,names.length,file);
-    for(let i=0;i<names.length;i++){
-      assert.ok(starts[i].includes("test('"+names[i]+"'"),file);
-      count+=starts[i].startsWith('for(')?2:1;
-    }
+    assert.deepEqual(starts,expected,file);
+    count+=starts.reduce((n,line)=>n+(line.startsWith('for(')?2:1),0);
   }
   assert.equal(count,15);
+});
+
+test('pilot preflight must pass before expensive diagnostic shards start',()=>{
+  const pilot=readFileSync(new URL('../.github/workflows/ci-node-timing.yml',import.meta.url),'utf8');
+  assert.match(pilot,/preflight:\n/);
+  assert.match(pilot,/node --test tests\/ci-node-timing\.test\.js/);
+  assert.match(pilot,/measure:\n    needs: preflight/);
 });

@@ -9,7 +9,25 @@ concurrency:
   group: mappo-node-timing-${{ github.sha }}
   cancel-in-progress: false
 jobs:
+  preflight:
+    if: contains(github.event.head_commit.message, '[node-timing-pilot]')
+    name: Node timing preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact revision and timing contracts before expensive shards
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          node --test tests/ci-node-timing.test.js
   measure:
+    needs: preflight
     if: contains(github.event.head_commit.message, '[node-timing-pilot]')
     name: Node timing (shard ${{ matrix.shard }}/4)
     runs-on: ubuntu-24.04
