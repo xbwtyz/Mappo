@@ -1,15 +1,15 @@
 // RESEARCH ONLY: derived from coordinator at 3b0b6dd6d3abac84ae7a1f15d261606c7e50d689.
 // Never imported by editor or production bundle. Work-limit comparison only.
-import { createSpatialOperation } from './spatial-recovery-contract.js';
+import { createSpatialOperation, spatialRefKey } from './spatial-recovery-contract.js';
 import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-delta.js';
 import { createLareBudget, LareBudgetExceeded, LARE_PRESERVATION_LIMITS, LARE_DEMOLITION_LIMITS } from './reconciliation-budget.js';
 import { searchSpatialNondestructiveRoadGroup, searchSpatialBuildingRetirementRoadGroup,
   searchSpatialPropertyRetirementRoadGroup, searchSpatialGroupedRetirementRoadGroup,
-  restoreSpatialRoadRetirements, optimizeSpatialRoadRetirements,
+  restoreSpatialRoadRetirements, optimizeSpatialRoadRetirements, searchSpatialRetirementSubsetRoadGroup,
   verifySpatialStrictRoadWitness, verifySpatialConcessionRoadWitness, verifySpatialRetirementWitness } from './spatial-recovery-road-adapter.js';
 import { searchSpatialShellRegeneration, searchSpatialGroupRegeneration,
   verifySpatialShellRegeneration, verifySpatialGroupRegeneration } from './spatial-recovery-regeneration.js';
-import { riEqual, riFreeze } from './road-impact-model.js';
+import { riEqual, riFreeze, riCompare } from './road-impact-model.js';
 import { measureSpatialRetirementCost, improvesSpatialRetirementCost } from './spatial-recovery-score.js';
 
 // Detached road coordinator, not a worker, UI, acceptance or allocation
@@ -70,7 +70,63 @@ export async function verifySpatialUnifiedRoadWitness(project,input,witness,budg
 // Phase ceilings are scheduling boundaries within existing limits, not
 // new allowances. Reserve enough work to bind a verified witness to the
 // external operation before spending on optional improvements.
-export async function searchSpatialBudgetResearch(project,input,callerBudget,{workLimit,iterative=false}={}){
+// Research-only child-first pass. Search derives candidate sets from the
+// current independently verified incumbent, not from old fixture answers.
+async function searchResearchChildRestoration(project,operation,seed,budget,seen){
+  let incumbent={delta:seed.basisDelta,ledger:seed.ledger},exhausted=null;
+  const attempts=[];
+  const finish=()=>({status:'verified-witness',...incumbent,attempts,exhausted});
+  try{
+    const buildings=new Map(project.city.buildings.map(b=>[b.id,b]));
+    budget.spend(Math.max(1,buildings.size));
+    const p=operation.permissions;
+    const scale=p.alternativeFrontage?(p.uniformScaling?1-p.maxLinearReduction:1):null;
+    const children=()=>{
+      const keys=new Set(incumbent.delta.retired.map(spatialRefKey));
+      budget.spend(Math.max(1,keys.size));
+      return incumbent.delta.retired.filter(r=>{
+        budget.spend();
+        return r.collection==='buildings'&&!keys.has(spatialRefKey({collection:'properties',id:buildings.get(r.id).propertyId}));
+      }).sort((a,b)=>{budget.spend();return buildings.get(a.id).area-buildings.get(b.id).area||riCompare(a.id,b.id);});
+    };
+    for(const size of [4,2,1]){
+      const rows=children();
+      for(let i=0;i<rows.length;i+=size){
+        if(attempts.length>=12)return finish();
+        const keys=new Set(rows.slice(i,i+size).map(spatialRefKey));
+        const remaining=incumbent.delta.retired.filter(r=>{budget.spend();return !keys.has(spatialRefKey(r));});
+        if(!remaining.length||remaining.length===incumbent.delta.retired.length)continue;
+        const key=JSON.stringify([remaining.map(spatialRefKey).sort(riCompare),scale]);
+        if(seen.has(key))continue;
+        const trialBudget=sreChild(budget,5000000,16384,20000);
+        if(!trialBudget)return finish();
+        seen.add(key);
+        const row={size,restoring:incumbent.delta.retired.length-remaining.length,status:'refused',selected:false};
+        attempts.push(row);
+        try{
+          const result=await searchSpatialRetirementSubsetRoadGroup(project,operation,remaining,trialBudget,{diagnosticScale:scale});
+          row.status=result.status;row.exhausted=result.exhausted??null;
+          if(result.status!=='verified-witness')continue;
+          const expected=new Set(remaining.map(spatialRefKey));
+          if(result.delta.added.length||result.delta.retired.length!==expected.size||
+            result.delta.retired.some(r=>!expected.has(spatialRefKey(r))))throw Error('Unexpected research child retirement membership.');
+          if(improvesSpatialRetirementCost(measureSpatialRetirementCost(result.ledger,trialBudget),measureSpatialRetirementCost(incumbent.ledger,trialBudget))){
+            incumbent={delta:result.delta,ledger:result.ledger};row.selected=true;
+          }
+        }catch(error){
+          if(!(error instanceof LareBudgetExceeded))throw error;
+          row.exhausted=error.resource;
+        }finally{row.work=trialBudget.snapshot().work;}
+      }
+    }
+    return finish();
+  }catch(error){
+    if(!(error instanceof LareBudgetExceeded))throw error;
+    exhausted=error.resource;return finish();
+  }
+}
+export async function searchSpatialBudgetResearch(project,input,callerBudget,{workLimit,iterative=false,childPriority=false}={}){
+  if(typeof childPriority!=='boolean'||(childPriority&&!iterative))throw Error('Unsupported child priority research setting.');
   if(typeof iterative!=='boolean'||(iterative&&workLimit!==256000000))throw Error('Unsupported iterative research setting.');
   if(![32000000,64000000,128000000,256000000].includes(workLimit))throw Error('Unsupported research work limit.');
   if(callerBudget.snapshot().remainingWork!==workLimit||callerBudget.snapshot().work!==0||callerBudget.snapshot().remainingExpansions!==131072)throw Error('Research budget mismatch.');
@@ -98,6 +154,7 @@ export async function searchSpatialBudgetResearch(project,input,callerBudget,{wo
       const result=await run(child);
       row.status=result.status;row.exhausted=result.exhausted??null;row.work=child.snapshot().work;
       if(schedule==='area-deficit-direct'&&name==='grouped-retirement')row.seedTrials=result.attempts??[];
+      if(childPriority&&name.startsWith('iterative-child-'))row.childTrials=result.attempts??[];
       if(result.exhausted)exhausted=result.exhausted;
       return result.status==='verified-witness'?result:null;
     }catch(error){
@@ -173,6 +230,7 @@ export async function searchSpatialBudgetResearch(project,input,callerBudget,{wo
         if(!improvesSpatialRetirementCost(newCost,oldCost))return false;
         await setRetirement(result);return true;
       };
+      const childSeen=new Set();
       for(let pass=1;pass<=3;pass++){
         let changed=false;
         // Alternate small shells and diversified batches, then re-rank
@@ -181,8 +239,11 @@ export async function searchSpatialBudgetResearch(project,input,callerBudget,{wo
         const restored=await phase('iterative-restoration-'+pass,45000000,
           b=>restoreSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b,{proposalPolicy:policy}),{reserve:bindReserve});
         if(await improve(restored))changed=true;
-        const optimized=await phase('iterative-optimization-'+pass,32000000,
-          b=>optimizeSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b),{reserve:bindReserve});
+        const optimized=childPriority?
+          await phase('iterative-child-'+pass,32000000,
+            b=>searchResearchChildRestoration(project,retirement,incumbent,b,childSeen),{reserve:bindReserve}):
+          await phase('iterative-optimization-'+pass,32000000,
+            b=>optimizeSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b),{reserve:bindReserve});
         if(await improve(optimized))changed=true;
         if(!changed&&pass>=2)break; // explore both orderings once, then stop on plateau
         if(budget.snapshot().remainingWork<=bindReserve)break;
