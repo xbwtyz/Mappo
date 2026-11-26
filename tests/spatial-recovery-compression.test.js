@@ -362,9 +362,22 @@ for(const irregularProperties of [false,true])test('SRE unified operation-local 
       assert.equal(metrics.fingerprint,establishedConcessions[scale]);
       assert.equal(metrics.scaled,0);assert.equal(metrics.loss,0);
     }
+    // Exact-head qualification added a tenth witness at the smallest
+    // authorized scaling tier. Keep it and its measured concession cost
+    // until a separately qualified ranking improvement replaces it.
+    if(!irregularProperties&&scale===1){
+      assert.equal(result.status,'verified-witness','tenth unified witness lost');
+      assert.equal(result.tier,'uniform-scale-5');
+      assert.equal(metrics.fingerprint,'e2a1f659b2b386a8f2c6a828a4ad7a2f75551b3eea376e5297d0f19b9576e974');
+      assert.equal(metrics.switches,26);
+      assert.equal(metrics.scaled,30);
+      assert.ok(result.ledger.scaledBuildings.every(row=>row.factor>=.95-1e-6));
+      assert.ok(Math.abs(metrics.loss-550.8781205476942)<1e-6);
+    }
     assert.equal(hash(project),before);
     console.log('SRE_INVENTORY_REUSE_CASE '+JSON.stringify({irregularProperties,scale,status:result.status,tier:result.tier,phase:result.phase,attempts:result.attempts,stats,hits,metrics,verificationWork:result.verificationWork}));
   }
   assert.ok(summary.cacheHits>0,'operation-local cache must be exercised');
+  assert.ok(summary.verified>=(irregularProperties?3:7),'qualified unified nondestructive recovery floor regressed');
   console.log('SRE_INVENTORY_REUSE_SUMMARY '+JSON.stringify({irregularProperties,...summary}));
 });
