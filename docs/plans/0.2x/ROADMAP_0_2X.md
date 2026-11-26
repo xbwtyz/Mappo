@@ -163,3 +163,7 @@ D-031-1–5=A: session-only shared chronological Undo/Redo for roads, properties
 
 
 **Approved B1R-E:** [Spatial Recovery Engine 0.2.26-dev](milestones/0.2.25-spatial-recovery-b1r-e.md), E1 foundation in progress; B2 remains deferred. No release authorized.
+
+### Future parallel processing — owner-approved readiness, implementation deferred
+
+During B1R-E, preserve deterministic detached computation boundaries and a single authoritative Schema 11 writer; keep already-approved SRE offline worker work. After SRE qualification, profile bottlenecks and separately plan a bounded reusable worker pool, beginning with independent expensive tasks where justified. This is not an additional prerequisite milestone, a broad parallel rewrite or an authorization to alter the current feature order. [Design constraints and deferred evaluation](milestones/0.2.25-spatial-recovery-b1r-e.md#owner-approved-parallel-execution-readiness).
