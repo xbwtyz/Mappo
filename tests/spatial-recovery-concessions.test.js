@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
-import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals } from '../src/core/spatial-recovery-concessions.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
@@ -179,4 +179,37 @@ test('detached SRE adjacent frontage and scaled packing produce locally verified
   assert.throws(()=>collectConcessionProposals(iterateSpatialConcessionParcelProposals(project,op,entry.id,budget(),{frontageRoadId:road,scale:.7})),/Unauthorized scaling/);
   assert.equal(JSON.stringify(project),before);
   console.log('SRE_CONCESSION_LOCAL_PROPOSALS '+JSON.stringify({propertyId:entry.id,road,scale:.8,count:actual.length}));
+});
+
+test('detached cooperative concession transport compression diagnostic',{timeout:300000},async()=>{
+  // Research geometry only, not hardcoded answers or witness sets. Report
+  // actual recovery rather than asserting an unqualified success rate.
+  const offset0={x:-3.005274072121821,y:-37.39896113564458},roadIds=['RD-0184','RD-0186'];
+  let exercised=0;
+  for(const irregularProperties of [false,true]){
+    const source=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+      shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
+    const before=JSON.stringify(source);
+    for(const scaleOffset of [.25,.5]){
+      const op=normalizeSpatialRoadGroup(source,1,roadIds,{x:offset0.x*scaleOffset,y:offset0.y*scaleOffset},
+        {alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2});
+      const shared=budget();
+      let result,exhausted=null;
+      try{result=await searchSpatialConcessionRoadGroup(source,op,shared,{scale:.8});}
+      catch(error){if(error.name!=='LareBudgetExceeded'&&error.constructor.name!=='LareBudgetExceeded')throw error;exhausted=error.resource;}
+      const stats=shared.snapshot();
+      assert.ok(stats.work<=8000000&&stats.expansions<=32768);
+      if(result?.status==='verified-witness'){
+        const actual=await verifySpatialConcessionRoadWitness(source,op,result.delta,budget());
+        assert.deepEqual(inspectSpatialConcessionLedger(source,op,actual,budget()),result.ledger);
+        assert.deepEqual(actual.identityAllocation,source.identityAllocation);
+        assert.equal(Object.hasOwn(result,'candidateProject'),false);
+      }else if(result){assert.equal(result.status,'refused');assert.equal(result.delta,null);}
+      exercised+=Number(Boolean(result?.stages?.['concession-inventory']));
+      assert.equal(JSON.stringify(source),before);
+      console.log('SRE_CONCESSION_COOPERATIVE '+JSON.stringify({irregularProperties,scaleOffset,status:result?.status??'exhausted',exhausted,stats,
+        stages:result?.stages??{},issues:result?.issues??[],ledger:result?.ledger??null}));
+    }
+  }
+  assert.ok(exercised,'detached cooperative concession inventory was not exercised');
 });
