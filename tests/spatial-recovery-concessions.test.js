@@ -227,7 +227,9 @@ test('detached cooperative concession transport compression diagnostic',{timeout
     }
   }
   assert.ok(exercised,'detached cooperative concession inventory was not exercised');
-  assert.deepEqual(successful,[[false,.25],[false,.5],[true,.5]],'retain the three established combined witnesses');
+  // Index reuse qualified the fourth previously exhausted case in exact-head CI.
+  // Require every established witness, including irregular +.25, to survive.
+  assert.deepEqual(successful,[[false,.25],[false,.5],[true,.25],[true,.5]],'retain all four independently verified combined witnesses');
 });
 
 // Independent qualification trials, NOT retries that reset a live operation's

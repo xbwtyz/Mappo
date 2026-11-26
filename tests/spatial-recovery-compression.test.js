@@ -326,6 +326,19 @@ for(const irregularProperties of [false,true])test('SRE unified operation-local 
     const stats=budget.snapshot();assert.ok(stats.work<=8000000&&stats.expansions<=32768);
     const hits={parcel:result.stages?.['sre-packing-parcel-cache-hit']??0,building:result.stages?.['sre-packing-building-cache-hit']??0};
     summary.cases++;summary.cacheHits+=hits.parcel+hits.building;
+    // The trace must describe a prefix of the actual independent verification
+    // pipeline, with nondecreasing cumulative work bounded by the operation.
+    const stages=['delta','context','reconstruction','preservation','dependencies','infrastructure','storedProject','complete'];
+    const trace=result.verificationWork;
+    assert.ok(trace&&typeof trace==='object');
+    const keys=Object.keys(trace);
+    assert.deepEqual(keys,stages.slice(0,keys.length));
+    let prior=0;
+    for(const key of keys){
+      assert.ok(Number.isFinite(trace[key])&&trace[key]>=prior&&trace[key]<=stats.work);
+      prior=trace[key];
+    }
+    if(result.status==='verified-witness')assert.deepEqual(keys,stages);
     let metrics=null;
     if(result.status==='verified-witness'){
       const candidate=await verifySpatialConcessionRoadWitness(project,op,result.delta,createSpatialPreservationBudget());
