@@ -132,7 +132,8 @@ async function searchResearchChildRestoration(project,operation,seed,budget,seen
     exhausted=error.resource;return finish();
   }
 }
-export async function searchSpatialBudgetResearch(project,input,callerBudget,{workLimit,iterative=false,childPriority=false,solverSelection=false}={}){
+export async function searchSpatialBudgetResearch(project,input,callerBudget,{workLimit,iterative=false,childPriority=false,solverSelection=false,finalRefinement=false}={}){
+  if(typeof finalRefinement!=='boolean'||(finalRefinement&&(!childPriority||solverSelection)))throw Error('Unsupported final refinement setting.');
   if(typeof solverSelection!=='boolean'||(solverSelection&&!childPriority))throw Error('Unsupported solver selection research setting.');
   if(typeof childPriority!=='boolean'||(childPriority&&!iterative))throw Error('Unsupported child priority research setting.');
   if(typeof iterative!=='boolean'||(iterative&&workLimit!==256000000))throw Error('Unsupported iterative research setting.');
@@ -255,6 +256,28 @@ export async function searchSpatialBudgetResearch(project,input,callerBudget,{wo
         if(await improve(optimized))changed=true;
         if(!changed&&pass>=2)break; // explore both orderings once, then stop on plateau
         if(budget.snapshot().remainingWork<=bindReserve)break;
+      }
+    }
+    // Combine fast identity-first recovery with least-disruptive same-set
+    // solver selection. Spend only remaining shared research allowance.
+    // Every trial independently verifies the original-to-final retirement
+    // witness; exact retirement membership and strict cost improvement
+    // are required before replacing the fully bound incumbent.
+    if(finalRefinement&&p.alternativeFrontage&&p.uniformScaling){
+      for(const scale of [1,.95,.9,.85,.8]){
+        if(scale<1-p.maxLinearReduction-1e-9)continue;
+        const oldCost=measureSpatialRetirementCost(incumbent.ledger,budget);
+        if(oldCost.scaleLoss<=1e-6)break;
+        const refs=incumbent.basisDelta.retired;
+        const result=await phase('final-refinement-'+scale,5000000,
+          b=>searchSpatialRetirementSubsetRoadGroup(project,retirement,refs,b,{diagnosticScale:scale}),
+          {expansions:16384,reserve:bindReserve});
+        if(!result)continue;
+        const expected=new Set(refs.map(spatialRefKey));
+        if(result.delta.added.length||result.delta.retired.length!==expected.size||
+          result.delta.retired.some(r=>!expected.has(spatialRefKey(r))))throw Error('Unexpected final refinement retirement membership.');
+        const newCost=measureSpatialRetirementCost(result.ledger,budget);
+        if(improvesSpatialRetirementCost(newCost,oldCost))await setRetirement(result);
       }
     }
     if(p.regeneration){
