@@ -9,6 +9,9 @@ import { scoreSpatialPreservation, preferVerifiedSpatialPreservation } from '../
 import { validateStoredProject } from '../src/data/project-validation.js';
 import { normalizeSpatialRoadGroup, searchSpatialPackingRoadGroup, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { LareBudgetExceeded } from '../src/core/reconciliation-budget.js';
+import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
+import { createSpatialInventory } from '../src/core/spatial-recovery-contract.js';
+import { copyJson } from '../src/data/project-format.js';
 import { createHash } from 'node:crypto';
 const roadIds=['RD-0184','RD-0186'];
 const offset0={x:-3.005274072121821,y:-37.39896113564458};
@@ -91,4 +94,65 @@ for(const irregularProperties of [false,true])test('SRE shared-budget packing tr
     console.log('SRE_TRANSPORT_CASE '+JSON.stringify({irregularProperties,scale,knownRaw,status:result?.status??'exhausted',exhausted,stats,issues:result?.issues??[],cost:result?.cost??null}));
   }
   console.log('SRE_TRANSPORT_SUMMARY '+JSON.stringify({irregularProperties,...summary}));
+});
+
+// Scheduling comparison only. Both variants use the identical 8M/32768
+// operation budget, accepted snapshot, independent witness gate and scoring.
+// Do not use results as production authority or silently change strategy order.
+async function runPackingSchedule(project,offset,strategy){
+  const operation=normalizeSpatialRoadGroup(project,1,roadIds,offset);
+  const budget=createSpatialPreservationBudget(),stages={};
+  let phase='inventory',iterator=null;
+  try{
+    createSpatialInventory(project,operation,budget);
+    const snapshot=copyJson(project);
+    budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
+    phase='search';
+    iterator=iterateRoadGroupReflowB1(snapshot,roadIds,offset,{
+      acceptedRevision:operation.revision,sharedBudget:budget,packing:true,strategy});
+    let result;
+    for(;;){
+      budget.spend();
+      const step=iterator.next();
+      if(step.done){result=step.value;break;}
+      const stage=step.value?.strategy??step.value?.stage??'other';
+      stages[stage]=(stages[stage]??0)+1;
+    }
+    iterator.return();iterator=null;
+    if(!result?.candidateProject)return {status:'refused',phase,stages,stats:budget.snapshot(),issues:(result?.unresolved??[]).map(i=>i.code)};
+    phase='delta';
+    const delta=await createSpatialDelta(snapshot,result.candidateProject,operation,1,budget);
+    phase='verification';
+    const candidate=await verifySpatialStrictRoadWitness(snapshot,operation,delta,budget);
+    phase='score';
+    const cost=scoreSpatialPreservation(snapshot,candidate,budget);
+    validateStoredProject(candidate);
+    assert.deepEqual(candidate.identityAllocation,project.identityAllocation);
+    return {status:'verified-witness',phase,stages,stats:budget.snapshot(),cost,fingerprint:hash(candidate)};
+  }catch(error){
+    if(!(error instanceof LareBudgetExceeded))throw error;
+    return {status:'exhausted',phase,resource:error.resource,stages,stats:budget.snapshot()};
+  }finally{iterator?.return();}
+}
+for(const irregularProperties of [false,true])test('SRE single-pass scheduling diagnostic '+(irregularProperties?'irregular':'regular'),{timeout:300000},async()=>{
+  const project=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
+  const before=hash(project),summary={progressive:0,enhanced:0,knownRaw:0};
+  for(const scale of [.025,.125,-.25,.75]){
+    const offset={x:offset0.x*scale,y:offset0.y*scale},knownRaw=scale!==.75;
+    const progressive=await runPackingSchedule(project,offset,'progressive');
+    const enhanced=await runPackingSchedule(project,offset,'enhanced-adaptive');
+    for(const row of [progressive,enhanced]){
+      assert.ok(row.stats.work<=8000000&&row.stats.expansions<=32768);
+      if(scale===.025)assert.equal(row.status,'verified-witness','known strict baseline lost');
+    }
+    if(knownRaw){
+      summary.knownRaw++;
+      summary.progressive+=Number(progressive.status==='verified-witness');
+      summary.enhanced+=Number(enhanced.status==='verified-witness');
+    }
+    assert.equal(hash(project),before);
+    console.log('SRE_SCHEDULE_CASE '+JSON.stringify({irregularProperties,scale,knownRaw,progressive,enhanced}));
+  }
+  console.log('SRE_SCHEDULE_SUMMARY '+JSON.stringify({irregularProperties,...summary}));
 });
