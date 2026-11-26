@@ -135,6 +135,132 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
     if(parcels.length!==entries.length||buildings.length!==entries.reduce((n,e)=>n+e.buildings.length,0))return null;
     return finalize({parcels,buildings,score:row.score,key:row.key},false);
   };
+  // R7/R8 cooperative packing: cache a complete local building proposal
+  // per parcel geometry; no locally successful bundle is an accepted edit.
+  if (packing && enhanced && entries.some(e => e.buildings.some(b => b.permission.mode === 'rigid'))) {
+    const groups=new Map(), cache=new Map(), proposals=[];
+    for(const id of variables){
+      if(!id.startsWith('property:'))continue;
+      const block=byVariable.get(id).entry.property.blockId;
+      if(!groups.has(block))groups.set(block,[]);
+      groups.get(block).push(id);
+    }
+    const report=(status,exhausted=null)=>({status,best:verifiedIncumbent,stage:0,
+      complete:verifiedIncumbent?1:0,stats:budget.snapshot(),exhausted});
+    const zero=()=>({assignments:[],score:[0,0,0,0,0,0],key:''});
+    const add=(row,id,choice)=>({assignments:[...row.assignments,{variable:id,choice}],
+      score:row.score.map((v,i)=>v+choice.score[i]),key:row.key+JSON.stringify([id,choice.key])+';'});
+    const join=(a,b)=>({assignments:[...a.assignments,...b.assignments],score:a.score.map((v,i)=>v+b.score[i]),key:a.key+b.key});
+    let refused=false;
+    try{
+      for(const [block,ids] of groups){
+        let used=0,deepest=0,blocked=null,bundles=0,cacheHits=0,bundleFailures=0,bundleLimits=0,pruned=0,pairTests=0,pairHits=0;
+        const expand=()=>{if(used>=2048)throw new LareBudgetExceeded('block-expansions');budget.expand();used++;};
+        const bundle=function*(id,choice){
+          if(cache.has(choice.value)){budget.spend();cacheHits++;return cache.get(choice.value);}
+          bundles++;
+          const entry=byVariable.get(id).entry, root=add(zero(),id,choice);
+          const domains=[];
+          for(const building of entry.buildings){
+            const bid='building:'+building.source.id;
+            const options=(yield* choices(bid,root)).sort((a,b)=>Number(b.value.family==='packed-seed')-Number(a.value.family==='packed-seed'));
+            if(!options.length){cache.set(choice.value,null);bundleFailures++;return null;}
+            domains.push({id:bid,options});
+          }
+          domains.sort((a,b)=>a.options.length-b.options.length||lareArrangeCompare(a.id,b.id));
+          let localUsed=0,limited=false;
+          function* fill(depth,row){
+            if(depth===domains.length)return row;
+            const d=domains[depth];
+            for(const option of d.options){
+              if(localUsed>=256){limited=true;return null;}
+              expand();localUsed++;
+              if(!(yield* compatible(d.id,option,row)))continue;
+              yield {stage:'bundle-building',id:d.id,stats:budget.snapshot()};
+              const next=yield* fill(depth+1,add(row,d.id,option));
+              if(next)return next;
+              if(limited)return null;
+            }
+            return null;
+          }
+          const result=yield* fill(0,root);
+          if(limited)bundleLimits++;
+          else if(!result)bundleFailures++;
+          // A bounded-out bundle is not an impossibility proof.
+          // Record it as unavailable within this experiment's fixed cap.
+          cache.set(choice.value,result);
+          return result;
+        };
+        // Pair compatibility is immutable for this arrangement. Charge cache
+        // reads too; exact geometry remains the original overlap predicate.
+        const pairCache=new Map();
+        const pairOK=(a,b)=>{
+          budget.spend();
+          if(pairCache.get(a.value)?.has(b.value)){pairHits++;return pairCache.get(a.value).get(b.value);}
+          pairTests++;
+          const ok=!lareArrangeOverlap(a.value.property.boundary,b.value.property.boundary,budget);
+          if(!pairCache.has(a.value))pairCache.set(a.value,new Map());
+          if(!pairCache.has(b.value))pairCache.set(b.value,new Map());
+          pairCache.get(a.value).set(b.value,ok);pairCache.get(b.value).set(a.value,ok);
+          return ok;
+        };
+        const available=option=>!cache.has(option.value)||Boolean(cache.get(option.value));
+        function* visit(row,domains){
+          const depth=ids.length-domains.size;
+          if(depth>deepest){deepest=depth;blocked=null;}
+          if(!domains.size)return row;
+          // Do not retry known failed/capped local bundles in this run.
+          for(const [id,options] of domains){
+            const kept=options.filter(available);
+            pruned+=options.length-kept.length;domains.set(id,kept);
+            if(!kept.length){blocked=id;return null;}
+          }
+          const [id,options]=[...domains].sort((a,b)=>a[1].length-b[1].length||
+            lareArrangeCompare(a[0],b[0]))[0];
+          for(const option of options.slice().sort((a,b)=>Number(Boolean(b.value.buildingSeeds))-Number(Boolean(a.value.buildingSeeds)))){
+            expand();
+            if(!available(option))continue;
+            const next=new Map();
+            let viable=true;
+            for(const [other,domain] of domains){
+              if(other===id)continue;
+              const kept=domain.filter(b=>available(b)&&pairOK(option,b));
+              pruned+=domain.length-kept.length;
+              yield {stage:'domain-forward',id,other,stats:budget.snapshot()};
+              if(!kept.length){blocked=other;viable=false;break;}
+              next.set(other,kept);
+            }
+            if(!viable)continue;
+            const local=yield* bundle(id,option);
+            if(!local)continue;
+            yield {stage:'bundle-property',id,depth,stats:budget.snapshot()};
+            const result=yield* visit(join(row,local),next);
+            if(result)return result;
+          }
+          if(depth>=deepest)blocked=id;
+          return null;
+        }
+        let local=null,failure=null;
+        try{const domains=new Map();for(const id of ids)domains.set(id,yield* choices(id,zero()));
+          local=yield* visit(zero(),domains);}
+        catch(error){if(!(error instanceof LareBudgetExceeded))throw error;failure=error.resource;}
+        yield {stage:'block-result',block,method:'pack-fit',status:local?'proposal':failure?'limited':'exhausted',
+          depth:deepest,total:ids.length,blocked,expansions:used,exhausted:failure,bundles,cacheHits,bundleFailures,bundleLimits,pruned,pairTests,pairHits};
+        if(local)proposals.push(local);else refused=true;
+        if(failure&&failure!=='block-expansions')return report(verifiedIncumbent?'candidate':'work-limit',failure);
+      }
+      if(!refused&&proposals.length===groups.size){
+        const candidate=yield* lareStepResult(finalizeState(proposals.reduce(join,zero())));
+        yield {stage:'block-union',accepted:Boolean(candidate)};
+        if(candidate&&(!verifiedIncumbent||compareLareScore(candidate.score,verifiedIncumbent.score)<0||
+          (compareLareScore(candidate.score,verifiedIncumbent.score)===0&&candidate.key<verifiedIncumbent.key)))verifiedIncumbent=candidate;
+      }
+      // If local bundles did not yield a complete verified candidate, continue
+      // into the existing greedy/beam path with remaining shared work.
+      if(verifiedIncumbent)return report('candidate');
+    }catch(error){if(!(error instanceof LareBudgetExceeded))throw error;
+      return report(verifiedIncumbent?'candidate':'work-limit',error.resource);}
+  }
   // Try the first fully compatible arrangement before expanding the entire
   // beam. This is a complete candidate, not a weaker acceptance path.
   // The verified result is retained even if subsequent search hits its cap.
