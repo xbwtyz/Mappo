@@ -217,8 +217,18 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     // Zero relocation tier first; if it fails, allow only the individually
     // authorized generated rigid transformations under the same budget.
     const fixed=entries.map(e=>({...e,buildings:e.buildings.map(b=>({...b,permission:{...b.permission,mode:'fixed'}}))}));
-    let outcome=yield* iterateLareArrangement({entries:fixed,finalize,incumbent,enhanced},budget);
-    if(outcome.best)incumbent=outcome.best;
+    // Explicit detached qualification only: isolate the relaxed tier's
+    // work without rerunning the zero-relocation arrangement. Do not infer
+    // a prior fixed refusal or change ordinary production ordering.
+    const relaxedOnly=concessions?.relaxedOnlyDiagnostic===true;
+    let outcome;
+    if(relaxedOnly){
+      yield {stage:'concession-relaxed-only-diagnostic',stats:budget.snapshot()};
+      outcome={best:incumbent,exhausted:null};
+    }else{
+      outcome=yield* iterateLareArrangement({entries:fixed,finalize,incumbent,enhanced},budget);
+      if(outcome.best)incumbent=outcome.best;
+    }
     if(!outcome.exhausted&&(!incumbent||incumbent.score[0]>0)){
       outcome=yield* iterateLareArrangement({entries,finalize,incumbent,enhanced,packing,concessionSource:concessionInventory},budget);
       if(outcome.best)incumbent=outcome.best;
