@@ -1,4 +1,5 @@
 import { test } from 'node:test';
+import { assertRoadUndoProject } from './helpers/road-undo-project.js';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { buildRoadGraph } from '../src/core/road-graph.js';
@@ -160,7 +161,7 @@ test('J3/J4 UI chooses source then target by map clicks, uses verified Apply, Un
   assert.equal(app.state().project.city.nodes.some(n=>n.id===targetId),true);
   assert.equal(app.state().project.city.nodes.some(n=>n.id===sourceId),false);
   assert.equal(app.moveRoadHistory('undo'),true);
-  assert.equal(JSON.stringify(app.state().project),before);
+  assertRoadUndoProject(JSON.stringify(app.state().project),before,after);
   assert.equal(app.moveRoadHistory('redo'),true);
   assert.equal(JSON.stringify(app.state().project),after);
 

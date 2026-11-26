@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -39,7 +40,7 @@ test('7B: schema-9 project geometry and in-progress workspace inputs survive sav
   const { document, project } = fixture();
   const beforeGeometry = JSON.stringify(project.city);
   const loaded = decodeProjectDocument(encodeProjectDocument(document));
-  assert.equal(loaded.project.schemaVersion, 10);
+  assert.equal(loaded.project.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.equal(loaded.workspace.schemaVersion, 1);
   assert.equal(JSON.stringify(loaded.project.city), beforeGeometry);
   assert.deepEqual(loaded.workspace.ui.selection, { kind: 'landscape-add', id: 'lake' });

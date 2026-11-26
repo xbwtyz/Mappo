@@ -77,13 +77,15 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
           properties:__buildingQA.state().project.city.properties.length,
           plots:__buildingQA.state().project.city.plots.length,
           revision:__buildingQA.state().files.revision,
-          history:__buildingQA.state().propertyMergeE3.history.past.length
+          history:__buildingQA.state().acceptedHistoryD01.past.length,
+          operation:__buildingQA.state().acceptedHistoryD01.entry('undo')?.operation
         }));
         assert.notEqual(accepted.city,original);
         assert.equal(accepted.properties,initialCount-1);
         assert.equal(accepted.plots,initialPlots);
         assert.ok(accepted.revision>=revision+1);
         assert.equal(accepted.history,1);
+        assert.equal(accepted.operation,'property-merge');
         await page.locator('#propertyMergeUndoE3').click();
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),original);
         await page.locator('#propertyMergeRedoE3').click();
@@ -91,7 +93,7 @@ for(const [engineName,engine] of [['chromium',chromium],['firefox',firefox]]){
         const saved=await page.evaluate(()=>__buildingQA.capture());
         await page.evaluate(doc=>__buildingQA.apply(doc),saved);
         assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project.city)),accepted.city);
-        assert.equal(await page.evaluate(()=>__buildingQA.state().propertyMergeE3.history.can(
+        assert.equal(await page.evaluate(()=>__buildingQA.state().acceptedHistoryD01.can(
           'undo',__buildingQA.state().project)),false);
         assert.deepEqual(errors,[]);
         console.log('PASS E3 '+label+' preview/reset/cancel/Apply/Undo/Redo/save');

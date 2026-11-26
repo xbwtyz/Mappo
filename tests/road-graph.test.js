@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import { legacyCityViewS10 } from './helpers/schema10-legacy-view.js';
 import assert from 'node:assert/strict';
@@ -172,7 +173,7 @@ test('save/recovery document bytes and schema 9 remain unchanged by graph analys
   analyzeRoadGraph(freeze(document.project.city));
   proposeJunctionMove(document.project.city,ordinary,{x:node.x+.01,y:node.y+.01});
   assert.equal(encodeProjectDocument(document),before);
-  assert.equal(document.project.schemaVersion,10);
+  assert.equal(document.project.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.deepEqual(decodeProjectDocument(before),document);
 });
 

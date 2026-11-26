@@ -1,3 +1,4 @@
+import { supportsCanonicalBuildingProjectSchema } from './project-schema-capabilities.js';
 import { buildingExteriorRingsS10 } from './building-geometry-adapter-s10.js';
 import { prepareRoadTopologyReflowC3 } from './road-topology-reflow.js';
 import { roadBuildingOccupiedPlots } from './road-building-decisions.js';
@@ -129,8 +130,8 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     validation:source.validation??{graph:'not-run',faces:'not-run',parcels:'not-run',project:'not-run'},
     parcelReview:source.parcelReview??[],selectedRoadIds:draft.selectedRoadIds??[],
     offset:draft.offset??null});
-  if(project?.schemaVersion!==10)
-    return blocked([c2Issue('road',id,'group-schema','Group translation requires Schema 10.')]);
+  if(!supportsCanonicalBuildingProjectSchema(project?.schemaVersion))
+    return blocked([c2Issue('road',id,'group-schema','Group translation requires canonical building geometry.')]);
   if(!draft.draftable || !draft.topologyResolved || !draft.facesResolved ||
     draft.status==='unchanged' || draft.issues.some(issue=>issue.code==='boundary-escape')) {
     const issues=draft.issues.filter(issue=>issue.code!=='neighborhood-reflow-pending')
@@ -452,7 +453,7 @@ function* iterateNeighborhoodReflow(project, roadId, draft, adaptBuildings,
           next = c2Parcel(city, property, road, edges, []);
           const proposedPlots = ownPlots.map((plot, i) => ({ ...plot, boundary: next.plots[i].boundary }));
           const result = reflowGeneratedRoadBuildings(project.seed, property, next.property, proposedPlots,
-            ownBuildings, reservedIds, project.schemaVersion===10,!options.strictGroup);
+            ownBuildings, reservedIds, supportsCanonicalBuildingProjectSchema(project.schemaVersion),!options.strictGroup);
           next.property.buildingIds = result.buildings.map(building => building.id);
           replacements.set(property.id, result.buildings);
           for (const building of ownBuildings) {

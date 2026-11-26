@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -54,7 +55,7 @@ test('B04 multi-operation draft is nonmutating and accepts one schema-9 transact
  assert.equal(session.flexible.operations.length,2);
  assert.equal(saved.ok,true,JSON.stringify(saved.issues));
  validateStoredProject(saved.candidate);
- assert.equal(saved.candidate.schemaVersion,10);
+ assert.equal(saved.candidate.schemaVersion,PROJECT_SCHEMA_VERSION);
  assert.equal(JSON.stringify(project.city),before);
  assert.equal(saved.candidate.city.properties.find(p=>p.id===property.id).plotIds.length,property.plotIds.length+2);
  const history=new PropertyGeometryHistory3I();

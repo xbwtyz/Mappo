@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildingAppHarness } from './helpers/building-app.js';
@@ -76,7 +77,7 @@ test('compiled property click/hover reveals the correct inspector, preserves geo
   assert.equal(JSON.stringify(app.state().project), before);
   const captured = app.capture();
   const portable = decodeProjectDocument(encodeProjectDocument(createProjectDocument(captured.project, captured.workspace)));
-  assert.equal(portable.project.schemaVersion, 10);
+  assert.equal(portable.project.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.deepEqual(copy(portable.workspace.ui.selection), { kind: 'property', id: target.propertyId });
   assert.equal(JSON.stringify(portable.project), before);
   app.apply(portable);

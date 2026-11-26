@@ -1,3 +1,4 @@
+import { supportsCanonicalBuildingProjectSchema } from '../core/project-schema-capabilities.js';
 import {
   CURRENT_FORMAT_VERSION,
   CURRENT_APP_VERSION,
@@ -21,8 +22,8 @@ export function copyJson(value) {
   const detached=JSON.parse(JSON.stringify(value));
   // Rehydrate only derived, read-only views; canonical geometry remains the
   // sole persisted/writable source for Schema 10 buildings.
-  if(detached?.schemaVersion===10 && detached.city) hydrateProjectS10(detached);
-  else if(detached?.project?.schemaVersion===10) hydrateProjectS10(detached.project);
+  if(supportsCanonicalBuildingProjectSchema(detached?.schemaVersion) && detached.city) hydrateProjectS10(detached);
+  else if(supportsCanonicalBuildingProjectSchema(detached?.project?.schemaVersion)) hydrateProjectS10(detached.project);
   else if(Array.isArray(detached?.buildings)) hydrateCityS10(detached);
   else if([1, 2, 3].includes(detached?.geometry?.version) && Array.isArray(detached?.components)) hydrateBuildingS10(detached);
   else if(Array.isArray(detached)) detached.forEach(x=>{
@@ -75,6 +76,9 @@ export function defaultWorkspace(project) {
   };
 }
 export function createProjectDocument(project, workspace = defaultWorkspace(project), base = null, now = new Date().toISOString()) {
+  return buildProjectDocumentInternal(project,workspace,base,now,copyJson);
+}
+function buildProjectDocumentInternal(project,workspace,base,now,cloneProject){
   const document = base ? copyJson({ ...base, project: null }) : {
     format: PROJECT_FORMAT,
     formatVersion: CURRENT_FORMAT_VERSION,
@@ -84,7 +88,7 @@ export function createProjectDocument(project, workspace = defaultWorkspace(proj
   };
   document.appVersion = CURRENT_APP_VERSION;
   document.savedAt = now;
-  document.project = copyJson(project);
+  document.project = cloneProject(project);
   // Preserve opaque future workspace fields while replacing known state.
   const previous = document.workspace || {};
   document.workspace = {
@@ -217,6 +221,17 @@ export function decodeProjectDocument(text) {
   validateDocument(document);
   hydrateProjectS10(document.project);
   return document;
+}
+// S3-BC: the intermediate Schema 11 envelope is never exposed. Its
+// persisted project is still detached exactly as before, but has no need
+// for temporary non-enumerable UI accessors. Both full encode and decode
+// validators, migration rules, size limits and decoded hydration remain.
+export function roundTripProjectDocument(project,workspace=defaultWorkspace(project)){
+  if(project?.schemaVersion!==11)
+    return decodeProjectDocument(encodeProjectDocument(createProjectDocument(project,workspace)));
+  const document=buildProjectDocumentInternal(project,workspace,null,new Date().toISOString(),
+    value=>JSON.parse(JSON.stringify(value)));
+  return decodeProjectDocument(encodeProjectDocument(document));
 }
 export function projectFilename(document) {
   const name = document.project.city.name.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'mappo-city';

@@ -1,3 +1,4 @@
+import { verifyIdentityReservation, verifyIdentityAdditions } from '../core/identity-verification.js';
 import { buildingExteriorRingsS10 } from '../core/building-geometry-adapter-s10.js';
 import { polygonSignedArea } from '../core/geometry.js';
 import { inspectFlexiblePlot027,prepareFlexiblePlot027 } from './plot-application-027.js';
@@ -123,15 +124,33 @@ export function inspectPropertyEdit3I(project,session){
 
 // Apply is one transaction: entire project cloned; parent, plots, building-to-
 // plot links and open-space area reconciled; schema+portable checks gate commit.
-export function preparePropertyApply3I(project,workspace,session){
-  if(session?.flexibleMode)return prepareFlexiblePlot027(project,workspace,session);
+export function propertyEditIdentityRequests3I(project,inspection){
+  if(!inspection?.ok)throw Error('A valid property geometry edit is required.');
+  const current=new Set(project.city.plots.map(p=>p.id));
+  return inspection.preview.plots.flatMap((row,i)=>current.has(row.id)?[]:[{type:'plot',key:'edit-plot-'+i}]);
+}
+export function preparePropertyApply3I(project,workspace,session,{identityReservation=null}={}){
+  if(session?.flexibleMode)return prepareFlexiblePlot027(project,workspace,session,{identityReservation});
   const inspected=inspectPropertyEdit3I(project,session);
   if(!inspected.ok)return {...inspected,candidate:null};
   if(!session.isPending)return {ok:false,status:'unchanged',issues:[{code:'unchanged',message:'The property preview has no changes to apply.'}],preview:inspected.preview,candidate:null};
   try{
     const candidate=copyJson(project),city=candidate.city;
     const original=city.properties.find(p=>p.id===session.propertyId);
-    const preview=inspected.preview;
+    let preview=inspected.preview,verifiedAllocation=null,requests=[];
+    const allocated=new Map();
+    if(identityReservation!==null){
+      if(project.schemaVersion!==11)throw Error('Identity reservation requires Schema 11.');
+      requests=propertyEditIdentityRequests3I(project,inspected);
+      const {context,receipt}=identityReservation;
+      verifiedAllocation=verifyIdentityReservation(project.identityAllocation,project.city,context,requests,receipt);
+      const byKey=new Map(receipt.allocations.map(row=>[row.key,row.id]));
+      preview.plots.forEach((row,i)=>{if(byKey.has('edit-plot-'+i))allocated.set(row.id,byKey.get('edit-plot-'+i));});
+      candidate.identityAllocation=verifiedAllocation;
+    }
+    const mapped=id=>allocated.get(id)??id;
+    if(verifiedAllocation)preview={...preview,plots:preview.plots.map(row=>({...row,id:mapped(row.id)})),
+      ...(preview.plotIds?{plotIds:preview.plotIds.map(mapped)}:{})};
     original.boundary=copyJson(preview.boundary);
     original.frontage=copyJson([preview.boundary[0],preview.boundary[1]]);
     original.area=polygonSignedArea(preview.boundary);
@@ -169,7 +188,7 @@ export function preparePropertyApply3I(project,workspace,session){
       const oldSource=city.plots.find(p=>p.id===sourceId&&p.propertyId===original.id);
       if(!oldSource)throw new Error('Original plot identity changed.');
       const receipt={operation:change.kind,retainedId:change.kind==='split'?change.sourceId:change.retainedId,
-        newId:change.kind==='split'?change.newId:null,
+        newId:change.kind==='split'?mapped(change.newId):null,
         retiredId:change.kind==='merge'?change.retiredId:null,
         sourceRecord:copyJson(oldSource),previousPlotIds:copyJson(original.plotIds)};
       original.plotCountHistoryE4=[...(history??[]),receipt];
@@ -178,10 +197,10 @@ export function preparePropertyApply3I(project,workspace,session){
       }else{
         const source=city.plots.find(p=>p.id===change.sourceId);
         if(!source)throw new Error('Split plot identity changed.');
-        city.plots.push({id:change.newId,propertyId:original.id,blockId:source.blockId,
+        city.plots.push({id:mapped(change.newId),propertyId:original.id,blockId:source.blockId,
           frontageRoadId:source.frontageRoadId,boundary:[]});
       }
-      original.plotIds=[...session.plotIds];
+      original.plotIds=session.plotIds.map(mapped);
     }
     for(const row of preview.plots){
       const plot=city.plots.find(p=>p.id===row.id);
@@ -197,9 +216,13 @@ export function preparePropertyApply3I(project,workspace,session){
     const block=city.blocks.find(record=>record.id===original.blockId);
     if(open&&block)
       open.area=Math.max(0,block.area-city.properties.filter(p=>p.blockId===block.id).reduce((sum,p)=>sum+p.area,0));
+    if(verifiedAllocation)verifyIdentityAdditions(project.identityAllocation,project.city,
+      identityReservation.context,requests,identityReservation.receipt,city);
     validateStoredProject(candidate);
     const saved=decodeProjectDocument(encodeProjectDocument(createProjectDocument(candidate,workspace)));
     if(!giSame(candidate.city,saved.project.city))throw new Error('Portable project round-trip altered the accepted geometry.');
+    if(verifiedAllocation&&!giSame(saved.project.identityAllocation,verifiedAllocation))
+      throw Error('Portable save changed property edit allocation state.');
     return {ok:true,status:'valid',issues:[],preview,candidate:saved.project};
   }catch(error){
     return {ok:false,status:'invalid',issues:[{code:'project',message:'Property edit rejected: '+error.message}],preview:inspected.preview,candidate:null};

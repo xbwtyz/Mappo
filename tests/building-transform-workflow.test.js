@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildingAppHarness } from './helpers/building-app.js';
@@ -49,7 +50,7 @@ test('3G-B compiled numeric controls preview move/rotate/resize without changing
   assert.equal(JSON.stringify(state.project.city),before);
   const captured=app.capture();
   const doc=decodeProjectDocument(encodeProjectDocument(createProjectDocument(captured.project,captured.workspace)));
-  assert.equal(doc.project.schemaVersion,10);
+  assert.equal(doc.project.schemaVersion,PROJECT_SCHEMA_VERSION);
   assert.equal(JSON.stringify(doc.project.city),before);
   assert.equal(JSON.stringify(captured.workspace).includes('buildingTransform'),false);
   assert.equal(JSON.stringify(captured.workspace).includes('buildingEditSession'),false);

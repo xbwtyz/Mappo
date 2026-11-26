@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -7,12 +8,13 @@ import { stampRoadGenerated, classifyRoadProvenance } from '../src/core/road-pro
 
 const clone = x => JSON.parse(JSON.stringify(x));
 // S10-B keeps the shipped Schema 9 migration contract tested independently of
-// the now-native Schema 10 generator; no test deletes historical fixtures.
+// the current canonical-geometry generator; no test deletes historical fixtures.
 function legacyFixture(options) {
   const current=createProject(options);
-  assert.equal(current.schemaVersion,10);
+  assert.equal(current.schemaVersion,PROJECT_SCHEMA_VERSION);
   const old=clone(current);
   old.schemaVersion=9;
+  delete old.identityAllocation;
   old.city.buildings=old.city.buildings.map(building=>{
     const view=projectSimpleBuildingS10(building.geometry,building.components);
     assert.equal(view.ok,true);

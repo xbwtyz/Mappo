@@ -112,7 +112,8 @@ test('B4 full accepted Apply and Undo/Redo each change recovery revision once',a
  const city=undeveloped('b4-atomic-integration');
  app.apply({project:city,workspace:defaultWorkspace(city)});
  const current=app.state().project;
- const proposal=eligible(current);
+ // Modular reconciliation runs in Node; serialize the mounted VM snapshot into that realm.
+ const proposal=eligible(copy(current));
  assert.ok(proposal,'Expected a reconciled road move for integration testing');
  const road=app.state().roadWorkspace;
  road.start();

@@ -1,3 +1,4 @@
+import { applyNonallocatingCityIntent } from '../editor/nonallocating-transaction-bridge.js';
 import { IdentityEditor, identityRecord, identityChanges, customizedIdentityCounts, IDENTITY_USE_PRESETS } from '../core/identity.js';
 
 import { renderBuildingUseOptions } from './building-use.js';
@@ -93,28 +94,37 @@ export class IdentityWorkspace {
       { validateOnApply: true }) : this.commitDraft();
   }
   commitDraft() {
+    let before,checkpoint;
     try {
       const ref = this.ref();
       if (!ref || this.key(ref) !== this.key(this.mounted)) throw new Error('Select the property or building again before applying.');
       const input = this.fields();
       if (input.useChoice === 'other' && !input.customUse.trim()) throw new Error('Enter a descriptive use for Other, or choose no override.');
       const city = this.getCity();
+      before=city;
+      checkpoint={history:this.editor.history.slice(),drafts:new Map(this.drafts),mounted:this.mounted};
       const record = identityRecord(city, ref);
       const typeChanged = Boolean(input.buildingType && input.buildingType !== record?.type);
       if (typeChanged && !this.canChangeBuildingUse())
         throw new Error('Finish or cancel the active map edit before applying building use.');
       const fields = identityChanges(record, ref, input).fields;
-      const next = this.editor.apply(city, ref, input);
+      const intent={kind:'identity',ref,input};
+      const next = applyNonallocatingCityIntent(city,intent,this.editor);
       if(this.historyMove)this.editor.reset(); // canonical ledger handles accepted Undo/Redo
       this.drafts.delete(this.key(ref));
       this.mounted = null;
-      this.commit(next, { ref, fields });
+      if(this.commit(next, { ref, fields,intent })===false)throw Error('Identity Apply was refused.');
       this.render({ reload: true });
       this.showMessage(typeChanged ? 'Building use applied.' : 'Identity applied.');
       for (const id of ['identityNameInput', 'identityOtherUseInput']) this.$(id).setAttribute('aria-invalid', 'false');
       this.changed();
       return true;
     } catch (error) {
+      if(checkpoint&&this.getCity()===before){
+        this.editor.history=checkpoint.history;
+        this.drafts=checkpoint.drafts;
+        this.mounted=checkpoint.mounted;
+      }
       this.syncDraft([{ code: 'identity-edit', message: error.message }]);
       this.showMessage(error.message, true);
       this.$('identityNameInput').setAttribute('aria-invalid', String(/name/i.test(error.message)));

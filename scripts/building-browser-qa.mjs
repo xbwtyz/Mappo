@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 // Runs against the compiled standalone document. The sole test-only addition is
 // a closure-state observer; shipped HTML has no QA globals or runtime dependency.
 import assert from 'node:assert/strict';
@@ -450,7 +451,7 @@ for (const [browserName, browserType] of [['chromium', chromium], ['firefox', fi
         await page.locator(`[data-inspector-kind="property"][data-inspector-id="${id}"]`).click();
       }
       const saved = await page.evaluate(() => __buildingQA.state().files.captureDocument());
-      assert.equal(saved.project.schemaVersion, 10);
+      assert.equal(saved.project.schemaVersion, PROJECT_SCHEMA_VERSION);
       assert.equal(saved.workspace.schemaVersion, 1);
       assert.deepEqual(saved.workspace.ui.selection, { kind: 'property', id }, 'Property selection travels with schema-1 UI state');
       // 3F-C: native identity editing, scoped undo and portable metadata.

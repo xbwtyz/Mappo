@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import { legacyCityViewS10 } from './helpers/schema10-legacy-view.js';
 import assert from 'node:assert/strict';
@@ -271,7 +272,7 @@ test('saved water corruption and unsupported forms fail before replacing a city'
 test('native 3D files migrate to dry land without changing geometry, walls, districts or workspace', async () => {
   const raw = JSON.parse(await readFile(new URL('./fixtures/save-3d-format1-schema4.json', import.meta.url), 'utf8')),
     loaded = decodeProjectDocument(JSON.stringify(raw));
-  assert.equal(loaded.project.schemaVersion, 10);
+  assert.equal(loaded.project.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.equal(loaded.project.city.waterState.status, 'dry');
   const {
     waterState,

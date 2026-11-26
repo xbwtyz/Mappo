@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -153,7 +154,7 @@ test('F4 on E4 land composes replacement, wing, courtyard, use, exact scoped his
   const document = createProjectDocument(redo.candidate);
   const reopened = decodeProjectDocument(encodeProjectDocument(document));
   assert.equal(reopened.formatVersion, 1);
-  assert.equal(reopened.project.schemaVersion, 10);
+  assert.equal(reopened.project.schemaVersion, PROJECT_SCHEMA_VERSION);
   assert.equal(JSON.stringify(reopened.project), JSON.stringify(classified));
 });
 

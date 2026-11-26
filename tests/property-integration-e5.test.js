@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {performance} from 'node:perf_hooks';
@@ -22,8 +23,8 @@ function roundTrip(project){
  const workspace=defaultWorkspace(project);
  const document=createProjectDocument(project,workspace);
  const reopened=decodeProjectDocument(encodeProjectDocument(document)).project;
- assert.deepEqual(reopened.city,project.city,'Portable schema-9 round-trip must preserve every identity and lineage field');
- assert.equal(reopened.schemaVersion,10);
+ assert.deepEqual(reopened.city,project.city,'Portable current-schema round-trip must preserve every identity and lineage field');
+ assert.equal(reopened.schemaVersion,PROJECT_SCHEMA_VERSION);
  return reopened;
 }
 test('E5 complete E2→E3→E4 property/plot chain preserves unrelated city and all lineage after reopen',()=>{

@@ -3,6 +3,7 @@
 import { validateFootprintF1 } from './building-footprint-f1.js';
 import { validateBuildingStructureS10 } from './building-components-s10.js';
 import { occupiedAreaS10 } from './building-occupancy-s10.js';
+import { polygonSignedArea } from './geometry.js';
 
 const s10AdapterCloneRing=ring=>ring.map(p=>({x:p.x,y:p.y}));
 export function reserveBuildingPartIdS10(usedIds,prefix) {
@@ -51,7 +52,11 @@ export function projectSimpleBuildingS10(geometry,components) {
       reason:'Nested or multi-root S10 geometry cannot be edited by a simple-footprint tool.'};
   const holes=valid.regions.filter(r=>r.kind==='void').map(r=>s10AdapterCloneRing(r.ring));
   const footprint=s10AdapterCloneRing(roots[0].ring);
-  return {ok:true,footprint,holes,area:occupiedAreaS10(valid)};
+  // The geometry above was freshly canonicalized and checked in this call.
+  // Compute the same signed occupancy sum without canonicalizing it again.
+  const area=valid.regions.reduce((sum,r)=>sum+(r.kind==='solid'?1:-1)*polygonSignedArea(r.ring),0);
+  if(area<=1)throw Error('S10 building net occupied s10OccupancyArea must exceed one unit.');
+  return {ok:true,footprint,holes,area};
 }
 
 // The separate roots share one owner. Callers that need containment or

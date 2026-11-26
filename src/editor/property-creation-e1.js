@@ -1,3 +1,4 @@
+import { verifyIdentityReservation, verifyIdentityAdditions } from '../core/identity-verification.js';
 import { pointInPolygon, polygonSignedArea } from '../core/geometry.js';
 import { shapeWellFormed, shapeContained, shapesOverlapInterior } from '../core/building-validation.js';
 import { rectangleInFrame, PROPERTY_SETBACK, STREET_EDGE_WIDTH, STREET_WIDTHS, propertyFits } from '../core/placement.js';
@@ -145,12 +146,23 @@ function portable(project,workspace){
   return candidate;
 }
 
-export function preparePropertyCreationE1(project,workspace,draft){
+export function preparePropertyCreationE1(project,workspace,draft,{identityReservation=null}={}){
   const inspection=inspectPropertyCreationE1(project,draft);
   if(!inspection.ok)return {...inspection,candidate:null};
   try {
     const candidate=copyJson(project),city=candidate.city,{preview}=inspection;
-    const propertyId=nextId(city.properties,'PROP-'),plotId=nextId(city.plots,'PLOT-');
+    let propertyId,plotId,verifiedAllocation=null;
+    const requests=[{type:'property',key:'new-property'},{type:'plot',key:'initial-plot'}];
+    if(identityReservation!==null){
+      if(project.schemaVersion!==11)throw Error('Identity reservation requires a Schema 11 project.');
+      const {context,receipt}=identityReservation;
+      verifiedAllocation=verifyIdentityReservation(project.identityAllocation,project.city,context,requests,receipt);
+      propertyId=receipt.allocations.find(row=>row.type==='property').id;
+      plotId=receipt.allocations.find(row=>row.type==='plot').id;
+      candidate.identityAllocation=verifiedAllocation;
+    }else{
+      propertyId=nextId(city.properties,'PROP-');plotId=nextId(city.plots,'PLOT-');
+    }
     const boundary=copyJson(preview.boundary);
     const plot={id:plotId,blockId:draft.blockId,propertyId,frontageRoadId:draft.roadId,
       boundary:copyJson(boundary)};
@@ -166,7 +178,11 @@ export function preparePropertyCreationE1(project,workspace,draft){
     const block=city.blocks.find(row=>row.id===draft.blockId);
     open.area=Math.max(0,block.area-city.properties.filter(row=>row.blockId===block.id)
       .reduce((sum,row)=>sum+row.area,0));
+    if(verifiedAllocation)verifyIdentityAdditions(project.identityAllocation,project.city,
+      identityReservation.context,requests,identityReservation.receipt,city);
     const persisted=portable(candidate,workspace);
+    if(verifiedAllocation&&!same(persisted.identityAllocation,verifiedAllocation))
+      throw Error('Save/reopen changed verified allocation state.');
     return {ok:true,status:'valid',issues:[],preview,candidate:persisted,propertyId,plotId};
   } catch(error){
     return {...inspection,ok:false,status:'invalid',issues:[issue('project','Property creation rejected: '+error.message)],candidate:null};

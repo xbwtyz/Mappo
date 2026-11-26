@@ -1,3 +1,4 @@
+import { supportsCanonicalBuildingProjectSchema } from './project-schema-capabilities.js';
 import { placeRoadConflictBuilding } from './road-building-decisions.js';
 import { reconcileRoadParcels028 } from './road-parcel-decisions-028.js';
 import { terminalCorridors, polygonIntrudesTerminalCorridor } from './road-terminal-corridors.js';
@@ -335,7 +336,7 @@ export function prepareRoadTopologyReflowC3(project, roadId, draft, edit = null,
     };
     const keptIds = new Set(Object.values(kept).flat().map(record=>record.id));
     const oldPlots = riIndex(old.plots);
-    const regenerated = c3Development(project.seed, city, rebuilt, old, kept, corridors,project.schemaVersion===10);
+    const regenerated = c3Development(project.seed, city, rebuilt, old, kept, corridors,supportsCanonicalBuildingProjectSchema(project.schemaVersion));
     hydrateCityS10(regenerated);
     const parcelResolution = reconcileRoadParcels028(old,city,replacements,regenerated,graph,kept,
       options.parcelChoices);

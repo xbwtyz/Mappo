@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 // H2: native archived save files still open, export and reject unsupported
 // data through the real canonical Project menu in Chromium and Firefox.
 import assert from 'node:assert/strict';
@@ -50,7 +51,7 @@ for (const [name, engine] of [['chromium',chromium],['firefox',firefox]]) {
         return !state.busy && !state.opening && document.getElementById('fileStatus')?.textContent?.startsWith('Opened ');
       });
       const migrated = await page.evaluate(() => __buildingQA.state().project);
-      assert.equal(migrated.schemaVersion, 10);
+      assert.equal(migrated.schemaVersion, PROJECT_SCHEMA_VERSION);
       for (const key of ['nodes','roads','blocks','plots','properties']) {
         if (Object.hasOwn(project.city,key)) assert.deepEqual(migrated.city[key],project.city[key],
           label+': original '+key+' records cannot be regenerated');
@@ -74,7 +75,7 @@ for (const [name, engine] of [['chromium',chromium],['firefox',firefox]]) {
     // A future save must fail closed without changing the project being edited.
     const before = await page.evaluate(() => JSON.stringify(__buildingQA.state().project));
     const future = createProjectDocument(createProject({seed:'h2-future',size:'small',morphology:'planned'}));
-    future.project.schemaVersion = 11;
+    future.project.schemaVersion = PROJECT_SCHEMA_VERSION + 1;
     await el('projectFileInput').setInputFiles({
       name:'h2-unsupported.mappo.json', mimeType:'application/json',
       buffer:Buffer.from(JSON.stringify(future)),
@@ -91,7 +92,7 @@ for (const [name, engine] of [['chromium',chromium],['firefox',firefox]]) {
     const exportedText = await readFile(await file.path(),'utf8');
     const exported = JSON.parse(exportedText);
     assert.equal(exported.formatVersion,1);
-    assert.equal(exported.project.schemaVersion,10);
+    assert.equal(exported.project.schemaVersion,PROJECT_SCHEMA_VERSION);
     assert.deepEqual(exported.project, JSON.parse(before));
     await el('projectFileInput').setInputFiles({
       name:'h2-roundtrip.mappo.json', mimeType:'application/json',

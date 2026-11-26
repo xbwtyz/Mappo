@@ -1,3 +1,4 @@
+import { PROJECT_SCHEMA_VERSION } from '../src/core/version.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
@@ -25,7 +26,7 @@ test('Dev4f layer presets only update the existing seven visibility flags',()=>{
  workspace.view.layers=layerPreset4F('minimal');
  const serialized=encodeProjectDocument(createProjectDocument(project,workspace));
  assert.equal(JSON.parse(serialized).workspace.view.layers.plots,false);
- assert.equal(JSON.parse(serialized).project.schemaVersion,10);
+ assert.equal(JSON.parse(serialized).project.schemaVersion,PROJECT_SCHEMA_VERSION);
 });
 test('Dev4f filenames sanitize paths and never change existing project content',()=>{
  const project=createProject({seed:'4f-filename',size:'small',morphology:'organic'});

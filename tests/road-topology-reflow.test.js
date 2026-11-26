@@ -1,4 +1,5 @@
 import { test } from 'node:test';
+import { assertRoadUndoProject } from './helpers/road-undo-project.js';
 import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { buildRoadGraph } from '../src/core/road-graph.js';
@@ -106,7 +107,7 @@ test('The standalone applies a crossing and road removal with Undo, Redo and por
     const after = JSON.stringify(app.state().project);
     assert.equal(app.state().files.revision,rev+1);
     assert.equal(app.moveRoadHistory('undo'),true);
-    assert.equal(JSON.stringify(app.state().project),before);
+    assertRoadUndoProject(JSON.stringify(app.state().project),before,after);
     if (delta === -1) {
       // Reselect the restored block. Redo must handle the same retired ID.
       app.state().districtPanel.editor.selectedBlockId = selectedBlock.id;
