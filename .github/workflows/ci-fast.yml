@@ -13,6 +13,7 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  actions: read
 
 concurrency:
   group: mappo-fast-${{ github.ref }}
@@ -22,12 +23,15 @@ jobs:
   fast:
     name: Build, syntax and targeted Node smoke tests
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    # Conservative fallback can include the complete Node inventory.
+    timeout-minutes: 35
+    env:
+      FOCUS_PLAN: ${{ runner.temp }}/mappo-focus-plan.json
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Node.js
@@ -41,15 +45,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/ci-trigger.mjs fast
 
+      - name: Select exact-push incremental checks
+        if: steps.gate.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/ci-focused.mjs plan
+
       - name: Check changed JavaScript syntax
         if: steps.gate.outputs.run == 'true'
-        shell: bash
-        run: |
-          while IFS= read -r path; do
-            if [[ -f "$path" && ( "$path" == *.js || "$path" == *.mjs ) ]]; then
-              node --check "$path"
-            fi
-          done < <(git diff --name-only HEAD^ HEAD -- src/ scripts/ tests/)
+        run: node scripts/ci-focused.mjs syntax
 
       - name: Build and verify offline standalone parity
         if: steps.gate.outputs.run == 'true'
@@ -64,21 +68,6 @@ jobs:
           git diff --exit-code -- index.html "dist/mappo-$version.html"
 
       - name: Run smoke tests and directly modified Node tests
+        # Baseline includes tests/ci-trigger.test.js; profiles are incremental only.
         if: steps.gate.outputs.run == 'true'
-        shell: bash
-        run: |
-          tests=(tests/build.test.js tests/core.test.js tests/persistence.test.js tests/ci-trigger.test.js)
-          # Core preview and worker cancellation are low-cost, high-value
-          # regression guards for every active development branch.
-          for core_test in tests/road-preview.test.js tests/c7-junction-preview-worker.test.js tests/c7-p2-worker-cancellation.test.js; do
-            if [[ -f "$core_test" ]]; then
-              tests+=("$core_test")
-            fi
-          done
-          while IFS= read -r path; do
-            if [[ "$path" == tests/*.test.js && -f "$path" ]]; then
-              tests+=("$path")
-            fi
-          done < <(git diff --name-only HEAD^ HEAD -- tests/)
-          mapfile -t unique_tests < <(printf '%s\n' "${tests[@]}" | sort -u)
-          node --test "${unique_tests[@]}"
+        run: node scripts/ci-focused.mjs test
