@@ -1,13 +1,15 @@
-import { createSpatialOperation } from './spatial-recovery-contract.js';
+import { createSpatialOperation, spatialRefKey } from './spatial-recovery-contract.js';
 import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-delta.js';
 import { createLareBudget, LareBudgetExceeded, LARE_PRESERVATION_LIMITS, LARE_DEMOLITION_LIMITS } from './reconciliation-budget.js';
 import { searchSpatialNondestructiveRoadGroup, searchSpatialBuildingRetirementRoadGroup,
   searchSpatialPropertyRetirementRoadGroup, searchSpatialGroupedRetirementRoadGroup,
-  restoreSpatialRoadRetirements, optimizeSpatialRoadRetirements,
+  restoreSpatialRoadRetirements, optimizeSpatialRoadRetirements, searchSpatialRetirementSubsetRoadGroup,
   verifySpatialStrictRoadWitness, verifySpatialConcessionRoadWitness, verifySpatialRetirementWitness } from './spatial-recovery-road-adapter.js';
 import { searchSpatialShellRegeneration, searchSpatialGroupRegeneration,
   verifySpatialShellRegeneration, verifySpatialGroupRegeneration } from './spatial-recovery-regeneration.js';
 import { riEqual, riFreeze } from './road-impact-model.js';
+import { restoreSpatialPriorityChildren, SRE_HIGH_QUALITY_LIMITS } from './spatial-recovery-quality.js';
+import { measureSpatialRetirementCost, improvesSpatialRetirementCost } from './spatial-recovery-score.js';
 
 // Detached road coordinator, not a worker, UI, acceptance or allocation
 // publisher. Every strategy uses a child of one caller-owned operation
@@ -24,12 +26,12 @@ function sreRoadOperations(input){
 }
 const sreHasConcessions=op=>op.permissions.alternativeFrontage||op.permissions.uniformScaling;
 const sreEmptyConcessions=()=>({frontageSwitches:[],scaledBuildings:[],footprintLoss:0});
-function sreChild(parent,work,expansions=131072,reserve=0){
+function sreChild(parent,work,expansions=131072,reserve=0,ceiling=LARE_DEMOLITION_LIMITS){
   const remaining=parent.snapshot();
   const cap={work:Math.min(work,remaining.remainingWork-reserve),
     stateExpansions:Math.min(expansions,remaining.remainingExpansions)};
   if(cap.work<1||cap.stateExpansions<1)return null;
-  return createLareBudget(cap,{parent,ceiling:LARE_DEMOLITION_LIMITS});
+  return createLareBudget(cap,{parent,ceiling});
 }
 async function sreBind(project,from,to,delta,budget){
   if(riEqual(from,to))return delta;
@@ -67,14 +69,26 @@ export async function verifySpatialUnifiedRoadWitness(project,input,witness,budg
 // Phase ceilings are scheduling boundaries within existing limits, not
 // new allowances. Reserve enough work to bind a verified witness to the
 // external operation before spending on optional improvements.
-export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{context=null,schedule='baseline'}={}){
+export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{context=null,quality='standard',schedule=quality==='high'?'diversified-restoration':'baseline'}={}){
   const {operation,retirement,preserving,building}=sreRoadOperations(input);
   const p=operation.permissions,attempts=[];
+  if(!['standard','high'].includes(quality))throw Error('Unsupported detached recovery quality.');
+  const high=quality==='high';
+  if(high){
+    if(!p.destruction||p.regeneration||schedule!=='diversified-restoration')
+      throw Error('High quality requires explicit destruction permission, diversified scheduling and no regeneration.');
+    const snapshot=callerBudget.snapshot();
+    if(snapshot.work!==0||snapshot.expansions!==0||snapshot.remainingWork!==SRE_HIGH_QUALITY_LIMITS.work||
+      snapshot.remainingExpansions!==SRE_HIGH_QUALITY_LIMITS.stateExpansions)throw Error('High quality requires a fresh matching operation budget.');
+  }
+  const extra=high?SRE_HIGH_QUALITY_LIMITS.work-LARE_DEMOLITION_LIMITS.work:0;
+  const restoreExtra=Math.floor(extra*2/3),optimizeExtra=extra-restoreExtra;
   if(!['baseline','grouped-first','diversified-restoration','shell-first-restoration','area-deficit-seed','area-deficit-direct'].includes(schedule))throw Error('Unsupported detached scheduling policy.');
   if(p.regeneration&&(context?.projectId!==operation.projectId||context?.revision!==operation.revision))
     throw Error('Missing or stale regeneration reservation context.');
-  const limits=p.destruction?LARE_DEMOLITION_LIMITS:LARE_PRESERVATION_LIMITS;
-  const budget=sreChild(callerBudget,limits.work,limits.stateExpansions);
+  const limits=high?SRE_HIGH_QUALITY_LIMITS:p.destruction?LARE_DEMOLITION_LIMITS:LARE_PRESERVATION_LIMITS;
+  const ceiling=high?SRE_HIGH_QUALITY_LIMITS:LARE_DEMOLITION_LIMITS;
+  const budget=sreChild(callerBudget,limits.work,limits.stateExpansions,0,ceiling);
   let incumbent=null,exhausted=null;
   const finish=()=>riFreeze({status:incumbent?'verified-witness':'refused',operation,
     kind:incumbent?.kind??null,delta:incumbent?.delta??null,basisDelta:incumbent?.basisDelta??null,
@@ -82,13 +96,14 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
     attempts,exhausted,stats:callerBudget.snapshot()});
   if(!budget){exhausted='work';return finish();}
   const phase=async(name,cap,run,{expansions=131072,reserve=0}={})=>{
-    const child=sreChild(budget,cap,expansions,reserve);
+    const child=sreChild(budget,cap,expansions,reserve,ceiling);
     if(!child){attempts.push({phase:name,status:'skipped-budget',stats:budget.snapshot()});return null;}
     const row={phase:name,status:'refused',stats:budget.snapshot()};attempts.push(row);
     try{
       const result=await run(child);
       row.status=result.status;row.exhausted=result.exhausted??null;row.work=child.snapshot().work;
       if(schedule==='area-deficit-direct'&&name==='grouped-retirement')row.seedTrials=result.attempts??[];
+      if(high&&name.startsWith('iterative-child-'))row.childTrials=result.attempts??[];
       if(result.exhausted)exhausted=result.exhausted;
       return result.status==='verified-witness'?result:null;
     }catch(error){
@@ -142,17 +157,65 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
     // optimization runs out of work or rebinding fails on its budget,
     // the already validated witness remains available.
     const regenerationReserve=p.regeneration?4000000:0;
-    const restored=await phase('restoration',schedule==='baseline'?6000000:12000000,
+    const restored=await phase('restoration',(schedule==='baseline'?6000000:12000000)+restoreExtra,
       b=>restoreSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b,
         {proposalPolicy:schedule==='shell-first-restoration'?'shell-first':['diversified-restoration','area-deficit-seed','area-deficit-direct'].includes(schedule)?'diversified':'baseline'}),
       {reserve:bindReserve+regenerationReserve});
     if(restored&&restored.delta.candidateFingerprint!==incumbent.basisDelta.candidateFingerprint)
       await setRetirement(restored);
-    const optimized=await phase('optimization',6000000,
+    const optimized=await phase('optimization',6000000+optimizeExtra,
       b=>optimizeSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b),
       {reserve:bindReserve+regenerationReserve});
     if(optimized&&optimized.delta.candidateFingerprint!==incumbent.basisDelta.candidateFingerprint)
       await setRetirement(optimized);
+    // High-quality improvement passes start from the verified incumbent.
+    // The standard path remains the existing one-pass coordinator.
+    if(high){
+      const improve=async(result)=>{
+        if(!result||result.delta.candidateFingerprint===incumbent.basisDelta.candidateFingerprint)return false;
+        const oldCost=measureSpatialRetirementCost(incumbent.ledger,budget);
+        const newCost=measureSpatialRetirementCost(result.ledger,budget);
+        if(!improvesSpatialRetirementCost(newCost,oldCost))return false;
+        await setRetirement(result);return true;
+      };
+      const childSeen=new Set();
+      for(let pass=1;pass<=3;pass++){
+        let changed=false;
+        // Alternate small shells and diversified batches, then prioritize
+        // restoration of retired children on surviving properties.
+        const policy=pass%2?'shell-first':'diversified';
+        const restored=await phase('iterative-restoration-'+pass,45000000,
+          b=>restoreSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b,{proposalPolicy:policy}),{reserve:bindReserve});
+        if(await improve(restored))changed=true;
+        const optimized=await phase('iterative-child-'+pass,32000000,
+          b=>restoreSpatialPriorityChildren(project,retirement,incumbent,b,childSeen),{reserve:bindReserve});
+        if(await improve(optimized))changed=true;
+        if(!changed&&pass>=2)break; // explore both orderings once, then stop on plateau
+        if(budget.snapshot().remainingWork<=bindReserve)break;
+      }
+    }
+    // Combine fast identity-first recovery with least-disruptive same-set
+    // solver selection. Spend only remaining shared operation allowance.
+    // Every trial independently verifies the original-to-final retirement
+    // witness; exact retirement membership and strict cost improvement
+    // are required before replacing the fully bound incumbent.
+    if(high&&p.alternativeFrontage&&p.uniformScaling){
+      for(const scale of [1,.95,.9,.85,.8]){
+        if(scale<1-p.maxLinearReduction-1e-9)continue;
+        const oldCost=measureSpatialRetirementCost(incumbent.ledger,budget);
+        if(oldCost.scaleLoss<=1e-6)break;
+        const refs=incumbent.basisDelta.retired;
+        const result=await phase('final-refinement-'+scale,5000000,
+          b=>searchSpatialRetirementSubsetRoadGroup(project,retirement,refs,b,{diagnosticScale:scale}),
+          {expansions:16384,reserve:bindReserve});
+        if(!result)continue;
+        const expected=new Set(refs.map(spatialRefKey));
+        if(result.delta.added.length||result.delta.retired.length!==expected.size||
+          result.delta.retired.some(r=>!expected.has(spatialRefKey(r))))throw Error('Unexpected final refinement retirement membership.');
+        const newCost=measureSpatialRetirementCost(result.ledger,budget);
+        if(improvesSpatialRetirementCost(newCost,oldCost))await setRetirement(result);
+      }
+    }
     if(p.regeneration){
       for(const [kind,search] of [['shell-regeneration',searchSpatialShellRegeneration],['group-regeneration',searchSpatialGroupRegeneration]]){
         const result=await phase(kind,kind==='shell-regeneration'?2000000:6000000,
