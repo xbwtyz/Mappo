@@ -261,12 +261,32 @@ export function* iterateSpatialConcessionParcelProposals(project,input,propertyI
 // One independently derived context per detached arrangement inventory.
 export function createSpatialConcessionProposalSource(project,input,budget){
   const derived=sreConcessionDerive(project,input,budget);
+  // Same detached accepted snapshot and single strategy budget as derived.
+  // Lazy private indexes contain only original records, never proposals or
+  // validation results. Meter construction once and each use thereafter.
+  let roads=null,land=null;
+  const getRoads=()=>{
+    budget.spend();
+    if(!roads)roads=sreConcessionRoadIndex(project,budget);
+    return roads;
+  };
+  const getLand=()=>{
+    budget.spend();
+    if(!land){
+      const plotsById=new Map(),buildingsById=new Map();
+      for(const row of project.city.plots){budget.spend();plotsById.set(row.id,row);}
+      for(const row of project.city.buildings){budget.spend();buildingsById.set(row.id,row);}
+      land={plotsById,buildingsById};
+    }
+    return land;
+  };
+  const indexes={getRoads,getLand};
   return Object.freeze({
-    frontages: id=>sreConcessionAdjacentFrontages(project,derived,id,budget),
-    proposals: (id,options)=>sreConcessionParcelProposals(project,derived,id,budget,options)
+    frontages: id=>sreConcessionAdjacentFrontages(project,derived,id,budget,getRoads()),
+    proposals: (id,options)=>sreConcessionParcelProposals(project,derived,id,budget,options,indexes)
   });
 }
-function* sreConcessionParcelProposals(project,derived,propertyId,budget,{frontageRoadId,scale=1}={}){
+function* sreConcessionParcelProposals(project,derived,propertyId,budget,{frontageRoadId,scale=1}={},indexes=null){
   const {op,context,changed,graph}=derived;
   const entry=context.properties.find(p=>p.id===propertyId);
   if(!entry||entry.policy.mode!=='adaptive'||entry.policy.provenance!=='generated'||
@@ -274,15 +294,19 @@ function* sreConcessionParcelProposals(project,derived,propertyId,budget,{fronta
   const property=project.city.properties.find(p=>p.id===propertyId),block=changed.get(entry.blockId);
   if(!block)return [];
   const target=frontageRoadId??property.frontageRoadId;
-  if(target!==property.frontageRoadId&&!sreConcessionAdjacentFrontages(project,derived,propertyId,budget).includes(target))
+  if(target!==property.frontageRoadId&&!sreConcessionAdjacentFrontages(project,derived,propertyId,budget,indexes?.getRoads()??null).includes(target))
     throw Error('Unauthorized alternative frontage proposal.');
   if(!Number.isFinite(scale)||scale<=0||scale>1||
     (scale!==1&&(!op.permissions.uniformScaling||scale<1-op.permissions.maxLinearReduction-sreConcessionEps)))
     throw Error('Unauthorized scaling proposal.');
-  const roads=new Map(project.city.roads.map(r=>[[r.a,r.b].sort(riCompare).join(':'),r]));
-  const plotsById=new Map(project.city.plots.map(r=>[r.id,r]));
-  const buildingsById=new Map(project.city.buildings.map(r=>[r.id,r]));
-  budget.spend(roads.size+plotsById.size+buildingsById.size);
+  const roads=indexes?indexes.getRoads():sreConcessionRoadIndex(project,budget);
+  let plotsById,buildingsById;
+  if(indexes){({plotsById,buildingsById}=indexes.getLand());}
+  else{
+    plotsById=new Map(project.city.plots.map(r=>[r.id,r]));
+    buildingsById=new Map(project.city.buildings.map(r=>[r.id,r]));
+    budget.spend(plotsById.size+buildingsById.size);
+  }
   const edges=block.vertices.map((id,i)=>{
     budget.spend();const other=block.vertices[(i+1)%block.vertices.length];
     return {a:graph.nodesById.get(id),b:graph.nodesById.get(other),road:roads.get([id,other].sort(riCompare).join(':'))};
