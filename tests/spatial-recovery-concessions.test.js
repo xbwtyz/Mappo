@@ -185,7 +185,7 @@ test('detached cooperative concession transport compression diagnostic',{timeout
   // Research geometry only, not hardcoded answers or witness sets. Report
   // actual recovery rather than asserting an unqualified success rate.
   const offset0={x:-3.005274072121821,y:-37.39896113564458},roadIds=['RD-0184','RD-0186'];
-  let exercised=0;
+  let exercised=0;const successful=[];
   for(const irregularProperties of [false,true]){
     const source=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
       shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
@@ -204,6 +204,8 @@ test('detached cooperative concession transport compression diagnostic',{timeout
         assert.deepEqual(inspectSpatialConcessionLedger(source,op,actual,budget()),result.ledger);
         assert.deepEqual(actual.identityAllocation,source.identityAllocation);
         assert.equal(Object.hasOwn(result,'candidateProject'),false);
+        assert.ok(result.ledger.frontageSwitches.length&&result.ledger.scaledBuildings.length);
+        successful.push([irregularProperties,scaleOffset]);
       }else if(result){assert.equal(result.status,'refused');assert.equal(result.delta,null);}
       exercised+=Number(Boolean(result?.stages?.['concession-inventory']));
       assert.equal(JSON.stringify(source),before);
@@ -212,4 +214,66 @@ test('detached cooperative concession transport compression diagnostic',{timeout
     }
   }
   assert.ok(exercised,'detached cooperative concession inventory was not exercised');
+  assert.deepEqual(successful,[[false,.25],[false,.5],[true,.5]],'retain the three established combined witnesses');
+});
+
+// Independent qualification trials, NOT retries that reset a live operation's
+// budget. Compare actual cost ledgers for each authorized tier. No production
+// ranking rule is selected by this diagnostic, and no success is presumed.
+test('detached concession tier comparison measures least-disruptive available recovery',{timeout:600000},async()=>{
+  const offset0={x:-3.005274072121821,y:-37.39896113564458},roadIds=['RD-0184','RD-0186'];
+  for(const irregularProperties of [false,true]){
+    const source=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+      shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
+    const before=JSON.stringify(source);
+    for(const scaleOffset of [.25,.5]){
+      const rows=[];
+      for(const scale of [1,.95,.9]){
+        const permissions=scale===1?{alternativeFrontage:true}:
+          {alternativeFrontage:true,uniformScaling:true,maxLinearReduction:scale===.95?.05:.1};
+        const op=normalizeSpatialRoadGroup(source,1,roadIds,{x:offset0.x*scaleOffset,y:offset0.y*scaleOffset},permissions);
+        const shared=budget();
+        let result,exhausted=null;
+        try{result=await searchSpatialConcessionRoadGroup(source,op,shared,{scale});}
+        catch(error){if(error.constructor.name!=='LareBudgetExceeded')throw error;exhausted=error.resource;}
+        const stats=shared.snapshot();
+        assert.ok(stats.work<=8000000&&stats.expansions<=32768);
+        let metrics=null;
+        if(result?.status==='verified-witness'){
+          const actual=await verifySpatialConcessionRoadWitness(source,op,result.delta,budget());
+          const ledger=inspectSpatialConcessionLedger(source,op,actual,budget());
+          assert.deepEqual(ledger,result.ledger);
+          assert.deepEqual(actual.identityAllocation,source.identityAllocation);
+          for(const key of ['properties','plots','buildings'])
+            assert.deepEqual(actual.city[key].map(x=>x.id),source.city[key].map(x=>x.id));
+          if(scale===1)assert.equal(ledger.scaledBuildings.length,0);
+          else assert.ok(ledger.scaledBuildings.every(b=>Math.abs(b.factor-scale)<1e-6));
+          const prior=new Map(source.city.buildings.map(b=>[b.id,b]));
+          const priorProps=new Map(source.city.properties.map(p=>[p.id,p]));
+          const priorPlots=new Map(source.city.plots.map(p=>[p.id,p]));
+          const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+          const ringCost=(a,b)=>a.reduce((n,p,i)=>n+dist(p,b[i]),0);
+          const center=b=>{const pts=b.geometry.regions.flatMap(r=>r.ring);return {
+            x:pts.reduce((n,p)=>n+p.x,0)/pts.length,y:pts.reduce((n,p)=>n+p.y,0)/pts.length};};
+          const moved=actual.city.buildings.filter(b=>JSON.stringify(b.geometry)!==JSON.stringify(prior.get(b.id).geometry)||
+            b.orientation!==prior.get(b.id).orientation);
+          metrics={frontageSwitches:ledger.frontageSwitches.length,scaledBuildings:ledger.scaledBuildings.length,
+            footprintLoss:ledger.footprintLoss,movedBuildings:moved.length,
+            displacement:moved.reduce((n,b)=>n+dist(center(b),center(prior.get(b.id))),0),
+            rotation:moved.reduce((n,b)=>{const a=b.orientation-prior.get(b.id).orientation;return n+Math.abs(Math.atan2(Math.sin(a),Math.cos(a)));},0),
+            propertyDeformation:actual.city.properties.reduce((n,p)=>n+ringCost(priorProps.get(p.id).boundary,p.boundary),0),
+            plotDeformation:actual.city.plots.reduce((n,p)=>n+ringCost(priorPlots.get(p.id).boundary,p.boundary),0),
+            accessChanges:actual.city.buildings.filter(b=>JSON.stringify([b.entrance,b.accessPath])!==JSON.stringify([prior.get(b.id).entrance,prior.get(b.id).accessPath])).length};
+          assert.ok(Object.values(metrics).every(n=>Number.isFinite(n)&&n>=0));
+        }else if(result){assert.equal(result.status,'refused');assert.equal(result.delta,null);}
+        assert.equal(JSON.stringify(source),before);
+        rows.push({scale,status:result?.status??'exhausted',exhausted,stats,metrics,
+          issueCodes:result?.issues.map(i=>i.code)??[],
+          materializations:result?.stages['candidate-materialization']??0,
+          accessChecks:result?.stages['building-access']??0,
+          unions:result?.stages['block-union']??0});
+      }
+      console.log('SRE_CONCESSION_TIER_COMPARISON '+JSON.stringify({irregularProperties,scaleOffset,rows}));
+    }
+  }
 });
