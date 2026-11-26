@@ -8,7 +8,7 @@ const srePackEps=1e-6,srePackMargin=.12;
 const srePackClamp=(x,lo,hi)=>Math.max(lo,Math.min(hi,x));
 const srePackUnique=xs=>[...new Set(xs.filter(Number.isFinite))];
 const srePackDot=(p,v)=>p.x*v.x+p.y*v.y;
-export function* iterateSpatialPackingSeeds({property,policy,buildings,edge},budget){
+export function* iterateSpatialPackingSeeds({property,policy,buildings,edge,edges=[],maxProposals=24},budget){
   if(!budget?.spend||!Array.isArray(buildings))throw Error('Invalid spatial packing request.');
   if(policy?.mode!=='adaptive'||policy?.provenance!=='generated'||!buildings.length||
     buildings.some(b=>b.permission?.mode!=='rigid'||b.permission?.provenance!=='generated'||
@@ -33,8 +33,16 @@ export function* iterateSpatialPackingSeeds({property,policy,buildings,edge},bud
   const front=(STREET_WIDTHS[edge.road.kind]+STREET_EDGE_WIDTH)/2+PROPERTY_SETBACK+.05;
   const center=srePackDot({x:(f0.x+f1.x)/2-a.x,y:(f0.y+f1.y)/2-a.y},t);
   const align=Math.atan2(t.y,t.x)-Math.atan2(oldT.y,oldT.x);
-  const out=[],seen=new Set();let attempts=0;
-  for(const angle of [align,align+Math.PI/2,0]){
+  if(!Number.isSafeInteger(maxProposals)||maxProposals<1||maxProposals>192)
+    throw Error('Invalid packing proposal limit.');
+  const shape=original.map(local);
+  const rectangular=shape.length===4&&shape.every(q=>
+    (Math.abs(q.u)<1e-5||Math.abs(q.u-width)<1e-5)&&
+    (Math.abs(q.v)<1e-5||Math.abs(q.v-depth)<1e-5));
+  const out=[],seen=new Set();
+  for(const fitMode of rectangular?[0]:[0,1]){
+  let attempts=0;
+  fitPass: for(const [rotationMode,angle] of [align,align+Math.PI/2,0].entries()){
     const pieces=buildings.map(({source})=>{
       const points=source.geometry.regions.flatMap(r=>r.ring);
       budget.spend(Math.max(1,points.length*4));
@@ -54,11 +62,35 @@ export function* iterateSpatialPackingSeeds({property,policy,buildings,edge},bud
         placed.push({p,u,v});usedW=Math.max(usedW,u+p.w+m);u+=p.w+m;rowH=Math.max(rowH,p.h);
       }
       const packedDepth=v+rowH+m;
-      for(const widthFactor of [1,1.35])for(const depthFactor of [1,1.2]){
+      for(const widthFactor of fitMode?[1.15,1.35,1.6]:[1])for(const depthFactor of fitMode?[1.15,1.4,1.65]:[1,1.2]){
         const span=Math.max(Math.min(7,width),usedW+.08)*widthFactor,newDepth=Math.max(1.01,packedDepth*depthFactor);
         if(span>len)continue;
-        for(const left of srePackUnique([center-span/2,0,(len-span)/2,len-span].map(x=>srePackClamp(x,0,len-span)))){
-          if(attempts++>=96)return riFreeze(out);
+        // A conservative half-plane intersection supplies extra translations,
+        // never excludes the ordinary samples (concave blocks need not have
+        // a nonempty common inset). The real parcel gate remains decisive.
+        const guided=[];
+        if(fitMode&&edges.length){
+          let lo=0,hi=len-span,valid=true;
+          for(const e of edges){
+            const dx=e.b.x-e.a.x,dy=e.b.y-e.a.y,edgeLen=Math.hypot(dx,dy);
+            if(edgeLen<srePackEps||!Number.isFinite(STREET_WIDTHS[e.road?.kind])){valid=false;break;}
+            const inward={x:-dy/edgeLen,y:dx/edgeLen};
+            const margin=(STREET_WIDTHS[e.road.kind]+STREET_EDGE_WIDTH)/2+PROPERTY_SETBACK+.05;
+            const slope=srePackDot(t,inward);
+            for(const q of shape){
+              budget.spend();
+              const p=world(q.u*span/width,front+q.v*newDepth/depth);
+              const required=margin-srePackDot({x:p.x-e.a.x,y:p.y-e.a.y},inward);
+              if(Math.abs(slope)<1e-9){if(required>1e-7)valid=false;}
+              else if(slope>0)lo=Math.max(lo,required/slope);
+              else hi=Math.min(hi,required/slope);
+            }
+          }
+          if(valid&&lo<=hi)guided.push(srePackClamp(center-span/2,lo,hi),(lo+hi)/2,lo,hi);
+        }
+        const oldLeft=srePackDot({x:f0.x-a.x,y:f0.y-a.y},t);
+        for(const left of srePackUnique([...guided,center-span/2,oldLeft,(len-span)*.25,(len-span)*.5,(len-span)*.75,0,len-span].map(x=>srePackClamp(x,0,len-span)))){
+          if(attempts++>=96)break fitPass;
           budget.spend(Math.max(1,original.length));
           yield {stage:'spatial-packing-seed',id:property.id};
           const boundary=original.map(p=>{const q=local(p);return world(left+q.u*span/width,front+q.v*newDepth/depth);});
@@ -77,11 +109,12 @@ export function* iterateSpatialPackingSeeds({property,policy,buildings,edge},bud
           seeds.sort((a,b)=>riCompare(a.id,b.id));
           const key=JSON.stringify([boundary,seeds]);
           if(seen.has(key))continue;seen.add(key);
-          out.push({propertyId:property.id,frontageRoadId:property.frontageRoadId,boundary,seeds});
-          if(out.length>=24)return riFreeze(out);
+          out.push({propertyId:property.id,frontageRoadId:property.frontageRoadId,boundary,seeds,family:(fitMode?'packed-fit-':'packed-')+rotationMode+'-'+Math.round(target*100),frame:{left,front,span,depth:newDepth}});
+          if(out.length>=maxProposals)return riFreeze(out);
         }
       }
     }
+  }
   }
   return riFreeze(out);
 }

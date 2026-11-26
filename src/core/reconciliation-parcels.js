@@ -208,23 +208,21 @@ export function* iterateLareParcelCandidates({property,plots,edge,edges,fixedRin
       }
     }
   }
-  // Additional opt-in rigid packing family. Keep ordinary inventory intact
-  // until proposals are validated by the same parcel/plot gate.
+  // Validate the full bounded proposal inventory before applying the
+  // existing 24-candidate diversity cap, as in the R7/R8 research.
   if(packing&&compactDeformation&&!fixedRings.length){
-    const ordinary=found.splice(0);
-    attemptLimit=attempts+24;
-    const seeds=yield* iterateSpatialPackingSeeds({property,policy,buildings,edge},budget);
+    const seeds=yield* iterateSpatialPackingSeeds({property,policy,buildings,edge,edges,maxProposals:192},budget);
+    attemptLimit=attempts+seeds.length;
+    let accepted=0;
     for(const proposal of seeds){
-      const boundary=proposal.boundary;
-      const l=projected(boundary[0]),r=projected(boundary[1]);
-      const span=r.u-l.u,newDepth=Math.max(...boundary.map(p=>projected(p).v))-l.v;
-      const map=p=>{const q=local(p);return world(l.u+q.u*span/width,l.v+q.v*newDepth/oldDepth);};
-      yield* tryCandidate('building-first-packed',boundary,mapLarePlotCells(plots,map,budget),proposal.seeds);
+      const {left,front,span,depth}=proposal.frame;
+      const map=p=>{const q=local(p);return world(left+q.u*span/width,front+q.v*depth/oldDepth);};
+      const orderBefore=order;
+      yield* tryCandidate(proposal.family,proposal.boundary,mapLarePlotCells(plots,map,budget),proposal.seeds);
+      if(found.some(c=>c.order>=orderBefore&&c.buildingSeeds))accepted++;
     }
-    // Reserve at most half the inventory for the new family. Ordinary
-    // progressive search remains available as the separate strict incumbent.
-    const packed=found.splice(0).sort(lareParcelCmp).slice(0,12);
-    found.push(...ordinary.slice(0,LARE_LIMITS.parcelCandidates-packed.length),...packed);
+    yield {stage:'packing-inventory',id:property.id,proposals:seeds.length,accepted,
+      retained:found.filter(c=>c.buildingSeeds).length};
   }
   return found.sort(lareParcelCmp);
 }
