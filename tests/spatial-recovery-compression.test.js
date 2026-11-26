@@ -312,6 +312,12 @@ for(const irregularProperties of [false,true])test('SRE unified operation-local 
   const project=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
     shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
   const before=hash(project),summary={cases:0,verified:0,knownRetained:0,cacheHits:0};
+  // Exact already-qualified concessions must survive transport optimization.
+  const establishedConcessions=irregularProperties?{}:{
+    .25:'704fbb3ae8a6d05d96f8ed6f85ca9b59da6fc14a1299dd22c248285c5227ba07',
+    .5:'29be178022ec22688c465c5f9bb77451c29a697b3a5ef05088f9e9d6ce991581',
+    .75:'ab0c1ca2cbfa6261e9ad606c53a35e7a96a74f53b03f5bad97f09b17e2d63ba6'
+  };
   for(const scale of scales){
     const op=normalizeSpatialRoadGroup(project,1,roadIds,{x:offset0.x*scale,y:offset0.y*scale},
       {alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2});
@@ -338,6 +344,11 @@ for(const irregularProperties of [false,true])test('SRE unified operation-local 
       summary.verified++;summary.knownRetained+=Number([.025,.125,-.25,.25,.5].includes(scale));
     }else{assert.equal(result.status,'refused');assert.equal(result.delta,null);}
     if([.025,.125,-.25].includes(scale))assert.equal(result.status,'verified-witness','established strict/packing witness lost');
+    if(Object.hasOwn(establishedConcessions,scale)){
+      assert.equal(result.status,'verified-witness','established frontage witness lost');
+      assert.equal(metrics.fingerprint,establishedConcessions[scale]);
+      assert.equal(metrics.scaled,0);assert.equal(metrics.loss,0);
+    }
     assert.equal(hash(project),before);
     console.log('SRE_INVENTORY_REUSE_CASE '+JSON.stringify({irregularProperties,scale,status:result.status,tier:result.tier,phase:result.phase,attempts:result.attempts,stats,hits,metrics}));
   }

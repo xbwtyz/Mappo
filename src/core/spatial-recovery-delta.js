@@ -103,6 +103,13 @@ export async function createSpatialDelta(accepted,candidate,input,strategyVersio
   sreRequireStrategy(strategyVersion);
   const acceptedFingerprint=await sreFingerprint(accepted,budget);
   const candidateFingerprint=await sreFingerprint(candidate,budget);
+  return sreBuildSpatialDelta(accepted,candidate,operation,strategyVersion,budget,authorization,acceptedFingerprint,candidateFingerprint);
+}
+
+// Internal structural ledger builder. Fingerprints are produced only by
+// the validating entry point or the independent reconstruction below.
+// No caller-supplied digest or search evidence can bypass validation.
+async function sreBuildSpatialDelta(accepted,candidate,operation,strategyVersion,budget,authorization,acceptedFingerprint,candidateFingerprint) {
   createSpatialInventory(accepted,operation,budget);
   if (candidate?.schemaVersion!==11 || !sreSameJson(sreOutsideCollections(accepted),sreOutsideCollections(candidate)))
     throw Error('Unsupported non-collection spatial change.');
@@ -184,10 +191,14 @@ export async function reconstructSpatialDelta(accepted,input,strategyVersion,del
     candidate.identityAllocation=sreVerifyIdentityMetered(accepted,candidate,context,requests,receipt,budget);
   }
   const result=copyJson(candidate);
-  if (delta.candidateFingerprint!==await sreFingerprint(result,budget)) throw Error('Spatial candidate fingerprint mismatch.');
+  const candidateFingerprint=await sreFingerprint(result,budget);
+  if (delta.candidateFingerprint!==candidateFingerprint) throw Error('Spatial candidate fingerprint mismatch.');
   // Recompute the full structural ledger rather than trusting the worker's
-  // classification or order. The ledger still needs independent policy checks.
-  const rebuilt=await createSpatialDelta(accepted,result,operation,strategyVersion,budget,authorization);
+  // classification or order. The candidate is an owned reconstruction; its
+  // independently validated digest can be reused within this call only.
+  // Recheck the externally owned accepted project as before.
+  const acceptedFingerprint=await sreFingerprint(accepted,budget);
+  const rebuilt=await sreBuildSpatialDelta(accepted,result,operation,strategyVersion,budget,authorization,acceptedFingerprint,candidateFingerprint);
   if (!sreSameJson(rebuilt,delta)) throw Error('Spatial delta differs from reconstructed ledger.');
   return result;
 }
