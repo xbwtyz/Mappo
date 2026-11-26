@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
-import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals, createSpatialConcessionProposalSource } from '../src/core/spatial-recovery-concessions.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
@@ -28,6 +28,7 @@ test('detached concession cost preserves tier priority and deterministic multidi
   assert.equal(compareSpatialConcessionCost(scaled,{...scaled,maxLinearReduction:.1,footprintLoss:1}),-1);
   assert.equal(compareSpatialConcessionCost(frontage,{...frontage,frontageSwitches:3,movedBuildings:0}),-1);
   assert.equal(compareSpatialConcessionCost(scaled,{...scaled,footprintLoss:11}),-1);
+  assert.equal(compareSpatialConcessionCost(scaled,{...scaled,maxLinearReduction:.05-1e-12,footprintLoss:11}),-1);
   for(const key of ['movedBuildings','displacement','rotation','propertyDeformation','plotDeformation','accessChanges'])
     assert.equal(compareSpatialConcessionCost(frontage,{...frontage,[key]:frontage[key]+1}),-1);
   assert.throws(()=>compareSpatialConcessionCost(scaled,{...scaled,footprintLoss:NaN}),/Invalid spatial concession cost/);
@@ -373,4 +374,41 @@ test('detached relaxed-only concession tier measures repeated fixed-pass overhea
   }
   assert.ok(exercised,'relaxed-only diagnostic must exercise its intended branch');
   assert.equal(verifiedCount,cases.length,'retain all ten independently verified relaxed-only witnesses');
+});
+
+
+test('detached ranked concession challenger uses one budget and retains the better verified witness',{timeout:600000},async()=>{
+  const offset0={x:-3.005274072121821,y:-37.39896113564458},roadIds=['RD-0184','RD-0186'];
+  let compared=0;
+  for(const irregularProperties of [false,true]){
+    const source=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+      shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
+    const before=JSON.stringify(source),multiplier=irregularProperties?.5:.25;
+    const op=normalizeSpatialRoadGroup(source,1,roadIds,{x:offset0.x*multiplier,y:offset0.y*multiplier},
+      {alternativeFrontage:true});
+    const shared=budget(),result=await searchSpatialRankedConcessionRoadGroup(source,op,shared);
+    assert.equal(result.status,'verified-witness');
+    const {baseline,challenger,selection}=result.ranking;
+    assert.equal(baseline.status,'verified-witness');assert.ok(baseline.cost);
+    assert.equal(result.stats.work,shared.snapshot().work);
+    assert.ok(result.stats.work<=8000000&&result.stats.expansions<=32768);
+    if(challenger){
+      assert.ok(challenger.stats.work>=baseline.stats.work);
+      assert.ok(challenger.stats.expansions>=baseline.stats.expansions);
+      if(challenger.status==='verified-witness'&&challenger.cost){
+        assert.ok(challenger.rankedInventories>0);compared++;
+        const better=compareSpatialConcessionCost(challenger.cost,baseline.cost)<0;
+        assert.equal(selection,better?'challenger':'baseline');
+      }else assert.equal(selection,'baseline');
+    }else assert.equal(selection,'baseline');
+    const winner=selection==='challenger'?challenger:baseline;
+    assert.equal(result.delta.candidateFingerprint,winner.fingerprint);
+    const actual=await verifySpatialConcessionRoadWitness(source,op,result.delta,budget());
+    assert.deepEqual(scoreSpatialConcessions(source,op,actual,budget()),winner.cost);
+    assert.deepEqual(inspectSpatialConcessionLedger(source,op,actual,budget()),result.ledger);
+    assert.equal(JSON.stringify(source),before);
+    console.log('SRE_CONCESSION_RANKED_CHALLENGER '+JSON.stringify({irregularProperties,multiplier,
+      ranking:result.ranking,stats:result.stats}));
+  }
+  assert.ok(compared>0,'at least one challenger must complete full independent comparison');
 });

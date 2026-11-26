@@ -106,7 +106,12 @@ export function compareSpatialConcessionCost(a,b){
   sreValidateConcessionCost(a);sreValidateConcessionCost(b);
   const tier=sreConcessionTier(a)-sreConcessionTier(b);
   if(tier)return Math.sign(tier);
-  for(const key of ['maxLinearReduction','frontageSwitches','footprintLoss','scaledBuildings'])
+  // Quantize the independently measured reduction at the geometry
+  // tolerance, so floating-point noise at one authorized scale cannot
+  // outrank meaningful cost differences. Fixed bins preserve transitivity.
+  const reduction=cost=>Math.round(cost.maxLinearReduction*1e6);
+  if(reduction(a)!==reduction(b))return reduction(a)<reduction(b)?-1:1;
+  for(const key of ['frontageSwitches','footprintLoss','scaledBuildings'])
     if(a[key]!==b[key])return a[key]<b[key]?-1:1;
   return compareSpatialPreservationCost(a,b);
 }
