@@ -70,7 +70,7 @@ export async function verifySpatialUnifiedRoadWitness(project,input,witness,budg
 export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{context=null,schedule='baseline'}={}){
   const {operation,retirement,preserving,building}=sreRoadOperations(input);
   const p=operation.permissions,attempts=[];
-  if(!['baseline','grouped-first','diversified-restoration','shell-first-restoration'].includes(schedule))throw Error('Unsupported detached scheduling policy.');
+  if(!['baseline','grouped-first','diversified-restoration','shell-first-restoration','area-deficit-seed'].includes(schedule))throw Error('Unsupported detached scheduling policy.');
   if(p.regeneration&&(context?.projectId!==operation.projectId||context?.revision!==operation.revision))
     throw Error('Missing or stale regeneration reservation context.');
   const limits=p.destruction?LARE_DEMOLITION_LIMITS:LARE_PRESERVATION_LIMITS;
@@ -115,7 +115,8 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
     // the existing baseline schedule unchanged by default.
     if(schedule!=='baseline'){
       const grouped=await phase('grouped-retirement',18000000,
-        b=>searchSpatialGroupedRetirementRoadGroup(project,retirement,b),{reserve:bindReserve});
+        b=>searchSpatialGroupedRetirementRoadGroup(project,retirement,b,
+          {seedPolicy:schedule==='area-deficit-seed'?'area-deficit':'baseline'}),{reserve:bindReserve});
       if(grouped)await setRetirement(grouped);
     }
     const legacy=incumbent?null:await phase('building-retirement',4000000,
@@ -142,7 +143,7 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
     const regenerationReserve=p.regeneration?4000000:0;
     const restored=await phase('restoration',schedule==='baseline'?6000000:12000000,
       b=>restoreSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b,
-        {proposalPolicy:schedule==='shell-first-restoration'?'shell-first':schedule==='diversified-restoration'?'diversified':'baseline'}),
+        {proposalPolicy:schedule==='shell-first-restoration'?'shell-first':['diversified-restoration','area-deficit-seed'].includes(schedule)?'diversified':'baseline'}),
       {reserve:bindReserve+regenerationReserve});
     if(restored&&restored.delta.candidateFingerprint!==incumbent.basisDelta.candidateFingerprint)
       await setRetirement(restored);

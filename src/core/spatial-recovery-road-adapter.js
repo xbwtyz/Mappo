@@ -298,7 +298,38 @@ export async function searchSpatialRetirementSubsetRoadGroup(project,input,refs,
 // then all eligible groups. No preselected witness sets or fixture answers.
 // Only detached scope-authorized groups are eligible; this is not a new
 // topology or destruction permission and does not replace the single path.
-export async function searchSpatialGroupedRetirementRoadGroup(project,input,budget){
+// Area deficit is a ranking heuristic, not a packing feasibility proof.
+ // Work only with independently derived eligible complete property groups.
+ // Prefer more released land per retired record; deterministic ties by ID.
+export function selectSpatialAreaDeficitSeed(groups,properties,blocks,changedFaces,budget){
+  const losses=new Map(),byBlock=new Map();
+  for(const face of changedFaces){
+    budget.spend();
+    const old=blocks.get(face.id)?.area,next=face.record?.area;
+    if(face.kind==='block'&&Number.isFinite(old)&&Number.isFinite(next)&&old-next>1e-6)
+      losses.set(face.id,old-next);
+  }
+  for(const group of groups){
+    budget.spend(1+group.refs.length);
+    const p=properties.get(group.propertyId);
+    if(!p||!losses.has(p.blockId)||!Number.isFinite(p.area)||p.area<=0||!group.refs.length)continue;
+    if(!byBlock.has(p.blockId))byBlock.set(p.blockId,[]);
+    byBlock.get(p.blockId).push({group,area:p.area,cost:group.refs.length});
+  }
+  const selected=[];
+  for(const id of [...byBlock.keys()].sort(riCompare)){
+    const rows=byBlock.get(id);
+    rows.sort((a,b)=>{budget.spend();return b.area/b.cost-a.area/a.cost||a.cost-b.cost||riCompare(a.group.propertyId,b.group.propertyId);});
+    let released=0;
+    for(const row of rows){
+      budget.spend();selected.push(row.group);released+=row.area;
+      if(released>=losses.get(id))break;
+    }
+  }
+  return selected.sort((a,b)=>{budget.spend();return riCompare(a.propertyId,b.propertyId);});
+}
+export async function searchSpatialGroupedRetirementRoadGroup(project,input,budget,{seedPolicy='baseline'}={}){
+  if(!['baseline','area-deficit'].includes(seedPolicy))throw Error('Unsupported grouped retirement seed policy.');
   const operation=createSpatialOperation(input),attempts=[];
   const refusal=exhausted=>riFreeze({status:'refused',operation,delta:null,ledger:null,attempts,exhausted,stats:budget.snapshot()});
   try{
@@ -315,7 +346,16 @@ export async function searchSpatialGroupedRetirementRoadGroup(project,input,budg
     }
     const groups=eligibility.propertyGroups.slice().sort((a,b)=>{budget.spend();return riCompare(a.propertyId,b.propertyId);});
     const seen=new Set();
-    for(const [tier,selected] of [['compressed-blocks',groups.filter(g=>compressed.has(properties.get(g.propertyId)?.blockId))],['all-eligible',groups]]){
+    const compressedGroups=groups.filter(g=>compressed.has(properties.get(g.propertyId)?.blockId));
+    const tiers=[['compressed-blocks',compressedGroups],['all-eligible',groups]];
+    if(seedPolicy==='area-deficit'){
+      const selected=selectSpatialAreaDeficitSeed(groups,properties,blocks,topology.identity.changed,budget);
+      // Avoid a duplicate broad trial. The new trial is capped and cannot
+      // borrow extra operation work or invalidate an already verified result.
+      if(selected.length&&selected.length<compressedGroups.length)
+        tiers.unshift(['area-deficit',selected]);
+    }
+    for(const [tier,selected] of tiers){
       budget.spend(Math.max(1,groups.length));
       if(!selected.length)continue;
       const ids=selected.map(g=>g.propertyId),key=JSON.stringify(ids);
@@ -325,7 +365,19 @@ export async function searchSpatialGroupedRetirementRoadGroup(project,input,budg
       const refs=selected.flatMap(g=>g.refs);
       budget.spend(Math.max(1,refs.length));
       const row={tier,propertyIds:ids,stats:budget.snapshot()};attempts.push(row);
-      const result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,refs,budget);
+      let trialBudget=budget;
+      if(tier==='area-deficit'){
+        const remaining=budget.snapshot();
+        const work=Math.min(6000000,remaining.remainingWork),stateExpansions=Math.min(16384,remaining.remainingExpansions);
+        if(work<1||stateExpansions<1)continue;
+        trialBudget=createLareBudget({work,stateExpansions},{parent:budget,ceiling:LARE_DEMOLITION_LIMITS});
+      }
+      let result;
+      try{result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,refs,trialBudget);}
+      catch(error){
+        if(tier!=='area-deficit'||!(error instanceof LareBudgetExceeded))throw error;
+        result={status:'refused',exhausted:error.resource};
+      }
       row.status=result.status;row.exhausted=result.exhausted??null;
       if(result.status==='verified-witness')return riFreeze({...result,operation,attempts,exhausted:null,stats:budget.snapshot()});
     }
