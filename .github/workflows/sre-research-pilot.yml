@@ -1,0 +1,73 @@
+name: Mappo SRE Research Pilot
+on:
+  push:
+    branches:
+      - chore/dev-opt-p0-p1
+permissions:
+  contents: read
+jobs:
+  shards:
+    if: contains(github.event.head_commit.message, '[sre-research-pilot]')
+    name: SRE research shard ${{ matrix.shard }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [0, 1]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: harness
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7
+          path: frozen-sre
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Execute frozen SRE experiments
+        env:
+          RESEARCH_SHARD: ${{ matrix.shard }}
+        run: node harness/scripts/development/research/sre-pilot.mjs shard "$RESEARCH_SHARD" "$GITHUB_WORKSPACE/frozen-sre" "$RUNNER_TEMP/sre-shard"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sre-shard-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: ${{ runner.temp }}/sre-shard/shard.json
+          if-no-files-found: error
+          retention-days: 14
+  aggregate:
+    if: always() && contains(github.event.head_commit.message, '[sre-research-pilot]')
+    name: SRE research completeness
+    needs: shards
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: sre-shard-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/sre-evidence
+      - name: Verify SRE evidence
+        env:
+          RESEARCH_MATRIX_RESULT: ${{ needs.shards.result }}
+        run: node scripts/development/research/sre-pilot.mjs aggregate unused "$RUNNER_TEMP/sre-evidence" "$RUNNER_TEMP/sre-report"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sre-report-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/sre-report/report.json
+          if-no-files-found: error
+          retention-days: 14
