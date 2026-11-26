@@ -341,7 +341,7 @@ export async function searchSpatialGroupedRetirementRoadGroup(project,input,budg
 // input. Restoring land alone leaves its originally retired children absent.
 // No new retirement or identity allocation; no accepted-project mutation.
 export async function restoreSpatialRoadRetirements(project,input,seedDelta,budget,{proposalPolicy='baseline'}={}){
-  if(!['baseline','diversified'].includes(proposalPolicy))throw Error('Unsupported restoration proposal policy.');
+  if(!['baseline','diversified','shell-first'].includes(proposalPolicy))throw Error('Unsupported restoration proposal policy.');
   const operation=createSpatialOperation(input),attempts=[],restored=[];
   let incumbent=null,exhausted=null;
   const finish=()=>riFreeze({status:incumbent?'verified-witness':'refused',operation,
@@ -375,7 +375,7 @@ export async function restoreSpatialRoadRetirements(project,input,seedDelta,budg
       const row={tier,requested:current.length-remaining.length,status:'refused',stats:budget.snapshot()};
       attempts.push(row);
       let result;
-      if(proposalPolicy==='diversified'){
+      if(proposalPolicy!=='baseline'){
         const p=operation.permissions;
         const scale=p.alternativeFrontage?(p.uniformScaling?1-p.maxLinearReduction:1):null;
         row.scale=scale;
@@ -412,6 +412,30 @@ export async function restoreSpatialRoadRetirements(project,input,seedDelta,budg
       for(const block of blocks.slice(0,2))await trial('block',currentGroups().filter(row=>row.block===block).flatMap(row=>row.group.refs));
       for(const {group} of currentGroups().slice(0,6))await trial('whole-property',group.refs);
       for(const {group} of currentGroups().slice(0,6))await trial('property-shell',group.refs.filter(r=>r.collection!=='buildings'));
+    }else if(proposalPolicy==='shell-first'){
+      // R29-inspired smaller land first. All proposals remain exact
+      // subsets of the incumbent; no accepted survivor is retired.
+      // Prefer fitting vacant shells without forcing their old buildings
+      // to fit simultaneously, then try whole properties and child restores.
+      const currentRows=block=>currentGroups().filter(r=>r.block===block)
+        .sort((a,b)=>{budget.spend();return properties.get(a.group.propertyId).area-properties.get(b.group.propertyId).area||
+          riCompare(a.group.propertyId,b.group.propertyId);});
+      const shellRefs=rows=>rows.flatMap(r=>r.group.refs.filter(ref=>ref.collection!=='buildings'));
+      for(const size of [4,2,1]){
+        for(const block of blocks.slice(0,2)){
+          const rows=currentRows(block).slice(0,size);
+          await trial('small-shell-batch-'+size,shellRefs(rows));
+          const next=currentRows(block).slice(0,size);
+          await trial('small-whole-batch-'+size,next.flatMap(r=>r.group.refs));
+        }
+      }
+      const survivingChildren=()=> {
+        const retired=new Set(incumbent.delta.retired.map(spatialRefKey));
+        return incumbent.delta.retired.filter(r=>r.collection==='buildings'&&
+          !retired.has(spatialRefKey({collection:'properties',id:buildings.get(r.id).propertyId})))
+          .sort((a,b)=>{budget.spend();return buildings.get(a.id).area-buildings.get(b.id).area||riCompare(a.id,b.id);});
+      };
+      for(const size of [2,1])await trial('small-child-batch-'+size,survivingChildren().slice(0,size));
     }else{
       // R27-inspired coarse-to-fine, class-interleaved restoration.
       // Derive all proposals from current verified retirements, never
