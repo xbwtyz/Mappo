@@ -1,6 +1,6 @@
 # Mappo 0.2.x — Engine Limitations Improvement Roadmap
 
-> **Living dependency roadmap, reconciled through PR #151 on November 23, 2026 (Pacific).** The development build on `main` is **0.2.23-dev**, with Schema 10. The stable release is **v0.2.0**.
+> **Living dependency roadmap, reconciled through PR #156 on November 25, 2026 (Pacific).** The development build on `main` is **0.2.25-dev**, with Schema 11. The stable release is **v0.2.0**.
 
 ## Problem and intended outcome
 
@@ -90,7 +90,7 @@ flowchart TD
 2. All previews, Cancel and Reset are read-only to accepted data and recovery.
 3. Preserve or explicitly reconcile user-authored identities, unknown metadata, plot/building/road ownership and protected context.
 4. Retain deterministic generation and accurate local change/lineage ledgers.
-5. Maintain project schema 10, portable envelope 1, and workspace schema 1 until a separately authorized schema/format change. Future universal legacy-save support is **optional**, but shipped migrations/tests must not be silently removed.
+5. Maintain project schema 11, portable envelope 1, and workspace schema 1 until a separately authorized schema/format change. Future universal legacy-save support is **optional**, but shipped migrations/tests must not be silently removed.
 6. Keep modular source, one dependency-free offline HTML, byte-identical root/dist build and archive retention.
 7. Target Firefox and Chromium desktop/laptop/ultrawide, with keyboard, mouse/trackpad, accessible statuses and numeric editing. No forced walkthroughs.
 8. Run focused tests while developing; six-runner CI (two Node shards, four browser suites) on review-ready PRs and `main`. Opt-in heavy C7 benchmark only where measured comparisons are relevant.
@@ -162,4 +162,4 @@ D-031-1–5=A: session-only shared chronological Undo/Redo for roads, properties
 **Approved next prerequisite:** [B1R — 0.2.24-dev Local Adaptive Reconciliation](milestones/0.2.24-adaptive-reconciliation-b1r.md). P1–P4 functional checks passed. PR #153 merged; exact-main CI passed. The owner approved proceeding to P5 with measured slice overruns, and the 8 ms target continues to apply. B2 is deferred.
 
 
-**Approved B1R-E:** [Spatial Recovery Engine 0.2.25-dev](milestones/0.2.25-spatial-recovery-b1r-e.md), E1 foundation in progress; B2 remains deferred. No release authorized.
+**Approved B1R-E:** [Spatial Recovery Engine 0.2.26-dev](milestones/0.2.25-spatial-recovery-b1r-e.md), E1 foundation in progress; B2 remains deferred. No release authorized.

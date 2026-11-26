@@ -181,4 +181,4 @@ The owner's approved direction is A0 audit → A usability foundation → B conn
 
 Update this document as phases are approved/completed or the owner changes direction. Record links to relevant issue/PR, exact verification evidence and the next approval boundary; keep historical snapshots distinguishable from live state.
 
-Next approved implementation: [B1R-E spatial recovery](milestones/0.2.25-spatial-recovery-b1r-e.md), beginning with E1/P1. B2 deferred and A6 hands-on acceptance separate.
+Schema 11 persistent identity allocation is merged in PR #156; [exact-main CI passed](https://github.com/xbwtyz/Mappo/actions/runs/45731699500). Current runtime is 0.2.25-dev; target SRE runtime is 0.2.26-dev. Next approved implementation: [B1R-E spatial recovery](milestones/0.2.25-spatial-recovery-b1r-e.md), beginning with E1/P1. B2 deferred and A6 hands-on acceptance separate.
