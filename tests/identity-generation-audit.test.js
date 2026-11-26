@@ -21,8 +21,12 @@ test('IDA generation audit inventories all current direct generator and reflow s
   // Deliberate source inventory, not a JS parser or proof against computed
   // dispatch. New callers must be classified rather than silently enabled.
   const expected={
-    populateProperty:['src/core/road-building-reflow.js','src/generators/buildings.js'],
-    generateBuildings:['src/core/city-model.js','src/core/road-topology-reflow.js','src/generators/buildings.js'],
+    // SRE detached shell/group proposals: generator IDs are provisional only.
+    // Both paths reserve fresh typed Schema 11 IDs, remap additions, and
+    // independently replay the delta with host-supplied authorization.
+    // See spatial-recovery-regeneration.test.js for positive and refusal cases.
+    populateProperty:['src/core/road-building-reflow.js','src/core/spatial-recovery-regeneration.js','src/generators/buildings.js'],
+    generateBuildings:['src/core/city-model.js','src/core/road-topology-reflow.js','src/core/spatial-recovery-regeneration.js','src/generators/buildings.js'],
     reflowGeneratedRoadBuildings:['src/core/neighborhood-reflow.js','src/core/road-building-reflow.js']
   };
   const files=sourceFiles(join(root,'src'));
