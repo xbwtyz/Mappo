@@ -24,3 +24,8 @@ The owner accepted the proposed P0/P1 pause at the verified SRE small-shell chec
 ## Subsequent authorized DEV-OPT scope and operation
 
 After P0/P1, owner authorized continuation on the same draft PR160 through P3 and P2. P4/P5 remain deferred until their separately approved triggers. [Research operation](dev-opt-research.md), [hosted standalone operation](hosted-standalone-build.md), [joint qualification record](../plans/dev-opt/closeout-p0-p1-p3-p2.md). Green is continuation evidence, not merge or release authorization. Research candidates do not authorize production changes; hosted scratch commits are never CI acceptance. Keep normal six-runner review/main checks. Existing P0/P1 historical statements reflect their original scope.
+
+
+## OPT-03 V2 active and full-gate checkpoints
+
+V2 supports active/paused draft, review-ready and merged exact-main checkpoints. Independently bind branch, PR, exact SHA, run ID/attempt, correct event, mandatory full job names and artifact parity. Distinguish unqualified, focused-only, full-pending and full qualification; pending becoming completed requires reconstruction, not promotion by assumption. Failed/missing/duplicate mandatory jobs or stale evidence reject full claims. V1 records remain readable unchanged. Records never grant authority. Exact source remains separate from the record's own commit. Keep historical records when a new commit makes them stale; obtain live evidence for the new head.

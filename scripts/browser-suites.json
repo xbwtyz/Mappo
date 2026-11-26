@@ -4,9 +4,7 @@
     "scripts/desktop-three-tabs-browser-qa.mjs",
     "scripts/workspace-g2-browser-qa.mjs",
     "scripts/g4-desktop-acceptance-browser-qa.mjs",
-    "scripts/g4-cross-editor-browser-qa.mjs",
     "scripts/h2-save-compatibility-browser-qa.mjs",
-    "scripts/h4-recovery-browser-qa.mjs",
     "scripts/building-footprint-f2-browser-qa.mjs"
   ],
   "roads": [
@@ -31,7 +29,8 @@
     "scripts/property-split-025-browser-qa.mjs",
     "scripts/property-creation-e1-browser-qa.mjs",
     "scripts/property-polygons-024-browser-qa.mjs",
-    "scripts/building-browser-qa.mjs"
+    "scripts/building-browser-qa.mjs",
+    "scripts/g4-cross-editor-browser-qa.mjs"
   ],
   "integration": [
     "scripts/browser-qa.mjs",
@@ -42,6 +41,7 @@
     "scripts/building-components-browser-qa.mjs",
     "scripts/inspector-a3-browser-qa.mjs",
     "scripts/staged-drafts-a4-browser-qa.mjs",
-    "scripts/history-workflow-a5-browser-qa.mjs"
+    "scripts/history-workflow-a5-browser-qa.mjs",
+    "scripts/h4-recovery-browser-qa.mjs"
   ]
 }

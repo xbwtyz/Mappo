@@ -44,3 +44,39 @@ test('DEV-OPT real baseline separates full CI from focused workflow-only evidenc
   const bad=clone(evidence);bad.runs[0].jobs=bad.runs[0].jobs.filter(j=>j.name!=='Browser QA (roads)');assert.equal(summarizeDevelopmentMetrics(bad)['full-main'].incomplete,1);
   const dup=clone(evidence);dup.runs.push(dup.runs[0]);assert.throws(()=>summarizeDevelopmentMetrics(dup),/duplicate/);
 });
+
+function v2Checkpoint(state='active',qualification='focused-only'){
+  const x=clone(c);x.version=2;x.state=state;x.evidence.qualification=qualification;
+  x.evidence.fast.attempt=1;x.evidence.full.attempt=1;
+  if(state==='merged'){x.source.branch='main';x.source.prHeadSha='b'.repeat(40);}
+  return x;
+}
+const mandatory=['Resolve full CI request','Node regression (shard 1/2)','Node regression (shard 2/2)',
+  'Browser QA (desktop)','Browser QA (roads)','Browser QA (property)','Browser QA (integration)','Build, Node tests and browser QA'];
+function v2Live(x){
+  const l=observation(),e=x.evidence;
+  l.pr.draft=x.state!=='review-ready';
+  if(x.state==='merged'){l.pr.state='closed';l.pr.merged=true;l.pr.merge_commit_sha=x.source.sha;l.pr.head.sha=x.source.prHeadSha;l.pr.base.ref='main';}
+  l.fastRun.run_attempt=1;l.fullRun.run_attempt=1;l.fullRun.event=x.state==='merged'?'push':'pull_request';l.fullRun.head_branch=x.state==='merged'?'main':x.source.branch;
+  l.fastJobs.forEach(j=>Object.assign(j,{run_id:e.fast.runId,run_attempt:1}));
+  l.fullJobs=mandatory.map(name=>({name,run_id:e.full.runId,run_attempt:1,status:'completed',conclusion:'success'}));
+  return l;
+}
+test('V2 distinguishes active focused, pending full, ready full, and merged exact-main evidence',()=>{
+  for(const [state,qualification] of [['active','focused-only'],['paused','focused-only'],['review-ready','full-pending'],['review-ready','full'],['merged','full'],['active','unqualified']]){
+    const x=v2Checkpoint(state,qualification),l=v2Live(x);
+    if(qualification==='full-pending'){l.fullRun.status='in_progress';l.fullRun.conclusion=null;}
+    const r=reconstructDevelopmentCheckpoint(x,l);
+    assert.equal(r.qualified,qualification);assert.equal(r.authorizationGranted,false);
+  }
+});
+test('V2 full gate fails closed on missing, duplicate, skipped, stale or cross-attempt evidence',()=>{
+  const x=v2Checkpoint('review-ready','full');
+  for(const change of [l=>l.fullJobs.pop(),l=>l.fullJobs.push(l.fullJobs[0]),l=>l.fullJobs[2].conclusion='skipped',
+    l=>l.fullJobs[1].run_attempt=2,l=>l.fullRun.run_attempt=2,l=>l.fullRun.head_sha='a'.repeat(40),
+    l=>l.fullRun.event='push',l=>l.pr.draft=true,l=>l.pr.base.sha='a'.repeat(40),l=>l.branchSha='a'.repeat(40)]){
+    const l=v2Live(x);change(l);assert.throws(()=>reconstructDevelopmentCheckpoint(x,l));
+  }
+  const p=v2Checkpoint('review-ready','full-pending');assert.throws(()=>reconstructDevelopmentCheckpoint(p,v2Live(p)),/Pending checkpoint changed/);
+  const m=v2Checkpoint('merged','full'),live=v2Live(m);live.pr.merge_commit_sha='a'.repeat(40);assert.throws(()=>reconstructDevelopmentCheckpoint(m,live));
+});

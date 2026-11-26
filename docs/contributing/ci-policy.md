@@ -100,3 +100,6 @@ DEV-OPT timing: the two full Node jobs retain native file isolation and TAP, emi
 
 
 Measured Node assignments: scripts/ci-node-weights.json retains reviewed exact pilot evidence and the reproducible two-shard proposal. Both mandatory runners validate the full inventory before executing their assigned native Node files and compare actual file summaries with their assignment. Any new or removed test requires a reviewed manifest refresh; no test can silently disappear. Native npm test and reference shard commands remain available. Full review-ready and main CI are still mandatory.
+
+
+Browser balance update: move G4 cross-editor to property and H4 recovery to integration from desktop based on three successful run medians. Preserve all 37 independent scripts, existing runner names and optional benchmark position. Estimated maximum script sum 214.35s to 191.04s; actual performance pending final qualification. Roll back via the prior reviewed browser manifest if needed.
