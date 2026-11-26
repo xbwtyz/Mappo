@@ -2,23 +2,36 @@
   "version": 1,
   "targetRevision": "fe4b3c9306bde3b110b5f77b292521320ec5f6d2",
   "schedules": [
-    "child-priority-256m",
-    "solver-selection-256m",
+    "budget-32m",
     "combined-256m"
   ],
   "cases": [
     {
-      "id": "regular-severe-reverse",
+      "id": "regular-reverse-0p25",
       "partition": "development",
       "irregularProperties": false,
-      "scale": -1,
+      "scale": -0.25,
       "expectation": "exploratory"
     },
     {
-      "id": "irregular-severe-reverse",
+      "id": "irregular-reverse-0p25",
       "partition": "development",
       "irregularProperties": true,
-      "scale": -1,
+      "scale": -0.25,
+      "expectation": "exploratory"
+    },
+    {
+      "id": "regular-reverse-0p5",
+      "partition": "development",
+      "irregularProperties": false,
+      "scale": -0.5,
+      "expectation": "exploratory"
+    },
+    {
+      "id": "irregular-reverse-0p5",
+      "partition": "development",
+      "irregularProperties": true,
+      "scale": -0.5,
       "expectation": "exploratory"
     }
   ]
