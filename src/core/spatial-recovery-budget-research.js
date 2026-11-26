@@ -5,7 +5,7 @@ import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-
 import { createLareBudget, LareBudgetExceeded, LARE_PRESERVATION_LIMITS, LARE_DEMOLITION_LIMITS } from './reconciliation-budget.js';
 import { searchSpatialNondestructiveRoadGroup, searchSpatialBuildingRetirementRoadGroup,
   searchSpatialPropertyRetirementRoadGroup, searchSpatialGroupedRetirementRoadGroup,
-  restoreSpatialRoadRetirements, optimizeSpatialRoadRetirements, searchSpatialRetirementSubsetRoadGroup,
+  restoreSpatialRoadRetirements, optimizeSpatialRoadRetirements, searchSpatialRetirementSubsetRoadGroup, discoverSpatialRoadRetirementEligibility,
   verifySpatialStrictRoadWitness, verifySpatialConcessionRoadWitness, verifySpatialRetirementWitness } from './spatial-recovery-road-adapter.js';
 import { searchSpatialShellRegeneration, searchSpatialGroupRegeneration,
   verifySpatialShellRegeneration, verifySpatialGroupRegeneration } from './spatial-recovery-regeneration.js';
@@ -125,7 +125,80 @@ async function searchResearchChildRestoration(project,operation,seed,budget,seen
     exhausted=error.resource;return finish();
   }
 }
-export async function searchSpatialBudgetResearch(project,input,callerBudget,{workLimit,iterative=false,childPriority=false}={}){
+// Research-only two-for-one building exchange. All replacement retirement
+// IDs come from original, independently derived eligibility; no net increase
+// in any entity count, no parent/plot changes, no historical fixture answers.
+async function searchResearchChildExchange(project,operation,seed,budget){
+  let incumbent={delta:seed.basisDelta,ledger:seed.ledger},exhausted=null;
+  const attempts=[],seen=new Set();
+  const finish=()=>({status:'verified-witness',...incumbent,attempts,exhausted});
+  try{
+    const eligibility=discoverSpatialRoadRetirementEligibility(project,operation,budget);
+    const buildings=new Map(project.city.buildings.map(b=>[b.id,b]));
+    budget.spend(Math.max(1,buildings.size));
+    const p=operation.permissions;
+    const scale=p.alternativeFrontage?(p.uniformScaling?1-p.maxLinearReduction:1):null;
+    for(let pass=0;pass<3;pass++){
+      const retired=new Set(incumbent.delta.retired.map(spatialRefKey));
+      budget.spend(Math.max(1,retired.size));
+      const parentSurvives=r=>!retired.has(spatialRefKey({collection:'properties',id:buildings.get(r.id).propertyId}));
+      const children=incumbent.delta.retired.filter(r=>{budget.spend();return r.collection==='buildings'&&parentSurvives(r);})
+        .sort((a,b)=>{budget.spend();return buildings.get(a.id).area-buildings.get(b.id).area||riCompare(a.id,b.id);});
+      const eligible=eligibility.buildingRefs.filter(r=>{budget.spend();return !retired.has(spatialRefKey(r))&&parentSurvives(r);});
+      const proposals=[];
+      // Bound enumeration before solving, and prefer freeing enough footprint
+      // to fit both old children. This is a ranking hint, not a geometry gate.
+      for(let i=0;i<children.length;i++){
+        for(let j=i+1;j<children.length;j++){
+          budget.spend();
+          const a=buildings.get(children[i].id),b=buildings.get(children[j].id);
+          if(!a.blockId||a.blockId!==b.blockId)continue;
+          for(const ref of eligible){
+            budget.spend();
+            const c=buildings.get(ref.id);
+            if(c.blockId!==a.blockId)continue;
+            const key=JSON.stringify([children[i].id,children[j].id,ref.id]);
+            if(seen.has(key))continue;
+            const row={restore:[children[i],children[j]],retire:ref,key,margin:c.area-a.area-b.area};
+            proposals.push(row);
+          }
+        }
+      }
+      proposals.sort((a,b)=>{budget.spend();return b.margin-a.margin||riCompare(a.key,b.key);});
+      let improved=false;
+      for(const proposal of proposals.slice(0,12-attempts.length)){
+        const trialBudget=sreChild(budget,5000000,16384,20000);
+        if(!trialBudget)return finish();
+        seen.add(proposal.key);
+        const restored=new Set(proposal.restore.map(spatialRefKey));
+        const refs=incumbent.delta.retired.filter(r=>{budget.spend();return !restored.has(spatialRefKey(r));}).concat(proposal.retire);
+        const row={restored:proposal.restore.map(r=>r.id),retired:proposal.retire.id,status:'refused',selected:false};
+        attempts.push(row);
+        try{
+          const result=await searchSpatialRetirementSubsetRoadGroup(project,operation,refs,trialBudget,{diagnosticScale:scale});
+          row.status=result.status;row.exhausted=result.exhausted??null;
+          if(result.status!=='verified-witness')continue;
+          const expected=new Set(refs.map(spatialRefKey));
+          if(result.delta.added.length||result.delta.retired.length!==expected.size||
+            result.delta.retired.some(r=>!expected.has(spatialRefKey(r))))throw Error('Unexpected exchange retirement membership.');
+          if(improvesSpatialRetirementCost(measureSpatialRetirementCost(result.ledger,trialBudget),measureSpatialRetirementCost(incumbent.ledger,trialBudget))){
+            incumbent={delta:result.delta,ledger:result.ledger};row.selected=true;improved=true;break;
+          }
+        }catch(error){
+          if(!(error instanceof LareBudgetExceeded))throw error;
+          row.exhausted=error.resource;
+        }finally{row.work=trialBudget.snapshot().work;}
+      }
+      if(!improved||attempts.length>=12)break;
+    }
+    return finish();
+  }catch(error){
+    if(!(error instanceof LareBudgetExceeded))throw error;
+    exhausted=error.resource;return finish();
+  }
+}
+export async function searchSpatialBudgetResearch(project,input,callerBudget,{workLimit,iterative=false,childPriority=false,childExchange=false}={}){
+  if(typeof childExchange!=='boolean'||(childExchange&&!childPriority))throw Error('Unsupported exchange research setting.');
   if(typeof childPriority!=='boolean'||(childPriority&&!iterative))throw Error('Unsupported child priority research setting.');
   if(typeof iterative!=='boolean'||(iterative&&workLimit!==256000000))throw Error('Unsupported iterative research setting.');
   if(![32000000,64000000,128000000,256000000].includes(workLimit))throw Error('Unsupported research work limit.');
@@ -155,6 +228,7 @@ export async function searchSpatialBudgetResearch(project,input,callerBudget,{wo
       row.status=result.status;row.exhausted=result.exhausted??null;row.work=child.snapshot().work;
       if(schedule==='area-deficit-direct'&&name==='grouped-retirement')row.seedTrials=result.attempts??[];
       if(childPriority&&name.startsWith('iterative-child-'))row.childTrials=result.attempts??[];
+      if(childExchange&&name==='child-exchange')row.exchangeTrials=result.attempts??[];
       if(result.exhausted)exhausted=result.exhausted;
       return result.status==='verified-witness'?result:null;
     }catch(error){
@@ -248,6 +322,13 @@ export async function searchSpatialBudgetResearch(project,input,callerBudget,{wo
         if(!changed&&pass>=2)break; // explore both orderings once, then stop on plateau
         if(budget.snapshot().remainingWork<=bindReserve)break;
       }
+    }
+    if(childExchange){
+      const exchanged=await phase('child-exchange',60000000,
+        b=>searchResearchChildExchange(project,retirement,incumbent,b),{reserve:bindReserve});
+      if(exchanged&&exchanged.delta.candidateFingerprint!==incumbent.basisDelta.candidateFingerprint&&
+        improvesSpatialRetirementCost(measureSpatialRetirementCost(exchanged.ledger,budget),measureSpatialRetirementCost(incumbent.ledger,budget)))
+        await setRetirement(exchanged);
     }
     if(p.regeneration){
       for(const [kind,search] of [['shell-regeneration',searchSpatialShellRegeneration],['group-regeneration',searchSpatialGroupRegeneration]]){
