@@ -2,6 +2,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import { join } from 'node:path';
 
 const SHA = /^[0-9a-f]{40}$/;
 const VALID = x => typeof x === 'string' && SHA.test(x) && !/^0+$/.test(x);
@@ -74,7 +75,8 @@ export function selectTests(paths, inventory, broad=false) {
       paths.some(p=>typeof p!=='string'||!p)) throw Error('Invalid incremental inventory');
   const names = new Set(inventory);
   if (names.size!==inventory.length) throw Error('Duplicate test inventory');
-  const tags = new Set(broad?['all']:paths.flatMap(classify));
+  const deletedTest=paths.some(p=>/^tests\/[^/]+\.test\.js$/.test(p)&&!names.has(p));
+  const tags = new Set(broad||deletedTest?['all']:paths.flatMap(classify));
   const selected = new Set(smoke.map(n=>'tests/'+n+'.test.js').filter(p=>names.has(p)));
   // Required base smoke tests cannot disappear silently.
   for(const n of smoke.slice(0,4)) if(!selected.has('tests/'+n+'.test.js')) throw Error('Missing required smoke: '+n);
@@ -101,6 +103,10 @@ function mainEvidence(sha,env) {
   } catch(error) { console.warn('::warning::Exact-main qualification lookup unavailable; keep conservative push selection.'); }
   return null;
 }
+function planPath(env) {
+  if (!env.RUNNER_TEMP) throw Error('Missing runner temporary directory');
+  return join(env.RUNNER_TEMP,'mappo-focus-plan.json');
+}
 function plan(env) {
   const event=JSON.parse(readFileSync(env.GITHUB_EVENT_PATH,'utf8'));
   const head=git(['rev-parse','HEAD']).trim();
@@ -117,7 +123,7 @@ function plan(env) {
   const paths=range.base?nul(git(['diff','--no-renames','--name-only','-z',range.base,head,'--'])):nul(git(['ls-files','-z']));
   const selection=selectTests(paths,inventory,!range.base);
   const output={head,...range,changedPaths:paths,...selection};
-  writeFileSync(env.FOCUS_PLAN,JSON.stringify(output,null,2));
+  writeFileSync(planPath(env),JSON.stringify(output,null,2));
   console.log('CI_FOCUS '+JSON.stringify(output));
 }
 function runNode(args) {
@@ -127,7 +133,7 @@ function runNode(args) {
 }
 function runCLI(mode,env=process.env) {
   if(mode==='plan') return plan(env);
-  const selection=JSON.parse(readFileSync(env.FOCUS_PLAN,'utf8'));
+  const selection=JSON.parse(readFileSync(planPath(env),'utf8'));
   if(selection.head!==git(['rev-parse','HEAD']).trim()||selection.head!==env.GITHUB_SHA) throw Error('Stale focus plan');
   if(mode==='syntax') {
     for(const p of selection.changedPaths) if(/^(src|scripts|tests)\/.*\.(js|mjs)$/.test(p)&&existsSync(p)) runNode(['--check',p]);

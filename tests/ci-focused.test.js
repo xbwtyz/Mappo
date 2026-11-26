@@ -51,12 +51,14 @@ test('unknown, shared, deleted fixture, and missing range escalate; direct tests
     assert.deepEqual(p.profiles,['all']);assert.deepEqual(p.tests,[...inv].sort());
   }
   assert.deepEqual(selectTests([],inv,true).tests,[...inv].sort());
+  assert.deepEqual(selectTests(['tests/deleted.test.js'],inv).tests,[...inv].sort());
   assert.throws(()=>selectTests([],inv.slice(1)),/Missing required smoke/);
   assert.throws(()=>selectTests([], [...inv,inv[0]]),/Duplicate/);
 });
 test('workflow retains parity, exact gate precedence, and independent full CI',()=>{
   const quick=readFileSync(new URL('../.github/workflows/ci-fast.yml',import.meta.url),'utf8');
   const full=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8');
+  assert.doesNotMatch(quick,/runner\.temp/);
   assert.match(quick,/fetch-depth: 0/);assert.match(quick,/run: node scripts\/ci-trigger\.mjs fast/);
   assert.match(quick,/run: node scripts\/ci-focused\.mjs plan/);
   assert.match(quick,/run: node scripts\/ci-focused\.mjs syntax/);
