@@ -80,3 +80,36 @@ test('V2 full gate fails closed on missing, duplicate, skipped, stale or cross-a
   const p=v2Checkpoint('review-ready','full-pending');assert.throws(()=>reconstructDevelopmentCheckpoint(p,v2Live(p)),/Pending checkpoint changed/);
   const m=v2Checkpoint('merged','full'),live=v2Live(m);live.pr.merge_commit_sha='a'.repeat(40);assert.throws(()=>reconstructDevelopmentCheckpoint(m,live));
 });
+
+test('manual acceptance package is deterministic, exact-source bound, and never claims manual success',async()=>{
+  const {buildAcceptancePackage,verifyAcceptancePackage,writeAcceptancePackage}=await import('../scripts/development/manual-acceptance.mjs');
+  const {decodeProjectDocument}=await import('../src/data/project-format.js');
+  const {mkdtempSync,rmSync,readdirSync}=await import('node:fs');
+  const {tmpdir}=await import('node:os');
+  const {join}=await import('node:path');
+  const source='d'.repeat(40),html=readFileSync(new URL('../index.html',import.meta.url));
+  const {APP_VERSION}=await import('../src/core/version.js');
+  const currentDist=readFileSync(new URL('../dist/mappo-'+APP_VERSION+'.html',import.meta.url));
+  const input={source,prHead:'e'.repeat(40),html,distHtml:currentDist};
+  const first=buildAcceptancePackage(input),second=buildAcceptancePackage(input);
+  assert.deepEqual(first,second);
+  assert.equal(verifyAcceptancePackage(first,source),true);
+  assert.equal(first.manifest.manualStatus,'not-run');
+  for(const id of ['regular','irregular']){
+    const doc=decodeProjectDocument(first.files[id+'.mappo.json'].toString('utf8'));
+    assert.equal(doc.project.schemaVersion,first.manifest.projectSchema);
+    assert.ok(['RD-0184','RD-0186'].every(r=>doc.project.city.roads.some(x=>x.id===r)));
+  }
+  assert.match(first.files['CHECKLIST.md'].toString('utf8'),/SRE is detached/);
+  assert.throws(()=>buildAcceptancePackage({...input,distHtml:Buffer.from('wrong')}));
+  assert.throws(()=>verifyAcceptancePackage(first,'a'.repeat(40)));
+  const bad={manifest:structuredClone(first.manifest),files:{...first.files}};
+  bad.manifest.manualStatus='pass';assert.throws(()=>verifyAcceptancePackage(bad,source));
+  bad.manifest.manualStatus='not-run';bad.files['index.html']=Buffer.from('tampered');assert.throws(()=>verifyAcceptancePackage(bad,source));
+  const dir=mkdtempSync(join(tmpdir(),'mappo-manual-'));
+  try{
+    writeAcceptancePackage(dir,first);
+    assert.equal(readdirSync(dir).length,7);
+    assert.throws(()=>writeAcceptancePackage(dir,first),/new or empty/);
+  }finally{rmSync(dir,{recursive:true,force:true});}
+});

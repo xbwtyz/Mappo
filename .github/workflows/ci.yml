@@ -91,6 +91,22 @@ jobs:
           cmp index.html "dist/mappo-$VERSION.html"
           git diff --exit-code -- index.html "dist/mappo-$VERSION.html"
 
+      - name: Prepare exact-candidate manual acceptance package
+        if: matrix.shard == 1
+        env:
+          EXPECTED_SOURCE: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft && github.event.pull_request.head.sha || github.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha || '' }}
+        run: node scripts/development/manual-acceptance.mjs
+
+      - name: Upload manual acceptance package
+        if: matrix.shard == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: mappo-manual-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/manual-acceptance/
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Upload Node timing evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@v4

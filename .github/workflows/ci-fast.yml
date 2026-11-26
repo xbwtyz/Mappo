@@ -69,3 +69,18 @@ jobs:
         # Baseline includes tests/ci-trigger.test.js; profiles are incremental only.
         if: steps.gate.outputs.run == 'true'
         run: node scripts/ci-focused.mjs test
+
+      - name: Prepare exact-candidate manual acceptance package
+        if: steps.gate.outputs.run == 'true' && contains(github.event.head_commit.message, '[acceptance-package]')
+        env:
+          EXPECTED_SOURCE: ${{ github.sha }}
+        run: node scripts/development/manual-acceptance.mjs
+
+      - name: Upload manual acceptance package
+        if: steps.gate.outputs.run == 'true' && contains(github.event.head_commit.message, '[acceptance-package]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: mappo-manual-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/manual-acceptance/
+          if-no-files-found: error
+          retention-days: 14

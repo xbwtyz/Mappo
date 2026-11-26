@@ -29,3 +29,8 @@ After P0/P1, owner authorized continuation on the same draft PR160 through P3 an
 ## OPT-03 V2 active and full-gate checkpoints
 
 V2 supports active/paused draft, review-ready and merged exact-main checkpoints. Independently bind branch, PR, exact SHA, run ID/attempt, correct event, mandatory full job names and artifact parity. Distinguish unqualified, focused-only, full-pending and full qualification; pending becoming completed requires reconstruction, not promotion by assumption. Failed/missing/duplicate mandatory jobs or stale evidence reject full claims. V1 records remain readable unchanged. Records never grant authority. Exact source remains separate from the record's own commit. Keep historical records when a new commit makes them stale; obtain live evidence for the new head.
+
+
+## OPT-10 candidate acceptance artifacts
+
+On a qualified full candidate, the first Node job creates the manual acceptance archive after standalone parity and regression testing. For a draft diagnostic, use the explicit [acceptance-package] head marker to generate it during Fast Checks. Extract the uploaded artifact, open index.html offline, use the two synthetic road movement fixtures and checklist, and return actual results. The manifest binds the actual checkout SHA (which may be the PR merge ref), optional PR head, app/schema versions and SHA256 of every file. No generated report claims manual acceptance or full CI success; verify the workflow and candidate identity independently. Current package describes the detached SRE baseline, not future live controls.

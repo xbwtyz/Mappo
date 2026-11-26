@@ -1,0 +1,77 @@
+{
+  "version": 2,
+  "repository": "xbwtyz/Mappo",
+  "milestone": "DEV-OPT P4/P5 combined",
+  "appVersion": "0.2.25-dev",
+  "targetVersion": "0.2.25-dev",
+  "state": "active",
+  "source": {
+    "branch": "chore/dev-opt-focused-ci",
+    "sha": "b295104820ca3f2c02d0ca81f30ce8ad8d606cf7",
+    "baseSha": "0f03dee0d1bb51a6e0e6bf6452896041ad1e917a",
+    "pr": 162
+  },
+  "scope": {
+    "approved": [
+      "Combined remaining DEV-OPT P4/P5 infrastructure on PR162; owner directed continued implementation after canceling premature review-ready gate."
+    ],
+    "prohibited": [
+      "No application/schema/permission changes; no merge, release, tag or deploy without separate approval; retain all mandatory full gates."
+    ],
+    "stopConditions": [
+      "Unexpected policy or schema changes, failed acceptance requiring scope expansion, final review-ready gate, separate merge authorization."
+    ]
+  },
+  "completed": [
+    "Focused merge-aware selection",
+    "Complete measured Node pilot and deterministic two-runner assignment; focused checks passed",
+    "Browser redistribution and V2 checkpoint support; exact-head focused checks passed"
+  ],
+  "pending": [
+    "Automated acceptance package",
+    "Final integrated qualification",
+    "Separate merge and exact-main gate",
+    "Road-only SRE worker phase after DEV-OPT completion"
+  ],
+  "decisions": [
+    "One combined draft branch, no repeated full qualification during incremental work",
+    "Two mandatory Node and four browser runners unchanged"
+  ],
+  "blockers": [
+    "Actual full wall-time improvement not yet measured; SRE remains detached"
+  ],
+  "evidence": {
+    "qualification": "focused-only",
+    "fast": {
+      "runId": 45913697693,
+      "jobId": 140227766021,
+      "attempt": 1,
+      "head": "b295104820ca3f2c02d0ca81f30ce8ad8d606cf7",
+      "tests": 118,
+      "passed": 118,
+      "failed": 0,
+      "durationSeconds": 76
+    },
+    "full": {
+      "runId": 45913704838,
+      "attempt": 1,
+      "head": "b295104820ca3f2c02d0ca81f30ce8ad8d606cf7",
+      "qualification": "routing-only"
+    },
+    "artifacts": [
+      {
+        "path": "index.html",
+        "blob": "013832e573c5c4f1651a1139ccec25daf153457e"
+      },
+      {
+        "path": "dist/mappo-0.2.25-dev.html",
+        "blob": "013832e573c5c4f1651a1139ccec25daf153457e"
+      }
+    ]
+  },
+  "rollback": {
+    "sourceSha": "b295104820ca3f2c02d0ca81f30ce8ad8d606cf7",
+    "policy": "Use reviewed reversions; preserve exact evidence and immutable historical records."
+  },
+  "nextAction": "Implement and qualify candidate-specific manual acceptance package; then final integrated review."
+}
