@@ -16,7 +16,8 @@ const start=performance.now();
 function solve(){
   const c=task.case,project=createProject(c.project),before=JSON.stringify(project);
   validateStoredProject(project);
-  const strategy=task.strategy==='production'?null:task.strategy;
+  // The public manifest label maps to the engine's actual default strategy.
+  const strategy=task.strategy==='production'?'progressive':task.strategy;
   const preview=prepareRoadGroupReflowB1(project,c.roadIds,c.offset,{strategy});
   let candidateFingerprint=null,issues=preview.unresolved??[];
   if(preview.candidateProject){

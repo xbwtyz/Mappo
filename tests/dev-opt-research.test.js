@@ -26,7 +26,13 @@ test('DEV-OPT real LARE pilot: two strategies, held-out fixture, isolated determ
   const result=await runResearch(m);
   console.log('DEV_OPT_RESEARCH_PILOT '+JSON.stringify(result));
   assert.equal(result.complete,true);assert.equal(result.results.length,4);
-  assert.ok(result.results.some(r=>r.status==='verified'&&r.key.startsWith('linear-holdout:')));
+  // Both existing known-valid fixtures must pass for both strategies.
+  // A successful selective strategy cannot conceal a broken production mapping.
+  for(const row of result.results)assert.equal(row.status,'verified',JSON.stringify(row));
+  for(const c of m.cases){
+    const pair=result.results.filter(r=>r.key.startsWith(c.id+':'));
+    assert.equal(pair.length,2);assert.equal(pair[0].inputFingerprint,pair[1].inputFingerprint);
+  }
   assert.equal(result.productionAdoptionAuthorized,false);
   const stale={...m,sourceRevision:'0'.repeat(40)};await assert.rejects(runResearch(stale),/revision mismatch/);
 });
