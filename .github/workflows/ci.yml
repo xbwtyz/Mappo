@@ -76,11 +76,11 @@ jobs:
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
       # Every shard builds its own standalone artifact before running its
-      # native Node --test-shard file partition. No tests are removed.
+      # measured file assignment with native Node isolation. No tests are removed.
       - name: Build standalone HTML
         run: npm run build
 
-      - name: Run native Node test shard ${{ matrix.shard }}/2
+      - name: Run measured Node test shard ${{ matrix.shard }}/2
         run: node scripts/ci-node-timing.mjs run ${{ matrix.shard }} 2
 
       - name: Verify checked-in compiled distribution

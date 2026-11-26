@@ -97,3 +97,6 @@ Cadence: avoid running a full draft gate immediately before ready-for-review qua
 
 
 DEV-OPT timing: the two full Node jobs retain native file isolation and TAP, emitting a separate per-file timing report on Node 22. The explicit four-shard Node Timing Pilot on the DEV-OPT draft is diagnostic only and never satisfies the full aggregate. Timing collection is not a test waiver; the complete inventory and original exit result remain mandatory. See the approved DEV-OPT plan for evidence and scope.
+
+
+Measured Node assignments: scripts/ci-node-weights.json retains reviewed exact pilot evidence and the reproducible two-shard proposal. Both mandatory runners validate the full inventory before executing their assigned native Node files and compare actual file summaries with their assignment. Any new or removed test requires a reviewed manifest refresh; no test can silently disappear. Native npm test and reference shard commands remain available. Full review-ready and main CI are still mandatory.

@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { parseTiming, verifyTimingReports, proposeBalanced } from '../scripts/ci-node-timing.mjs';
+import { parseTiming, verifyTimingReports, proposeBalanced, validateBalancedManifest, nodeInventory } from '../scripts/ci-node-timing.mjs';
 const files=['tests/a.test.js','tests/b.test.js','tests/c.test.js','tests/d.test.js'];
 const root=process.cwd(),sha='a'.repeat(40);
 const counts=n=>({tests:n,passed:n,failed:0,cancelled:0,skipped:0,todo:0});
@@ -65,7 +65,7 @@ test('native reporter preserves TAP and records real per-file summaries under No
     assert.notEqual(bad.status,0);assert.match(bad.stdout,/fixture failure/);
   }finally {rmSync(dir,{recursive:true,force:true});}
 });
-test('timing pilot is isolated from full CI and full workflow retains two native shards',()=>{
+test('timing pilot is isolated from full CI and full workflow retains two Node jobs',()=>{
   const pilot=readFileSync(new URL('../.github/workflows/ci-node-timing.yml',import.meta.url),'utf8');
   const full=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8');
   assert.match(pilot,/\[node-timing-pilot\]/);assert.match(pilot,/shard: \[1, 2, 3, 4\]/);
@@ -115,4 +115,24 @@ test('pilot preflight must pass before expensive diagnostic shards start',()=>{
   assert.match(pilot,/preflight:\n/);
   assert.match(pilot,/node --test tests\/ci-node-timing\.test\.js/);
   assert.match(pilot,/measure:\n    needs: preflight/);
+});
+
+test('reviewed measured assignment includes each current Node test exactly once',()=>{
+  const manifest=JSON.parse(readFileSync(new URL('../scripts/ci-node-weights.json',import.meta.url),'utf8'));
+  const inventory=nodeInventory();
+  const groups=validateBalancedManifest(manifest,inventory);
+  assert.equal(groups.length,2);
+  assert.deepEqual(groups.flatMap(g=>g.files).sort(),inventory);
+  // Independently verify the inventory against the tracked repository files.
+  const tracked=spawnSync('git',['ls-files','-z','--','tests/'],{cwd:root,encoding:'utf8'});
+  assert.equal(tracked.status,0,tracked.stderr);
+  assert.deepEqual(tracked.stdout.split('\0').filter(p=>/^tests\/[^/]+\.test\.js$/.test(p)).sort(),inventory);
+  for(const change of [x=>x.files.pop(),x=>x.files.push(x.files[0]),x=>x.proposal[0].files.pop(),
+    x=>x.proposal[0].files.push(x.proposal[1].files[0]),x=>x.files[0].ms=-1,
+    x=>x.proposal[0].ms+=1,x=>x.source='unknown']){
+    const invalid=structuredClone(manifest);change(invalid);
+    assert.throws(()=>validateBalancedManifest(invalid,inventory));
+  }
+  assert.throws(()=>validateBalancedManifest(manifest,[...inventory,'tests/unmeasured.test.js']));
+  assert.throws(()=>validateBalancedManifest(manifest,inventory.slice(1)));
 });

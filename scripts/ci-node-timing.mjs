@@ -76,6 +76,32 @@ export function proposeBalanced(files,shards=2) {
   }
   return groups.map(g=>({...g,files:g.files.sort()}));
 }
+
+// The reviewed manifest is evidence, not permission to omit an added test.
+// New/removed files require a deliberate manifest refresh before full CI.
+export function validateBalancedManifest(manifest,inventory) {
+  if(manifest?.version!==1||!validSha(manifest.source)||
+     typeof manifest.runId!=='string'||!/^\d+$/.test(manifest.runId)||
+     typeof manifest.attempt!=='string'||!/^\d+$/.test(manifest.attempt)||
+     !Array.isArray(manifest.files)||!Array.isArray(manifest.proposal)||
+     !Array.isArray(inventory)||inventory.length<2||new Set(inventory).size!==inventory.length||
+     inventory.some(p=>!pathPattern.test(p))) throw Error('Invalid balanced manifest');
+  if(manifest.files.some(x=>!pathPattern.test(x.file)||!Number.isFinite(x.ms)||x.ms<0)||
+     new Set(manifest.files.map(x=>x.file)).size!==manifest.files.length||
+     JSON.stringify(manifest.files.map(x=>x.file).sort())!==JSON.stringify([...inventory].sort()))
+    throw Error('Balanced timing manifest does not match complete current inventory');
+  const expected=proposeBalanced(manifest.files,2);
+  if(manifest.proposal.length!==2||manifest.proposal.some((g,i)=>
+     g.shard!==expected[i].shard||g.ms!==expected[i].ms||
+     JSON.stringify(g.files)!==JSON.stringify(expected[i].files)))
+    throw Error('Balanced assignment differs from reproducible measured proposal');
+  const assigned=manifest.proposal.flatMap(g=>g.files);
+  if(new Set(assigned).size!==assigned.length||
+     JSON.stringify([...assigned].sort())!==JSON.stringify([...inventory].sort()))
+    throw Error('Incomplete or duplicate balanced assignment');
+  return expected;
+}
+
 const source=()=>execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 const outdir=()=>resolve('artifacts','ci-timings');
 function run(shard,shards) {
@@ -86,14 +112,19 @@ function run(shard,shards) {
   const reportPath=resolve(outdir(),'node-'+shard+'.json');
   const commit=source();
   if(!validSha(commit)) throw Error('Invalid source identity');
-  const result=spawnSync(process.execPath,['--test','--test-shard='+shard+'/'+shards,
+  const assignment=shards===2?validateBalancedManifest(JSON.parse(readFileSync(resolve(root,'scripts/ci-node-weights.json'),'utf8')),inventory)[shard-1]:null;
+  const selected=assignment?assignment.files:inventory;
+  const flags=assignment?[]:['--test-shard='+shard+'/'+shards];
+  if(assignment) console.log('NODE_BALANCED_ASSIGNMENT '+JSON.stringify({source:commit,shard,estimatedMs:assignment.ms,files:selected}));
+  const result=spawnSync(process.execPath,['--test',...flags,
     '--test-reporter=tap','--test-reporter-destination=stdout',
-    '--test-reporter=./scripts/ci-node-timing-reporter.mjs','--test-reporter-destination='+raw,...inventory],
+    '--test-reporter=./scripts/ci-node-timing-reporter.mjs','--test-reporter-destination='+raw,...selected],
     {cwd:root,stdio:'inherit'});
   if(result.error) throw result.error;
   // On failure, preserve native status even if timing is absent or malformed.
   if(result.status!==0||result.signal) {process.exitCode=result.status||1;return;}
-  const parsed=parseTiming(readFileSync(raw,'utf8'),root,inventory);
+  const parsed=parseTiming(readFileSync(raw,'utf8'),root,selected);
+  if(assignment&&JSON.stringify(parsed.files.map(x=>x.file).sort())!==JSON.stringify([...selected].sort())) throw Error('Executed files differ from balanced assignment');
   const report={version:1,source:commit,runId:process.env.GITHUB_RUN_ID||'local',attempt:process.env.GITHUB_RUN_ATTEMPT||'local',
     shard,shards,node:process.version,platform:platform(),arch:arch(),parallelism:availableParallelism(),exitCode:0,...parsed};
   if(report.total.success!==true||report.total.counts.failed||report.total.counts.cancelled||
