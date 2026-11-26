@@ -10,24 +10,35 @@ import { copyJson, createProjectDocument, encodeProjectDocument, decodeProjectDo
 const idaRoadApplyTokens=new WeakMap();
 const idaRoadApplySame=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 function idaRoadApplyRequire(ok,message){if(!ok)throw Error(message);}
-function idaRoadApplySnapshot(session,revision){
+// S4 follow-up: capture exact persisted intent text once at Begin. The
+// synchronous raw assembly holds no authority and is never retained across
+// calls; the private snapshot is parsed from that text. Later checks still
+// serialize every current field and compare exact text, without copying the
+// entire inspected candidate only to immediately stringify that copy.
+function idaRoadApplySnapshotJson(session,revision){
   const group=session.roadGroupB1,demolition=session.demolition;
-  const entries=map=>copyJson([...(map??new Map())]);
+  const entries=map=>[...(map??new Map())];
+  // Missing required fields previously failed JSON detachment. Keep that
+  // refusal instead of letting an undefined value silently disappear.
+  const required=value=>{
+    if(value===undefined)throw Error('Incomplete road Apply snapshot.');
+    return value;
+  };
   if(group){
-    return {kind:demolition?.candidate?'demolition':'group',
-      draft:{selectedRoadIds:copyJson(group.selectedRoadIds),offset:copyJson(session.roadIntentOffset),
+    return JSON.stringify({kind:demolition?.candidate?'demolition':'group',
+      draft:{selectedRoadIds:required(group.selectedRoadIds),offset:required(session.roadIntentOffset),
         parcelChoices:entries(session.parcelChoices),revision,acceptedRevision:revision},
-      inspected:demolition?.candidate?null:copyJson(session.reconciliation)};
+      inspected:demolition?.candidate?null:required(session.reconciliation)});
   }
-  return {kind:'single',draft:{selection:copyJson(session.selection),
-    point:session.point?copyJson(session.point):null,
-    roadConnectionEdit:session.roadConnectionEdit?copyJson(session.roadConnectionEdit):null,
-    roadIntentOffset:session.roadIntentOffset?copyJson(session.roadIntentOffset):null,
+  return JSON.stringify({kind:'single',draft:{selection:required(session.selection),
+    point:session.point||null,
+    roadConnectionEdit:session.roadConnectionEdit||null,
+    roadIntentOffset:session.roadIntentOffset||null,
     targetJunctionId:session.targetJunctionId??null,
     buildingDecisions:entries(session.buildingDecisions),ownershipChoices:entries(session.ownershipChoices),
-    parcelChoices:entries(session.parcelChoices)},inspected:copyJson(session.reconciliation)};
+    parcelChoices:entries(session.parcelChoices)},inspected:required(session.reconciliation)});
 }
-function idaRoadApplyCheck(view,session,baselineRevision,revision){
+function idaRoadApplyCheck(view,session,baselineRevision,revision,fingerprint){
   idaRoadApplyRequire(session?.current?.()&&session.project===view.project&&session.city===view.project.city&&
     Number.isSafeInteger(revision)&&revision>=0&&baselineRevision===revision&&
     Number.isSafeInteger(session.revision)&&session.revision>=0,
@@ -35,11 +46,11 @@ function idaRoadApplyCheck(view,session,baselineRevision,revision){
   if(session.roadGroupB1){
     idaRoadApplyRequire(session.roadGroupB1.eligible&&session.pending&&!session.drag&&!session.checking&&
       !session.error&&!session.roadIntentInputError&&!session.reconciliationError&&
-      session.settledRevision===session.revision&&session.acceptedFingerprint===JSON.stringify(view.project)&&
+      session.settledRevision===session.revision&&session.acceptedFingerprint===fingerprint&&
       (session.demolition?.candidate||session.previewGeometry?.verified),
       'The connected-road preview is not complete and current.');
   }else{
-    const check=checkRoadApplyC2(view.project,session,baselineRevision,revision);
+    const check=checkRoadApplyC2(view.project,session,baselineRevision,revision,fingerprint);
     idaRoadApplyRequire(check.ok,check.issues?.[0]?.message??'Stale road preview.');
   }
 }
@@ -134,18 +145,19 @@ function idaRoadApplyAllocated(state,project,legacy,receipt){
 export function beginRoadIdentityApply(host,workspace,session,baselineRevision,revision,
   {asyncWorker=false,savedDistrictCount}={}){
   const view=host.view();
-  idaRoadApplyCheck(view,session,baselineRevision,revision);
-  const snapshot=idaRoadApplySnapshot(session,revision);
+  const fingerprint=JSON.stringify(view.project);
+  idaRoadApplyCheck(view,session,baselineRevision,revision,fingerprint);
+  const snapshotJson=idaRoadApplySnapshotJson(session,revision),snapshot=JSON.parse(snapshotJson);
   idaRoadApplyRequire(!asyncWorker||(snapshot.kind==='single'&&snapshot.draft.selection.kind==='junction'),
     'Only junction Apply uses the asynchronous worker.');
   const token=Object.freeze({});
-  const state={host,view,session,snapshot,workspace:copyJson(workspace),revision,draftRevision:session.revision,
+  const state={host,view,session,snapshot,snapshotJson,workspace:copyJson(workspace),revision,draftRevision:session.revision,
     asyncWorker:Boolean(asyncWorker),savedDistrictCount,reviewed:session.demolition?.candidate,
     authorization:session.demolition?.authorization};
   idaRoadApplyTokens.set(token,state);
   if(!asyncWorker)return {token};
   const d=snapshot.draft,i=snapshot.inspected;
-  return {token,workerRequest:{operation:'apply',projectJson:JSON.stringify(view.project),
+  return {token,workerRequest:{operation:'apply',projectJson:fingerprint,
     junctionId:d.selection.id,workspace:copyJson(workspace),point:copyJson(d.point),
     targetJunctionId:d.targetJunctionId,decisions:copyJson(d.buildingDecisions),
     ownershipChoices:copyJson(d.ownershipChoices),parcelChoices:copyJson(d.parcelChoices),
@@ -166,8 +178,9 @@ export function commitRoadIdentityApply(host,token,workspace,session,revision,wo
   idaRoadApplyRequire(view===state.view&&session===state.session&&revision===state.revision&&
     session.revision===state.draftRevision&&idaRoadApplySame(workspace,state.workspace),
     'Accepted identity, workspace or draft revision changed during road Apply.');
-  idaRoadApplyCheck(view,session,state.revision,revision);
-  idaRoadApplyRequire(idaRoadApplySame(idaRoadApplySnapshot(session,revision),state.snapshot)&&
+  const fingerprint=JSON.stringify(view.project);
+  idaRoadApplyCheck(view,session,state.revision,revision,fingerprint);
+  idaRoadApplyRequire(idaRoadApplySnapshotJson(session,revision)===state.snapshotJson&&
     session.demolition?.candidate===state.reviewed&&session.demolition?.authorization===state.authorization,
     'Reviewed road intent changed during Apply.');
   const legacy=idaRoadApplyReconstruct(state,view.project);
@@ -196,7 +209,7 @@ export function commitRoadIdentityApply(host,token,workspace,session,revision,wo
         return host.view()===view&&session.current()&&
           session.revision===state.draftRevision&&
           idaRoadApplySame(workspace,state.workspace)&&
-          idaRoadApplySame(idaRoadApplySnapshot(session,revision),state.snapshot)&&
+          idaRoadApplySnapshotJson(session,revision)===state.snapshotJson&&
           session.demolition?.candidate===state.reviewed&&
           session.demolition?.authorization===state.authorization&&
           JSON.stringify(before)===evidence.before&&JSON.stringify(after)===evidence.after&&

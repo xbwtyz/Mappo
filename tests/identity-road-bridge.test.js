@@ -224,3 +224,30 @@ test('S4 allocating road acceptance still matches complete final portable roundt
   assert.deepEqual(decoded.project,out.project);
   assert.deepEqual(decoded.workspace,out.workspace);
 });
+
+test('S4 exact intent text detects changed inspected result and map choices before acceptance',()=>{
+  for(const change of [
+    f=>{f.s.reconciliation.candidateJson+=' ';},
+    f=>{f.s.reconciliation.ledger[0].disposition='tampered';},
+    f=>{f.s.parcelChoices.set('unknown-parcel','unexpected-choice');},
+    f=>{f.s.ownershipChoices.set('unknown-building','unexpected-choice');}
+  ]){
+    const f=junction(),before=f.h.view(),b=begin(f,true),reply=worker(b.workerRequest);
+    change(f);
+    assert.throws(()=>commit(f,b,reply),/intent changed/);
+    assert.equal(f.h.view(),before);
+    assert.throws(()=>commit(f,b,reply),/token/);
+  }
+});
+
+test('S4 exact intent text remains private and rechecks inspected ledger during host acceptance',()=>{
+  const f=junction(),before=f.h.view(),b=begin(f,true),reply=worker(b.workerRequest);
+  const original=f.h.commit.bind(f.h);
+  f.h.commit=command=>{
+    f.s.reconciliation={...f.s.reconciliation,ledger:[...f.s.reconciliation.ledger,{unexpected:'change'}]};
+    return original(command);
+  };
+  assert.throws(()=>commit(f,b,reply),/Independent domain validation/);
+  assert.equal(f.h.view(),before);
+  assert.equal(before.history.length,0);
+});
