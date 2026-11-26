@@ -1,4 +1,4 @@
-import { createSpatialOperation, spatialRefKey } from './spatial-recovery-contract.js';
+import { createSpatialOperation } from './spatial-recovery-contract.js';
 import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-delta.js';
 import { verifySpatialRetirementWitness } from './spatial-recovery-road-adapter.js';
 import { issueIdentityReservation } from './identity-verification.js';
@@ -111,7 +111,7 @@ export async function verifySpatialShellRegeneration(original,input,seedDelta,de
   const base=await verifySpatialRetirementWitness(original,retirement,seedDelta,budget);
   const candidate=await reconstructSpatialDelta(original,op,1,delta,budget,authorization);
   if(!riEqual(seedDelta.retired,delta.retired))throw Error('Regeneration changed reviewed retirements.');
-  sreCheckShellDomain(original,base,candidate,delta.retired,delta.added,budget);
+  sreCheckShellDomain(original,base,candidate,delta.retired,delta.added.map(item=>item.ref),budget);
   return candidate;
 }
 export async function searchSpatialShellRegeneration(original,input,seedDelta,context,budget){

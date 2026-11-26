@@ -9,7 +9,7 @@ import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 const budget=()=>createSpatialDestructionBudget();
 const clone=x=>JSON.parse(JSON.stringify(x));
 test('detached optional shell regeneration uses fresh Schema 11 reservations and preserves survivors',{timeout:300000},async()=>{
-  const project=createProject({seed:'lare-linear-2',morphology:'linear',size:'small',irregularProperties:true});
+  const project=clone(createProject({seed:'lare-linear-2',morphology:'linear',size:'small',irregularProperties:true}));
   const ids=['RD-0174','RD-0252'],offset={x:4,y:3},revision=5;
   const retirement=normalizeSpatialRoadGroup(project,revision,ids,offset,{destruction:true});
   const op=normalizeSpatialRoadGroup(project,revision,ids,offset,{destruction:true,regeneration:true});
@@ -37,10 +37,10 @@ test('detached optional shell regeneration uses fresh Schema 11 reservations and
   assert.deepEqual(receipt,result.provisionalAuthorization.receipt);
   const actual=await verifySpatialShellRegeneration(project,op,seed.delta,result.delta,auth,budget());
   assert.deepEqual(result.delta.retired,seed.delta.retired);
-  assert.ok(result.delta.added.length>0&&result.delta.added.every(r=>r.collection==='buildings'));
+  assert.ok(result.delta.added.length>0&&result.delta.added.every(r=>r.ref.collection==='buildings'));
   assert.equal(actual.identityAllocation.namespaces[namespace].building,7+result.delta.added.length);
   assert.deepEqual(actual.identityAllocation.namespaces[other],project.identityAllocation.namespaces[other]);
-  for(const row of result.delta.added)assert.ok(!project.city.buildings.some(b=>b.id===row.id));
+  for(const row of result.delta.added)assert.ok(!project.city.buildings.some(b=>b.id===row.ref.id));
   await assert.rejects(()=>verifySpatialShellRegeneration(project,retirement,seed.delta,result.delta,auth,budget()),/permission/i);
   await assert.rejects(()=>verifySpatialShellRegeneration(project,op,seed.delta,result.delta,null,budget()),/authorization/i);
   const stale=clone(auth);stale.context.revision++;
@@ -51,5 +51,5 @@ test('detached optional shell regeneration uses fresh Schema 11 reservations and
   const tiny=await searchSpatialShellRegeneration(project,op,seed.delta,context,createSpatialDestructionBudget({work:1,stateExpansions:1}));
   assert.equal(tiny.status,'refused');assert.equal(tiny.delta,null);
   assert.equal(JSON.stringify(project),before);
-  console.log('SRE_SHELL_REGENERATION '+JSON.stringify({retired:result.delta.retired,added:result.delta.added.map(r=>({collection:r.collection,id:r.id})),attempts:result.attempts,stats:shared.snapshot()}));
+  console.log('SRE_SHELL_REGENERATION '+JSON.stringify({retired:result.delta.retired,added:result.delta.added.map(r=>r.ref),attempts:result.attempts,stats:shared.snapshot()}));
 });
