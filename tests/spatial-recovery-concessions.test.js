@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
-import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, discoverSpatialRoadRetirementEligibility, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals, createSpatialConcessionProposalSource } from '../src/core/spatial-recovery-concessions.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
@@ -263,6 +263,13 @@ test('detached cooperative concession transport compression diagnostic',{timeout
             const rebound=await createSpatialDelta(source,actual,denied,1,budget());
             await assert.rejects(()=>verifySpatialConcessionRoadWitness(source,denied,rebound,budget()));
           }
+          const staleSource=clone(source);
+          const changed=staleSource.city.buildings.find(b=>b.id===result.ledger.scaledBuildings[0].buildingId);
+          delete changed.roadProvenance;
+          await assert.rejects(()=>verifySpatialConcessionRoadWitness(staleSource,op,result.delta,budget()),/Stale or incompatible/);
+          const freshlyBound=await createSpatialDelta(staleSource,actual,op,1,budget());
+          await assert.rejects(()=>verifySpatialConcessionRoadWitness(staleSource,op,freshlyBound,budget()));
+          assert.equal(changed.roadProvenance,undefined);
           const staleRevision=normalizeSpatialRoadGroup(source,2,roadIds,op.geometry.offset,op.permissions);
           await assert.rejects(()=>verifySpatialConcessionRoadWitness(source,staleRevision,result.delta,budget()),/Stale or incompatible/);
           const alteredOffset=normalizeSpatialRoadGroup(source,1,roadIds,
@@ -464,4 +471,53 @@ test('detached ranked concession challenger uses one budget and retains the bett
       ranking:result.ranking,stats:result.stats}));
   }
   assert.ok(compared>0,'at least one challenger must complete full independent comparison');
+});
+
+
+test('detached destruction eligibility uses actual affected scope and protects property groups',()=>{
+  const source=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties:false});
+  const before=JSON.stringify(source),roads=['RD-0184','RD-0186'],
+    move={x:-3.005274072121821*.25,y:-37.39896113564458*.25};
+  const op=normalizeSpatialRoadGroup(source,1,roads,move,{destruction:true});
+  const denied=normalizeSpatialRoadGroup(source,1,roads,move,{});
+  const none=discoverSpatialRoadRetirementEligibility(source,denied,budget());
+  assert.deepEqual(none.buildingRefs,[]);assert.deepEqual(none.propertyGroups,[]);
+  const result=discoverSpatialRoadRetirementEligibility(source,op,budget());
+  assert.ok(result.buildingRefs.length>0);assert.ok(result.propertyGroups.length>0);
+  assert.deepEqual(result,discoverSpatialRoadRetirementEligibility(source,op,budget()));
+  assert.ok(Object.isFrozen(result.propertyGroups));
+  const groups=result.propertyGroups.filter(g=>g.refs.some(r=>r.collection==='buildings'));
+  assert.ok(groups.length);
+  const group=groups[0],building=group.refs.find(r=>r.collection==='buildings');
+  const selected=result.buildingRefs.map(r=>r.id);
+  for(const g of result.propertyGroups){
+    const p=source.city.properties.find(r=>r.id===g.propertyId);
+    assert.deepEqual(g.refs.filter(r=>r.collection==='plots').map(r=>r.id),p.plotIds);
+    assert.deepEqual(g.refs.filter(r=>r.collection==='buildings').map(r=>r.id).sort(),p.buildingIds.slice().sort());
+    assert.ok(g.refs.filter(r=>r.collection==='buildings').every(r=>selected.includes(r.id)));
+    assert.ok(g.refs.every(r=>['properties','plots','buildings'].includes(r.collection)));
+  }
+  for(const mutate of [
+    s=>{delete s.city.buildings.find(r=>r.id===building.id).roadProvenance;},
+    s=>{s.city.buildings.find(r=>r.id===building.id).customName='Protected';},
+    s=>{s.city.buildings.find(r=>r.id===building.id).unsupportedExtension={value:1};
+      stampRoadGenerated(s.city.buildings.find(r=>r.id===building.id));},
+    s=>{s.opaqueReference={target:building.id};}
+  ]){
+    const altered=clone(source);mutate(altered);const unchanged=JSON.stringify(altered);
+    const protectedResult=discoverSpatialRoadRetirementEligibility(altered,op,budget());
+    assert.ok(!protectedResult.buildingRefs.some(r=>r.id===building.id));
+    assert.ok(!protectedResult.propertyGroups.some(g=>g.propertyId===group.propertyId));
+    assert.equal(JSON.stringify(altered),unchanged);
+  }
+  for(const member of group.refs.filter(r=>r.collection!=='buildings')){
+    const altered=clone(source);altered.opaqueReference={target:member.id};
+    const protectedResult=discoverSpatialRoadRetirementEligibility(altered,op,budget());
+    assert.ok(!protectedResult.propertyGroups.some(g=>g.propertyId===group.propertyId));
+  }
+  assert.throws(()=>discoverSpatialRoadRetirementEligibility(source,{...op,permissions:{destruction:true,regeneration:true}},budget()),/not integrated/);
+  assert.throws(()=>discoverSpatialRoadRetirementEligibility(source,op,createSpatialPreservationBudget({work:1,stateExpansions:1})),/budget/);
+  assert.equal(JSON.stringify(source),before);
+  console.log('SRE_RETIREMENT_ELIGIBILITY '+JSON.stringify({buildings:result.buildingRefs.length,groups:result.propertyGroups.length}));
 });

@@ -7,6 +7,7 @@ import { LareBudgetExceeded } from './reconciliation-budget.js';
 import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, scoreSpatialConcessions, compareSpatialConcessionCost } from './spatial-recovery-score.js';
 import { copyJson } from '../data/project-format.js';
 import { createLareContext } from './reconciliation-context.js';
+import { iterateLareSpatialRetirementEligibility } from './reconciliation-demolition.js';
 import { iterateLareGroupPreservation } from './reconciliation-preservation.js';
 import { riBudget, riCompare, riFreeze, riReporter } from './road-impact-model.js';
 
@@ -82,6 +83,20 @@ export function discoverSpatialRoadScope(project,input,budget) {
   return riFreeze({operation:result.operation,affectedBlocks:result.context.blockIds.slice(),
     refs:[...scope.refs.entries()].sort(([a],[b])=>riCompare(a,b)).map(([,ref])=>ref),
     capabilities:scope.capabilities});
+}
+
+// Separate, read-only discovery. Never pass destruction permissions into
+// the existing nondestructive verifier or accept a caller-supplied scope.
+export function discoverSpatialRoadRetirementEligibility(project,input,budget){
+  const operation=createSpatialOperation(input);
+  if(operation.regeneration||operation.permissions.regeneration)
+    throw Error('Regeneration eligibility is not integrated.');
+  const preserving=createSpatialOperation({...operation,permissions:{...operation.permissions,destruction:false}});
+  const {draft}=sreStrictRoadContext(project,preserving,budget,true);
+  const eligible=operation.permissions.destruction?
+    sreFinishMetered(iterateLareSpatialRetirementEligibility(project,draft,budget),budget):
+    {buildingRefs:[],propertyGroups:[]};
+  return riFreeze({operation,...eligible});
 }
 
 // Detached strict witness verification only. No editor hooks, no Apply
