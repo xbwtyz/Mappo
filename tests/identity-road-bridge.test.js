@@ -8,7 +8,7 @@ import {createLareDemolitionSession,iterateLareDemolition,authorizeLareDemolitio
 import {validateRoadApplyC2} from '../src/editor/road-application.js';
 import {junctionPreviewMessage,calculateJunctionPreviewP1} from '../src/worker/junction-preview-worker.js';
 import {beginRoadIdentityApply,commitRoadIdentityApply,cancelRoadIdentityApply} from '../src/editor/road-transaction-bridge.js';
-import {copyJson,defaultWorkspace} from '../src/data/project-format.js';
+import {copyJson,defaultWorkspace,roundTripProjectDocument} from '../src/data/project-format.js';
 
 function setup(seed,morphology,irregularProperties=false){
   let n=0;const h=new SecureIdentityHost({cryptoSource:{getRandomValues(a){a.fill(++n);return a;}}});
@@ -160,4 +160,27 @@ test('S1-C1 local reconstruction remains independent of a candidate with matchin
   assert.equal(f.h.view().history.length,0);
   const next=begin(f,true);
   assert.equal(commit(f,next,worker(next.workerRequest)).context.revision,1);
+});
+
+test('S4 nonallocating junction acceptance exactly matches independent portable result and replay',()=>{
+  const f=junction(),b=begin(f,true),reply=worker(b.workerRequest);
+  assert.ok(reply.ok);
+  const expected=roundTripProjectDocument(reply.candidate,reply.workspace);
+  const out=commit(f,b,reply);
+  assert.equal(JSON.stringify(out.project),JSON.stringify(expected.project));
+  assert.deepEqual(out.workspace,expected.workspace);
+  assert.deepEqual(out.project.identityAllocation,f.p.identityAllocation);
+  assert.notEqual(out.workspace,f.w);
+  const undo=f.h.replay({direction:'undo',context:f.h.view().context,workspace:out.workspace});
+  assert.deepEqual(undo.project,f.p);
+  const redo=f.h.replay({direction:'redo',context:f.h.view().context,workspace:undo.workspace});
+  assert.deepEqual(redo.project,out.project);
+});
+
+test('S4 allocating road acceptance still matches complete final portable roundtrip',()=>{
+  const f=road(),out=commit(f,begin(f));
+  assert.ok(out.project.city.buildings.some(b=>b.id.startsWith('BLD-IDA-')));
+  const decoded=roundTripProjectDocument(out.project,out.workspace);
+  assert.deepEqual(decoded.project,out.project);
+  assert.deepEqual(decoded.workspace,out.workspace);
 });

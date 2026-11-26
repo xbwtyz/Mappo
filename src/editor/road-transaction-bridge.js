@@ -107,12 +107,25 @@ function idaRoadApplyAllocated(state,project,legacy,receipt){
       before:{history:copyJson(beforeHistory),savedCount:count},
       after:{history:copyJson(afterHistory),savedCount:Math.max(0,count-(beforeHistory.length-afterHistory.length))}};
   }
-  const decoded=state.snapshot.kind==='demolition'
-    ?decodeProjectDocument(encodeProjectDocument(createProjectDocument(allocated.candidate,workspace)))
-    :roundTripProjectDocument(allocated.candidate,workspace);
-  idaRoadApplyRequire(idaRoadApplySame(decoded.project,allocated.candidate)&&idaRoadApplySame(decoded.workspace,workspace),
-    'Portable roundtrip changed allocated road candidate or workspace.');
-  return {...allocated,workspace:decoded.workspace,transaction,receipt:issued};
+  // S4: the independently reconstructed ordinary candidate already passed
+  // both portable validators and exact persisted equality. Reuse that
+  // evidence only when final allocation is empty AND both persisted values
+  // are exactly unchanged. Changed allocator order, geometry or workspace
+  // must take the full final roundtrip. Never use worker/preview evidence.
+  let verifiedWorkspace;
+  if(state.snapshot.kind!=='demolition'&&allocated.requests.length===0&&
+     idaRoadApplySame(legacy.candidate,allocated.candidate)&&
+     idaRoadApplySame(legacy.workspace,workspace)){
+    verifiedWorkspace=JSON.parse(JSON.stringify(workspace));
+  }else{
+    const decoded=state.snapshot.kind==='demolition'
+      ?decodeProjectDocument(encodeProjectDocument(createProjectDocument(allocated.candidate,workspace)))
+      :roundTripProjectDocument(allocated.candidate,workspace);
+    idaRoadApplyRequire(idaRoadApplySame(decoded.project,allocated.candidate)&&idaRoadApplySame(decoded.workspace,workspace),
+      'Portable roundtrip changed allocated road candidate or workspace.');
+    verifiedWorkspace=decoded.workspace;
+  }
+  return {...allocated,workspace:verifiedWorkspace,transaction,receipt:issued};
 }
 
 // Begin captures only trusted mounted intent and reviewed result, not a
