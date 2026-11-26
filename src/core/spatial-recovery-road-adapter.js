@@ -6,6 +6,7 @@ import { iterateRoadGroupReflowB1 } from './neighborhood-reflow.js';
 import { LareBudgetExceeded } from './reconciliation-budget.js';
 import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, scoreSpatialConcessions, compareSpatialConcessionCost } from './spatial-recovery-score.js';
 import { copyJson } from '../data/project-format.js';
+import { stampRoadGenerated } from './road-provenance.js';
 import { createLareContext } from './reconciliation-context.js';
 import { iterateLareSpatialRetirementEligibility, iterateLareSpatialBuildingRetirementTrials, iterateLareVerifySpatialBuildingRetirement } from './reconciliation-demolition.js';
 import { iterateLareGroupPreservation } from './reconciliation-preservation.js';
@@ -153,6 +154,106 @@ export async function searchSpatialBuildingRetirementRoadGroup(project,input,bud
     if(error instanceof LareBudgetExceeded)return refusal(error.resource);
     throw error;
   }finally{iterator?.return();}
+}
+
+// Derive a reduced accepted baseline from the original, never from
+// candidate-provided records. Complete groups and independent building
+// retirements are the only supported membership changes.
+function sreRetirementContext(project,input,budget){
+  const operation=createSpatialOperation(input),p=operation.permissions;
+  if(!p.destruction||p.regeneration)throw Error('Explicit destruction permission required; regeneration not integrated.');
+  const preserving=createSpatialOperation({...operation,permissions:{...p,destruction:false}});
+  const {draft}=sreStrictRoadContext(project,preserving,budget,true);
+  const eligibility=sreFinishMetered(iterateLareSpatialRetirementEligibility(project,draft,budget),budget);
+  return {operation,preserving,eligibility};
+}
+function sreReducedRetirementBase(project,refs,eligibility,budget){
+  const keys=new Set(refs.map(spatialRefKey));
+  if(!keys.size||keys.size!==refs.length)throw Error('Missing or duplicate retirement membership.');
+  const allowed=new Set(eligibility.buildingRefs.map(spatialRefKey));
+  for(const group of eligibility.propertyGroups){
+    budget.spend(1+group.refs.length);
+    const propertyKey=spatialRefKey({collection:'properties',id:group.propertyId});
+    if(!keys.has(propertyKey))continue;
+    if(!group.refs.every(ref=>keys.has(spatialRefKey(ref))))
+      throw Error('Incomplete property retirement group.');
+    for(const ref of group.refs)allowed.add(spatialRefKey(ref));
+  }
+  if([...keys].some(key=>!allowed.has(key)))throw Error('Protected or ineligible retirement.');
+  const reduced=copyJson(project);
+  budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(reduced)).length/64)));
+  for(const collection of ['properties','plots','buildings']){
+    reduced.city[collection]=reduced.city[collection].filter(row=>{
+      budget.spend();return !keys.has(spatialRefKey({collection,id:row.id}));
+    });
+  }
+  const plots=new Map(reduced.city.plots.map(row=>[row.id,row]));
+  budget.spend(Math.max(1,plots.size));
+  for(const property of reduced.city.properties){
+    budget.spend(1+property.buildingIds.length);
+    const surviving=property.buildingIds.filter(id=>!keys.has(spatialRefKey({collection:'buildings',id})));
+    if(surviving.length!==property.buildingIds.length){
+      property.buildingIds=surviving;
+      stampRoadGenerated(property,property.plotIds.map(id=>plots.get(id)));
+    }
+  }
+  sreFinishMetered(spatialConstraint('storedProject').iterate(reduced),budget);
+  return reduced;
+}
+async function sreVerifyRetirement(project,input,delta,budget){
+  const {operation,preserving,eligibility}=sreRetirementContext(project,input,budget);
+  const candidate=await reconstructSpatialDelta(project,operation,1,delta,budget);
+  if(delta.added.length)throw Error('Regeneration not integrated.');
+  const reduced=sreReducedRetirementBase(project,delta.retired,eligibility,budget);
+  // A second independently reconstructed transport must contain NO
+  // membership changes. Existing preservation gate validates all survivors,
+  // including protected infrastructure, ownership, and actual concessions.
+  const remaining=await createSpatialDelta(reduced,candidate,preserving,1,budget);
+  if(remaining.added.length||remaining.retired.length)throw Error('Unreviewed retirement membership.');
+  const {candidate:verified,ledger}=await sreVerifyRoadWitness(reduced,preserving,remaining,budget,true);
+  const index=new Map(project.city.buildings.map(b=>[b.id,b]));
+  budget.spend(Math.max(1,index.size));
+  let demolishedFootprint=0;
+  for(const ref of delta.retired){budget.spend();if(ref.collection==='buildings')demolishedFootprint+=index.get(ref.id).area;}
+  return {candidate:verified,ledger:{retired:delta.retired.map(r=>({...r})),demolishedFootprint,concessions:ledger}};
+}
+export async function verifySpatialRetirementWitness(project,input,delta,budget){
+  return (await sreVerifyRetirement(project,input,delta,budget)).candidate;
+}
+// Property-group qualification path. One operation budget for all trials
+// and both original/reduced verification gates. No automatic live fallback.
+export async function searchSpatialPropertyRetirementRoadGroup(project,input,budget){
+  const operation=createSpatialOperation(input),attempts=[];
+  const refusal=exhausted=>riFreeze({status:'refused',operation,delta:null,ledger:null,attempts,exhausted,stats:budget.snapshot()});
+  try{
+    const snapshot=copyJson(project);
+    budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
+    const {preserving,eligibility}=sreRetirementContext(snapshot,operation,budget);
+    // Building count first, then larger footprint as a deterministic
+    // obstruction heuristic; final quality optimization belongs to Batch 3.
+    const index=new Map(snapshot.city.buildings.map(b=>[b.id,b]));
+    budget.spend(Math.max(1,index.size));
+    const groups=eligibility.propertyGroups.map(group=>{
+      budget.spend(1+group.refs.length);
+      const buildings=group.refs.filter(r=>r.collection==='buildings');
+      return {group,count:buildings.length,area:buildings.reduce((n,r)=>n+index.get(r.id).area,0)};
+    });
+    groups.sort((a,b)=>{budget.spend();return a.count-b.count||b.area-a.area||riCompare(a.group.propertyId,b.group.propertyId);});
+    for(const {group} of groups.slice(0,16)){
+      budget.spend();attempts.push({propertyId:group.propertyId,stats:budget.snapshot()});
+      const reduced=sreReducedRetirementBase(snapshot,group.refs,eligibility,budget);
+      const trial=await searchSpatialNondestructiveRoadGroup(reduced,preserving,budget,{reusePackingInventory:true});
+      if(trial.status!=='verified-witness')continue;
+      const candidate=await reconstructSpatialDelta(reduced,preserving,1,trial.delta,budget);
+      const delta=await createSpatialDelta(snapshot,candidate,operation,1,budget);
+      const {ledger}=await sreVerifyRetirement(snapshot,operation,delta,budget);
+      return riFreeze({status:'verified-witness',operation,delta,ledger,attempts,exhausted:null,stats:budget.snapshot()});
+    }
+    return refusal(null);
+  }catch(error){
+    if(error instanceof LareBudgetExceeded)return refusal(error.resource);
+    throw error;
+  }
 }
 
 // Detached strict witness verification only. No editor hooks, no Apply
