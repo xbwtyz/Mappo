@@ -1,13 +1,18 @@
 import { createSpatialOperation, createSpatialInventory } from './spatial-recovery-contract.js';
 import { prepareRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent-c1.js';
 import { createLareContext } from './reconciliation-context.js';
-import { occupiedAreaS10 } from './building-occupancy-s10.js';
+import { iterateSpatialPackingSeeds } from './spatial-recovery-packing.js';
+import { polygonSignedArea } from './geometry.js';
+import { shapeContained, shapeWellFormed } from './building-validation.js';
+import { hydrateBuildingS10 } from './building-project-s10.js';
+import { occupiedAreaS10, occupiedPlotAreaS10, occupiedRegionsOverlapS10 } from './building-occupancy-s10.js';
 import { validateBuildingStructureS10 } from './building-components-s10.js';
-import { STREET_WIDTHS, STREET_EDGE_WIDTH, PROPERTY_SETBACK } from './placement.js';
+import { propertyFits, STREET_WIDTHS, STREET_EDGE_WIDTH, PROPERTY_SETBACK } from './placement.js';
 import { propertyLocalBounds3I } from './property-geometry.js';
 import { verifyLareRigidGeometry } from './reconciliation-buildings.js';
-import { verifyLarePlotDeformation } from './reconciliation-plots.js';
-import { classifyRoadProvenance } from './road-provenance.js';
+import { mapLarePlotCells, verifyLarePlotDeformation } from './reconciliation-plots.js';
+import { classifyRoadProvenance, stampRoadGenerated } from './road-provenance.js';
+import { LareBudgetExceeded } from './reconciliation-budget.js';
 import { riCompare, riEqual, riFreeze } from './road-impact-model.js';
 
 // Detached concession primitives only. No solver, candidate acceptance,
@@ -225,4 +230,92 @@ export function verifySpatialFrontageAlignment(project,input,candidate,ledger,bu
     if(!p.local||Object.keys(local).some(k=>!Number.isFinite(p.local[k])||Math.abs(local[k]-p.local[k])>1e-5))
       throw Error('Concession frontage local bounds mismatch.');
   }
+}
+
+// Detached, locally checked parcel+building bundles. No whole-city search,
+// accepted mutation, access authorization or Apply. Every seed is derived
+// from original canonical geometry and only the caller's explicit policy.
+export function* iterateSpatialConcessionParcelProposals(project,input,propertyId,budget,{frontageRoadId,scale=1}={}){
+  const derived=sreConcessionDerive(project,input,budget),{op,context,changed,graph}=derived;
+  const entry=context.properties.find(p=>p.id===propertyId);
+  if(!entry||entry.policy.mode!=='adaptive'||entry.policy.provenance!=='generated'||
+    !entry.buildings.length||entry.buildings.some(b=>b.mode!=='rigid'||b.provenance!=='generated'))return [];
+  const property=project.city.properties.find(p=>p.id===propertyId),block=changed.get(entry.blockId);
+  if(!block)return [];
+  const target=frontageRoadId??property.frontageRoadId;
+  if(target!==property.frontageRoadId&&!sreConcessionAdjacentFrontages(project,derived,propertyId,budget).includes(target))
+    throw Error('Unauthorized alternative frontage proposal.');
+  if(!Number.isFinite(scale)||scale<=0||scale>1||
+    (scale!==1&&(!op.permissions.uniformScaling||scale<1-op.permissions.maxLinearReduction-sreConcessionEps)))
+    throw Error('Unauthorized scaling proposal.');
+  const roads=new Map(project.city.roads.map(r=>[[r.a,r.b].sort(riCompare).join(':'),r]));
+  const plotsById=new Map(project.city.plots.map(r=>[r.id,r]));
+  const buildingsById=new Map(project.city.buildings.map(r=>[r.id,r]));
+  budget.spend(roads.size+plotsById.size+buildingsById.size);
+  const edges=block.vertices.map((id,i)=>{
+    budget.spend();const other=block.vertices[(i+1)%block.vertices.length];
+    return {a:graph.nodesById.get(id),b:graph.nodesById.get(other),road:roads.get([id,other].sort(riCompare).join(':'))};
+  });
+  const edge=edges.find(e=>e.road?.id===target);
+  if(!edge||edges.some(e=>!e.road||!sreConcessionFinitePoint(e.a)||!sreConcessionFinitePoint(e.b)))return [];
+  const plots=entry.plotIds.map(id=>plotsById.get(id)),buildings=entry.buildings.map(permission=>({permission,source:buildingsById.get(permission.id)}));
+  const seeds=yield* iterateSpatialPackingSeeds({property,policy:entry.policy,buildings,edge,edges,maxProposals:192,permissions:op.permissions,scale},budget);
+  const [f0,f1]=property.boundary,width=Math.hypot(f1.x-f0.x,f1.y-f0.y);
+  const oldT={x:(f1.x-f0.x)/width,y:(f1.y-f0.y)/width},oldN={x:-oldT.y,y:oldT.x};
+  const local=q=>({u:(q.x-f0.x)*oldT.x+(q.y-f0.y)*oldT.y,v:(q.x-f0.x)*oldN.x+(q.y-f0.y)*oldN.y});
+  const oldDepth=Math.max(...property.boundary.map(q=>local(q).v));
+  const {a,b}=edge,len=Math.hypot(b.x-a.x,b.y-a.y),tangent={x:(b.x-a.x)/len,y:(b.y-a.y)/len},inward={x:-tangent.y,y:tangent.x};
+  const world=(u,v)=>({x:a.x+tangent.x*u+inward.x*v,y:a.y+tangent.y*u+inward.y*v});
+  const blockRing=edges.map(e=>e.a),out=[];
+  for(const seed of seeds){
+    budget.spend(Math.max(1,seed.boundary.length**2+seed.boundary.length*edges.length*4));
+    yield {stage:'spatial-concession-parcel',id:propertyId};
+    if(!shapeWellFormed(seed.boundary)||!shapeContained(seed.boundary,blockRing)||!propertyFits(seed.boundary,blockRing,edges))continue;
+    try{
+      const {left,front,span,depth}=seed.frame;
+      const map=q=>{const l=local(q);return world(left+l.u*span/width,front+l.v*depth/oldDepth);};
+      const newPlots=mapLarePlotCells(plots,map,budget).map(p=>({...p,frontageRoadId:target}));
+      verifyLarePlotDeformation(seed.boundary,plots,newPlots,budget);
+      const parcel={...JSON.parse(JSON.stringify(property)),boundary:seed.boundary.map(q=>({...q})),
+        frontageRoadId:target,frontage:seed.boundary.slice(0,2).map(q=>({...q})),
+        frame:{origin:{...a},tangent,inward},area:polygonSignedArea(seed.boundary)};
+      parcel.local=propertyLocalBounds3I(parcel,parcel.boundary);
+      stampRoadGenerated(parcel,newPlots);
+      const placements=[],charge={charge:(n=1)=>{if(n>0)budget.spend(n);}};
+      let valid=true;
+      for(const transform of seed.seeds){
+        const source=buildingsById.get(transform.id),points=source.geometry.regions.flatMap(r=>r.ring);
+        budget.spend(points.length*4);
+        const center={x:points.reduce((n,q)=>n+q.x,0)/points.length,y:points.reduce((n,q)=>n+q.y,0)/points.length};
+        const co=Math.cos(transform.angle),si=Math.sin(transform.angle),factor=transform.scale??1;
+        const place=q=>{const x=q.x-center.x,y=q.y-center.y;return {
+          x:center.x+transform.dx+factor*(x*co-y*si),y:center.y+transform.dy+factor*(x*si+y*co)};};
+        const next=JSON.parse(JSON.stringify(source));
+        next.geometry.regions=next.geometry.regions.map(r=>({...r,ring:r.ring.map(place)}));
+        next.orientation+=transform.angle;next.area*=factor*factor;
+        next.entrance=place(source.entrance);next.accessPath=source.accessPath.map(place);
+        next.frontageRoadId=target;
+        validateBuildingStructureS10(next.geometry,next.components,charge);
+        for(const region of next.geometry.regions){
+          budget.spend(region.ring.length*parcel.boundary.length*2);
+          if(!shapeContained(region.ring,parcel.boundary)){valid=false;break;}
+        }
+        if(!valid)break;
+        next.plotIds=newPlots.filter(p=>occupiedPlotAreaS10(next.geometry,p.boundary,charge)>1e-5).map(p=>p.id);
+        if(!next.plotIds.length||placements.some(p=>occupiedRegionsOverlapS10(next.geometry,p.geometry,charge))){valid=false;break;}
+        const normalized={...next,frontageRoadId:source.frontageRoadId};
+        if(factor===1){
+          if(!verifyLareRigidGeometry(source,normalized,budget)){valid=false;break;}
+        }else sreConcessionInspectSimilarity(project,derived,source.id,normalized,budget);
+        // Keep the placement detached. Access repair and final provenance
+        // stamping belong to the later whole-arrangement finalizer.
+        placements.push(hydrateBuildingS10(next));
+      }
+      if(!valid||placements.length!==buildings.length)continue;
+      out.push({property:parcel,plots:newPlots,buildings:placements,scale,frontageRoadId:target,
+        family:seed.family,requiresAccessRepair:true});
+      if(out.length>=24)break;
+    }catch(error){if(error instanceof LareBudgetExceeded)throw error;}
+  }
+  return out;
 }
