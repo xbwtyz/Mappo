@@ -1,0 +1,83 @@
+name: SRE E2 isolated qualification
+on:
+  push:
+    branches:
+      - research/sre/qualification-e2-cycle2
+permissions:
+  contents: read
+jobs:
+  qualify:
+    if: contains(github.event.head_commit.message, '[sre-qualification]')
+    name: Qualification ${{ matrix.mode }} ${{ matrix.index }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        include:
+          - {mode: historical, index: 0}
+          - {mode: historical, index: 1}
+          - {mode: historical, index: 2}
+          - {mode: historical, index: 3}
+          - {mode: historical, index: 4}
+          - {mode: historical, index: 5}
+          - {mode: historical, index: 6}
+          - {mode: historical, index: 7}
+          - {mode: historical, index: 8}
+          - {mode: historical, index: 9}
+          - {mode: historical, index: 10}
+          - {mode: historical, index: 11}
+          - {mode: historical, index: 12}
+          - {mode: historical, index: 13}
+          - {mode: historical, index: 14}
+          - {mode: historical, index: 15}
+          - {mode: historical, index: 16}
+          - {mode: historical, index: 17}
+          - {mode: historical, index: 18}
+          - {mode: historical, index: 19}
+          - {mode: compression, index: 0}
+          - {mode: compression, index: 1}
+          - {mode: compression, index: 2}
+          - {mode: compression, index: 3}
+          - {mode: regeneration, index: 0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: harness
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/checkout@v4
+        with:
+          ref: 2a842d6e5f37790a74c1db526a12d99b271a51b0
+          path: frozen-sre
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        if: matrix.mode == 'historical'
+        with:
+          ref: e5f1cf83dcdcc75e52911aa717035955b40569d0
+          path: frozen-b1
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        if: matrix.mode == 'historical'
+        with:
+          ref: ad2a0f88995fbd6c869fcb38575626ff85cded19
+          path: frozen-b1r
+          persist-credentials: false
+      - name: Execute frozen qualification
+        env:
+          MODE: ${{ matrix.mode }}
+          SHARD: ${{ matrix.index }}
+        run: |
+          node --check harness/scripts/development/research/sre-qualification.mjs
+          node harness/scripts/development/research/sre-qualification.mjs "$MODE" "$SHARD" "$GITHUB_WORKSPACE/frozen-sre" "$GITHUB_WORKSPACE/frozen-b1" "$GITHUB_WORKSPACE/frozen-b1r" "$RUNNER_TEMP/sre-qualification"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sre-qualification-${{ github.run_attempt }}-${{ matrix.mode }}-${{ matrix.index }}
+          path: ${{ runner.temp }}/sre-qualification/qualification.json
+          if-no-files-found: error
+          retention-days: 14
