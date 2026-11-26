@@ -31,3 +31,14 @@ test('DEV-OPT distributed aggregate keeps failed and timed-out tasks visible',()
     assert.equal(r.complete,false);assert.equal(r.results.find(x=>x.key===e[0].rows[0].key).status,status);
   }
 });
+
+// Catch malformed interpolation before Actions attempts to parse the workflow.
+test('DEV-OPT pilot workflow uses balanced GitHub expression delimiters',()=>{
+  const yaml=readFileSync(new URL('../.github/workflows/research-pilot.yml',import.meta.url),'utf8');
+  const open=String.fromCharCode(36)+'{{';
+  const expressions=yaml.split(open).slice(1);
+  assert.ok(expressions.length>=10);
+  for(const part of expressions)assert.match(part,/^\s*[a-zA-Z0-9_.]+\s*\}\}/);
+  assert.match(yaml,/contents: read/);
+  assert.match(yaml,/max-parallel: 2/);
+});
