@@ -67,9 +67,10 @@ export async function verifySpatialUnifiedRoadWitness(project,input,witness,budg
 // Phase ceilings are scheduling boundaries within existing limits, not
 // new allowances. Reserve enough work to bind a verified witness to the
 // external operation before spending on optional improvements.
-export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{context=null}={}){
+export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{context=null,schedule='baseline'}={}){
   const {operation,retirement,preserving,building}=sreRoadOperations(input);
   const p=operation.permissions,attempts=[];
+  if(!['baseline','grouped-first'].includes(schedule))throw Error('Unsupported detached scheduling policy.');
   if(p.regeneration&&(context?.projectId!==operation.projectId||context?.revision!==operation.revision))
     throw Error('Missing or stale regeneration reservation context.');
   const limits=p.destruction?LARE_DEMOLITION_LIMITS:LARE_PRESERVATION_LIMITS;
@@ -109,7 +110,15 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
     }
     if(!p.destruction)return finish();
     const bindReserve=1500000;
-    const legacy=await phase('building-retirement',4000000,
+    // Diagnostic challenger: establish the broad eligible recovery first
+    // and redirect unused small-subset allowances to restoration. Keep
+    // the existing baseline schedule unchanged by default.
+    if(schedule==='grouped-first'){
+      const grouped=await phase('grouped-retirement',18000000,
+        b=>searchSpatialGroupedRetirementRoadGroup(project,retirement,b),{reserve:bindReserve});
+      if(grouped)await setRetirement(grouped);
+    }
+    const legacy=incumbent?null:await phase('building-retirement',4000000,
       b=>searchSpatialBuildingRetirementRoadGroup(project,building,b),{expansions:16384,reserve:bindReserve});
     if(legacy){
       const delta=await sreBind(project,building,retirement,legacy.delta,budget);
@@ -121,7 +130,7 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
         b=>searchSpatialPropertyRetirementRoadGroup(project,retirement,b),{expansions:8192,reserve:bindReserve});
       if(single)await setRetirement(single);
     }
-    if(!incumbent){
+    if(!incumbent&&schedule==='baseline'){
       const grouped=await phase('grouped-retirement',18000000,
         b=>searchSpatialGroupedRetirementRoadGroup(project,retirement,b),{reserve:bindReserve});
       if(grouped)await setRetirement(grouped);
@@ -131,7 +140,7 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
     // optimization runs out of work or rebinding fails on its budget,
     // the already validated witness remains available.
     const regenerationReserve=p.regeneration?4000000:0;
-    const restored=await phase('restoration',6000000,
+    const restored=await phase('restoration',schedule==='grouped-first'?12000000:6000000,
       b=>restoreSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b),
       {reserve:bindReserve+regenerationReserve});
     if(restored&&restored.delta.candidateFingerprint!==incumbent.basisDelta.candidateFingerprint)

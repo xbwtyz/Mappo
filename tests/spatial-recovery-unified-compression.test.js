@@ -91,3 +91,62 @@ for(const irregularProperties of [false,true])test('SRE integrated 18-case basel
   assert.equal(summary.verified+summary.refused,9);
   console.log('SRE_INTEGRATED_COMPRESSION_SUMMARY '+JSON.stringify(summary));
 });
+
+
+// Separate challenger qualification: each case starts with a fresh standalone
+// operation budget solely for comparing schedules, never as a second live
+// attempt. Retain baseline default pending historical qualification.
+const baselineRetired={
+  regular:{'-0.5':[16,22,16],'-1':[16,22,16]},
+  irregular:{1:[20,30,26],.75:[20,30,26],.5:[20,30,26],.25:[19,29,25],'-0.5':[16,28,16],'-1':[16,28,16]}
+};
+for(const irregularProperties of [false,true])test('SRE grouped-first scheduling challenger '+(irregularProperties?'irregular':'regular'),{timeout:600000},async()=>{
+  const family=irregularProperties?'irregular':'regular';
+  const project=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
+  const before=hash(project),summary={family,cases:0,verified:0,retained:0,lost:0,better:0,equal:0,worse:0,retired:{properties:0,plots:0,buildings:0}};
+  const collections=['properties','plots','buildings'];
+  for(const scale of scales){
+    const op=normalizeSpatialRoadGroup(project,1,roads,{x:offset.x*scale,y:offset.y*scale},permissions);
+    const shared=budget();
+    const result=await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:'grouped-first'});
+    assert.deepEqual(result.stats,shared.snapshot());
+    assert.ok(result.stats.work<=32000000&&result.stats.expansions<=131072);
+    summary.cases++;
+    const counts={properties:0,plots:0,buildings:0};let fingerprint=null,comparison=null;
+    if(result.status==='verified-witness'){
+      const actual=await verifySpatialUnifiedRoadWitness(project,op,result,budget());
+      validateStoredProject(actual);fingerprint=hash(actual);
+      assert.equal(fingerprint,result.delta.candidateFingerprint);
+      assert.deepEqual(actual.identityAllocation,project.identityAllocation);
+      assert.deepEqual(result.delta.added,[]);
+      assert.deepEqual(result.delta.retired,result.ledger.retired);
+      for(const key of collections){
+        const ids=new Set(actual.city[key].map(r=>r.id));
+        const missing=project.city[key].filter(r=>!ids.has(r.id)).map(r=>r.id);
+        assert.deepEqual(missing.slice().sort(),result.delta.retired.filter(r=>r.collection===key).map(r=>r.id).sort());
+        counts[key]=missing.length;summary.retired[key]+=missing.length;
+        assert.deepEqual(actual.city[key].map(r=>r.id),project.city[key].filter(r=>ids.has(r.id)).map(r=>r.id));
+      }
+      summary.verified++;summary.retained++;
+      if(Object.hasOwn(known[family],scale)){
+        assert.equal(result.kind,'nondestructive');
+        assert.equal(fingerprint,known[family][scale]);
+        assert.deepEqual(result.attempts.map(r=>r.phase),['nondestructive']);
+      }else{
+        assert.equal(result.kind,'retirement');
+        const prior=baselineRetired[family][scale],now=collections.map(k=>counts[k]);
+        comparison=now.some((v,i)=>v>prior[i])?'worse':now.some((v,i)=>v<prior[i])?'better':'equal';
+        summary[comparison]++;
+      }
+    }else{
+      assert.equal(result.status,'refused');assert.equal(result.delta,null);
+      assert.ok(!Object.hasOwn(known[family],scale),'Nondestructive regression');
+      summary.lost++;
+    }
+    assert.equal(hash(project),before);
+    console.log('SRE_GROUPED_FIRST_CASE '+JSON.stringify({family,scale,status:result.status,kind:result.kind,counts,baseline:baselineRetired[family][scale]??[0,0,0],comparison,fingerprint,demolishedFootprint:result.ledger?.demolishedFootprint??null,scaleLoss:result.ledger?.concessions?.footprintLoss??null,attempts:result.attempts,stats:result.stats}));
+  }
+  assert.equal(summary.cases,9);assert.equal(summary.verified+summary.lost,9);
+  console.log('SRE_GROUPED_FIRST_SUMMARY '+JSON.stringify(summary));
+});
