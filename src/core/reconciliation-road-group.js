@@ -64,7 +64,7 @@ function lareGroupLedger(before,after,draft,changedBlocks){
 }
 // A complete arrangement is checked without trusting its score or ledger.
 // This adapter receives the already verified planar graph/face analysis.
-export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget(),{enhanced=false}={}){
+export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget(),{enhanced=false,packing=false}={}){
   const group=draft.selectedRoadIds?.[0]??'group';
   const refused=(issue)=>({...baseline,candidateProject:null,changed:[],ledger:[],status:'needs-review',
     unresolved:[issue],lare:{stats:budget.snapshot()}});
@@ -111,7 +111,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     }))]));
     const entries=active.map(p=>{
       const source=propertyIndex.get(p.id),edges=blockEdges.get(p.blockId);
-      return {property:source,plots:p.plotIds.map(id=>plotIndex.get(id)),mode:p.policy.mode,
+      return {property:source,plots:p.plotIds.map(id=>plotIndex.get(id)),mode:p.policy.mode,policy:p.policy,
         edge:edges.find(e=>e.road?.id===p.frontageRoadId),edges,
         fixedNeighbors:city.properties.filter(q=>q.blockId===p.blockId&&spatial.role(q.id)!=='authorized').map(q=>q.boundary),
         buildings:p.buildings.map(b=>({source:buildingIndex.get(b.id),permission:b}))};
@@ -201,7 +201,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     let outcome=yield* iterateLareArrangement({entries:fixed,finalize,incumbent,enhanced},budget);
     if(outcome.best)incumbent=outcome.best;
     if(!outcome.exhausted&&(!incumbent||incumbent.score[0]>0)){
-      outcome=yield* iterateLareArrangement({entries,finalize,incumbent,enhanced},budget);
+      outcome=yield* iterateLareArrangement({entries,finalize,incumbent,enhanced,packing},budget);
       if(outcome.best)incumbent=outcome.best;
     }
     if(incumbent)return {...incumbent.result,lare:{source:incumbent.key==='baseline'?'verified-baseline':'adaptive',
