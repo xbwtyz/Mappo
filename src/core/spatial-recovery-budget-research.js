@@ -10,6 +10,7 @@ import { searchSpatialNondestructiveRoadGroup, searchSpatialBuildingRetirementRo
 import { searchSpatialShellRegeneration, searchSpatialGroupRegeneration,
   verifySpatialShellRegeneration, verifySpatialGroupRegeneration } from './spatial-recovery-regeneration.js';
 import { riEqual, riFreeze } from './road-impact-model.js';
+import { measureSpatialRetirementCost, improvesSpatialRetirementCost } from './spatial-recovery-score.js';
 
 // Detached road coordinator, not a worker, UI, acceptance or allocation
 // publisher. Every strategy uses a child of one caller-owned operation
@@ -69,7 +70,8 @@ export async function verifySpatialUnifiedRoadWitness(project,input,witness,budg
 // Phase ceilings are scheduling boundaries within existing limits, not
 // new allowances. Reserve enough work to bind a verified witness to the
 // external operation before spending on optional improvements.
-export async function searchSpatialBudgetResearch(project,input,callerBudget,{workLimit}={}){
+export async function searchSpatialBudgetResearch(project,input,callerBudget,{workLimit,iterative=false}={}){
+  if(typeof iterative!=='boolean'||(iterative&&workLimit!==256000000))throw Error('Unsupported iterative research setting.');
   if(![32000000,64000000,128000000,256000000].includes(workLimit))throw Error('Unsupported research work limit.');
   if(callerBudget.snapshot().remainingWork!==workLimit||callerBudget.snapshot().work!==0||callerBudget.snapshot().remainingExpansions!==131072)throw Error('Research budget mismatch.');
   const context=null,schedule='diversified-restoration';
@@ -160,6 +162,32 @@ export async function searchSpatialBudgetResearch(project,input,callerBudget,{wo
       {reserve:bindReserve+regenerationReserve});
     if(optimized&&optimized.delta.candidateFingerprint!==incumbent.basisDelta.candidateFingerprint)
       await setRetirement(optimized);
+    // Research-only extra passes, seeded by the independently verified
+    // current-operation incumbent, never by a historical witness.
+    // Preserve the exact one-pass control when iterative is false.
+    if(iterative){
+      const improve=async(result)=>{
+        if(!result||result.delta.candidateFingerprint===incumbent.basisDelta.candidateFingerprint)return false;
+        const oldCost=measureSpatialRetirementCost(incumbent.ledger,budget);
+        const newCost=measureSpatialRetirementCost(result.ledger,budget);
+        if(!improvesSpatialRetirementCost(newCost,oldCost))return false;
+        await setRetirement(result);return true;
+      };
+      for(let pass=1;pass<=3;pass++){
+        let changed=false;
+        // Alternate small shells and diversified batches, then re-rank
+        // same-block exchanges against the current surviving identities.
+        const policy=pass%2?'shell-first':'diversified';
+        const restored=await phase('iterative-restoration-'+pass,45000000,
+          b=>restoreSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b,{proposalPolicy:policy}),{reserve:bindReserve});
+        if(await improve(restored))changed=true;
+        const optimized=await phase('iterative-optimization-'+pass,32000000,
+          b=>optimizeSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b),{reserve:bindReserve});
+        if(await improve(optimized))changed=true;
+        if(!changed&&pass>=2)break; // explore both orderings once, then stop on plateau
+        if(budget.snapshot().remainingWork<=bindReserve)break;
+      }
+    }
     if(p.regeneration){
       for(const [kind,search] of [['shell-regeneration',searchSpatialShellRegeneration],['group-regeneration',searchSpatialGroupRegeneration]]){
         const result=await phase(kind,kind==='shell-regeneration'?2000000:6000000,
