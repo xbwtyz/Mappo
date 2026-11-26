@@ -4,7 +4,7 @@ import { describeSpatialCapability, spatialConstraint } from './spatial-recovery
 import { prepareRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent-c1.js';
 import { iterateRoadGroupReflowB1 } from './neighborhood-reflow.js';
 import { LareBudgetExceeded, createLareBudget, LARE_PRESERVATION_LIMITS, LARE_DEMOLITION_LIMITS } from './reconciliation-budget.js';
-import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, scoreSpatialConcessions, compareSpatialConcessionCost } from './spatial-recovery-score.js';
+import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, scoreSpatialConcessions, compareSpatialConcessionCost, measureSpatialRetirementCost, improvesSpatialRetirementCost } from './spatial-recovery-score.js';
 import { copyJson } from '../data/project-format.js';
 import { stampRoadGenerated } from './road-provenance.js';
 import { createLareContext } from './reconciliation-context.js';
@@ -382,7 +382,8 @@ export async function restoreSpatialRoadRetirements(project,input,seedDelta,budg
         [...actual].some(k=>!expected.has(k))||result.delta.added.length)
         throw Error('Restoration would change unapproved retirement membership.');
       const returned=current.filter(ref=>!actual.has(spatialRefKey(ref)));
-      for(const ref of returned){budget.spend();restored.push({...ref});}
+      budget.spend(Math.max(1,returned.length));
+      restored.push(...returned.map(ref=>({...ref})));
       incumbent={delta:result.delta,ledger:result.ledger};
     };
     // Whole blocks first (at most two), then individual groups, then land
@@ -393,6 +394,118 @@ export async function restoreSpatialRoadRetirements(project,input,seedDelta,budg
     for(const block of blocks.slice(0,2))await trial('block',currentGroups().filter(row=>row.block===block).flatMap(row=>row.group.refs));
     for(const {group} of currentGroups().slice(0,6))await trial('whole-property',group.refs);
     for(const {group} of currentGroups().slice(0,6))await trial('property-shell',group.refs.filter(r=>r.collection!=='buildings'));
+    return finish();
+  }catch(error){
+    if(error instanceof LareBudgetExceeded){exhausted=error.resource;return finish();}
+    throw error;
+  }
+}
+
+// B3c/d bounded optimization from a fully verified seed. A candidate
+// trial has its own small ceiling but charges the same operation parent;
+// no fresh overall allowance, no live activation. Never compare claims
+// from search: every accepted challenger passes original-to-final replay.
+export async function optimizeSpatialRoadRetirements(project,input,seedDelta,budget){
+  const operation=createSpatialOperation(input),attempts=[];
+  let incumbent=null,initial=null,exhausted=null;
+  const finish=()=>{
+    const finalKeys=new Set((incumbent?.delta.retired??[]).map(spatialRefKey));
+    const initialKeys=new Set((initial?.delta.retired??[]).map(spatialRefKey));
+    return riFreeze({status:incumbent?'verified-witness':'refused',operation,
+      delta:incumbent?.delta??null,ledger:incumbent?.ledger??null,cost:incumbent?.cost??null,
+      initialCost:initial?.cost??null,attempts,
+      restored:initial?.delta.retired.filter(r=>!finalKeys.has(spatialRefKey(r)))??[],
+      newlyRetired:incumbent?.delta.retired.filter(r=>!initialKeys.has(spatialRefKey(r)))??[],
+      exhausted,stats:budget.snapshot()});
+  };
+  try{
+    const snapshot=copyJson(project);
+    budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
+    const {preserving,eligibility}=sreRetirementContext(snapshot,operation,budget);
+    const verified=await sreVerifyRetirement(snapshot,operation,seedDelta,budget);
+    initial=incumbent={delta:copyJson(seedDelta),ledger:verified.ledger,cost:measureSpatialRetirementCost(verified.ledger,budget)};
+    const buildings=new Map(snapshot.city.buildings.map(b=>[b.id,b]));
+    const properties=new Map(snapshot.city.properties.map(p=>[p.id,p]));
+    budget.spend(Math.max(1,buildings.size+properties.size));
+    const seen=new Set(),limit={work:4000000,stateExpansions:16384};
+    const keys=()=>new Set(incumbent.delta.retired.map(spatialRefKey));
+    const trial=async(tier,refs,scale=null)=>{
+      budget.spend(Math.max(1,refs.length));
+      if(!refs.length||attempts.length>=8)return;
+      const key=JSON.stringify([refs.map(spatialRefKey).sort(riCompare),scale]);
+      if(seen.has(key))return;seen.add(key);
+      const row={tier,scale,status:'refused',selected:false,stats:budget.snapshot()};attempts.push(row);
+      const bounded=createLareBudget(limit,{parent:budget});
+      try{
+        const result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,refs,bounded,scale);
+        row.status=result.status;row.exhausted=result.exhausted??null;
+        if(result.status!=='verified-witness')return;
+        const expected=new Set(refs.map(spatialRefKey));
+        if(result.delta.added.length||result.delta.retired.length!==expected.size||
+          result.delta.retired.some(r=>!expected.has(spatialRefKey(r))))throw Error('Unexpected optimized retirement membership.');
+        const cost=measureSpatialRetirementCost(result.ledger,bounded);
+        row.cost=cost;
+        if(improvesSpatialRetirementCost(cost,incumbent.cost)){
+          incumbent={delta:result.delta,ledger:result.ledger,cost};row.selected=true;
+        }
+      }catch(error){
+        if(!(error instanceof LareBudgetExceeded))throw error;
+        row.exhausted=error.resource;
+      }
+    };
+    // Restore individual buildings only when the original parent survives.
+    // Rank by footprint saved; retain an exact smaller retirement set.
+    const childCandidates=incumbent.delta.retired.filter(r=>r.collection==='buildings'&&
+      !keys().has(spatialRefKey({collection:'properties',id:buildings.get(r.id).propertyId})))
+      .sort((a,b)=>{budget.spend();return buildings.get(b.id).area-buildings.get(a.id).area||riCompare(a.id,b.id);});
+    for(const ref of childCandidates.slice(0,2)){
+      if(keys().has(spatialRefKey(ref)))await trial('individual-building',incumbent.delta.retired.filter(r=>spatialRefKey(r)!==spatialRefKey(ref)));
+    }
+    // Compare the same exact retirement set using ordinary progressive
+    // preservation first, then the cheapest permitted isolated frontage tier.
+    await trial('same-set-progressive',incumbent.delta.retired);
+    if(operation.permissions.alternativeFrontage)await trial('same-set-frontage',incumbent.delta.retired,1);
+    // At most two same-block group exchanges and two building exchanges.
+    // Componentwise count checks precede expensive solving.
+    const groups=eligibility.propertyGroups;
+    for(let i=0;i<2;i++){
+      const retired=keys(),current=incumbent.delta.retired;
+      let exchange=null;
+      for(const old of groups){
+        budget.spend();
+        if(!retired.has(spatialRefKey({collection:'properties',id:old.propertyId})))continue;
+        for(const next of groups){
+          budget.spend(1+next.refs.length);
+          if(properties.get(old.propertyId).blockId!==properties.get(next.propertyId).blockId||
+            next.refs.some(r=>retired.has(spatialRefKey(r))))continue;
+          if(['plots','buildings'].some(c=>next.refs.filter(r=>r.collection===c).length>old.refs.filter(r=>r.collection===c).length))continue;
+          const removed=new Set(old.refs.map(spatialRefKey)),refs=current.filter(r=>!removed.has(spatialRefKey(r))).concat(next.refs);
+          if(seen.has(JSON.stringify([refs.map(spatialRefKey).sort(riCompare),null])))continue;
+          exchange=refs;break;
+        }
+        if(exchange)break;
+      }
+      if(!exchange)break;await trial('same-block-property-exchange',exchange);
+    }
+    for(let i=0;i<2;i++){
+      const retired=keys(),current=incumbent.delta.retired;
+      let exchange=null;
+      for(const old of current.filter(r=>r.collection==='buildings')){
+        budget.spend();const original=buildings.get(old.id);
+        if(retired.has(spatialRefKey({collection:'properties',id:original.propertyId})))continue;
+        for(const next of eligibility.buildingRefs){
+          budget.spend();const replacement=buildings.get(next.id);
+          if(retired.has(spatialRefKey(next))||replacement.blockId!==original.blockId||
+            retired.has(spatialRefKey({collection:'properties',id:replacement.propertyId}))||
+            replacement.area>=original.area)continue;
+          const refs=current.filter(r=>spatialRefKey(r)!==spatialRefKey(old)).concat(next);
+          if(seen.has(JSON.stringify([refs.map(spatialRefKey).sort(riCompare),null])))continue;
+          exchange=refs;break;
+        }
+        if(exchange)break;
+      }
+      if(!exchange)break;await trial('same-block-building-exchange',exchange);
+    }
     return finish();
   }catch(error){
     if(error instanceof LareBudgetExceeded){exhausted=error.resource;return finish();}

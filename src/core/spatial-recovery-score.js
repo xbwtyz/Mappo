@@ -115,3 +115,42 @@ export function compareSpatialConcessionCost(a,b){
     if(a[key]!==b[key])return a[key]<b[key]?-1:1;
   return compareSpatialPreservationCost(a,b);
 }
+
+
+// Destructive comparison is deliberately separate from nondestructive
+// ranking. Only an independently derived retirement/concession ledger may
+// be used by the adapter. No worsening of any retirement count is allowed.
+export function measureSpatialRetirementCost(ledger,budget){
+  const cost={properties:0,plots:0,buildings:0,demolishedFootprint:ledger.demolishedFootprint,
+    scaleLoss:ledger.concessions.footprintLoss,frontageSwitches:ledger.concessions.frontageSwitches.length,
+    scaledBuildings:ledger.concessions.scaledBuildings.length};
+  const seen=new Set();
+  for(const ref of ledger.retired){
+    budget.spend();
+    if(!['properties','plots','buildings'].includes(ref.collection)||seen.has(JSON.stringify(ref)))
+      throw Error('Invalid retirement ledger.');
+    seen.add(JSON.stringify(ref));cost[ref.collection]++;
+  }
+  cost.totalFootprintLoss=cost.demolishedFootprint+cost.scaleLoss;
+  sreValidateRetirementCost(cost);return riFreeze(cost);
+}
+function sreValidateRetirementCost(cost){
+  for(const key of ['properties','plots','buildings','frontageSwitches','scaledBuildings'])
+    if(!Number.isSafeInteger(cost?.[key])||cost[key]<0)throw Error('Invalid retirement cost.');
+  for(const key of ['demolishedFootprint','scaleLoss','totalFootprintLoss'])
+    if(!Number.isFinite(cost?.[key])||cost[key]<0)throw Error('Invalid retirement cost.');
+  if(Math.abs(cost.totalFootprintLoss-cost.demolishedFootprint-cost.scaleLoss)>1e-6)
+    throw Error('Invalid retirement footprint total.');
+}
+export function improvesSpatialRetirementCost(challenger,incumbent){
+  sreValidateRetirementCost(challenger);sreValidateRetirementCost(incumbent);
+  const counts=['properties','plots','buildings'];
+  if(counts.some(k=>challenger[k]>incumbent[k]))return false;
+  if(counts.some(k=>challenger[k]<incumbent[k]))return true;
+  for(const key of ['totalFootprintLoss','frontageSwitches','scaledBuildings']){
+    const a=key==='totalFootprintLoss'?Math.round(challenger[key]*1e6):challenger[key];
+    const b=key==='totalFootprintLoss'?Math.round(incumbent[key]*1e6):incumbent[key];
+    if(a!==b)return a<b;
+  }
+  return false;
+}

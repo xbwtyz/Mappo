@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
-import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, discoverSpatialRoadRetirementEligibility, searchSpatialBuildingRetirementRoadGroup, verifySpatialBuildingRetirementWitness, searchSpatialPropertyRetirementRoadGroup, searchSpatialGroupedRetirementRoadGroup, searchSpatialRetirementSubsetRoadGroup, restoreSpatialRoadRetirements, verifySpatialRetirementWitness, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, discoverSpatialRoadRetirementEligibility, searchSpatialBuildingRetirementRoadGroup, verifySpatialBuildingRetirementWitness, searchSpatialPropertyRetirementRoadGroup, searchSpatialGroupedRetirementRoadGroup, searchSpatialRetirementSubsetRoadGroup, restoreSpatialRoadRetirements, optimizeSpatialRoadRetirements, verifySpatialRetirementWitness, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialDestructionBudget, createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals, createSpatialConcessionProposalSource } from '../src/core/spatial-recovery-concessions.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
-import { scoreSpatialConcessions,compareSpatialConcessionCost,scoreSpatialPreservation } from '../src/core/spatial-recovery-score.js';
+import { scoreSpatialConcessions,compareSpatialConcessionCost,scoreSpatialPreservation,measureSpatialRetirementCost,improvesSpatialRetirementCost } from '../src/core/spatial-recovery-score.js';
 import { stampRoadGenerated } from '../src/core/road-provenance.js';
 const budget=()=>createSpatialPreservationBudget();
 const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
@@ -669,4 +669,47 @@ test('detached mixed retirement and actual concessions independently replay unde
   }
   assert.equal(JSON.stringify(source),before);
   console.log('SRE_MIXED_RETIREMENT_CONCESSIONS '+JSON.stringify({ledger:result.ledger,stats:shared.snapshot()}));
+});
+
+
+test('retirement comparison protects each identity count and ranks independently measured equal-count losses',()=>{
+  const a=measureSpatialRetirementCost({retired:[{collection:'buildings',id:'B'}],demolishedFootprint:100,
+    concessions:{footprintLoss:30,frontageSwitches:[{}],scaledBuildings:[{}]}},budget());
+  assert.equal(improvesSpatialRetirementCost({...a,buildings:0,scaleLoss:200,totalFootprintLoss:300},a),true);
+  assert.equal(improvesSpatialRetirementCost({...a,properties:1,buildings:0},a),false);
+  assert.equal(improvesSpatialRetirementCost({...a,demolishedFootprint:99,totalFootprintLoss:129},a),true);
+  assert.equal(improvesSpatialRetirementCost({...a,frontageSwitches:0},a),true);
+  assert.equal(improvesSpatialRetirementCost(a,a),false);
+  assert.throws(()=>improvesSpatialRetirementCost({...a,totalFootprintLoss:NaN},a));
+});
+
+test('detached individual restoration and bounded exchange optimization retain verified incumbent',{timeout:300000},async()=>{
+  const source=createProject({seed:'lare-linear-2',morphology:'linear',size:'small',irregularProperties:true});
+  const before=JSON.stringify(source),ids=['RD-0174','RD-0252'],offset={x:4,y:3};
+  const op=normalizeSpatialRoadGroup(source,5,ids,offset,{destruction:true});
+  const shared=createSpatialDestructionBudget(),eligible=discoverSpatialRoadRetirementEligibility(source,op,budget());
+  const known=eligible.buildingRefs.find(r=>r.id==='BLD-00153');
+  assert.ok(known);
+  let seed=null;
+  for(const extra of eligible.buildingRefs.filter(r=>r.id!==known.id).slice(0,3)){
+    const result=await searchSpatialRetirementSubsetRoadGroup(source,op,[known,extra],shared);
+    if(result.status==='verified-witness'){seed=result;break;}
+  }
+  assert.ok(seed,'must construct a verified redundant building-retirement seed');
+  const optimized=await optimizeSpatialRoadRetirements(source,op,seed.delta,shared);
+  assert.equal(optimized.status,'verified-witness');
+  assert.equal(optimized.cost.properties,0);assert.equal(optimized.cost.plots,0);
+  assert.equal(optimized.cost.buildings,1);
+  assert.ok(optimized.attempts.some(r=>r.tier==='individual-building'&&r.selected));
+  assert.ok(improvesSpatialRetirementCost(optimized.cost,optimized.initialCost));
+  assert.deepEqual(optimized.delta.added,[]);
+  assert.ok(optimized.attempts.length<=8);
+  assert.ok(optimized.stats.work<=32000000&&optimized.stats.expansions<=131072);
+  const actual=await verifySpatialRetirementWitness(source,op,optimized.delta,createSpatialDestructionBudget());
+  assert.deepEqual(actual.identityAllocation,source.identityAllocation);
+  assert.equal(JSON.stringify(source),before);
+  const tiny=await optimizeSpatialRoadRetirements(source,op,seed.delta,createSpatialDestructionBudget({work:1,stateExpansions:1}));
+  assert.equal(tiny.status,'refused');assert.equal(tiny.delta,null);
+  console.log('SRE_BUILDING_RESTORATION_OPTIMIZATION '+JSON.stringify({before:optimized.initialCost,after:optimized.cost,
+    restored:optimized.restored,newlyRetired:optimized.newlyRetired,attempts:optimized.attempts,stats:optimized.stats}));
 });
