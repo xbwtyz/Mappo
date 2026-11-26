@@ -1,0 +1,109 @@
+name: IDA S4-C final uninstrumented comparison
+on:
+  push:
+    branches: ['build/diagnostics/ida-s4-final']
+permissions:
+  contents: read
+jobs:
+  paired:
+    name: Final same-runner comparison (${{ matrix.suite }})
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [f4, c7]
+    steps:
+      - name: Check out exact Schema 10 reference
+        uses: actions/checkout@v4
+        with:
+          ref: 3a4e6170b20e24787dfa1507473cf3af20a64e4a
+          path: s10
+          persist-credentials: false
+      - name: Check out exact initial Schema 11
+        uses: actions/checkout@v4
+        with:
+          ref: 35091c6d4b6eac7f260dd3aaeca1d0b7d895cabf
+          path: s11
+          persist-credentials: false
+      - name: Check out exact final Schema 11 candidate
+        uses: actions/checkout@v4
+        with:
+          ref: d2658456631fefc572db6aa0a3c38cca3c8a62c7
+          path: final
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact checkouts and generated standalone parity
+        shell: bash
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: |
+          set -euo pipefail
+          for variant in s10 s11 final; do
+            case "$variant" in
+              s10) expected=3a4e6170b20e24787dfa1507473cf3af20a64e4a ;;
+              s11) expected=35091c6d4b6eac7f260dd3aaeca1d0b7d895cabf ;;
+              final) expected=d2658456631fefc572db6aa0a3c38cca3c8a62c7 ;;
+            esac
+            (
+              cd "$variant"
+              gitcmd() { git -c safe.directory="$GITHUB_WORKSPACE/$variant" "$@"; }
+              test "$(gitcmd rev-parse HEAD)" = "$expected"
+              npm run build
+              version=$(node --input-type=module -e "import { APP_VERSION } from './src/core/version.js'; process.stdout.write(APP_VERSION)")
+              test -s index.html
+              test -s "dist/mappo-$version.html"
+              gitcmd ls-files --error-unmatch index.html "dist/mappo-$version.html"
+              cmp index.html "dist/mappo-$version.html"
+              gitcmd diff --exit-code -- index.html "dist/mappo-$version.html"
+              npm install --no-save --no-package-lock playwright@1.56.1
+            )
+          done
+          cmp "s11/tests/helpers/building-app.js" "final/tests/helpers/building-app.js"
+          cmp "s11/tests/helpers/building-footprint-fixture.js" "final/tests/helpers/building-footprint-fixture.js"
+          cmp "s11/tests/helpers/road-undo-project.js" "final/tests/helpers/road-undo-project.js"
+          cmp s10/scripts/building-performance-f4.mjs s11/scripts/building-performance-f4.mjs
+          # Use the exact pre-instrumentation Schema 11 harness for both
+          # Schema 11 revisions; Schema 10 retains its original strict Undo
+          # expectation. Only scratch checkout scripts are copied.
+          cp s11/scripts/building-performance-f4.mjs final/scripts/building-performance-f4.mjs
+          cp s11/scripts/c7-browser-performance.mjs final/scripts/c7-browser-performance.mjs
+          cmp s11/scripts/building-performance-f4.mjs final/scripts/building-performance-f4.mjs
+          cmp s11/scripts/c7-browser-performance.mjs final/scripts/c7-browser-performance.mjs
+      - name: Run counterbalanced uninstrumented comparison
+        shell: bash
+        env:
+          HOME: /root
+          SUITE: ${{ matrix.suite }}
+        run: |
+          set -euo pipefail
+          mkdir -p final-evidence
+          case "$SUITE" in
+            f4) script=scripts/building-performance-f4.mjs; report=artifacts/f4/building-performance.json ;;
+            c7) script=scripts/c7-browser-performance.mjs; report=artifacts/c7/performance.json ;;
+            *) exit 1 ;;
+          esac
+          # Two samples of each revision, symmetric order to reduce drift.
+          for slot in 1-s10 2-s11 3-final 4-final 5-s11 6-s10; do
+            variant="${slot#*-}"
+            echo "FINAL_RUN_BEGIN $slot $SUITE"
+            (
+              cd "$variant"
+              node "$script"
+            ) | tee "final-evidence/$slot.log"
+            cp "$variant/$report" "final-evidence/$slot.json"
+            echo "FINAL_RUN_END $slot $SUITE"
+          done
+      - name: Upload final comparison evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ida-s4-final-${{ matrix.suite }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: final-evidence/
+          if-no-files-found: error
+          retention-days: 14
