@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {collectCiDiagnostics,ciDiagnosticsExitCode} from '../scripts/development/research/ci-diagnostics.mjs';
+import {diagnoseCiLog} from '../scripts/development/research/diagnostics.mjs';
 const req={runId:45775429431,attempt:1,sourceRevision:'ec9158be87a81f5e11ab7b3e52838a59434a1002'};
 const run={id:req.runId,run_attempt:1,head_sha:req.sourceRevision,repository:{full_name:'xbwtyz/Mappo'},name:'Mappo Fast Checks',status:'completed',conclusion:'failure'};
 const job={id:139757827123,run_id:req.runId,run_attempt:1,head_sha:req.sourceRevision,name:'Build, syntax and targeted Node smoke tests',status:'completed',conclusion:'failure'};
@@ -25,4 +26,14 @@ test('DEV-OPT missing, zero-job, canceled and incomplete CI evidence cannot be g
 test('DEV-OPT CI reader keeps skips separate and only reports original success',()=>{
   const r=collectCiDiagnostics(req,reader({...run,conclusion:'success'},[{...job,conclusion:'success'},{...job,id:2,conclusion:'skipped'}]));
   assert.equal(r.originalConclusion,'success');assert.equal(r.jobs[1].conclusion,'skipped');assert.equal(ciDiagnosticsExitCode(r),0);
+});
+
+test('DEV-OPT preserves original ANSI-colored logs while parsing safe text',()=>{
+  const colored=raw.replace('not ok 29','\u001b[31mnot ok 29\u001b[0m');
+  const report=collectCiDiagnostics(req,reader(run,[job],colored));
+  assert.equal(report.evidenceComplete,true);
+  assert.equal(report.jobs[0].diagnostics.originalLog,colored);
+  assert.equal(report.jobs[0].diagnostics.failures[0].context.testName,'research pilot');
+  assert.equal(report.jobs[0].diagnostics.failures[0].category,'probable-regression');
+  assert.equal(ciDiagnosticsExitCode(report),1);
 });

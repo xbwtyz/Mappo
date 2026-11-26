@@ -1,6 +1,7 @@
 // P3c: read-only diagnostics. Classifications are provisional, never test authority.
 import {readFileSync,writeFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
+import {stripVTControlCharacters} from 'node:util';
 import {expandResearchManifest,digest} from './contract.mjs';
 const need=(ok,msg)=>{if(!ok)throw Error(msg);};
 const copy=v=>JSON.parse(JSON.stringify(v));
@@ -20,7 +21,7 @@ export function classifyFailure(status,message=''){
   return {category:'unclassified',reason:'No sufficient diagnostic pattern; inspect original evidence.'};
 }
 function diagnostic(status,original,context){
-  const message=typeof original==='string'?original:JSON.stringify(original);
+  const message=typeof original==='string'?stripVTControlCharacters(original):JSON.stringify(original);
   return {status,...classifyFailure(status,message),provisional:true,context:copy(context),original:copy(original)};
 }
 export function diagnoseResearchReport(m,report){
@@ -49,7 +50,7 @@ export function diagnoseCiLog(meta,log){
   need(typeof log==='string'&&Buffer.byteLength(log,'utf8')<=16*1024*1024,'Missing or oversized CI log.');
   const context={...copy(meta),runUrl:'https://github.com/xbwtyz/Mappo/actions/runs/'+meta.runId,jobUrl:'https://github.com/xbwtyz/Mappo/actions/runs/'+meta.runId+'/job/'+meta.jobId};
   const lines=log.split(/\r?\n/);
-  const clean=s=>s.replace(/^\d{4}-\d\d-\d\dT\S+\s/,'');
+  const clean=s=>stripVTControlCharacters(s).replace(/^\d{4}-\d\d-\d\dT\S+\s/,'');
   const failures=[];
   for(let i=0;i<lines.length;i++){
     const line=clean(lines[i]);

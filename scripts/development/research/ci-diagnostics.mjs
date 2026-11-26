@@ -56,8 +56,10 @@ export function ciDiagnosticsExitCode(report){
   return report.evidenceComplete&&report.originalStatus==='completed'&&report.originalConclusion==='success'&&report.jobs.every(j=>j.conclusion==='success'||j.conclusion==='skipped')?0:1;
 }
 export function githubReadOnlyReader(){
-  const get=path=>execFileSync('gh',['api','--method','GET',path],{encoding:'utf8',maxBuffer:16*1024*1024,timeout:30000,stdio:['ignore','pipe','pipe']});
-  return {json:path=>JSON.parse(get(path)),log:get};
+  // Allow terminal escapes only for raw job log capture, never metadata.
+  // Output is piped into memory, never printed or executed.
+  const get=(path,raw=false)=>execFileSync('gh',['api','--method','GET',...(raw?['--allow-escape-sequences']:[]),path],{encoding:'utf8',maxBuffer:16*1024*1024,timeout:30000,stdio:['ignore','pipe','pipe']});
+  return {json:path=>JSON.parse(get(path)),log:path=>get(path,true)};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{
