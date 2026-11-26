@@ -6,15 +6,32 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {digest} from './contract.mjs';
 const need=(ok,msg)=>{if(!ok)throw Error(msg);};
 export const targetRevision='e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7';
-export const schedules=['baseline','diversified-restoration'];
-export const cases=[{id:'regular-preservation',irregularProperties:false,scale:.5},{id:'irregular-compression',irregularProperties:true,scale:.25}];
+export const schedules=['baseline','grouped-first','diversified-restoration','shell-first-restoration'];
+export const cases=[{id:'regular-preservation',partition:'development',irregularProperties:false,scale:.5,expectation:'known-preservation'},{id:'irregular-compression',partition:'development',irregularProperties:true,scale:.25,expectation:'known-compression'}];
 export const gates=['independentWitness','storedProject','nonmutation','permissions','identity','deterministicReplay','budget'];
 const sha=x=>typeof x==='string'&&/^[a-f0-9]{40}$/.test(x);
 const fingerprint=x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x);
 const validId=x=>typeof x==='string'&&/^[1-9][0-9]{0,19}$/.test(x);
-export function manifest(identity){
+export function validateSubmission(s){
+  const fields=(v,keys)=>v&&typeof v==='object'&&Object.keys(v).sort().join(',')===keys.slice().sort().join(',');
+  need(fields(s,['version','targetRevision','schedules','cases'])&&s.version===1&&sha(s.targetRevision),'Invalid submission identity.');
+  need(Array.isArray(s.schedules)&&s.schedules.length>=2&&s.schedules.length<=4&&new Set(s.schedules).size===s.schedules.length&&s.schedules.every(x=>schedules.includes(x)),'Invalid schedules.');
+  need(Array.isArray(s.cases)&&s.cases.length>=2&&s.cases.length<=4,'Invalid case inventory.');
+  const ids=new Set(),inputs=new Set();
+  for(const c of s.cases){
+    need(fields(c,['id','partition','irregularProperties','scale','expectation'])&&typeof c.id==='string'&&/^[a-z][a-z0-9-]{0,63}$/.test(c.id)&&!ids.has(c.id)&&['development','held-out'].includes(c.partition)&&typeof c.irregularProperties==='boolean'&&typeof c.scale==='number'&&Number.isFinite(c.scale)&&c.scale!==0&&Math.abs(c.scale)<=1&&['known-preservation','known-compression','exploratory'].includes(c.expectation),'Invalid case.');
+    const key=JSON.stringify([c.irregularProperties,c.scale]);need(!inputs.has(key),'Duplicate movement across partitions.');ids.add(c.id);inputs.add(key);
+    if(c.expectation==='known-preservation')need(!c.irregularProperties&&c.scale===.5&&c.partition==='development','Wrong preservation control.');
+    if(c.expectation==='known-compression')need(c.irregularProperties&&c.scale===.25&&c.partition==='development'&&s.schedules.every(x=>['baseline','diversified-restoration'].includes(x)),'Wrong compression control.');
+    if(c.partition==='held-out')need(c.expectation==='exploratory'&&![1,.75,.5,.25,.125,.025,-.25,-.5,-1].includes(c.scale),'Held-out movement overlaps historical grid.');
+  }
+  need(s.cases.some(c=>c.partition==='development'),'Missing development cases.');
+  return s;
+}
+export function manifest(identity,submission={version:1,targetRevision,schedules:['baseline','diversified-restoration'],cases}){
+  validateSubmission(submission);
   need(sha(identity.harnessRevision)&&validId(identity.runId)&&validId(identity.attempt),'Invalid run identity.');
-  return {version:1,...identity,targetRevision,adapter:'sre-road-recovery-v1',schedules,cases,
+  return {version:1,...identity,targetRevision:submission.targetRevision,adapter:'sre-road-recovery-v1',schedules:submission.schedules,cases:submission.cases,
     environment:{nodeMajor:22,platform:'linux'},permissions:{destruction:true,alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2},
     project:{seed:'mappo-001',size:'medium',morphology:'organic',shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44}},
     roadIds:['RD-0184','RD-0186'],offset:{x:-3.005274072121821,y:-37.39896113564458},
@@ -22,7 +39,7 @@ export function manifest(identity){
 }
 export function tasks(m,index){
   need(Number.isInteger(index)&&index>=0&&index<2,'Invalid shard.');
-  return m.cases.map(c=>({manifest:m,manifestDigest:digest(m),case:c,schedule:m.schedules[index],key:c.id+':'+m.schedules[index]}));
+  return m.schedules.flatMap((schedule,i)=>i%2===index?m.cases.map(c=>({manifest:m,manifestDigest:digest(m),case:c,schedule,key:c.id+':'+schedule})):[]);
 }
 export function aggregate(m,envelopes,matrix){
   const faults=[],rows=[],seen=new Set();
@@ -35,17 +52,20 @@ export function aggregate(m,envelopes,matrix){
       const task=expected.find(t=>t.key===row?.key);
       if(!task||keys.has(row.key)||row.inputDigest!==digest(task)){faults.push('Invalid task evidence in shard '+e.index);continue;}keys.add(row.key);
       rows.push(row);
-      if(row.status!=='verified'||!fingerprint(row.inputFingerprint)||!fingerprint(row.candidateFingerprint)||!gates.every(g=>row.gates?.[g]===true)||!Number.isFinite(row.elapsedMs)||row.elapsedMs<0||!Number.isSafeInteger(row.stats?.work)||row.stats.work<0||row.stats.work>m.budget.work||!Number.isSafeInteger(row.stats?.expansions)||row.stats.expansions<0||row.stats.expansions>m.budget.expansions||!['properties','plots','buildings'].every(k=>Number.isSafeInteger(row.counts?.[k])&&row.counts[k]>=0)||!Number.isFinite(row.demolishedFootprint)||row.demolishedFootprint<0||!Number.isFinite(row.scaleLoss)||row.scaleLoss<0)faults.push('Unqualified task '+row.key);
+      const refused=row.status==='refused'&&task.case.expectation==='exploratory'&&row.candidateFingerprint===null&&['nonmutation','deterministicReplay','budget'].every(g=>row.gates?.[g]===true)&&row.counts===null&&row.demolishedFootprint===null&&row.scaleLoss===null;
+      const verified=row.status==='verified'&&fingerprint(row.candidateFingerprint)&&gates.every(g=>row.gates?.[g]===true)&&['properties','plots','buildings'].every(k=>Number.isSafeInteger(row.counts?.[k])&&row.counts[k]>=0)&&Number.isFinite(row.demolishedFootprint)&&row.demolishedFootprint>=0&&Number.isFinite(row.scaleLoss)&&row.scaleLoss>=0;
+      if((!refused&&!verified)||!fingerprint(row.inputFingerprint)||!Number.isFinite(row.elapsedMs)||row.elapsedMs<0||!Number.isSafeInteger(row.stats?.work)||row.stats.work<0||row.stats.work>m.budget.work||!Number.isSafeInteger(row.stats?.expansions)||row.stats.expansions<0||row.stats.expansions>m.budget.expansions)faults.push('Unqualified task '+row.key);
     }
   }
   for(let i=0;i<2;i++)if(!seen.has(i))faults.push('Missing shard '+i);
   if(matrix!=='success')faults.push('Matrix '+matrix);
   for(const c of m.cases){
     const pair=rows.filter(r=>r.key.startsWith(c.id+':'));
-    if(pair.length!==2||pair[0].inputFingerprint!==pair[1].inputFingerprint)faults.push('Incomplete or different input '+c.id);
+    if(pair.length!==m.schedules.length||new Set(pair.map(r=>r.inputFingerprint)).size!==1)faults.push('Incomplete or different input '+c.id);
   }
-  const complete=faults.length===0&&rows.length===4;
-  return {version:1,manifest:m,manifestDigest:digest(m),complete,faults,rows,eligibleForComparison:complete,productionAdoptionAuthorized:false};
+  const complete=faults.length===0&&rows.length===m.cases.length*m.schedules.length;
+  const summary=m.schedules.map(schedule=>({schedule,verified:rows.filter(r=>r.key.endsWith(':'+schedule)&&r.status==='verified').length,refused:rows.filter(r=>r.key.endsWith(':'+schedule)&&r.status==='refused').length,heldOutVerified:rows.filter(r=>r.key.endsWith(':'+schedule)&&r.status==='verified'&&m.cases.some(c=>c.partition==='held-out'&&r.key.startsWith(c.id+':'))).length}));
+  return {version:1,manifest:m,manifestDigest:digest(m),complete,faults,rows,summary,eligibleForComparison:complete,productionAdoptionAuthorized:false};
 }
 function checkCheckout(dir,revision){
   const git=args=>execFileSync('git',['-C',dir,...args],{encoding:'utf8'}).trim();
@@ -63,14 +83,17 @@ function runTask(task,target){
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{
     const [mode,arg,input,out]=process.argv.slice(2);
-    const m=manifest({harnessRevision:process.env.GITHUB_SHA,runId:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT});
+    const submission=validateSubmission(JSON.parse(readFileSync(new URL('../../../docs/development/research/sre-submission.json',import.meta.url),'utf8')));
+    if(mode==='target'){console.log(submission.targetRevision);process.exit(0);}
+    const m=manifest({harnessRevision:process.env.GITHUB_SHA,runId:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT},submission);
+    checkCheckout(fileURLToPath(new URL('../../../',import.meta.url)),m.harnessRevision);
     need(process.platform==='linux'&&Number(process.versions.node.split('.')[0])===22,'Pilot environment mismatch.');
     if(mode==='shard'){
       const index=Number(arg),target=resolve(input);checkCheckout(target,m.targetRevision);
       const rows=tasks(m,index).map(t=>runTask(t,target));checkCheckout(target,m.targetRevision);
       const envelope={index,manifestDigest:digest(m),targetRevision:m.targetRevision,harnessRevision:m.harnessRevision,runId:m.runId,attempt:m.attempt,rows};
       mkdirSync(out,{recursive:true});writeFileSync(join(out,'shard.json'),JSON.stringify(envelope,null,2)+'\n',{flag:'wx'});
-      console.log('DEV_OPT_SRE_SHARD '+JSON.stringify(envelope));if(rows.some(r=>r.status!=='verified'))process.exitCode=1;
+      console.log('DEV_OPT_SRE_SHARD '+JSON.stringify(envelope));if(rows.some(r=>!['verified','refused'].includes(r.status)))process.exitCode=1;
     }else if(mode==='aggregate'){
       const envelopes=[];
       for(let i=0;i<2;i++){const f=join(input,'sre-shard-'+m.attempt+'-'+i,'shard.json');if(existsSync(f)){try{envelopes.push(JSON.parse(readFileSync(f,'utf8')));}catch{envelopes.push(null);}}}

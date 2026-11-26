@@ -9,7 +9,7 @@ import {targetRevision,schedules,gates} from './sre-pilot.mjs';
 const task=JSON.parse(readFileSync(0,'utf8')),m=task.manifest,root=process.argv[2],start=performance.now();
 const load=p=>import(pathToFileURL(join(root,p)).href);
 try{
-  assert.equal(m.targetRevision,targetRevision);assert.ok(schedules.includes(task.schedule));
+  assert.match(m.targetRevision,/^[a-f0-9]{40}$/);assert.ok(schedules.includes(task.schedule));
   assert.equal(task.manifestDigest,digest(m));
   const {createProject}=await load('src/core/city-model.js');
   const {normalizeSpatialRoadGroup}=await load('src/core/spatial-recovery-road-adapter.js');
@@ -23,6 +23,10 @@ try{
     const result=await searchSpatialUnifiedRoadGroup(project,op,shared,{schedule:task.schedule});
     assert.deepEqual(result.stats,shared.snapshot());
     assert.ok(result.stats.work<=m.budget.work&&result.stats.expansions<=m.budget.expansions);
+    if(result.status==='refused'&&c.expectation==='exploratory'){
+      assert.equal(result.delta,null);assert.equal(result.basisDelta,null);assert.equal(digest(project),before);
+      return {status:'refused',inputFingerprint:before,candidateFingerprint:null,kind:null,counts:null,demolishedFootprint:null,scaleLoss:null,stats:result.stats,attempts:result.attempts};
+    }
     assert.equal(result.status,'verified-witness','Known pilot movement refused');
     assert.ok(['nondestructive','retirement'].includes(result.kind));
     const actual=await verifySpatialUnifiedRoadWitness(project,op,result,createSpatialDestructionBudget());
@@ -37,17 +41,17 @@ try{
       assert.deepEqual(actual.city[k].map(r=>r.id),project.city[k].filter(r=>ids.has(r.id)).map(r=>r.id));
       counts[k]=missing.length;
     }
-    if(c.id==='regular-preservation'){
+    if(c.expectation==='known-preservation'){
       assert.equal(result.kind,'nondestructive');assert.deepEqual(counts,{properties:0,plots:0,buildings:0});
       assert.equal(digest(actual),'29be178022ec22688c465c5f9bb77451c29a697b3a5ef05088f9e9d6ce991581');
-    }else{
+    }else if(c.expectation==='known-compression'){
       assert.equal(result.kind,'retirement');
       const expected=task.schedule==='baseline'?[19,29,25]:[5,9,9];
       assert.deepEqual(Object.values(counts),expected);
     }
     assert.equal(digest(project),before);
-    return {inputFingerprint:before,candidateFingerprint:digest(actual),kind:result.kind,counts,demolishedFootprint:result.ledger.demolishedFootprint,scaleLoss:result.ledger.concessions?.footprintLoss??0,stats:result.stats};
+    return {status:'verified',inputFingerprint:before,candidateFingerprint:digest(actual),kind:result.kind,counts,demolishedFootprint:result.ledger.demolishedFootprint,scaleLoss:result.ledger.concessions?.footprintLoss??0,stats:result.stats};
   }
   const a=await solve(),b=await solve();assert.deepEqual(a,b,'Nondeterministic SRE replay');
-  console.log(JSON.stringify({...a,status:'verified',elapsedMs:performance.now()-start,peakRssKiB:process.resourceUsage().maxRSS,gates:Object.fromEntries(gates.map(g=>[g,true]))}));
+  console.log(JSON.stringify({...a,elapsedMs:performance.now()-start,peakRssKiB:process.resourceUsage().maxRSS,gates:Object.fromEntries((a.status==='verified'?gates:['nonmutation','deterministicReplay','budget']).map(g=>[g,true]))}));
 }catch(e){console.error(e.stack);process.exitCode=1;}

@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "targetRevision": "e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7",
+  "schedules": [
+    "baseline",
+    "diversified-restoration"
+  ],
+  "cases": [
+    {
+      "id": "regular-preservation",
+      "partition": "development",
+      "irregularProperties": false,
+      "scale": 0.5,
+      "expectation": "known-preservation"
+    },
+    {
+      "id": "irregular-compression",
+      "partition": "development",
+      "irregularProperties": true,
+      "scale": 0.25,
+      "expectation": "known-compression"
+    },
+    {
+      "id": "irregular-off-grid",
+      "partition": "held-out",
+      "irregularProperties": true,
+      "scale": 0.375,
+      "expectation": "exploratory"
+    },
+    {
+      "id": "regular-reverse-off-grid",
+      "partition": "held-out",
+      "irregularProperties": false,
+      "scale": -0.375,
+      "expectation": "exploratory"
+    }
+  ]
+}

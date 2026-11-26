@@ -10,7 +10,7 @@ jobs:
     if: contains(github.event.head_commit.message, '[sre-research-pilot]')
     name: SRE research shard ${{ matrix.shard }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 9
+    timeout-minutes: 27
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -22,14 +22,21 @@ jobs:
           ref: ${{ github.sha }}
           path: harness
           persist-credentials: false
-      - uses: actions/checkout@v4
-        with:
-          ref: e2fcbdf370fa1bb6e96f99e63a97fc8ec0b5bdd7
-          path: frozen-sre
-          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Validate pinned target submission
+        id: target
+        shell: bash
+        run: |
+          target=$(node harness/scripts/development/research/sre-pilot.mjs target)
+          [[ "$target" =~ ^[a-f0-9]{40}$ ]]
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.sha }}
+          path: frozen-sre
+          persist-credentials: false
       - name: Execute frozen SRE experiments
         env:
           RESEARCH_SHARD: ${{ matrix.shard }}

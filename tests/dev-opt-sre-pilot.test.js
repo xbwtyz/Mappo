@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {manifest,tasks,aggregate,gates,targetRevision} from '../scripts/development/research/sre-pilot.mjs';
+import {readFileSync} from 'node:fs';
+import {manifest,tasks,aggregate,gates,targetRevision,validateSubmission} from '../scripts/development/research/sre-pilot.mjs';
 import {digest} from '../scripts/development/research/contract.mjs';
 const m=manifest({harnessRevision:'a'.repeat(40),runId:'123',attempt:'1'});
 const evidence=()=>[0,1].map(index=>({index,manifestDigest:digest(m),targetRevision,harnessRevision:m.harnessRevision,runId:m.runId,attempt:m.attempt,rows:tasks(m,index).map(t=>({key:t.key,inputDigest:digest(t),inputFingerprint:digest(t.case),candidateFingerprint:'b'.repeat(64),status:'verified',elapsedMs:1,stats:{work:300,expansions:5},counts:{properties:0,plots:0,buildings:0},demolishedFootprint:0,scaleLoss:0,gates:Object.fromEntries(gates.map(g=>[g,true]))}))}));
@@ -16,4 +17,14 @@ test('DEV-OPT SRE cross-revision evidence cannot qualify stale, incomplete or in
     const e=evidence();f(e);assert.equal(aggregate(m,e,'success').complete,false);
   }
   assert.equal(aggregate(m,evidence(),'failure').complete,false);
+});
+
+test('DEV-OPT reusable SRE submission validates unseen movement partition, bounded schedules and source',()=>{
+  const s=JSON.parse(readFileSync(new URL('../docs/development/research/sre-submission.json',import.meta.url),'utf8'));
+  const full=manifest({harnessRevision:'a'.repeat(40),runId:'123',attempt:'1'},s);
+  assert.equal(new Set([...tasks(full,0),...tasks(full,1)].map(t=>t.key)).size,8);
+  assert.equal(s.cases.filter(c=>c.partition==='held-out').length,2);
+  for(const edit of [x=>x.targetRevision='main',x=>x.schedules.push('arbitrary'),x=>x.cases[2].scale=.5,x=>x.cases[3].scale=2,x=>x.cases[3]={...x.cases[2],id:'duplicate'}]){
+    const bad=JSON.parse(JSON.stringify(s));edit(bad);assert.throws(()=>validateSubmission(bad));
+  }
 });
