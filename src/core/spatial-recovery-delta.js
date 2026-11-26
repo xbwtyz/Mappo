@@ -56,6 +56,26 @@ function sreDeltaMembership(ref,permission,action) {
     !(action==='retire'?permission.destruction:permission.regeneration))
     throw Error('Unauthorized spatial membership change.');
 }
+// Conservative deterministic accounting for the independent allocator verifier:
+// its accepted inventory is scanned twice and its candidate inventory once.
+// Charge namespace/counter and request processing before invoking it as well.
+function sreVerifyIdentityMetered(accepted,candidate,context,requests,receipt,budget) {
+  for (const [city,multiplier] of [[accepted.city,2],[candidate.city,1]]) {
+    for (const rows of Object.values(city)) {
+      budget.spend();
+      if (Array.isArray(rows) && rows.length) budget.spend(rows.length*multiplier);
+    }
+  }
+  for (const state of [accepted.identityAllocation,receipt?.nextState]) {
+    for (const counters of Object.values(state?.namespaces??{})) {
+      budget.spend(8);
+      if (counters && typeof counters==='object') budget.spend(Math.max(1,Object.keys(counters).length*8));
+    }
+  }
+  if (Array.isArray(requests)) budget.spend(Math.max(1,requests.length*8));
+  if (Array.isArray(receipt?.allocations)) budget.spend(Math.max(1,receipt.allocations.length*8));
+  return verifyIdentityAdditions(accepted.identityAllocation,accepted.city,context,requests,receipt,candidate.city);
+}
 // Allocation authorization is a separate host-supplied context and request list.
 // A receipt alone is not authorization; never derive requests from a delta.
 function sreVerifyAllocation(accepted,candidate,operation,authorization,budget) {
@@ -71,14 +91,12 @@ function sreVerifyAllocation(accepted,candidate,operation,authorization,budget) 
   const {context,requests,receipt}=authorization;
   if (!operation.permissions.regeneration || context?.projectId!==operation.projectId || context?.revision!==operation.revision)
     throw Error('Unauthorized or stale spatial allocation context.');
-  // Account for the inventory passes in the shared operation budget.
-  for (const city of [accepted.city,candidate.city]) for (const rows of Object.values(city)) if (Array.isArray(rows)) budget.spend(rows.length || 1);
-  const next=verifyIdentityAdditions(before,accepted.city,context,requests,receipt,candidate.city);
+  const next=sreVerifyIdentityMetered(accepted,candidate,context,requests,receipt,budget);
   if (!sreSameJson(next,candidate.identityAllocation)) throw Error('Spatial allocation transition mismatch.');
 }
 // Structural diff only. It must never be used as geometry/provenance
 // validation or as authority to Apply; that gate belongs to later P1/P2 work.
-// v1 deliberately refuses collection reorder, non-collection changes, and
+// v2 deliberately refuses collection reorder, non-collection changes, and
 // inserting new identities anywhere but the end of the collection.
 export async function createSpatialDelta(accepted,candidate,input,strategyVersion,budget,authorization) {
   const operation=createSpatialOperation(input);
@@ -163,7 +181,7 @@ export async function reconstructSpatialDelta(accepted,input,strategyVersion,del
     const {context,requests,receipt}=authorization;
     if (!operation.permissions.regeneration || context?.projectId!==operation.projectId || context?.revision!==operation.revision)
       throw Error('Unauthorized or stale spatial allocation context.');
-    candidate.identityAllocation=verifyIdentityAdditions(accepted.identityAllocation,accepted.city,context,requests,receipt,candidate.city);
+    candidate.identityAllocation=sreVerifyIdentityMetered(accepted,candidate,context,requests,receipt,budget);
   }
   const result=copyJson(candidate);
   if (delta.candidateFingerprint!==await sreFingerprint(result,budget)) throw Error('Spatial candidate fingerprint mismatch.');
