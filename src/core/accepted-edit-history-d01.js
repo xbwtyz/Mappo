@@ -108,8 +108,10 @@ export class AcceptedEditHistoryD01 {
       typeof value === 'string' && value.trim()) || !Array.isArray(targetIds) ||
       !targetIds.every(id => typeof id === 'string' && id))
       throw Error('An accepted-history transaction requires a family, operation, label, and target IDs.');
+    let exactSnapshotBytes;
     if(before.schemaVersion===11&&after.schemaVersion===11){
       const beforeJson=JSON.stringify(before),afterJson=JSON.stringify(after);
+      if(immutableSnapshots)exactSnapshotBytes=(beforeJson.length+afterJson.length)*2;
       if(beforeJson===afterJson){this.baseline=copyJson(after);return {status:'no-op'};}
       if(this.baseline&&JSON.stringify(this.baseline)!==beforeJson)
         return {status:'stale',reason:'The accepted city changed before history recording.'};
@@ -120,7 +122,10 @@ export class AcceptedEditHistoryD01 {
     }
     const from=immutableSnapshots?d01RequireFrozenProject(before):copyJson(before);
     const to=immutableSnapshots?d01RequireFrozenProject(after):copyJson(after);
-    const bytes=d01Bytes(from)+d01Bytes(to)+(editorHistory ? d01Bytes(editorHistory) : 0);
+    // Frozen owned snapshots retain the exact text measured above; the
+    // public detached path continues to measure its actual copied values.
+    const bytes=(exactSnapshotBytes??(d01Bytes(from)+d01Bytes(to)))+
+      (editorHistory ? d01Bytes(editorHistory) : 0);
     // The accepted edit itself remains valid even if its history does not fit.
     if(bytes>this.maxBytes) {
       if(immutableSnapshots){

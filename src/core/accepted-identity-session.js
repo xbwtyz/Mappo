@@ -111,7 +111,9 @@ export class AcceptedIdentitySession {
       const recorded=history.record(current.project,prepared.project,prepared.transaction,{immutableSnapshots:true});
       if(recorded.status!==prepared.historyStatus)
         throw Error('Accepted identity transaction history recording refused');
-      if(JSON.stringify(history.baseline)!==JSON.stringify(prepared.project))
+      // Both recorded and oversize immutable paths must install this exact
+      // owned snapshot. Reference identity is stronger than JSON equality.
+      if(history.baseline!==prepared.project)
         throw Error('Accepted identity transaction history baseline mismatch');
       const next=idaSessionPublishedState(prepared.project,prepared.context,history);
       // Complete every fallible operation, including detached return data,

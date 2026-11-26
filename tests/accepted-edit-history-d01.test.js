@@ -187,3 +187,27 @@ test('S1-B3 replay comparisons never cache mutable project or historical inputs'
   const reordered=Object.fromEntries(Object.entries(current).reverse());
   assert.equal(h.can('undo',reordered),false);
 });
+
+test('S4 immutable history preserves exact UTF-16 capacity including opaque sidecar',()=>{
+  function freeze(value){
+    if(value&&typeof value==='object'&&!Object.isFrozen(value)){
+      for(const child of Object.values(value))freeze(child);
+      Object.freeze(value);
+    }
+    return value;
+  }
+  const a=freeze(cityFixture()),b=freeze(renamed(a,a.city.buildings[0].id,'S4 🏰'));
+  const editorHistory={opaque:'History 🏰'};
+  const bytes=2*(JSON.stringify(a).length+JSON.stringify(b).length+JSON.stringify(editorHistory).length);
+  const h=new AcceptedEditHistoryD01({maxBytes:bytes});h.clear(a);
+  const entry=h.record(a,b,{...identityEdit,editorHistory},{immutableSnapshots:true});
+  assert.equal(entry.status,'recorded');
+  assert.equal(entry.entry.bytes,bytes);
+  assert.equal(entry.entry.from,a);
+  assert.equal(entry.entry.to,b);
+  assert.equal(h.baseline,b);
+  const small=new AcceptedEditHistoryD01({maxBytes:bytes-1});small.clear(a);
+  assert.equal(small.record(a,b,{...identityEdit,editorHistory},{immutableSnapshots:true}).status,'oversize');
+  assert.equal(small.baseline,b);
+  assert.equal(small.length,0);
+});
