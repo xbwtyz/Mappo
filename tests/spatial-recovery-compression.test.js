@@ -7,6 +7,8 @@ import { verifyLareGroupPreservation } from '../src/core/reconciliation-preserva
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { scoreSpatialPreservation, preferVerifiedSpatialPreservation } from '../src/core/spatial-recovery-score.js';
 import { validateStoredProject } from '../src/data/project-validation.js';
+import { normalizeSpatialRoadGroup, searchSpatialPackingRoadGroup, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { LareBudgetExceeded } from '../src/core/reconciliation-budget.js';
 import { createHash } from 'node:crypto';
 const roadIds=['RD-0184','RD-0186'];
 const offset0={x:-3.005274072121821,y:-37.39896113564458};
@@ -47,9 +49,46 @@ for(const irregularProperties of [false,true])test('SRE cooperative compression 
     summary.blockSearchCases+=Number(Boolean(packing.stages['block-result']||packing.stages['bundle-building']));
     if(baseline.witness)assert.ok(selected);
     if(scale===.025)assert.ok(baseline.witness,'known strict baseline lost');
+    if([.125,.025,-.25].includes(scale))assert.ok(selected,'qualified packing witness lost');
     assert.equal(hash(project),before);
     console.log('SRE_PACKING_CASE '+JSON.stringify({irregularProperties,scale,baseline,packing,selected}));
   }
   assert.ok(summary.blockSearchCases,'cooperative packing path was not exercised');
   console.log('SRE_PACKING_SUMMARY '+JSON.stringify({irregularProperties,...summary}));
+});
+
+ // Qualify the actual transport coordinator separately from the raw solver.
+ // The same shared parent budget must cover both strategies, reconstruction,
+ // independent verification and scoring. Refusal is measured, not hidden by
+ // silently retrying with a fresh search budget. Fresh budget below is solely
+ // the independent test oracle and cannot influence search.
+for(const irregularProperties of [false,true])test('SRE shared-budget packing transport '+(irregularProperties?'irregular':'regular'),{timeout:300000},async()=>{
+  const project=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
+  const before=hash(project),summary={cases:0,verified:0,refused:0,exhausted:0,knownRawWitnesses:0,rawWitnessesRetained:0};
+  for(const scale of [.125,.025,-.25,.75]){
+    const offset={x:offset0.x*scale,y:offset0.y*scale};
+    const operation=normalizeSpatialRoadGroup(project,1,roadIds,offset);
+    const budget=createSpatialPreservationBudget(),initial=budget.snapshot();
+    const knownRaw=[.125,.025,-.25].includes(scale);
+    summary.cases++;summary.knownRawWitnesses+=Number(knownRaw);
+    let result=null,exhausted=null;
+    try{result=await searchSpatialPackingRoadGroup(project,operation,budget);}
+    catch(error){if(!(error instanceof LareBudgetExceeded))throw error;exhausted=error.resource;}
+    const stats=budget.snapshot();
+    assert.ok(stats.work<=initial.remainingWork&&stats.expansions<=initial.remainingExpansions);
+    if(result?.status==='verified-witness'){
+      const candidate=await verifySpatialStrictRoadWitness(project,operation,result.delta,createSpatialPreservationBudget());
+      validateStoredProject(candidate);
+      assert.deepEqual(candidate.identityAllocation,project.identityAllocation);
+      assert.deepEqual(scoreSpatialPreservation(project,candidate,createSpatialPreservationBudget()),result.cost);
+      assert.equal(Object.hasOwn(result,'candidateProject'),false);
+      summary.verified++;summary.rawWitnessesRetained+=Number(knownRaw);
+    }else if(exhausted)summary.exhausted++;
+    else{assert.equal(result?.status,'refused');assert.equal(result.delta,null);summary.refused++;}
+    if(scale===.025)assert.equal(result?.status,'verified-witness','known strict baseline lost in SRE transport');
+    assert.equal(hash(project),before);
+    console.log('SRE_TRANSPORT_CASE '+JSON.stringify({irregularProperties,scale,knownRaw,status:result?.status??'exhausted',exhausted,stats,issues:result?.issues??[],cost:result?.cost??null}));
+  }
+  console.log('SRE_TRANSPORT_SUMMARY '+JSON.stringify({irregularProperties,...summary}));
 });
