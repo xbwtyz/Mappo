@@ -207,7 +207,7 @@ export async function searchSpatialPackingRoadGroupStrictFirst(project,input,bud
 // Explicit detached strategy qualification. Not a replacement for the
 // ordinary-first production coordinator and never an Apply authorization.
 // The caller selects a permitted concession tier; all work shares one cap.
-export async function searchSpatialConcessionRoadGroup(project,input,budget,{scale=1}={}){
+export async function searchSpatialConcessionRoadGroup(project,input,budget,{scale=1,relaxedOnlyDiagnostic=false}={}){
   const operation=sreStrictRoadOperation(input,true);
   if(!operation.permissions.alternativeFrontage&&!operation.permissions.uniformScaling)
     throw Error('No detached concession permission.');
@@ -219,7 +219,7 @@ export async function searchSpatialConcessionRoadGroup(project,input,budget,{sca
   budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
   const iterator=iterateRoadGroupReflowB1(snapshot,operation.editedRefs.map(ref=>ref.id),operation.geometry.offset,{
     acceptedRevision:operation.revision,sharedBudget:budget,strategy:'enhanced-adaptive',packing:true,
-    detachedConcessions:{operation,scale}
+    detachedConcessions:{operation,scale,relaxedOnlyDiagnostic:relaxedOnlyDiagnostic===true}
   });
   let result;const stages={};
   try{

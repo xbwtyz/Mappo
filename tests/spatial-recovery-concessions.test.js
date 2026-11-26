@@ -277,3 +277,45 @@ test('detached concession tier comparison measures least-disruptive available re
     }
   }
 });
+
+// The production priority is not altered. This diagnostic isolates the
+// cost of the fixed-building arrangement pass at the same child/parent caps.
+test('detached relaxed-only concession tier measures repeated fixed-pass overhead',{timeout:600000},async()=>{
+  const offset0={x:-3.005274072121821,y:-37.39896113564458},roadIds=['RD-0184','RD-0186'];
+  const cases=[{irregularProperties:false,offset:.25,scale:1},{irregularProperties:false,offset:.5,scale:1},
+    ...[.25,.5].flatMap(offset=>[1,.95,.9,.8].map(scale=>({irregularProperties:true,offset,scale})))];
+  let exercised=0;
+  for(const irregularProperties of [false,true]){
+    const source=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+      shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties});
+    const before=JSON.stringify(source);
+    for(const row of cases.filter(c=>c.irregularProperties===irregularProperties)){
+      const {offset,scale}=row;
+      const permissions=scale===1?{alternativeFrontage:true}:
+        {alternativeFrontage:true,uniformScaling:true,maxLinearReduction:scale===.95?.05:scale===.9?.1:.2};
+      const op=normalizeSpatialRoadGroup(source,1,roadIds,{x:offset0.x*offset,y:offset0.y*offset},permissions);
+      const shared=budget();
+      let result,exhausted=null;
+      try{result=await searchSpatialConcessionRoadGroup(source,op,shared,{scale,relaxedOnlyDiagnostic:true});}
+      catch(error){if(error.constructor.name!=='LareBudgetExceeded')throw error;exhausted=error.resource;}
+      const stats=shared.snapshot();assert.ok(stats.work<=8000000&&stats.expansions<=32768);
+      if(result?.stages?.['concession-relaxed-only-diagnostic'])exercised++;
+      let metrics=null;
+      if(result?.status==='verified-witness'){
+        const actual=await verifySpatialConcessionRoadWitness(source,op,result.delta,budget());
+        const ledger=inspectSpatialConcessionLedger(source,op,actual,budget());
+        assert.deepEqual(ledger,result.ledger);assert.deepEqual(actual.identityAllocation,source.identityAllocation);
+        for(const k of ['properties','plots','buildings'])assert.deepEqual(actual.city[k].map(x=>x.id),source.city[k].map(x=>x.id));
+        if(scale===1)assert.equal(ledger.scaledBuildings.length,0);
+        else assert.ok(ledger.scaledBuildings.every(b=>Math.abs(b.factor-scale)<1e-6));
+        metrics={switches:ledger.frontageSwitches.length,scaled:ledger.scaledBuildings.length,loss:ledger.footprintLoss};
+      }else if(result){assert.equal(result.status,'refused');assert.equal(result.delta,null);}
+      assert.equal(JSON.stringify(source),before);
+      console.log('SRE_RELAXED_TIER_COMPARISON '+JSON.stringify({...row,status:result?.status??'exhausted',exhausted,stats,metrics,
+        issueCodes:result?.issues.map(i=>i.code)??[],materializations:result?.stages['candidate-materialization']??0,
+        accessChecks:result?.stages['building-access']??0,unions:result?.stages['block-union']??0,
+        parcelInventory:result?.stages['parcel-inventory']??0}));
+    }
+  }
+  assert.ok(exercised,'relaxed-only diagnostic must exercise its intended branch');
+});
