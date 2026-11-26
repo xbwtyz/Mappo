@@ -43,6 +43,7 @@ const smoke = [
 ];
 const profiles = {
   infrastructure:/^(ci-|dev-opt-|h1-release-policy)/,
+  'compression-partition':/^spatial-recovery-compression(?:\.test|-single-pass-history|-fixed-reuse|-unified-progressive|-unified-history|-inventory-reuse)/,
   geometry:/^(geometry|adjustment-audit|road-|property-|plot-|building|courtyard|local-reconciliation|spatial-recovery|neighborhood-reflow|parcel-reconciliation|dead-end|junction-|c7-)/,
   sre:/^(spatial-recovery|local-reconciliation|lare-|neighborhood-reflow|parcel-reconciliation|road-group|road-reconciliation|identity-qualification|identity-generation)/,
   roads:/^(road-|dead-end|junction-|c7-|neighborhood-reflow|parcel-reconciliation|local-reconciliation|spatial-recovery|lare-|identity-road)/,
@@ -54,6 +55,7 @@ const profiles = {
 };
 function classify(path) {
   if (path.startsWith('docs/') || /^(AGENTS|README|LICENSE|CHANGELOG)(\..*)?$/.test(path)) return [];
+  if (path==='tests/spatial-recovery-compression-support.js') return ['compression-partition'];
   if (/^tests\/[^/]+\.test\.js$/.test(path)) return [];
   if (path==='index.html' || /^dist\/mappo-[^/]+\.html$/.test(path)) return [];
   if (/^(scripts\/ci-(trigger|focused|node-timing|node-timing-reporter)\.mjs|\.github\/workflows\/ci(-fast|-node-timing)?\.yml|scripts\/browser-suites\.json|scripts\/run-browser-suite\.mjs|scripts\/development\/.+)$/.test(path)) return ['infrastructure'];

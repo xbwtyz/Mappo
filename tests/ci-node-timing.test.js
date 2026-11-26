@@ -73,3 +73,25 @@ test('timing pilot is isolated from full CI and full workflow retains two native
   assert.match(full,/shard: \[1, 2\]/);assert.match(full,/ci-node-timing\.mjs run/);
   assert.match(full,/name: Build, Node tests and browser QA/);
 });
+
+test('compression partition keeps the fifteen original independent test registrations',()=>{
+  const partition={
+    'spatial-recovery-compression.test.js':['SRE cooperative compression diagnostic','SRE shared-budget packing transport','SRE single-pass scheduling diagnostic','SRE candidate single-pass transport retains all known compression witnesses'],
+    'spatial-recovery-compression-single-pass-history.test.js':['SRE candidate single-pass transport historical preservation comparison'],
+    'spatial-recovery-compression-fixed-reuse.test.js':['SRE packing fallback fixed-refusal reuse qualification'],
+    'spatial-recovery-compression-unified-progressive.test.js':['SRE unified nondestructive progressive compression'],
+    'spatial-recovery-compression-unified-history.test.js':['SRE unified no-concession route retains exact historical ordinary fingerprints'],
+    'spatial-recovery-compression-inventory-reuse.test.js':['SRE unified operation-local packing inventory reuse']
+  };
+  let count=0;
+  for(const [file,names] of Object.entries(partition)){
+    const source=readFileSync(new URL(file,import.meta.url),'utf8');
+    const starts=source.split('\n').filter(line=>/^(for\(const irregularProperties.*\)test\(|test\()/.test(line));
+    assert.equal(starts.length,names.length,file);
+    for(let i=0;i<names.length;i++){
+      assert.ok(starts[i].includes("test('"+names[i]+"'"),file);
+      count+=starts[i].startsWith('for(')?2:1;
+    }
+  }
+  assert.equal(count,15);
+});
