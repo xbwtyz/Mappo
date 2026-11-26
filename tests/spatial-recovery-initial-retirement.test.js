@@ -28,6 +28,10 @@ test('area deficit schedule preserves the exact nondestructive incumbent and doe
   assert.equal(a.status,'verified-witness');assert.equal(b.kind,'nondestructive');
   assert.deepEqual(b.delta,a.delta);assert.deepEqual(b.attempts.map(r=>r.phase),['nondestructive']);
   assert.deepEqual(b.delta.retired,[]);assert.deepEqual(b.delta.added,[]);
+  const direct=await searchSpatialUnifiedRoadGroup(project,op,createSpatialDestructionBudget(),{schedule:'area-deficit-direct'});
+  assert.equal(direct.kind,'nondestructive');assert.deepEqual(direct.delta,a.delta);
+  assert.deepEqual(direct.attempts.map(r=>r.phase),['nondestructive']);
+  await verifySpatialUnifiedRoadWitness(project,op,direct,createSpatialDestructionBudget());
   await verifySpatialUnifiedRoadWitness(project,op,b,createSpatialDestructionBudget());
   assert.equal(JSON.stringify(project),before);
 });

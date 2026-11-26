@@ -329,7 +329,7 @@ export function selectSpatialAreaDeficitSeed(groups,properties,blocks,changedFac
   return selected.sort((a,b)=>{budget.spend();return riCompare(a.propertyId,b.propertyId);});
 }
 export async function searchSpatialGroupedRetirementRoadGroup(project,input,budget,{seedPolicy='baseline'}={}){
-  if(!['baseline','area-deficit'].includes(seedPolicy))throw Error('Unsupported grouped retirement seed policy.');
+  if(!['baseline','area-deficit','area-deficit-direct'].includes(seedPolicy))throw Error('Unsupported grouped retirement seed policy.');
   const operation=createSpatialOperation(input),attempts=[];
   const refusal=exhausted=>riFreeze({status:'refused',operation,delta:null,ledger:null,attempts,exhausted,stats:budget.snapshot()});
   try{
@@ -348,7 +348,7 @@ export async function searchSpatialGroupedRetirementRoadGroup(project,input,budg
     const seen=new Set();
     const compressedGroups=groups.filter(g=>compressed.has(properties.get(g.propertyId)?.blockId));
     const tiers=[['compressed-blocks',compressedGroups],['all-eligible',groups]];
-    if(seedPolicy==='area-deficit'){
+    if(seedPolicy!=='baseline'){
       const selected=selectSpatialAreaDeficitSeed(groups,properties,blocks,topology.identity.changed,budget);
       // Avoid a duplicate broad trial. The new trial is capped and cannot
       // borrow extra operation work or invalidate an already verified result.
@@ -373,7 +373,11 @@ export async function searchSpatialGroupedRetirementRoadGroup(project,input,budg
         trialBudget=createLareBudget({work,stateExpansions},{parent:budget,ceiling:LARE_DEMOLITION_LIMITS});
       }
       let result;
-      try{result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,refs,trialBudget);}
+      const p=operation.permissions;
+      const diagnosticScale=tier==='area-deficit'&&seedPolicy==='area-deficit-direct'&&p.alternativeFrontage?
+        (p.uniformScaling?1-p.maxLinearReduction:1):null;
+      if(tier==='area-deficit'&&seedPolicy==='area-deficit-direct')row.diagnosticScale=diagnosticScale;
+      try{result=await sreTrialRetirementSubset(snapshot,operation,preserving,eligibility,refs,trialBudget,diagnosticScale);}
       catch(error){
         if(tier!=='area-deficit'||!(error instanceof LareBudgetExceeded))throw error;
         result={status:'refused',exhausted:error.resource};
