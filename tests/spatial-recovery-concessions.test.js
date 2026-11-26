@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { createProject } from '../src/core/city-model.js';
 import { createLareContext } from '../src/core/reconciliation-context.js';
 import { prepareRoadGroupIntentB1 } from '../src/core/road-intent-c1.js';
-import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, discoverSpatialRoadRetirementEligibility, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
-import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
+import { normalizeSpatialRoadGroup, searchSpatialPreservingRoadGroup, searchSpatialConcessionRoadGroup, searchSpatialRankedConcessionRoadGroup, discoverSpatialRoadRetirementEligibility, searchSpatialBuildingRetirementRoadGroup, verifySpatialBuildingRetirementWitness, verifySpatialConcessionRoadWitness, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { createSpatialDestructionBudget, createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { listSpatialAdjacentFrontages, inspectSpatialUniformSimilarity, inspectSpatialConcessionLedger, verifySpatialFrontageAlignment, iterateSpatialConcessionParcelProposals, createSpatialConcessionProposalSource } from '../src/core/spatial-recovery-concessions.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 import { scoreSpatialConcessions,compareSpatialConcessionCost,scoreSpatialPreservation } from '../src/core/spatial-recovery-score.js';
@@ -520,4 +520,38 @@ test('detached destruction eligibility uses actual affected scope and protects p
   assert.throws(()=>discoverSpatialRoadRetirementEligibility(source,op,createSpatialPreservationBudget({work:1,stateExpansions:1})),/budget/);
   assert.equal(JSON.stringify(source),before);
   console.log('SRE_RETIREMENT_ELIGIBILITY '+JSON.stringify({buildings:result.buildingRefs.length,groups:result.propertyGroups.length}));
+});
+
+
+test('detached building retirement search recovers a real historical witness with one shared budget',{timeout:300000},async()=>{
+  const source=createProject({seed:'lare-linear-2',morphology:'linear',size:'small',irregularProperties:true});
+  const before=JSON.stringify(source),ids=['RD-0174','RD-0252'],offset={x:4,y:3};
+  const op=normalizeSpatialRoadGroup(source,5,ids,offset,{destruction:true});
+  const result=await searchSpatialBuildingRetirementRoadGroup(source,op,createSpatialDestructionBudget());
+  assert.equal(result.status,'verified-witness',JSON.stringify(result.attempts));
+  assert.deepEqual(result.delta.retired,[{collection:'buildings',id:'BLD-00153'}]);
+  assert.deepEqual(result.delta.added,[]);
+  assert.ok(result.attempts.length<=16);
+  assert.ok(result.stats.work<=32000000&&result.stats.expansions<=131072);
+  const actual=await verifySpatialBuildingRetirementWitness(source,op,result.delta,createSpatialDestructionBudget());
+  assert.deepEqual(actual.identityAllocation,source.identityAllocation);
+  assert.equal(result.ledger.demolishedFootprint,source.city.buildings.find(b=>b.id==='BLD-00153').area);
+  assert.equal(Object.hasOwn(result,'candidateProject'),false);
+  for(const collection of ['properties','plots','roads','nodes','blocks'])
+    assert.deepEqual(actual.city[collection].map(r=>r.id),source.city[collection].map(r=>r.id));
+  assert.deepEqual(actual.city.buildings.map(r=>r.id),source.city.buildings.filter(r=>r.id!=='BLD-00153').map(r=>r.id));
+  const repeat=await searchSpatialBuildingRetirementRoadGroup(source,op,createSpatialDestructionBudget());
+  assert.deepEqual(repeat.delta,result.delta);assert.deepEqual(repeat.ledger,result.ledger);
+  await assert.rejects(()=>verifySpatialBuildingRetirementWitness(source,{...op,permissions:{}},result.delta,budget()),/permission/);
+  await assert.rejects(()=>verifySpatialBuildingRetirementWitness(source,{...op,revision:6},result.delta,budget()),/Stale/);
+  const forged=clone(result.delta);forged.retired.push(forged.retired[0]);
+  await assert.rejects(()=>verifySpatialBuildingRetirementWitness(source,op,forged,budget()),/Duplicate/);
+  const protectedSource=clone(source);protectedSource.opaqueReference={target:'BLD-00153'};
+  const protectedCandidate=clone(actual);protectedCandidate.opaqueReference=clone(protectedSource.opaqueReference);
+  const rebound=await createSpatialDelta(protectedSource,protectedCandidate,op,1,budget());
+  await assert.rejects(()=>verifySpatialBuildingRetirementWitness(protectedSource,op,rebound,createSpatialDestructionBudget()),/protected|eligible/);
+  const tiny=await searchSpatialBuildingRetirementRoadGroup(source,op,createSpatialDestructionBudget({work:1,stateExpansions:1}));
+  assert.equal(tiny.status,'refused');assert.equal(tiny.delta,null);assert.equal(tiny.exhausted,'work');
+  assert.equal(JSON.stringify(source),before);
+  console.log('SRE_BUILDING_RETIREMENT '+JSON.stringify({retired:result.ledger.retired,footprint:result.ledger.demolishedFootprint,attempts:result.attempts,stats:result.stats}));
 });
