@@ -4,7 +4,7 @@ import { describeSpatialCapability, spatialConstraint } from './spatial-recovery
 import { prepareRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent-c1.js';
 import { iterateRoadGroupReflowB1 } from './neighborhood-reflow.js';
 import { LareBudgetExceeded } from './reconciliation-budget.js';
-import { scoreSpatialPreservation, preferVerifiedSpatialPreservation } from './spatial-recovery-score.js';
+import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, scoreSpatialConcessions, compareSpatialConcessionCost } from './spatial-recovery-score.js';
 import { copyJson } from '../data/project-format.js';
 import { createLareContext } from './reconciliation-context.js';
 import { iterateLareGroupPreservation } from './reconciliation-preservation.js';
@@ -223,6 +223,9 @@ export async function searchSpatialPackingRoadGroupReuseFixed(project,input,budg
 // ordinary-first production coordinator and never an Apply authorization.
 // The caller selects a permitted concession tier; all work shares one cap.
 export async function searchSpatialConcessionRoadGroup(project,input,budget,{scale=1,relaxedOnlyDiagnostic=false}={}){
+  return sreSearchConcessionRoadGroup(project,input,budget,{scale,relaxedOnlyDiagnostic});
+}
+async function sreSearchConcessionRoadGroup(project,input,budget,{scale=1,relaxedOnlyDiagnostic=false,rankProposalOrder=false,measureRank=false}={}){
   const operation=sreStrictRoadOperation(input,true);
   if(!operation.permissions.alternativeFrontage&&!operation.permissions.uniformScaling)
     throw Error('No detached concession permission.');
@@ -234,7 +237,7 @@ export async function searchSpatialConcessionRoadGroup(project,input,budget,{sca
   budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
   const iterator=iterateRoadGroupReflowB1(snapshot,operation.editedRefs.map(ref=>ref.id),operation.geometry.offset,{
     acceptedRevision:operation.revision,sharedBudget:budget,strategy:'enhanced-adaptive',packing:true,
-    detachedConcessions:{operation,scale,relaxedOnlyDiagnostic:relaxedOnlyDiagnostic===true}
+    detachedConcessions:{operation,scale,relaxedOnlyDiagnostic:relaxedOnlyDiagnostic===true,rankProposalOrder:rankProposalOrder===true}
   });
   let result;const stages={};
   try{
@@ -245,8 +248,48 @@ export async function searchSpatialConcessionRoadGroup(project,input,budget,{sca
     issues:(result?.unresolved??[]).map(row=>({code:String(row.code??'unknown'),message:String(row.message??'Road recovery refused.')})),
     stats:budget.snapshot()});
   const delta=await createSpatialDelta(snapshot,result.candidateProject,operation,1,budget);
-  const {ledger}=await sreVerifyRoadWitness(snapshot,operation,delta,budget,true);
-  return riFreeze({status:'verified-witness',operation,delta,ledger,stages,issues:[],stats:budget.snapshot()});
+  const {candidate,ledger}=await sreVerifyRoadWitness(snapshot,operation,delta,budget,true);
+  let rankCost=null,rankExhausted=null;
+  if(measureRank){
+    try{rankCost=scoreSpatialConcessions(snapshot,operation,candidate,budget);}
+    catch(error){if(!(error instanceof LareBudgetExceeded))throw error;rankExhausted=error.resource;}
+  }
+  return riFreeze({status:'verified-witness',operation,delta,ledger,stages,issues:[],
+    ...(measureRank?{rankCost,rankExhausted}:{}),stats:budget.snapshot()});
+}
+
+// A2b isolated relaxed-tier qualification, not the progressive coordinator.
+// Both trials consume the same caller-owned budget; neither resets it.
+// The first full independent witness remains eligible if comparison work
+// exhausts the budget. Local search scores never choose the final witness.
+export async function searchSpatialRankedConcessionRoadGroup(project,input,budget,{scale=1}={}){
+  const operation=sreStrictRoadOperation(input,true);
+  const snapshot=copyJson(project);
+  budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
+  const trial=async rankProposalOrder=>{
+    try{return await sreSearchConcessionRoadGroup(snapshot,operation,budget,
+      {scale,relaxedOnlyDiagnostic:true,rankProposalOrder,measureRank:true});}
+    catch(error){
+      if(!(error instanceof LareBudgetExceeded))throw error;
+      return riFreeze({status:'refused',operation,delta:null,ledger:null,rankCost:null,
+        exhausted:error.resource,stats:budget.snapshot()});
+    }
+  };
+  const baseline=await trial(false);
+  let challenger=null,selected=baseline,selection=baseline.status==='verified-witness'?'baseline':'none';
+  if((baseline.status!=='verified-witness'||baseline.rankCost)&&
+    budget.snapshot().remainingWork>0&&budget.snapshot().remainingExpansions>0){
+    challenger=await trial(true);
+    if(challenger.status==='verified-witness'&&(selection==='none'||
+      (challenger.rankCost&&compareSpatialConcessionCost(challenger.rankCost,baseline.rankCost)<0))){
+      selected=challenger;selection='challenger';
+    }
+  }
+  const describe=row=>row?{status:row.status,cost:row.rankCost??null,
+    fingerprint:row.delta?.candidateFingerprint??null,exhausted:row.exhausted??row.rankExhausted??null,
+    rankedInventories:row.stages?.['sre-concession-ranked-proposals']??0,stats:row.stats}:null;
+  return riFreeze({...selected,ranking:{selection,baseline:describe(baseline),challenger:describe(challenger)},
+    stats:budget.snapshot()});
 }
 
 // Detached progressive coordinator qualification. The earlier independent

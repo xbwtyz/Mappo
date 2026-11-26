@@ -135,6 +135,37 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
       const result=[];
       for(let i=0;i<24&&result.length<24;i++)for(const domain of domains)
         if(domain[i]&&result.length<24)result.push(domain[i]);
+      // Detached challenger only: reorder the same bounded sample. These
+      // local estimates are search hints, never a verified cost or permission.
+      if(concessions.rankProposalOrder===true){
+        const originals=new Map(entry.buildings.map(b=>[b.source.id,b.source]));
+        const ranked=result.map((bundle,index)=>{
+          let loss=0,moved=0,displacement=0,rotation=0;
+          for(const next of bundle.buildings){
+            const old=originals.get(next.id);
+            budget.spend(Math.max(1,old.geometry.regions.reduce((n,r)=>n+r.ring.length,0)+
+              next.geometry.regions.reduce((n,r)=>n+r.ring.length,0)));
+            loss+=Math.max(0,old.area-next.area);
+            if(!riEqual(old.geometry,next.geometry)||old.orientation!==next.orientation){
+              moved++;const p=lareGroupCenter(old),q=lareGroupCenter(next);
+              displacement+=Math.hypot(q.x-p.x,q.y-p.y);
+              rotation+=Math.abs(Math.atan2(Math.sin(next.orientation-old.orientation),Math.cos(next.orientation-old.orientation)));
+            }
+          }
+          budget.spend(Math.max(1,entry.property.boundary.length+
+            entry.plots.reduce((n,p)=>n+p.boundary.length,0)));
+          const plotCost=entry.plots.reduce((n,p,i)=>n+lareGroupRingCost(p.boundary,bundle.plots[i].boundary),0);
+          return {bundle,index,cost:[Number(bundle.frontageRoadId!==entry.property.frontageRoadId),
+            loss,moved,displacement,rotation,lareGroupRingCost(entry.property.boundary,bundle.property.boundary),plotCost]};
+        });
+        ranked.sort((a,b)=>{
+          budget.spend();
+          for(let i=0;i<a.cost.length;i++)if(a.cost[i]!==b.cost[i])return a.cost[i]<b.cost[i]?-1:1;
+          return a.index-b.index;
+        });
+        yield {stage:'sre-concession-ranked-proposals',id:entry.property.id,count:ranked.length};
+        return ranked.map(row=>row.bundle);
+      }
       return result;
     }:null;
     let lastIssue=null;
