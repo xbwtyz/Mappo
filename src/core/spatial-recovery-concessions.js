@@ -236,7 +236,18 @@ export function verifySpatialFrontageAlignment(project,input,candidate,ledger,bu
 // accepted mutation, access authorization or Apply. Every seed is derived
 // from original canonical geometry and only the caller's explicit policy.
 export function* iterateSpatialConcessionParcelProposals(project,input,propertyId,budget,{frontageRoadId,scale=1}={}){
-  const derived=sreConcessionDerive(project,input,budget),{op,context,changed,graph}=derived;
+  return yield* sreConcessionParcelProposals(project,sreConcessionDerive(project,input,budget),propertyId,budget,{frontageRoadId,scale});
+}
+// One independently derived context per detached arrangement inventory.
+export function createSpatialConcessionProposalSource(project,input,budget){
+  const derived=sreConcessionDerive(project,input,budget);
+  return Object.freeze({
+    frontages: id=>sreConcessionAdjacentFrontages(project,derived,id,budget),
+    proposals: (id,options)=>sreConcessionParcelProposals(project,derived,id,budget,options)
+  });
+}
+function* sreConcessionParcelProposals(project,derived,propertyId,budget,{frontageRoadId,scale=1}={}){
+  const {op,context,changed,graph}=derived;
   const entry=context.properties.find(p=>p.id===propertyId);
   if(!entry||entry.policy.mode!=='adaptive'||entry.policy.provenance!=='generated'||
     !entry.buildings.length||entry.buildings.some(b=>b.mode!=='rigid'||b.provenance!=='generated'))return [];

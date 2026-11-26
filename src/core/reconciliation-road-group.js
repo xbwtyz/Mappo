@@ -1,3 +1,5 @@
+import { shapesOverlapInterior } from './building-validation.js';
+import { createSpatialConcessionProposalSource } from './spatial-recovery-concessions.js';
 import { describeLareRefusal } from './reconciliation-diagnostics.js';
 import { createLareBudget,LareBudgetExceeded } from './reconciliation-budget.js';
 import { createLareContext, discoverLareParcelScope } from './reconciliation-context.js';
@@ -64,7 +66,7 @@ function lareGroupLedger(before,after,draft,changedBlocks){
 }
 // A complete arrangement is checked without trusting its score or ledger.
 // This adapter receives the already verified planar graph/face analysis.
-export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget(),{enhanced=false,packing=false}={}){
+export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=new Map(),budget=createLareBudget(),{enhanced=false,packing=false,concessions=null}={}){
   const group=draft.selectedRoadIds?.[0]??'group';
   const refused=(issue)=>({...baseline,candidateProject:null,changed:[],ledger:[],status:'needs-review',
     unresolved:[issue],lare:{stats:budget.snapshot()}});
@@ -118,6 +120,23 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     });
     const permissions=new Map(context.properties.flatMap(p=>p.buildings.map(b=>[b.id,b])));
     const parcelPermissions=new Map(context.properties.map(p=>[p.id,p.policy]));
+    const concessionSource=concessions?createSpatialConcessionProposalSource(project,concessions.operation,budget):null;
+    const concessionInventory=concessionSource?function*(entry){
+      const ids=concessions.operation.permissions.alternativeFrontage?concessionSource.frontages(entry.property.id):[entry.property.frontageRoadId];
+      const domains=[];
+      for(const frontageRoadId of ids){
+        const proposals=yield* concessionSource.proposals(entry.property.id,{frontageRoadId,scale:concessions.scale});
+        domains.push(proposals.filter(bundle=>!entry.fixedNeighbors.some(ring=>{
+          budget.spend(ring.length*bundle.property.boundary.length*4);
+          return shapesOverlapInterior(ring,bundle.property.boundary);
+        })));
+      }
+      // Round-robin alternatives across adjacent streets under the existing cap.
+      const result=[];
+      for(let i=0;i<24&&result.length<24;i++)for(const domain of domains)
+        if(domain[i]&&result.length<24)result.push(domain[i]);
+      return result;
+    }:null;
     let lastIssue=null;
     const finalize = function* (row, old) {
       if(old)return incumbent?.result?incumbent:null;
@@ -155,7 +174,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
           if(!permission||(!activeIds.has(b.propertyId)&&!roadsChanged.has(b.frontageRoadId)))continue;
           if(permission.reason==='dependent-structure')return null;
           yield { stage: 'building-access', id: b.id };
-          const repaired=reconcileLareAccess(next,original,b,permission,budget);
+          const repaired=reconcileLareAccess(next,original,b,permission,budget,{allowAlternativeFrontage:concessions?.operation.permissions.alternativeFrontage===true});
           if(!repaired.ok){lastIssue=lareGroupIssue(group,repaired.code,'No authorized route to the existing frontage was found.','geometric-obstruction',[b.id]);return null;}
           const candidate=repaired.building;
           if(permission.provenance==='generated'&&!riEqual(original.plotIds,candidate.plotIds))
@@ -169,7 +188,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
         for(const space of next.openSpaces)if(changedBlocks.has(space.blockId))
           space.area=Math.max(0,changedBlocks.get(space.blockId).area-(areaByBlock.get(space.blockId)??0));
         const candidateProject={...lareGroupClone({...project,city:null}),city:next};
-        const violation=yield* iterateLareGroupPreservation(project,candidateProject,draft,choices,budget);
+        const violation=yield* iterateLareGroupPreservation(project,candidateProject,draft,choices,budget,new Set(),concessions?.operation??null);
         if(violation){lastIssue=violation;return null;}
         const {emit,items}=riReporter(),impactSpend=riBudget(),spend=(n=1)=>{impactSpend(n);if(n>0)budget.spend(n);};
         const dependencyContext={roadIds:draft.changedRoadIds,junctionIds:draft.proposedNodes.map(n=>n.id),
@@ -201,7 +220,7 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
     let outcome=yield* iterateLareArrangement({entries:fixed,finalize,incumbent,enhanced},budget);
     if(outcome.best)incumbent=outcome.best;
     if(!outcome.exhausted&&(!incumbent||incumbent.score[0]>0)){
-      outcome=yield* iterateLareArrangement({entries,finalize,incumbent,enhanced,packing},budget);
+      outcome=yield* iterateLareArrangement({entries,finalize,incumbent,enhanced,packing,concessionSource:concessionInventory},budget);
       if(outcome.best)incumbent=outcome.best;
     }
     if(incumbent)return {...incumbent.result,lare:{source:incumbent.key==='baseline'?'verified-baseline':'adaptive',

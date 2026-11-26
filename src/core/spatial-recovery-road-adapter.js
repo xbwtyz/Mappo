@@ -1,3 +1,4 @@
+import { inspectSpatialConcessionLedger } from './spatial-recovery-concessions.js';
 import { createSpatialOperation, createSpatialInventory, createSpatialRef, spatialRefKey } from './spatial-recovery-contract.js';
 import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-delta.js';
 import { describeSpatialCapability, spatialConstraint } from './spatial-recovery-registry.js';
@@ -201,4 +202,35 @@ export async function searchSpatialPackingRoadGroupSinglePass(project,input,budg
 // one parent budget and one independent transport verification.
 export async function searchSpatialPackingRoadGroupStrictFirst(project,input,budget) {
   return sreSearchPreservingRoadGroup(project,input,budget,false,'progressive',true);
+}
+
+// Explicit detached strategy qualification. Not a replacement for the
+// ordinary-first production coordinator and never an Apply authorization.
+// The caller selects a permitted concession tier; all work shares one cap.
+export async function searchSpatialConcessionRoadGroup(project,input,budget,{scale=1}={}){
+  const operation=sreStrictRoadOperation(input,true);
+  if(!operation.permissions.alternativeFrontage&&!operation.permissions.uniformScaling)
+    throw Error('No detached concession permission.');
+  if(!Number.isFinite(scale)||scale<=0||scale>1||
+    (scale!==1&&(!operation.permissions.uniformScaling||scale<1-operation.permissions.maxLinearReduction-1e-6)))
+    throw Error('Unauthorized detached concession scale.');
+  createSpatialInventory(project,operation,budget);
+  const snapshot=copyJson(project);
+  budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
+  const iterator=iterateRoadGroupReflowB1(snapshot,operation.editedRefs.map(ref=>ref.id),operation.geometry.offset,{
+    acceptedRevision:operation.revision,sharedBudget:budget,strategy:'enhanced-adaptive',packing:true,
+    detachedConcessions:{operation,scale}
+  });
+  let result;const stages={};
+  try{
+    for(;;){budget.spend();const step=iterator.next();if(step.done){result=step.value;break;}
+      const stage=step.value?.stage??'other';stages[stage]=(stages[stage]??0)+1;}
+  }finally{iterator.return();}
+  if(!result?.candidateProject)return riFreeze({status:'refused',operation,delta:null,stages,
+    issues:(result?.unresolved??[]).map(row=>({code:String(row.code??'unknown'),message:String(row.message??'Road recovery refused.')})),
+    stats:budget.snapshot()});
+  const delta=await createSpatialDelta(snapshot,result.candidateProject,operation,1,budget);
+  const verified=await verifySpatialConcessionRoadWitness(snapshot,operation,delta,budget);
+  const ledger=inspectSpatialConcessionLedger(snapshot,operation,verified,budget);
+  return riFreeze({status:'verified-witness',operation,delta,ledger,stages,issues:[],stats:budget.snapshot()});
 }

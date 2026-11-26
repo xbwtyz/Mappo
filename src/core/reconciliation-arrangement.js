@@ -32,7 +32,7 @@ function lareArrangeRank(entries,parcelCandidates){
 }
 // Pure joint solver over actual parcel/plot and rigid building alternatives.
 // Adapter supplies affected blocks, external obstacles and whole-project finalizer.
-export function* iterateLareArrangement({entries,finalize,incumbent=null,enhanced=false,packing=false},budget){
+export function* iterateLareArrangement({entries,finalize,incumbent=null,enhanced=false,packing=false,concessionSource=null},budget){
   if(!Array.isArray(entries)||entries.length>LARE_LIMITS.affectedParcels||
     new Set(entries.map(e=>e.property.id)).size!==entries.length||typeof finalize!=='function')
     throw Error('Invalid local arrangement inventory.');
@@ -45,6 +45,22 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
     for(const entry of entries.slice().sort((a,b)=>lareArrangeCompare(a.property.id,b.property.id))){
       const fixedRings=entry.buildings.filter(b=>b.permission.mode!=='rigid').flatMap(b=>buildingExteriorRingsS10(b.source));
       const candidates = yield* iterateLareParcelCandidates({ ...entry, fixedRings, compactDeformation: enhanced, packing }, budget);
+      if(concessionSource&&enhanced&&!fixedRings.length&&entry.mode==='adaptive'){
+        const extra=yield* concessionSource(entry);
+        // Bound the joint inventory, retaining ordinary and concession
+        // alternatives independently. Only the detached concession tier
+        // uses this split; ordinary LARE candidate ordering is untouched.
+        const normalLimit=extra.length?Math.min(12,candidates.length):candidates.length;
+        const ordinary=candidates.slice(0,normalLimit),available=LARE_LIMITS.parcelCandidates-ordinary.length;
+        const proposals=extra.slice(0,available).map((bundle,i)=>({
+          property:bundle.property,plots:bundle.plots,buildingSeeds:[],
+          concessionBuildings:bundle.buildings, family:'concession-'+bundle.family,
+          score:lareArrangeDist(entry.property.boundary,bundle.property.boundary),
+          order:Math.max(-1,...candidates.map(c=>c.order))+1+i
+        }));
+        candidates.splice(0,candidates.length,...ordinary,...proposals);
+        yield {stage:'concession-inventory',id:entry.property.id,ordinary:ordinary.length,concessions:proposals.length};
+      }
       parcelCandidates.set(entry.property.id, candidates);
       yield {stage:'parcel-inventory',id:entry.property.id,stats:budget.snapshot()};
     }
@@ -78,6 +94,16 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
     if (!inventory.has(building)) {
       const fixedBuildings = entry.buildings.filter(other => other.permission.mode !== 'rigid' &&
         other.source.id !== building.source.id).map(other => other.source);
+      if(parcel.concessionBuildings){
+        const candidate=parcel.concessionBuildings.find(b=>b.id===building.source.id);
+        const center=b=>{const points=b.geometry.regions.flatMap(r=>r.ring);budget.spend(points.length);
+          return {x:points.reduce((s,p)=>s+p.x,0)/points.length,y:points.reduce((s,p)=>s+p.y,0)/points.length};};
+        const old=center(building.source),next=candidate?center(candidate):null;
+        inventory.set(building,candidate?[{building:candidate,family:'packed-seed',order:0,moved:1,
+          displacement:Math.hypot(next.x-old.x,next.y-old.y),
+          rotation:Math.abs(Math.atan2(Math.sin(candidate.orientation-building.source.orientation),Math.cos(candidate.orientation-building.source.orientation)))}]:[]);
+        return inventory.get(building);
+      }
       const candidates = yield* iterateLareBuildingCandidates({ source: building.source,
         permission: building.permission, oldProperty: entry.property, property: parcel.property,
         plots: parcel.plots, fixedBuildings, seedTransforms: parcel.buildingSeeds?.filter(seed=>seed.id===building.source.id)??[] }, budget);

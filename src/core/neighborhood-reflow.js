@@ -158,7 +158,7 @@ export function* iterateRoadGroupReflowB1(project,selectedRoadIds,offset,options
     *run(previous) {
       const budget = createLareBudget(operation.limits, { parent });
       const strategy = enhanced ? 'enhanced-adaptive' : 'selective-adaptive';
-      const iterator = iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices, budget, { enhanced, packing: usePacking });
+      const iterator = iterateLareRoadGroup(project, draft, analysis, checked(previous), operationChoices, budget, { enhanced, packing: usePacking, concessions: enhanced?options.detachedConcessions??null:null });
       try {
         for (;;) {
           const step = iterator.next();
