@@ -2,7 +2,7 @@ name: SRE E2 isolated qualification
 on:
   push:
     branches:
-      - research/sre/qualification-e2-cycle2
+      - research/sre/qualification-e2-cycle2-regeneration-fix
 permissions:
   contents: read
 jobs:
@@ -13,33 +13,9 @@ jobs:
     timeout-minutes: 45
     strategy:
       fail-fast: false
-      max-parallel: 20
+      max-parallel: 1
       matrix:
         include:
-          - {mode: historical, index: 0}
-          - {mode: historical, index: 1}
-          - {mode: historical, index: 2}
-          - {mode: historical, index: 3}
-          - {mode: historical, index: 4}
-          - {mode: historical, index: 5}
-          - {mode: historical, index: 6}
-          - {mode: historical, index: 7}
-          - {mode: historical, index: 8}
-          - {mode: historical, index: 9}
-          - {mode: historical, index: 10}
-          - {mode: historical, index: 11}
-          - {mode: historical, index: 12}
-          - {mode: historical, index: 13}
-          - {mode: historical, index: 14}
-          - {mode: historical, index: 15}
-          - {mode: historical, index: 16}
-          - {mode: historical, index: 17}
-          - {mode: historical, index: 18}
-          - {mode: historical, index: 19}
-          - {mode: compression, index: 0}
-          - {mode: compression, index: 1}
-          - {mode: compression, index: 2}
-          - {mode: compression, index: 3}
           - {mode: regeneration, index: 0}
     steps:
       - uses: actions/checkout@v4

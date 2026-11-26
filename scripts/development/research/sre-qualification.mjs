@@ -132,10 +132,13 @@ if(mode==='historical'){
   setup={cases:specs.length};
 }else if(mode==='regeneration'){
   assert.equal(index,0);
-  const project=createProject({seed:'mappo-001',size:'medium',morphology:'organic',shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties:false});
+  // Match the existing regeneration fixture: detach the frozen generated
+  // identity allocation before setting test-only reservation counters.
+  const project=copyJson(createProject({seed:'mappo-001',size:'medium',morphology:'organic',shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties:false}));
   const ids=['RD-0184','RD-0186'],offset={x:-3.005274072121821*-.5,y:-37.39896113564458*-.5};
   const namespace='12'.repeat(16),other='34'.repeat(16);
   project.identityAllocation.namespaces[namespace]={property:7,plot:11,building:13};project.identityAllocation.namespaces[other]={property:93};
+  validateStoredProject(project);
   const context={projectId:project.id??project.city.id,revision:1,namespace},before=hash(project);
   await capture('integrated-positive-regeneration',async()=>{
     const result=await solve(project,ids,offset,{...permissions,regeneration:true},'standard','diversified-restoration',context);
