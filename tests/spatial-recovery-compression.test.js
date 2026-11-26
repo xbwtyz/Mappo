@@ -7,7 +7,7 @@ import { verifyLareGroupPreservation } from '../src/core/reconciliation-preserva
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { scoreSpatialPreservation, preferVerifiedSpatialPreservation, compareSpatialPreservationCost } from '../src/core/spatial-recovery-score.js';
 import { validateStoredProject } from '../src/data/project-validation.js';
-import { normalizeSpatialRoadGroup, searchSpatialPackingRoadGroup, searchSpatialPackingRoadGroupSinglePass, searchSpatialPreservingRoadGroup, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
+import { normalizeSpatialRoadGroup, searchSpatialPackingRoadGroup, searchSpatialPackingRoadGroupSinglePass, searchSpatialPackingRoadGroupStrictFirst, searchSpatialPreservingRoadGroup, verifySpatialStrictRoadWitness } from '../src/core/spatial-recovery-road-adapter.js';
 import { LareBudgetExceeded } from '../src/core/reconciliation-budget.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 import { createSpatialInventory } from '../src/core/spatial-recovery-contract.js';
@@ -179,6 +179,9 @@ for(const irregularProperties of [false,true])test('SRE candidate single-pass tr
   for(const scale of [.025,.125,-.25]){
     const op=normalizeSpatialRoadGroup(project,1,roadIds,{x:offset0.x*scale,y:offset0.y*scale});
     const actual=await qualifyCoordinator(project,op,searchSpatialPackingRoadGroupSinglePass);
+    const strictFirst=await qualifyCoordinator(project,op,searchSpatialPackingRoadGroupStrictFirst);
+    console.log('SRE_STRICT_FIRST_CASE '+JSON.stringify({irregularProperties,scale,strictFirst}));
+    if(scale===.025)assert.equal(strictFirst.status,'verified-witness','ordinary strict baseline lost');
     console.log('SRE_SINGLE_PASS_CASE '+JSON.stringify({irregularProperties,scale,actual}));
     assert.equal(actual.status,'verified-witness','known compression recovery lost');
     assert.equal(hash(project),before);
@@ -186,19 +189,23 @@ for(const irregularProperties of [false,true])test('SRE candidate single-pass tr
 });
 const historical=JSON.parse(readFileSync(new URL('./fixtures/lare-preservation-research.json',import.meta.url)));
 test('SRE candidate single-pass transport historical preservation comparison',{timeout:300000},async()=>{
-  const projects=new Map(),summary={cases:0,ordinaryVerified:0,candidateVerified:0,lost:0,worseCost:0,improvedCost:0,newRecoveries:0};
+  const projects=new Map(),summary={cases:0,ordinaryVerified:0,candidateVerified:0,lost:0,worseCost:0,improvedCost:0,newRecoveries:0,strictFirstVerified:0,strictFirstLost:0,strictFirstWorse:0};
   for(const row of historical.cases){
     if(!projects.has(row.projectId))projects.set(row.projectId,createProject(historical.projects[row.projectId]));
     const project=projects.get(row.projectId),before=hash(project);
     const op=normalizeSpatialRoadGroup(project,1,row.roadIds,row.offset);
     const ordinary=await qualifyCoordinator(project,op,searchSpatialPreservingRoadGroup);
     const candidate=await qualifyCoordinator(project,op,searchSpatialPackingRoadGroupSinglePass);
-    const a=ordinary.status==='verified-witness',b=candidate.status==='verified-witness';
+    const strictFirst=await qualifyCoordinator(project,op,searchSpatialPackingRoadGroupStrictFirst);
+    const a=ordinary.status==='verified-witness',b=candidate.status==='verified-witness',c=strictFirst.status==='verified-witness';
+    const strictCmp=a&&c?compareSpatialPreservationCost(strictFirst.cost,ordinary.cost):null;
+    summary.strictFirstVerified+=Number(c);summary.strictFirstLost+=Number(a&&!c);summary.strictFirstWorse+=Number(strictCmp===1);
+    if(a){assert.ok(c,'ordinary witness lost by strict-first fallback');assert.equal(strictFirst.fingerprint,ordinary.fingerprint,'ordinary witness changed by strict-first fallback');}
     const cmp=a&&b?compareSpatialPreservationCost(candidate.cost,ordinary.cost):null;
     summary.cases++;summary.ordinaryVerified+=Number(a);summary.candidateVerified+=Number(b);
     summary.lost+=Number(a&&!b);summary.worseCost+=Number(cmp===1);summary.improvedCost+=Number(cmp===-1);summary.newRecoveries+=Number(!a&&b);
     assert.equal(hash(project),before);
-    console.log('SRE_SINGLE_PASS_HISTORICAL '+JSON.stringify({projectId:row.projectId,roadIds:row.roadIds,offset:row.offset,ordinary,candidate,cmp}));
+    console.log('SRE_SINGLE_PASS_HISTORICAL '+JSON.stringify({projectId:row.projectId,roadIds:row.roadIds,offset:row.offset,ordinary,candidate,cmp,strictFirst,strictCmp}));
   }
   console.log('SRE_SINGLE_PASS_HISTORICAL_SUMMARY '+JSON.stringify(summary));
   // Candidate-only qualification: report gaps rather than silently replacing
