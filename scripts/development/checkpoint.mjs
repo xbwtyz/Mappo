@@ -10,7 +10,7 @@ const require=(ok,msg)=>{if(!ok)throw Error(msg);};
 
 // V2 supports active/paused draft work, a ready candidate awaiting CI, and
 // verified main after an explicit merge. Evidence is never authorization.
-import { completeFullJobs, NODE_SHARDS } from '../ci-full-contract.mjs';
+import { completeFullJobs, NODE_SHARDS, focusedExecution } from '../ci-full-contract.mjs';
 const terminal=x=>x?.status==='completed'&&x.conclusion==='success';
 const runStates=['queued','in_progress','completed','requested','waiting','pending'];
 function validateV2(c){
@@ -29,6 +29,7 @@ function validateV2(c){
   if(e.qualification==='full-pending')require(c.state==='review-ready'||c.state==='merged','Invalid pending gate state.');
   for(const k of ['fast','full'])if(e[k]!=null)require(positive(e[k].runId)&&positive(e[k].attempt)&&e[k].head===s.sha,'Invalid exact run reference.');
   if(e.qualification==='focused-only')require(e.fast&&positive(e.fast.jobId)&&positive(e.fast.tests)&&e.fast.passed===e.fast.tests&&e.fast.failed===0,'Missing focused evidence.');
+  if(e.fast?.shards!==undefined)require(positive(e.fast.shards)&&e.fast.shards<=16&&(e.fast.shards===1?e.fast.completionJobId==null:positive(e.fast.completionJobId)),'Invalid focused architecture reference.');
   if(e.qualification.startsWith('full'))require(e.full&&e.full.nodeShards===NODE_SHARDS,'Missing current full gate architecture.');
   require(Array.isArray(e.artifacts)&&e.artifacts.length===2,'Missing artifact pair.');
   const [a,b]=e.artifacts;
@@ -52,6 +53,10 @@ function reconstructV2(c,live){
   if(e.qualification==='focused-only'){
     const r=checkRun('fast');
     require(terminal(r)&&Array.isArray(live.fastJobs)&&live.fastJobs.filter(j=>j.id===e.fast.jobId&&j.name==='Build, syntax and targeted Node smoke tests'&&j.run_id===r.id&&j.run_attempt===r.run_attempt&&terminal(j)).length===1,'Focused job not verified.');
+    if(e.fast.shards!==undefined||live.fastJobs.some(j=>j.name==='Focused execution completeness'||j.name.startsWith('Focused Node (shard '))){
+      const execution=focusedExecution(live.fastJobs,r);
+      require(execution&&e.fast.shards===execution.shards&&e.fast.jobId===execution.jobId&&(e.fast.completionJobId??null)===execution.completionJobId,'Incomplete focused execution gate.');
+    }
     qualified='focused-only';
   }
   if(e.qualification==='full'||e.qualification==='full-pending'){

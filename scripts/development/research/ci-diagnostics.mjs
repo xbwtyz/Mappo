@@ -31,7 +31,7 @@ export function collectCiDiagnostics(request,reader){
   }
   if(!jobs.length){report.faults.push('No jobs created; inspect workflow configuration and original run annotations.');return report;}
   for(const j of jobs){
-    const entry={id:j.id,name:j.name,status:j.status,conclusion:j.conclusion??null,diagnostics:null};
+    const entry={id:j.id,name:j.name,status:j.status,conclusion:j.conclusion??null,run_id:j.run_id,run_attempt:j.run_attempt,head_sha:j.head_sha,startedAt:j.started_at??null,completedAt:j.completed_at??null,steps:j.steps??[],diagnostics:null};
     report.jobs.push(entry);
     if(j.status!=='completed'){report.faults.push('Incomplete job '+j.id);continue;}
     // Skips are visible, not diagnosed as executed failures.

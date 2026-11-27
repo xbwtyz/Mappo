@@ -1,0 +1,63 @@
+name: Mappo CI Evidence Report
+# Read-only observer. workflow_run triggers only after this file exists on default branch.
+on:
+  workflow_run:
+    workflows: ['Mappo Fast Checks', 'Mappo CI']
+    types: [completed]
+  push:
+    branches: ['chore/dev-opt-focused-ci']
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+jobs:
+  report:
+    if: github.repository == 'xbwtyz/Mappo' && ((github.event_name == 'workflow_run' && github.event.workflow_run.head_repository.full_name == github.repository) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[dev-opt-report-pilot]')))
+    name: Capture original CI evidence and handoff
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      # workflow_run checks out the trusted default-branch workflow SHA, never source-run code.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Report completed source run
+        if: github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPORT_DIR: artifacts/ci-report
+        run: node scripts/development/ci-run-report.mjs
+      - name: Replay exact successful parallel and failed historical runs
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p artifacts
+          REPORT_DIR=artifacts/ci-report-green node scripts/development/ci-run-report.mjs 45916785118 b4ae118aed89063c8bffd6565a8b6e2524b06578 1
+          REPORT_DIR=artifacts/ci-report-red node scripts/development/ci-run-report.mjs 45916121413 13dab96d04b64ec995eba3cffccae635c287a69d 1
+          node --input-type=module -e '
+            import assert from "node:assert/strict";
+            import {readFileSync} from "node:fs";
+            const g=JSON.parse(readFileSync("artifacts/ci-report-green/report.json","utf8"));
+            const r=JSON.parse(readFileSync("artifacts/ci-report-red/report.json","utf8"));
+            assert.equal(g.handoff.evidence,"focused-only");
+            assert.equal(g.performance.focusedShards,2);
+            assert.equal(g.source.originalConclusion,"success");
+            assert.equal(r.source.originalConclusion,"failure");
+            assert.equal(r.handoff.evidence,"unqualified");
+            assert.ok(r.source.jobs.some(j=>j.diagnostics?.failures.some(f=>f.context.testName?.includes("workflow retains parity"))));
+            assert.equal(g.handoff.authorizationGranted,false);
+            assert.equal(r.handoff.authorizationGranted,false);
+          '
+      - name: Retain report artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mappo-ci-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/ci-report*/
+          if-no-files-found: error
+          retention-days: 30

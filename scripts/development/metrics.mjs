@@ -1,7 +1,7 @@
 // Development-only descriptive metrics; no network or write authority.
 import {readFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
-import { mandatoryJobNames, completeFullJobs, NODE_SHARDS } from '../ci-full-contract.mjs';
+import { mandatoryJobNames, completeFullJobs, NODE_SHARDS, focusedExecution } from '../ci-full-contract.mjs';
 const elapsed=(a,b)=>{const start=Date.parse(a),end=Date.parse(b);return Number.isFinite(start)&&Number.isFinite(end)&&end>=start?(end-start)/1000:null;};
 const distribution=xs=>{const a=xs.slice().sort((x,y)=>x-y),n=a.length;return n?{n,median:n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2,p90:a[Math.ceil(.9*n)-1]}:{n:0,median:null,p90:null};};
 const exactlyOne=(jobs,name)=>jobs.filter(j=>j.name===name).length===1&&jobs.some(j=>j.name===name&&j.status==='completed'&&j.conclusion==='success');
@@ -20,7 +20,7 @@ export function summarizeDevelopmentMetrics(input){
     if(['failure','timed_out'].includes(r.conclusion)){g.failed++;continue;}
     if(r.conclusion!=='success'||wall===null){g.incomplete++;continue;}
     const required=r.kind==='full-main'?mandatoryJobNames(input.version===1?2:NODE_SHARDS,{routing:input.version===2}):['Build, syntax and targeted Node smoke tests'];
-    if(!Array.isArray(r.jobs)||!required.every(name=>exactlyOne(r.jobs,name))||(input.version===2&&r.kind==='full-main'&&(r.nodeShards!==NODE_SHARDS||!completeFullJobs(r.jobs,{id:r.runId,run_attempt:r.attempt})))){
+    if(!Array.isArray(r.jobs)||!required.every(name=>exactlyOne(r.jobs,name))||(input.version===2&&r.kind==='fast-draft'&&!focusedExecution(r.jobs,{id:r.runId,run_attempt:r.attempt}))||(input.version===2&&r.kind==='full-main'&&(r.nodeShards!==NODE_SHARDS||!completeFullJobs(r.jobs,{id:r.runId,run_attempt:r.attempt})))){
       if(r.kind==='fast-draft'&&r.jobs===null){g.workflowOnly++;g.wall.push(wall);}else g.incomplete++;
       continue;
     }
