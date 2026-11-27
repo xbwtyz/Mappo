@@ -207,6 +207,32 @@ function* connectedClusters(graph,rows,selected,cap,budget){
     }
   }
 }
+// P4R R3A: compare the same cluster/stencil candidates with a bounded
+// breadth window. Legacy order and accounting remain exact. The breadth
+// arm charges materialization and traversal inside the shared root.
+function* orderedTrials(graph,rows,selected,maxNeighbors,budget,breadth){
+  const factors=[.0625,.125,.25,.5,1,-.125,-.25,-.5,-1];
+  const clusters=connectedClusters(graph,rows,selected,maxNeighbors,budget);
+  if(!breadth){
+    for(const ids of clusters)for(const factor of factors)for(const taper of [false,true])
+      yield {ids,factor,taper};
+    return;
+  }
+  // At most eight obstruction-ranked connected clusters buffered at once.
+  // Rotate between them for each stencil rather than spend 18 attempts
+  // on one cluster. No altered eligibility or candidate geometry.
+  let window=[];
+  function* visit(groups){
+    for(const factor of factors)for(const taper of [false,true])for(const ids of groups){
+      budget.spend();yield {ids,factor,taper};
+    }
+  }
+  for(const ids of clusters){
+    budget.spend(1+ids.length);window.push(ids);
+    if(window.length===8){yield* visit(window);window=[];}
+  }
+  if(window.length)yield* visit(window);
+}
 // E2: detached candidate constraints, built once per exact fresh snapshot.
 // Same metered provider data, recomputed geometry for every evaluated candidate.
 // Observed-satisfied final rows do not imply continuous sweep, full face
@@ -297,7 +323,10 @@ export async function probeFreshRtreRanked(caseId,o,budget){
 export async function probeFreshRtreFirstValid(caseId,o,budget){
   return probeCoordinated(caseId,o,budget,true,true,false,true);
 }
-async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false){
+export async function probeFreshRtreBreadth(caseId,o,budget){
+  return probeCoordinated(caseId,o,budget,true,true,false,true,true);
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -359,8 +388,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     const rows=[...report.eligibleJunctions].sort((a,b)=>Number(blockers.has(b.ref.id))-Number(blockers.has(a.ref.id))||
       a.primaryIncidentCount-b.primaryIncidentCount||a.depth-b.depth||riCompare(a.ref.id,b.ref.id));
     const byId=new Map(rows.map(r=>[r.ref.id,r])),offset=f.context.operation.geometry.offset;
-    outer:for(const ids of connectedClusters(accepted,rows,selected,maxNeighbors,budget)){
-      for(const factor of [.0625,.125,.25,.5,1,-.125,-.25,-.5,-1])for(const taper of [false,true]){
+    outer:for(const {ids,factor,taper} of orderedTrials(accepted,rows,selected,maxNeighbors,budget,breadth)){
         if(result.attempts>=maxCandidates){result.termination='candidate-limit';break outer;}
         const proposed=new Map(positions),neighbors=[];
         for(const id of ids){
@@ -401,8 +429,6 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
           ranking.bestScore=score;ranking.bestAttempt=result.attempts;result.adjustedWitness=w;
         }
         // Continue only inside the original candidate/work/expansion limits.
-
-      }
     }
     if(result.termination==='preflight')result.termination='cluster-stencil-exhausted';
     result.status=result.baseline.valid?'baseline-valid':result.adjustedWitness?'geometry-recovered':'search-refused';

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { G_MANIFEST } from './ares-p4-g-corpus.mjs';
 import { G_OPTIONS } from './ares-p4-g-run.mjs';
 import { inspectFreshRtreNeighborhood } from './ares-rtre-fresh-neighborhood.mjs';
-import { probeFreshRtreFirstValid } from './ares-rtre-single-junction.mjs';
+import { probeFreshRtreFirstValid,probeFreshRtreBreadth } from './ares-rtre-single-junction.mjs';
 import { verifyFreshRtreWitness } from './ares-rtre-verify.mjs';
 import { createSpatialPreservationBudget } from '../../../src/core/spatial-recovery-contract.js';
 import { LareBudgetExceeded } from '../../../src/core/reconciliation-budget.js';
@@ -29,11 +29,17 @@ export async function inspectP4RRefusal(id){
     fatalCodes:[...new Set(observations.filter(d=>d.fatal).map(d=>d.code))].sort(),requested:report.requested,admitted:report.entries.length,omitted:report.omittedRefs.length,stats:budget.snapshot(),elapsedMs:performance.now()-t});
 }
 export async function probeP4RCap(id,cap){
+  return probeP4RArm(id,cap,probeFreshRtreFirstValid);
+}
+export async function probeP4RBreadth(id,cap){
+  return probeP4RArm(id,cap,probeFreshRtreBreadth);
+}
+async function probeP4RArm(id,cap,probe){
   const r=prior(id);
   if(!P4R_CAPS.includes(cap))throw Error('Unapproved P4R candidate cap.');
   const o={...G_OPTIONS,maxCandidates:cap},budget=createSpatialPreservationBudget(G_MANIFEST.search.root),t=performance.now();
   let search;
-  try{search=await probeFreshRtreFirstValid('g:'+id,o,budget);}
+  try{search=await probe('g:'+id,o,budget);}
   catch(e){if(e instanceof LareBudgetExceeded)return {id,cap,category:'work-limit',termination:'preflight-work-limit',stats:budget.snapshot(),elapsedMs:performance.now()-t};throw e;}
   if(search.snapshotFingerprint!==r.source)throw Error('P4R cap source identity changed.');
   const row={id,cap,source:r.source,category:search.status,eligibilityStatus:search.eligibilityStatus,baselineValid:search.baseline?.valid??null,
