@@ -133,3 +133,23 @@ export async function discoverAresDefense(project,context,budget){
     status:observation.status,providers:service.descriptors(),anchors:data.anchors,evidence,
     diagnostics:observation.discovery.diagnostics});
 }
+
+// P4-E1 detached ordinary-segment evidence. No accepted city writer or
+// permission grant; the research caller independently binds source/geometry.
+export function createAresDefenseSegmentObserver(city,budget){
+  const data=defenseData(city,budget),widths=new Map();
+  for(const r of city.roads){budget.spend();widths.set(r.id,(dimension(STREET_WIDTHS[r.kind])+STREET_EDGE_WIDTH)/2);}
+  return Object.freeze({observe(context,snapshot,road,phase,shared){
+    if(shared!==budget)throw Error('Defense observer requires its original shared budget.');
+    const half=widths.get(road.ref.id);
+    if(!Number.isFinite(half))throw Error('Unknown defense road width.');
+    const query=defenseQuery({context,snapshotFingerprint:snapshot},road,phase);
+    let measured;
+    const service=createAresConstraintQueryService([{descriptor,evaluate(q,spend){
+      const result=defenseEvaluate(data,road,half,q,spend);
+      measured=result.measurements;return result.rows;
+    }}]);
+    const constraint=service.query(descriptor.id,query,budget);
+    return riFreeze({constraint,measurements:measured});
+  }});
+}

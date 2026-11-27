@@ -133,3 +133,22 @@ export async function discoverAresLandscape(project,context,budget){
     status:observation.status,providers,crossings,evidence,diagnostics:observation.discovery.diagnostics,
     verticalCapability:'unsupported'});
 }
+
+// P4-E1 detached geometry query helper. Reuses P2 domain semantics for
+// arbitrary proposed ordinary segment geometry. Observation only, not
+// authority, proof of source membership, or whole-city verification.
+// Caller owns source binding and must reconstruct rows independently.
+export function createAresLandscapeSegmentObserver(city,budget){
+  const datasets=kinds.map(kind=>({kind,data:landscapeData(city,kind,budget)}));
+  return Object.freeze({observe(context,snapshot,road,phase,shared){
+    if(shared!==budget)throw Error('Landscape observer requires its original shared budget.');
+    const query=makeAresRoadConstraintQuery(context,snapshot,road,phase);
+    return riFreeze(datasets.map(({kind,data})=>{
+      const descriptor={id:kind.id,version:1,capabilities:['road-corridor-2d']};
+      const service=createAresConstraintQueryService([{descriptor,evaluate(q,spend){
+        return landscapeRows(kind,data,road,q,spend);
+      }}]);
+      return service.query(kind.id,query,budget);
+    }));
+  }});
+}
