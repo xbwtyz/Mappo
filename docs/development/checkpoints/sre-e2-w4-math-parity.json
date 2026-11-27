@@ -1,0 +1,67 @@
+{
+  "version": 2,
+  "repository": "xbwtyz/Mappo",
+  "milestone": "SRE E2 W4 numerical parity blocker",
+  "appVersion": "0.2.25-dev",
+  "targetVersion": "0.2.26-dev",
+  "state": "active",
+  "source": {
+    "branch": "feature/sre-e2-live-road-worker",
+    "sha": "7e72787d7f7c70a78f7715f3a6c3dfd8454998f1",
+    "baseSha": "eae2b1f73af2b04d2e9b980954eaa94d5c9b576b",
+    "pr": 163
+  },
+  "scope": {
+    "approved": [
+      "Continue approved E2 qualification and safe bounded corrective research; maintain checkpoints."
+    ],
+    "prohibited": [
+      "No merge, release, deployment, other domain activation, altered schema, weakened acceptance or changed historic golden hashes without reviewed approval."
+    ],
+    "stopConditions": [
+      "Stop before changing numeric parity policy or rebaselining locked fixtures; manual acceptance and explicit merge approval."
+    ]
+  },
+  "completed": [
+    "Exact full green 4becfaef5457a40d2f15d268bcd504a04d9643b8 run 45926250551, 318 seconds; W1–W3 integration and standard destructive qualification.",
+    "Both Chromium and Firefox positive regeneration including independent reservations, accepted history and portable checks in run 45928614839.",
+    "Identical accepted snapshot, exact 43 retired IDs; candidate coordinate mismatch isolated from input and identity selection."
+  ],
+  "pending": [
+    "Inspect isolated three-engine math pilot on research/sre/w4-math-parity, localize proven correction then qualify product without changing golden tests.",
+    "Restored-identity audit, advanced high-quality Apply, remaining corpus/interactive evidence, manual acceptance, version and review-ready full gate."
+  ],
+  "decisions": [
+    "No full rerun on unproven production patch; isolated hosted pilot only. Exact candidate equality remains required."
+  ],
+  "blockers": [
+    "Latest full CI 45928614839 failed in 625 seconds on high-quality candidate equality, Chromium and Firefox differ from locked Node result.",
+    "Checkpoint stored on isolated research branch to avoid an extra product CI cycle; product PR remains at exact failed revision. Verify live ref and runs before resumption."
+  ],
+  "evidence": {
+    "qualification": "unqualified",
+    "full": {
+      "runId": 45928614839,
+      "attempt": 1,
+      "head": "7e72787d7f7c70a78f7715f3a6c3dfd8454998f1",
+      "nodeShards": 16,
+      "conclusion": "failure",
+      "durationSeconds": 625
+    },
+    "artifacts": [
+      {
+        "path": "index.html",
+        "blob": "f06a030cf3779571590b38e43373ed59b5842712"
+      },
+      {
+        "path": "dist/mappo-0.2.25-dev.html",
+        "blob": "f06a030cf3779571590b38e43373ed59b5842712"
+      }
+    ]
+  },
+  "rollback": {
+    "sourceSha": "4becfaef5457a40d2f15d268bcd504a04d9643b8",
+    "policy": "Reviewed reversion only; retain exact historic evidence and product gate."
+  },
+  "nextAction": "Verify research branch exact run and per-engine logs/artifacts. Use findings to plan localized math correction; do not merge research branch."
+}

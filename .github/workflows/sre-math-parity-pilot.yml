@@ -1,0 +1,38 @@
+name: Mappo Isolated SRE Math Parity Pilot
+on:
+  push:
+    branches: ['research/sre/w4-math-parity']
+permissions:
+  contents: read
+jobs:
+  pilot:
+    if: contains(github.event.head_commit.message, '[sre-math-pilot]')
+    name: Math parity (${{ matrix.engine }})
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        engine: [node, chromium, firefox]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Run isolated fixed arithmetic experiments
+        run: node scripts/development/research/sre-math-parity.mjs ${{ matrix.engine }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sre-math-pilot-${{ matrix.engine }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/sre-math-pilot/
+          if-no-files-found: error
+          retention-days: 14
