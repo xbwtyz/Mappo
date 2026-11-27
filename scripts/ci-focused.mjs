@@ -7,7 +7,7 @@ import { join, resolve } from 'node:path';
 const SHA = /^[0-9a-f]{40}$/;
 const VALID = x => typeof x === 'string' && SHA.test(x) && !/^0+$/.test(x);
 import { mandatoryJobNames, completeFullJobs, NODE_SHARDS } from './ci-full-contract.mjs';
-import { currentWeights, proposeBalanced, nodeInventory, runTimedSelection, verifyTimingReports } from './ci-node-timing.mjs';
+import { currentWeights, proposeBalanced, trackedNodeInventory, runTimedSelection, verifyTimingReports } from './ci-node-timing.mjs';
 export const MAIN_JOBS = mandatoryJobNames();
 export function verifiedMainRun(sha, run, response, shards=NODE_SHARDS) {
   if (!VALID(sha) || run?.head_sha !== sha || run.head_branch !== 'main' || run.event !== 'push' ||
@@ -112,11 +112,7 @@ export function adaptiveFocusGroups(manifest,tests,{broad=false}={}){
   const shards=Math.min(desired,weights.length);
   return {shards,estimatedMs:total,unknown:weights.filter(x=>x.estimated).map(x=>x.file),groups:proposeBalanced(weights,shards)};
 }
-function exactInventory(){
-  const tracked=nul(git(['ls-files','-z','--','tests/'])).filter(p=>/^tests\/[^/]+\.test\.js$/.test(p)).sort();
-  if(JSON.stringify(tracked)!==JSON.stringify(nodeInventory()))throw Error('Tracked and actual test inventory differ');
-  return tracked;
-}
+function exactInventory(){return trackedNodeInventory();}
 const manifest=()=>JSON.parse(readFileSync('scripts/ci-node-weights.json','utf8'));
 export function verifyFocusPlan(selection,{head,runId,attempt,inventory,weights}){
   if(selection?.version!==2||selection.head!==head||selection.runId!==runId||selection.attempt!==attempt||

@@ -12,6 +12,13 @@ export function nodeInventory(root=process.cwd()) {
     .filter(x=>x.isFile()&&x.name.endsWith('.test.js'))
     .map(x=>'tests/'+x.name).sort();
 }
+export function trackedNodeInventory(root=process.cwd()){
+  const tracked=execFileSync('git',['ls-files','-z','--','tests/'],{cwd:root,encoding:'utf8'})
+    .split('\0').filter(p=>pathPattern.test(p)).sort();
+  const actual=nodeInventory(root);
+  if(JSON.stringify(tracked)!==JSON.stringify(actual))throw Error('Tracked and actual Node inventory differ');
+  return tracked;
+}
 function validCounts(counts) {
   return counts&&['tests','passed','failed','cancelled','skipped','todo'].every(k=>Number.isSafeInteger(counts[k])&&counts[k]>=0);
 }
@@ -127,10 +134,7 @@ export const source=()=>execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'
 const outdir=()=>resolve('artifacts','ci-timings');
 function run(shard,shards) {
   if(!Number.isSafeInteger(shard)||!Number.isSafeInteger(shards)||shard<1||shard>shards||![2,4,16].includes(shards)) throw Error('Invalid native shard');
-  const root=process.cwd(),inventory=nodeInventory(root);
-  mkdirSync(outdir(),{recursive:true});
-  const raw=resolve(outdir(),'node-'+shard+'.ndjson');
-  const reportPath=resolve(outdir(),'node-'+shard+'.json');
+  const root=process.cwd(),inventory=trackedNodeInventory(root);
   const commit=source();
   if(!validSha(commit)) throw Error('Invalid source identity');
   const manifest=shards===4?null:JSON.parse(readFileSync(resolve(root,'scripts/ci-node-weights.json'),'utf8'));
@@ -163,9 +167,9 @@ export function runTimedSelection({selected,flags=[],expected=selected,shard,sha
 }
 function aggregate(directory,shards) {
   const reports=readdirSync(directory).filter(p=>/^node-\d+\.json$/.test(p)).map(p=>JSON.parse(readFileSync(resolve(directory,p),'utf8')));
-  const evidence=verifyTimingReports(reports,{inventory:nodeInventory(),source:source(),runId:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,shards});
+  const evidence=verifyTimingReports(reports,{inventory:trackedNodeInventory(),source:source(),runId:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,shards});
   if(shards===16){
-    const groups=measuredAssignments(JSON.parse(readFileSync('scripts/ci-node-weights.json','utf8')),nodeInventory(),16);
+    const groups=measuredAssignments(JSON.parse(readFileSync('scripts/ci-node-weights.json','utf8')),trackedNodeInventory(),16);
     for(const r of reports){
       if(JSON.stringify(r.files.map(x=>x.file).sort())!==JSON.stringify([...groups[r.shard-1].files].sort()))
         throw Error('Shard executed a different measured assignment');

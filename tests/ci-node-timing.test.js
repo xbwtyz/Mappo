@@ -132,10 +132,10 @@ test('reviewed measured assignment includes each current Node test exactly once'
     x=>x.proposal[0].files.push(x.proposal[1].files[0]),x=>x.files[0].ms=-1,
     x=>x.proposal[0].ms+=1,x=>x.source='unknown']){
     const invalid=structuredClone(manifest);change(invalid);
-    assert.throws(()=>validateBalancedManifest(invalid,inventory));
+    assert.throws(()=>validateBalancedManifest(invalid,historical));
   }
-  assert.throws(()=>validateBalancedManifest(manifest,[...inventory,'tests/unmeasured.test.js']));
-  assert.throws(()=>validateBalancedManifest(manifest,inventory.slice(1)));
+  assert.throws(()=>validateBalancedManifest(manifest,[...historical,'tests/unmeasured.test.js']));
+  assert.throws(()=>validateBalancedManifest(manifest,historical.slice(1)));
 });
 
 test('sixteen-runner diagnostic reuses validated measured inventory and preserves historical two-runner assignment',()=>{
