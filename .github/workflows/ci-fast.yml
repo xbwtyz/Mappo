@@ -80,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: focused-plan-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/mappo-focus-plan.json
+          path: ${{ steps.plan.outputs.plan_path }}
           if-no-files-found: error
           retention-days: 14
 

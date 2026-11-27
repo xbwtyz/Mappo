@@ -110,3 +110,11 @@ test('adaptive focused workflow preserves light path and requires parallel compl
   assert.match(quick,/test "\$PARALLEL_RESULT" = success/);
   assert.match(quick,/focused-plan-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/);
 });
+
+test('focused plan upload uses the runtime-resolved step output, not runner context',()=>{
+  const quick=readFileSync(new URL('../.github/workflows/ci-fast.yml',import.meta.url),'utf8');
+  const planner=readFileSync(new URL('../scripts/ci-focused.mjs',import.meta.url),'utf8');
+  assert.doesNotMatch(quick,/runner\.temp/);
+  assert.match(quick,/path: \$\{\{ steps\.plan\.outputs\.plan_path \}\}/);
+  assert.match(planner,/plan_path='\+planPath\(env\)/);
+});

@@ -157,7 +157,7 @@ function plan(env) {
   const output={version:2,head,runId:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT,...range,changedPaths:paths,...selection,execution};
   writeFileSync(planPath(env),JSON.stringify(output,null,2));
   console.log('CI_FOCUS '+JSON.stringify(output));
-  if(env.GITHUB_OUTPUT)writeFileSync(env.GITHUB_OUTPUT,'parallel='+(execution.shards>1)+'\nmatrix='+JSON.stringify(execution.groups.map(g=>g.shard))+'\n',{flag:'a'});
+  if(env.GITHUB_OUTPUT)writeFileSync(env.GITHUB_OUTPUT,'parallel='+(execution.shards>1)+'\nmatrix='+JSON.stringify(execution.groups.map(g=>g.shard))+'\nplan_path='+planPath(env)+'\n',{flag:'a'});
 }
 function runNode(args) {
   const result=spawnSync(process.execPath,args,{stdio:'inherit'});
