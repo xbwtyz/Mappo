@@ -5,7 +5,8 @@ import { createProject } from '../src/core/city-model.js';
 import { normalizeSpatialRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { searchSpatialUnifiedRoadGroup, verifySpatialUnifiedRoadWitness } from '../src/core/spatial-recovery-coordinator.js';
-import { calculateSpatialRoadWorkerResult } from '../src/worker/spatial-recovery-worker.js';
+import { calculateSpatialRoadWorkerResult, installSpatialRoadRecoveryWorker } from '../src/worker/spatial-recovery-worker.js';
+import { issueIdentityReservation } from '../src/core/identity-verification.js';
 import { normalizeSpatialRoadWorkerRequest, SRE_ROAD_WORKER_VERSION } from '../src/core/spatial-recovery-worker-protocol.js';
 import { createSpatialRoadWorkerController } from '../src/editor/spatial-recovery-worker-client.js';
 import { readFile } from 'node:fs/promises';
@@ -78,18 +79,18 @@ test('SRE detached worker thread returns a compact replayable witness identical 
   } finally {await worker.terminate();}
 });
 
-function controllerFixture(){
+function controllerFixture(options){
   let current={sessionId:'host-session-a',operation,quality:'standard'};
   const workers=[];
   const controller=createSpatialRoadWorkerController(()=>{
     const listeners=new Map();
     const worker={terminated:false,request:null,
       addEventListener:(name,fn)=>listeners.set(name,fn),
-      postMessage(data){this.request=data;},
+      postMessage(data){if(data.command)(this.commands??=[]).push(data);else this.request=data;},
       terminate(){this.terminated=true;},
       emit(name,data){listeners.get(name)?.(data);}
     };workers.push(worker);return worker;
-  },()=>current);
+  },()=>current,options);
   const input=()=>({sessionId:current.sessionId,operation:current.operation,quality:current.quality,projectJson:JSON.stringify(project)});
   const reply=worker=>({version:1,requestId:worker.request.requestId,sessionId:worker.request.sessionId,
     operation:worker.request.operation,quality:worker.request.quality,result:{status:'refused',operation:worker.request.operation,
@@ -170,4 +171,99 @@ test('SRE compiled standalone contains syntactically valid independent worker an
     assert.deepEqual(response.result.delta,direct.delta);
     assert.deepEqual(response.result.basisDelta,direct.basisDelta);
   }finally{await worker.terminate();}
+});
+
+test('SRE controlled worker stops and continues the same operation and budget', {timeout:120000}, async()=>{
+  // Real worker handler on a deterministic message harness. The existing
+  // worker-thread and compiled bundle tests independently cover transport.
+  let receive,finish,fail;
+  const seen=[],input={...request(),controlled:true};
+  const completed=new Promise((resolve,reject)=>{finish=resolve;fail=reject;});
+  const control=command=>receive({data:{version:1,requestId:1,sessionId:input.sessionId,command}});
+  installSpatialRoadRecoveryWorker({
+    addEventListener:(_,fn)=>{receive=fn;},
+    postMessage:data=>{
+      try{
+        if(data.error)throw Error(data.error);
+        if(!data.progress){finish(data);return;}
+        seen.push(data);
+        if(seen.length===1)control('stop');
+        if(data.paused){
+          assert.equal(data.incumbent.status,'refused');
+          assert.equal(data.incumbent.delta,null);
+          assert.equal(data.progress.stats.work,0);
+          // A different request cannot resume the paused search.
+          receive({data:{version:1,requestId:2,sessionId:input.sessionId,command:'continue'}});
+          setTimeout(()=>control('continue'),0);
+        }
+      }catch(error){fail(error);}
+    }
+  });
+  void receive({data:input});
+  const response=await completed;
+  assert.ok(seen.some(x=>x.paused));
+  assert.equal(response.result.status,'verified-witness');
+  const baseline=await searchSpatialUnifiedRoadGroup(project,operation,createSpatialPreservationBudget());
+  assert.deepEqual(response.result,baseline);
+});
+
+test('SRE controller validates progress and controls, rejects stale binding without renewing the request',async()=>{
+  const seen=[],f=controllerFixture({onProgress:p=>seen.push(p)});
+  const p=f.controller({...f.input(),controlled:true}),w=f.workers[0];
+  const stats={work:0,expansions:0,remainingWork:8000000,remainingExpansions:32768};
+  const {result,...envelope}=f.reply(w);
+  const progress={...envelope,progress:{phase:'nondestructive',stats,hasIncumbent:false,incumbentKind:null},paused:true,incumbent:{...result,stats}};
+  assert.equal(f.controller.stop(),true);
+  w.emit('message',{data:progress});
+  assert.equal(seen.length,1);
+  assert.equal(f.controller.continue(),true);
+  assert.deepEqual(w.commands.map(c=>c.command),['stop','continue']);
+  assert.ok(w.commands.every(c=>c.requestId===w.request.requestId));
+  f.change({operation:{...operation,revision:2}});
+  w.emit('message',{data:progress});
+  await assert.rejects(p,{name:'AbortError'});
+  assert.equal(seen.length,1);
+  assert.equal(w.terminated,true);
+});
+
+test('SRE regeneration requires explicit standard policy, exact host context and independent request authority',async()=>{
+  const op={...operation,permissions:{...operation.permissions,destruction:true,regeneration:true}};
+  const context={projectId:op.projectId,revision:op.revision,namespace:'12'.repeat(16)};
+  const input={...request(),operation:op,reservationContext:context};
+  assert.deepEqual(normalizeSpatialRoadWorkerRequest(input).reservationContext,context);
+  assert.throws(()=>normalizeSpatialRoadWorkerRequest({...input,quality:'high'}),/quality/);
+  assert.throws(()=>normalizeSpatialRoadWorkerRequest({...input,reservationContext:{...context,revision:2}}),/stale/);
+  assert.throws(()=>normalizeSpatialRoadWorkerRequest({...request(),reservationContext:context}),/Unexpected/);
+  const f=controllerFixture();
+  f.change({operation:op,reservationContext:context,projectJson:input.projectJson});
+  await assert.rejects(f.controller({...f.input(),reservationContext:context}),/independent host/);
+  assert.equal(f.workers.length,0);
+  const result=await calculateSpatialRoadWorkerResult(input);
+  assert.equal(result.result.status,'verified-witness');
+  assert.equal(result.result.kind,'nondestructive');
+  assert.equal(result.result.provisionalAuthorization,null);
+});
+
+test('SRE controller compares provisional allocation to independently supplied host plan and accepted snapshot',async()=>{
+  const op={...operation,permissions:{...operation.permissions,destruction:true,regeneration:true}};
+  const context={projectId:op.projectId,revision:op.revision,namespace:'12'.repeat(16)};
+  const expected=[{type:'building',key:'sre-shell/host-plan/0/0'}];
+  const receipt=issueIdentityReservation(project.identityAllocation,project.city,context,expected);
+  const f=controllerFixture({hostReservationRequests:binding=>{
+    assert.deepEqual(binding.context,context);
+    assert.equal(Object.hasOwn(binding,'proposal'),false);
+    return expected;
+  }});
+  f.change({operation:op,reservationContext:context,projectJson:JSON.stringify(project)});
+  const run=()=>f.controller({...f.input(),reservationContext:context});
+  const emit=(w,proposal,added)=>w.emit('message',{data:{...f.reply(w),result:{
+    operation:op,status:'verified-witness',kind:'shell-regeneration',
+    delta:{added},basisDelta:{},provisionalAuthorization:proposal}}});
+  const proposal={context,requests:expected,receipt},added=[{ref:{collection:'buildings',id:receipt.allocations[0].id}}];
+  const p=run();emit(f.workers.at(-1),proposal,added);
+  assert.equal((await p).result.kind,'shell-regeneration'); // transport only, not Apply
+  const q=run();emit(f.workers.at(-1),{...proposal,requests:[{type:'building',key:'forged'}]},added);
+  await assert.rejects(q,/host requests/);
+  const z=run();emit(f.workers.at(-1),proposal,[{ref:{collection:'plots',id:added[0].ref.id}}]);
+  await assert.rejects(z,/addition differs/);
 });

@@ -98,7 +98,11 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
   const observe=async phase=>{
     const state=Object.freeze({phase,stats:callerBudget.snapshot(),
       hasIncumbent:Boolean(incumbent),incumbentKind:incumbent?.kind??null});
-    const decision=await checkpoint(state);
+    const capture=()=>riFreeze({status:incumbent?'verified-witness':'refused',operation,
+      kind:incumbent?.kind??null,delta:incumbent?.delta??null,basisDelta:incumbent?.basisDelta??null,
+      ledger:incumbent?.ledger??null,provisionalAuthorization:incumbent?.provisionalAuthorization??null,
+      attempts:JSON.parse(JSON.stringify(attempts)),exhausted,stats:callerBudget.snapshot()});
+    const decision=await checkpoint(state,capture);
     if(decision==='stop'){stopped=true;throw stopSignal;}
     if(decision!=='continue'&&decision!==undefined)throw Error('Invalid recovery checkpoint decision.');
   };
