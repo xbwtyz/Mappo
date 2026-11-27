@@ -1,12 +1,13 @@
 // Incremental checks only. Full review-ready/main CI remains independent.
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 const SHA = /^[0-9a-f]{40}$/;
 const VALID = x => typeof x === 'string' && SHA.test(x) && !/^0+$/.test(x);
 import { mandatoryJobNames, completeFullJobs, NODE_SHARDS } from './ci-full-contract.mjs';
+import { currentWeights, proposeBalanced, nodeInventory, runTimedSelection, verifyTimingReports } from './ci-node-timing.mjs';
 export const MAIN_JOBS = mandatoryJobNames();
 export function verifiedMainRun(sha, run, response, shards=NODE_SHARDS) {
   if (!VALID(sha) || run?.head_sha !== sha || run.head_branch !== 'main' || run.event !== 'push' ||
@@ -102,7 +103,42 @@ function mainEvidence(sha,env) {
   } catch(error) { console.warn('::warning::Exact-main qualification lookup unavailable; keep conservative push selection.'); }
   return null;
 }
+
+export function adaptiveFocusGroups(manifest,tests,{broad=false}={}){
+  const weights=currentWeights(manifest,tests);
+  const total=weights.reduce((n,x)=>n+x.ms,0);
+  // Target <=240s summed file weights per runner (not wall-time prediction).
+  const desired=broad?16:total<=240000?1:total<=480000?2:total<=960000?4:total<=1920000?8:16;
+  const shards=Math.min(desired,weights.length);
+  return {shards,estimatedMs:total,unknown:weights.filter(x=>x.estimated).map(x=>x.file),groups:proposeBalanced(weights,shards)};
+}
+function exactInventory(){
+  const tracked=nul(git(['ls-files','-z','--','tests/'])).filter(p=>/^tests\/[^/]+\.test\.js$/.test(p)).sort();
+  if(JSON.stringify(tracked)!==JSON.stringify(nodeInventory()))throw Error('Tracked and actual test inventory differ');
+  return tracked;
+}
+const manifest=()=>JSON.parse(readFileSync('scripts/ci-node-weights.json','utf8'));
+export function verifyFocusPlan(selection,{head,runId,attempt,inventory,weights}){
+  if(selection?.version!==2||selection.head!==head||selection.runId!==runId||selection.attempt!==attempt||
+     !VALID(head)||!Array.isArray(selection.changedPaths))throw Error('Stale or invalid focus plan');
+  const selected=selectTests(selection.changedPaths,inventory,!selection.base);
+  const expected=adaptiveFocusGroups(weights,selected.tests,{broad:selected.profiles.includes('all')});
+  if(JSON.stringify(selection.tests)!==JSON.stringify(selected.tests)||
+     JSON.stringify(selection.profiles)!==JSON.stringify(selected.profiles)||
+     JSON.stringify(selection.execution)!==JSON.stringify(expected))throw Error('Focused assignment differs from selected inventory');
+  return expected;
+}
+export function verifyFocusReports(selection,reports){
+  const {execution:e}=selection;
+  const evidence=verifyTimingReports(reports,{inventory:selection.tests,source:selection.head,
+    runId:selection.runId,attempt:selection.attempt,shards:e.shards});
+  for(const r of reports)if(JSON.stringify(r.files.map(x=>x.file).sort())!==JSON.stringify(e.groups[r.shard-1].files))
+    throw Error('Focused shard executed wrong assignment');
+  return evidence;
+}
+
 function planPath(env) {
+  if(env.FOCUS_PLAN_PATH)return env.FOCUS_PLAN_PATH;
   if (!env.RUNNER_TEMP) throw Error('Missing runner temporary directory');
   return join(env.RUNNER_TEMP,'mappo-focus-plan.json');
 }
@@ -118,12 +154,14 @@ function plan(env) {
   const mainAncestor=mainTip.status===0&&ancestor(possible,mainTip.stdout.trim())?possible:null;
   const range=changeRange({head,before:event.before,parents,mainAncestor,
     verifiedMain:mainEvidence(mainAncestor,env),isAncestor:ancestor});
-  const inventory=nul(git(['ls-files','-z','--','tests/'])).filter(p=>/^tests\/[^/]+\.test\.js$/.test(p));
+  const inventory=exactInventory();
   const paths=range.base?nul(git(['diff','--no-renames','--name-only','-z',range.base,head,'--'])):nul(git(['ls-files','-z']));
   const selection=selectTests(paths,inventory,!range.base);
-  const output={head,...range,changedPaths:paths,...selection};
+  const execution=adaptiveFocusGroups(manifest(),selection.tests,{broad:selection.profiles.includes('all')});
+  const output={version:2,head,runId:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT,...range,changedPaths:paths,...selection,execution};
   writeFileSync(planPath(env),JSON.stringify(output,null,2));
   console.log('CI_FOCUS '+JSON.stringify(output));
+  if(env.GITHUB_OUTPUT)writeFileSync(env.GITHUB_OUTPUT,'parallel='+(execution.shards>1)+'\nmatrix='+JSON.stringify(execution.groups.map(g=>g.shard))+'\n',{flag:'a'});
 }
 function runNode(args) {
   const result=spawnSync(process.execPath,args,{stdio:'inherit'});
@@ -133,12 +171,24 @@ function runNode(args) {
 function runCLI(mode,env=process.env) {
   if(mode==='plan') return plan(env);
   const selection=JSON.parse(readFileSync(planPath(env),'utf8'));
-  if(selection.head!==git(['rev-parse','HEAD']).trim()||selection.head!==env.GITHUB_SHA) throw Error('Stale focus plan');
+  const head=git(['rev-parse','HEAD']).trim();
+  if(head!==env.GITHUB_SHA)throw Error('Stale focus checkout');
+  const execution=verifyFocusPlan(selection,{head,runId:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT,inventory:exactInventory(),weights:manifest()});
   if(mode==='syntax') {
     for(const p of selection.changedPaths) if(/^(src|scripts|tests)\/.*\.(js|mjs)$/.test(p)&&existsSync(p)) runNode(['--check',p]);
   } else if(mode==='test') {
     if(!selection.tests.length||selection.tests.some(p=>!/^tests\/[^/]+\.test\.js$/.test(p)||!existsSync(p))) throw Error('Invalid selected tests');
-    runNode(['--test',...selection.tests]);
+    if(execution.shards!==1)throw Error('Parallel plan cannot run as single job');
+    runTimedSelection({selected:selection.tests,shard:1,shards:1,commit:head});
+  } else if(mode==='shard') {
+    const shard=Number(env.FOCUS_SHARD);
+    if(!Number.isSafeInteger(shard)||shard<1||shard>execution.shards||execution.shards<2)throw Error('Invalid focused shard');
+    runTimedSelection({selected:execution.groups[shard-1].files,shard,shards:execution.shards,commit:head});
+  } else if(mode==='complete') {
+    const directory=resolve('focused-reports');
+    const reports=readdirSync(directory).filter(p=>/^node-\d+\.json$/.test(p)).map(p=>JSON.parse(readFileSync(join(directory,p),'utf8')));
+    const evidence=verifyFocusReports(selection,reports);
+    console.log('FOCUSED_COMPLETENESS '+JSON.stringify(evidence));
   } else throw Error('Unknown focused CI mode');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href) runCLI(process.argv[2]);

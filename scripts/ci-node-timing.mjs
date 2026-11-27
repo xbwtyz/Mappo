@@ -78,7 +78,7 @@ export function proposeBalanced(files,shards=2) {
 }
 
 // The reviewed manifest is evidence, not permission to omit an added test.
-// New/removed files require a deliberate manifest refresh before full CI.
+// Validate historical measurement integrity separately from live scheduling.
 export function validateBalancedManifest(manifest,inventory) {
   if(manifest?.version!==1||!validSha(manifest.source)||
      typeof manifest.runId!=='string'||!/^\d+$/.test(manifest.runId)||
@@ -102,18 +102,28 @@ export function validateBalancedManifest(manifest,inventory) {
   return expected;
 }
 
+// Current inventory is authoritative; the historical manifest supplies weights only.
+// Unknown tests receive a conservative 120s weight (or the measured p90 if higher).
+export function currentWeights(manifest,inventory){
+  if(!Array.isArray(manifest?.files))throw Error('Missing historical timing weights');
+  validateBalancedManifest(manifest,manifest.files.map(x=>x.file));
+  if(!Array.isArray(inventory)||!inventory.length||new Set(inventory).size!==inventory.length||
+     inventory.some(p=>!pathPattern.test(p)))throw Error('Invalid current inventory');
+  const old=new Map(manifest.files.map(x=>[x.file,x.ms]));
+  const ordered=[...old.values()].sort((a,b)=>a-b);
+  const fallback=Math.max(120000,ordered[Math.ceil(ordered.length*.9)-1]);
+  return [...inventory].sort().map(file=>({file,ms:old.get(file)??fallback,estimated:!old.has(file)}));
+}
 export function measuredAssignments(manifest,inventory,shards){
   if(![2,16].includes(shards))throw Error('Unsupported measured shard count');
-  const original=validateBalancedManifest(manifest,inventory);
-  if(shards===2)return original;
-  const groups=proposeBalanced(manifest.files,shards);
+  const groups=proposeBalanced(currentWeights(manifest,inventory),shards);
   const assigned=groups.flatMap(g=>g.files);
   if(groups.length!==shards||groups.some(g=>g.files.length===0)||new Set(assigned).size!==assigned.length||
      JSON.stringify([...assigned].sort())!==JSON.stringify([...inventory].sort()))throw Error('Invalid measured assignment');
   return groups;
 }
 
-const source=()=>execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+export const source=()=>execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 const outdir=()=>resolve('artifacts','ci-timings');
 function run(shard,shards) {
   if(!Number.isSafeInteger(shard)||!Number.isSafeInteger(shards)||shard<1||shard>shards||![2,4,16].includes(shards)) throw Error('Invalid native shard');
@@ -128,6 +138,12 @@ function run(shard,shards) {
   const selected=assignment?assignment.files:inventory;
   const flags=assignment?[]:['--test-shard='+shard+'/'+shards];
   if(assignment) console.log('NODE_BALANCED_ASSIGNMENT '+JSON.stringify({source:commit,shard,estimatedMs:assignment.ms,files:selected}));
+  return runTimedSelection({selected,flags,expected:assignment?selected:null,shard,shards,root,commit});
+}
+export function runTimedSelection({selected,flags=[],expected=selected,shard,shards,root=process.cwd(),commit=source()}){
+  mkdirSync(outdir(),{recursive:true});
+  const raw=resolve(outdir(),'node-'+shard+'.ndjson');
+  const reportPath=resolve(outdir(),'node-'+shard+'.json');
   const result=spawnSync(process.execPath,['--test',...flags,
     '--test-reporter=tap','--test-reporter-destination=stdout',
     '--test-reporter=./scripts/ci-node-timing-reporter.mjs','--test-reporter-destination='+raw,...selected],
@@ -136,7 +152,7 @@ function run(shard,shards) {
   // On failure, preserve native status even if timing is absent or malformed.
   if(result.status!==0||result.signal) {process.exitCode=result.status||1;return;}
   const parsed=parseTiming(readFileSync(raw,'utf8'),root,selected);
-  if(assignment&&JSON.stringify(parsed.files.map(x=>x.file).sort())!==JSON.stringify([...selected].sort())) throw Error('Executed files differ from balanced assignment');
+  if(expected&&JSON.stringify(parsed.files.map(x=>x.file).sort())!==JSON.stringify([...expected].sort())) throw Error('Executed files differ from balanced assignment');
   const report={version:1,source:commit,runId:process.env.GITHUB_RUN_ID||'local',attempt:process.env.GITHUB_RUN_ATTEMPT||'local',
     shard,shards,node:process.version,platform:platform(),arch:arch(),parallelism:availableParallelism(),exitCode:0,...parsed};
   if(report.total.success!==true||report.total.counts.failed||report.total.counts.cancelled||

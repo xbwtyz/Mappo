@@ -22,6 +22,10 @@ concurrency:
 jobs:
   fast:
     name: Build, syntax and targeted Node smoke tests
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+      parallel: ${{ steps.plan.outputs.parallel }}
+      matrix: ${{ steps.plan.outputs.matrix }}
     runs-on: ubuntu-24.04
     # Conservative fallback can include the complete Node inventory.
     timeout-minutes: 35
@@ -44,6 +48,7 @@ jobs:
         run: node scripts/ci-trigger.mjs fast
 
       - name: Select exact-push incremental checks
+        id: plan
         if: steps.gate.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -67,8 +72,17 @@ jobs:
 
       - name: Run smoke tests and directly modified Node tests
         # Baseline includes tests/ci-trigger.test.js; profiles are incremental only.
-        if: steps.gate.outputs.run == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.plan.outputs.parallel == 'false'
         run: node scripts/ci-focused.mjs test
+
+      - name: Retain exact focused execution plan
+        if: steps.gate.outputs.run == 'true' && steps.plan.outputs.parallel == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: focused-plan-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mappo-focus-plan.json
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Prepare exact-candidate manual acceptance package
         if: steps.gate.outputs.run == 'true' && contains(github.event.head_commit.message, '[acceptance-package]')
@@ -84,3 +98,78 @@ jobs:
           path: artifacts/manual-acceptance/
           if-no-files-found: error
           retention-days: 14
+
+  parallel:
+    needs: fast
+    if: needs.fast.outputs.run == 'true' && needs.fast.outputs.parallel == 'true'
+    name: Focused Node (shard ${{ matrix.shard }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix:
+        shard: ${{ fromJSON(needs.fast.outputs.matrix || '[1]') }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: focused-plan-${{ github.run_id }}-${{ github.run_attempt }}
+          path: focused-plan
+      - name: Build exact standalone and verify parity
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          npm run build
+          git diff --exit-code -- index.html dist/
+      - name: Run assigned focused tests
+        env:
+          FOCUS_PLAN_PATH: focused-plan/mappo-focus-plan.json
+          FOCUS_SHARD: ${{ matrix.shard }}
+        run: node scripts/ci-focused.mjs shard
+      - uses: actions/upload-artifact@v4
+        with:
+          name: focused-report-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: artifacts/ci-timings/node-${{ matrix.shard }}.json
+          if-no-files-found: error
+          retention-days: 14
+
+  completeness:
+    needs: [fast, parallel]
+    if: ${{ always() && needs.fast.outputs.run == 'true' && needs.fast.outputs.parallel == 'true' }}
+    name: Focused execution completeness
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require all planned shards to succeed
+        env:
+          FAST_RESULT: ${{ needs.fast.result }}
+          PARALLEL_RESULT: ${{ needs.parallel.result }}
+        run: |
+          test "$FAST_RESULT" = success
+          test "$PARALLEL_RESULT" = success
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: focused-plan-${{ github.run_id }}-${{ github.run_attempt }}
+          path: focused-plan
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: focused-report-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: focused-reports
+          merge-multiple: true
+      - name: Verify exact selected inventory and all shard reports
+        env:
+          FOCUS_PLAN_PATH: focused-plan/mappo-focus-plan.json
+        run: node scripts/ci-focused.mjs complete

@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { parseTiming, verifyTimingReports, proposeBalanced, validateBalancedManifest, nodeInventory, measuredAssignments } from '../scripts/ci-node-timing.mjs';
+import { parseTiming, verifyTimingReports, proposeBalanced, validateBalancedManifest, nodeInventory, measuredAssignments, currentWeights } from '../scripts/ci-node-timing.mjs';
 const files=['tests/a.test.js','tests/b.test.js','tests/c.test.js','tests/d.test.js'];
 const root=process.cwd(),sha='a'.repeat(40);
 const counts=n=>({tests:n,passed:n,failed:0,cancelled:0,skipped:0,todo:0});
@@ -120,9 +120,10 @@ test('pilot preflight must pass before expensive diagnostic shards start',()=>{
 test('reviewed measured assignment includes each current Node test exactly once',()=>{
   const manifest=JSON.parse(readFileSync(new URL('../scripts/ci-node-weights.json',import.meta.url),'utf8'));
   const inventory=nodeInventory();
-  const groups=validateBalancedManifest(manifest,inventory);
+  const historical=manifest.files.map(x=>x.file);
+  const groups=validateBalancedManifest(manifest,historical);
   assert.equal(groups.length,2);
-  assert.deepEqual(groups.flatMap(g=>g.files).sort(),inventory);
+  assert.deepEqual(groups.flatMap(g=>g.files).sort(),[...historical].sort());
   // Independently verify the inventory against the tracked repository files.
   const tracked=spawnSync('git',['ls-files','-z','--','tests/'],{cwd:root,encoding:'utf8'});
   assert.equal(tracked.status,0,tracked.stderr);
@@ -145,9 +146,9 @@ test('sixteen-runner diagnostic reuses validated measured inventory and preserve
   assert.ok(groups.every(g=>g.files.length>0));
   assert.deepEqual(groups.flatMap(g=>g.files).sort(),inventory);
   assert.deepEqual(groups,measuredAssignments(manifest,inventory,16));
-  assert.deepEqual(measuredAssignments(manifest,inventory,2),manifest.proposal);
+  assert.deepEqual(measuredAssignments(manifest,manifest.files.map(x=>x.file),2),manifest.proposal);
   assert.throws(()=>measuredAssignments(manifest,inventory,15));
-  assert.throws(()=>measuredAssignments(manifest,inventory.slice(1),16));
+  assert.deepEqual(measuredAssignments(manifest,inventory.slice(1),16).flatMap(g=>g.files).sort(),inventory.slice(1));
   const reports=groups.map(g=>({...report(g.shard,g.files),shards:16}));
   const options16={inventory,source:sha,runId:'42',attempt:'1',shards:16};
   assert.equal(verifyTimingReports(reports,options16).files.length,inventory.length);
@@ -163,4 +164,19 @@ test('full CI requires all sixteen same-attempt reports in its existing aggregat
   assert.match(full,/ci-node-timing\.mjs aggregate timing-input 16/);
   assert.match(full,/pattern: mappo-node-timing-\*-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/);
   assert.match(full,/needs: \[route, node, browser\]/);
+});
+
+test('current scheduling automatically includes new and renamed files without weakening historical evidence',()=>{
+  const manifest=JSON.parse(readFileSync(new URL('../scripts/ci-node-weights.json',import.meta.url),'utf8'));
+  const old=manifest.files.map(x=>x.file).sort();
+  const current=[...old.slice(1),'tests/brand-new.test.js'].sort();
+  const weights=currentWeights(manifest,current);
+  assert.equal(weights.find(x=>x.file==='tests/brand-new.test.js').estimated,true);
+  assert.ok(weights.find(x=>x.file==='tests/brand-new.test.js').ms>=120000);
+  assert.ok(!weights.some(x=>x.file===old[0]));
+  assert.deepEqual(measuredAssignments(manifest,current,16).flatMap(g=>g.files).sort(),current);
+  assert.deepEqual(measuredAssignments(manifest,current,16),measuredAssignments(manifest,[...current].reverse(),16));
+  assert.throws(()=>currentWeights(manifest,[...current,current[0]]));
+  const bad=structuredClone(manifest);bad.proposal[0].files.pop();
+  assert.throws(()=>currentWeights(bad,current));
 });

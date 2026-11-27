@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { changeRange, selectTests, verifiedMainRun, MAIN_JOBS } from '../scripts/ci-focused.mjs';
+import { changeRange, selectTests, verifiedMainRun, MAIN_JOBS, adaptiveFocusGroups, verifyFocusPlan, verifyFocusReports } from '../scripts/ci-focused.mjs';
 const head='a'.repeat(40),before='b'.repeat(40),main='c'.repeat(40),old='d'.repeat(40);
 const range={head,before,parents:[before,main],mainAncestor:main,verifiedMain:main,isAncestor:()=>true};
 test('only a verified exact-main two-parent reconciliation narrows the range',()=>{
@@ -78,4 +78,35 @@ test('sixteen-runner current gate rejects old or mixed architecture and missing 
   for(const changed of [jobs.filter(j=>j.name!=='Node regression (shard 16/16)'),[...jobs,oldJobs.at(-1)],jobs.map(j=>j.name==='Node regression (shard 16/16)'?{...j,run_attempt:1}:j)]){
     assert.equal(verifiedMainRun(main,run,{total_count:changed.length,jobs:changed}),false);
   }
+});
+
+test('adaptive focused assignment keeps selected files exactly once and rejects stale or tampered plans',()=>{
+  const weights=JSON.parse(readFileSync(new URL('../scripts/ci-node-weights.json',import.meta.url),'utf8'));
+  const light=adaptiveFocusGroups(weights,['tests/ci-trigger.test.js']);
+  assert.equal(light.shards,1);
+  const broad=adaptiveFocusGroups(weights,weights.files.map(x=>x.file),{broad:true});
+  assert.equal(broad.shards,16);
+  const selection=selectTests(['scripts/build.mjs'],inv);
+  const execution=adaptiveFocusGroups(weights,selection.tests,{broad:true});
+  const plan={version:2,head,runId:'42',attempt:'1',base:before,changedPaths:['scripts/build.mjs'],...selection,execution};
+  const context={head,runId:'42',attempt:'1',inventory:inv,weights};
+  assert.deepEqual(verifyFocusPlan(plan,context),execution);
+  assert.deepEqual(execution.groups.flatMap(g=>g.files).sort(),selection.tests);
+  for(const change of [x=>x.attempt='2',x=>x.head=old,x=>x.tests.pop(),x=>x.execution.groups[0].files.pop()]){
+    const bad=structuredClone(plan);change(bad);assert.throws(()=>verifyFocusPlan(bad,context));
+  }
+  const counts={tests:1,passed:1,failed:0,cancelled:0,skipped:0,todo:0};
+  const reports=execution.groups.map(g=>({version:1,source:head,runId:'42',attempt:'1',shard:g.shard,shards:execution.shards,node:'v22',platform:'linux',arch:'x64',parallelism:4,exitCode:0,
+    files:g.files.map(file=>({file,duration_ms:1,success:true,counts})),total:{success:true,duration_ms:1,counts:{...counts,tests:g.files.length,passed:g.files.length}}}));
+  assert.equal(verifyFocusReports(plan,reports).files.length,selection.tests.length);
+  assert.throws(()=>verifyFocusReports(plan,reports.slice(1)));
+  const bad=structuredClone(reports);bad[0].attempt='2';assert.throws(()=>verifyFocusReports(plan,bad));
+});
+test('adaptive focused workflow preserves light path and requires parallel completeness',()=>{
+  const quick=readFileSync(new URL('../.github/workflows/ci-fast.yml',import.meta.url),'utf8');
+  assert.match(quick,/max-parallel: 16/);
+  assert.match(quick,/needs: \[fast, parallel\]/);
+  assert.match(quick,/node scripts\/ci-focused\.mjs complete/);
+  assert.match(quick,/test "\$PARALLEL_RESULT" = success/);
+  assert.match(quick,/focused-plan-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/);
 });
