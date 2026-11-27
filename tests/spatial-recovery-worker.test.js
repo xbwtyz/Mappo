@@ -170,6 +170,14 @@ test('SRE compiled standalone contains syntactically valid independent worker an
     const direct=await searchSpatialUnifiedRoadGroup(project,operation,createSpatialPreservationBudget());
     assert.deepEqual(response.result.delta,direct.delta);
     assert.deepEqual(response.result.basisDelta,direct.basisDelta);
+    const verification=new Promise((resolve,reject)=>{worker.once('message',resolve);worker.once('error',reject);});
+    worker.postMessage({...input,requestId:2,kind:'verify-review',witness:response.result,authorization:null});
+    const proof=await verification;
+    assert.equal(proof.kind,'verified-review');
+    assert.equal(proof.requestId,2);
+    assert.deepEqual(proof.summary.retired,[]);
+    assert.deepEqual(proof.summary.added,[]);
+    assert.deepEqual(JSON.parse(proof.candidateJson),await verifySpatialUnifiedRoadWitness(project,operation,response.result,createSpatialPreservationBudget()));
   }finally{await worker.terminate();}
 });
 
