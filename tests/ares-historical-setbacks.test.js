@@ -9,6 +9,11 @@ import { normalizeSpatialRoadGroup, discoverSpatialRoadRetirementEligibility, se
 import { createSpatialDestructionBudget, createSpatialOperation, spatialRefKey } from '../src/core/spatial-recovery-contract.js';
 import { discoverAresRoadSetbacks } from '../src/core/ares-road-discovery.js';
 import { createAresDependencyObservation } from '../src/core/ares-dependency-observation.js';
+import { discoverAresAdaptationScope, verifyAresOutsideScope } from '../src/core/ares-adaptation-scope.js';
+import { createLareContext, discoverLareParcelScope } from '../src/core/reconciliation-context.js';
+import { analyzeRoadImpact } from '../src/core/road-impact.js';
+import { buildRoadGraph } from '../src/core/road-graph.js';
+import { aresReplayJson } from '../src/core/ares-diagnostic-replay.js';
 import { stampRoadGenerated } from '../src/core/road-provenance.js';
 import { APP_VERSION } from '../src/core/version.js';
 
@@ -73,6 +78,18 @@ for(const c of fixture.cases)test('P2 exact historical movement '+c.id+' — sou
   const reduced=reducedReference(project,eligibility,refs);
   const preserving=createSpatialOperation({...op,permissions:{...op.permissions,destruction:false}});
   const reducedDiscovery=compareDiscovery(reduced,context(preserving,c.id+'-reduced'));
+  // Lock independently observed E1 results, not an invented solver answer.
+  assert.equal(original.blockers.length,c.e1Evidence.originalBlockers);
+  assert.equal(reducedDiscovery.blockers.length,c.e1Evidence.reducedBlockers);
+  assert.deepEqual([...new Set(reducedDiscovery.blockers.map(b=>b.propertyRef.id))].sort(),c.properties.slice().sort());
+  const impact=analyzeRoadImpact(project,{operation:'translate-road',graph:buildRoadGraph(draft.proposedCity)});
+  assert.ok(impact.complete&&impact.status!=='invalid');
+  const legacyContext=createLareContext(project,draft,new Map(),budget());
+  const legacyScope=discoverLareParcelScope(legacyContext,project.city,draft,
+    new Map(topology.identity.changed.filter(f=>f.kind==='block').map(f=>[f.id,f.record])),impact.issues,budget()).adapt();
+  const scope=await discoverAresAdaptationScope(project,context(op,c.id),{maxObjects:10000,maxHops:8},budget());
+  assert.equal(scope.status,'observed');
+  assert.deepEqual(scope.unresolvedRefs,[]);
   const properties=c.properties.map(id=>{
     const record=project.city.properties.find(p=>p.id===id);
     const originalRows=matchingRows(original,id),reducedRows=matchingRows(reducedDiscovery,id);
@@ -81,6 +98,26 @@ for(const c of fixture.cases)test('P2 exact historical movement '+c.id+' — sou
     const eligible=eligibility.propertyGroups.some(g=>g.propertyId===id);
     const survives=reduced.city.properties.some(p=>p.id===id);
     assert.equal(survives,!eligible);
+    const expected=fixture.e1Evidence.properties[id];
+    assert.equal(record.blockId,expected.blockId);
+    assert.equal(record.frontageRoadId,expected.frontageRoadId);
+    assert.equal(changedBlocks.has(record.blockId),false);
+    assert.equal(legacyContext.properties.some(p=>p.id===id),false);
+    assert.equal(legacyScope.role(id),'observable');
+    assert.equal(legacyScope.authorized.some(p=>p.id===id),false);
+    assert.ok(impact.issues.some(i=>i.code==='road-setback'&&i.kind==='property'&&i.id===id));
+    assert.equal(eligible,false);assert.equal(survives,true);
+    assert.equal(label.classification,'review-candidate');
+    assert.equal(label.reason,'generated-property-review');
+    assert.ok(scope.reviewRefs.some(r=>r.collection==='properties'&&r.id===id));
+    assert.ok(scope.entries.some(e=>e.ref.collection==='blocks'&&e.ref.id===record.blockId&&e.role==='observe-only'));
+    const expectedRow={roadId:expected.conflictingRoadId,blockId:expected.blockId,unit:'map-unit',...fixture.e1Evidence.measurements};
+    assert.equal(originalRows.length,1);assert.equal(reducedRows.length,1);
+    for(const row of [...originalRows,...reducedRows]){
+      assert.equal(row.roadId,expectedRow.roadId);assert.equal(row.blockId,expectedRow.blockId);assert.equal(row.unit,expectedRow.unit);
+      for(const field of ['newDistance','requiredDistance','oldDistance','oldRequiredDistance'])
+        assert.ok(Math.abs(row[field]-expectedRow[field])<1e-10,field);
+    }
     return {id,blockId:record.blockId,frontageRoadId:record.frontageRoadId,
       blockChanged:changedBlocks.has(record.blockId),eligible,survives,classification:label.classification,reason:label.reason,
       originalRows,reducedRows};
@@ -101,4 +138,24 @@ for(const c of fixture.cases)test('P2 exact historical movement '+c.id+' — sou
     originalBlockers:original.blockers.length,reducedBlockers:reducedDiscovery.blockers.length,
     properties,trial:{status:trial.status,verified,exhausted:trial.exhausted,stats:trial.stats}};
   console.log('ARES_P2_HISTORICAL '+JSON.stringify(report));
+  console.log('ARES_P2_SCOPE_CAUSE '+JSON.stringify({id:c.id,oldScope:properties.map(p=>({id:p.id,role:legacyScope.role(p.id)})),
+    newScope:properties.map(p=>({id:p.id,role:scope.entries.find(e=>e.ref.collection==='properties'&&e.ref.id===p.id).role})),
+    scopeStatus:scope.status,scopeEntries:scope.entries.length,reviewRefs:scope.reviewRefs.length}));
+});
+
+test('P2 cross-block review is not an unlimited permission or proof of solvability',async()=>{
+  const c=fixture.cases.find(c=>c.id==='five-branch'),op=normalizeSpatialRoadGroup(project,0,c.ids,c.offset,fixture.permissions);
+  const ctx=context(op,c.id+'-cap');
+  const limited=await discoverAresAdaptationScope(project,ctx,{maxObjects:1,maxHops:0},budget());
+  assert.equal(limited.status,'scope-limited');assert.deepEqual(limited.reviewRefs,[]);
+  await assert.rejects(()=>verifyAresOutsideScope(project,JSON.parse(aresReplayJson(project)),limited,ctx,budget()),/scope required/);
+  const scope=await discoverAresAdaptationScope(project,ctx,{maxObjects:10000,maxHops:8},budget());
+  assert.equal(scope.status,'observed');
+  const candidate=JSON.parse(aresReplayJson(project));
+  const review=new Set(scope.reviewRefs.map(spatialRefKey));
+  const external=candidate.city.properties.find(p=>!review.has(spatialRefKey({collection:'properties',id:p.id})));
+  assert.ok(external);external.customName='Unauthorized outside-scope change';
+  const result=await verifyAresOutsideScope(project,candidate,scope,ctx,budget());
+  assert.equal(result.status,'outside-scope-changed');assert.ok(result.violations.some(v=>v.ref?.id===external.id));
+  assert.equal(sha(project),before);
 });

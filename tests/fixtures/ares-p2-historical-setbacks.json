@@ -37,7 +37,12 @@
       "historicalStatus": "refused",
       "properties": [
         "PROP-00398"
-      ]
+      ],
+      "e1Evidence": {
+        "originalBlockers": 32,
+        "reducedBlockers": 1,
+        "observedTrialWork": 394076
+      }
     },
     {
       "id": "five-branch",
@@ -60,7 +65,12 @@
         "PROP-00398",
         "PROP-00406",
         "PROP-00407"
-      ]
+      ],
+      "e1Evidence": {
+        "originalBlockers": 30,
+        "reducedBlockers": 3,
+        "observedTrialWork": 393933
+      }
     },
     {
       "id": "three-junction",
@@ -80,7 +90,12 @@
       "properties": [
         "PROP-00406",
         "PROP-00407"
-      ]
+      ],
+      "e1Evidence": {
+        "originalBlockers": 18,
+        "reducedBlockers": 2,
+        "observedTrialWork": 394792
+      }
     },
     {
       "id": "quad-control",
@@ -98,12 +113,46 @@
       "groups": 19,
       "retirementRefs": 64,
       "historicalStatus": "verified-witness",
-      "properties": []
+      "properties": [],
+      "e1Evidence": {
+        "originalBlockers": 12,
+        "reducedBlockers": 0,
+        "observedTrialWork": 2637503
+      }
     }
   ],
   "reportedClearance": {
     "required": 8.7,
     "proposed": 8.211,
     "previous": 83.211
+  },
+  "e1Evidence": {
+    "source": "45f18cc702cf8b2c2ec721fbf70606c370b6681e",
+    "run": 45957331181,
+    "attempt": 1,
+    "job": 140366837861,
+    "measurements": {
+      "newDistance": 8.210910579343476,
+      "requiredDistance": 8.7,
+      "oldDistance": 83.21091057934348,
+      "oldRequiredDistance": 8.7
+    },
+    "properties": {
+      "PROP-00398": {
+        "blockId": "BLK-0111",
+        "frontageRoadId": "RD-0279",
+        "conflictingRoadId": "RD-0252"
+      },
+      "PROP-00406": {
+        "blockId": "BLK-0113",
+        "frontageRoadId": "RD-0283",
+        "conflictingRoadId": "RD-0256"
+      },
+      "PROP-00407": {
+        "blockId": "BLK-0113",
+        "frontageRoadId": "RD-0283",
+        "conflictingRoadId": "RD-0256"
+      }
+    }
   }
 }
