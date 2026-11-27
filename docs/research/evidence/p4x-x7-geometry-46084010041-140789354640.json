@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "source": "329166808a5df8bcca5ace840493ae6930f2eb64",
+  "run": 46084010041,
+  "attempt": 1,
+  "aggregate": 140790866102,
+  "job": 140789354640,
+  "rows": [
+    {
+      "id": "radial-small:five-branch:75:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "minimum": 7,
+      "category": "search-refused",
+      "termination": "hybrid-stream-exhausted",
+      "attempts": 179,
+      "stats": {
+        "work": 1659379,
+        "expansions": 219,
+        "remainingWork": 6340621,
+        "remainingExpansions": 32549
+      },
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "hybrid": {
+        "baselinePairs": 14,
+        "subsets": 40,
+        "coveringGroups": 4,
+        "connectedGroups": 4,
+        "connectorGroups": 0,
+        "enumerationLimit": false,
+        "groupLimit": false,
+        "seedProposals": 64,
+        "feedbackProposals": 128,
+        "duplicates": 13,
+        "feedbackEvaluations": 179,
+        "bestConflictCount": 4,
+        "attempted": {
+          "hybrid-refinement": 115,
+          "hybrid-directional-seed": 64
+        },
+        "failures": {
+          "unnormalized-crossing": 179
+        },
+        "approvedMinimum": 7,
+        "seedValidated": true
+      },
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 0,
+        "firstScore": null,
+        "bestScore": null,
+        "bestAttempt": null
+      }
+    }
+  ]
+}
