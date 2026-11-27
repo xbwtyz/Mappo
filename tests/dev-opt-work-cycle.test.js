@@ -165,3 +165,10 @@ test('read-only CI run report retains original failure, timing and stale handoff
   assert.match(workflow,/workflow_run:/);assert.match(workflow,/actions: read/);assert.doesNotMatch(workflow,/: write\b/);
   assert.doesNotMatch(workflow,/ref: .*workflow_run\.head_sha/);
 });
+
+test('actual historical adaptive checkpoint is structurally valid without granting authority',()=>{
+  const record=JSON.parse(readFileSync(new URL('../docs/development/checkpoints/dev-opt-pr162-adaptive-qualified.json',import.meta.url),'utf8'));
+  assert.equal(validateDevelopmentCheckpoint(record),record);
+  assert.equal(record.evidence.fast.shards,2);
+  assert.equal(record.evidence.fast.tests,130);
+});

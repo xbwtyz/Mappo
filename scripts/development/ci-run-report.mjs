@@ -1,6 +1,6 @@
 // Read-only completed-run evidence. Never changes source status or grants approval.
 import {readFileSync, mkdirSync, writeFileSync, appendFileSync} from 'node:fs';
-import {join} from 'node:path';
+import {join,dirname} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {collectCiDiagnostics,githubReadOnlyReader} from './research/ci-diagnostics.mjs';
 import {completeFullJobs,focusedExecution,NODE_SHARDS} from '../ci-full-contract.mjs';
@@ -78,6 +78,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     const out=process.env.REPORT_DIR;
     need(out&&positive(request.runId)&&positive(request.attempt)&&sha(request.sourceRevision),'Invalid report request');
     const report=buildRunReport(request,githubReadOnlyReader());
+    mkdirSync(dirname(out),{recursive:true});
     mkdirSync(out,{recursive:false});
     const markdown=renderRunSummary(report);
     writeFileSync(join(out,'report.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});
