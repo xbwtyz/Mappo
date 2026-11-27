@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { G_MANIFEST } from './ares-p4-g-corpus.mjs';
 import { G_OPTIONS } from './ares-p4-g-run.mjs';
 import { inspectFreshRtreNeighborhood } from './ares-rtre-fresh-neighborhood.mjs';
-import { probeFreshRtreFirstValid,probeFreshRtreBreadth } from './ares-rtre-single-junction.mjs';
+import { probeFreshRtreFirstValid,probeFreshRtreBreadth,probeFreshRtreDirectional } from './ares-rtre-single-junction.mjs';
 import { verifyFreshRtreWitness } from './ares-rtre-verify.mjs';
 import { createSpatialPreservationBudget } from '../../../src/core/spatial-recovery-contract.js';
 import { LareBudgetExceeded } from '../../../src/core/reconciliation-budget.js';
@@ -34,7 +34,10 @@ export async function probeP4RCap(id,cap){
 export async function probeP4RBreadth(id,cap){
   return probeP4RArm(id,cap,probeFreshRtreBreadth);
 }
-async function probeP4RArm(id,cap,probe){
+export async function probeP4RDirectional(id,cap){
+  return probeP4RArm(id,cap,probeFreshRtreDirectional,true);
+}
+async function probeP4RArm(id,cap,probe,includeStencil=false){
   const r=prior(id);
   if(!P4R_CAPS.includes(cap))throw Error('Unapproved P4R candidate cap.');
   const o={...G_OPTIONS,maxCandidates:cap},budget=createSpatialPreservationBudget(G_MANIFEST.search.root),t=performance.now();
@@ -49,6 +52,7 @@ async function probeP4RArm(id,cap,probe){
     row.audit=await verifyFreshRtreWitness('g:'+id,o,search,createSpatialPreservationBudget(G_MANIFEST.audit.root));
     row.auditMs=performance.now()-u;
     row.witness=search.adjustedWitness?{neighbors:search.adjustedWitness.neighbors,updates:search.adjustedWitness.updates,changedRoadIds:search.adjustedWitness.changedRoadIds,displacement:search.adjustedWitness.displacement}:null;
+    if(includeStencil&&search.adjustedWitness)row.stencil=search.adjustedWitness.stencil;
     if(row.audit.status!=='geometry-verified')row.category='unverified';
   }
   return riFreeze(row);

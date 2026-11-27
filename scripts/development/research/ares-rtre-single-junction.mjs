@@ -210,9 +210,20 @@ function* connectedClusters(graph,rows,selected,cap,budget){
 // P4R R3A: compare the same cluster/stencil candidates with a bounded
 // breadth window. Legacy order and accounting remain exact. The breadth
 // arm charges materialization and traversal inside the shared root.
-function* orderedTrials(graph,rows,selected,maxNeighbors,budget,breadth){
+function* orderedTrials(graph,rows,selected,maxNeighbors,budget,breadth,directional=false){
   const factors=[.0625,.125,.25,.5,1,-.125,-.25,-.5,-1];
   const clusters=connectedClusters(graph,rows,selected,maxNeighbors,budget);
+  if(directional){
+    // R3B: same connected clusters and factor magnitudes, but rotate the
+    // neighbor motion. Selected coordinates always use the original offset.
+    // Interleave directions for each magnitude; no new displacement ceiling.
+    for(const ids of clusters)for(const factor of factors)
+      for(const direction of ['parallel','perpendicular','diagonal-left','diagonal-right'])
+        for(const taper of [false,true]){
+          budget.spend();yield {ids,factor,taper,direction};
+        }
+    return;
+  }
   if(!breadth){
     for(const ids of clusters)for(const factor of factors)for(const taper of [false,true])
       yield {ids,factor,taper};
@@ -326,7 +337,11 @@ export async function probeFreshRtreFirstValid(caseId,o,budget){
 export async function probeFreshRtreBreadth(caseId,o,budget){
   return probeCoordinated(caseId,o,budget,true,true,false,true,true);
 }
-async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false){
+// R3B is a separate detached first-valid arm, not a production setting.
+export async function probeFreshRtreDirectional(caseId,o,budget){
+  return probeCoordinated(caseId,o,budget,true,true,false,true,false,true);
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -388,12 +403,19 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     const rows=[...report.eligibleJunctions].sort((a,b)=>Number(blockers.has(b.ref.id))-Number(blockers.has(a.ref.id))||
       a.primaryIncidentCount-b.primaryIncidentCount||a.depth-b.depth||riCompare(a.ref.id,b.ref.id));
     const byId=new Map(rows.map(r=>[r.ref.id,r])),offset=f.context.operation.geometry.offset;
-    outer:for(const {ids,factor,taper} of orderedTrials(accepted,rows,selected,maxNeighbors,budget,breadth)){
+    outer:for(const {ids,factor,taper,direction} of orderedTrials(accepted,rows,selected,maxNeighbors,budget,breadth,directional)){
         if(result.attempts>=maxCandidates){result.termination='candidate-limit';break outer;}
         const proposed=new Map(positions),neighbors=[];
+        let dx=offset.x,dy=offset.y;
+        if(directional){
+          budget.spend();
+          if(direction==='perpendicular'){dx=-offset.y;dy=offset.x;}
+          else if(direction==='diagonal-left'){dx=(offset.x-offset.y)*Math.SQRT1_2;dy=(offset.x+offset.y)*Math.SQRT1_2;}
+          else if(direction==='diagonal-right'){dx=(offset.x+offset.y)*Math.SQRT1_2;dy=(offset.y-offset.x)*Math.SQRT1_2;}
+        }
         for(const id of ids){
           budget.spend();const row=byId.get(id),weight=taper?factor/(1+row.depth):factor,
-            point=move(row.old,offset.x*weight,offset.y*weight);
+            point=move(row.old,dx*weight,dy*weight);
           if(point.x===row.old.x&&point.y===row.old.y)continue;
           proposed.set(id,point);neighbors.push({id,old:{...row.old},point:{...point}});
         }
@@ -411,7 +433,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         for(const u of updates)for(const rid of accepted.incidentRoads.get(u.id)){budget.spend();roads.add(rid);}
         sortCharge(roads.size,budget);let displacement=0;
         for(const n of neighbors){budget.spend();displacement+=Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y);}
-        const w={kind:'geometry-only',neighbors,updates,changedRoadIds:[...roads].sort(riCompare),displacement,stencil:{factor,taper}};
+        const w={kind:'geometry-only',neighbors,updates,changedRoadIds:[...roads].sort(riCompare),displacement,stencil:directional?{factor,taper,direction}:{factor,taper}};
         if(constrained){
           w.kind='geometry-with-final-constraints';
           w.constraints=checked.constraints;
