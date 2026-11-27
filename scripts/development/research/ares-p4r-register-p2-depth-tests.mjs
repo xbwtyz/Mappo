@@ -7,13 +7,13 @@ export function registerP2DepthAudit(city){
     const rows=await auditP2Case(id);assert.deepEqual(rows.map(r=>r.hops),P2_AUDIT_HOPS);
     for(const r of rows){
       console.log('ARES_P4R_P2_DEPTH '+JSON.stringify(r));
-      assert.equal(r.caseId,id);assert.ok(['compared','preflight-refused','object-cap-not-comparable'].includes(r.comparison));
+      assert.equal(r.caseId,id);assert.equal(r.comparison,'compared');
       for(const stats of [r.observationStats,r.scopeStats,r.auditStats]){
         assert.ok(stats.work<=G_MANIFEST.search.root.work);assert.equal(stats.expansions,0);
       }
-      // Mismatches are the research outcome, not a passing safety gate.
-      // Retain every mismatch and prohibit broader movement pending review.
-      assert.ok(Array.isArray(r.mismatches));
+      // Historical diagnostic rows preserved separately. All 156 exact
+      // frozen cases are now mandatory zero-discrepancy regressions.
+      assert.deepEqual(r.mismatches,[]);
       if(r.scopeStatus!=='observed')assert.equal(r.reviewRefs,0);
     }
   });

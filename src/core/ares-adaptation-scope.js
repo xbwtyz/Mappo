@@ -70,22 +70,31 @@ function buildAresScope(observation,context,limits,budget,feedback=null){
   const mark=(row,depth,reason,expand)=>{
     budget.spend();const k=key(row.ref),existing=admitted.get(k);
     const canExpand=expand&&['requested-intent','review-candidate'].includes(row.classification);
-    if(existing){
-      if(canExpand&&!existing.expand){existing.expand=true;existing.depth=Math.min(existing.depth,depth);queue.push(k);}
+    // Observation may have a shorter read-only path than the path that
+    // permits ownership expansion. Never promote through an over-limit path.
+    if(depth>limits.maxHops){
+      if(!existing&&!unresolved.has(k))unresolved.set(k,row.ref);
       return;
     }
-    if(depth>limits.maxHops||admitted.size>=limits.maxObjects){
+    if(existing){
+      if(depth<existing.depth){existing.depth=depth;existing.reason=reason;}
+      if(canExpand&&existing.expansionDepth===null){
+        existing.expansionDepth=depth;queue.push(k);
+      }
+      return;
+    }
+    if(admitted.size>=limits.maxObjects){
       if(!unresolved.has(k))unresolved.set(k,row.ref);
       return;
     }
-    admitted.set(k,{row,depth,reason,expand:canExpand});
+    admitted.set(k,{row,depth,reason,expansionDepth:canExpand?depth:null});
     if(canExpand)queue.push(k);
   };
   const finish=(status,diagnostics)=>{
-    const entries=[...admitted.values()].sort((a,b)=>byRef(a.row,b.row)).map(({row,depth,reason,expand})=>({
+    const entries=[...admitted.values()].sort((a,b)=>byRef(a.row,b.row)).map(({row,depth,reason,expansionDepth})=>({
       ref:row.ref,classification:row.classification,classificationReason:row.reason,depth,discoveryReason:reason,
       // Read-only context and stationary anchors are never change candidates.
-      role:row.classification==='protected'?'protected':expand?'review-candidate':'observe-only'}));
+      role:row.classification==='protected'?'protected':expansionDepth!==null?'review-candidate':'observe-only'}));
     const scope=riFreeze({version:ARES_SCOPE_VERSION,context,snapshotFingerprint:observation.snapshotFingerprint,
       limits,status,entries,unresolvedRefs:[...unresolved.values()].sort((a,b)=>riCompare(key(a),key(b))),
       reviewRefs:status==='observed'?entries.filter(e=>e.role==='review-candidate').map(e=>e.ref):[],
@@ -114,8 +123,10 @@ function buildAresScope(observation,context,limits,budget,feedback=null){
         mark(row,1,edge.relation,false);
     }
   }
-  // Deterministic queue: roots are sorted by typed identity, graph edges
-  // already sorted; each node expanded at most once.
+  // All expansion roots are queued at depth zero before traversal.
+  // FIFO unit-edge expansion gives the first permitted expansion path its
+  // shortest depth, independently of earlier read-only observations.
+  // Graph edges are sorted; each node expands at most once.
   const expanded=new Set();
   for(let i=0;i<queue.length;i++){
     const k=queue[i],current=admitted.get(k);
@@ -124,7 +135,7 @@ function buildAresScope(observation,context,limits,budget,feedback=null){
     for(const {edge,other} of adj.get(k)){
       budget.spend();
       const row=nodes.get(other);
-      mark(row,current.depth+1,edge.relation,active.has(other)||scopeRelatedActive(current.row,row,edge));
+      mark(row,current.expansionDepth+1,edge.relation,active.has(other)||scopeRelatedActive(current.row,row,edge));
     }
   }
   // A node first seen beyond the limit could later be admitted by a shorter
