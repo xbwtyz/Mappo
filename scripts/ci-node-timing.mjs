@@ -109,7 +109,7 @@ export function measuredAssignments(manifest,inventory,shards){
   const groups=proposeBalanced(manifest.files,shards);
   const assigned=groups.flatMap(g=>g.files);
   if(groups.length!==shards||groups.some(g=>g.files.length===0)||new Set(assigned).size!==assigned.length||
-     JSON.stringify([...assigned].sort())!==JSON.stringify([...inventory].sort()))throw Error('Invalid measured diagnostic assignment');
+     JSON.stringify([...assigned].sort())!==JSON.stringify([...inventory].sort()))throw Error('Invalid measured assignment');
   return groups;
 }
 
@@ -152,7 +152,7 @@ function aggregate(directory,shards) {
     const groups=measuredAssignments(JSON.parse(readFileSync('scripts/ci-node-weights.json','utf8')),nodeInventory(),16);
     for(const r of reports){
       if(JSON.stringify(r.files.map(x=>x.file).sort())!==JSON.stringify([...groups[r.shard-1].files].sort()))
-        throw Error('Diagnostic shard executed a different assignment');
+        throw Error('Shard executed a different measured assignment');
     }
   }
   const proposal=proposeBalanced(evidence.files,2);

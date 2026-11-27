@@ -50,7 +50,7 @@ function classify(path) {
   if (path==='tests/spatial-recovery-compression-support.js') return ['compression-partition'];
   if (/^tests\/[^/]+\.test\.js$/.test(path)) return [];
   if (path==='index.html' || /^dist\/mappo-[^/]+\.html$/.test(path)) return [];
-  if (/^(scripts\/ci-(trigger|focused|full-contract|node-timing|node-timing-reporter)\.mjs|\.github\/workflows\/ci(-fast|-node-timing)?\.yml|scripts\/ci-node-weights\.json|scripts\/browser-suites\.json|scripts\/run-browser-suite\.mjs|scripts\/development\/.+)$/.test(path)) return ['infrastructure'];
+  if (/^(scripts\/ci-(trigger|focused|full-contract|node-timing|node-timing-reporter)\.mjs|\.github\/workflows\/(ci(-fast|-node-timing)?|release)\.yml|scripts\/ci-node-weights\.json|scripts\/browser-suites\.json|scripts\/run-browser-suite\.mjs|scripts\/development\/.+)$/.test(path)) return ['infrastructure'];
   if (/^src\/core\/(geometry|validate-|identity|secure-identity|accepted-|city-model|project-schema|prng|boundary|placement|reconciliation-|neighborhood-reflow|parcel-reconciliation|road-group-preservation)/.test(path) ||
       /^src\/data\/project-validation/.test(path)) return ['all'];
   if (/^src\/core\/spatial-recovery-/.test(path)) return ['sre','roads','schema'];

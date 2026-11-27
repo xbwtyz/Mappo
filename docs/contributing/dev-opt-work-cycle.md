@@ -34,3 +34,8 @@ V2 supports active/paused draft, review-ready and merged exact-main checkpoints.
 ## OPT-10 candidate acceptance artifacts
 
 On a qualified full candidate, the first Node job creates the manual acceptance archive after standalone parity and regression testing. For a draft diagnostic, use the explicit [acceptance-package] head marker to generate it during Fast Checks. Extract the uploaded artifact, open index.html offline, use the two synthetic road movement fixtures and checklist, and return actual results. The manifest binds the actual checkout SHA (which may be the PR merge ref), optional PR head, app/schema versions and SHA256 of every file. No generated report claims manual acceptance or full CI success; verify the workflow and candidate identity independently. Current package describes the detached SRE baseline, not future live controls.
+
+
+## Current DEV-39 architecture and evidence formats
+
+Owner approved sixteen measured Node shards plus four browser suites on PR162. The earlier six-runner descriptions above refer to their historical P0/P1 scope. V2 full checkpoint references now require `nodeShards: 16`, and the same-attempt validator requires all 22 routing/regression/aggregate jobs. V1 paused evidence and historical metrics V1 remain readable. Metrics V2 separates `full-main-16-node` observations and requires all current mandatory jobs with run ID/attempt; no old run is promoted. The release gate also verifies the complete current job set, not just workflow status. No change to separate approvals.

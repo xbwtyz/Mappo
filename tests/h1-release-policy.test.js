@@ -16,6 +16,8 @@ test('H1 release workflow is manual, gated to stable version and exact green mai
   assert.match(release, /test -s docs\/releases\/v0\.2\.0\.md/);
   assert.match(release, /\.name == "Mappo CI" and \.conclusion == "success"/);
   assert.match(release, /test "\$actual_main" = "\$GITHUB_SHA"/);
+  assert.match(release, /verifiedMainRun\(sha,run,jobs\)/);
+  assert.match(release, /run\.run_attempt\+'\/jobs\?per_page=100'/);
   assert.match(release, /npm run check/);
   assert.match(release, /git diff --exit-code -- index\.html dist\/mappo-0\.2\.0\.html/);
   assert.match(release, /gh release create v0\.2\.0/);
