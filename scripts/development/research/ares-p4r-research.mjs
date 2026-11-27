@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { G_MANIFEST } from './ares-p4-g-corpus.mjs';
 import { G_OPTIONS } from './ares-p4-g-run.mjs';
 import { inspectFreshRtreNeighborhood } from './ares-rtre-fresh-neighborhood.mjs';
-import { probeFreshRtreFirstValid,probeFreshRtreBreadth,probeFreshRtreDirectional } from './ares-rtre-single-junction.mjs';
+import { probeFreshRtreFirstValid,probeFreshRtreBreadth,probeFreshRtreDirectional,probeFreshRtreBreadthDirectional,probeFreshRtreDirectionalFallback } from './ares-rtre-single-junction.mjs';
 import { verifyFreshRtreWitness } from './ares-rtre-verify.mjs';
 import { createSpatialPreservationBudget } from '../../../src/core/spatial-recovery-contract.js';
 import { LareBudgetExceeded } from '../../../src/core/reconciliation-budget.js';
@@ -36,6 +36,11 @@ export async function probeP4RBreadth(id,cap){
 }
 export async function probeP4RDirectional(id,cap){
   return probeP4RArm(id,cap,probeFreshRtreDirectional,true);
+}
+export const P4R_COMBINATIONS=Object.freeze(['breadth-directional','original-directional-fallback']);
+export async function probeP4RCombination(id,cap,kind){
+  if(!P4R_COMBINATIONS.includes(kind))throw Error('Unapproved P4R combination.');
+  return probeP4RArm(id,cap,kind==='breadth-directional'?probeFreshRtreBreadthDirectional:probeFreshRtreDirectionalFallback,true);
 }
 async function probeP4RArm(id,cap,probe,includeStencil=false){
   const r=prior(id);

@@ -210,6 +210,45 @@ function* connectedClusters(graph,rows,selected,cap,budget){
 // P4R R3A: compare the same cluster/stencil candidates with a bounded
 // breadth window. Legacy order and accounting remain exact. The breadth
 // arm charges materialization and traversal inside the shared root.
+// R4C-A: two explicit combined streams. All stages use the very same
+// search root, preflight, exact requested positions and candidate checks.
+// Neither arm resets the candidate count, creates another budget, or
+// uses a wider neighborhood.
+function* combinedTrials(graph,rows,selected,maxNeighbors,budget,kind){
+  const factors=[.0625,.125,.25,.5,1,-.125,-.25,-.5,-1];
+  const directions=['parallel','perpendicular','diagonal-left','diagonal-right'];
+  if(kind==='original-directional-fallback'){
+    // A fixed, cap-independent prefix preserves early reference witnesses.
+    // After 64 emitted slots (not necessarily 64 evaluated candidates),
+    // try only nonparallel directions; repeat cluster enumeration is charged.
+    let emitted=0;
+    for(const trial of orderedTrials(graph,rows,selected,maxNeighbors,budget,false,false)){
+      yield trial;
+      if(++emitted===64)break;
+    }
+    for(const ids of connectedClusters(graph,rows,selected,maxNeighbors,budget))
+      for(const factor of factors)for(const direction of directions.slice(1))
+        for(const taper of [false,true]){
+          budget.spend();yield {ids,factor,taper,direction};
+        }
+    return;
+  }
+  if(kind!=='breadth-directional')throw Error('Unknown combined RTRE research strategy.');
+  // Interleave directions over an eight-cluster bounded window; identical
+  // signed factors/taper and displacement magnitude as the individual arms.
+  let window=[];
+  function* visit(groups){
+    for(const factor of factors)for(const direction of directions)
+      for(const taper of [false,true])for(const ids of groups){
+        budget.spend();yield {ids,factor,taper,direction};
+      }
+  }
+  for(const ids of connectedClusters(graph,rows,selected,maxNeighbors,budget)){
+    budget.spend(1+ids.length);window.push(ids);
+    if(window.length===8){yield* visit(window);window=[];}
+  }
+  if(window.length)yield* visit(window);
+}
 function* orderedTrials(graph,rows,selected,maxNeighbors,budget,breadth,directional=false){
   const factors=[.0625,.125,.25,.5,1,-.125,-.25,-.5,-1];
   const clusters=connectedClusters(graph,rows,selected,maxNeighbors,budget);
@@ -341,7 +380,13 @@ export async function probeFreshRtreBreadth(caseId,o,budget){
 export async function probeFreshRtreDirectional(caseId,o,budget){
   return probeCoordinated(caseId,o,budget,true,true,false,true,false,true);
 }
-async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false){
+export async function probeFreshRtreBreadthDirectional(caseId,o,budget){
+  return probeCoordinated(caseId,o,budget,true,true,false,true,false,false,'breadth-directional');
+}
+export async function probeFreshRtreDirectionalFallback(caseId,o,budget){
+  return probeCoordinated(caseId,o,budget,true,true,false,true,false,false,'original-directional-fallback');
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -403,11 +448,13 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     const rows=[...report.eligibleJunctions].sort((a,b)=>Number(blockers.has(b.ref.id))-Number(blockers.has(a.ref.id))||
       a.primaryIncidentCount-b.primaryIncidentCount||a.depth-b.depth||riCompare(a.ref.id,b.ref.id));
     const byId=new Map(rows.map(r=>[r.ref.id,r])),offset=f.context.operation.geometry.offset;
-    outer:for(const {ids,factor,taper,direction} of orderedTrials(accepted,rows,selected,maxNeighbors,budget,breadth,directional)){
+    const trials=combined?combinedTrials(accepted,rows,selected,maxNeighbors,budget,combined):
+      orderedTrials(accepted,rows,selected,maxNeighbors,budget,breadth,directional);
+    outer:for(const {ids,factor,taper,direction} of trials){
         if(result.attempts>=maxCandidates){result.termination='candidate-limit';break outer;}
         const proposed=new Map(positions),neighbors=[];
         let dx=offset.x,dy=offset.y;
-        if(directional){
+        if(direction!==undefined){
           budget.spend();
           if(direction==='perpendicular'){dx=-offset.y;dy=offset.x;}
           else if(direction==='diagonal-left'){dx=(offset.x-offset.y)*Math.SQRT1_2;dy=(offset.x+offset.y)*Math.SQRT1_2;}
@@ -433,7 +480,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         for(const u of updates)for(const rid of accepted.incidentRoads.get(u.id)){budget.spend();roads.add(rid);}
         sortCharge(roads.size,budget);let displacement=0;
         for(const n of neighbors){budget.spend();displacement+=Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y);}
-        const w={kind:'geometry-only',neighbors,updates,changedRoadIds:[...roads].sort(riCompare),displacement,stencil:directional?{factor,taper,direction}:{factor,taper}};
+        const w={kind:'geometry-only',neighbors,updates,changedRoadIds:[...roads].sort(riCompare),displacement,stencil:direction!==undefined?{factor,taper,direction}:{factor,taper}};
         if(constrained){
           w.kind='geometry-with-final-constraints';
           w.constraints=checked.constraints;
