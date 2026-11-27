@@ -1,6 +1,8 @@
 import { createAresDependencyObservation, matchesAresDependencySource } from './ares-dependency-observation.js';
-import { createAresDiagnostic, createAresDiagnosticContext } from './ares-diagnostic-contract.js';
+import { createAresDiagnostic, createAresDiagnosticContext, matchesAresDiagnosticContext } from './ares-diagnostic-contract.js';
 import { aresReplayJson } from './ares-diagnostic-replay.js';
+import { discoverAresLandscape } from './ares-landscape-observation.js';
+import { discoverAresDefense } from './ares-defense-observation.js';
 import { spatialRefKey, createSpatialRef } from './spatial-recovery-contract.js';
 import { ROAD_IMPACT_COLLECTIONS, riCompare, riFreeze } from './road-impact-model.js';
 
@@ -53,6 +55,9 @@ function scopeRelatedActive(from,other,edge){
 export async function discoverAresAdaptationScope(project,contextInput,limitsInput,budget){
   const limits=scopeLimits(limitsInput),context=createAresDiagnosticContext(contextInput);
   const observation=await createAresDependencyObservation(project,context,budget);
+  return buildAresScope(observation,context,limits,budget);
+}
+function buildAresScope(observation,context,limits,budget,feedback=null){
   const nodes=new Map(),adj=new Map();
   for(const row of observation.nodes){budget.spend();nodes.set(key(row.ref),row);adj.set(key(row.ref),[]);}
   for(const edge of observation.edges){
@@ -84,13 +89,30 @@ export async function discoverAresAdaptationScope(project,contextInput,limitsInp
     const scope=riFreeze({version:ARES_SCOPE_VERSION,context,snapshotFingerprint:observation.snapshotFingerprint,
       limits,status,entries,unresolvedRefs:[...unresolved.values()].sort((a,b)=>riCompare(key(a),key(b))),
       reviewRefs:status==='observed'?entries.filter(e=>e.role==='review-candidate').map(e=>e.ref):[],
-      diagnostics});
+      diagnostics,...(feedback?{constraintFeedback:feedback}:{})});
     scopeEvidence.add(scope);return scope;
   };
   if(observation.status!=='observed')return finish('preflight-refused',observation.discovery.diagnostics);
   for(const root of observation.roots){
     const row=nodes.get(key(root));if(!row)throw Error('Missing scope root.');
     mark(row,0,'changed-road-or-setback-root',active.has(key(root)));
+  }
+  // Independently observed constraint refs consume the same object cap.
+  // They are never new writable roots. Inspect one direct protected/context
+  // neighborhood without following unrelated roads, parcels or districts.
+  if(feedback)for(const r of feedback.contactRefs){
+    budget.spend();const k=key(r),row=nodes.get(k);
+    if(!row)throw Error('Missing constraint scope reference.');
+    mark(row,0,'landscape-or-defense-contact',active.has(k));
+  }
+  if(feedback)for(const r of feedback.contactRefs){
+    budget.spend();const k=key(r),entry=admitted.get(k);
+    if(!entry||entry.row.classification!=='protected')continue;
+    for(const {edge,other} of adj.get(k)){
+      budget.spend();const row=nodes.get(other);
+      if(row.classification==='protected'||row.classification==='observe-only')
+        mark(row,1,edge.relation,false);
+    }
   }
   // Deterministic queue: roots are sorted by typed identity, graph edges
   // already sorted; each node expanded at most once.
@@ -113,7 +135,55 @@ export async function discoverAresAdaptationScope(project,contextInput,limitsInp
     'Required dependency observations exceed the explicit scope limits.',[...unresolved.values()]));
   if(conflicts.length)diagnostics.push(scopeDiagnostic(context,'protected-content','scope-protected-blocker',
     'Requested movement or setback obstruction touches protected content.',conflicts));
-  return finish(unresolved.size?'scope-limited':conflicts.length?'protected-blocker':'observed',diagnostics);
+  if(feedback?.finalViolations.length)diagnostics.push(...feedback.diagnostics);
+  if(feedback?.finalUnresolved.length)diagnostics.push(scopeDiagnostic(context,'unknown-data','constraint-unresolved',
+    'Final landscape or defense constraint evidence is unresolved.',feedback.finalUnresolved.flatMap(e=>e.refs)));
+  return finish(unresolved.size?'scope-limited':conflicts.length?'protected-blocker':
+    feedback?.finalViolations.length?'constraint-blocked':feedback?.finalUnresolved.length?'constraint-unresolved':'observed',diagnostics);
+}
+
+// Public detached integration path: no caller-injected constraint rows. All
+// providers receive the same captured snapshot/context and one caller budget.
+// The older isolated scope API remains a diagnostic reference. Repeated
+// source discovery is deliberately charged, not a second budget or cache.
+export async function discoverAresIntegratedScope(project,contextInput,limitsInput,budget){
+  const limits=scopeLimits(limitsInput),context=createAresDiagnosticContext(contextInput);
+  const snapshot=JSON.parse(aresReplayJson(project,budget));
+  const observation=await createAresDependencyObservation(snapshot,context,budget);
+  const landscape=await discoverAresLandscape(snapshot,context,budget);
+  const defense=await discoverAresDefense(snapshot,context,budget);
+  for(const report of [landscape,defense]){
+    budget.spend();
+    if(report.snapshotFingerprint!==observation.snapshotFingerprint||
+       report.status!==observation.status||
+       !matchesAresDiagnosticContext({version:1,context:report.context},context))
+      throw Error('Inconsistent ARES constraint source.');
+  }
+  const finalViolations=[],finalUnresolved=[],sweptCandidates=[],diagnostics=[],contacts=new Map();
+  for(const entry of [...landscape.evidence.map(constraint=>({constraint,measurements:[]})),...defense.evidence]){
+    budget.spend();const {constraint,measurements}=entry;
+    for(const row of constraint.rows){
+      budget.spend();
+      if(row.kind==='preference'||row.outcome==='satisfied')continue;
+      const refs=[...new Map([...row.refs,...row.anchorRefs].map(r=>[key(r),r])).entries()]
+        .sort(([a],[b])=>riCompare(a,b)).map(([,r])=>r);
+      for(const r of refs){budget.spend();contacts.set(key(r),r);}
+      const item={provider:constraint.provider.id,query:constraint.query,row,refs,
+        measurements:measurements.filter(m=>m.rowId===row.id)};
+      if(constraint.query.phase==='swept'){sweptCandidates.push(item);continue;}
+      if(row.outcome==='violated'){
+        finalViolations.push(item);
+        diagnostics.push(createAresDiagnostic(context,{reason:row.kind==='protection'?'protected-content':'domain-violation',
+          code:row.id,stage:'final-landscape-defense',message:row.detail,refs,
+          source:{id:constraint.provider.id,version:row.ruleVersion}}));
+      }else finalUnresolved.push(item);
+    }
+  }
+  const feedback=riFreeze({contactRefs:[...contacts.entries()].sort(([a],[b])=>riCompare(a,b)).map(([,r])=>r),
+    finalViolations,finalUnresolved,sweptCandidates,diagnostics,
+    providers:[...landscape.providers,...defense.providers],crossings:landscape.crossings,anchors:defense.anchors,
+    verticalCapability:landscape.verticalCapability});
+  return buildAresScope(observation,context,limits,budget,feedback);
 }
 
 // Outside-scope preservation gate only; never candidate validity or Apply.
