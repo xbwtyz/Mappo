@@ -266,7 +266,11 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     async function assertVisibleRestoration(review){
       const audit=review.audit;
       assert.ok(audit&&audit.status!=='unavailable',browserName+': expected independently replayed restoration evidence');
-      assert.deepEqual(audit.finalRetired,review.summary.retired);
+      // Audit uses typed-reference order; display summary follows collection
+      // order. Require exact membership (including multiplicity), not order.
+      const keys=refs=>refs.map(({collection,id})=>JSON.stringify([collection,id])).sort();
+      assert.deepEqual(keys(audit.finalRetired),keys(review.summary.retired));
+      assert.deepEqual(keys(audit.grossRetired),keys([...audit.finalRetired,...audit.restored]));
       assert.equal(audit.grossRetired.length,audit.finalRetired.length+audit.restored.length);
       const totals=await page.locator('#roadSreTotals').textContent();
       assert.ok(totals.includes(review.summary.retired.length+' removed'));
