@@ -15,7 +15,8 @@
     "approved": [
       "Current W4 audit/interactive/manual qualification only; ARES plan previously approved but now paused pending owner discussion and explicit new go-ahead.",
       "Owner approved documenting landscape-aware ARES-L01–L10 planning amendment; no implementation authorization; existing ARES hold remains.",
-      "Discussion 1: owner approved UAEF-01–08 Option B, practical extensibility and accessibility. Planning only; ARES hold remains."
+      "Discussion 1: owner approved UAEF-01–08 Option B, practical extensibility and accessibility. Planning only; ARES hold remains.",
+      "Discussion 2: AP-01–12 explicitly approved; documentation only; no ARES implementation or hold lift."
     ],
     "prohibited": [
       "No schema/CI policy change, new protected-content rights, merge, release, tag or Pages without explicit separate approval."
@@ -40,13 +41,14 @@
   "pending": [
     "A5 exact full draft CI including mounted audit, paused incumbent/stale review, locked High and positive regeneration; manual acceptance/version alignment/review-ready CI.",
     "Separate PR163 merge approval and exact-main verification; stop for owner discussion before ARES.",
-    "Carry the UAEF discussion planning amendment into PR163 after current A5 exact-head full CI; preserve separate merge/implementation gates."
+    "Carry the UAEF and AP-01–12 discussion planning amendments into PR163 after current A5 exact-head full CI; preserve separate merge/implementation gates."
   ],
   "decisions": [
     "16 witness cap for detached prototype only, no runtime refusal policy or budget change.",
     "Preserve current schema 11 and portable/workspace 1; defer E3–E6 and B2.",
     "Mandatory reusable landscape spatial constraint contract, mixed environment fixtures and future elevation capability seam; no new schema, permission, landscape editor or 3D runtime scope.",
-    "UAEF shared specialized-engine infrastructure, developer documentation/contract tests and end-user accessibility requirements; parallel-ready only pending detailed production concurrency approval."
+    "UAEF shared specialized-engine infrastructure, developer documentation/contract tests and end-user accessibility requirements; parallel-ready only pending detailed production concurrency approval.",
+    "Adaptive default, bounded user scope and obstruction-driven expansion; typed preservation priorities and profiles; authored protection, major-road preference, future lock seam, character-aware reconstruction only when authorized, exact intent and no automatic escalation."
   ],
   "blockers": [
     "A4b focused-qualified; A5 interactive/browser coverage and owner manual acceptance outstanding. Audit proves supplied selected lineage only.",
@@ -88,5 +90,5 @@
     "sourceSha": "6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9",
     "policy": "Reviewed revert only; preserve exact evidence."
   },
-  "nextAction": "Verify active W4 A5 full CI; incorporate staged UAEF documentation on next safe branch update, continue W4 only. ARES requires remaining discussions and renewed go-ahead."
+  "nextAction": "Carry staged UAEF/AP documentation into PR163 at next separately authorized safe W4 update; verify exact-head full qualification and manual closeout. Continue ARES discussions only; no ARES implementation."
 }
