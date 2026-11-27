@@ -56,6 +56,14 @@ function auditDepths(city,geometry,report,hops,budget){
 }
 export async function observeR4Scope(id,hops){
   if(!R4_CASES.includes(id)||!R4_HOPS.includes(hops))throw Error('Unapproved R4 observation arm.');
+  return observeScope(id,hops);
+}
+export async function observeR4SpatialScope(id,hops){
+  if(P4R_BASELINE.find(r=>r.id===id)?.category!=='search-refused'||!R4_HOPS.includes(hops))
+    throw Error('Unapproved R4 spatial observation arm.');
+  return observeScope(id,hops);
+}
+async function observeScope(id,hops){
   const prior=P4R_BASELINE.find(r=>r.id===id),caseId='g:'+id;
   const budget=createSpatialPreservationBudget(G_MANIFEST.search.root),t=performance.now();
   const report=await inspectFreshRtreNeighborhood(caseId,{mode:'adaptive',maxObjects:G_MANIFEST.search.maxObjects,maxHops:hops},budget);

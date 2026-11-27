@@ -42,10 +42,18 @@ export async function probeP4RCombination(id,cap,kind){
   if(!P4R_COMBINATIONS.includes(kind))throw Error('Unapproved P4R combination.');
   return probeP4RArm(id,cap,kind==='breadth-directional'?probeFreshRtreBreadthDirectional:probeFreshRtreDirectionalFallback,true);
 }
-async function probeP4RArm(id,cap,probe,includeStencil=false){
+// R4C-B: finite, detached spatial combination matrix only. No external
+// geometry, arbitrary scope settings, changed candidate/root budget or
+// live authority. The reference and all older entrypoints stay unchanged.
+export async function probeP4RSpatial(id,hops,kind){
+  if(prior(id).category!=='search-refused'||![6,8,10].includes(hops)||!['original','breadth'].includes(kind))
+    throw Error('Unapproved P4R spatial arm.');
+  return probeP4RArm(id,256,kind==='original'?probeFreshRtreFirstValid:probeFreshRtreBreadth,true,hops);
+}
+async function probeP4RArm(id,cap,probe,includeStencil=false,maxHops=G_OPTIONS.maxHops){
   const r=prior(id);
   if(!P4R_CAPS.includes(cap))throw Error('Unapproved P4R candidate cap.');
-  const o={...G_OPTIONS,maxCandidates:cap},budget=createSpatialPreservationBudget(G_MANIFEST.search.root),t=performance.now();
+  const o={...G_OPTIONS,maxCandidates:cap,maxHops},budget=createSpatialPreservationBudget(G_MANIFEST.search.root),t=performance.now();
   let search;
   try{search=await probe('g:'+id,o,budget);}
   catch(e){if(e instanceof LareBudgetExceeded)return {id,cap,category:'work-limit',termination:'preflight-work-limit',stats:budget.snapshot(),elapsedMs:performance.now()-t};throw e;}

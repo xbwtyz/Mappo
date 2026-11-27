@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "source": "f2a9cdd38e013c2ac78da54765f6944c802e66e4",
+  "baseline": "0327d329fc01a6be818404af8df1916830ba81a6",
+  "cap": 256,
+  "hops": [
+    6,
+    8,
+    10
+  ],
+  "strategies": [
+    "original",
+    "breadth"
+  ],
+  "reused": {
+    "hops": 6,
+    "kind": "original"
+  },
+  "groups": {
+    "organic-large:quad": [
+      "organic-large:quad:100:diagonal",
+      "organic-large:quad:100:y",
+      "organic-large:quad:75:y"
+    ],
+    "linear-medium:eight-loop": [
+      "linear-medium:eight-loop:100:diagonal",
+      "linear-medium:eight-loop:75:y"
+    ],
+    "radial-small:five-chain": [
+      "radial-small:five-chain:50:y"
+    ],
+    "organic-large:five-chain": [
+      "organic-large:five-chain:100:diagonal",
+      "organic-large:five-chain:100:y"
+    ],
+    "planned-medium:eight-chain": [
+      "planned-medium:eight-chain:100:diagonal",
+      "planned-medium:eight-chain:100:y",
+      "planned-medium:eight-chain:75:y"
+    ],
+    "linear-medium:five-chain": [
+      "linear-medium:five-chain:100:diagonal",
+      "linear-medium:five-chain:100:y",
+      "linear-medium:five-chain:50:y",
+      "linear-medium:five-chain:75:diagonal",
+      "linear-medium:five-chain:75:y"
+    ],
+    "organic-large:five-branch": [
+      "organic-large:five-branch:100:y",
+      "organic-large:five-branch:75:y"
+    ],
+    "planned-medium:eight-loop": [
+      "planned-medium:eight-loop:100:y"
+    ],
+    "organic-large:eight-chain": [
+      "organic-large:eight-chain:100:diagonal",
+      "organic-large:eight-chain:100:y",
+      "organic-large:eight-chain:75:y"
+    ],
+    "organic-large:eight-loop": [
+      "organic-large:eight-loop:100:diagonal",
+      "organic-large:eight-loop:100:y",
+      "organic-large:eight-loop:75:y"
+    ],
+    "planned-medium:five-chain": [
+      "planned-medium:five-chain:100:diagonal",
+      "planned-medium:five-chain:100:y",
+      "planned-medium:five-chain:75:y"
+    ],
+    "radial-small:eight-loop": [
+      "radial-small:eight-loop:100:diagonal",
+      "radial-small:eight-loop:100:x",
+      "radial-small:eight-loop:100:y",
+      "radial-small:eight-loop:50:y",
+      "radial-small:eight-loop:75:diagonal",
+      "radial-small:eight-loop:75:x",
+      "radial-small:eight-loop:75:y"
+    ],
+    "linear-medium:five-branch": [
+      "linear-medium:five-branch:100:diagonal",
+      "linear-medium:five-branch:75:y"
+    ],
+    "linear-medium:eight-chain": [
+      "linear-medium:eight-chain:100:diagonal",
+      "linear-medium:eight-chain:100:y",
+      "linear-medium:eight-chain:75:y"
+    ],
+    "radial-small:five-branch": [
+      "radial-small:five-branch:100:diagonal",
+      "radial-small:five-branch:100:x",
+      "radial-small:five-branch:100:y",
+      "radial-small:five-branch:50:y",
+      "radial-small:five-branch:75:diagonal",
+      "radial-small:five-branch:75:y"
+    ],
+    "linear-medium:quad": [
+      "linear-medium:quad:100:diagonal",
+      "linear-medium:quad:75:y"
+    ],
+    "planned-medium:five-branch": [
+      "planned-medium:five-branch:100:diagonal",
+      "planned-medium:five-branch:100:y"
+    ]
+  }
+}
