@@ -20,7 +20,7 @@ const order=(a,b)=>riCompare(a,b);
 const sort=(a,budget,cmp=order)=>{budget.spend(Math.max(1,a.length*Math.ceil(Math.log2(a.length+1))));return a.sort(cmp);};
 const pairCode=c=>c==='unnormalized-crossing'||c==='overlapping-roads';
 const orient=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
-function pairsFor(graph,diagnostics,eligible,budget){
+export function pairsFor(graph,diagnostics,eligible,budget){
   const seen=new Set(),out=[];
   for(const d of diagnostics){
     budget.spend();

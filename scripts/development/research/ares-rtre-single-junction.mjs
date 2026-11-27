@@ -12,6 +12,8 @@ import { riFreeze, riCompare } from '../../../src/core/road-impact-model.js';
 import { analyticalTrials,X34_IDS } from './ares-p4x-analytical.mjs';
 import { hybridTrials,X56_IDS } from './ares-p4x-hybrid.mjs';
 import { x7Recipe,x7Options } from './ares-p4x-x7-scope.mjs';
+import { radialRecipe,radialOptions } from './ares-p4x-radial-scope.mjs';
+import { radialTrials } from './ares-p4x-radial.mjs';
 
 // C: bounded dry-land, single-unselected-junction geometry experiment.
 // A graph witness is NOT a city witness, property repair, or Apply authority.
@@ -456,7 +458,11 @@ export async function probeFreshRtreX7(caseId,budget){
   const recipe=x7Recipe(caseId);
   return probeCoordinated(caseId,x7Options(caseId),budget,true,true,true,true,false,false,'x7-minimum-cluster',recipe);
 }
-async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null,minimumRecipe=null){
+export async function probeFreshRtreRadial(caseId,budget){
+  const recipe=radialRecipe(caseId);
+  return probeCoordinated(caseId,radialOptions(caseId),budget,true,true,true,true,false,false,'radial-refinement',recipe.minimumRecipe,recipe);
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null,minimumRecipe=null,radial=null){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -468,8 +474,9 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     baseline:null,attempts:0,adjustedWitness:null,termination:'preflight'};
   if(constrained){result.constraintMode='final-landscape-defense';result.constraintRejected=0;}
   if(combined==='adaptive-portfolio')result.portfolio=portfolioTelemetry();
-  if(combined==='hybrid-refinement'||minimumRecipe)result.hybrid={baselinePairs:0,subsets:0,coveringGroups:0,connectedGroups:0,connectorGroups:0,enumerationLimit:false,groupLimit:false,seedProposals:0,feedbackProposals:0,duplicates:0,feedbackEvaluations:0,bestConflictCount:null,attempted:{'hybrid-refinement':0,'hybrid-directional-seed':0},failures:{}};
+  if(combined==='hybrid-refinement'||minimumRecipe||radial)result.hybrid={baselinePairs:0,subsets:0,coveringGroups:0,connectedGroups:0,connectorGroups:0,enumerationLimit:false,groupLimit:false,seedProposals:0,feedbackProposals:0,duplicates:0,feedbackEvaluations:0,bestConflictCount:null,attempted:{'hybrid-refinement':0,'hybrid-directional-seed':0},failures:{}};
   if(minimumRecipe){result.hybrid.approvedMinimum=minimumRecipe.minimum;result.hybrid.seedValidated=false;}
+  if(radial){result.hybrid.attempted={'radial-refinement':0,'radial-directional-seed':0};Object.assign(result.hybrid,{approvedCap:radial.cap,orientationChoices:0,alternateSigns:0,explore:0,exploit:0});}
   if(combined==='analytical-independent')result.analytical={pairs:0,subsets:0,covering:0,connectedGroups:0,groupLimit:false,failures:{}};
   if(ranked)result.ranking={profile:'research-major-roads-neighbors-displacement-v1',verifiedCount:0,firstScore:null,bestScore:null,bestAttempt:null};
   const finish=()=>{
@@ -524,7 +531,9 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     const byId=new Map(rows.map(r=>[r.ref.id,r])),offset=f.context.operation.geometry.offset;
     const feedback={value:null};
     if(minimumRecipe&&report.snapshotFingerprint!==minimumRecipe.source)throw Error('X7 frozen source changed.');
-    const trials=result.hybrid?hybridTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,minimumRecipe):
+    if(radial&&report.snapshotFingerprint!==radial.source)throw Error('Radial frozen source changed.');
+    const trials=radial?radialTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,radial):
+      result.hybrid?hybridTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,minimumRecipe):
       result.analytical?analyticalTrials(accepted,rows,positions,report,offset,budget,result.analytical):
       result.portfolio?adaptiveTrials(accepted,rows,selected,maxNeighbors,budget,result.portfolio):
       combined?combinedTrials(accepted,rows,selected,maxNeighbors,budget,combined):
@@ -548,15 +557,15 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         if(neighbors.length!==ids.length)continue;
         if(result.hybrid){
           budget.spend(1+neighbors.length);
-          if(neighbors.length<2||neighbors.length>(minimumRecipe?minimumRecipe.minimum:4)||(minimumRecipe&&neighbors.length!==minimumRecipe.minimum)||new Set(ids).size!==ids.length||neighbors.some(n=>!byId.has(n.id)||selected.has(n.id)||!finite(n.point)||Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y)>Math.hypot(offset.x,offset.y)))throw Error(minimumRecipe?'X7 candidate exceeded authority.':'X56 candidate exceeded authority.');
+          if(neighbors.length<2||neighbors.length>(minimumRecipe?minimumRecipe.minimum:4)||(minimumRecipe&&neighbors.length!==minimumRecipe.minimum)||new Set(ids).size!==ids.length||neighbors.some(n=>!byId.has(n.id)||selected.has(n.id)||!finite(n.point)||Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y)>Math.hypot(offset.x,offset.y)))throw Error(radial?'Radial candidate exceeded authority.':minimumRecipe?'X7 candidate exceeded authority.':'X56 candidate exceeded authority.');
         }
         budget.expand();result.attempts++;
         if(result.portfolio)result.portfolio.attempted[strategy]++;
-        if(minimumRecipe)result.hybrid.attempted[strategy]++;
+        if(minimumRecipe||radial)result.hybrid.attempted[strategy]++;
         const checked=evaluate(proposed);
         if(result.hybrid){
           budget.spend(1+checked.issues.length);
-          if(!minimumRecipe)result.hybrid.attempted[strategy]++;
+          if(!minimumRecipe&&!radial)result.hybrid.attempted[strategy]++;
           feedback.value=checked;
           for(const issue of checked.issues)result.hybrid.failures[issue]=(result.hybrid.failures[issue]??0)+1;
         }
@@ -596,7 +605,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         }
         // Continue only inside the original candidate/work/expansion limits.
     }
-    if(result.termination==='preflight')result.termination=result.hybrid?'hybrid-stream-exhausted':result.analytical?'analytical-stream-exhausted':'cluster-stencil-exhausted';
+    if(result.termination==='preflight')result.termination=radial?'radial-stream-exhausted':result.hybrid?'hybrid-stream-exhausted':result.analytical?'analytical-stream-exhausted':'cluster-stencil-exhausted';
     result.status=result.baseline.valid?'baseline-valid':result.adjustedWitness?'geometry-recovered':'search-refused';
   }catch(e){
     if(!(e instanceof LareBudgetExceeded))throw e;
