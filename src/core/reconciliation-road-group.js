@@ -1,3 +1,5 @@
+import { roadFrameLength } from './geometry.js';
+import { sreMathSin, sreMathCos, sreMathAtan2 } from './spatial-recovery-math.js';
 import { shapesOverlapInterior } from './building-validation.js';
 import { createSpatialConcessionProposalSource } from './spatial-recovery-concessions.js';
 import { describeLareRefusal } from './reconciliation-diagnostics.js';
@@ -22,7 +24,7 @@ const lareGroupCenter=b=>{
   const p=b.geometry.regions.flatMap(r=>r.ring);
   return {x:p.reduce((s,q)=>s+q.x,0)/p.length,y:p.reduce((s,q)=>s+q.y,0)/p.length};
 };
-const lareGroupRingCost=(a,b)=>a.length===b.length?a.reduce((s,p,i)=>s+Math.hypot(p.x-b[i].x,p.y-b[i].y),0):1e9;
+const lareGroupRingCost=(a,b)=>a.length===b.length?a.reduce((s,p,i)=>s+roadFrameLength(p.x-b[i].x,p.y-b[i].y),0):1e9;
 function lareGroupRank(before,after){
   const score=[0,0,0,0,0,0],city=before.city,next=after.city;
   const buildings=riIndex(next.buildings),properties=riIndex(next.properties),plots=riIndex(next.plots);
@@ -30,8 +32,8 @@ function lareGroupRank(before,after){
     const b=buildings.get(a.id);
     if(!riEqual(a.geometry,b.geometry)||a.orientation!==b.orientation){
       const p=lareGroupCenter(a),q=lareGroupCenter(b);
-      score[0]++;score[1]+=Math.hypot(q.x-p.x,q.y-p.y);
-      score[2]+=Math.abs(Math.atan2(Math.sin(b.orientation-a.orientation),Math.cos(b.orientation-a.orientation)));
+      score[0]++;score[1]+=roadFrameLength(q.x-p.x,q.y-p.y);
+      score[2]+=Math.abs(sreMathAtan2(sreMathSin(b.orientation-a.orientation),sreMathCos(b.orientation-a.orientation)));
     }
     if(!riEqual(a.entrance,b.entrance)||!riEqual(a.accessPath,b.accessPath))score[5]++;
   }
@@ -149,8 +151,8 @@ export function* iterateLareRoadGroup(project,draft,analysis,baseline,choices=ne
             loss+=Math.max(0,old.area-next.area);
             if(!riEqual(old.geometry,next.geometry)||old.orientation!==next.orientation){
               moved++;const p=lareGroupCenter(old),q=lareGroupCenter(next);
-              displacement+=Math.hypot(q.x-p.x,q.y-p.y);
-              rotation+=Math.abs(Math.atan2(Math.sin(next.orientation-old.orientation),Math.cos(next.orientation-old.orientation)));
+              displacement+=roadFrameLength(q.x-p.x,q.y-p.y);
+              rotation+=Math.abs(sreMathAtan2(sreMathSin(next.orientation-old.orientation),sreMathCos(next.orientation-old.orientation)));
             }
           }
           budget.spend(Math.max(1,entry.property.boundary.length+

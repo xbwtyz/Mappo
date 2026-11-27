@@ -1,3 +1,5 @@
+import { roadFrameLength } from './geometry.js';
+import { sreMathSin, sreMathCos, sreMathAtan2 } from './spatial-recovery-math.js';
 import { lareStepResult } from './reconciliation-steps.js';
 import { LARE_LIMITS,LareBudgetExceeded } from './reconciliation-budget.js';
 import { iterateLareParcelCandidates } from './reconciliation-parcels.js';
@@ -8,7 +10,7 @@ import { occupiedRegionsOverlapS10 } from './building-occupancy-s10.js';
 import { compareLareScore,iterateLareSearch } from './reconciliation-search.js';
 
 const lareArrangeCompare=(a,b)=>a<b?-1:a>b?1:0;
-const lareArrangeDist=(a,b)=>a.reduce((s,p,i)=>s+Math.hypot(p.x-b[i].x,p.y-b[i].y),0);
+const lareArrangeDist=(a,b)=>a.reduce((s,p,i)=>s+roadFrameLength(p.x-b[i].x,p.y-b[i].y),0);
 const lareArrangeIndex=(state,id)=>state.assignments.find(row=>row.variable===id)?.choice.value;
 const lareArrangePlotCost=(before,after)=>before.reduce((sum,p,i)=>sum+lareArrangeDist(p.boundary,after[i].boundary),0);
 function lareArrangeOverlap(a,b,budget){
@@ -122,8 +124,8 @@ export function* iterateLareArrangement({entries,finalize,incumbent=null,enhance
           return {x:points.reduce((s,p)=>s+p.x,0)/points.length,y:points.reduce((s,p)=>s+p.y,0)/points.length};};
         const old=center(building.source),next=candidate?center(candidate):null;
         inventory.set(building,candidate?[{building:candidate,family:'packed-seed',order:0,moved:1,
-          displacement:Math.hypot(next.x-old.x,next.y-old.y),
-          rotation:Math.abs(Math.atan2(Math.sin(candidate.orientation-building.source.orientation),Math.cos(candidate.orientation-building.source.orientation)))}]:[]);
+          displacement:roadFrameLength(next.x-old.x,next.y-old.y),
+          rotation:Math.abs(sreMathAtan2(sreMathSin(candidate.orientation-building.source.orientation),sreMathCos(candidate.orientation-building.source.orientation)))}]:[]);
         return inventory.get(building);
       }
       const request={source:building.source,permission:building.permission,oldProperty:entry.property,

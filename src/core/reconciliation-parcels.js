@@ -1,3 +1,4 @@
+import { roadFrameLength } from './geometry.js';
 import { iterateSpatialPackingSeeds } from './spatial-recovery-packing.js';
 import { finishLareSteps } from './reconciliation-steps.js';
 import { polygonSignedArea } from './geometry.js';
@@ -17,11 +18,11 @@ function lareParcelStrip(property,plots){
     const city={properties:[property],plots},ratios=propertyDividerFractions3I(city,property);
     const reference=propertyGeometryPreview3I(city,property.id,property.boundary,ratios);
     if(reference.plots.every((p,i)=>p.id===plots[i].id&&p.boundary.every((q,j)=>
-      Math.hypot(q.x-plots[i].boundary[j].x,q.y-plots[i].boundary[j].y)<lareParcelEps)))return ratios;
+      roadFrameLength(q.x-plots[i].boundary[j].x,q.y-plots[i].boundary[j].y)<lareParcelEps)))return ratios;
   }catch{/* Arbitrary convex-cell layouts use coordinated affine deformation. */}
   return null;
 }
-const lareParcelDist=(a,b)=>a.reduce((n,p,i)=>n+Math.hypot(p.x-b[i].x,p.y-b[i].y),0);
+const lareParcelDist=(a,b)=>a.reduce((n,p,i)=>n+roadFrameLength(p.x-b[i].x,p.y-b[i].y),0);
 const lareParcelCmp=(a,b)=>a.score-b.score||a.order-b.order;
 // Returns admissible parcel/plot candidates, never a complete accepted edit.
 // Fixed exterior rings and fixed neighbors constrain the search; movable
@@ -41,8 +42,8 @@ export function* iterateLareParcelCandidates({property,plots,edge,edges,fixedRin
   if(edge?.road?.id!==property.frontageRoadId||!edges.some(e=>e===edge||e.road?.id===edge.road.id))
     throw Error('Assigned frontage is not a boundary of this block.');
   if(edges.some(e=>!Number.isFinite(STREET_WIDTHS[e.road?.kind])))throw Error('Unsupported block edge.');
-  const {a,b}=edge,length=Math.hypot(b.x-a.x,b.y-a.y);
-  const f0=original[0],f1=original[1],width=Math.hypot(f1.x-f0.x,f1.y-f0.y);
+  const {a,b}=edge,length=roadFrameLength(b.x-a.x,b.y-a.y);
+  const f0=original[0],f1=original[1],width=roadFrameLength(f1.x-f0.x,f1.y-f0.y);
   if(length<lareParcelEps||width<lareParcelEps)return [];
   const tangent={x:(b.x-a.x)/length,y:(b.y-a.y)/length},inward={x:-tangent.y,y:tangent.x};
   const oldT={x:(f1.x-f0.x)/width,y:(f1.y-f0.y)/width},oldN={x:-oldT.y,y:oldT.x};
@@ -120,7 +121,7 @@ export function* iterateLareParcelCandidates({property,plots,edge,edges,fixedRin
     const seams=new Set();let eligible=0;
     for(const plot of plots)for(let i=0;i<plot.boundary.length;i++){
       if(eligible>=8||attempts>=attemptLimit)return;
-      const p=plot.boundary[i],q=plot.boundary[(i+1)%plot.boundary.length],len=Math.hypot(q.x-p.x,q.y-p.y);
+      const p=plot.boundary[i],q=plot.boundary[(i+1)%plot.boundary.length],len=roadFrameLength(q.x-p.x,q.y-p.y);
       if(len<lareParcelEps)continue;
       const key=[p.x+','+p.y,q.x+','+q.y].sort().join('|');
       if(seams.has(key))continue;seams.add(key);
