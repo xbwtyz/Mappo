@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "source": "ca9b205f40227823e2f93411c591aa912f2513ca",
+  "run": 45981297678,
+  "attempt": 1,
+  "aggregate": 140447678606,
+  "rows": [
+    {
+      "job": 140445767151,
+      "id": "holdout-linear",
+      "version": 1,
+      "caseId": "holdout-linear",
+      "status": "geometry-verified",
+      "reason": null,
+      "changedRoadIds": [
+        "RD-0131",
+        "RD-0132",
+        "RD-0136",
+        "RD-0137",
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0150",
+        "RD-0151",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0155",
+        "RD-0156"
+      ],
+      "finalChecked": 45,
+      "sweptUnresolved": 0,
+      "stats": {
+        "work": 618942,
+        "expansions": 0,
+        "remainingWork": 31381058,
+        "remainingExpansions": 131072
+      }
+    },
+    {
+      "job": 140445767151,
+      "id": "mixed-small",
+      "adjusted": {
+        "version": 1,
+        "caseId": "mixed-small",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0129",
+          "RD-0131",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0140",
+          "RD-0142",
+          "RD-0432",
+          "RD-0568",
+          "RD-0569"
+        ],
+        "finalChecked": 33,
+        "sweptUnresolved": 2,
+        "stats": {
+          "work": 537877,
+          "expansions": 0,
+          "remainingWork": 7462123,
+          "remainingExpansions": 32768
+        }
+      },
+      "baseline": {
+        "version": 1,
+        "caseId": "mixed-small",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0432",
+          "RD-0568",
+          "RD-0569"
+        ],
+        "finalChecked": 21,
+        "sweptUnresolved": 1,
+        "stats": {
+          "work": 534087,
+          "expansions": 0,
+          "remainingWork": 7465913,
+          "remainingExpansions": 32768
+        }
+      }
+    }
+  ]
+}
