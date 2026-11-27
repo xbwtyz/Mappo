@@ -50,6 +50,8 @@ test('P3 real budget refusal routes a later existing schedule with explicitly pe
   assert.equal(r.events[1].status,'proposed');
   assert.equal(r.retention.incumbent.metrics.retiredBuildings,0);
   assert.equal(r.ledger.settled[0].task.strategyId,'sre-baseline');
+  assert.equal(r.ledger.settled[0].status,'refused');
+  assert.ok(r.ledger.settled[0].usage.work>0&&r.ledger.settled[0].usage.work<=2000);
   assert.equal(r.ledger.settled[1].task.strategyId,'sre-grouped-first');
   assert.deepEqual(r.ledger.root,root.snapshot());
   assert.equal(aresReplayJson(project),original);
@@ -76,6 +78,9 @@ test('P3 real portfolio refuses unauthorized alternates and retains original ref
   assert.deepEqual(r.events.map(e=>e.taskId),['baseline']);
   assert.equal(r.events[0].status,'refused');
   assert.deepEqual(r.pending.map(t=>t.taskId),['group','area']);
+  assert.equal(r.ledger.settled[0].status,'refused');
+  assert.deepEqual(r.ledger.root,root.snapshot());
+  assert.ok(root.snapshot().work<=8000000);
   assert.equal(aresReplayJson(project),original);
 });
 test('P3 portfolio denies unapproved budgets, strategies and regeneration, and supports boundary stop',async()=>{
@@ -87,4 +92,19 @@ test('P3 portfolio denies unapproved budgets, strategies and regeneration, and s
   const r=await runAresSrePortfolio(project,context,{...options,checkpoint:()=> 'stop'},createSpatialPreservationBudget());
   assert.equal(r.reason,'stopped');assert.equal(r.ledger.settled.length,0);
   assert.equal(r.retention.incumbent,null);assert.equal(aresReplayJson(project),original);
+});
+
+test('P3 a task too small for refusal handoff never exceeds its lease or invents feedback',async()=>{
+  const context=ctx(.025,{...flex,destruction:true}),root=createSpatialDestructionBudget();
+  const r=await runAresSrePortfolio(project,context,config([
+    task('tiny','sre-baseline',1,1),task('alternate','sre-grouped-first',8000000)
+  ]),root);
+  assert.equal(r.reason,'no-eligible-task');
+  assert.equal(r.retention.incumbent,null);
+  assert.deepEqual(r.events,[{taskId:'tiny',status:'slice-exhausted',resource:'work'}]);
+  assert.equal(r.ledger.settled[0].usage.work,0);
+  assert.equal(r.ledger.settled[0].status,'failed');
+  assert.deepEqual(r.pending.map(t=>t.taskId),['alternate']);
+  assert.deepEqual(r.ledger.root,root.snapshot());
+  assert.equal(aresReplayJson(project),original);
 });

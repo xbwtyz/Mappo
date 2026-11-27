@@ -5,8 +5,7 @@ import { hydrateProjectS10 } from './building-project-s10.js';
 import { createAresSreVerifier } from './ares-sre-verifier.js';
 import { runAresSerialSearch } from './ares-serial-search.js';
 import { searchSpatialUnifiedRoadGroup } from './spatial-recovery-coordinator.js';
-import { LARE_PRESERVATION_LIMITS, LARE_DEMOLITION_LIMITS } from './reconciliation-budget.js';
-import { riFreeze } from './road-impact-model.js';
+import { createLareBudget, LareBudgetExceeded, LARE_PRESERVATION_LIMITS, LARE_DEMOLITION_LIMITS } from './reconciliation-budget.js';
 
 // Initial research portfolio: existing Standard schedules only. This is
 // not a new geometry solver, default mode or replacement of mounted SRE.
@@ -49,12 +48,25 @@ export async function runAresSrePortfolio(project,contextInput,input,root){
         !matchesAresDiagnosticContext({version:1,context:task.context},context))
         throw Error('Stale ARES SRE strategy task.');
       if(i&&!context.operation.permissions.destruction)throw Error('Unauthorized ARES SRE alternate schedule.');
-      // The lease is the actual parent of every internal SRE search phase.
-      // Keep the complete existing schedule semantics and fallback order.
-      const result=await searchSpatialUnifiedRoadGroup(source,context.operation,budget,{quality:'standard',schedule:schedules[i]});
+      const envelope={version:1,taskId:task.taskId,context,snapshotFingerprint};
+      // Reserve a bounded refusal handoff within the existing task lease.
+      // The context occurs twice in the refusal envelope; each edited ref
+      // has three JSON visits (object + two fields) per occurrence. The
+      // fixed 256 covers the remaining fixed-shape fields and D1's single
+      // diagnostic normalization debit. No reserve is spent unless used.
+      // A proposal may be larger: normal metered handoff still fails closed.
+      const refusalReserve=256+6*context.operation.editedRefs.length;
+      const available=budget.snapshot();
+      if(available.remainingWork<=refusalReserve)throw new LareBudgetExceeded('work');
+      const searchBudget=createLareBudget({
+        work:available.remainingWork-refusalReserve,
+        stateExpansions:available.remainingExpansions
+      },{parent:budget,ceiling:context.operation.permissions.destruction?LARE_DEMOLITION_LIMITS:LARE_PRESERVATION_LIMITS});
+      // The child and result handoff debit the same lease and original root.
+      // Keep the existing schedule semantics and fallback order.
+      const result=await searchSpatialUnifiedRoadGroup(source,context.operation,searchBudget,{quality:'standard',schedule:schedules[i]});
       if(!matchesAresDiagnosticContext({version:1,context:{...context,operation:result.operation}},context))
         throw Error('Mismatched ARES SRE strategy operation.');
-      const envelope={version:1,taskId:task.taskId,context,snapshotFingerprint};
       if(result.status==='refused'){
         return {...envelope,status:'refused',proposal:null,diagnostics:[adaptAresRecoveryRefusal(context,result)]};
       }
