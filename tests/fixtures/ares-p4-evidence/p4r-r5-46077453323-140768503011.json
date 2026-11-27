@@ -1,0 +1,190 @@
+{
+  "version": 1,
+  "source": "098c7210537eb963857c5e7925e9825ced535280",
+  "run": 46077453323,
+  "attempt": 1,
+  "aggregate": 140772099830,
+  "job": 140768503011,
+  "rows": [
+    {
+      "id": "organic-large:pentagon:50:x",
+      "referenceCategory": "selection-limit",
+      "referenceAttempts": null,
+      "referenceWork": null,
+      "result": {
+        "id": "organic-large:pentagon:50:x",
+        "city": "organic-large",
+        "group": "pentagon",
+        "magnitude": 50,
+        "direction": "x",
+        "offset": {
+          "x": 50,
+          "y": 0
+        },
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "selectedRoadIds": [],
+        "category": "selection-limit"
+      }
+    },
+    {
+      "id": "organic-large:pentagon:50:y",
+      "referenceCategory": "selection-limit",
+      "referenceAttempts": null,
+      "referenceWork": null,
+      "result": {
+        "id": "organic-large:pentagon:50:y",
+        "city": "organic-large",
+        "group": "pentagon",
+        "magnitude": 50,
+        "direction": "y",
+        "offset": {
+          "x": 0,
+          "y": 50
+        },
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "selectedRoadIds": [],
+        "category": "selection-limit"
+      }
+    },
+    {
+      "id": "organic-large:pentagon:50:diagonal",
+      "referenceCategory": "selection-limit",
+      "referenceAttempts": null,
+      "referenceWork": null,
+      "result": {
+        "id": "organic-large:pentagon:50:diagonal",
+        "city": "organic-large",
+        "group": "pentagon",
+        "magnitude": 50,
+        "direction": "diagonal",
+        "offset": {
+          "x": 35.35533905932738,
+          "y": 35.35533905932738
+        },
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "selectedRoadIds": [],
+        "category": "selection-limit"
+      }
+    },
+    {
+      "id": "organic-large:pentagon:75:x",
+      "referenceCategory": "selection-limit",
+      "referenceAttempts": null,
+      "referenceWork": null,
+      "result": {
+        "id": "organic-large:pentagon:75:x",
+        "city": "organic-large",
+        "group": "pentagon",
+        "magnitude": 75,
+        "direction": "x",
+        "offset": {
+          "x": 75,
+          "y": 0
+        },
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "selectedRoadIds": [],
+        "category": "selection-limit"
+      }
+    },
+    {
+      "id": "organic-large:pentagon:75:y",
+      "referenceCategory": "selection-limit",
+      "referenceAttempts": null,
+      "referenceWork": null,
+      "result": {
+        "id": "organic-large:pentagon:75:y",
+        "city": "organic-large",
+        "group": "pentagon",
+        "magnitude": 75,
+        "direction": "y",
+        "offset": {
+          "x": 0,
+          "y": 75
+        },
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "selectedRoadIds": [],
+        "category": "selection-limit"
+      }
+    },
+    {
+      "id": "organic-large:pentagon:75:diagonal",
+      "referenceCategory": "selection-limit",
+      "referenceAttempts": null,
+      "referenceWork": null,
+      "result": {
+        "id": "organic-large:pentagon:75:diagonal",
+        "city": "organic-large",
+        "group": "pentagon",
+        "magnitude": 75,
+        "direction": "diagonal",
+        "offset": {
+          "x": 53.033008588991066,
+          "y": 53.033008588991066
+        },
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "selectedRoadIds": [],
+        "category": "selection-limit"
+      }
+    },
+    {
+      "id": "organic-large:pentagon:100:x",
+      "referenceCategory": "selection-limit",
+      "referenceAttempts": null,
+      "referenceWork": null,
+      "result": {
+        "id": "organic-large:pentagon:100:x",
+        "city": "organic-large",
+        "group": "pentagon",
+        "magnitude": 100,
+        "direction": "x",
+        "offset": {
+          "x": 100,
+          "y": 0
+        },
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "selectedRoadIds": [],
+        "category": "selection-limit"
+      }
+    },
+    {
+      "id": "organic-large:pentagon:100:y",
+      "referenceCategory": "selection-limit",
+      "referenceAttempts": null,
+      "referenceWork": null,
+      "result": {
+        "id": "organic-large:pentagon:100:y",
+        "city": "organic-large",
+        "group": "pentagon",
+        "magnitude": 100,
+        "direction": "y",
+        "offset": {
+          "x": 0,
+          "y": 100
+        },
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "selectedRoadIds": [],
+        "category": "selection-limit"
+      }
+    },
+    {
+      "id": "organic-large:pentagon:100:diagonal",
+      "referenceCategory": "selection-limit",
+      "referenceAttempts": null,
+      "referenceWork": null,
+      "result": {
+        "id": "organic-large:pentagon:100:diagonal",
+        "city": "organic-large",
+        "group": "pentagon",
+        "magnitude": 100,
+        "direction": "diagonal",
+        "offset": {
+          "x": 70.71067811865476,
+          "y": 70.71067811865476
+        },
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "selectedRoadIds": [],
+        "category": "selection-limit"
+      }
+    }
+  ]
+}
