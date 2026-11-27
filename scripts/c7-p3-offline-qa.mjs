@@ -5,8 +5,10 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
 import { createProject } from '../src/core/city-model.js';
 import { normalizeSpatialRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
-import { searchSpatialUnifiedRoadGroup } from '../src/core/spatial-recovery-coordinator.js';
-import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
+import { searchSpatialUnifiedRoadGroup,verifySpatialUnifiedRoadWitness } from '../src/core/spatial-recovery-coordinator.js';
+import { createSpatialHighQualityBudget } from '../src/core/spatial-recovery-quality.js';
+import { createHash } from 'node:crypto';
+import { createSpatialPreservationBudget,createSpatialDestructionBudget } from '../src/core/spatial-recovery-contract.js';
 import { defaultWorkspace, roundTripProjectDocument } from '../src/data/project-format.js';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 
@@ -22,6 +24,37 @@ const sreOperation=normalizeSpatialRoadGroup(sreProject,1,['RD-0113','RD-0114'],
 const sreDirect=await searchSpatialUnifiedRoadGroup(sreProject,sreOperation,createSpatialPreservationBudget());
 assert.equal(sreDirect.status,'verified-witness');
 
+// Compare the exact mounted accepted input and operation against a fresh
+// Node search. Cache only identical serialized inputs within this test run.
+const advancedReferenceCache=new Map(),browserFailures=[];
+const shaJson=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
+function firstDifferences(expected,actual,limit=32){
+  const differences=[];
+  const brief=v=>typeof v==='string'&&v.length>180?v.slice(0,180)+'…':
+    v&&typeof v==='object'?(Array.isArray(v)?'Array('+v.length+')':'Object'):v;
+  const walk=(a,b,path)=>{
+    if(differences.length>=limit||Object.is(a,b))return;
+    if(a&&b&&typeof a==='object'&&typeof b==='object'&&Array.isArray(a)===Array.isArray(b)){
+      for(const k of new Set([...Object.keys(a),...Object.keys(b)])){
+        if(differences.length>=limit)break;
+        walk(a[k],b[k],path+'/'+k);
+      }
+    }else differences.push({path,expected:brief(a),actual:brief(b),
+      ...(typeof a==='number'&&typeof b==='number'?{difference:b-a}:{})});
+  };
+  walk(expected,actual,'');return differences;
+}
+async function advancedReference(project,operation){
+  const key=shaJson({project,operation});
+  if(!advancedReferenceCache.has(key)){
+    const budget=createSpatialHighQualityBudget();
+    const result=await searchSpatialUnifiedRoadGroup(project,operation,budget,{quality:'high'});
+    assert.equal(result.status,'verified-witness','Node mounted-input reference must verify');
+    const candidate=await verifySpatialUnifiedRoadWitness(project,operation,result,createSpatialDestructionBudget());
+    advancedReferenceCache.set(key,{result,candidate});
+  }
+  return advancedReferenceCache.get(key);
+}
 for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) {
   const browser=await engine.launch({headless:true});
   try {
@@ -234,7 +267,8 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
         return {phase:s.phase,message:s.message,summary:s.review?.summary,candidate:s.review?.candidate,
           fingerprint:s.review?.candidateFingerprint,progress:s.progress?.stats,accepted:app.project,
           revision:app.files.revision,identityRevision:app.identityView.context.revision,
-          requests:s.reservationRequests,enabled:!document.querySelector('#roadApplyB4').disabled};
+          requests:s.reservationRequests,operation:s.binding.operation,quality:s.binding.quality,
+          enabled:!document.querySelector('#roadApplyB4').disabled};
       });
       assert.equal(review.phase,'ready',browserName+': '+label+': '+review.message);
       assert.equal(review.enabled,true);
@@ -305,7 +339,30 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     const highStarted=Date.now();
     await page.locator('#roadSreStart').click();
     const highReview=await awaitAdvancedReview('high quality');
-    assert.equal(highReview.fingerprint,'bbcbad96e73f85b19a2afd51743c9b6f00485daba564ee800576c5239bb80ec1');
+    const locked='bbcbad96e73f85b19a2afd51743c9b6f00485daba564ee800576c5239bb80ec1';
+    const highExpectedOperation=normalizeSpatialRoadGroup(highBefore.project,highBefore.identityRevision,
+      ['RD-0184','RD-0186'],{x:3.005274072121821,y:37.39896113564458},
+      {destruction:true,alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2});
+    assert.deepEqual(highReview.operation,highExpectedOperation);
+    assert.equal(highReview.quality,'high');
+    const reference=await advancedReference(highBefore.project,highExpectedOperation);
+    const diagnostic={browser:browserName,locked,actual:highReview.fingerprint,
+      nodeMountedInput:reference.result.delta.candidateFingerprint,
+      browserAccepted:shaJson(highBefore.project),generatedAccepted:shaJson(highProject),
+      inputDifferences:firstDifferences(highProject,highBefore.project),
+      candidateDifferences:firstDifferences(reference.candidate,highReview.candidate),
+      referenceRetired:reference.result.delta.retired,actualRetired:highReview.summary.retired,
+      nodeStats:reference.result.stats,browserProgress:highReview.progress,
+      nodePhases:reference.result.attempts.map(r=>({phase:r.phase,status:r.status,work:r.work})),
+      operation:highExpectedOperation};
+    console.log('SRE_HIGH_QUALITY_DIAGNOSTIC '+JSON.stringify(diagnostic));
+    await writeFile(new URL('../artifacts/c7/sre-high-quality-'+browserName+'.json',import.meta.url),
+      JSON.stringify({...diagnostic,nodeCandidate:reference.candidate,browserCandidate:highReview.candidate,
+        accepted:highBefore.project},null,2)+'\n');
+    assert.equal(reference.result.delta.candidateFingerprint,locked,'Mounted input Node reference differs from locked detached witness');
+    assert.equal(highReview.fingerprint,reference.result.delta.candidateFingerprint,'Browser and Node exact high-quality candidate fingerprints differ');
+    assert.equal(highReview.fingerprint,locked);
+    assert.deepEqual(highReview.candidate,reference.candidate);
     assert.deepEqual(['properties','plots','buildings'].map(k=>highReview.summary.retired.filter(r=>r.collection===k).length),[10,19,14]);
     assert.deepEqual(highReview.summary.added,[]);
     assert.deepEqual(highReview.candidate.identityAllocation,highBefore.project.identityAllocation);
@@ -403,5 +460,9 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     console.log('C7_OFFLINE '+JSON.stringify({browser:browserName,passed:true,
       preview:true,apply:true,resetDuringApply:true,networkRequests:external.length}));
     await page.close();
+  } catch(error) {
+    browserFailures.push(new Error(browserName+' offline acceptance failed: '+error.message,{cause:error}));
+    console.error('SRE_BROWSER_FAILURE '+browserName+' '+(error.stack??String(error)));
   } finally { await browser.close(); }
 }
+if(browserFailures.length)throw new AggregateError(browserFailures,'Offline browser acceptance failed');

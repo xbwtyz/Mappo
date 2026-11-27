@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "repository": "xbwtyz/Mappo",
+  "milestone": "SRE E2 W4 live connected-road qualification",
+  "appVersion": "0.2.25-dev",
+  "targetVersion": "0.2.26-dev",
+  "state": "active",
+  "source": {
+    "branch": "feature/sre-e2-live-road-worker",
+    "sha": "103786a87534dfe6f94137c74030ef4329033891",
+    "baseSha": "eae2b1f73af2b04d2e9b980954eaa94d5c9b576b",
+    "pr": 163
+  },
+  "scope": {
+    "approved": [
+      "Approved SRE P1–P5 and road-only E2 worker, controls, review and qualification; owner authorized continued work after exact checks and safe batching.",
+      "Owner requested persistent checkpoint maintenance during normal development batches."
+    ],
+    "prohibited": [
+      "No merge, release, tag, deploy or other domain activation without separate approval.",
+      "Do not weaken exact witness parity, permission checks, allocation and required history, or approved work ceilings. High-quality regeneration remains unsupported."
+    ],
+    "stopConditions": [
+      "Unapproved architecture, policy or schema change; unresolved safety or acceptance gap requiring scope expansion; final owner manual acceptance and separate merge approval."
+    ]
+  },
+  "completed": [
+    "DEV-OPT merged and verified; 16 Node and four browser runners mandatory.",
+    "W1–W3 worker and mounted road controls implemented; full exact 4becfaef5457a40d2f15d268bcd504a04d9643b8 run 45926250551 all 22 mandatory jobs green in 318 seconds.",
+    "Chromium positive Standard regeneration in failed run 45927760613: 3 new IDs, independent reservations, Apply/Undo/Redo/portable passed."
+  ],
+  "pending": [
+    "Diagnose and fix high-quality exact candidate mismatch; qualify both browsers including live regeneration and high quality.",
+    "Independently audited intermediate restored identities; remaining performance and corpus acceptance; manual acceptance; approved version update; review-ready exact gate and separate merge approval."
+  ],
+  "decisions": [
+    "Keep ordinary road preview available; SRE relaxed permissions off by default; Standard 32M destruction and High 256M with no regeneration; same-stack phase boundary pause and independent worker Review/Apply.",
+    "Require actual production schedule positive regeneration, not diagnostic schedule; do not substitute approximate parity."
+  ],
+  "blockers": [
+    "Full run 45927760613 failed: Chromium high-quality fingerprint e7036eab44bbb000f87c7d0e9fdd698d0302ac637b30473fe78b0ecb5f458cc6 differs from locked bbcbad96e73f85b19a2afd51743c9b6f00485daba564ee800576c5239bb80ec1; Firefox advanced cases not reached. Root cause unproven.",
+    "Current checkpoint refers to source before diagnostic commit; reconstruct live PR head and exact CI before relying on it."
+  ],
+  "evidence": {
+    "qualification": "unqualified",
+    "full": {
+      "runId": 45927760613,
+      "attempt": 1,
+      "head": "103786a87534dfe6f94137c74030ef4329033891",
+      "nodeShards": 16,
+      "conclusion": "failure",
+      "durationSeconds": 408
+    },
+    "artifacts": [
+      {
+        "path": "index.html",
+        "blob": "f06a030cf3779571590b38e43373ed59b5842712"
+      },
+      {
+        "path": "dist/mappo-0.2.25-dev.html",
+        "blob": "f06a030cf3779571590b38e43373ed59b5842712"
+      }
+    ]
+  },
+  "rollback": {
+    "sourceSha": "4becfaef5457a40d2f15d268bcd504a04d9643b8",
+    "policy": "Reviewed reversion only; retain historical full green and failed evidence; no merge or publishing."
+  },
+  "nextAction": "Read latest PR milestone and CI evidence. Compare high-quality browser and Node same-input candidates, identify actual divergence before changing production arithmetic/search policy, maintain strict acceptance and qualify both browsers."
+}
