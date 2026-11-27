@@ -1,0 +1,70 @@
+name: Mappo Owner Road Group Movement Research
+on:
+  push:
+    branches: ['research/sre/w4-group-motion-corpus']
+permissions:
+  contents: read
+jobs:
+  shards:
+    if: contains(github.event.head_commit.message, '[sre-group-motion]')
+    name: Road movement research (${{ matrix.shard }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        shard: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check frozen source and script
+        run: |
+          test "$(git rev-parse HEAD^)" = f04a447ecd4ae6b1f8d12a28ac68adb3573d265f
+          git diff --exit-code HEAD^ HEAD -- src index.html dist
+          node --check scripts/development/research/sre-group-motion.mjs
+      - name: Execute movement preflight and bounded matched solver cases
+        run: node scripts/development/research/sre-group-motion.mjs ${{ matrix.shard }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sre-group-motion-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: artifacts/sre-group-motion/shard-*.json
+          if-no-files-found: error
+          retention-days: 14
+  aggregate:
+    if: always() && contains(github.event.head_commit.message, '[sre-group-motion]')
+    needs: shards
+    name: Road movement evidence completeness
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: sre-group-motion-${{ github.run_attempt }}-*
+          path: evidence
+      - name: Verify exact same-attempt corpus evidence
+        env:
+          SHARD_RESULT: ${{ needs.shards.result }}
+        run: |
+          node scripts/development/research/sre-group-motion.mjs aggregate evidence
+          test "$SHARD_RESULT" = success
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sre-group-motion-report-${{ github.run_attempt }}
+          path: artifacts/sre-group-motion/report.json
+          if-no-files-found: error
+          retention-days: 14

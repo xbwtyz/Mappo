@@ -1,0 +1,68 @@
+{
+  "version": 2,
+  "repository": "xbwtyz/Mappo",
+  "milestone": "SRE E2 W4 owner movement stress research",
+  "appVersion": "0.2.25-dev",
+  "targetVersion": "0.2.26-dev",
+  "state": "active",
+  "source": {
+    "branch": "feature/sre-e2-live-road-worker",
+    "sha": "f04a447ecd4ae6b1f8d12a28ac68adb3573d265f",
+    "baseSha": "eae2b1f73af2b04d2e9b980954eaa94d5c9b576b",
+    "pr": 163
+  },
+  "scope": {
+    "approved": [
+      "Continue E2 qualification and specifically test four-segment quadrilaterals, five-segment groups, X/Y translations through 100 and other movement shapes.",
+      "Research only; owner has not approved new R01–R07 production architecture."
+    ],
+    "prohibited": [
+      "No new search policies, permissions, schema, production gate changes, merge, release or Pages deployment."
+    ],
+    "stopConditions": [
+      "Policy change, broadened topology or destruction scope, budget alteration, manual acceptance and explicit merge approval."
+    ]
+  },
+  "completed": [
+    "Prior Chromium and Firefox positive regeneration confirmed; isolated three-engine high-quality norm+trig matched historic candidate.",
+    "Localized arithmetic compiled and transferred to product PR163; exact full CI 45931893779 in progress at verification."
+  ],
+  "pending": [
+    "Inspect exact product full CI 45931893779 independently.",
+    "Run isolated owner group motion corpus; compare standard/high valid refusals and topology-blocked offsets, especially 100-axis cases.",
+    "Plan R01–R06 separately; restored identity audit and final manual acceptance remain pending."
+  ],
+  "decisions": [
+    "Freeze product source and separate evidence workflow; do not replace mandatory full CI.",
+    "Every attempted topology move counted. Five stratified eligible solves per fixture, matched standard/high, no reclassification of refusals as success."
+  ],
+  "blockers": [
+    "Product full CI not yet qualified; research does not confer production acceptance.",
+    "Current high-quality initial-solution phases bounded independently from remaining total budget; owner reports frequent refusal.",
+    "Checkpoint held on isolated research branch; verify live head before use."
+  ],
+  "evidence": {
+    "qualification": "unqualified",
+    "full": {
+      "runId": 45931893779,
+      "attempt": 1,
+      "head": "f04a447ecd4ae6b1f8d12a28ac68adb3573d265f",
+      "nodeShards": 16
+    },
+    "artifacts": [
+      {
+        "path": "index.html",
+        "blob": "21b7421285332d3c1951e39c3056d98e2f580626"
+      },
+      {
+        "path": "dist/mappo-0.2.25-dev.html",
+        "blob": "21b7421285332d3c1951e39c3056d98e2f580626"
+      }
+    ]
+  },
+  "rollback": {
+    "sourceSha": "4becfaef5457a40d2f15d268bcd504a04d9643b8",
+    "policy": "Retain immutable historical evidence; reviewed revert only."
+  },
+  "nextAction": "Verify product CI and isolated research branch results. Use recorded blocked/eligible/refused/verified categories to plan next solver improvements, with owner approval before new production behavior."
+}
