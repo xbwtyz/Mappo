@@ -141,6 +141,8 @@ import { RoadInspectionWorkspace } from './ui/road-inspection.js';
 import { createJunctionPreviewWorkerP1 } from './editor/junction-preview-worker-client.js';
 // Detached road recovery controller bundled for upcoming Review integration.
 import { createSpatialRoadWorkerClient } from './editor/spatial-recovery-worker-client.js';
+// Review/Apply gate is compiled for the road inspector integration.
+import { createSpatialRoadReviewGate } from './editor/spatial-recovery-review-gate.js';
 import { drawRoadComparison } from './renderer/road-comparison.js';
 import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 // B1 candidate API is compiled for later editor integration; no Apply or UI hooks.

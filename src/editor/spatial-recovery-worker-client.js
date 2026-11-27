@@ -145,3 +145,49 @@ export function createSpatialRoadWorkerClient(getBinding,options) {
     finally{URL.revokeObjectURL(url);}
   },getBinding,options);
 }
+
+// A fresh dedicated offline verifier, separate from the search worker.
+// No fallback to expensive synchronous recovery on the application thread.
+export function createSpatialRoadReviewWorkerClient(){
+  let active=null;
+  const settle=(task,error,value)=>{
+    if(active!==task)return;
+    active=null;
+    try{task.worker?.terminate();}catch{}
+    if(error)task.reject(error);else task.resolve(value);
+  };
+  const cancel=()=>{
+    if(!active)return false;
+    settle(active,Object.assign(Error('Road review verification canceled.'),{name:'AbortError'}));
+    return true;
+  };
+  const verify=input=>{
+    cancel();
+    return new Promise((resolve,reject)=>{
+      const task={worker:null,resolve,reject};active=task;
+      try{
+        if(typeof Worker==='undefined'||typeof Blob==='undefined'||typeof URL==='undefined'||
+           typeof URL.createObjectURL!=='function'||typeof SRE_ROAD_WORKER_SOURCE_V1!=='string')
+          throw Error('Offline road review verifier unavailable.');
+        const url=URL.createObjectURL(new Blob([SRE_ROAD_WORKER_SOURCE_V1],{type:'text/javascript'}));
+        try{task.worker=new Worker(url,{name:'mappo-sre-road-review'});}
+        finally{URL.revokeObjectURL(url);}
+        task.worker.addEventListener('message',({data})=>{
+          if(active!==task)return;
+          if(data?.version!==input.version||data.requestId!==input.requestId||data.sessionId!==input.sessionId)
+            return settle(task,Error('Mismatched road review verifier response.'));
+          if(data.error)return settle(task,Error(data.error));
+          if(data.kind!=='verified-review'||data.quality!==input.quality||!riEqual(data.operation,input.operation)||
+             typeof data.candidateJson!=='string'||!data.summary)
+            return settle(task,Error('Malformed road review verifier response.'));
+          settle(task,null,data);
+        });
+        task.worker.addEventListener('error',event=>settle(task,Error('Road review verifier failed: '+(event.message||'worker error'))));
+        task.worker.addEventListener('messageerror',()=>settle(task,Error('Road review verifier response could not be decoded.')));
+        task.worker.postMessage(input);
+      }catch(error){settle(task,error);}
+    });
+  };
+  verify.cancel=cancel;
+  return verify;
+}

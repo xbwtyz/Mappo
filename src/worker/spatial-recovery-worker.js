@@ -3,6 +3,7 @@ import { createSpatialHighQualityBudget } from '../core/spatial-recovery-quality
 import { searchSpatialUnifiedRoadGroup, verifySpatialUnifiedRoadWitness } from '../core/spatial-recovery-coordinator.js';
 import { hydrateProjectS10 } from '../core/building-project-s10.js';
 import { riEqual } from '../core/road-impact-model.js';
+import { spatialRoadReviewSummary } from '../core/spatial-recovery-review-summary.js';
 
 import { SRE_ROAD_WORKER_VERSION, normalizeSpatialRoadWorkerRequest, sreWorkerId, sreWorkerSession } from '../core/spatial-recovery-worker-protocol.js';
 
@@ -53,6 +54,27 @@ export async function calculateSpatialRoadWorkerResult(input, control=null) {
     operation,quality,result};
 }
 
+// Fresh verification only: no search, no worker-owned Apply authority.
+// The host supplies the independently reserved authorization separately.
+export async function calculateSpatialRoadReview(input){
+  const {kind,witness,authorization,...base}=input;
+  if(kind!=='verify-review')throw Error('Unsupported road review request.');
+  const request=normalizeSpatialRoadWorkerRequest(base),operation=request.operation;
+  if(request.controlled||witness?.status!=='verified-witness'||!riEqual(witness.operation,operation))
+    throw Error('Invalid reviewed road witness.');
+  if(!riEqual(authorization??null,witness.provisionalAuthorization??null)||
+     (authorization&&!riEqual(authorization.context,request.reservationContext)))
+    throw Error('Road review reservation differs from host authorization.');
+  const project=hydrateProjectS10(JSON.parse(request.projectJson));
+  if(project?.schemaVersion!==11||(project.id??project.city?.id)!==operation.projectId)
+    throw Error('Road review project identity mismatch.');
+  const budget=operation.permissions.destruction?createSpatialDestructionBudget():createSpatialPreservationBudget();
+  const candidate=await verifySpatialUnifiedRoadWitness(project,operation,witness,budget,authorization??null);
+  return {version:request.version,requestId:request.requestId,sessionId:request.sessionId,
+    operation,quality:request.quality,kind:'verified-review',
+    candidateJson:JSON.stringify(candidate),summary:spatialRoadReviewSummary(project,candidate)};
+}
+
 // Stop pauses cooperatively at a verified phase boundary; Continue
 // resumes the same stack and budget. Hard Cancel is worker termination.
 export function installSpatialRoadRecoveryWorker(scope) {
@@ -75,6 +97,11 @@ export function installSpatialRoadRecoveryWorker(scope) {
       sessionId:sreWorkerSession(data?.sessionId)?data.sessionId:null};
     if(active){scope.postMessage({...identity,error:'Road recovery worker is busy.'});return;}
     try{
+      if(data?.kind==='verify-review'){
+        active={request:{controlled:false}};
+        scope.postMessage(await calculateSpatialRoadReview(data));
+        return;
+      }
       const request=normalizeSpatialRoadWorkerRequest(data),task={request,stop:false,resume:null};
       active=task;
       const control=request.controlled?{
