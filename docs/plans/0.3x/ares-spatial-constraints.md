@@ -1,6 +1,8 @@
 # ARES landscape-aware spatial constraint architecture
 Status: owner-approved planning amendment, 2026-11-26 Pacific. Documented on PR163 only; no implementation authorization, schema decision, new editing permission or release action. ARES remains paused for discussion and renewed explicit go-ahead after W4 closeout and exact-main qualification. This supplements [the approved ARES plan](ares-approved-plan.md); all existing SAFE-01–15 contracts and qualification thresholds remain binding.
 
+The provider registry is the spatial-constraint component of the [approved UAEF shared architecture](uaef-approved-architecture.md); it is not a competing coordinator or geometry engine.
+
 ## Objective and boundary
 ARES must reason about the real city environment from P1, not treat terrain/water as later exceptions. Current 2D accepted Schema 11 city and existing authoritative validators remain the source of truth. Develop reusable read-only adapters for existing rivers, lakes, coast/ocean boundaries, terrain hills/mountains, crossings/bridges and fortification dependencies. Inspect actual model semantics and supported feature combinations before coding; distinguish actual elevation data from categorical 2D terrain. Where current schema cannot represent a feature, use detached synthetic contract tests, label that capability unsupported in production, and stop for separate schema/feature approval if required. Do not claim that new terrain authoring, height fields, bridges, harbors, tunnels, elevated roads or 3D editing are delivered by ARES. These remain future integrations. A road movement never grants water or terrain modification rights.
 

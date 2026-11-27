@@ -1,20 +1,22 @@
 {
   "version": 2,
   "repository": "xbwtyz/Mappo",
-  "milestone": "SRE W4 A5 browser qualification requested; ARES landscape planning hold",
+  "milestone": "SRE W4 A5 full qualified; manual closeout preparation; ARES discussions hold",
   "appVersion": "0.2.25-dev",
   "targetVersion": "0.3.0",
   "state": "active",
   "source": {
     "branch": "feature/sre-e2-live-road-worker",
-    "sha": "e2439195bf4c4f04ea1d070001d7746abdc72b7d",
+    "sha": "9be4fa7d5b44fa99cd2fd38241aa2c510eebcb6b",
     "baseSha": "eae2b1f73af2b04d2e9b980954eaa94d5c9b576b",
     "pr": 163
   },
   "scope": {
     "approved": [
       "Current W4 audit/interactive/manual qualification only; ARES plan previously approved but now paused pending owner discussion and explicit new go-ahead.",
-      "Owner approved documenting landscape-aware ARES-L01–L10 planning amendment; no implementation authorization; existing ARES hold remains."
+      "Owner approved documenting landscape-aware ARES-L01–L10 planning amendment; no implementation authorization; existing ARES hold remains.",
+      "Discussion 1: owner approved UAEF-01–08 Option B, practical extensibility and accessibility. Planning only; ARES hold remains.",
+      "Discussion 2: AP-01–12 explicitly approved; documentation only; no ARES implementation or hold lift."
     ],
     "prohibited": [
       "No schema/CI policy change, new protected-content rights, merge, release, tag or Pages without explicit separate approval."
@@ -34,31 +36,40 @@
     "A4a Fast Checks 45939040836 exact 8bd52c8006231682cfb6863c8bfda527377473a3 18/18, 1412 tests / 198 files, 225s.",
     "A4b exact Fast Checks 45939772653 green 18/18, 1413 tests / 198 files, 279s at e2439195bf4c4f04ea1d070001d7746abdc72b7d.",
     "Landscape-aware ARES planning amendment recorded in docs/plans/0.3x/ares-spatial-constraints.md and integrated into P1–P9 plan.",
-    "Documentation-only Fast Checks 45940314102 green 59s at 6040cf1b58f4431143af7368a7b22a73631182bc; smoke only."
+    "Documentation-only Fast Checks 45940314102 green 59s at 6040cf1b58f4431143af7368a7b22a73631182bc; smoke only.",
+    "A5 full run 45940694634 failed browser test ordering; corrected typed identity membership without production changes.",
+    "A5 exact full CI 45941285755 22/22, 1413 tests / 198 files, 742s, both browsers locked 60/17/43 High and paused 60/8/52, positive Standard regen +3, stale cleared, exact verification and history/portable.",
+    "Version 0.2.25-dev / Schema 11 / portable/workspace 1 verified; prior exact A5 manual package artifact 15173445757 generated, manual not-run.",
+    "Approved Discussion 1 UAEF and Discussion 2 AP-01–12 staged documents incorporated with documentation-only closeout; refresh exact-candidate acceptance package."
   ],
   "pending": [
-    "A5 exact full draft CI including mounted audit, paused incumbent/stale review, locked High and positive regeneration; manual acceptance/version alignment/review-ready CI.",
-    "Separate PR163 merge approval and exact-main verification; stop for owner discussion before ARES."
+    "Fresh exact documentation candidate manual acceptance package via existing acceptance-package marker; owner manual acceptance not yet run.",
+    "Review-ready full CI on final exact candidate after manual acceptance; separate PR163 merge approval, exact-main verification.",
+    "Remaining ARES discussions and renewed explicit implementation go-ahead; no ARES runtime."
   ],
   "decisions": [
     "16 witness cap for detached prototype only, no runtime refusal policy or budget change.",
     "Preserve current schema 11 and portable/workspace 1; defer E3–E6 and B2.",
-    "Mandatory reusable landscape spatial constraint contract, mixed environment fixtures and future elevation capability seam; no new schema, permission, landscape editor or 3D runtime scope."
+    "Mandatory reusable landscape spatial constraint contract, mixed environment fixtures and future elevation capability seam; no new schema, permission, landscape editor or 3D runtime scope.",
+    "UAEF shared specialized-engine infrastructure, developer documentation/contract tests and end-user accessibility requirements; parallel-ready only pending detailed production concurrency approval.",
+    "Adaptive default, bounded user scope and obstruction-driven expansion; typed preservation priorities and profiles; authored protection, major-road preference, future lock seam, character-aware reconstruction only when authorized, exact intent and no automatic escalation."
   ],
   "blockers": [
-    "A4b focused-qualified; A5 interactive/browser coverage and owner manual acceptance outstanding. Audit proves supplied selected lineage only.",
-    "Current PR163 not review-ready; manual acceptance pending.",
+    "Owner manual acceptance pending; audit proves selected lineage only.",
+    "Current PR163 draft, new exact-head package/checks and review-ready full qualification pending.",
     "Known setback and topology limitations remain; ARES on owner hold."
   ],
   "evidence": {
-    "qualification": "focused",
+    "qualification": "full",
     "full": {
-      "runId": 45937837093,
+      "runId": 45941285755,
       "attempt": 1,
-      "head": "f6ad2c13f0108f9a3161f791772385e26f18069e",
+      "head": "9be4fa7d5b44fa99cd2fd38241aa2c510eebcb6b",
       "nodeShards": 16,
       "conclusion": "success",
-      "durationSeconds": 620
+      "durationSeconds": 742,
+      "tests": 1413,
+      "files": 198
     },
     "artifacts": [
       {
@@ -85,5 +96,5 @@
     "sourceSha": "6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9",
     "policy": "Reviewed revert only; preserve exact evidence."
   },
-  "nextAction": "Verify A5 exact-head full mandatory CI; prepare exact candidate manual acceptance/version alignment and stop for owner acceptance. No ARES."
+  "nextAction": "Verify new exact-head Fast Checks and manual acceptance package; present artifact to owner for manual test. Stop for owner acceptance and subsequent review-ready full CI; no merge or ARES."
 }
