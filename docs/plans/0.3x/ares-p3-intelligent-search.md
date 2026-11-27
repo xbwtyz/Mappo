@@ -70,7 +70,8 @@ Execute both predeclared reserved cases (radial 1 X, linear 100 X) under unchang
 ### Reserved cases
 - Radial +1 X: all three independently verify fingerprint dcb2e617a6036f4eaa0074a081f8243668e4f5a07644c6136995efd71e898ba7, zero retirement, surviving footprint loss and frontage change; 46 modified records. Work reference/single/portfolio 742,667 / 771,914 / 771,943. One hosted wall observation 2.019 / 2.117 / 1.759s.
 - Linear +100 X: all three preflight-refused, nine overlapping-road/unnormalized-crossing diagnostics, 16,863 work and zero expansions; no recovery dispatch. This is not an independently feasible 100-unit control.
-## Batch F — complete research and comprehensive draft qualification (pending qualification)
+## Batch F — complete research and comprehensive draft qualification (qualified)
+Full exact-head draft CI [45972083728](https://github.com/xbwtyz/Mappo/actions/runs/45972083728) at 79b24c57aae79113fcb3f4fc57f4bb5c727966ec passed 22/22 mandatory jobs, attempt 1, 707s, aggregate 140420059259, 1543 tests / 229 files; 130 ARES tests / 31 files, 56 P3 / 19 files. Optional benchmark skipped; compiled HTML unchanged. [Exit evidence](https://github.com/xbwtyz/Mappo/pull/164#issuecomment-7214713748). Owner separately authorized P4; [implementation plan](ares-p4-rtre-neighbor-geometry.md). P5 and publishing remain held.
 Final matched research dataset: 11 frozen scenarios x three arms = 33 observations, all revision 2, single exact hosted source/run/attempt. Nine known cases repeat deterministically across two runs in their work counters and verified fingerprint/consequences. Complete per-arm totals:
 - sre-reference: 4/11 verified, 7 refused (2 preflight), total 120,945,116 logical work, 40,192 expansions.
 - ares-single: 4/11 verified, 7 refused (2 preflight), total 121,318,425 logical work, 40,192 expansions.
