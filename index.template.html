@@ -447,6 +447,33 @@
               <p id="roadDemolitionStatusB1R" class="hint" hidden></p>
             </div>
 
+            <section id="roadSrePanel" class="road-sre-panel" aria-label="Connected road recovery" hidden>
+              <h4>Spatial recovery</h4>
+              <div class="road-sre-permissions">
+                <label><input id="roadSreFrontage" type="checkbox"> Allow alternative frontage</label>
+                <label><input id="roadSreScale" type="checkbox"> Allow uniform scaling</label>
+                <label>Maximum linear reduction <select id="roadSreScaleLimit"><option value="0.05">5%</option><option value="0.1" selected>10%</option><option value="0.2">20%</option></select></label>
+                <label><input id="roadSreDestruction" type="checkbox"> Allow eligible generated development removal</label>
+                <label><input id="roadSreRegeneration" type="checkbox"> Allow optional regeneration</label>
+                <label>Search quality <select id="roadSreQuality"><option value="standard">Standard</option><option value="high">High quality (destruction only)</option></select></label>
+              </div>
+              <div class="road-preview-actions">
+                <button id="roadSreStart" type="button" class="minor-button">Search recovery options</button>
+                <button id="roadSreStop" type="button" class="minor-button" hidden>Stop</button>
+                <button id="roadSreContinue" type="button" class="minor-button" hidden>Continue</button>
+                <button id="roadSreReviewBest" type="button" class="minor-button" hidden>Review best solution</button>
+                <button id="roadSreCancel" type="button" class="minor-button" hidden>Cancel recovery</button>
+              </div>
+              <p id="roadSreStatus" role="status" aria-live="polite" class="hint"></p>
+              <progress id="roadSreProgress" aria-label="Recovery work budget consumed" hidden></progress>
+              <p id="roadSreWork" class="hint"></p>
+              <details id="roadSreReview" open hidden>
+                <summary>Verified recovery changes</summary>
+                <p id="roadSreTotals"></p><p id="roadSreAreas" class="hint"></p>
+                <ul id="roadSreChanges" class="road-sre-changes"></ul>
+                <p class="hint">Apply accepts this exact result. Reset or change the draft to discard it.</p>
+              </details>
+            </section>
             <section id="roadDemolitionB1R" class="road-demolition" aria-label="Demolition review" hidden>
               <p id="roadDemolitionRemovalsB1R"></p>
               <p id="roadDemolitionRelocationsB1R"></p>

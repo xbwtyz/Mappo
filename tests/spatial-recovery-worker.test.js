@@ -88,7 +88,7 @@ function controllerFixture(options){
       addEventListener:(name,fn)=>listeners.set(name,fn),
       postMessage(data){if(data.command)(this.commands??=[]).push(data);else this.request=data;},
       terminate(){this.terminated=true;},
-      emit(name,data){listeners.get(name)?.(data);}
+      emit(name,data){return listeners.get(name)?.(data);}
     };workers.push(worker);return worker;
   },()=>current,options);
   const input=()=>({sessionId:current.sessionId,operation:current.operation,quality:current.quality,projectJson:JSON.stringify(project)});
@@ -222,7 +222,7 @@ test('SRE controller validates progress and controls, rejects stale binding with
   const {result,...envelope}=f.reply(w);
   const progress={...envelope,progress:{phase:'nondestructive',stats,hasIncumbent:false,incumbentKind:null},paused:true,incumbent:{...result,stats}};
   assert.equal(f.controller.stop(),true);
-  w.emit('message',{data:progress});
+  await w.emit('message',{data:progress});
   assert.equal(seen.length,1);
   assert.equal(f.controller.continue(),true);
   assert.deepEqual(w.commands.map(c=>c.command),['stop','continue']);

@@ -89,7 +89,8 @@ export function createSpatialRoadReviewGate(host,getDraft,{verify=createSpatialR
     check(state);
     const token=Object.freeze({});
     tokens.set(token,{...state,summary:proof.summary,candidateJson:proof.candidateJson});
-    return Object.freeze({token,summary:proof.summary,candidateFingerprint:state.witness.delta.candidateFingerprint});
+    return Object.freeze({token,summary:proof.summary,candidateFingerprint:state.witness.delta.candidateFingerprint,
+      candidate:riFreeze(proof.candidate)});
   };
   const apply=async(token,consent)=>{
     const state=tokens.get(token);

@@ -31,7 +31,7 @@ export function createSpatialRoadWorkerController(createWorker,getBinding,{onPro
     finish(active,errorOf('Road recovery canceled or superseded.','AbortError'));
     return true;
   };
-  const validateResult=(request,result)=>{
+  const validateResult=async(request,result)=>{
     if(!riEqual(result?.operation,request.operation)||
        !['verified-witness','refused'].includes(result.status)||
        (result.status==='verified-witness'&&(!result.delta||!result.basisDelta||!Array.isArray(result.delta.added)))||
@@ -49,8 +49,9 @@ export function createSpatialRoadWorkerController(createWorker,getBinding,{onPro
     if(typeof current.projectJson!=='string'||current.projectJson!==request.projectJson)
       throw Error('Road regeneration host snapshot changed.');
     // No receipt, candidate or worker-supplied request keys enter this policy.
-    const expected=hostReservationRequests(Object.freeze({operation:request.operation,
-      kind:result.kind,context:request.reservationContext}));
+    const expected=await hostReservationRequests(Object.freeze({operation:request.operation,
+      kind:result.kind,context:request.reservationContext,basisDelta:riFreeze(result.basisDelta),
+      candidateFingerprint:result.delta.candidateFingerprint}));
     if(!matches(request))throw errorOf('Stale road regeneration authorization.','AbortError');
     const auth=verifySpatialRoadWorkerReservation(JSON.parse(current.projectJson),request.operation,
       request.reservationContext,expected,proposal);
@@ -76,7 +77,7 @@ export function createSpatialRoadWorkerController(createWorker,getBinding,{onPro
           throw Error('Road regeneration requires independent host reservation policy and snapshot.');
         task={worker:null,request,resolve,reject,lastWork:0,lastExpansions:0}; active=task;
         const worker=createWorker(); task.worker=worker;
-        worker.addEventListener('message',({data})=>{
+        worker.addEventListener('message',async({data})=>{
           if(active!==task)return;
           try {
             if(!matches(request))throw errorOf('Stale road recovery result.','AbortError');
@@ -99,7 +100,9 @@ export function createSpatialRoadWorkerController(createWorker,getBinding,{onPro
                  stats.work+stats.remainingWork!==caps[0]||stats.expansions+stats.remainingExpansions!==caps[1])
                 throw Error('Invalid road recovery progress.');
               if(data.paused){
-                validateResult(request,data.incumbent);
+                await validateResult(request,data.incumbent);
+                if(active!==task)return;
+                if(!matches(request))throw errorOf('Stale paused road recovery result.','AbortError');
                 if((data.incumbent.status==='verified-witness')!==state.hasIncumbent||
                    !riEqual(data.incumbent.stats,stats))throw Error('Invalid paused recovery incumbent.');
               }else if(Object.hasOwn(data,'incumbent'))throw Error('Unexpected road recovery incumbent.');
@@ -107,7 +110,9 @@ export function createSpatialRoadWorkerController(createWorker,getBinding,{onPro
               onProgress?.(riFreeze(data));
               return;
             }
-            validateResult(request,data.result);
+            await validateResult(request,data.result);
+            if(active!==task)return;
+            if(!matches(request))throw errorOf('Stale road recovery result.','AbortError');
             // This is a detached preview response, NOT Apply authority.
             finish(task,null,data);
           }catch(error){finish(task,error);}
@@ -177,8 +182,10 @@ export function createSpatialRoadReviewWorkerClient(){
           if(data?.version!==input.version||data.requestId!==input.requestId||data.sessionId!==input.sessionId)
             return settle(task,Error('Mismatched road review verifier response.'));
           if(data.error)return settle(task,Error(data.error));
-          if(data.kind!=='verified-review'||data.quality!==input.quality||!riEqual(data.operation,input.operation)||
-             typeof data.candidateJson!=='string'||!data.summary)
+          if(data.quality!==input.quality||!riEqual(data.operation,input.operation)||
+             (input.kind==='plan-reservation'?(data.kind!=='planned-reservation'||!Array.isArray(data.requests)||
+               typeof data.candidateFingerprint!=='string'):(data.kind!=='verified-review'||
+               typeof data.candidateJson!=='string'||!data.summary)))
             return settle(task,Error('Malformed road review verifier response.'));
           settle(task,null,data);
         });

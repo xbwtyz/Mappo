@@ -116,13 +116,18 @@ export function drawRoadInspectionOverlay(canvas, camera, city, session) {
     highlight({ kind, id }, false, true);
   }
   if (showPreview) {
+    const sreKinds=new Map(ROAD_IMPACT_COLLECTIONS);
+    const retired=new Set((session.srePreviewSummary?.retired??[]).map(r=>JSON.stringify([sreKinds.get(r.collection),r.id])));
+    const added=new Set((session.srePreviewSummary?.added??[]).map(r=>JSON.stringify([sreKinds.get(r.collection),r.id])));
     for(const row of preview?.rows??[]){
-      const color=row.kind==='property'?'#8053a5':row.kind==='plot'?'#168578':row.kind==='building'?'#b45468':row.kind==='road'?'#168f80':'#cf8731';
+      const key=JSON.stringify([row.kind,row.id]);
+      const removed=retired.has(key),created=added.has(key);
+      const color=removed?'#bc2636':created?'#147d70':row.kind==='property'?'#8053a5':row.kind==='plot'?'#168578':row.kind==='building'?'#b45468':row.kind==='road'?'#168f80':'#cf8731';
       const focused=session.focusKey===JSON.stringify([row.kind,row.id]);
       const closed=!['road','junction'].includes(row.kind);
-      if (!session.showRoadDiagnostics && !focused && ['property','plot','open-space'].includes(row.kind)) continue;
+      if (!session.showRoadDiagnostics && !focused && !removed && !created && ['property','plot','open-space'].includes(row.kind)) continue;
       if(path(row.originalPoints,closed)){
-        ctx.strokeStyle='#5d717b';ctx.lineWidth=focused?3:1.4;
+        ctx.strokeStyle=removed?color:'#5d717b';ctx.lineWidth=focused?3:removed?2.5:1.4;
         ctx.setLineDash([]);ctx.stroke();
       }
       if (row.kind === 'junction' && row.proposedPoints?.length === 1) {

@@ -4,6 +4,7 @@ import { searchSpatialUnifiedRoadGroup, verifySpatialUnifiedRoadWitness } from '
 import { hydrateProjectS10 } from '../core/building-project-s10.js';
 import { riEqual } from '../core/road-impact-model.js';
 import { spatialRoadReviewSummary } from '../core/spatial-recovery-review-summary.js';
+import { searchSpatialShellRegeneration,searchSpatialGroupRegeneration } from '../core/spatial-recovery-regeneration.js';
 
 import { SRE_ROAD_WORKER_VERSION, normalizeSpatialRoadWorkerRequest, sreWorkerId, sreWorkerSession } from '../core/spatial-recovery-worker-protocol.js';
 
@@ -75,6 +76,30 @@ export async function calculateSpatialRoadReview(input){
     candidateJson:JSON.stringify(candidate),summary:spatialRoadReviewSummary(project,candidate)};
 }
 
+// Independently reproduce the regeneration plan on the already selected
+// retirement basis. This cannot select another recovery candidate or publish.
+export async function calculateSpatialRoadReservationPlan(input){
+  const {kind,basisDelta,regenerationKind,...base}=input;
+  if(kind!=='plan-reservation')throw Error('Unsupported reservation planning request.');
+  const request=normalizeSpatialRoadWorkerRequest(base),op=request.operation;
+  if(request.controlled||!request.reservationContext||request.quality!=='standard'||
+     !['shell-regeneration','group-regeneration'].includes(regenerationKind)||!basisDelta)
+    throw Error('Invalid regeneration plan request.');
+  const raw=JSON.parse(request.projectJson);
+  if(raw?.schemaVersion!==11||(raw.id??raw.city?.id)!==op.projectId)
+    throw Error('Regeneration plan snapshot mismatch.');
+  const project=hydrateProjectS10(raw);
+  const shell=regenerationKind==='shell-regeneration';
+  const plan=await (shell?searchSpatialShellRegeneration:searchSpatialGroupRegeneration)(
+    project,op,basisDelta,request.reservationContext,
+    createSpatialDestructionBudget({work:shell?2000000:6000000,stateExpansions:131072}));
+  if(plan.status!=='verified-witness'||!plan.provisionalAuthorization)
+    throw Error('Independent regeneration plan refused.');
+  return {kind:'planned-reservation',version:request.version,requestId:request.requestId,
+    sessionId:request.sessionId,operation:op,quality:request.quality,
+    requests:plan.provisionalAuthorization.requests,candidateFingerprint:plan.delta.candidateFingerprint};
+}
+
 // Stop pauses cooperatively at a verified phase boundary; Continue
 // resumes the same stack and budget. Hard Cancel is worker termination.
 export function installSpatialRoadRecoveryWorker(scope) {
@@ -97,6 +122,11 @@ export function installSpatialRoadRecoveryWorker(scope) {
       sessionId:sreWorkerSession(data?.sessionId)?data.sessionId:null};
     if(active){scope.postMessage({...identity,error:'Road recovery worker is busy.'});return;}
     try{
+      if(data?.kind==='plan-reservation'){
+        active={request:{controlled:false}};
+        scope.postMessage(await calculateSpatialRoadReservationPlan(data));
+        return;
+      }
       if(data?.kind==='verify-review'){
         active={request:{controlled:false}};
         scope.postMessage(await calculateSpatialRoadReview(data));

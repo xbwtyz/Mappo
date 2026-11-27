@@ -56,6 +56,57 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     assert.deepEqual(sreResult.result.basisDelta,sreDirect.basisDelta);
     console.log('SRE_OFFLINE '+JSON.stringify({browser:browserName,passed:true,parity:true,cancellation:true}));
 
+    // Exercise mounted connected-road recovery and its shared Apply button
+    // in real offline Firefox and Chromium, not only the detached worker.
+    await page.evaluate(doc=>__buildingQA.apply(doc),{project:sreProject,workspace:defaultWorkspace(sreProject)});
+    await page.locator('#roadModeButton').click();
+    const sreBefore=await page.evaluate(()=>{
+      const app=__buildingQA.state(),s=app.roadWorkspace.session;
+      s.select({kind:'road',id:'RD-0113'});
+      if(!s.requestSelectionA1({kind:'road',id:'RD-0114'},{toggle:true})||!s.roadGroupB1?.eligible)
+        throw Error('Offline SRE group fixture ineligible.');
+      s.updateRoadIntent({x:.05,y:0},{defer:false});
+      return {project:JSON.stringify(app.project),revision:app.files.revision,identityRevision:app.identityView.context.revision};
+    });
+    await page.locator('#roadSreStart').waitFor({state:'visible'});
+    for(const id of ['roadSreFrontage','roadSreScale','roadSreDestruction','roadSreRegeneration'])
+      assert.equal(await page.locator('#'+id).isChecked(),false);
+    await page.locator('#roadSreStart').click();
+    await page.waitForFunction(()=>['ready','refused','error'].includes(__buildingQA.state().roadWorkspace.sre.state?.phase));
+    const sreReview=await page.evaluate(()=>{
+      const app=__buildingQA.state(),state=app.roadWorkspace.sre.state;
+      return {phase:state?.phase,message:state?.message,summary:state?.review?.summary,
+        candidate:state?.review?.candidate,enabled:!document.querySelector('#roadApplyB4').disabled,
+        original:JSON.stringify(app.project),revision:app.files.revision};
+    });
+    assert.equal(sreReview.phase,'ready',sreReview.message);
+    assert.equal(sreReview.enabled,true);
+    assert.deepEqual(sreReview.summary.retired,[]);
+    assert.deepEqual(sreReview.summary.added,[]);
+    assert.equal(sreReview.original,sreBefore.project);
+    assert.equal(sreReview.revision,sreBefore.revision);
+    await page.locator('#roadSreCancel').click();
+    assert.equal(await page.evaluate(()=>__buildingQA.state().roadWorkspace.sre.state),null);
+    assert.equal(await page.evaluate(()=>JSON.stringify(__buildingQA.state().project)),sreBefore.project);
+    await page.locator('#roadSreStart').click();
+    await page.waitForFunction(()=>['ready','refused','error'].includes(__buildingQA.state().roadWorkspace.sre.state?.phase));
+    assert.equal(await page.evaluate(()=>__buildingQA.state().roadWorkspace.sre.state.phase),'ready');
+    await page.locator('#roadApplyB4').click();
+    await page.waitForFunction(()=>!__buildingQA.state().roadWorkspace.active);
+    const sreApplied=await page.evaluate(()=>{
+      const app=__buildingQA.state();
+      return {project:app.project,revision:app.files.revision,identityRevision:app.identityView.context.revision,history:app.identityView.history.length};
+    });
+    assert.deepEqual(sreApplied.project,sreReview.candidate);
+    assert.equal(sreApplied.revision,sreBefore.revision+1);
+    assert.equal(sreApplied.identityRevision,sreBefore.identityRevision+1);
+    assert.equal(sreApplied.history,1);
+    assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
+    assert.deepEqual(await page.evaluate(()=>__buildingQA.state().project.city),sreProject.city);
+    assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('redo')),true);
+    assert.deepEqual(await page.evaluate(()=>__buildingQA.state().project.city),sreApplied.project.city);
+    console.log('SRE_MOUNTED_OFFLINE '+JSON.stringify({browser:browserName,permissionsDefaultOff:true,review:true,cancel:true,apply:true,undoRedo:true}));
+
     await page.evaluate(doc=>__buildingQA.apply(doc),doc);
     await page.locator('#roadModeButton').scrollIntoViewIfNeeded();
     await page.locator('#roadModeButton').click();
