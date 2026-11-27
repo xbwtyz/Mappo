@@ -138,7 +138,7 @@ function planPath(env) {
   if (!env.RUNNER_TEMP) throw Error('Missing runner temporary directory');
   return join(env.RUNNER_TEMP,'mappo-focus-plan.json');
 }
-function plan(env) {
+function deriveFocusPlan(env) {
   const event=JSON.parse(readFileSync(env.GITHUB_EVENT_PATH,'utf8'));
   const head=git(['rev-parse','HEAD']).trim();
   if (env.GITHUB_EVENT_NAME!=='push'||head!==env.GITHUB_SHA||head!==event.after) throw Error('Not exact pushed revision');
@@ -155,6 +155,10 @@ function plan(env) {
   const selection=selectTests(paths,inventory,!range.base);
   const execution=adaptiveFocusGroups(manifest(),selection.tests,{broad:selection.profiles.includes('all')});
   const output={version:2,head,runId:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT,...range,changedPaths:paths,...selection,execution};
+  return output;
+}
+function plan(env){
+  const output=deriveFocusPlan(env),execution=output.execution;
   writeFileSync(planPath(env),JSON.stringify(output,null,2));
   console.log('CI_FOCUS '+JSON.stringify(output));
   if(env.GITHUB_OUTPUT)writeFileSync(env.GITHUB_OUTPUT,'parallel='+(execution.shards>1)+'\nmatrix='+JSON.stringify(execution.groups.map(g=>g.shard))+'\nplan_path='+planPath(env)+'\n',{flag:'a'});
@@ -170,6 +174,10 @@ function runCLI(mode,env=process.env) {
   const head=git(['rev-parse','HEAD']).trim();
   if(head!==env.GITHUB_SHA)throw Error('Stale focus checkout');
   const execution=verifyFocusPlan(selection,{head,runId:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT,inventory:exactInventory(),weights:manifest()});
+  // Independent reconstruction from the event and exact checked-out history.
+  // A self-consistent but narrowed artifact must not omit changed tests.
+  const independentlyDerived=deriveFocusPlan(env);
+  if(JSON.stringify(selection)!==JSON.stringify(independentlyDerived))throw Error('Focused plan differs from exact push evidence');
   if(mode==='syntax') {
     for(const p of selection.changedPaths) if(/^(src|scripts|tests)\/.*\.(js|mjs)$/.test(p)&&existsSync(p)) runNode(['--check',p]);
   } else if(mode==='test') {
