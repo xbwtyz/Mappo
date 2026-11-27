@@ -8,7 +8,7 @@ import { issueIdentityReservation } from '../src/core/identity-verification.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
 import { AcceptedIdentitySession } from '../src/core/accepted-identity-session.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
-import { calculateSpatialRoadReview } from '../src/worker/spatial-recovery-worker.js';
+import { calculateSpatialRoadReview,calculateSpatialRoadReservationPlan } from '../src/worker/spatial-recovery-worker.js';
 import { createSpatialRoadReviewGate } from '../src/editor/spatial-recovery-review-gate.js';
 import { verifySpatialRoadWorkerReservation } from '../src/core/spatial-recovery-worker-reservation.js';
 const budget=()=>createSpatialDestructionBudget();
@@ -127,6 +127,15 @@ test('detached complete property regeneration reserves every new identity and le
   await assert.rejects(()=>verifySpatialGroupRegeneration(project,op,seed.delta,rebound,auth,budget()),/survivor/);
   const tiny=await searchSpatialGroupRegeneration(project,op,seed.delta,context,createSpatialDestructionBudget({work:1,stateExpansions:1}));
   assert.equal(tiny.status,'refused');assert.equal(tiny.delta,null);
+  assert.equal(JSON.stringify(project),before);
+  // Fresh plan receives the accepted snapshot, verified retirement basis and
+  // permission/session context only, never the search's receipt or request keys.
+  const plan=await calculateSpatialRoadReservationPlan({kind:'plan-reservation',version:1,requestId:1,
+    sessionId:'independent-group-plan',projectJson:JSON.stringify(project),operation:op,quality:'standard',
+    reservationContext:context,basisDelta:seed.delta,regenerationKind:'group-regeneration'});
+  assert.equal(plan.kind,'planned-reservation');
+  assert.equal(plan.candidateFingerprint,result.delta.candidateFingerprint);
+  assert.deepEqual(plan.requests,requests);
   assert.equal(JSON.stringify(project),before);
   console.log('SRE_GROUP_REGENERATION '+JSON.stringify({counts,added:result.delta.added.map(r=>r.ref),stats:shared.snapshot()}));
 });
