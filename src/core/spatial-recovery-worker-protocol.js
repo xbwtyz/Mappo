@@ -2,7 +2,7 @@ import { createSpatialOperation } from './spatial-recovery-contract.js';
 import { validateAllocationNamespace } from './identity-allocation.js';
 
 export const SRE_ROAD_WORKER_VERSION = 1;
-const sreWorkerKeys = ['version','requestId','sessionId','projectJson','operation','quality','controlled','reservationContext'];
+const sreWorkerKeys = ['version','requestId','sessionId','projectJson','operation','quality','controlled','reservationContext','captureRestorationAudit'];
 export const sreWorkerId = id => Number.isSafeInteger(id) && id > 0;
 export const sreWorkerSession = id => typeof id === 'string' && id.length > 0 && id.length <= 200 && id.trim() === id;
 
@@ -25,9 +25,12 @@ export function normalizeSpatialRoadWorkerRequest(input) {
     throw Error('Invalid road worker quality policy.');
   const controlled=input.controlled??false;
   if(typeof controlled!=='boolean')throw Error('Invalid road worker control policy.');
+  const captureRestorationAudit=input.captureRestorationAudit??false;
+  if(typeof captureRestorationAudit!=='boolean'||(captureRestorationAudit&&!operation.permissions.destruction))
+    throw Error('Invalid road worker restoration audit policy.');
   const reservationContext=normalizeSpatialRoadReservationContext(operation,input.reservationContext??null);
   return Object.freeze({version:SRE_ROAD_WORKER_VERSION,requestId:input.requestId,
-    sessionId:input.sessionId,projectJson:input.projectJson,operation,quality,controlled,reservationContext});
+    sessionId:input.sessionId,projectJson:input.projectJson,operation,quality,controlled,reservationContext,captureRestorationAudit});
 }
 
 

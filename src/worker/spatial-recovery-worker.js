@@ -2,6 +2,7 @@ import { createSpatialPreservationBudget, createSpatialDestructionBudget } from 
 import { createSpatialHighQualityBudget } from '../core/spatial-recovery-quality.js';
 import { searchSpatialUnifiedRoadGroup, verifySpatialUnifiedRoadWitness } from '../core/spatial-recovery-coordinator.js';
 import { hydrateProjectS10 } from '../core/building-project-s10.js';
+import { verifySpatialRestorationAudit } from '../core/spatial-recovery-restoration-audit.js';
 import { riEqual } from '../core/road-impact-model.js';
 import { spatialRoadReviewSummary } from '../core/spatial-recovery-review-summary.js';
 import { searchSpatialShellRegeneration,searchSpatialGroupRegeneration } from '../core/spatial-recovery-regeneration.js';
@@ -49,7 +50,7 @@ export async function calculateSpatialRoadWorkerResult(input, control=null) {
     return 'continue';
   }:null;
   const result = await searchSpatialUnifiedRoadGroup(project,operation,observedBudget,
-    {quality,context:request.reservationContext,checkpoint});
+    {quality,context:request.reservationContext,checkpoint,captureRestorationAudit:request.captureRestorationAudit});
   await verify(result);
   return {version:SRE_ROAD_WORKER_VERSION,requestId:request.requestId,sessionId:request.sessionId,
     operation,quality,result};
@@ -74,6 +75,40 @@ export async function calculateSpatialRoadReview(input){
   return {version:request.version,requestId:request.requestId,sessionId:request.sessionId,
     operation,quality:request.quality,kind:'verified-review',
     candidateJson:JSON.stringify(candidate),summary:spatialRoadReviewSummary(project,candidate)};
+}
+
+// Fresh detached verifier: independently replay the final candidate and supplied
+// selected retirement lineage. Valid supplied transitions do not prove omitted
+// history. This diagnostic is not Apply authority and does not enable live capture.
+export async function calculateSpatialRoadRestorationAudit(input){
+  const {kind,witness,authorization,...base}=input;
+  if(kind!=='verify-restoration-audit')throw Error('Unsupported restoration audit request.');
+  const request=normalizeSpatialRoadWorkerRequest(base),operation=request.operation;
+  if(request.controlled||!request.captureRestorationAudit||
+     witness?.status!=='verified-witness'||!riEqual(witness.operation,operation)||
+     !Array.isArray(witness.restorationTrail))
+    throw Error('Invalid road restoration audit witness.');
+  if(!riEqual(authorization??null,witness.provisionalAuthorization??null)||
+     (authorization&&!riEqual(authorization.context,request.reservationContext)))
+    throw Error('Road restoration audit reservation differs from host authorization.');
+  const raw=JSON.parse(request.projectJson);
+  if(raw?.schemaVersion!==11||(raw.id??raw.city?.id)!==operation.projectId)
+    throw Error('Road restoration audit snapshot mismatch.');
+  const project=hydrateProjectS10(raw);
+  await verifySpatialUnifiedRoadWitness(project,operation,witness,createSpatialDestructionBudget(),authorization??null);
+  const budget=createSpatialDestructionBudget();
+  let audit=null;
+  if(witness.kind==='nondestructive'){
+    if(witness.restorationTrail.length||witness.basisDelta.retired.length)
+      throw Error('Unexpected retirement evidence for nondestructive witness.');
+  }else{
+    audit=await verifySpatialRestorationAudit(project,operation,witness.restorationTrail,witness.basisDelta,budget);
+  }
+  return {kind:'verified-restoration-audit',version:request.version,requestId:request.requestId,
+    sessionId:request.sessionId,operation,quality:request.quality,
+    candidateFingerprint:witness.delta.candidateFingerprint,
+    basisFingerprint:witness.basisDelta.candidateFingerprint,
+    audit,stats:budget.snapshot()};
 }
 
 // Independently reproduce the regeneration plan on the already selected
@@ -125,6 +160,11 @@ export function installSpatialRoadRecoveryWorker(scope) {
       if(data?.kind==='plan-reservation'){
         active={request:{controlled:false}};
         scope.postMessage(await calculateSpatialRoadReservationPlan(data));
+        return;
+      }
+      if(data?.kind==='verify-restoration-audit'){
+        active={request:{controlled:false}};
+        scope.postMessage(await calculateSpatialRoadRestorationAudit(data));
         return;
       }
       if(data?.kind==='verify-review'){

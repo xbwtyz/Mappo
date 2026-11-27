@@ -5,7 +5,7 @@ import { createProject } from '../src/core/city-model.js';
 import { normalizeSpatialRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { searchSpatialUnifiedRoadGroup, verifySpatialUnifiedRoadWitness } from '../src/core/spatial-recovery-coordinator.js';
-import { calculateSpatialRoadWorkerResult, installSpatialRoadRecoveryWorker } from '../src/worker/spatial-recovery-worker.js';
+import { calculateSpatialRoadWorkerResult, calculateSpatialRoadRestorationAudit, installSpatialRoadRecoveryWorker } from '../src/worker/spatial-recovery-worker.js';
 import { issueIdentityReservation } from '../src/core/identity-verification.js';
 import { normalizeSpatialRoadWorkerRequest, SRE_ROAD_WORKER_VERSION } from '../src/core/spatial-recovery-worker-protocol.js';
 import { createSpatialRoadWorkerController } from '../src/editor/spatial-recovery-worker-client.js';
@@ -24,6 +24,8 @@ test('SRE worker rejects unknown policy, malformed binding and mismatched snapsh
   assert.throws(()=>normalizeSpatialRoadWorkerRequest({...input,sessionId:''}),/request/);
   assert.throws(()=>normalizeSpatialRoadWorkerRequest({...input,budget:{work:999999999}}),/request/);
   assert.throws(()=>normalizeSpatialRoadWorkerRequest({...input,quality:'high'}),/quality/);
+  assert.throws(()=>normalizeSpatialRoadWorkerRequest({...input,captureRestorationAudit:true}),/audit policy/);
+  assert.throws(()=>normalizeSpatialRoadWorkerRequest({...input,captureRestorationAudit:'true'}),/audit policy/);
   assert.throws(()=>normalizeSpatialRoadWorkerRequest({...input,operation:{...operation,
     permissions:{destruction:true,regeneration:true}}}),/regeneration/);
   await assert.rejects(()=>calculateSpatialRoadWorkerResult({...input,projectJson:'{'}));
@@ -274,4 +276,58 @@ test('SRE controller compares provisional allocation to independently supplied h
   await assert.rejects(q,/host requests/);
   const z=run();emit(f.workers.at(-1),proposal,[{ref:{collection:'plots',id:added[0].ref.id}}]);
   await assert.rejects(z,/addition differs/);
+});
+
+test('SRE opt-in audit transport independently binds supplied selected retirement witnesses',{timeout:300000},async()=>{
+  const city=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties:false});
+  const op=normalizeSpatialRoadGroup(city,1,['RD-0184','RD-0186'],{x:3.005274072121821,y:37.39896113564458},
+    {destruction:true,alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2});
+  const input={...request(),projectJson:JSON.stringify(city),operation:op,captureRestorationAudit:true};
+  const moduleUrl=new URL('../src/worker/spatial-recovery-worker.js',import.meta.url).href;
+  const invoke=async data=>{
+    const worker=new Worker(`
+      const {parentPort,workerData}=require('node:worker_threads');
+      import(workerData).then(({installSpatialRoadRecoveryWorker})=>installSpatialRoadRecoveryWorker({
+        addEventListener:(_,fn)=>parentPort.on('message',data=>fn({data})),
+        postMessage:data=>parentPort.postMessage(data)
+      })).catch(error=>{throw error;});
+    `,{eval:true,workerData:moduleUrl});
+    try{
+      const reply=new Promise((resolve,reject)=>{worker.once('message',resolve);worker.once('error',reject);});
+      worker.postMessage(data);return await reply;
+    }finally{await worker.terminate();}
+  };
+  const found=await invoke(input);
+  assert.equal(found.error,undefined);
+  assert.equal(found.result.status,'verified-witness');
+  assert.equal(found.result.kind,'retirement');
+  assert.ok(found.result.restorationTrail.length>0);
+  assert.deepEqual(found.result.restorationTrail.at(-1),found.result.basisDelta);
+  const verify={...input,requestId:2,kind:'verify-restoration-audit',witness:found.result,authorization:null};
+  const proof=await invoke(verify);
+  assert.equal(proof.error,undefined);
+  assert.equal(proof.kind,'verified-restoration-audit');
+  assert.equal(proof.requestId,2);assert.equal(proof.sessionId,input.sessionId);
+  assert.equal(proof.candidateFingerprint,found.result.delta.candidateFingerprint);
+  assert.equal(proof.basisFingerprint,found.result.basisDelta.candidateFingerprint);
+  assert.equal(proof.audit.finalRetired.length,found.result.basisDelta.retired.length);
+  assert.ok(proof.stats.work>0&&proof.stats.work<=32000000);
+  assert.equal(Object.hasOwn(proof,'candidateJson'),false);
+  await assert.rejects(()=>calculateSpatialRoadRestorationAudit({...verify,witness:{...found.result,restorationTrail:[]}}),/basis/);
+  await assert.rejects(()=>calculateSpatialRoadRestorationAudit({...verify,captureRestorationAudit:false}),/audit witness/);
+  await assert.rejects(()=>calculateSpatialRoadRestorationAudit({...verify,witness:{...found.result,operation:{...op,revision:2}}}),/audit witness/);
+  const forged=structuredClone(found.result);forged.restorationTrail[0].retired.pop();
+  await assert.rejects(()=>calculateSpatialRoadRestorationAudit({...verify,witness:forged}));
+  assert.equal(JSON.stringify(city),input.projectJson);
+});
+test('SRE opt-in nondestructive witness has empty restoration lineage; unexpected evidence refuses',async()=>{
+  const op={...operation,permissions:{...operation.permissions,destruction:true}};
+  const input={...request(),operation:op,captureRestorationAudit:true};
+  const found=await calculateSpatialRoadWorkerResult(input);
+  assert.equal(found.result.kind,'nondestructive');assert.deepEqual(found.result.restorationTrail,[]);
+  const verify={...input,kind:'verify-restoration-audit',witness:found.result,authorization:null};
+  const proof=await calculateSpatialRoadRestorationAudit(verify);
+  assert.equal(proof.audit,null);assert.equal(proof.stats.work,0);
+  await assert.rejects(()=>calculateSpatialRoadRestorationAudit({...verify,witness:{...found.result,restorationTrail:[found.result.basisDelta]}}),/Unexpected retirement/);
 });
