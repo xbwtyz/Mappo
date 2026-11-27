@@ -163,7 +163,15 @@ async function nodeRun(program){
 }
 async function browserRun(browser,program){
   const page=await browser.newPage({offline:true});
-  try{return await page.evaluate(({program,request})=>new Promise((resolve,reject)=>{
+  try{
+    // Match the production file:// secure context. An opaque about:blank
+    // origin may not expose Web Crypto to the Blob worker.
+    const fixture=new URL('../../../artifacts/sre-math-pilot/pilot.html',import.meta.url);
+    await mkdir(new URL('./',fixture),{recursive:true});
+    await writeFile(fixture,'<!doctype html><meta charset="utf-8"><title>Isolated math parity</title>');
+    await page.goto(fixture.href,{waitUntil:'domcontentloaded'});
+    assert.equal(await page.evaluate(()=>Boolean(globalThis.crypto?.subtle)),true,'Offline pilot requires Web Crypto');
+    return await page.evaluate(({program,request})=>new Promise((resolve,reject)=>{
     const wrap=program+'\n;'; // install wrapper before worker implementation
     const transport='const mathPilotPost=self.postMessage.bind(self);self.postMessage=data=>mathPilotPost({data,pilot:globalThis.__mathPilot});\n';
     const url=URL.createObjectURL(new Blob([transport,wrap],{type:'text/javascript'}));
