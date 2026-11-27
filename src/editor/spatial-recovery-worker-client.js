@@ -16,6 +16,8 @@ export function createSpatialRoadWorkerController(createWorker,getBinding,{onPro
     const current=getBinding();
     return Boolean(current && current.sessionId===request.sessionId &&
       (current.quality??'standard')===request.quality &&
+      (current.captureRestorationAudit??false)===request.captureRestorationAudit &&
+      (!request.captureRestorationAudit||current.projectJson===request.projectJson)&&
       riEqual(createSpatialOperation(current.operation),request.operation)&&
       riEqual(normalizeSpatialRoadReservationContext(request.operation,current.reservationContext??null),request.reservationContext)&&
       (!request.reservationContext||current.projectJson===request.projectJson));
@@ -37,6 +39,9 @@ export function createSpatialRoadWorkerController(createWorker,getBinding,{onPro
        (result.status==='verified-witness'&&(!result.delta||!result.basisDelta||!Array.isArray(result.delta.added)))||
        (result.status==='refused'&&(result.delta!==null||result.basisDelta!==null)))
       throw Error('Malformed or unsupported road recovery witness.');
+    if(request.captureRestorationAudit!==Object.hasOwn(result,'restorationTrail')||
+       (request.captureRestorationAudit&&!Array.isArray(result.restorationTrail)))
+      throw Error('Invalid road restoration evidence transport.');
     const proposal=result.provisionalAuthorization;
     if(!proposal){
       if(proposal!==null||result.delta?.added.length)throw Error('Unreserved road recovery additions.');

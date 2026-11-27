@@ -80,3 +80,17 @@ test('mounted road recovery defaults to preservation, cancels stale work and app
   await assert.rejects(()=>mounted.apply(),/No current/);
   mounted.invalidate();
 });
+
+test('mounted destruction permission enables audit capture even when preservation wins',{timeout:120000},async()=>{
+  const {host,mounted,wait}=mountedFixture(),before=host.view();
+  mounted.setPolicy({permissions:{destruction:true}});
+  assert.equal(mounted.start(),true);
+  const state=await wait('ready');
+  assert.equal(state.binding.captureRestorationAudit,true);
+  assert.equal(state.review.restorationAudit,null);
+  assert.deepEqual(state.review.summary.retired,[]);
+  assert.equal(host.view(),before);
+  const applied=await mounted.apply();
+  assert.equal(applied.restorationAudit,null);
+  assert.equal(applied.historyStatus,'recorded');
+});

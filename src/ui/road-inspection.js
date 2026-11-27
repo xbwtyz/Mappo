@@ -485,14 +485,19 @@ export class RoadInspectionWorkspace {
     bar.hidden=!stats;
     if(stats){bar.max=stats.work+stats.remainingWork;bar.value=stats.work;}
     this.$('roadSreWork').textContent=stats?recovery.progress.phase+' · '+stats.work.toLocaleString()+' / '+(stats.work+stats.remainingWork).toLocaleString()+' work units (not elapsed time)':'';
-    const summary=recovery?.review?.summary;
+    const summary=recovery?.review?.summary,audit=recovery?.review?.restorationAudit;
     this.$('roadSreReview').hidden=!summary;
     if(summary&&this.sreLastSummary!==summary){
       this.sreLastSummary=summary;
-      this.$('roadSreTotals').textContent=summary.retired.length+' removed · '+summary.added.length+' added · '+summary.scaledBuildings.length+' scaled · '+summary.frontageSwitches.length+' frontage changes';
+      const restoration=audit?.status==='unavailable'?
+        ' · Restoration statistics unavailable ('+(audit.reason==='witness-limit'?'evidence limit':'audit work limit')+'); final changes verified':
+        audit?' · '+audit.grossRetired.length+' temporarily retired (selected path) · '+audit.restored.length+' restored and retained':
+        audit===null?' · 0 restored (no retirement)':'';
+      this.$('roadSreTotals').textContent=summary.retired.length+' removed · '+summary.added.length+' added · '+summary.scaledBuildings.length+' scaled · '+summary.frontageSwitches.length+' frontage changes'+restoration;
       this.$('roadSreAreas').textContent='Demolished footprint '+summary.demolishedFootprint.toFixed(2)+' · scaling loss '+summary.scaleLoss.toFixed(2)+' · regenerated footprint '+summary.regeneratedFootprint.toFixed(2);
       const rows=[
         ...summary.retired.map(r=>'Remove '+r.collection+' · '+r.id),
+        ...(audit?.restored??[]).map(r=>'Restored and retained '+r.collection+' · '+r.id),
         ...summary.added.map(r=>'Add '+r.collection+' · '+r.id),
         ...summary.scaledBuildings.map(r=>'Scale '+r.buildingId+' to '+(r.factor*100).toFixed(1)+'% · lost footprint '+r.footprintLoss.toFixed(2)),
         ...summary.frontageSwitches.map(r=>'Frontage '+r.propertyId+' · '+r.from+' → '+r.to)

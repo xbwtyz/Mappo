@@ -2,7 +2,8 @@ import { createSpatialPreservationBudget, createSpatialDestructionBudget } from 
 import { createSpatialHighQualityBudget } from '../core/spatial-recovery-quality.js';
 import { searchSpatialUnifiedRoadGroup, verifySpatialUnifiedRoadWitness } from '../core/spatial-recovery-coordinator.js';
 import { hydrateProjectS10 } from '../core/building-project-s10.js';
-import { verifySpatialRestorationAudit } from '../core/spatial-recovery-restoration-audit.js';
+import { verifySpatialRestorationAudit, SRE_RESTORATION_AUDIT_VERSION, SRE_RESTORATION_AUDIT_MAX_WITNESSES } from '../core/spatial-recovery-restoration-audit.js';
+import { LareBudgetExceeded } from '../core/reconciliation-budget.js';
 import { riEqual } from '../core/road-impact-model.js';
 import { spatialRoadReviewSummary } from '../core/spatial-recovery-review-summary.js';
 import { searchSpatialShellRegeneration,searchSpatialGroupRegeneration } from '../core/spatial-recovery-regeneration.js';
@@ -73,7 +74,7 @@ export async function calculateSpatialRoadReview(input){
   const budget=operation.permissions.destruction?createSpatialDestructionBudget():createSpatialPreservationBudget();
   const candidate=await verifySpatialUnifiedRoadWitness(project,operation,witness,budget,authorization??null);
   const auditFields=request.captureRestorationAudit?
-    {restorationAudit:await sreReplaySelectedRestoration(project,operation,witness,createSpatialDestructionBudget())}:{};
+    {restorationAudit:await sreReviewSelectedRestoration(project,operation,witness)}:{};
   return {version:request.version,requestId:request.requestId,sessionId:request.sessionId,
     operation,quality:request.quality,kind:'verified-review',
     candidateJson:JSON.stringify(candidate),summary:spatialRoadReviewSummary(project,candidate),...auditFields};
@@ -91,6 +92,22 @@ async function sreReplaySelectedRestoration(project,operation,witness,budget){
     return null;
   }
   return verifySpatialRestorationAudit(project,operation,witness.restorationTrail,witness.basisDelta,budget);
+}
+
+// Optional diagnostic only, after independent final candidate verification.
+// No partial counts or new geometry refusal due to diagnostic limits.
+async function sreReviewSelectedRestoration(project,operation,witness){
+  const trail=witness.restorationTrail;
+  if(!Array.isArray(trail))throw Error('Missing road restoration audit witness.');
+  if(witness.kind==='nondestructive')
+    return sreReplaySelectedRestoration(project,operation,witness,createSpatialDestructionBudget());
+  if(!trail.length||!riEqual(trail.at(-1),witness.basisDelta))
+    throw Error('Invalid or incomplete restoration audit basis.');
+  const unavailable=reason=>({version:SRE_RESTORATION_AUDIT_VERSION,status:'unavailable',
+    reason,finalBasisFingerprint:witness.basisDelta.candidateFingerprint});
+  if(trail.length>SRE_RESTORATION_AUDIT_MAX_WITNESSES)return unavailable('witness-limit');
+  try{return await sreReplaySelectedRestoration(project,operation,witness,createSpatialDestructionBudget());}
+  catch(error){if(error instanceof LareBudgetExceeded)return unavailable('audit-budget');throw error;}
 }
 
 // Fresh detached verifier: independently replay the final candidate and supplied

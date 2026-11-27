@@ -1,3 +1,4 @@
+import { SRE_RESTORATION_AUDIT_VERSION, SRE_RESTORATION_AUDIT_MAX_WITNESSES } from '../core/spatial-recovery-restoration-audit.js';
 import { createSpatialOperation, spatialRefKey } from '../core/spatial-recovery-contract.js';
 import { SRE_ROAD_WORKER_VERSION } from '../core/spatial-recovery-worker-protocol.js';
 import { verifySpatialRoadWorkerReservation } from '../core/spatial-recovery-worker-reservation.js';
@@ -87,13 +88,22 @@ export function createSpatialRoadReviewGate(host,getDraft,{verify=createSpatialR
       const audit=proof.restorationAudit;
       if(state.witness.kind==='nondestructive'){
         sreReviewNeed(audit===null&&summary.retired.length===0,'Unexpected nondestructive restoration audit.');
+      }else if(audit?.status==='unavailable'){
+        const trail=state.witness.restorationTrail;
+        sreReviewNeed(audit.version===SRE_RESTORATION_AUDIT_VERSION&&
+          Object.keys(audit).length===4&&audit.finalBasisFingerprint===state.witness.basisDelta.candidateFingerprint&&
+          Array.isArray(trail)&&trail.length>0&&riEqual(trail.at(-1),state.witness.basisDelta)&&
+          (audit.reason==='witness-limit'?trail.length>SRE_RESTORATION_AUDIT_MAX_WITNESSES:
+            audit.reason==='audit-budget'&&trail.length<=SRE_RESTORATION_AUDIT_MAX_WITNESSES),
+          'Invalid unavailable restoration audit binding.');
+        restorationAudit=riFreeze(copyJson(audit));
       }else{
         const keys=rows=>rows.map(spatialRefKey).sort();
         const original=new Set(['properties','plots','buildings'].flatMap(collection=>
           state.view.project.city[collection].map(row=>spatialRefKey({collection,id:row.id}))));
         const survivors=new Set(['properties','plots','buildings'].flatMap(collection=>
           candidate.city[collection].map(row=>spatialRefKey({collection,id:row.id}))));
-        sreReviewNeed(audit?.version===1&&audit.finalBasisFingerprint===state.witness.basisDelta.candidateFingerprint&&
+        sreReviewNeed(audit?.version===SRE_RESTORATION_AUDIT_VERSION&&audit.finalBasisFingerprint===state.witness.basisDelta.candidateFingerprint&&
           ['grossRetired','restored','finalRetired','transitions'].every(k=>Array.isArray(audit[k])),
           'Invalid independent restoration audit binding.');
         const gross=keys(audit.grossRetired),restored=keys(audit.restored),retired=keys(audit.finalRetired);

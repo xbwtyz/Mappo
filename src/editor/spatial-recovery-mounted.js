@@ -31,7 +31,7 @@ export function createMountedSpatialRoadRecovery(host,readDraft,changed=()=>{},
     const t=current(),d=draftFor();
     if(!t||!d)return null;
     return {...d,permissions:t.policy.permissions,quality:t.policy.quality,
-      reservationRequests:t.reservationRequests};
+      reservationRequests:t.reservationRequests,captureRestorationAudit:t.binding.captureRestorationAudit};
   },{verify:makeVerifier()});
   const clear=(resetPolicy=false)=>{
     const old=task;task=null;
@@ -83,7 +83,7 @@ export function createMountedSpatialRoadRecovery(host,readDraft,changed=()=>{},
     const reservationContext=operation.permissions.regeneration?{projectId:operation.projectId,
       revision:view.context.revision,namespace:view.context.namespace}:null;
     const binding={sessionId:view.context.projectId,projectJson:JSON.stringify(view.project),
-      operation,quality:policy.quality,reservationContext};
+      operation,quality:policy.quality,reservationContext,captureRestorationAudit:operation.permissions.destruction};
     const t={...copyJson(d),view,policy,binding,phase:'searching',message:'Searching for recovery…',
       progress:null,review:null,geometry:null,incumbent:null,reservationRequests:null,compute:null};
     task=t;
