@@ -1,0 +1,69 @@
+name: Mappo SRE Refusal Forensics
+on:
+  push:
+    branches: ['research/sre/w4-refusal-forensics']
+permissions:
+  contents: read
+jobs:
+  replay:
+    if: contains(github.event.head_commit.message, '[sre-refusal-forensics]')
+    runs-on: ubuntu-24.04
+    name: Refusal replay (${{ matrix.case }})
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        case: [0,1,2,3]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact frozen source and syntax
+        run: |
+          git merge-base --is-ancestor f04a447ecd4ae6b1f8d12a28ac68adb3573d265f HEAD
+          git diff --exit-code f04a447ecd4ae6b1f8d12a28ac68adb3573d265f HEAD -- src index.html dist
+          node --check scripts/development/research/sre-refusal-forensics.mjs
+      - run: node scripts/development/research/sre-refusal-forensics.mjs ${{ matrix.case }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sre-refusal-${{ github.run_attempt }}-${{ matrix.case }}
+          path: artifacts/sre-refusal-forensics/shard-*.json
+          if-no-files-found: error
+          retention-days: 14
+  aggregate:
+    if: always() && contains(github.event.head_commit.message, '[sre-refusal-forensics]')
+    needs: replay
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: sre-refusal-${{ github.run_attempt }}-*
+          path: evidence
+      - name: Validate exact complete evidence
+        env:
+          SHARD_RESULT: ${{ needs.replay.result }}
+        run: |
+          node scripts/development/research/sre-refusal-forensics.mjs aggregate evidence
+          test "$SHARD_RESULT" = success
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sre-refusal-report-${{ github.run_attempt }}
+          path: artifacts/sre-refusal-forensics/report.json
+          if-no-files-found: error
+          retention-days: 14
