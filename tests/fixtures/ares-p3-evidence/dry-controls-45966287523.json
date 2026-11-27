@@ -1,0 +1,921 @@
+{
+  "version": 1,
+  "source": "3461b289b4165cebf5172fa410769a0da78f53fd",
+  "run": 45966287523,
+  "attempt": 1,
+  "aggregate": 140397096060,
+  "rows": [
+    {
+      "job": 140395740156,
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "dry-positive",
+      "split": "known",
+      "stratum": "nondestructive-control",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": false,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": -0.07513185180304553,
+            "y": -0.9349740283911147
+          }
+        }
+      },
+      "arm": "sre-reference",
+      "order": 0,
+      "limits": {
+        "work": 8000000,
+        "stateExpansions": 32768
+      },
+      "referenceLabel": "prior-verified-witness",
+      "searchMs": 1676.933798,
+      "searchWork": 601145,
+      "phases": [
+        {
+          "phase": "nondestructive",
+          "status": "verified-witness",
+          "work": 601145,
+          "exhausted": null
+        }
+      ],
+      "status": "verified",
+      "reason": "completed",
+      "incumbent": {
+        "fingerprint": "84a142db28b1251734fb8a7c6b6e263d4c45f00e4c5fd525b3a00e82faab1201",
+        "metrics": {
+          "retiredProperties": 0,
+          "retiredPlots": 0,
+          "retiredBuildings": 0,
+          "demolishedFootprint": 0,
+          "survivingFootprintLoss": 0,
+          "buildingFrontageChanges": 0,
+          "primaryRoadChanges": 0,
+          "otherRoadChanges": 0,
+          "modifiedRecords": 104
+        }
+      },
+      "firstVerifiedMs": 2904.442309,
+      "verificationMs": 1104.742479,
+      "overheadWork": 1085667,
+      "wallMs": 2906.220364,
+      "heapBefore": 34891448,
+      "heapAfter": 92854480,
+      "peakHeap": null,
+      "stats": {
+        "work": 1686812,
+        "expansions": 0,
+        "remainingWork": 6313188,
+        "remainingExpansions": 32768
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    },
+    {
+      "job": 140395740156,
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "dry-positive",
+      "split": "known",
+      "stratum": "nondestructive-control",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": false,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": -0.07513185180304553,
+            "y": -0.9349740283911147
+          }
+        }
+      },
+      "arm": "ares-single",
+      "order": 1,
+      "limits": {
+        "work": 8000000,
+        "stateExpansions": 32768
+      },
+      "referenceLabel": "prior-verified-witness",
+      "status": "verified",
+      "reason": "plan-complete",
+      "failure": null,
+      "incumbent": {
+        "fingerprint": "84a142db28b1251734fb8a7c6b6e263d4c45f00e4c5fd525b3a00e82faab1201",
+        "metrics": {
+          "retiredProperties": 0,
+          "retiredPlots": 0,
+          "retiredBuildings": 0,
+          "demolishedFootprint": 0,
+          "survivingFootprintLoss": 0,
+          "buildingFrontageChanges": 0,
+          "primaryRoadChanges": 0,
+          "otherRoadChanges": 0,
+          "modifiedRecords": 104
+        }
+      },
+      "firstVerifiedMs": 2754.7035619999997,
+      "searchMs": null,
+      "verificationMs": null,
+      "searchWork": null,
+      "taskWork": 608990,
+      "overheadWork": 1145868,
+      "observations": 1,
+      "phases": [
+        {
+          "taskId": "baseline",
+          "strategyId": "sre-baseline",
+          "status": "completed",
+          "work": 608990,
+          "expansions": 0,
+          "limits": {
+            "work": 5849632,
+            "stateExpansions": 32736
+          },
+          "event": {
+            "taskId": "baseline",
+            "status": "proposed",
+            "considered": {
+              "status": "retained",
+              "candidateFingerprint": "84a142db28b1251734fb8a7c6b6e263d4c45f00e4c5fd525b3a00e82faab1201",
+              "improved": true
+            },
+            "improved": true
+          }
+        }
+      ],
+      "pending": [],
+      "wallMs": 2756.462571,
+      "heapBefore": 92022888,
+      "heapAfter": 98622328,
+      "peakHeap": null,
+      "stats": {
+        "work": 1754858,
+        "expansions": 0,
+        "remainingWork": 6245142,
+        "remainingExpansions": 32768
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    },
+    {
+      "job": 140395740156,
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "dry-positive",
+      "split": "known",
+      "stratum": "nondestructive-control",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": false,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": -0.07513185180304553,
+            "y": -0.9349740283911147
+          }
+        }
+      },
+      "arm": "ares-portfolio",
+      "order": 2,
+      "limits": {
+        "work": 8000000,
+        "stateExpansions": 32768
+      },
+      "referenceLabel": "prior-verified-witness",
+      "status": "verified",
+      "reason": "no-eligible-task",
+      "failure": null,
+      "incumbent": {
+        "fingerprint": "84a142db28b1251734fb8a7c6b6e263d4c45f00e4c5fd525b3a00e82faab1201",
+        "metrics": {
+          "retiredProperties": 0,
+          "retiredPlots": 0,
+          "retiredBuildings": 0,
+          "demolishedFootprint": 0,
+          "survivingFootprintLoss": 0,
+          "buildingFrontageChanges": 0,
+          "primaryRoadChanges": 0,
+          "otherRoadChanges": 0,
+          "modifiedRecords": 104
+        }
+      },
+      "firstVerifiedMs": 3281.640134,
+      "searchMs": null,
+      "verificationMs": null,
+      "searchWork": null,
+      "taskWork": 608990,
+      "overheadWork": 1145897,
+      "observations": 2,
+      "phases": [
+        {
+          "taskId": "baseline",
+          "strategyId": "sre-baseline",
+          "status": "completed",
+          "work": 608990,
+          "expansions": 0,
+          "limits": {
+            "work": 5849618,
+            "stateExpansions": 32736
+          },
+          "event": {
+            "taskId": "baseline",
+            "status": "proposed",
+            "considered": {
+              "status": "retained",
+              "candidateFingerprint": "84a142db28b1251734fb8a7c6b6e263d4c45f00e4c5fd525b3a00e82faab1201",
+              "improved": true
+            },
+            "improved": true
+          }
+        }
+      ],
+      "pending": [
+        "grouped",
+        "area"
+      ],
+      "wallMs": 3283.7480939999996,
+      "heapBefore": 102060896,
+      "heapAfter": 66961840,
+      "peakHeap": null,
+      "stats": {
+        "work": 1754887,
+        "expansions": 0,
+        "remainingWork": 6245113,
+        "remainingExpansions": 32768
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    },
+    {
+      "job": 140395740072,
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "dry-permission-off",
+      "split": "known",
+      "stratum": "permission-off-control",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": false,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 1.5026370360609105,
+            "y": 18.69948056782229
+          }
+        }
+      },
+      "arm": "sre-reference",
+      "order": 0,
+      "limits": {
+        "work": 8000000,
+        "stateExpansions": 32768
+      },
+      "referenceLabel": "prior-bounded-refusal",
+      "searchMs": 3725.18836,
+      "searchWork": 5909833,
+      "phases": [
+        {
+          "phase": "nondestructive",
+          "status": "refused",
+          "work": 5909833,
+          "exhausted": "work"
+        }
+      ],
+      "status": "refused",
+      "reason": "work-limit",
+      "incumbent": null,
+      "firstVerifiedMs": null,
+      "verificationMs": null,
+      "overheadWork": 90209,
+      "wallMs": 3862.5157899999995,
+      "heapBefore": 34987384,
+      "heapAfter": 41069464,
+      "peakHeap": null,
+      "stats": {
+        "work": 6000042,
+        "expansions": 321,
+        "remainingWork": 1999958,
+        "remainingExpansions": 32447
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    },
+    {
+      "job": 140395740072,
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "dry-permission-off",
+      "split": "known",
+      "stratum": "permission-off-control",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": false,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 1.5026370360609105,
+            "y": 18.69948056782229
+          }
+        }
+      },
+      "arm": "ares-single",
+      "order": 1,
+      "limits": {
+        "work": 8000000,
+        "stateExpansions": 32768
+      },
+      "referenceLabel": "prior-bounded-refusal",
+      "status": "refused",
+      "reason": "plan-complete",
+      "failure": null,
+      "incumbent": null,
+      "firstVerifiedMs": null,
+      "searchMs": null,
+      "verificationMs": null,
+      "searchWork": null,
+      "taskWork": 5849441,
+      "overheadWork": 150410,
+      "observations": 1,
+      "phases": [
+        {
+          "taskId": "baseline",
+          "strategyId": "sre-baseline",
+          "status": "refused",
+          "work": 5849441,
+          "expansions": 321,
+          "limits": {
+            "work": 5849632,
+            "stateExpansions": 32736
+          },
+          "event": {
+            "taskId": "baseline",
+            "status": "refused",
+            "considered": null,
+            "improved": false
+          }
+        }
+      ],
+      "pending": [],
+      "wallMs": 4944.984752,
+      "heapBefore": 62938512,
+      "heapAfter": 102392696,
+      "peakHeap": null,
+      "stats": {
+        "work": 5999851,
+        "expansions": 321,
+        "remainingWork": 2000149,
+        "remainingExpansions": 32447
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    },
+    {
+      "job": 140395740072,
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "dry-permission-off",
+      "split": "known",
+      "stratum": "permission-off-control",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": false,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 1.5026370360609105,
+            "y": 18.69948056782229
+          }
+        }
+      },
+      "arm": "ares-portfolio",
+      "order": 2,
+      "limits": {
+        "work": 8000000,
+        "stateExpansions": 32768
+      },
+      "referenceLabel": "prior-bounded-refusal",
+      "status": "refused",
+      "reason": "no-eligible-task",
+      "failure": null,
+      "incumbent": null,
+      "firstVerifiedMs": null,
+      "searchMs": null,
+      "verificationMs": null,
+      "searchWork": null,
+      "taskWork": 5849427,
+      "overheadWork": 150440,
+      "observations": 2,
+      "phases": [
+        {
+          "taskId": "baseline",
+          "strategyId": "sre-baseline",
+          "status": "refused",
+          "work": 5849427,
+          "expansions": 321,
+          "limits": {
+            "work": 5849618,
+            "stateExpansions": 32736
+          },
+          "event": {
+            "taskId": "baseline",
+            "status": "refused",
+            "considered": null,
+            "improved": false
+          }
+        }
+      ],
+      "pending": [
+        "grouped",
+        "area"
+      ],
+      "wallMs": 5691.922444,
+      "heapBefore": 108553160,
+      "heapAfter": 161100744,
+      "peakHeap": null,
+      "stats": {
+        "work": 5999867,
+        "expansions": 321,
+        "remainingWork": 2000133,
+        "remainingExpansions": 32447
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    },
+    {
+      "job": 140395740273,
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "dry-retirement",
+      "split": "known",
+      "stratum": "retirement-control",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 1.5026370360609105,
+            "y": 18.69948056782229
+          }
+        }
+      },
+      "arm": "sre-reference",
+      "order": 0,
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      },
+      "referenceLabel": "prior-verified-witness",
+      "searchMs": 24376.640337,
+      "searchWork": 28409833,
+      "phases": [
+        {
+          "phase": "nondestructive",
+          "status": "refused",
+          "work": 8000000,
+          "exhausted": "work"
+        },
+        {
+          "phase": "building-retirement",
+          "status": "refused",
+          "work": 4000000,
+          "exhausted": "work"
+        },
+        {
+          "phase": "single-property-retirement",
+          "status": "refused",
+          "work": 2000000,
+          "exhausted": "work"
+        },
+        {
+          "phase": "grouped-retirement",
+          "status": "verified-witness",
+          "work": 9069106,
+          "exhausted": null
+        },
+        {
+          "phase": "restoration",
+          "status": "verified-witness",
+          "work": 5340727,
+          "exhausted": "work"
+        },
+        {
+          "phase": "optimization",
+          "status": "skipped-budget",
+          "work": null,
+          "exhausted": null
+        }
+      ],
+      "status": "verified",
+      "reason": "completed",
+      "incumbent": {
+        "fingerprint": "84f4140fd7e943217b640adc834b8c4bf83e2278964a444d913e9c79f77f09fb",
+        "metrics": {
+          "retiredProperties": 16,
+          "retiredPlots": 22,
+          "retiredBuildings": 16,
+          "demolishedFootprint": 3064.6433624608544,
+          "survivingFootprintLoss": 0,
+          "buildingFrontageChanges": 0,
+          "primaryRoadChanges": 0,
+          "otherRoadChanges": 0,
+          "modifiedRecords": 80
+        }
+      },
+      "firstVerifiedMs": 26628.677275000002,
+      "verificationMs": 2115.9298149999995,
+      "overheadWork": 1813285,
+      "wallMs": 26630.435107,
+      "heapBefore": 35951456,
+      "heapAfter": 77479088,
+      "peakHeap": null,
+      "stats": {
+        "work": 30223118,
+        "expansions": 13989,
+        "remainingWork": 1776882,
+        "remainingExpansions": 117083
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    },
+    {
+      "job": 140395740273,
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "dry-retirement",
+      "split": "known",
+      "stratum": "retirement-control",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 1.5026370360609105,
+            "y": 18.69948056782229
+          }
+        }
+      },
+      "arm": "ares-single",
+      "order": 1,
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      },
+      "referenceLabel": "prior-verified-witness",
+      "status": "verified",
+      "reason": "plan-complete",
+      "failure": null,
+      "incumbent": {
+        "fingerprint": "84f4140fd7e943217b640adc834b8c4bf83e2278964a444d913e9c79f77f09fb",
+        "metrics": {
+          "retiredProperties": 16,
+          "retiredPlots": 22,
+          "retiredBuildings": 16,
+          "demolishedFootprint": 3064.6433624608544,
+          "survivingFootprintLoss": 0,
+          "buildingFrontageChanges": 0,
+          "primaryRoadChanges": 0,
+          "otherRoadChanges": 0,
+          "modifiedRecords": 80
+        }
+      },
+      "firstVerifiedMs": 37735.873488000005,
+      "searchMs": null,
+      "verificationMs": null,
+      "searchWork": null,
+      "taskWork": 28355539,
+      "overheadWork": 1873486,
+      "observations": 1,
+      "phases": [
+        {
+          "taskId": "baseline",
+          "strategyId": "sre-baseline",
+          "status": "completed",
+          "work": 28355539,
+          "expansions": 13989,
+          "limits": {
+            "work": 29849632,
+            "stateExpansions": 131040
+          },
+          "event": {
+            "taskId": "baseline",
+            "status": "proposed",
+            "considered": {
+              "status": "retained",
+              "candidateFingerprint": "84f4140fd7e943217b640adc834b8c4bf83e2278964a444d913e9c79f77f09fb",
+              "improved": true
+            },
+            "improved": true
+          }
+        }
+      ],
+      "pending": [],
+      "wallMs": 37737.571233,
+      "heapBefore": 82052552,
+      "heapAfter": 86158296,
+      "peakHeap": null,
+      "stats": {
+        "work": 30229025,
+        "expansions": 13989,
+        "remainingWork": 1770975,
+        "remainingExpansions": 117083
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    },
+    {
+      "job": 140395740273,
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "dry-retirement",
+      "split": "known",
+      "stratum": "retirement-control",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 1.5026370360609105,
+            "y": 18.69948056782229
+          }
+        }
+      },
+      "arm": "ares-portfolio",
+      "order": 2,
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      },
+      "referenceLabel": "prior-verified-witness",
+      "status": "refused",
+      "reason": "plan-complete",
+      "failure": null,
+      "incumbent": null,
+      "firstVerifiedMs": null,
+      "searchMs": null,
+      "verificationMs": null,
+      "searchWork": null,
+      "taskWork": 28331887,
+      "overheadWork": 150671,
+      "observations": 3,
+      "phases": [
+        {
+          "taskId": "baseline",
+          "strategyId": "sre-baseline",
+          "status": "refused",
+          "work": 7999808,
+          "expansions": 2496,
+          "limits": {
+            "work": 8000000,
+            "stateExpansions": 32768
+          },
+          "event": {
+            "taskId": "baseline",
+            "status": "refused",
+            "considered": null,
+            "improved": false
+          }
+        },
+        {
+          "taskId": "grouped",
+          "strategyId": "sre-grouped-first",
+          "status": "refused",
+          "work": 8499809,
+          "expansions": 2496,
+          "limits": {
+            "work": 10000000,
+            "stateExpansions": 65536
+          },
+          "event": {
+            "taskId": "grouped",
+            "status": "refused",
+            "considered": null,
+            "improved": false
+          }
+        },
+        {
+          "taskId": "area",
+          "strategyId": "sre-area-deficit-direct",
+          "status": "refused",
+          "work": 11832270,
+          "expansions": 2556,
+          "limits": {
+            "work": 13349838,
+            "stateExpansions": 126048
+          },
+          "event": {
+            "taskId": "area",
+            "status": "refused",
+            "considered": null,
+            "improved": false
+          }
+        }
+      ],
+      "pending": [],
+      "wallMs": 26569.445466999998,
+      "heapBefore": 90009336,
+      "heapAfter": 87393040,
+      "peakHeap": null,
+      "stats": {
+        "work": 28482558,
+        "expansions": 7548,
+        "remainingWork": 3517442,
+        "remainingExpansions": 123524
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    }
+  ]
+}
