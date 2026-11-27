@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "source": "f04a447ecd4ae6b1f8d12a28ac68adb3573d265f",
+  "forensicsSource": "d1076706258f49601aaf4b6de61f7e4f834bda83",
+  "historicalRun": 45934318758,
+  "historicalBaseline": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+  "options": {
+    "seed": "sre-owner-motion-planned-01",
+    "size": "medium",
+    "morphology": "planned",
+    "irregularProperties": false
+  },
+  "permissions": {
+    "alternativeFrontage": true,
+    "uniformScaling": true,
+    "maxLinearReduction": 0.2,
+    "destruction": true,
+    "regeneration": false
+  },
+  "cases": [
+    {
+      "id": "five-chain",
+      "ids": [
+        "RD-0220",
+        "RD-0221",
+        "RD-0226",
+        "RD-0252",
+        "RD-0254"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "job": 140293907240,
+      "groups": 39,
+      "retirementRefs": 143,
+      "historicalStatus": "refused",
+      "properties": [
+        "PROP-00398"
+      ]
+    },
+    {
+      "id": "five-branch",
+      "ids": [
+        "RD-0221",
+        "RD-0226",
+        "RD-0252",
+        "RD-0254",
+        "RD-0256"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "job": 140293907474,
+      "groups": 41,
+      "retirementRefs": 147,
+      "historicalStatus": "refused",
+      "properties": [
+        "PROP-00398",
+        "PROP-00406",
+        "PROP-00407"
+      ]
+    },
+    {
+      "id": "three-junction",
+      "ids": [
+        "RD-0226",
+        "RD-0254",
+        "RD-0256"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "job": 140293907444,
+      "groups": 29,
+      "retirementRefs": 106,
+      "historicalStatus": "refused",
+      "properties": [
+        "PROP-00406",
+        "PROP-00407"
+      ]
+    },
+    {
+      "id": "quad-control",
+      "ids": [
+        "RD-0224",
+        "RD-0225",
+        "RD-0228",
+        "RD-0338"
+      ],
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "job": 140293907373,
+      "groups": 19,
+      "retirementRefs": 64,
+      "historicalStatus": "verified-witness",
+      "properties": []
+    }
+  ],
+  "reportedClearance": {
+    "required": 8.7,
+    "proposed": 8.211,
+    "previous": 83.211
+  }
+}
