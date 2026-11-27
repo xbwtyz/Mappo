@@ -28,7 +28,7 @@ function aresReplaySource(value){
 // JSON.stringify alone loses IEEE -0. Preserve numeric values and enumerable
 // persisted fields, exclude derived nonenumerable views, reject non-JSON data.
 // Existing project depth/size limits also bound this diagnostic envelope.
-function aresReplayJson(value){
+export function aresReplayJson(value,budget=null){
   const chunks=[];let count=0,length=0;
   function append(s){
     length+=s.length;
@@ -36,6 +36,7 @@ function aresReplayJson(value){
     chunks.push(s);
   }
   function visit(v,depth){
+    if(budget)budget.spend();
     if(++count>1200000||depth>64)throw Error('ARES diagnostic exceeds data limits.');
     if(v===null||typeof v==='string'||typeof v==='boolean'){append(JSON.stringify(v));return;}
     if(typeof v==='number'){
