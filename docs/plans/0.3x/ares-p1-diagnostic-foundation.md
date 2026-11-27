@@ -1,4 +1,4 @@
-# ARES P1 — diagnostic foundation, batch A
+# ARES P1 — diagnostic foundation and qualification
 Owner explicitly authorized P1 on 2026-11-26 Pacific under the consolidated architecture. The hold is lifted for P1 only. P2–P9, merge, release, tag, Pages, schema, permission expansion and material architecture/CI changes remain outside this approval. Baseline main 0c068b4a42389164618aac8f42e2f018cc9edaed passed exact-main CI 45945892157 (22/22, 1413 tests / 198 files); planning source 649a86b918b7f098071f3a0d16a510e811ce615d is documentation-only. Preserve historical P0 checkpoint and all six approved discussions.
 
 ## Batch A: detached foundations (qualified)
@@ -19,8 +19,21 @@ New detached ares-diagnostic-replay module uses a separate versioned diagnostic 
 Exact-head Fast Checks 45950186291 at a88974a1c0f80d0f314a5b31839f0c1c5eab234d passed 18/18 jobs, 16 shards, 1446 tests / 202 files (nine new query tests), 272s. Compiled parity passed; not review-ready full CI.
 Adds versioned immutable query DTOs with source context, snapshot/geometry fingerprints, typed references, swept/final bounds and explicit XY/optional vertical unit/datum; registered internal evaluator returns typed rule-versioned rows, hard/protection/permission/preference classes, distinct satisfied/violated/unknown/unsupported, anchors and details. Shared caller budget charges dispatch/evaluation/rows; no new budget. Unknown capability and empty hard evidence remain unresolved; errors propagate fail closed. Synthetic elevation fixture demonstrates registration without feature-specific coordinator changes, not real 3D. No accepted city passed to evaluator; no writer or Apply authority. Fingerprints are caller-provided labels, not verified; actual authoritative binding, real queries, geometry algorithms and indexed/reference parity are P2/P7 work. Nine new tests cover deterministic registration, exact stale/context checks, missing data, permissions, malformed results and budget exhaustion. See [detached developer contracts](../../contributing/ares-p1-contracts.md).
 
-## Batch E1: P1 audit and completed Standard recovery refusal replay (pending qualification)
+## Batch E1: P1 audit and completed Standard recovery refusal replay (qualified)
+Exact-head Fast Checks 45950818586 at e37bd664dd572887f5e0bcb0ce40ef26664f4dde passed 18/18 jobs, 1451 tests / 203 files (38 new ARES tests), 289s.
 Audit confirmed all 33 new tests in four files and unchanged existing production closure. P1's reproducible-failure scope should include completed recovery refusal, not merely preflight. Add explicit confirmed capture of completed uncontrolled Standard/baseline non-regenerative SRE refusal with accepted snapshot, exact operation/session/source, original existing bounded limits and observed phase/work evidence. Replay independently reruns the existing coordinator on detached validated data using exactly the recorded permitted budget and compares observed evidence. No candidate, review or Apply result, no new search policy or authority, no network. Caller supplies source/context/quality/schedule/controlled metadata; not cryptographic authentication or automatic incident capture. High, stopped/controlled, regeneration and research schedules remain unsupported by this replay seam; no claim of reproducing the three historical setback cases (P2 investigation). Five tests include actual previously qualified permission-off Standard refusal, actual tiny-budget refusal with destruction allowed, mismatched evidence and invalid capture/replay controls. Existing accepted city/HTML/Schema 11 remain untouched.
 
-## Next P1 gate
-E2: verify E1 exact-head focused qualification, complete audit and persistent evidence, then final full review-ready CI and review. P2 remains held pending separate authorization. No user-facing changes yet.
+## Batch E2 — acceptance audit and full draft qualification (pending)
+
+Source comparison against verified main 0c068b4a42389164618aac8f42e2f018cc9edaed contains only docs and new detached ARES modules/tests. Existing production files, schema, CI and regression tests unchanged; both HTML files retain blob a228c29cc8c9267918898538f2b245559e9f25fd. [Historical E1 checkpoint](../../development/checkpoints/ares-p1-e1-qualified.json) records the prior exact source; reconstruct current live evidence before resuming.
+
+| P1 acceptance | Evidence and limitation |
+| --- | --- |
+| Model inventory and typed immutable diagnostics | A/B source review, reason taxonomy, context, permissions, typed and unresolved refs, measurements and work evidence; all new contract tests pass. |
+| Offline failure replay | C/E1 actual preflight and completed Standard non-regenerative baseline refusal with exact original limits; explicit confirmation, no network or candidate. High/controlled/regeneration unsupported. |
+| Read-only extensibility | D synthetic vertical provider, units/datum, shared budget, explicit unsupported/unknown and stale checks. No real terrain provider or 3D support. |
+| No accepted mutation | Detached modules, original production closure and compiled artifacts unchanged; no new permission or schema. |
+| Documentation | Developer contracts and sample provider documented. |
+| Full qualification | Existing full draft CI marker; verify 22 mandatory jobs and aggregate before phase exit. Review-ready full CI still required before any separately approved merge. |
+
+No new manual acceptance claim; unchanged artifact from W4. Real landscape adapters, authoritative host evidence, three historical setback failures, recovery thresholds and frozen corpus are later work. Keep PR164 draft for possible P1–P3 grouping. P2 remains held pending explicit approval; no merge, release, tag or Pages.
