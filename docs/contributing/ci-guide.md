@@ -4,24 +4,24 @@ The required `Mappo CI` runs full validation on review-ready PRs, explicitly req
 
 ## Request full CI without making a PR review-ready
 
-On an open draft PR, push a commit with `[full-ci]` in its message to run all six suite runners; use `[full-ci-benchmark]` to add heavy C7 performance and stale-draft checks. A normal commit returns a draft to Fast Checks. A marker on a branch without an open PR still gets Fast Checks until a PR is opened. Ready PRs always get full CI. The markers are case-insensitive and benchmark takes precedence. Manual dispatch remains available. The routing job and aggregate are lightweight support jobs, not extra regression suites. Draft status and the separate merge/release/Pages approvals are unchanged.
+On an open draft PR, push a commit with `[full-ci]` in its message to run all twenty suite runners; use `[full-ci-benchmark]` to add heavy C7 performance and stale-draft checks. A normal commit returns a draft to Fast Checks. A marker on a branch without an open PR still gets Fast Checks until a PR is opened. Ready PRs always get full CI. The markers are case-insensitive and benchmark takes precedence. Manual dispatch remains available. The routing job and aggregate are lightweight support jobs, not extra regression suites. Draft status and the separate merge/release/Pages approvals are unchanged.
 
 ## Request a focused benchmark on a draft PR
 
 Use `[benchmark-f4]` for the F4 building benchmark, `[benchmark-c7]` for the C7 road benchmark, or both tokens to run the two benchmark jobs in parallel. Normal Fast Checks still run. Each benchmark checks out the exact draft head, verifies standalone parity, uses the matching Playwright environment, and uploads its own diagnostic artifacts. No other regression suite runs for these markers alone. Full markers or a ready-for-review PR take precedence; ordinary full CI still runs F4 and the existing C7 correctness tests. These diagnostic results cannot replace the required full gate. A branch without an open PR gets normal Fast Checks until a PR opens.
 
-## Six concurrent full CI jobs
+## Twenty concurrent full CI test jobs
 
 | Runner | Responsibilities |
 | --- | --- |
-| Node shard 1/2 | Compile offline standalone; run native Node file shard; verify `index.html` equals tracked versioned HTML |
-| Node shard 2/2 | Compile; run complementary Node shard; verify standalone distribution parity |
-| Browser desktop | 8 scripts: desktop workspace, save/recovery and building footprint/compound QA |
-| Browser roads | 8 scripts: road editing, selection, input routing, snapping, ownership, reflow and offline QA |
-| Browser property | 10 scripts: parcel/property editing, creation, split/merge, identity and property integration |
-| Browser integration | 6 scripts: general browser QA, D4 acceptance, F4 performance, whole-city PNG, courtyard access and components |
+| Node shards 1–16 | Compile the exact offline standalone; execute measured file assignments under the native Node runner, check byte parity and retain per-file timing reports |
+| Browser desktop | 6 independent scripts |
+| Browser roads | 10 independent scripts |
+| Browser property | 11 independent scripts |
+| Browser integration | 10 independent scripts |
 
-All six jobs must pass for the unchanged required `Build, Node tests and browser QA` check to succeed. Browser runners use the official Playwright v1.56.1-noble container plus matching test-only package and retain Chromium and Firefox. The manifest `scripts/browser-suites.json` assigns all **32 A2 browser QA scripts** exactly once across the four suites. `scripts/run-browser-suite.mjs` records durations, exit status, per-suite timing artifacts and GitHub Actions summaries. The independent inventory test guards against omitted/duplicate scripts. See [CI optimization plan](ci-optimization-0.2.19.md). G4 retains its existing viewport and file:// coverage; no test scripts were rewritten.
+All twenty regression jobs must pass. The unchanged required `Build, Node tests and browser QA` aggregate independently verifies all 16 same-run/attempt Node reports against the exact checkout and complete file inventory. Routing and aggregate are support jobs, not extra regression suites. Browser runners retain Playwright v1.56.1-noble, Chromium and Firefox, and all 37 scripts in the independently checked `scripts/browser-suites.json` manifest. Timings and actual executed file evidence are uploaded. The first Node shard produces the manual acceptance package and standalone artifacts. `npm test` remains the complete native local inventory; the two older npm shard commands below are historical/reference tools, not the hosted CI architecture. New files receive conservative estimated weights automatically; the live tracked inventory, not the historical timing snapshot, determines coverage. A pilot is not a mandatory full gate.
+
 
 H2 adds frozen 3A.2–3E.5 historical save migration and nonmutation tests to the Node matrix, plus real Chromium/Firefox Project-menu import, rejection and re-export for representative schemas in the desktop browser group. `npm run test:browser:h2` runs that focused browser suite.
 
@@ -45,8 +45,11 @@ Browser setup: `npm install --no-save --no-package-lock playwright@1.56.1`; `npx
 
 ## Artifacts and deployment
 
-CI's Node shard uploads the compiled `index.html` and matching `dist/mappo-<APP_VERSION>.html` (for H5, `dist/mappo-0.2.0.html`); each browser suite uploads independent screenshots and QA evidence, retained 14 days. G4 stores machine context and Small/Large draw and road preview results in `artifacts/g4/desktop-acceptance.json` / `.md`. Wall-clock results on shared CI hardware are comparative diagnostics, not physical-device measurements.
+CI's first Node shard uploads the compiled `index.html` and matching `dist/mappo-<APP_VERSION>.html` (for H5, `dist/mappo-0.2.0.html`); each browser suite uploads independent screenshots and QA evidence, retained 14 days. G4 stores machine context and Small/Large draw and road preview results in `artifacts/g4/desktop-acceptance.json` / `.md`. Wall-clock results on shared CI hardware are comparative diagnostics, not physical-device measurements.
 
 CI uses `contents: read`; it never commits, tags or publishes. The separate `release.yml` is manual-only on `main` and rejects development versions, missing release notes, absent green CI for the exact commit, and existing immutable tags. Passing CI never publishes a release. The separate `pages.yml` uses **manual dispatch on main only**; merging a PR doesn't publish Pages. The optional heavy C7 browser benchmark is run only by selecting `run_c7_benchmark` on a manual Mappo CI dispatch using the `[full-ci-benchmark]` PR head commit marker, or using `[benchmark-c7]` on an ordinary draft PR.
 
 See [G4 acceptance](../history/0.2/workspace/g4-acceptance-report.md), [current roadmap](../plans/README.md) and [desktop implementation plan](../history/0.2/workspace/g1-g4-implementation-plan.md).
+
+
+Ordinary Fast Checks adapt from one to sixteen Node runners using the selected file weights. A parallel run is only green when every selected shard and the focused completeness check pass. Neither light nor parallel focused evidence substitutes for full CI.

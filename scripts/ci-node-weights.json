@@ -1,0 +1,1374 @@
+{
+  "version": 1,
+  "source": "c959c45cb8cfdc64984187f664924ddd568b4327",
+  "runId": "45912156352",
+  "attempt": "1",
+  "shards": 4,
+  "environment": [
+    "v22.23.5",
+    "linux",
+    "x64",
+    4
+  ],
+  "files": [
+    {
+      "file": "tests/accepted-edit-history-d01.test.js",
+      "ms": 5784.585486,
+      "tests": 11,
+      "shard": 1
+    },
+    {
+      "file": "tests/accepted-identity-session.test.js",
+      "ms": 29747.750758,
+      "tests": 55,
+      "shard": 2
+    },
+    {
+      "file": "tests/adjustment-audit.test.js",
+      "ms": 4653.123427,
+      "tests": 3,
+      "shard": 3
+    },
+    {
+      "file": "tests/allocated-building-placement.test.js",
+      "ms": 17729.398927,
+      "tests": 24,
+      "shard": 4
+    },
+    {
+      "file": "tests/allocated-land-edit.test.js",
+      "ms": 11361.086771,
+      "tests": 10,
+      "shard": 1
+    },
+    {
+      "file": "tests/allocated-land-subdivision.test.js",
+      "ms": 10117.818802,
+      "tests": 15,
+      "shard": 2
+    },
+    {
+      "file": "tests/allocated-property-creation.test.js",
+      "ms": 10371.376784,
+      "tests": 14,
+      "shard": 3
+    },
+    {
+      "file": "tests/build.test.js",
+      "ms": 85728.820929,
+      "tests": 4,
+      "shard": 4
+    },
+    {
+      "file": "tests/building-application.test.js",
+      "ms": 2074.973823,
+      "tests": 5,
+      "shard": 1
+    },
+    {
+      "file": "tests/building-components-s10d.test.js",
+      "ms": 1756.899273,
+      "tests": 5,
+      "shard": 2
+    },
+    {
+      "file": "tests/building-compounds-c01.test.js",
+      "ms": 6434.662666,
+      "tests": 3,
+      "shard": 3
+    },
+    {
+      "file": "tests/building-editing-workflow.test.js",
+      "ms": 10040.589535,
+      "tests": 3,
+      "shard": 4
+    },
+    {
+      "file": "tests/building-editing.test.js",
+      "ms": 9.886958,
+      "tests": 2,
+      "shard": 1
+    },
+    {
+      "file": "tests/building-footprint-f1.test.js",
+      "ms": 1004.446366,
+      "tests": 6,
+      "shard": 2
+    },
+    {
+      "file": "tests/building-footprint-f2.test.js",
+      "ms": 4465.833204,
+      "tests": 7,
+      "shard": 3
+    },
+    {
+      "file": "tests/building-footprint-union.test.js",
+      "ms": 2127.557601,
+      "tests": 6,
+      "shard": 4
+    },
+    {
+      "file": "tests/building-geometry-read-s10b.test.js",
+      "ms": 927.975016,
+      "tests": 4,
+      "shard": 1
+    },
+    {
+      "file": "tests/building-geometry-s10a.test.js",
+      "ms": 601.708173,
+      "tests": 19,
+      "shard": 2
+    },
+    {
+      "file": "tests/building-history.test.js",
+      "ms": 18179.676644,
+      "tests": 4,
+      "shard": 3
+    },
+    {
+      "file": "tests/building-integration-f4.test.js",
+      "ms": 5033.80702,
+      "tests": 3,
+      "shard": 4
+    },
+    {
+      "file": "tests/building-project-s10b.test.js",
+      "ms": 1584.995465,
+      "tests": 4,
+      "shard": 1
+    },
+    {
+      "file": "tests/building-selection-s10b.test.js",
+      "ms": 8.256846,
+      "tests": 2,
+      "shard": 2
+    },
+    {
+      "file": "tests/building-selection.test.js",
+      "ms": 22.635062,
+      "tests": 5,
+      "shard": 3
+    },
+    {
+      "file": "tests/building-structures.test.js",
+      "ms": 9974.837144,
+      "tests": 6,
+      "shard": 4
+    },
+    {
+      "file": "tests/building-transform-workflow.test.js",
+      "ms": 5248.877811,
+      "tests": 2,
+      "shard": 1
+    },
+    {
+      "file": "tests/building-transform.test.js",
+      "ms": 8.727377,
+      "tests": 4,
+      "shard": 2
+    },
+    {
+      "file": "tests/building-validation-workflow.test.js",
+      "ms": 16339.303752,
+      "tests": 3,
+      "shard": 3
+    },
+    {
+      "file": "tests/building-validation.test.js",
+      "ms": 14.834832,
+      "tests": 2,
+      "shard": 4
+    },
+    {
+      "file": "tests/building-workflow.test.js",
+      "ms": 23288.092333,
+      "tests": 7,
+      "shard": 1
+    },
+    {
+      "file": "tests/buildings.test.js",
+      "ms": 16958.072538,
+      "tests": 5,
+      "shard": 2
+    },
+    {
+      "file": "tests/c7-junction-preview-worker.test.js",
+      "ms": 3861.681569,
+      "tests": 3,
+      "shard": 3
+    },
+    {
+      "file": "tests/c7-p2-worker-cancellation.test.js",
+      "ms": 593.408496,
+      "tests": 5,
+      "shard": 4
+    },
+    {
+      "file": "tests/c7-preview-cache.test.js",
+      "ms": 4161.296877,
+      "tests": 1,
+      "shard": 1
+    },
+    {
+      "file": "tests/canvas-pointer.test.js",
+      "ms": 9.018457,
+      "tests": 1,
+      "shard": 2
+    },
+    {
+      "file": "tests/ci-browser-suites.test.js",
+      "ms": 151.837932,
+      "tests": 3,
+      "shard": 3
+    },
+    {
+      "file": "tests/ci-focused.test.js",
+      "ms": 26.176062,
+      "tests": 8,
+      "shard": 4
+    },
+    {
+      "file": "tests/ci-node-timing.test.js",
+      "ms": 281.104337,
+      "tests": 7,
+      "shard": 1
+    },
+    {
+      "file": "tests/ci-trigger.test.js",
+      "ms": 19.55532,
+      "tests": 9,
+      "shard": 2
+    },
+    {
+      "file": "tests/coast-editing.test.js",
+      "ms": 2828.512887,
+      "tests": 6,
+      "shard": 3
+    },
+    {
+      "file": "tests/coast.test.js",
+      "ms": 47025.44689,
+      "tests": 6,
+      "shard": 4
+    },
+    {
+      "file": "tests/core.test.js",
+      "ms": 3685.601392,
+      "tests": 5,
+      "shard": 1
+    },
+    {
+      "file": "tests/courtyard-access.test.js",
+      "ms": 2919.490121,
+      "tests": 8,
+      "shard": 2
+    },
+    {
+      "file": "tests/dead-end-roads-021.test.js",
+      "ms": 16054.9191,
+      "tests": 8,
+      "shard": 3
+    },
+    {
+      "file": "tests/defense-workflow.test.js",
+      "ms": 8.777685,
+      "tests": 3,
+      "shard": 4
+    },
+    {
+      "file": "tests/dev-opt-ci-diagnostics.test.js",
+      "ms": 13.984538,
+      "tests": 4,
+      "shard": 1
+    },
+    {
+      "file": "tests/dev-opt-diagnostics.test.js",
+      "ms": 96.51067,
+      "tests": 4,
+      "shard": 2
+    },
+    {
+      "file": "tests/dev-opt-hosted-build.test.js",
+      "ms": 12.427051,
+      "tests": 2,
+      "shard": 3
+    },
+    {
+      "file": "tests/dev-opt-research-shards.test.js",
+      "ms": 25.022374,
+      "tests": 4,
+      "shard": 4
+    },
+    {
+      "file": "tests/dev-opt-research.test.js",
+      "ms": 5249.39321,
+      "tests": 4,
+      "shard": 1
+    },
+    {
+      "file": "tests/dev-opt-sre-four-shards.test.js",
+      "ms": 15.585238,
+      "tests": 2,
+      "shard": 2
+    },
+    {
+      "file": "tests/dev-opt-sre-pilot.test.js",
+      "ms": 35.786612,
+      "tests": 4,
+      "shard": 3
+    },
+    {
+      "file": "tests/dev-opt-work-cycle.test.js",
+      "ms": 12.257486,
+      "tests": 4,
+      "shard": 4
+    },
+    {
+      "file": "tests/dev4f-export.test.js",
+      "ms": 672.699056,
+      "tests": 3,
+      "shard": 1
+    },
+    {
+      "file": "tests/district-workspace.test.js",
+      "ms": 12.72291,
+      "tests": 3,
+      "shard": 2
+    },
+    {
+      "file": "tests/districts.test.js",
+      "ms": 23497.232347,
+      "tests": 9,
+      "shard": 3
+    },
+    {
+      "file": "tests/draft-engine.test.js",
+      "ms": 17.843021,
+      "tests": 5,
+      "shard": 4
+    },
+    {
+      "file": "tests/editing-precision-4c.test.js",
+      "ms": 811.732268,
+      "tests": 3,
+      "shard": 1
+    },
+    {
+      "file": "tests/fortifications.test.js",
+      "ms": 24673.075675,
+      "tests": 8,
+      "shard": 2
+    },
+    {
+      "file": "tests/geometry.test.js",
+      "ms": 278197.728919,
+      "tests": 9,
+      "shard": 3
+    },
+    {
+      "file": "tests/h1-release-policy.test.js",
+      "ms": 10.464742,
+      "tests": 1,
+      "shard": 4
+    },
+    {
+      "file": "tests/h2-historical-compat.test.js",
+      "ms": 3106.203472,
+      "tests": 11,
+      "shard": 1
+    },
+    {
+      "file": "tests/identity-allocation.test.js",
+      "ms": 20.130007,
+      "tests": 9,
+      "shard": 2
+    },
+    {
+      "file": "tests/identity-building-editor-bridge.test.js",
+      "ms": 9531.708995,
+      "tests": 8,
+      "shard": 3
+    },
+    {
+      "file": "tests/identity-central-publication.test.js",
+      "ms": 6575.893969,
+      "tests": 7,
+      "shard": 4
+    },
+    {
+      "file": "tests/identity-editor-batch1.test.js",
+      "ms": 13137.874209,
+      "tests": 12,
+      "shard": 1
+    },
+    {
+      "file": "tests/identity-generation-audit.test.js",
+      "ms": 1456.785246,
+      "tests": 6,
+      "shard": 2
+    },
+    {
+      "file": "tests/identity-history-replay.test.js",
+      "ms": 7455.723488,
+      "tests": 15,
+      "shard": 3
+    },
+    {
+      "file": "tests/identity-host-audit.test.js",
+      "ms": 21.410655,
+      "tests": 5,
+      "shard": 4
+    },
+    {
+      "file": "tests/identity-live-adoption.test.js",
+      "ms": 8279.075661,
+      "tests": 8,
+      "shard": 1
+    },
+    {
+      "file": "tests/identity-local-editor-record.test.js",
+      "ms": 375.052252,
+      "tests": 5,
+      "shard": 2
+    },
+    {
+      "file": "tests/identity-mounted-activation.test.js",
+      "ms": 8764.722196,
+      "tests": 4,
+      "shard": 3
+    },
+    {
+      "file": "tests/identity-mounted-transaction.test.js",
+      "ms": 5851.691937,
+      "tests": 9,
+      "shard": 4
+    },
+    {
+      "file": "tests/identity-publication-view.test.js",
+      "ms": 4461.310045,
+      "tests": 11,
+      "shard": 1
+    },
+    {
+      "file": "tests/identity-qualification-audit.test.js",
+      "ms": 19.734428,
+      "tests": 5,
+      "shard": 2
+    },
+    {
+      "file": "tests/identity-qualification-boundaries.test.js",
+      "ms": 12553.378643,
+      "tests": 40,
+      "shard": 3
+    },
+    {
+      "file": "tests/identity-qualification-mounted.test.js",
+      "ms": 37673.95422,
+      "tests": 7,
+      "shard": 4
+    },
+    {
+      "file": "tests/identity-qualification-regeneration.test.js",
+      "ms": 25302.782605,
+      "tests": 21,
+      "shard": 1
+    },
+    {
+      "file": "tests/identity-reservations.test.js",
+      "ms": 32.092348,
+      "tests": 11,
+      "shard": 2
+    },
+    {
+      "file": "tests/identity-road-bridge.test.js",
+      "ms": 42660.943616,
+      "tests": 15,
+      "shard": 3
+    },
+    {
+      "file": "tests/identity-road-delta.test.js",
+      "ms": 10385.424601,
+      "tests": 10,
+      "shard": 4
+    },
+    {
+      "file": "tests/identity-staged-adoption.test.js",
+      "ms": 9257.785119,
+      "tests": 17,
+      "shard": 1
+    },
+    {
+      "file": "tests/identity-transaction.test.js",
+      "ms": 4610.738891,
+      "tests": 32,
+      "shard": 2
+    },
+    {
+      "file": "tests/identity-verification.test.js",
+      "ms": 64.123694,
+      "tests": 28,
+      "shard": 3
+    },
+    {
+      "file": "tests/identity-workflow.test.js",
+      "ms": 21317.543988,
+      "tests": 4,
+      "shard": 4
+    },
+    {
+      "file": "tests/identity.test.js",
+      "ms": 625.37715,
+      "tests": 5,
+      "shard": 1
+    },
+    {
+      "file": "tests/input-controller-a2.test.js",
+      "ms": 11.172553,
+      "tests": 4,
+      "shard": 2
+    },
+    {
+      "file": "tests/inspection-workflow.test.js",
+      "ms": 10583.094646,
+      "tests": 2,
+      "shard": 3
+    },
+    {
+      "file": "tests/inspector-controller-a3.test.js",
+      "ms": 11.044919,
+      "tests": 3,
+      "shard": 4
+    },
+    {
+      "file": "tests/inspector-feedback-4d.test.js",
+      "ms": 198.144285,
+      "tests": 3,
+      "shard": 1
+    },
+    {
+      "file": "tests/junction-snap-merge-022.test.js",
+      "ms": 7760.798304,
+      "tests": 6,
+      "shard": 2
+    },
+    {
+      "file": "tests/lakes.test.js",
+      "ms": 34779.457827,
+      "tests": 7,
+      "shard": 3
+    },
+    {
+      "file": "tests/landscape.test.js",
+      "ms": 29.589182,
+      "tests": 5,
+      "shard": 4
+    },
+    {
+      "file": "tests/lare-native-baseline-capture.test.js",
+      "ms": 7.560755,
+      "tests": 1,
+      "shard": 1
+    },
+    {
+      "file": "tests/local-reconciliation-demolition.test.js",
+      "ms": 6094.028649,
+      "tests": 25,
+      "shard": 2
+    },
+    {
+      "file": "tests/local-reconciliation-p1.test.js",
+      "ms": 39.683568,
+      "tests": 11,
+      "shard": 3
+    },
+    {
+      "file": "tests/local-reconciliation-p2.test.js",
+      "ms": 106.686341,
+      "tests": 7,
+      "shard": 4
+    },
+    {
+      "file": "tests/local-reconciliation-p3.test.js",
+      "ms": 42.162564,
+      "tests": 10,
+      "shard": 1
+    },
+    {
+      "file": "tests/local-reconciliation-p4.test.js",
+      "ms": 85.564874,
+      "tests": 9,
+      "shard": 2
+    },
+    {
+      "file": "tests/local-reconciliation-preservation.test.js",
+      "ms": 38.611511,
+      "tests": 5,
+      "shard": 3
+    },
+    {
+      "file": "tests/local-reconciliation-research.test.js",
+      "ms": 63784.497416,
+      "tests": 22,
+      "shard": 4
+    },
+    {
+      "file": "tests/local-reconciliation-road-group.test.js",
+      "ms": 3102.776102,
+      "tests": 6,
+      "shard": 1
+    },
+    {
+      "file": "tests/map-interaction-4b.test.js",
+      "ms": 2258.964548,
+      "tests": 3,
+      "shard": 2
+    },
+    {
+      "file": "tests/neighborhood-reflow.test.js",
+      "ms": 29326.272045,
+      "tests": 8,
+      "shard": 3
+    },
+    {
+      "file": "tests/outline.test.js",
+      "ms": 84.729628,
+      "tests": 9,
+      "shard": 4
+    },
+    {
+      "file": "tests/parcel-reconciliation.test.js",
+      "ms": 1272.108984,
+      "tests": 6,
+      "shard": 1
+    },
+    {
+      "file": "tests/pending-changes.test.js",
+      "ms": 11.167427,
+      "tests": 3,
+      "shard": 2
+    },
+    {
+      "file": "tests/persistence.test.js",
+      "ms": 59275.496178,
+      "tests": 31,
+      "shard": 3
+    },
+    {
+      "file": "tests/phase7-control-inventory.test.js",
+      "ms": 12.673635,
+      "tests": 2,
+      "shard": 4
+    },
+    {
+      "file": "tests/phase7-integration.test.js",
+      "ms": 837.714348,
+      "tests": 3,
+      "shard": 1
+    },
+    {
+      "file": "tests/plot-draft-027.test.js",
+      "ms": 1861.423828,
+      "tests": 4,
+      "shard": 2
+    },
+    {
+      "file": "tests/plot-partition-027.test.js",
+      "ms": 14.41846,
+      "tests": 3,
+      "shard": 3
+    },
+    {
+      "file": "tests/property-building-clear-4e.test.js",
+      "ms": 7584.732951,
+      "tests": 4,
+      "shard": 4
+    },
+    {
+      "file": "tests/property-count-e4.test.js",
+      "ms": 1410.332556,
+      "tests": 4,
+      "shard": 1
+    },
+    {
+      "file": "tests/property-creation-e1.test.js",
+      "ms": 11062.851851,
+      "tests": 4,
+      "shard": 2
+    },
+    {
+      "file": "tests/property-deletion.test.js",
+      "ms": 10587.208692,
+      "tests": 4,
+      "shard": 3
+    },
+    {
+      "file": "tests/property-edit.test.js",
+      "ms": 4090.814017,
+      "tests": 6,
+      "shard": 4
+    },
+    {
+      "file": "tests/property-frontage-snapping-sfs.test.js",
+      "ms": 1494.634181,
+      "tests": 4,
+      "shard": 1
+    },
+    {
+      "file": "tests/property-integration-e5.test.js",
+      "ms": 14363.515042,
+      "tests": 4,
+      "shard": 2
+    },
+    {
+      "file": "tests/property-merge-026-integration.test.js",
+      "ms": 1330.112652,
+      "tests": 1,
+      "shard": 3
+    },
+    {
+      "file": "tests/property-merge-adaptation-026.test.js",
+      "ms": 24.002847,
+      "tests": 3,
+      "shard": 4
+    },
+    {
+      "file": "tests/property-merge-e3.test.js",
+      "ms": 2162.279558,
+      "tests": 4,
+      "shard": 1
+    },
+    {
+      "file": "tests/property-merge-union-026.test.js",
+      "ms": 36.426281,
+      "tests": 5,
+      "shard": 2
+    },
+    {
+      "file": "tests/property-polygons-024-acceptance.test.js",
+      "ms": 14997.411744,
+      "tests": 1,
+      "shard": 3
+    },
+    {
+      "file": "tests/property-polygons-024.test.js",
+      "ms": 4374.015697,
+      "tests": 8,
+      "shard": 4
+    },
+    {
+      "file": "tests/property-selection.test.js",
+      "ms": 12.97239,
+      "tests": 5,
+      "shard": 1
+    },
+    {
+      "file": "tests/property-split-025-integration.test.js",
+      "ms": 3396.288039,
+      "tests": 4,
+      "shard": 2
+    },
+    {
+      "file": "tests/property-split-025.test.js",
+      "ms": 25.524864,
+      "tests": 5,
+      "shard": 3
+    },
+    {
+      "file": "tests/property-split-e2.test.js",
+      "ms": 4426.297915,
+      "tests": 5,
+      "shard": 4
+    },
+    {
+      "file": "tests/readability.test.js",
+      "ms": 7.689859,
+      "tests": 1,
+      "shard": 1
+    },
+    {
+      "file": "tests/responsive-layout.test.js",
+      "ms": 12.503552,
+      "tests": 3,
+      "shard": 2
+    },
+    {
+      "file": "tests/river-editing.test.js",
+      "ms": 3301.16596,
+      "tests": 6,
+      "shard": 3
+    },
+    {
+      "file": "tests/road-application.test.js",
+      "ms": 8877.227505,
+      "tests": 6,
+      "shard": 4
+    },
+    {
+      "file": "tests/road-b5-hardening.test.js",
+      "ms": 5518.755517,
+      "tests": 3,
+      "shard": 1
+    },
+    {
+      "file": "tests/road-building-decisions.test.js",
+      "ms": 12575.148222,
+      "tests": 5,
+      "shard": 2
+    },
+    {
+      "file": "tests/road-editor-acceptance.test.js",
+      "ms": 106932.352312,
+      "tests": 10,
+      "shard": 3
+    },
+    {
+      "file": "tests/road-face-lineage-023.test.js",
+      "ms": 946.344956,
+      "tests": 4,
+      "shard": 4
+    },
+    {
+      "file": "tests/road-faces.test.js",
+      "ms": 27764.687199,
+      "tests": 17,
+      "shard": 1
+    },
+    {
+      "file": "tests/road-first-c1.test.js",
+      "ms": 3465.484942,
+      "tests": 11,
+      "shard": 2
+    },
+    {
+      "file": "tests/road-graph.test.js",
+      "ms": 35541.797804,
+      "tests": 12,
+      "shard": 3
+    },
+    {
+      "file": "tests/road-group-b1.test.js",
+      "ms": 17.788376,
+      "tests": 7,
+      "shard": 4
+    },
+    {
+      "file": "tests/road-group-intent-b1.test.js",
+      "ms": 8401.359204,
+      "tests": 10,
+      "shard": 1
+    },
+    {
+      "file": "tests/road-impact-usability.test.js",
+      "ms": 6.371175,
+      "tests": 2,
+      "shard": 2
+    },
+    {
+      "file": "tests/road-impact.test.js",
+      "ms": 83462.922293,
+      "tests": 25,
+      "shard": 3
+    },
+    {
+      "file": "tests/road-intersections-022.test.js",
+      "ms": 8929.868199,
+      "tests": 7,
+      "shard": 4
+    },
+    {
+      "file": "tests/road-ownership-023.test.js",
+      "ms": 4348.303484,
+      "tests": 6,
+      "shard": 1
+    },
+    {
+      "file": "tests/road-parcel-decisions-028.test.js",
+      "ms": 4800.904666,
+      "tests": 4,
+      "shard": 2
+    },
+    {
+      "file": "tests/road-parcel-shape-reflow.test.js",
+      "ms": 7114.216452,
+      "tests": 5,
+      "shard": 3
+    },
+    {
+      "file": "tests/road-preview.test.js",
+      "ms": 11486.559027,
+      "tests": 11,
+      "shard": 4
+    },
+    {
+      "file": "tests/road-reconciliation-preview.test.js",
+      "ms": 3592.579922,
+      "tests": 4,
+      "shard": 1
+    },
+    {
+      "file": "tests/road-reconciliation.test.js",
+      "ms": 2224.94403,
+      "tests": 9,
+      "shard": 2
+    },
+    {
+      "file": "tests/road-shape.test.js",
+      "ms": 13899.539575,
+      "tests": 6,
+      "shard": 3
+    },
+    {
+      "file": "tests/road-topology-reflow.test.js",
+      "ms": 14507.690447,
+      "tests": 7,
+      "shard": 4
+    },
+    {
+      "file": "tests/road-undo-project.test.js",
+      "ms": 12.421074,
+      "tests": 2,
+      "shard": 1
+    },
+    {
+      "file": "tests/schema10-mixed-city.test.js",
+      "ms": 6804.79746,
+      "tests": 3,
+      "shard": 2
+    },
+    {
+      "file": "tests/schema11-bundle-preflight.test.js",
+      "ms": 175.475093,
+      "tests": 3,
+      "shard": 3
+    },
+    {
+      "file": "tests/schema11-migration.test.js",
+      "ms": 1920.846108,
+      "tests": 18,
+      "shard": 4
+    },
+    {
+      "file": "tests/schema11-runtime-adoption.test.js",
+      "ms": 1085.180914,
+      "tests": 12,
+      "shard": 1
+    },
+    {
+      "file": "tests/schema11-runtime-audit.test.js",
+      "ms": 86.279897,
+      "tests": 13,
+      "shard": 2
+    },
+    {
+      "file": "tests/secure-identity-host.test.js",
+      "ms": 10608.849902,
+      "tests": 15,
+      "shard": 3
+    },
+    {
+      "file": "tests/selection-a1.test.js",
+      "ms": 11.699059,
+      "tests": 4,
+      "shard": 4
+    },
+    {
+      "file": "tests/selection-information.test.js",
+      "ms": 29.734442,
+      "tests": 6,
+      "shard": 1
+    },
+    {
+      "file": "tests/shortcut-scope.test.js",
+      "ms": 10.892137,
+      "tests": 1,
+      "shard": 2
+    },
+    {
+      "file": "tests/spatial-recovery-compression-baseline.test.js",
+      "ms": 267899.116982,
+      "tests": 2,
+      "shard": 3
+    },
+    {
+      "file": "tests/spatial-recovery-compression-fixed-reuse.test.js",
+      "ms": 205264.730702,
+      "tests": 1,
+      "shard": 4
+    },
+    {
+      "file": "tests/spatial-recovery-compression-grouped-first.test.js",
+      "ms": 125689.829316,
+      "tests": 2,
+      "shard": 1
+    },
+    {
+      "file": "tests/spatial-recovery-compression-inventory-reuse.test.js",
+      "ms": 106535.700212,
+      "tests": 2,
+      "shard": 2
+    },
+    {
+      "file": "tests/spatial-recovery-compression-shell-first.test.js",
+      "ms": 263487.928827,
+      "tests": 2,
+      "shard": 3
+    },
+    {
+      "file": "tests/spatial-recovery-compression-single-pass-history.test.js",
+      "ms": 215322.863013,
+      "tests": 1,
+      "shard": 4
+    },
+    {
+      "file": "tests/spatial-recovery-compression-unified-history.test.js",
+      "ms": 102293.754997,
+      "tests": 1,
+      "shard": 1
+    },
+    {
+      "file": "tests/spatial-recovery-compression-unified-progressive.test.js",
+      "ms": 53128.259383,
+      "tests": 2,
+      "shard": 2
+    },
+    {
+      "file": "tests/spatial-recovery-compression.test.js",
+      "ms": 180992.92823,
+      "tests": 8,
+      "shard": 3
+    },
+    {
+      "file": "tests/spatial-recovery-concessions.test.js",
+      "ms": 143912.501979,
+      "tests": 17,
+      "shard": 4
+    },
+    {
+      "file": "tests/spatial-recovery-contract.test.js",
+      "ms": 14.737294,
+      "tests": 7,
+      "shard": 1
+    },
+    {
+      "file": "tests/spatial-recovery-coordinator.test.js",
+      "ms": 26858.782736,
+      "tests": 3,
+      "shard": 2
+    },
+    {
+      "file": "tests/spatial-recovery-delta.test.js",
+      "ms": 55.050018,
+      "tests": 7,
+      "shard": 3
+    },
+    {
+      "file": "tests/spatial-recovery-identity.test.js",
+      "ms": 91.985331,
+      "tests": 25,
+      "shard": 4
+    },
+    {
+      "file": "tests/spatial-recovery-initial-retirement.test.js",
+      "ms": 4884.765968,
+      "tests": 2,
+      "shard": 1
+    },
+    {
+      "file": "tests/spatial-recovery-packing.test.js",
+      "ms": 138.697901,
+      "tests": 2,
+      "shard": 2
+    },
+    {
+      "file": "tests/spatial-recovery-quality.test.js",
+      "ms": 193784.303117,
+      "tests": 3,
+      "shard": 3
+    },
+    {
+      "file": "tests/spatial-recovery-regeneration.test.js",
+      "ms": 17108.757178,
+      "tests": 2,
+      "shard": 4
+    },
+    {
+      "file": "tests/spatial-recovery-road-adapter.test.js",
+      "ms": 2619.830924,
+      "tests": 7,
+      "shard": 1
+    },
+    {
+      "file": "tests/spatial-recovery-unified-compression.test.js",
+      "ms": 116246.602383,
+      "tests": 2,
+      "shard": 2
+    },
+    {
+      "file": "tests/terrain.test.js",
+      "ms": 63297.392962,
+      "tests": 8,
+      "shard": 3
+    },
+    {
+      "file": "tests/transaction-profile.test.js",
+      "ms": 14.589024,
+      "tests": 3,
+      "shard": 4
+    },
+    {
+      "file": "tests/undo-context.test.js",
+      "ms": 7.266965,
+      "tests": 4,
+      "shard": 1
+    },
+    {
+      "file": "tests/validation-feedback.test.js",
+      "ms": 6.478265,
+      "tests": 2,
+      "shard": 2
+    },
+    {
+      "file": "tests/water-composition.test.js",
+      "ms": 41543.631738,
+      "tests": 6,
+      "shard": 3
+    },
+    {
+      "file": "tests/water.test.js",
+      "ms": 47287.369067,
+      "tests": 8,
+      "shard": 4
+    },
+    {
+      "file": "tests/whole-city-png.test.js",
+      "ms": 1524.966175,
+      "tests": 4,
+      "shard": 1
+    },
+    {
+      "file": "tests/workspace-menus.test.js",
+      "ms": 19.598029,
+      "tests": 3,
+      "shard": 2
+    },
+    {
+      "file": "tests/workspace-presentation.test.js",
+      "ms": 19.487596,
+      "tests": 3,
+      "shard": 3
+    },
+    {
+      "file": "tests/workspace.test.js",
+      "ms": 28.826504,
+      "tests": 10,
+      "shard": 4
+    }
+  ],
+  "tests": 1366,
+  "proposal": [
+    {
+      "shard": 1,
+      "ms": 1910847.8786229999,
+      "files": [
+        "tests/accepted-identity-session.test.js",
+        "tests/adjustment-audit.test.js",
+        "tests/allocated-building-placement.test.js",
+        "tests/allocated-land-edit.test.js",
+        "tests/allocated-property-creation.test.js",
+        "tests/build.test.js",
+        "tests/building-application.test.js",
+        "tests/building-components-s10d.test.js",
+        "tests/building-editing-workflow.test.js",
+        "tests/building-editing.test.js",
+        "tests/building-footprint-f2.test.js",
+        "tests/building-geometry-s10a.test.js",
+        "tests/building-history.test.js",
+        "tests/building-integration-f4.test.js",
+        "tests/building-project-s10b.test.js",
+        "tests/building-transform.test.js",
+        "tests/building-validation.test.js",
+        "tests/building-workflow.test.js",
+        "tests/buildings.test.js",
+        "tests/c7-preview-cache.test.js",
+        "tests/ci-node-timing.test.js",
+        "tests/ci-trigger.test.js",
+        "tests/dead-end-roads-021.test.js",
+        "tests/dev-opt-sre-four-shards.test.js",
+        "tests/dev-opt-sre-pilot.test.js",
+        "tests/district-workspace.test.js",
+        "tests/draft-engine.test.js",
+        "tests/editing-precision-4c.test.js",
+        "tests/geometry.test.js",
+        "tests/h1-release-policy.test.js",
+        "tests/h2-historical-compat.test.js",
+        "tests/identity-building-editor-bridge.test.js",
+        "tests/identity-host-audit.test.js",
+        "tests/identity-live-adoption.test.js",
+        "tests/identity-local-editor-record.test.js",
+        "tests/identity-mounted-activation.test.js",
+        "tests/identity-mounted-transaction.test.js",
+        "tests/identity-qualification-audit.test.js",
+        "tests/identity-qualification-boundaries.test.js",
+        "tests/identity-qualification-mounted.test.js",
+        "tests/identity-qualification-regeneration.test.js",
+        "tests/identity-road-bridge.test.js",
+        "tests/identity-staged-adoption.test.js",
+        "tests/identity-verification.test.js",
+        "tests/inspection-workflow.test.js",
+        "tests/junction-snap-merge-022.test.js",
+        "tests/lare-native-baseline-capture.test.js",
+        "tests/local-reconciliation-demolition.test.js",
+        "tests/local-reconciliation-p4.test.js",
+        "tests/local-reconciliation-preservation.test.js",
+        "tests/local-reconciliation-road-group.test.js",
+        "tests/map-interaction-4b.test.js",
+        "tests/parcel-reconciliation.test.js",
+        "tests/pending-changes.test.js",
+        "tests/persistence.test.js",
+        "tests/phase7-integration.test.js",
+        "tests/property-creation-e1.test.js",
+        "tests/property-edit.test.js",
+        "tests/property-frontage-snapping-sfs.test.js",
+        "tests/property-merge-026-integration.test.js",
+        "tests/property-merge-adaptation-026.test.js",
+        "tests/property-merge-e3.test.js",
+        "tests/property-selection.test.js",
+        "tests/property-split-025.test.js",
+        "tests/property-split-e2.test.js",
+        "tests/readability.test.js",
+        "tests/responsive-layout.test.js",
+        "tests/road-b5-hardening.test.js",
+        "tests/road-face-lineage-023.test.js",
+        "tests/road-faces.test.js",
+        "tests/road-first-c1.test.js",
+        "tests/road-graph.test.js",
+        "tests/road-impact-usability.test.js",
+        "tests/road-impact.test.js",
+        "tests/road-parcel-shape-reflow.test.js",
+        "tests/road-reconciliation-preview.test.js",
+        "tests/road-shape.test.js",
+        "tests/road-topology-reflow.test.js",
+        "tests/road-undo-project.test.js",
+        "tests/schema10-mixed-city.test.js",
+        "tests/schema11-bundle-preflight.test.js",
+        "tests/selection-a1.test.js",
+        "tests/selection-information.test.js",
+        "tests/spatial-recovery-compression-fixed-reuse.test.js",
+        "tests/spatial-recovery-compression-inventory-reuse.test.js",
+        "tests/spatial-recovery-compression-single-pass-history.test.js",
+        "tests/spatial-recovery-compression-unified-progressive.test.js",
+        "tests/spatial-recovery-compression.test.js",
+        "tests/spatial-recovery-delta.test.js",
+        "tests/spatial-recovery-identity.test.js",
+        "tests/spatial-recovery-initial-retirement.test.js",
+        "tests/spatial-recovery-packing.test.js",
+        "tests/spatial-recovery-road-adapter.test.js",
+        "tests/spatial-recovery-unified-compression.test.js",
+        "tests/transaction-profile.test.js",
+        "tests/workspace.test.js"
+      ]
+    },
+    {
+      "shard": 2,
+      "ms": 1910847.8648110002,
+      "files": [
+        "tests/accepted-edit-history-d01.test.js",
+        "tests/allocated-land-subdivision.test.js",
+        "tests/building-compounds-c01.test.js",
+        "tests/building-footprint-f1.test.js",
+        "tests/building-footprint-union.test.js",
+        "tests/building-geometry-read-s10b.test.js",
+        "tests/building-selection-s10b.test.js",
+        "tests/building-selection.test.js",
+        "tests/building-structures.test.js",
+        "tests/building-transform-workflow.test.js",
+        "tests/building-validation-workflow.test.js",
+        "tests/c7-junction-preview-worker.test.js",
+        "tests/c7-p2-worker-cancellation.test.js",
+        "tests/canvas-pointer.test.js",
+        "tests/ci-browser-suites.test.js",
+        "tests/ci-focused.test.js",
+        "tests/coast-editing.test.js",
+        "tests/coast.test.js",
+        "tests/core.test.js",
+        "tests/courtyard-access.test.js",
+        "tests/defense-workflow.test.js",
+        "tests/dev-opt-ci-diagnostics.test.js",
+        "tests/dev-opt-diagnostics.test.js",
+        "tests/dev-opt-hosted-build.test.js",
+        "tests/dev-opt-research-shards.test.js",
+        "tests/dev-opt-research.test.js",
+        "tests/dev-opt-work-cycle.test.js",
+        "tests/dev4f-export.test.js",
+        "tests/districts.test.js",
+        "tests/fortifications.test.js",
+        "tests/identity-allocation.test.js",
+        "tests/identity-central-publication.test.js",
+        "tests/identity-editor-batch1.test.js",
+        "tests/identity-generation-audit.test.js",
+        "tests/identity-history-replay.test.js",
+        "tests/identity-publication-view.test.js",
+        "tests/identity-reservations.test.js",
+        "tests/identity-road-delta.test.js",
+        "tests/identity-transaction.test.js",
+        "tests/identity-workflow.test.js",
+        "tests/identity.test.js",
+        "tests/input-controller-a2.test.js",
+        "tests/inspector-controller-a3.test.js",
+        "tests/inspector-feedback-4d.test.js",
+        "tests/lakes.test.js",
+        "tests/landscape.test.js",
+        "tests/local-reconciliation-p1.test.js",
+        "tests/local-reconciliation-p2.test.js",
+        "tests/local-reconciliation-p3.test.js",
+        "tests/local-reconciliation-research.test.js",
+        "tests/neighborhood-reflow.test.js",
+        "tests/outline.test.js",
+        "tests/phase7-control-inventory.test.js",
+        "tests/plot-draft-027.test.js",
+        "tests/plot-partition-027.test.js",
+        "tests/property-building-clear-4e.test.js",
+        "tests/property-count-e4.test.js",
+        "tests/property-deletion.test.js",
+        "tests/property-integration-e5.test.js",
+        "tests/property-merge-union-026.test.js",
+        "tests/property-polygons-024-acceptance.test.js",
+        "tests/property-polygons-024.test.js",
+        "tests/property-split-025-integration.test.js",
+        "tests/river-editing.test.js",
+        "tests/road-application.test.js",
+        "tests/road-building-decisions.test.js",
+        "tests/road-editor-acceptance.test.js",
+        "tests/road-group-b1.test.js",
+        "tests/road-group-intent-b1.test.js",
+        "tests/road-intersections-022.test.js",
+        "tests/road-ownership-023.test.js",
+        "tests/road-parcel-decisions-028.test.js",
+        "tests/road-preview.test.js",
+        "tests/road-reconciliation.test.js",
+        "tests/schema11-migration.test.js",
+        "tests/schema11-runtime-adoption.test.js",
+        "tests/schema11-runtime-audit.test.js",
+        "tests/secure-identity-host.test.js",
+        "tests/shortcut-scope.test.js",
+        "tests/spatial-recovery-compression-baseline.test.js",
+        "tests/spatial-recovery-compression-grouped-first.test.js",
+        "tests/spatial-recovery-compression-shell-first.test.js",
+        "tests/spatial-recovery-compression-unified-history.test.js",
+        "tests/spatial-recovery-concessions.test.js",
+        "tests/spatial-recovery-contract.test.js",
+        "tests/spatial-recovery-coordinator.test.js",
+        "tests/spatial-recovery-quality.test.js",
+        "tests/spatial-recovery-regeneration.test.js",
+        "tests/terrain.test.js",
+        "tests/undo-context.test.js",
+        "tests/validation-feedback.test.js",
+        "tests/water-composition.test.js",
+        "tests/water.test.js",
+        "tests/whole-city-png.test.js",
+        "tests/workspace-menus.test.js",
+        "tests/workspace-presentation.test.js"
+      ]
+    }
+  ]
+}

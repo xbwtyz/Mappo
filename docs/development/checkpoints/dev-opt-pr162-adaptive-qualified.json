@@ -1,0 +1,79 @@
+{
+  "version": 2,
+  "repository": "xbwtyz/Mappo",
+  "milestone": "DEV-OPT P4/P5 combined",
+  "appVersion": "0.2.25-dev",
+  "targetVersion": "0.2.25-dev",
+  "state": "active",
+  "source": {
+    "branch": "chore/dev-opt-focused-ci",
+    "sha": "b4ae118aed89063c8bffd6565a8b6e2524b06578",
+    "baseSha": "0f03dee0d1bb51a6e0e6bf6452896041ad1e917a",
+    "pr": 162
+  },
+  "scope": {
+    "approved": [
+      "Combined remaining DEV-OPT P4/P5 infrastructure on PR162; owner directed continued implementation after canceling premature review-ready gate."
+    ],
+    "prohibited": [
+      "No application/schema/permission changes; no merge, release, tag or deploy without separate approval; retain all mandatory full gates."
+    ],
+    "stopConditions": [
+      "Unexpected policy or schema changes, failed acceptance requiring scope expansion, final review-ready gate, separate merge authorization."
+    ]
+  },
+  "completed": [
+    "16-shard diagnostic qualification and permanent DEV-39 adoption implemented",
+    "Automatic live inventory scheduling and both adaptive focused execution paths qualified",
+    "Candidate manual acceptance package implementation tested"
+  ],
+  "pending": [
+    "Batch B automatic reporting qualification and rolling metrics",
+    "Batch C shared build investigation",
+    "Final full review-ready qualification and separate merge approval",
+    "Exact-main qualification; road-only live SRE integration afterward"
+  ],
+  "decisions": [
+    "Owner approved sixteen Node shards and four browser runners",
+    "Owner approved additional batches A–D on PR162"
+  ],
+  "blockers": [
+    "Full twenty-runner qualification still pending; SRE remains detached"
+  ],
+  "evidence": {
+    "qualification": "focused-only",
+    "fast": {
+      "runId": 45916785118,
+      "jobId": 140237814066,
+      "completionJobId": 140238273867,
+      "shards": 2,
+      "attempt": 1,
+      "head": "b4ae118aed89063c8bffd6565a8b6e2524b06578",
+      "tests": 130,
+      "passed": 130,
+      "failed": 0,
+      "durationSeconds": 99
+    },
+    "full": {
+      "runId": 45916791912,
+      "attempt": 1,
+      "head": "b4ae118aed89063c8bffd6565a8b6e2524b06578",
+      "qualification": "routing-only"
+    },
+    "artifacts": [
+      {
+        "path": "index.html",
+        "blob": "013832e573c5c4f1651a1139ccec25daf153457e"
+      },
+      {
+        "path": "dist/mappo-0.2.25-dev.html",
+        "blob": "013832e573c5c4f1651a1139ccec25daf153457e"
+      }
+    ]
+  },
+  "rollback": {
+    "sourceSha": "b4ae118aed89063c8bffd6565a8b6e2524b06578",
+    "policy": "Use reviewed reversions; preserve exact evidence and immutable historical records."
+  },
+  "nextAction": "Qualify read-only automated CI report on verified successful and failed runs, then continue Batch B."
+}

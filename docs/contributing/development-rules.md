@@ -11,6 +11,10 @@
 - **Repository state:** inspect current source, workflows, PRs and CI before claiming an action or status. Some older planning documents are time-stamped and can be stale. Preserve historical descriptions as historical context rather than accepting them as authoritative current release state.
 - **Approval boundary:** the policy adoption authorizes only this documentation PR. Future runtime changes, schema/CI updates, PR merges, releases and Pages deployments still need their own explicit approvals.
 
+## Standing restriction-review policy (owner authorized 2026-11-26)
+
+When any project rule materially limits speed, cost, architecture or capability, raise the issue promptly rather than silently working around it. Explain why the rule exists, whether its original rationale still holds, the expected/measured cost of retaining it, alternatives, risks and safeguards. Ask for a decision before substantial avoidable workaround effort or a policy change; continue only within approved bounds. Preserve preservation, coverage, exact-revision verification, and separate merge/release approvals. This requirement supplements the original 51 development and 48 output selections; it does not automatically turn any existing rule off. The owner explicitly authorized documenting this requirement and investigating 16 Node shards on 2026-11-26. DEV-39 now specifies the owner-approved twenty-runner architecture (16 measured Node shards and four browser suites); implementation must pass the normal exact-candidate qualification before adoption.
+
 ## 1. Development preferences — complete owner selection (51 rules)
 
 The table preserves every item in the original development checklist, with the owner's single subsequent change to legacy-save compatibility reflected as **OFF**. The other two defaults that were already OFF remain OFF.
@@ -82,7 +86,7 @@ The table preserves every item in the original development checklist, with the o
 |---|---|---|---|
 | `DEV-37` | **ON** | Use targeted tests during development | Run focused tests to reproduce and fix changes; do not rerun the full suite at every small edit. |
 | `DEV-38` | **ON** | Run full CI on review-ready PRs and main | Use the required comprehensive CI gate before merge/release and after merging; `[full-ci]` / `[full-ci-benchmark]` may request draft qualification but cannot replace review-ready and exact-main gates. Do not treat a narrow smoke test as equivalent. |
-| `DEV-39` | **ON** | Keep six-runner parallel CI | Maintain two Node shards plus desktop/roads/property/integration browser suites and the required aggregate result unless a reviewed CI change is approved. |
+| `DEV-39` | **ON** | Keep twenty-runner parallel CI | Maintain 16 measured Node shards and desktop/roads/property/integration browser suites; require every exact-run, same-attempt suite plus complete unique Node execution evidence and the unchanged required aggregate. Changes to runner count or coverage require reviewed owner approval. |
 | `DEV-40` | **ON** | Require green CI for the exact review-ready revision | Verify check results match the candidate SHA; later commits require revalidation under the policy. |
 | `DEV-41` | **ON** | Test standalone and offline behavior | Include deterministic output checks, actual standalone file:// startup, and isolation from required network access. |
 | `DEV-42` | **ON** | Retain old-save and cross-editor regression coverage | Keep already-existing frozen fixtures and relevant regression coverage. Under the separate legacy-compatibility OFF rule, new format support and test expectations may change only by an approved plan; never silently bypass required CI. |
@@ -276,7 +280,7 @@ These are consequences of the ON development rules and current repository implem
 
 ### 4.5 CI, quality and support scope
 
-- Local development: focused syntax/Node/browser tests on affected domains. Gate: full required CI on ready-for-review PRs and `main`, with **two Node shards, four browser suites and the combined `Build, Node tests and browser QA` result**.
+- Local development: focused syntax/Node/browser tests on affected domains. Gate: full required CI on ready-for-review PRs and `main`, with **16 Node shards, four browser suites and the combined `Build, Node tests and browser QA` result**.
 - Check deterministic compiled parity, offline `file://`, supported browser engines, representative cross-editor/Undo/save/recovery behavior, and any new schema policy when changed. Test failures must be fixed or explicitly reviewed as policy changes; don't quietly disable checks.
 - Desktop/laptop/ultrawide with mouse/trackpad/keyboard are the support targets; phone/tablet acceptance is OFF by default. Heavy C7 performance benchmarking is explicit opt-in (manual dispatch or approved head-commit markers). Focused draft benchmark jobs do not replace mandatory full review and main gates. Do not chase benchmarks absent a reproducible user-facing regression.
 - The existing CI suite contains legacy-save tests despite optional future compatibility. **That is not an error in itself:** the shipped version must remain tested to its own published contract until an approved update changes supported behavior.

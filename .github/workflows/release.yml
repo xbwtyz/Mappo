@@ -69,6 +69,20 @@ jobs:
           test "$actual_main" = "$GITHUB_SHA"
           successful="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$GITHUB_SHA&event=push&per_page=100" --jq '[.workflow_runs[] | select(.name == "Mappo CI" and .conclusion == "success")] | length')"
           test "$successful" -ge 1
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { verifiedMainRun } from './scripts/ci-focused.mjs';
+          const repo=process.env.GITHUB_REPOSITORY,sha=process.env.GITHUB_SHA;
+          const api=path=>JSON.parse(execFileSync('gh',['api','--method','GET','repos/'+repo+'/'+path],{encoding:'utf8',maxBuffer:16*1024*1024}));
+          const runs=api('actions/runs?head_sha='+sha+'&event=push&per_page=100').workflow_runs;
+          let qualified=false;
+          for(const run of runs){
+            if(run.name!=='Mappo CI'||run.conclusion!=='success'||run.head_sha!==sha||run.head_branch!=='main')continue;
+            const jobs=api('actions/runs/'+run.id+'/attempts/'+run.run_attempt+'/jobs?per_page=100');
+            if(verifiedMainRun(sha,run,jobs)){qualified=true;break;}
+          }
+          if(!qualified)throw Error('No exact-main CI with all 16 Node shards, four browser suites and aggregate passed.');
+          NODE
 
       - name: Rebuild and retest the exact committed standalone
         run: |

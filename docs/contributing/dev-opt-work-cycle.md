@@ -24,3 +24,26 @@ The owner accepted the proposed P0/P1 pause at the verified SRE small-shell chec
 ## Subsequent authorized DEV-OPT scope and operation
 
 After P0/P1, owner authorized continuation on the same draft PR160 through P3 and P2. P4/P5 remain deferred until their separately approved triggers. [Research operation](dev-opt-research.md), [hosted standalone operation](hosted-standalone-build.md), [joint qualification record](../plans/dev-opt/closeout-p0-p1-p3-p2.md). Green is continuation evidence, not merge or release authorization. Research candidates do not authorize production changes; hosted scratch commits are never CI acceptance. Keep normal six-runner review/main checks. Existing P0/P1 historical statements reflect their original scope.
+
+
+## OPT-03 V2 active and full-gate checkpoints
+
+V2 supports active/paused draft, review-ready and merged exact-main checkpoints. Independently bind branch, PR, exact SHA, run ID/attempt, correct event, mandatory full job names and artifact parity. Distinguish unqualified, focused-only, full-pending and full qualification; pending becoming completed requires reconstruction, not promotion by assumption. Failed/missing/duplicate mandatory jobs or stale evidence reject full claims. V1 records remain readable unchanged. Records never grant authority. Exact source remains separate from the record's own commit. Keep historical records when a new commit makes them stale; obtain live evidence for the new head.
+
+
+## OPT-10 candidate acceptance artifacts
+
+On a qualified full candidate, the first Node job creates the manual acceptance archive after standalone parity and regression testing. For a draft diagnostic, use the explicit [acceptance-package] head marker to generate it during Fast Checks. Extract the uploaded artifact, open index.html offline, use the two synthetic road movement fixtures and checklist, and return actual results. The manifest binds the actual checkout SHA (which may be the PR merge ref), optional PR head, app/schema versions and SHA256 of every file. No generated report claims manual acceptance or full CI success; verify the workflow and candidate identity independently. Current package describes the detached SRE baseline, not future live controls.
+
+
+## Current DEV-39 architecture and evidence formats
+
+Owner approved sixteen measured Node shards plus four browser suites on PR162. The earlier six-runner descriptions above refer to their historical P0/P1 scope. V2 full checkpoint references now require `nodeShards: 16`, and the same-attempt validator requires all 22 routing/regression/aggregate jobs. V1 paused evidence and historical metrics V1 remain readable. Metrics V2 separates `full-main-16-node` observations and requires all current mandatory jobs with run ID/attempt; no old run is promoted. The release gate also verifies the complete current job set, not just workflow status. No change to separate approvals.
+
+
+## Batch B — automatic CI evidence reports
+
+The read-only `Mappo CI Evidence Report` observes completed Fast Checks and full CI after this workflow is present on default main. It checks out only the trusted workflow revision, not a source run's potentially untrusted code. Reports preserve original result, exact run/attempt/source, failure classifications and raw evidence, longest jobs, wall seconds, observed runner minutes, and branch/PR observation with explicit stale-state warning. Artifacts include report.json and HANDOFF.md; source CI status remains authoritative. Per-run metrics V2 keep actual full-main and substantive focused results distinct, rejecting suppressed or incomplete adaptive checks. A report does not grant approval, qualify a merge-ref tree or claim manual acceptance. The explicit [dev-opt-report-pilot] marker on PR162 replays a verified green parallel run and red historical run before main adoption. The automatic workflow_run trigger itself cannot execute from a draft-only workflow. Historical V1 metrics remain unchanged. No source mutation, secrets, releases or branch writes.
+
+
+Rolling evidence reports query up to ten completed push runs per workflow (main-only for full CI) and each exact latest attempt's complete job list. Separate historical two-Node and current sixteen-Node full runs; reject skipped/suppressed focused work as qualifying. Include sample counts, median/p90 wall and observed runner minutes, failures, cancellations and missing evidence. API/read failures remain explicit, and incomplete history is never a qualification gate. Source branch/PR observation fails closed if the PR cannot be resolved. Report artifacts are read-only and retain 30 days; no repository writeback.

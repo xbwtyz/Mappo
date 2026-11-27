@@ -53,7 +53,7 @@ test('full routing remains wired to both matrices, benchmark and fail-closed agg
   assert.match(ci,/ready_for_review/);
   assert.match(ci,/run: node scripts\/ci-trigger\.mjs full/);
   assert.equal(ci.split("needs.route.outputs.full == 'true'").length-1,3);
-  assert.match(ci,/shard: \[1, 2\]/);
+  assert.match(ci,/shard: \[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16\]/);
   assert.match(ci,/suite: \[desktop, roads, property, integration\]/);
   assert.match(ci,/matrix.suite == 'integration' && needs.route.outputs.benchmark == 'true'/);
   assert.match(ci,/needs: \[route, node, browser\]/);
