@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "source": "fdb67a06bde4464b7bb877de95265e4dcb11cfd8",
+  "run": 46082452709,
+  "attempt": 1,
+  "aggregate": 140784669129,
+  "job": 140784338139,
+  "kind": "archival-ci-live-pilot-source-test-evidence",
+  "scope": "Historical CI policy test results, not executable fixtures or application qualification",
+  "sourceSummary": {
+    "selectedFiles": 21,
+    "testsPassed": 139,
+    "shards": 2,
+    "wallSeconds": 88
+  },
+  "rows": [
+    {
+      "id": "archive-policy-1",
+      "testFile": "tests/ci-archive.test.js",
+      "name": "archive selection admits only exact single-parent draft push and allowed paths",
+      "conclusion": "pass",
+      "tap": "2026-11-27T23:26:24.4789804Z ok 9 - archive selection admits only exact single-parent draft push and allowed paths"
+    },
+    {
+      "id": "archive-policy-2",
+      "testFile": "tests/ci-archive.test.js",
+      "name": "mixed code, fixtures, executable modes, deletions and archive modifications cannot skip normal CI",
+      "conclusion": "pass",
+      "tap": "2026-11-27T23:26:24.4793390Z ok 10 - mixed code, fixtures, executable modes, deletions and archive modifications cannot skip normal CI"
+    },
+    {
+      "id": "archive-policy-3",
+      "testFile": "tests/ci-archive.test.js",
+      "name": "substantive exact prior CI required; skipped build, archived parent and routing-only never qualify",
+      "conclusion": "pass",
+      "tap": "2026-11-27T23:26:24.4796540Z ok 11 - substantive exact prior CI required; skipped build, archived parent and routing-only never qualify"
+    },
+    {
+      "id": "archive-policy-4",
+      "testFile": "tests/ci-archive.test.js",
+      "name": "archive validates exact provenance and unique nonempty rows",
+      "conclusion": "pass",
+      "tap": "2026-11-27T23:26:24.4799595Z ok 12 - archive validates exact provenance and unique nonempty rows"
+    },
+    {
+      "id": "archive-policy-5",
+      "testFile": "tests/ci-archive.test.js",
+      "name": "workflow gate keeps normal path and full gates distinct",
+      "conclusion": "pass",
+      "tap": "2026-11-27T23:26:24.4802390Z ok 13 - workflow gate keeps normal path and full gates distinct"
+    }
+  ]
+}
