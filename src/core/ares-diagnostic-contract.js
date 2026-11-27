@@ -6,7 +6,7 @@ export const ARES_DIAGNOSTIC_VERSION = 1;
 export const ARES_REFUSAL_REASONS = Object.freeze([
   'invalid-input', 'domain-violation', 'protected-content', 'permission-required',
   'scope-limited', 'unsupported-capability', 'unknown-data', 'search-exhausted',
-  'work-limit', 'verification-failure', 'canceled', 'stale', 'unclassified'
+  'work-limit', 'verification-failure', 'stopped', 'canceled', 'stale', 'unclassified'
 ]);
 function aresP1Record(value, keys, label) {
   if (!value || typeof value !== 'object' || Array.isArray(value) ||
@@ -50,7 +50,7 @@ export function createAresDiagnosticContext(input) {
 // Reason labels describe observed evidence; they never prove global infeasibility.
 export function createAresDiagnostic(contextInput,input) {
   const context=createAresDiagnosticContext(contextInput);
-  aresP1Record(input,['reason','code','stage','message','refs','source','work'],'diagnostic');
+  aresP1Record(input,['reason','code','stage','message','refs','source','work','unresolvedIds','measurements'],'diagnostic');
   if(!ARES_REFUSAL_REASONS.includes(input.reason)) throw Error('Unsupported ARES refusal reason.');
   aresP1Record(input.source,['id','version'],'diagnostic source');
   const result={version:ARES_DIAGNOSTIC_VERSION,context,reason:input.reason,
@@ -58,6 +58,21 @@ export function createAresDiagnostic(contextInput,input) {
     message:aresP1Text(input.message,'message',4000),refs:aresP1Refs(input.refs),
     source:{id:aresP1Text(input.source.id,'source ID'),version:aresP1Text(input.source.version,'source contract version')}};
   if(Object.hasOwn(input,'work'))result.work=aresP1Work(input.work);
+  // Unresolved IDs are source-reported strings, never typed entity claims.
+  if(Object.hasOwn(input,'unresolvedIds')){
+    if(!Array.isArray(input.unresolvedIds))throw Error('Invalid ARES unresolved IDs.');
+    result.unresolvedIds=[...new Set(input.unresolvedIds.map(id=>aresP1Text(id,'unresolved ID')))].sort(riCompare);
+  }
+  if(Object.hasOwn(input,'measurements')){
+    const m=input.measurements;
+    aresP1Record(m,['unit','newDistance','requiredDistance','oldDistance','oldRequiredDistance'],'measurements');
+    if(m.unit!=='map-unit'||!Number.isFinite(m.newDistance)||m.newDistance<0||
+       !Number.isFinite(m.requiredDistance)||m.requiredDistance<0||
+       !['oldDistance','oldRequiredDistance'].every(k=>m[k]===null||(Number.isFinite(m[k])&&m[k]>=0)))
+      throw Error('Invalid ARES distance measurements.');
+    result.measurements={unit:m.unit,newDistance:m.newDistance,requiredDistance:m.requiredDistance,
+      oldDistance:m.oldDistance,oldRequiredDistance:m.oldRequiredDistance};
+  }
   return riFreeze(result);
 }
 // Compare complete normalized context, including exact intent and permissions.
@@ -66,6 +81,8 @@ export function matchesAresDiagnosticContext(diagnostic,contextInput) {
   const context=createAresDiagnosticContext(contextInput);
   try {
     if(diagnostic?.version!==ARES_DIAGNOSTIC_VERSION)return false;
-    return JSON.stringify(createAresDiagnosticContext(diagnostic.context))===JSON.stringify(context);
+    const observed=createAresDiagnosticContext(diagnostic.context);
+    return JSON.stringify(observed)===JSON.stringify(context)&&
+      ['x','y'].every(k=>Object.is(observed.operation.geometry.offset[k],context.operation.geometry.offset[k]));
   } catch { return false; }
 }
