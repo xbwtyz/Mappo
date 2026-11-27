@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        engine: [node, chromium, firefox]
+        engine: [firefox]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,6 +31,8 @@ jobs:
       - name: Check research script syntax
         run: node --check scripts/development/research/sre-math-parity.mjs
       - name: Run isolated fixed arithmetic experiments
+        env:
+          HOME: /root
         run: node scripts/development/research/sre-math-parity.mjs ${{ matrix.engine }}
       - uses: actions/upload-artifact@v4
         if: always()

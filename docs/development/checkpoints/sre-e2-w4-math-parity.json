@@ -25,10 +25,11 @@
   "completed": [
     "Exact full green 4becfaef5457a40d2f15d268bcd504a04d9643b8 run 45926250551, 318 seconds; W1–W3 integration and standard destructive qualification.",
     "Both Chromium and Firefox positive regeneration including independent reservations, accepted history and portable checks in run 45928614839.",
-    "Identical accepted snapshot, exact 43 retired IDs; candidate coordinate mismatch isolated from input and identity selection."
+    "Identical accepted snapshot, exact 43 retired IDs; candidate coordinate mismatch isolated from input and identity selection.",
+    "Research run 45930291616: Node and Chromium norm+trig both match locked exact candidate, independently verified, identical 43 retired IDs. Firefox failed at launch, not calculation."
   ],
   "pending": [
-    "Inspect isolated three-engine math pilot on research/sre/w4-math-parity, localize proven correction then qualify product without changing golden tests.",
+    "Run only missing Firefox norm and norm-trig variants with existing product CI HOME=/root; compare exact fingerprints, retired IDs and work against prior unchanged-script Node/Chromium research evidence. Localize production fix only after evidence.",
     "Restored-identity audit, advanced high-quality Apply, remaining corpus/interactive evidence, manual acceptance, version and review-ready full gate."
   ],
   "decisions": [
@@ -36,7 +37,8 @@
   ],
   "blockers": [
     "Latest full CI 45928614839 failed in 625 seconds on high-quality candidate equality, Chromium and Firefox differ from locked Node result.",
-    "Checkpoint stored on isolated research branch to avoid an extra product CI cycle; product PR remains at exact failed revision. Verify live ref and runs before resumption."
+    "Checkpoint stored on isolated research branch to avoid an extra product CI cycle; product PR remains at exact failed revision. Verify live ref and runs before resumption.",
+    "Firefox research launch failed in 45930291616 because of container HOME ownership; research-only follow-up uses existing HOME=/root convention. Product branch remains untouched."
   ],
   "evidence": {
     "qualification": "unqualified",
@@ -63,5 +65,5 @@
     "sourceSha": "4becfaef5457a40d2f15d268bcd504a04d9643b8",
     "policy": "Reviewed reversion only; retain exact historic evidence and product gate."
   },
-  "nextAction": "Verify research branch exact run and per-engine logs/artifacts. Use findings to plan localized math correction; do not merge research branch."
+  "nextAction": "Verify Firefox-only research results and compare to 45930291616 Node/Chromium evidence. If exact hash and safety pass, design localized production math correction without changing historical expectations or mutating global Math."
 }
