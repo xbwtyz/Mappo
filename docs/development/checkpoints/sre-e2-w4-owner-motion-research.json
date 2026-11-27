@@ -37,9 +37,10 @@
     "Every attempted topology move counted. Five stratified eligible solves per fixture, matched standard/high, no reclassification of refusals as success."
   ],
   "blockers": [
-    "Product full CI not yet qualified; research does not confer production acceptance.",
+    "Full CI 45931893779 failed, 628s: Chromium high-quality exact/Apply/history/portable passed; Firefox one access-path coordinate discrepancy; Node shard 10 build invariant failed.",
     "Current high-quality initial-solution phases bounded independently from remaining total budget; owner reports frequent refusal.",
-    "Checkpoint held on isolated research branch; verify live head before use."
+    "Checkpoint held on isolated research branch; verify live head before use.",
+    "Research run 45933019721 failed before executing any movement tests because shallow checkout excluded target. Correct frozen target comparison and checkout depth."
   ],
   "evidence": {
     "qualification": "unqualified",
@@ -47,7 +48,9 @@
       "runId": 45931893779,
       "attempt": 1,
       "head": "f04a447ecd4ae6b1f8d12a28ac68adb3573d265f",
-      "nodeShards": 16
+      "nodeShards": 16,
+      "conclusion": "failure",
+      "durationSeconds": 628
     },
     "artifacts": [
       {

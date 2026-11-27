@@ -19,14 +19,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 3
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Check frozen source and script
         run: |
-          test "$(git rev-parse HEAD^)" = f04a447ecd4ae6b1f8d12a28ac68adb3573d265f
-          git diff --exit-code HEAD^ HEAD -- src index.html dist
+          git merge-base --is-ancestor f04a447ecd4ae6b1f8d12a28ac68adb3573d265f HEAD
+          git diff --exit-code f04a447ecd4ae6b1f8d12a28ac68adb3573d265f HEAD -- src index.html dist
           node --check scripts/development/research/sre-group-motion.mjs
       - name: Execute movement preflight and bounded matched solver cases
         run: node scripts/development/research/sre-group-motion.mjs ${{ matrix.shard }}
