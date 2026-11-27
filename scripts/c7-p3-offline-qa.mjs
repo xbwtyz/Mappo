@@ -107,6 +107,102 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     assert.deepEqual(await page.evaluate(()=>__buildingQA.state().project.city),sreApplied.project.city);
     console.log('SRE_MOUNTED_OFFLINE '+JSON.stringify({browser:browserName,permissionsDefaultOff:true,review:true,cancel:true,apply:true,undoRedo:true}));
 
+    // Actual destructive recovery through mounted controls. Test the same
+    // standard reverse-compression fixture qualified by the Node review gate.
+    const severe=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+      shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties:false});
+    await page.evaluate(doc=>__buildingQA.apply(doc),{project:severe,workspace:defaultWorkspace(severe)});
+    await page.locator('#roadModeButton').click();
+    const severeBefore=await page.evaluate(()=>{
+      const app=__buildingQA.state(),s=app.roadWorkspace.session;
+      s.select({kind:'road',id:'RD-0184'});
+      if(!s.requestSelectionA1({kind:'road',id:'RD-0186'},{toggle:true})||!s.roadGroupB1?.eligible)
+        throw Error('Destructive SRE fixture ineligible.');
+      s.updateRoadIntent({x:1.5026370360609105,y:18.69948056782279},{defer:false});
+      return {project:JSON.stringify(app.project),revision:app.files.revision,identityRevision:app.identityView.context.revision};
+    });
+    await page.locator('#roadSreFrontage').check();
+    await page.locator('#roadSreScale').check();
+    await page.locator('#roadSreScaleLimit').selectOption('0.2');
+    await page.locator('#roadSreDestruction').check();
+    assert.equal(await page.locator('#roadSreRegeneration').isChecked(),false);
+    // Install test-only observation of trusted pointer event dispatch and
+    // animation-frame gaps. These are runner diagnostics, not a universal SLA.
+    await page.evaluate(()=>{
+      const m={input:[],frames:[],progress:[],active:true,lastFrame:performance.now(),lastProgress:''};
+      const sample=e=>{if(m.active&&e.isTrusted)m.input.push(Math.max(0,performance.now()-e.timeStamp));};
+      document.addEventListener('pointermove',sample,true);
+      const frame=now=>{if(!m.active)return;m.frames.push(now-m.lastFrame);m.lastFrame=now;requestAnimationFrame(frame);};
+      requestAnimationFrame(frame);
+      const watch=new MutationObserver(()=>{
+        const text=document.querySelector('#roadSreWork').textContent;
+        if(m.active&&text&&text!==m.lastProgress){m.lastProgress=text;m.progress.push(performance.now());}
+      });
+      watch.observe(document.querySelector('#roadSreWork'),{childList:true,subtree:true,characterData:true});
+      window.__srePerf={m,stop:()=>{m.active=false;watch.disconnect();document.removeEventListener('pointermove',sample,true);}};
+      document.querySelector('#roadSreStart').click();
+      m.stopRequested=performance.now();
+      document.querySelector('#roadSreStop').click();
+    });
+    await page.waitForFunction(()=>['paused','ready','refused','error'].includes(__buildingQA.state().roadWorkspace.sre.state?.phase));
+    const pause=await page.evaluate(()=>{
+      const app=__buildingQA.state(),s=app.roadWorkspace.sre.state;
+      return {phase:s.phase,message:s.message,stats:s.progress?.stats,accepted:JSON.stringify(app.project),
+        delay:performance.now()-window.__srePerf.m.stopRequested};
+    });
+    assert.equal(pause.phase,'paused',pause.message);
+    assert.equal(pause.accepted,severeBefore.project);
+    assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+    await page.locator('#roadSreContinue').click();
+    const began=Date.now();
+    let phase;
+    do{
+      await page.mouse.move(12+(Date.now()%20),12);
+      phase=await page.evaluate(()=>__buildingQA.state().roadWorkspace.sre.state?.phase);
+      if(['ready','refused','error'].includes(phase))break;
+      await page.waitForTimeout(80);
+    }while(Date.now()-began<120000);
+    const destructive=await page.evaluate(()=>{
+      const app=__buildingQA.state(),s=app.roadWorkspace.sre.state,p=window.__srePerf;
+      p.stop();
+      return {phase:s.phase,message:s.message,summary:s.review?.summary,candidate:s.review?.candidate,
+        progress:s.progress?.stats,accepted:JSON.stringify(app.project),revision:app.files.revision,
+        samples:p.m.input,frames:p.m.frames,updates:p.m.progress};
+    });
+    assert.equal(destructive.phase,'ready',destructive.message);
+    assert.ok(destructive.summary.retired.length>0);
+    assert.ok(destructive.summary.demolishedFootprint>0);
+    assert.equal(destructive.summary.added.length,0);
+    assert.equal(destructive.accepted,severeBefore.project);
+    assert.equal(destructive.revision,severeBefore.revision);
+    assert.ok(destructive.progress.work>=pause.stats.work);
+    assert.equal(destructive.progress.work+destructive.progress.remainingWork,32000000);
+    const percentile=(values,p)=>values.length?[...values].sort((a,b)=>a-b)[Math.ceil(values.length*p)-1]:null;
+    const gaps=destructive.updates.slice(1).map((v,i)=>v-destructive.updates[i]);
+    const perf={browser:browserName,stopObservedMs:pause.delay,continueToReviewMs:Date.now()-began,
+      pointerSamples:destructive.samples.length,p95PointerDispatchMs:percentile(destructive.samples,.95),
+      frameSamples:destructive.frames.length,p95FrameGapMs:percentile(destructive.frames,.95),
+      progressUpdates:destructive.updates.length,medianProgressGapMs:percentile(gaps,.5)};
+    const applyStarted=Date.now();
+    await page.locator('#roadApplyB4').click();
+    await page.waitForFunction(()=>!__buildingQA.state().roadWorkspace.active);
+    perf.applyObservedMs=Date.now()-applyStarted;
+    const severeAfter=await page.evaluate(()=>{
+      const app=__buildingQA.state();
+      return {project:app.project,revision:app.files.revision,identityRevision:app.identityView.context.revision,history:app.identityView.history.length};
+    });
+    assert.deepEqual(severeAfter.project,destructive.candidate);
+    assert.equal(severeAfter.revision,severeBefore.revision+1);
+    assert.equal(severeAfter.identityRevision,severeBefore.identityRevision+1);
+    assert.equal(severeAfter.history,1);
+    assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
+    assert.deepEqual(await page.evaluate(()=>__buildingQA.state().project.city),severe.city);
+    assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('redo')),true);
+    assert.deepEqual(await page.evaluate(()=>__buildingQA.state().project.city),severeAfter.project.city);
+    console.log('SRE_DESTRUCTIVE_OFFLINE '+JSON.stringify({browser:browserName,stopContinue:true,review:true,apply:true,undoRedo:true,retired:destructive.summary.retired.length}));
+    console.log('SRE_INTERACTIVE_DIAGNOSTIC '+JSON.stringify(perf));
+    await writeFile(new URL('../artifacts/c7/sre-interactive-'+browserName+'.json',import.meta.url),JSON.stringify(perf,null,2)+'\n');
+
     await page.evaluate(doc=>__buildingQA.apply(doc),doc);
     await page.locator('#roadModeButton').scrollIntoViewIfNeeded();
     await page.locator('#roadModeButton').click();

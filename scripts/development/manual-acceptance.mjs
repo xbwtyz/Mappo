@@ -39,13 +39,18 @@ export function createAcceptanceFixture(scenario){
     JSON.stringify(restored.project)===JSON.stringify(document.project),'Fixture round trip altered accepted project');
   return text;
 }
-function checklist(source){
+function checklist(source,liveRecovery){
   return [
     '# Mappo manual acceptance — '+APP_VERSION,
     '', 'Source checkout: '+source, '',
     'Status: NOT RUN. This package is not CI qualification or manual approval.',
-    'The DEV-OPT baseline still uses the existing road editor; the SRE is detached. Do not expect live high-quality recovery, destruction, regeneration, Stop/Continue, or future worker controls.',
-    'For a future live-SRE milestone, obtain its approved candidate-specific acceptance criteria before using these fixtures as an activation gate.',
+    ...(liveRecovery?[
+      'This candidate contains the connected-road Spatial recovery controls. The checklist is a test plan, not a claim that the controls have passed.',
+      'High quality is available only with destruction enabled and regeneration disabled. Stop pauses at a safe phase boundary; it is not immediate cancellation.'
+    ]:[
+      'The DEV-OPT baseline still uses the existing road editor; the SRE is detached. Do not expect live high-quality recovery, destruction, regeneration, Stop/Continue, or future worker controls.',
+      'For a future live-SRE milestone, obtain its approved candidate-specific acceptance criteria before using these fixtures as an activation gate.'
+    ]),
     '', '## Setup',
     '', '- [ ] Extract the archive into a new directory. Open index.html locally in Firefox; repeat in Chromium.',
     '- [ ] Use desktop/laptop and, where available, 32:9 ultrawide. Confirm offline file:// operation.',
@@ -58,6 +63,20 @@ function checklist(source){
     '- [ ] Apply a valid preview; confirm affected parcels/buildings are preserved according to the existing editor contract. Undo, then Redo, and save a separate copy; reopen it and compare the accepted geometry.',
     '- [ ] For a refused move, verify a clear refusal and unchanged accepted city. Strong moves may legitimately refuse in this detached baseline.',
     '- [ ] Check unrelated selection and map controls remain usable; note any freezes or rendering defects.',
+    ...(liveRecovery?[
+      '', '## Live connected-road recovery',
+      '', '- [ ] With both connected roads selected, enter a nonzero movement, wait for the ordinary preview, and locate Spatial recovery. Confirm all four permission checkboxes default off.',
+      '- [ ] Start a small preservation-only search. Confirm that progress is work consumed, not elapsed time; the accepted city, file revision and history stay unchanged before Apply.',
+      '- [ ] Use Stop during a longer search; record delay until pause or completion. Continue if paused. If a verified incumbent exists, Review best solution must show exactly that result.',
+      '- [ ] Cancel during search and after Review. Reset and change the displacement. Verify stale results do not reappear and new drafts reset permissions.',
+      '- [ ] Enable alternative frontage and scaling independently; test 5%, 10% and 20% limits. Review the exact frontage and scaling changes. No destruction or regeneration without their separate permissions.',
+      '- [ ] On the regular fixture use scale -0.5 (offset X 1.5026370360609105, Y 18.69948056782279), with alternative frontage, scaling at 20%, destruction on, regeneration off and Standard quality. Review the removed IDs and footprint loss. Apply only if the exact result is acceptable; Undo, Redo, save a separate copy and reopen.',
+      '- [ ] Try the same or another difficult movement with regeneration separately enabled. Verify fresh additions are listed separately from removals. If no regenerated result is found, record BLOCKED for the positive regeneration test, not PASS. High-quality regeneration must remain unavailable.',
+      '- [ ] Try High quality explicitly with destruction permitted and regeneration off; verify any accepted result is reviewed. Record refusal as refusal, not success.',
+      '- [ ] While searching, move the pointer and use non-editing inspector/map controls. Record responsiveness, progress cadence, Stop and Apply latency; note any freezes. Repeat offline in Firefox and Chromium.',
+      '- [ ] Confirm the ordinary connected-road preview, other road edit modes and Ctrl/Cmd+Z / Ctrl/Cmd+Shift+Z remain usable. Report any discrepancy between the map overlay, exact review and accepted result.',
+      '- [ ] Record any missing restored-identity audit or other incomplete acceptance criterion as BLOCKED; do not treat this checklist alone as approval to merge.'
+    ]:[]),
     '', '## Result',
     '', 'Record PASS / FAIL / BLOCKED separately for each scenario and browser, using BUG-REPORT.md. A checkbox or generated package is not evidence of a completed manual test. Do not submit private cities or credentials.'
   ].join('\n')+'\n';
@@ -77,7 +96,7 @@ export function buildAcceptancePackage({source,prHead=null,html,distHtml}){
     'regular.mappo.json':Buffer.from(createAcceptanceFixture(scenarios[0])),
     'irregular.mappo.json':Buffer.from(createAcceptanceFixture(scenarios[1])),
     'scenarios.json':Buffer.from(JSON.stringify({version:1,scenarios},null,2)+'\n'),
-    'CHECKLIST.md':Buffer.from(checklist(source)),
+    'CHECKLIST.md':Buffer.from(checklist(source,html.includes(Buffer.from('id="roadSrePanel"')))),
     'BUG-REPORT.md':Buffer.from(bugReport)
   };
   const manifest={version:1,source,prHead,appVersion:APP_VERSION,projectSchema:PROJECT_SCHEMA_VERSION,
