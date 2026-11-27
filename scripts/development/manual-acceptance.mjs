@@ -75,6 +75,10 @@ function checklist(source,liveRecovery){
       '- [ ] Try High quality explicitly with destruction permitted and regeneration off; verify any accepted result is reviewed. Record refusal as refusal, not success.',
       '- [ ] While searching, move the pointer and use non-editing inspector/map controls. Record responsiveness, progress cadence, Stop and Apply latency; note any freezes. Repeat offline in Firefox and Chromium.',
       '- [ ] Confirm the ordinary connected-road preview, other road edit modes and Ctrl/Cmd+Z / Ctrl/Cmd+Shift+Z remain usable. Report any discrepancy between the map overlay, exact review and accepted result.',
+      '- [ ] For a destructive Review, compare temporarily retired (selected path), restored and retained, and final removed counts; gross = restored + final removed. Restored IDs must survive in the candidate and must not be listed as removed. These are selected-lineage counts, not all attempted trials.',
+      '- [ ] If restoration statistics are unavailable due to evidence/work limits, confirm no partial counts appear, final changes remain independently verified and exact consent is still required. Do not force a limit in normal production to claim this case passed.',
+      '- [ ] For the irregular High fixture at X 3.005274072121821, Y 37.39896113564458, alternative frontage and 20% scaling, destruction on and regeneration off, expect 60 temporarily retired, 17 restored and retained, 43 final removals (10 properties, 19 plots, 14 buildings) on the locked fixture. Record mismatches, not an assumed pass.',
+      '- [ ] Stop with a verified incumbent, Review best, inspect the exact restoration counts and accepted-state isolation, then change the road intent. Confirm that the stale review disappears and no old result can be applied. Repeat offline in Firefox and Chromium.',
       '- [ ] Record any missing restored-identity audit or other incomplete acceptance criterion as BLOCKED; do not treat this checklist alone as approval to merge.'
     ]:[]),
     '', '## Result',

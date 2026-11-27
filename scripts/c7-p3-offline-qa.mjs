@@ -6,6 +6,7 @@ import { chromium, firefox } from 'playwright';
 import { createProject } from '../src/core/city-model.js';
 import { normalizeSpatialRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
 import { searchSpatialUnifiedRoadGroup,verifySpatialUnifiedRoadWitness } from '../src/core/spatial-recovery-coordinator.js';
+import { verifySpatialRestorationAudit } from '../src/core/spatial-recovery-restoration-audit.js';
 import { createSpatialHighQualityBudget } from '../src/core/spatial-recovery-quality.js';
 import { createHash } from 'node:crypto';
 import { createSpatialPreservationBudget,createSpatialDestructionBudget } from '../src/core/spatial-recovery-contract.js';
@@ -48,10 +49,11 @@ async function advancedReference(project,operation){
   const key=shaJson({project,operation});
   if(!advancedReferenceCache.has(key)){
     const budget=createSpatialHighQualityBudget();
-    const result=await searchSpatialUnifiedRoadGroup(project,operation,budget,{quality:'high'});
+    const result=await searchSpatialUnifiedRoadGroup(project,operation,budget,{quality:'high',captureRestorationAudit:true});
     assert.equal(result.status,'verified-witness','Node mounted-input reference must verify');
     const candidate=await verifySpatialUnifiedRoadWitness(project,operation,result,createSpatialDestructionBudget());
-    advancedReferenceCache.set(key,{result,candidate});
+    const audit=await verifySpatialRestorationAudit(project,operation,result.restorationTrail,result.basisDelta,createSpatialDestructionBudget());
+    advancedReferenceCache.set(key,{result,candidate,audit});
   }
   return advancedReferenceCache.get(key);
 }
@@ -199,13 +201,14 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
       const app=__buildingQA.state(),s=app.roadWorkspace.sre.state,p=window.__srePerf;
       p.stop();
       return {phase:s.phase,message:s.message,summary:s.review?.summary,candidate:s.review?.candidate,
-        progress:s.progress?.stats,accepted:JSON.stringify(app.project),revision:app.files.revision,
+        audit:s.review?.restorationAudit,progress:s.progress?.stats,accepted:JSON.stringify(app.project),revision:app.files.revision,
         samples:p.m.input,frames:p.m.frames,updates:p.m.progress};
     });
     assert.equal(destructive.phase,'ready',destructive.message);
     assert.ok(destructive.summary.retired.length>0);
     assert.ok(destructive.summary.demolishedFootprint>0);
     assert.equal(destructive.summary.added.length,0);
+    await assertVisibleRestoration(destructive);
     assert.equal(destructive.accepted,severeBefore.project);
     assert.equal(destructive.revision,severeBefore.revision);
     assert.ok(destructive.progress.work>=pause.stats.work);
@@ -260,12 +263,31 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
       await page.locator('#roadSreDestruction').check();
       return before;
     }
+    async function assertVisibleRestoration(review){
+      const audit=review.audit;
+      assert.ok(audit&&audit.status!=='unavailable',browserName+': expected independently replayed restoration evidence');
+      assert.deepEqual(audit.finalRetired,review.summary.retired);
+      assert.equal(audit.grossRetired.length,audit.finalRetired.length+audit.restored.length);
+      const totals=await page.locator('#roadSreTotals').textContent();
+      assert.ok(totals.includes(review.summary.retired.length+' removed'));
+      assert.ok(totals.includes(audit.grossRetired.length+' temporarily retired (selected path)'));
+      assert.ok(totals.includes(audit.restored.length+' restored and retained'));
+      const rows=await page.locator('#roadSreChanges li').allTextContents();
+      for(const r of audit.restored){
+        assert.ok(review.candidate.city[r.collection].some(row=>row.id===r.id));
+        assert.ok(rows.includes('Restored and retained '+r.collection+' · '+r.id));
+        assert.ok(!rows.includes('Remove '+r.collection+' · '+r.id));
+      }
+      console.log('SRE_MOUNTED_AUDIT '+JSON.stringify({browser:browserName,
+        gross:audit.grossRetired.length,restored:audit.restored.length,final:audit.finalRetired.length,
+        transitions:audit.transitions.length,basis:audit.finalBasisFingerprint}));
+    }
     async function awaitAdvancedReview(label){
       await page.waitForFunction(()=>['ready','refused','error'].includes(__buildingQA.state().roadWorkspace.sre.state?.phase),null,{timeout:480000});
       const review=await page.evaluate(()=>{
         const app=__buildingQA.state(),s=app.roadWorkspace.sre.state;
         return {phase:s.phase,message:s.message,summary:s.review?.summary,candidate:s.review?.candidate,
-          fingerprint:s.review?.candidateFingerprint,progress:s.progress?.stats,accepted:app.project,
+          audit:s.review?.restorationAudit,fingerprint:s.review?.candidateFingerprint,progress:s.progress?.stats,accepted:app.project,
           revision:app.files.revision,identityRevision:app.identityView.context.revision,
           requests:s.reservationRequests,operation:s.binding.operation,quality:s.binding.quality,
           enabled:!document.querySelector('#roadApplyB4').disabled};
@@ -318,6 +340,7 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
       assert.ok(regenReview.candidate.city[collection].some(r=>r.id===id));
       assert.ok(id.includes(regenBefore.namespace),'Regenerated identity must use the host-owned namespace.');
     }
+    await assertVisibleRestoration(regenReview);
     const regenAfter=await acceptAdvancedReview(regenBefore,regenReview);
     const counterTypes={properties:'property',plots:'plot',buildings:'building'};
     for(const [collection,type] of Object.entries(counterTypes)){
@@ -333,7 +356,52 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     // full production high-quality worker and mounted Review/Apply.
     const highProject=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
       shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties:true});
-    const highBefore=await beginRecoveryFixture(highProject,{x:3.005274072121821,y:37.39896113564458});
+    const highOffset={x:3.005274072121821,y:37.39896113564458};
+    const pausedBefore=await beginRecoveryFixture(highProject,highOffset);
+    await page.locator('#roadSreQuality').selectOption('high');
+    // Observe the first verified incumbent through the mounted UI. Stop
+    // during the next expensive phase; the worker pauses only at a safe
+    // boundary and Review best must independently replay that exact witness.
+    await page.evaluate(()=>{
+      const watch=new MutationObserver(()=>{
+        const s=__buildingQA.state().roadWorkspace.sre.state;
+        if(s?.phase==='searching'&&s.progress?.hasIncumbent){
+          watch.disconnect();document.querySelector('#roadSreStop').click();
+        }
+      });
+      watch.observe(document.querySelector('#roadSreWork'),{childList:true,subtree:true,characterData:true});
+      window.__sreAuditStopWatch=watch;
+      document.querySelector('#roadSreStart').click();
+    });
+    await page.waitForFunction(()=>['paused','ready','refused','error'].includes(__buildingQA.state().roadWorkspace.sre.state?.phase),null,{timeout:480000});
+    const paused=await page.evaluate(()=>{
+      window.__sreAuditStopWatch.disconnect();
+      const app=__buildingQA.state(),s=app.roadWorkspace.sre.state;
+      return {phase:s.phase,message:s.message,incumbent:s.incumbent,
+        accepted:app.project,revision:app.files.revision,identityRevision:app.identityView.context.revision};
+    });
+    assert.equal(paused.phase,'paused',paused.message);
+    assert.equal(paused.incumbent?.status,'verified-witness');
+    assert.ok(paused.incumbent.restorationTrail.length);
+    assert.deepEqual(paused.accepted,pausedBefore.project);
+    assert.equal(paused.revision,pausedBefore.revision);
+    assert.equal(paused.identityRevision,pausedBefore.identityRevision);
+    assert.equal(await page.locator('#roadApplyB4').isDisabled(),true);
+    await page.locator('#roadSreReviewBest').click();
+    const best=await awaitAdvancedReview('paused verified incumbent');
+    assert.equal(best.fingerprint,paused.incumbent.delta.candidateFingerprint);
+    assert.equal(best.audit.finalBasisFingerprint,paused.incumbent.basisDelta.candidateFingerprint);
+    await assertVisibleRestoration(best);
+    // Change the exact road intent after review, rather than applying.
+    await page.evaluate(offset=>__buildingQA.state().roadWorkspace.session.updateRoadIntent(offset,{defer:false}),
+      {x:highOffset.x+.05,y:highOffset.y});
+    assert.equal(await page.evaluate(()=>__buildingQA.state().roadWorkspace.sre.state),null);
+    assert.equal(await page.locator('#roadSreReview').isHidden(),true);
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    assert.equal(await page.evaluate(()=>__buildingQA.state().roadWorkspace.sre.state),null);
+    assert.deepEqual(await page.evaluate(()=>__buildingQA.state().project),pausedBefore.project);
+    console.log('SRE_PAUSED_AUDIT '+JSON.stringify({browser:browserName,verifiedIncumbent:true,staleCleared:true}));
+    const highBefore=await beginRecoveryFixture(highProject,highOffset);
     await page.locator('#roadSreQuality').selectOption('high');
     assert.equal(await page.locator('#roadSreRegeneration').isChecked(),false);
     const highStarted=Date.now();
@@ -365,6 +433,11 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     assert.deepEqual(highReview.candidate,reference.candidate);
     assert.deepEqual(['properties','plots','buildings'].map(k=>highReview.summary.retired.filter(r=>r.collection===k).length),[10,19,14]);
     assert.deepEqual(highReview.summary.added,[]);
+    await assertVisibleRestoration(highReview);
+    assert.deepEqual([highReview.audit.grossRetired.length,highReview.audit.restored.length,highReview.audit.finalRetired.length],[60,17,43]);
+    assert.deepEqual(highReview.audit.grossRetired,reference.audit.grossRetired);
+    assert.deepEqual(highReview.audit.restored,reference.audit.restored);
+    assert.deepEqual(highReview.audit.finalRetired,reference.audit.finalRetired);
     assert.deepEqual(highReview.candidate.identityAllocation,highBefore.project.identityAllocation);
     assert.equal(highReview.progress.work+highReview.progress.remainingWork,256000000);
     const highSearchMs=Date.now()-highStarted;

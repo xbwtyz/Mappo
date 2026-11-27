@@ -1,7 +1,7 @@
 {
   "version": 2,
   "repository": "xbwtyz/Mappo",
-  "milestone": "SRE W4 A4b qualified; ARES landscape planning amendment / discussion hold",
+  "milestone": "SRE W4 A5 browser qualification requested; ARES landscape planning hold",
   "appVersion": "0.2.25-dev",
   "targetVersion": "0.3.0",
   "state": "active",
@@ -33,10 +33,11 @@
     "A3 full CI 45937837093 exact f6ad2c13f0108f9a3161f791772385e26f18069e 22/22 620s.",
     "A4a Fast Checks 45939040836 exact 8bd52c8006231682cfb6863c8bfda527377473a3 18/18, 1412 tests / 198 files, 225s.",
     "A4b exact Fast Checks 45939772653 green 18/18, 1413 tests / 198 files, 279s at e2439195bf4c4f04ea1d070001d7746abdc72b7d.",
-    "Landscape-aware ARES planning amendment recorded in docs/plans/0.3x/ares-spatial-constraints.md and integrated into P1–P9 plan."
+    "Landscape-aware ARES planning amendment recorded in docs/plans/0.3x/ares-spatial-constraints.md and integrated into P1–P9 plan.",
+    "Documentation-only Fast Checks 45940314102 green 59s at 6040cf1b58f4431143af7368a7b22a73631182bc; smoke only."
   ],
   "pending": [
-    "A5 interactive and full browser qualification; manual acceptance/version alignment/review-ready CI.",
+    "A5 exact full draft CI including mounted audit, paused incumbent/stale review, locked High and positive regeneration; manual acceptance/version alignment/review-ready CI.",
     "Separate PR163 merge approval and exact-main verification; stop for owner discussion before ARES."
   ],
   "decisions": [
@@ -84,5 +85,5 @@
     "sourceSha": "6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9",
     "policy": "Reviewed revert only; preserve exact evidence."
   },
-  "nextAction": "W4 A5 interactive/browser qualification and manual closeout only; ARES requires renewed explicit go-ahead after discussion and exact-main."
+  "nextAction": "Verify A5 exact-head full mandatory CI; prepare exact candidate manual acceptance/version alignment and stop for owner acceptance. No ARES."
 }
