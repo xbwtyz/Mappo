@@ -139,9 +139,18 @@ test('SRE worker controller fails closed on response mismatch, permission change
 
 test('SRE compiled standalone contains syntactically valid independent worker and real transport parity',{timeout:120000},async()=>{
   const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
-  const match=html.match(/const SRE_ROAD_WORKER_SOURCE_V1 = ("(?:[^"\\\\]|\\\\.)*");/);
-  assert.ok(match,'compiled standalone must embed dedicated worker');
-  const source=JSON.parse(match[1]);new vm.Script(source);
+  // The builder emits exactly one JSON string literal on its own line.
+  // Slice that assignment, then use JSON.parse for the escape grammar rather
+  // than attempting to recognize JavaScript string escapes with a regex.
+  const marker='const SRE_ROAD_WORKER_SOURCE_V1 = ';
+  const assignments=html.split('\n').filter(line=>line.startsWith(marker));
+  assert.equal(assignments.length,1,'compiled standalone must embed exactly one dedicated worker');
+  const assignment=assignments[0];
+  assert.ok(assignment.endsWith(';'),'compiled worker assignment must terminate');
+  const source=JSON.parse(assignment.slice(marker.length,-1));
+  assert.equal(typeof source,'string');
+  assert.ok(source.length>0,'compiled worker source must not be empty');
+  new vm.Script(source);
   const worker=new Worker(`
     const {parentPort,workerData}=require('node:worker_threads');
     globalThis.WorkerGlobalScope=class {};
