@@ -283,6 +283,47 @@ function* orderedTrials(graph,rows,selected,maxNeighbors,budget,breadth,directio
   }
   if(window.length)yield* visit(window);
 }
+// R4C-C: preserve 160 reference descriptor slots, then use metered,
+ // feedback-guided breadth/nonparallel streams without resetting search.
+function* adaptiveTrials(graph,rows,selected,maxNeighbors,budget,p){
+  const seen=new Set();
+  function admit(trial,strategy){
+    budget.spend(2+trial.ids.length);
+    p.enumerated[strategy]++;
+    if(strategy==='directional'&&trial.direction==='parallel'){p.skippedParallel++;return null;}
+    const key=JSON.stringify([trial.ids,trial.factor,trial.taper,trial.direction??'parallel']);
+    if(seen.has(key)){p.duplicates[strategy]++;return null;}
+    seen.add(key);p.scheduled[strategy]++;
+    return {...trial,strategy};
+  }
+  const original=orderedTrials(graph,rows,selected,maxNeighbors,budget,false,false);
+  for(let i=0;i<160;i++){
+    budget.spend();const next=original.next();if(next.done)break;
+    const t=admit(next.value,'original');if(t)yield t;
+  }
+  const streams={breadth:orderedTrials(graph,rows,selected,maxNeighbors,budget,true,false),
+    directional:orderedTrials(graph,rows,selected,maxNeighbors,budget,false,true)};
+  const exhausted=new Set();let last=null,streak=0;
+  while(exhausted.size<2){
+    budget.spend();
+    // Crossing/overlap feedback favors changed displacement; other failures
+    // favor wider cluster coverage. Repeated choices get at most two slots
+    // while both streams remain available.
+    let kind=p.lastFailure==='crossing'?'directional':'breadth';
+    if(kind===last&&streak>=2)kind=kind==='breadth'?'directional':'breadth';
+    if(exhausted.has(kind))kind=kind==='breadth'?'directional':'breadth';
+    const next=streams[kind].next();
+    if(next.done){exhausted.add(kind);continue;}
+    const t=admit(next.value,kind);if(!t)continue;
+    if(kind===last)streak++;else{if(last!==null)p.switches++;last=kind;streak=1;}
+    yield t;
+  }
+}
+function portfolioTelemetry(){
+  const counts=()=>({original:0,breadth:0,directional:0});
+  return {prefixSlots:160,enumerated:counts(),scheduled:counts(),attempted:counts(),duplicates:counts(),
+    skippedParallel:0,switches:0,lastFailure:null,feedback:{crossing:0,other:0}};
+}
 // E2: detached candidate constraints, built once per exact fresh snapshot.
 // Same metered provider data, recomputed geometry for every evaluated candidate.
 // Observed-satisfied final rows do not imply continuous sweep, full face
@@ -386,6 +427,9 @@ export async function probeFreshRtreBreadthDirectional(caseId,o,budget){
 export async function probeFreshRtreDirectionalFallback(caseId,o,budget){
   return probeCoordinated(caseId,o,budget,true,true,false,true,false,false,'original-directional-fallback');
 }
+export async function probeFreshRtreAdaptivePortfolio(caseId,o,budget){
+  return probeCoordinated(caseId,o,budget,true,true,false,true,false,false,'adaptive-portfolio');
+}
 async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
@@ -397,6 +441,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     limits:report.limits,maxCandidates,maxNeighbors,eligibilityStatus:report.status,status:'preflight-refused',
     baseline:null,attempts:0,adjustedWitness:null,termination:'preflight'};
   if(constrained){result.constraintMode='final-landscape-defense';result.constraintRejected=0;}
+  if(combined==='adaptive-portfolio')result.portfolio=portfolioTelemetry();
   if(ranked)result.ranking={profile:'research-major-roads-neighbors-displacement-v1',verifiedCount:0,firstScore:null,bestScore:null,bestAttempt:null};
   const finish=()=>{
     if(aresReplayJson(source)!==before)throw Error('RTRE coordinated source mutated.');
@@ -448,9 +493,10 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     const rows=[...report.eligibleJunctions].sort((a,b)=>Number(blockers.has(b.ref.id))-Number(blockers.has(a.ref.id))||
       a.primaryIncidentCount-b.primaryIncidentCount||a.depth-b.depth||riCompare(a.ref.id,b.ref.id));
     const byId=new Map(rows.map(r=>[r.ref.id,r])),offset=f.context.operation.geometry.offset;
-    const trials=combined?combinedTrials(accepted,rows,selected,maxNeighbors,budget,combined):
+    const trials=result.portfolio?adaptiveTrials(accepted,rows,selected,maxNeighbors,budget,result.portfolio):
+      combined?combinedTrials(accepted,rows,selected,maxNeighbors,budget,combined):
       orderedTrials(accepted,rows,selected,maxNeighbors,budget,breadth,directional);
-    outer:for(const {ids,factor,taper,direction} of trials){
+    outer:for(const {ids,factor,taper,direction,strategy} of trials){
         if(result.attempts>=maxCandidates){result.termination='candidate-limit';break outer;}
         const proposed=new Map(positions),neighbors=[];
         let dx=offset.x,dy=offset.y;
@@ -468,8 +514,14 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         }
         if(neighbors.length!==ids.length)continue;
         budget.expand();result.attempts++;
+        if(result.portfolio)result.portfolio.attempted[strategy]++;
         const checked=evaluate(proposed);
         if(!checked.valid){
+          if(result.portfolio){
+            budget.spend(1+checked.issues.length);
+            const reason=checked.issues.some(i=>i.includes('crossing')||i.includes('overlap'))?'crossing':'other';
+            result.portfolio.lastFailure=reason;result.portfolio.feedback[reason]++;
+          }
           if(constrained&&checked.constraints?.finalBlockers.length)result.constraintRejected++;
           if(constrained&&checked.issues.includes('graph-work-limit')){result.termination='graph-work-limit';break outer;}
           continue;

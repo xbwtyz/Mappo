@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { G_MANIFEST } from './ares-p4-g-corpus.mjs';
 import { G_OPTIONS } from './ares-p4-g-run.mjs';
 import { inspectFreshRtreNeighborhood } from './ares-rtre-fresh-neighborhood.mjs';
-import { probeFreshRtreFirstValid,probeFreshRtreBreadth,probeFreshRtreDirectional,probeFreshRtreBreadthDirectional,probeFreshRtreDirectionalFallback } from './ares-rtre-single-junction.mjs';
+import { probeFreshRtreFirstValid,probeFreshRtreBreadth,probeFreshRtreDirectional,probeFreshRtreBreadthDirectional,probeFreshRtreDirectionalFallback,probeFreshRtreAdaptivePortfolio } from './ares-rtre-single-junction.mjs';
 import { verifyFreshRtreWitness } from './ares-rtre-verify.mjs';
 import { createSpatialPreservationBudget } from '../../../src/core/spatial-recovery-contract.js';
 import { LareBudgetExceeded } from '../../../src/core/reconciliation-budget.js';
@@ -50,6 +50,10 @@ export async function probeP4RSpatial(id,hops,kind){
     throw Error('Unapproved P4R spatial arm.');
   return probeP4RArm(id,256,kind==='original'?probeFreshRtreFirstValid:probeFreshRtreBreadth,true,hops);
 }
+export async function probeP4RAdaptivePortfolio(id,hops){
+  if(prior(id).category!=='search-refused'||![6,10].includes(hops))throw Error('Unapproved P4R adaptive arm.');
+  return probeP4RArm(id,256,probeFreshRtreAdaptivePortfolio,true,hops);
+}
 async function probeP4RArm(id,cap,probe,includeStencil=false,maxHops=G_OPTIONS.maxHops){
   const r=prior(id);
   if(!P4R_CAPS.includes(cap))throw Error('Unapproved P4R candidate cap.');
@@ -60,6 +64,7 @@ async function probeP4RArm(id,cap,probe,includeStencil=false,maxHops=G_OPTIONS.m
   if(search.snapshotFingerprint!==r.source)throw Error('P4R cap source identity changed.');
   const row={id,cap,source:r.source,category:search.status,eligibilityStatus:search.eligibilityStatus,baselineValid:search.baseline?.valid??null,
     baselineIssues:search.baseline?.issues??[],termination:search.termination,attempts:search.attempts,stats:search.stats,elapsedMs:performance.now()-t};
+  if(search.portfolio)row.portfolio=search.portfolio;
   if(['geometry-recovered','baseline-valid'].includes(search.status)){
     const u=performance.now();
     row.audit=await verifyFreshRtreWitness('g:'+id,o,search,createSpatialPreservationBudget(G_MANIFEST.audit.root));
