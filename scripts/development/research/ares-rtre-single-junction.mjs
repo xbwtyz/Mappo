@@ -14,6 +14,7 @@ import { hybridTrials,X56_IDS } from './ares-p4x-hybrid.mjs';
 import { x7Recipe,x7Options } from './ares-p4x-x7-scope.mjs';
 import { radialRecipe,radialOptions } from './ares-p4x-radial-scope.mjs';
 import { radialTrials } from './ares-p4x-radial.mjs';
+import {createDiagnosticCapture} from './ares-p4x-diagnostic-capture.mjs';
 
 // C: bounded dry-land, single-unselected-junction geometry experiment.
 // A graph witness is NOT a city witness, property repair, or Apply authority.
@@ -462,7 +463,14 @@ export async function probeFreshRtreRadial(caseId,budget){
   const recipe=radialRecipe(caseId);
   return probeCoordinated(caseId,radialOptions(caseId),budget,true,true,true,true,false,false,'radial-refinement',recipe.minimumRecipe,recipe);
 }
-async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null,minimumRecipe=null,radial=null){
+// Diagnostic replay of exactly the existing arms. No caller-selected cap,
+ // strategy implementation or geometry. Capture work is charged to root.
+export async function probeFreshRtreRadialDiagnostic(caseId,arm,budget){
+  const recipe=radialRecipe(caseId),options=radialOptions(caseId);
+  if(!['prior','radial'].includes(arm))throw Error('Unapproved diagnostic arm.');
+  return probeCoordinated(caseId,options,budget,true,true,true,true,false,false,arm==='radial'?'radial-refinement':recipe.minimum?'x7-minimum-cluster':'hybrid-refinement',recipe.minimumRecipe,arm==='radial'?recipe:null,createDiagnosticCapture());
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null,minimumRecipe=null,radial=null,diagnostic=null){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -481,7 +489,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
   if(ranked)result.ranking={profile:'research-major-roads-neighbors-displacement-v1',verifiedCount:0,firstScore:null,bestScore:null,bestAttempt:null};
   const finish=()=>{
     if(aresReplayJson(source)!==before)throw Error('RTRE coordinated source mutated.');
-    return riFreeze({...result,stats:budget.snapshot()});
+    return riFreeze({...result,...(diagnostic?{diagnostics:diagnostic.finish()}:{}),stats:budget.snapshot()});
   };
   if(!constrained&&['waterFeatures','bridges','waterFaces','terrainFeatures','terrainPasses','terrainFaces','walls','gates','towers']
     .some(k=>(source.city[k]??[]).length>0)){result.status='unsupported-landscape';return finish();}
@@ -504,7 +512,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         blockingRoadIds:[...new Set([...(geometry.blockingRoadIds??[]),
           ...constraints.finalBlockers.map(e=>e.query.refs[0].id)])].sort(riCompare)};
     }
-    result.baseline=evaluate(positions,true);
+    result.baseline=diagnostic?diagnostic.measure('baseline',budget,()=>evaluate(positions,true)):evaluate(positions,true);
     if(constrained&&result.baseline.issues.includes('graph-work-limit')){
       result.status='work-limit';result.termination='graph-work-limit';return finish();
     }
@@ -532,12 +540,13 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     const feedback={value:null};
     if(minimumRecipe&&report.snapshotFingerprint!==minimumRecipe.source)throw Error('X7 frozen source changed.');
     if(radial&&report.snapshotFingerprint!==radial.source)throw Error('Radial frozen source changed.');
-    const trials=radial?radialTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,radial):
-      result.hybrid?hybridTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,minimumRecipe):
+    const stream=radial?radialTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,radial,diagnostic):
+      result.hybrid?hybridTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,minimumRecipe,diagnostic):
       result.analytical?analyticalTrials(accepted,rows,positions,report,offset,budget,result.analytical):
       result.portfolio?adaptiveTrials(accepted,rows,selected,maxNeighbors,budget,result.portfolio):
       combined?combinedTrials(accepted,rows,selected,maxNeighbors,budget,combined):
       orderedTrials(accepted,rows,selected,maxNeighbors,budget,breadth,directional);
+    const trials=diagnostic?diagnostic.trials(stream,budget):stream;
     outer:for(const {ids,factor,taper,direction,strategy,analyticalPoints} of trials){
         if(result.attempts>=maxCandidates){result.termination='candidate-limit';break outer;}
         const proposed=new Map(positions),neighbors=[];
@@ -562,7 +571,8 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         budget.expand();result.attempts++;
         if(result.portfolio)result.portfolio.attempted[strategy]++;
         if(minimumRecipe||radial)result.hybrid.attempted[strategy]++;
-        const checked=evaluate(proposed);
+        const checked=diagnostic?diagnostic.measure('evaluation',budget,()=>evaluate(proposed)):evaluate(proposed);
+        if(diagnostic)diagnostic.measure('capture',budget,()=>diagnostic.record(checked,neighbors,result.attempts,strategy,budget));
         if(result.hybrid){
           budget.spend(1+checked.issues.length);
           if(!minimumRecipe&&!radial)result.hybrid.attempted[strategy]++;

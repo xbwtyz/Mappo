@@ -41,13 +41,13 @@ function alternatives(g,exact,points,allowed,pair,margin,variant,b){
   }
   return sort(candidates,b,(a,c)=>a.cost-c.cost||a.flips-c.flips||a.sign-c.sign);
 }
-function project(g,exact,points,ids,pairs,offset,variant,b,tele){
+function project(g,exact,points,ids,pairs,offset,variant,b,tele,diagnostic=null){
   const allowed=new Set(ids),limit=Math.hypot(offset.x,offset.y),margin=[.1,.5,1.5,3,6][variant%5],relax=[.65,1,1.2][variant%3];
   for(let pass=0;pass<3;pass++){
     const ranked=[];
     for(const pair of pairs){
       b.spend(1+pair.movable.length);
-      const options=alternatives(g,exact,points,allowed,pair,margin,variant,b);
+      const options=diagnostic?diagnostic.measure('orientation-ranking',b,()=>alternatives(g,exact,points,allowed,pair,margin,variant,b),true):alternatives(g,exact,points,allowed,pair,margin,variant,b);
       if(!options.length)continue;
       const degrees=pair.movable.filter(n=>allowed.has(n)).length;
       ranked.push({pair,degrees,cost:options[0].cost});
@@ -57,7 +57,7 @@ function project(g,exact,points,ids,pairs,offset,variant,b,tele){
     sort(ranked,b,(a,c)=>variant%3===2?c.cost-a.cost||a.degrees-c.degrees||riCompare(pairKey(a.pair),pairKey(c.pair)):a.degrees-c.degrees||c.cost-a.cost||riCompare(pairKey(a.pair),pairKey(c.pair)));
     for(let i=0;i<ranked.length;i++){
       b.spend();const pair=ranked[variant%7===6?ranked.length-1-i:i].pair;
-      const opts=alternatives(g,exact,points,allowed,pair,margin,variant,b);
+      const opts=diagnostic?diagnostic.measure('orientation-recomputation',b,()=>alternatives(g,exact,points,allowed,pair,margin,variant,b),true):alternatives(g,exact,points,allowed,pair,margin,variant,b);
       if(!opts.length)continue;
       const index=opts.length>1&&variant%5===4?1:0,choice=opts[index];
       tele.orientationChoices++;if(choice.flips)tele.alternateSigns++;
@@ -101,7 +101,7 @@ function union(a,c,b){
 // One stream and one shared root. Warm up every retained group; then
 // interleave incumbent exploitation with least-visited exploration.
 // A bounded proposal schedule cannot imply infeasibility.
-export function* radialTrials(g,rows,exact,report,offset,b,tele,feedback,recipe){
+export function* radialTrials(g,rows,exact,report,offset,b,tele,feedback,recipe,diagnostic=null){
   const eligible=new Set(rows.map(r=>r.ref.id)),baseline=pairsFor(g,report.geometryDiagnostics,eligible,b);
   tele.baselinePairs=baseline.length;
   const selected=new Set(exact.keys()),groups=recipe.minimumRecipe?x7Groups(g,rows,selected,baseline,b,tele,recipe.minimumRecipe):hybridGroups(g,rows,selected,baseline,b,tele);
@@ -123,7 +123,8 @@ export function* radialTrials(g,rows,exact,report,offset,b,tele,feedback,recipe)
     // Retain original constraints to avoid cycling between newly fixed
     // and newly broken pairs. Recent actual pairs take precedence.
     const pairs=prior?union(prior.pairs,variant%3===0?state.recent:baseline,b):baseline;
-    project(g,exact,points,state.ids,pairs,offset,variant,b,tele);
+    if(diagnostic)diagnostic.measure('projection',b,()=>project(g,exact,points,state.ids,pairs,offset,variant,b,tele,diagnostic),true);
+    else project(g,exact,points,state.ids,pairs,offset,variant,b,tele);
     const limit=Math.hypot(offset.x,offset.y);
     for(const id of state.ids){
       b.spend(4);const p=old(g,id),q=points.get(id);

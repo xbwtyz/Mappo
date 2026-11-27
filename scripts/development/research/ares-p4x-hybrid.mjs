@@ -148,7 +148,7 @@ function seed(graph,ids,offset,variant,budget){
   }
   return points;
 }
-export function* hybridTrials(graph,rows,positions,report,offset,budget,telemetry,feedback,minimumRecipe=null){
+export function* hybridTrials(graph,rows,positions,report,offset,budget,telemetry,feedback,minimumRecipe=null,diagnostic=null){
   const eligible=new Set(rows.map(r=>r.ref.id)),baseline=pairsFor(graph,report.geometryDiagnostics,eligible,budget);
   telemetry.baselinePairs=baseline.length;
   const groups=minimumRecipe?x7Groups(graph,rows,new Set(positions.keys()),baseline,budget,telemetry,minimumRecipe):hybridGroups(graph,rows,new Set(positions.keys()),baseline,budget,telemetry);
@@ -163,7 +163,8 @@ export function* hybridTrials(graph,rows,positions,report,offset,budget,telemetr
       const points=prior?new Map(prior.points):seed(graph,s.ids,offset,Math.floor(variant/3),budget);
       const pairs=prior?.pairs?.length?prior.pairs:baseline;
       if(prior)telemetry.feedbackProposals++;else telemetry.seedProposals++;
-      project(graph,positions,points,s.ids,pairs,offset,variant,budget);
+      if(diagnostic)diagnostic.measure('projection',budget,()=>project(graph,positions,points,s.ids,pairs,offset,variant,budget),true);
+      else project(graph,positions,points,s.ids,pairs,offset,variant,budget);
       const limit=Math.hypot(offset.x,offset.y);
       // All counted connectors are real adjusted junctions, never virtual
       // authority. A collapsed vector gets a small bounded directional seed.
