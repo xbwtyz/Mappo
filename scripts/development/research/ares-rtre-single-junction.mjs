@@ -2,7 +2,10 @@ import { createHash } from 'node:crypto';
 import { materializeAresP3Case } from './ares-p3-fixtures.mjs';
 import { inspectFreshRtreNeighborhood } from './ares-rtre-fresh-neighborhood.mjs';
 import { aresReplayJson } from '../../../src/core/ares-diagnostic-replay.js';
-import { iterateRoadGraph } from '../../../src/core/road-graph.js';
+import { iterateRoadGraph, classifyRoad } from '../../../src/core/road-graph.js';
+import { createAresLandscapeSegmentObserver } from '../../../src/core/ares-landscape-observation.js';
+import { createAresDefenseSegmentObserver } from '../../../src/core/ares-defense-observation.js';
+import { createSpatialRef } from '../../../src/core/spatial-recovery-contract.js';
 import { appendSegmentCuts, insideOrOn, lerpPoint } from '../../../src/core/boundary.js';
 import { LareBudgetExceeded } from '../../../src/core/reconciliation-budget.js';
 import { riFreeze, riCompare } from '../../../src/core/road-impact-model.js';
@@ -199,7 +202,65 @@ function* connectedClusters(graph,rows,selected,cap,budget){
     }
   }
 }
+// E2: detached candidate constraints, built once per exact fresh snapshot.
+// Same metered provider data, recomputed geometry for every evaluated candidate.
+// Observed-satisfied final rows do not imply continuous sweep, full face
+// identity, parcel clearance or city validity. Never accept caller geometry.
+function constraintChecker(source,accepted,report,budget){
+  const city=source.city,landscape=createAresLandscapeSegmentObserver(city,budget),
+    defense=createAresDefenseSegmentObserver(city,budget);
+  const ref=(collection,id)=>createSpatialRef({collection,id});
+  const equal=(a,b)=>Object.is(a.x,b.x)&&Object.is(a.y,b.y);
+  const point=p=>({x:p.x,y:p.y});
+  const admitted=new Set(report.entries.map(e=>JSON.stringify(e.ref)));
+  const allowed=new Set([...report.requested.map(r=>r.ref.id),...report.eligibleJunctions.map(r=>r.ref.id)]);
+  const terminal=new Set(accepted.terminalRoadIds);
+  budget.spend(Math.max(1,admitted.size+allowed.size+terminal.size));
+  return positions=>{
+    const ids=new Set();
+    for(const id of positions.keys()){
+      budget.spend();
+      if(!allowed.has(id))throw Error('RTRE candidate outside fresh eligibility.');
+      for(const rid of accepted.incidentRoads.get(id)){budget.spend();ids.add(rid);}
+    }
+    sortCharge(ids.size,budget);
+    const result={changedRoadIds:[],finalChecked:0,finalBlockers:[],sweptUnresolved:[]};
+    for(const id of [...ids].sort(riCompare)){
+      budget.spend();
+      const road=accepted.roadsById.get(id),a=point(accepted.nodesById.get(road.a)),b=point(accepted.nodesById.get(road.b)),
+        p=positions.get(road.a)??a,q=positions.get(road.b)??b;
+      if(equal(a,p)&&equal(b,q))continue;
+      const roadRef=ref('roads',id),endpointRefs=[ref('nodes',road.a),ref('nodes',road.b)];
+      if(classifyRoad(road).protected||terminal.has(id)||
+         ![roadRef,...endpointRefs].every(r=>admitted.has(JSON.stringify(r))))
+        throw Error('RTRE candidate changes protected or out-of-scope road.');
+      const segment={ref:roadRef,endpointRefs,old:{a,b},proposed:{a:p,b:q}};
+      result.changedRoadIds.push(id);
+      for(const phase of ['final','swept']){
+        budget.spend();
+        const rows=[...landscape.observe(report.context,report.snapshotFingerprint,segment,phase,budget),
+          defense.observe(report.context,report.snapshotFingerprint,segment,phase,budget).constraint];
+        for(const e of rows){
+          budget.spend();
+          if(phase==='final')result.finalChecked++;
+          if(e.summary==='observed-satisfied')continue;
+          if(phase==='final')result.finalBlockers.push(e);
+          else result.sweptUnresolved.push(e);
+        }
+      }
+    }
+    if(result.finalChecked!==3*result.changedRoadIds.length)throw Error('Incomplete RTRE final constraint evidence.');
+    aresReplayJson(result,budget);
+    return result;
+  };
+}
 export async function probeFreshRtreCoordinated(caseId,o,budget){
+  return probeCoordinated(caseId,o,budget,false);
+}
+export async function probeFreshRtreConstrained(caseId,o,budget){
+  return probeCoordinated(caseId,o,budget,true);
+}
+async function probeCoordinated(caseId,o,budget,constrained){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -209,18 +270,42 @@ export async function probeFreshRtreCoordinated(caseId,o,budget){
   const result={version:1,caseId,context:f.context,snapshotFingerprint:report.snapshotFingerprint,
     limits:report.limits,maxCandidates,maxNeighbors,eligibilityStatus:report.status,status:'preflight-refused',
     baseline:null,attempts:0,adjustedWitness:null,termination:'preflight'};
+  if(constrained){result.constraintMode='final-landscape-defense';result.constraintRejected=0;}
   const finish=()=>{
     if(aresReplayJson(source)!==before)throw Error('RTRE coordinated source mutated.');
     return riFreeze({...result,stats:budget.snapshot()});
   };
-  if(['waterFeatures','bridges','waterFaces','terrainFeatures','terrainPasses','terrainFaces','walls','gates','towers']
+  if(!constrained&&['waterFeatures','bridges','waterFaces','terrainFeatures','terrainPasses','terrainFaces','walls','gates','towers']
     .some(k=>(source.city[k]??[]).length>0)){result.status='unsupported-landscape';return finish();}
   if(!['research-eligible','no-eligible-neighbors','strict-no-adjustment'].includes(report.status))return finish();
   try{
     const accepted=graphFor(source.city,budget);
     if(!accepted.valid)throw Error('Invalid fresh RTRE base graph.');
     const positions=new Map(report.requested.map(r=>[r.ref.id,r.point])),selected=new Set(positions.keys());
-    result.baseline=checkGeometry(source,accepted,positions,budget);
+    const checkConstraints=constrained?constraintChecker(source,accepted,report,budget):null;
+    function evaluate(proposed,baseline=false){
+      const geometry=checkGeometry(source,accepted,proposed,budget);
+      if(!constrained)return geometry;
+      // For baseline keep actual blocker evidence even when graph invalid.
+      // Nonplanar search candidates need not run expensive providers.
+      if(!geometry.valid&&!baseline)return {...geometry,geometryValid:false,constraints:null};
+      if(geometry.issues.includes('graph-work-limit'))return {...geometry,geometryValid:false,constraints:null};
+      const constraints=checkConstraints(proposed),blocked=constraints.finalBlockers.length>0;
+      return {...geometry,valid:geometry.valid&&!blocked,geometryValid:geometry.valid,constraints,
+        issues:blocked?[...geometry.issues,'final-constraint-blocked']:geometry.issues,
+        blockingRoadIds:[...new Set([...(geometry.blockingRoadIds??[]),
+          ...constraints.finalBlockers.map(e=>e.query.refs[0].id)])].sort(riCompare)};
+    }
+    result.baseline=evaluate(positions,true);
+    if(constrained&&result.baseline.issues.includes('graph-work-limit')){
+      result.status='work-limit';result.termination='graph-work-limit';return finish();
+    }
+    // A final blocker on an exact-selected road cannot be changed by
+    // unselected junction adaptation. Do not relax the requested intent.
+    if(constrained&&result.baseline.constraints?.finalBlockers.some(e=>
+      f.context.operation.editedRefs.some(r=>r.id===e.query.refs[0].id))){
+      result.status='search-refused';result.termination='fixed-selected-constraint';return finish();
+    }
     if(report.status==='strict-no-adjustment'){
       result.status=result.baseline.valid?'baseline-valid':'search-refused';result.termination='strict';return finish();
     }
@@ -244,7 +329,12 @@ export async function probeFreshRtreCoordinated(caseId,o,budget){
         }
         if(neighbors.length!==ids.length)continue;
         budget.expand();result.attempts++;
-        if(!checkGeometry(source,accepted,proposed,budget).valid)continue;
+        const checked=evaluate(proposed);
+        if(!checked.valid){
+          if(constrained&&checked.constraints?.finalBlockers.length)result.constraintRejected++;
+          if(constrained&&checked.issues.includes('graph-work-limit')){result.termination='graph-work-limit';break outer;}
+          continue;
+        }
         sortCharge(proposed.size,budget);
         const updates=[...proposed.entries()].sort(([a],[b])=>riCompare(a,b)).map(([id,point])=>({id,point:{...point}})),
           roads=new Set();
@@ -252,6 +342,10 @@ export async function probeFreshRtreCoordinated(caseId,o,budget){
         sortCharge(roads.size,budget);let displacement=0;
         for(const n of neighbors){budget.spend();displacement+=Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y);}
         const w={kind:'geometry-only',neighbors,updates,changedRoadIds:[...roads].sort(riCompare),displacement,stencil:{factor,taper}};
+        if(constrained){
+          w.kind='geometry-with-final-constraints';
+          w.constraints=checked.constraints;
+        }
         aresReplayJson(w,budget);result.adjustedWitness=w;result.termination='first-valid-adjustment';break outer;
       }
     }
