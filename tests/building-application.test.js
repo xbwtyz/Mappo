@@ -5,7 +5,7 @@ import { createProject } from '../src/core/city-model.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
 import { cornerBuildingFixture } from './helpers/corner-building-fixture.js';
 import { prepareNeighborhoodReflowC3 } from '../src/core/neighborhood-reflow.js';
-import { deriveOccupiedPlots, reattachFrontage, resolveBuildingAccess, prepareBuildingCandidate, prepareBuildingApply } from '../src/editor/building-application.js';
+import { deriveOccupiedPlots, reattachFrontage, resolveBuildingAccess, resolveSameFrontageAccessB1R, prepareBuildingCandidate, prepareBuildingApply } from '../src/editor/building-application.js';
 const poly=(x,y,w,h)=>[{x,y},{x:x+w,y},{x:x+w,y:y+h},{x,y:y+h}];
 
 test('a clear diagonal can reconnect to the existing street when nearest points are blocked',()=>{
@@ -100,4 +100,19 @@ test('3G-C2 candidate project survives schema-9 portable roundtrip without mutat
   const rejected=prepareBuildingApply(project,workspace,passing.id,{dx:200});
   assert.equal(rejected.ok,false);
   assert.equal(JSON.stringify(project),before);
+});
+
+test('B1R access prefers the exact projected endpoint in the W4 equal-distance ranking regression',()=>{
+  const entrance={x:6.927895181777931,y:-106.86855317014448};
+  const a={id:'a',x:-37.19615642349754,y:-96.67535951967133};
+  const b={id:'b',x:52.06178136298482,y:-103.15837190194219};
+  const building={id:'fixture',propertyId:'p',frontageRoadId:'r',entrance,
+    footprint:poly(entrance.x-1,entrance.y-2,2,2),holes:[]};
+  const city={nodes:[a,b],roads:[{id:'r',a:'a',b:'b'}],properties:[{id:'p'}],buildings:[building]};
+  const before=JSON.stringify(city);
+  const result=resolveSameFrontageAccessB1R(city,building,{allowRepair:true,spend:()=>{}});
+  assert.ok(result.route);
+  assert.equal(result.changed,true);
+  assert.deepEqual(result.route.accessPath,[entrance,{x:7.432812469743645,y:-99.91686571080676}]);
+  assert.equal(JSON.stringify(city),before);
 });
