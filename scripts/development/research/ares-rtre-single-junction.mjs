@@ -11,6 +11,7 @@ import { LareBudgetExceeded } from '../../../src/core/reconciliation-budget.js';
 import { riFreeze, riCompare } from '../../../src/core/road-impact-model.js';
 import { analyticalTrials,X34_IDS } from './ares-p4x-analytical.mjs';
 import { hybridTrials,X56_IDS } from './ares-p4x-hybrid.mjs';
+import { x7Recipe,x7Options } from './ares-p4x-x7-scope.mjs';
 
 // C: bounded dry-land, single-unselected-junction geometry experiment.
 // A graph witness is NOT a city witness, property repair, or Apply authority.
@@ -450,7 +451,12 @@ export async function probeFreshRtreHybrid(caseId,o,budget){
     throw Error('Unapproved P4X hybrid arm.');
   return probeCoordinated(caseId,o,budget,true,true,true,true,false,false,'hybrid-refinement');
 }
-async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null){
+// X7 authority is recipe-bound, never a caller-selected larger cap.
+export async function probeFreshRtreX7(caseId,budget){
+  const recipe=x7Recipe(caseId);
+  return probeCoordinated(caseId,x7Options(caseId),budget,true,true,true,true,false,false,'x7-minimum-cluster',recipe);
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null,minimumRecipe=null){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -462,7 +468,8 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     baseline:null,attempts:0,adjustedWitness:null,termination:'preflight'};
   if(constrained){result.constraintMode='final-landscape-defense';result.constraintRejected=0;}
   if(combined==='adaptive-portfolio')result.portfolio=portfolioTelemetry();
-  if(combined==='hybrid-refinement')result.hybrid={baselinePairs:0,subsets:0,coveringGroups:0,connectedGroups:0,connectorGroups:0,enumerationLimit:false,groupLimit:false,seedProposals:0,feedbackProposals:0,duplicates:0,feedbackEvaluations:0,bestConflictCount:null,attempted:{'hybrid-refinement':0,'hybrid-directional-seed':0},failures:{}};
+  if(combined==='hybrid-refinement'||minimumRecipe)result.hybrid={baselinePairs:0,subsets:0,coveringGroups:0,connectedGroups:0,connectorGroups:0,enumerationLimit:false,groupLimit:false,seedProposals:0,feedbackProposals:0,duplicates:0,feedbackEvaluations:0,bestConflictCount:null,attempted:{'hybrid-refinement':0,'hybrid-directional-seed':0},failures:{}};
+  if(minimumRecipe){result.hybrid.approvedMinimum=minimumRecipe.minimum;result.hybrid.seedValidated=false;}
   if(combined==='analytical-independent')result.analytical={pairs:0,subsets:0,covering:0,connectedGroups:0,groupLimit:false,failures:{}};
   if(ranked)result.ranking={profile:'research-major-roads-neighbors-displacement-v1',verifiedCount:0,firstScore:null,bestScore:null,bestAttempt:null};
   const finish=()=>{
@@ -516,7 +523,8 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
       a.primaryIncidentCount-b.primaryIncidentCount||a.depth-b.depth||riCompare(a.ref.id,b.ref.id));
     const byId=new Map(rows.map(r=>[r.ref.id,r])),offset=f.context.operation.geometry.offset;
     const feedback={value:null};
-    const trials=result.hybrid?hybridTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback):
+    if(minimumRecipe&&report.snapshotFingerprint!==minimumRecipe.source)throw Error('X7 frozen source changed.');
+    const trials=result.hybrid?hybridTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,minimumRecipe):
       result.analytical?analyticalTrials(accepted,rows,positions,report,offset,budget,result.analytical):
       result.portfolio?adaptiveTrials(accepted,rows,selected,maxNeighbors,budget,result.portfolio):
       combined?combinedTrials(accepted,rows,selected,maxNeighbors,budget,combined):
@@ -540,14 +548,15 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         if(neighbors.length!==ids.length)continue;
         if(result.hybrid){
           budget.spend(1+neighbors.length);
-          if(neighbors.length<2||neighbors.length>4||new Set(ids).size!==ids.length||neighbors.some(n=>!byId.has(n.id)||selected.has(n.id)||!finite(n.point)||Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y)>Math.hypot(offset.x,offset.y)))throw Error('X56 candidate exceeded authority.');
+          if(neighbors.length<2||neighbors.length>(minimumRecipe?minimumRecipe.minimum:4)||(minimumRecipe&&neighbors.length!==minimumRecipe.minimum)||new Set(ids).size!==ids.length||neighbors.some(n=>!byId.has(n.id)||selected.has(n.id)||!finite(n.point)||Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y)>Math.hypot(offset.x,offset.y)))throw Error(minimumRecipe?'X7 candidate exceeded authority.':'X56 candidate exceeded authority.');
         }
         budget.expand();result.attempts++;
         if(result.portfolio)result.portfolio.attempted[strategy]++;
+        if(minimumRecipe)result.hybrid.attempted[strategy]++;
         const checked=evaluate(proposed);
         if(result.hybrid){
           budget.spend(1+checked.issues.length);
-          result.hybrid.attempted[strategy]++;
+          if(!minimumRecipe)result.hybrid.attempted[strategy]++;
           feedback.value=checked;
           for(const issue of checked.issues)result.hybrid.failures[issue]=(result.hybrid.failures[issue]??0)+1;
         }

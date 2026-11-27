@@ -9,6 +9,7 @@ import { createAresDefenseSegmentObserver } from '../../../src/core/ares-defense
 import { createSpatialRef,spatialRefKey } from '../../../src/core/spatial-recovery-contract.js';
 import { LareBudgetExceeded } from '../../../src/core/reconciliation-budget.js';
 import { riFreeze,riCompare } from '../../../src/core/road-impact-model.js';
+import { x7Recipe,x7Options } from './ares-p4x-x7-scope.mjs';
 
 // Independent OFFLINE audit of a frozen-recipe geometry witness. Never calls
 // the search, trusts a candidate city, grants authority or returns Apply data.
@@ -57,7 +58,15 @@ function cyclicEqual(a,b,budget){
   const start=b.indexOf(a[0]);budget.spend(Math.max(1,a.length*2));
   return start>=0&&a.every((id,i)=>id===b[(start+i)%b.length]);
 }
+// New detached X7 entry only; prior verifier callers retain their contract.
+export async function verifyFreshRtreX7Witness(caseId,evidence,budget){
+  const recipe=x7Recipe(caseId);
+  return verifyWitness(caseId,x7Options(caseId),evidence,budget,recipe);
+}
 export async function verifyFreshRtreWitness(caseId,options,evidence,budget){
+  return verifyWitness(caseId,options,evidence,budget,null);
+}
+async function verifyWitness(caseId,options,evidence,budget,minimumRecipe){
   const result={version:1,caseId,status:'unverified',reason:null,changedRoadIds:[],finalChecked:0,sweptUnresolved:0};
   const finish=()=>riFreeze({...result,stats:budget.snapshot()});
   const equal=(a,b)=>aresReplayJson(a,budget)===aresReplayJson(b,budget);
@@ -84,6 +93,7 @@ export async function verifyFreshRtreWitness(caseId,options,evidence,budget){
     const positions=new Map(requested),neighbors=new Set(),w=evidence.adjustedWitness;
     const eligible=new Set(report.eligibleJunctions.map(r=>r.ref.id)),admitted=new Map(report.entries.map(r=>[key(r.ref),r]));
     budget.spend(Math.max(1,eligible.size+admitted.size));
+    if(minimumRecipe)need(report.snapshotFingerprint===minimumRecipe.source&&w&&Array.isArray(w.neighbors)&&w.neighbors.length===minimumRecipe.minimum,'x7-frozen-minimum');
     let claimed;
     if(w){
       need(mode==='adaptive'&&report.status==='research-eligible'&&w.kind==='geometry-with-final-constraints'&&Array.isArray(w.neighbors)&&w.neighbors.length>=2&&w.neighbors.length<=maxNeighbors&&Array.isArray(w.updates)&&w.updates.length===requested.size+w.neighbors.length,'neighbor-authority');
@@ -92,6 +102,7 @@ export async function verifyFreshRtreWitness(caseId,options,evidence,budget){
         need(n&&eligible.has(n.id)&&!requested.has(n.id)&&!neighbors.has(n.id),'neighbor-authority');
         const old=accepted.nodesById.get(n.id);
         need(validPoint(n.old)&&validPoint(n.point)&&same(n.old,old)&&!same(n.point,old),'neighbor-coordinate');
+        if(minimumRecipe){budget.spend();need(Math.hypot(n.point.x-old.x,n.point.y-old.y)<=Math.hypot(offset.x,offset.y),'x7-displacement-limit');}
         neighbors.add(n.id);positions.set(n.id,n.point);
       }
       const seen=new Set();

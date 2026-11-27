@@ -1,5 +1,6 @@
 import { riCompare } from '../../../src/core/road-impact-model.js';
 import { X34_IDS } from './ares-p4x-analytical.mjs';
+import { x7Groups } from './ares-p4x-x7-scope.mjs';
 
 // Frozen ten exact X34 search refusals; not a general research entrypoint.
 export const X56_IDS=Object.freeze([
@@ -147,10 +148,10 @@ function seed(graph,ids,offset,variant,budget){
   }
   return points;
 }
-export function* hybridTrials(graph,rows,positions,report,offset,budget,telemetry,feedback){
+export function* hybridTrials(graph,rows,positions,report,offset,budget,telemetry,feedback,minimumRecipe=null){
   const eligible=new Set(rows.map(r=>r.ref.id)),baseline=pairsFor(graph,report.geometryDiagnostics,eligible,budget);
   telemetry.baselinePairs=baseline.length;
-  const groups=hybridGroups(graph,rows,new Set(positions.keys()),baseline,budget,telemetry);
+  const groups=minimumRecipe?x7Groups(graph,rows,new Set(positions.keys()),baseline,budget,telemetry,minimumRecipe):hybridGroups(graph,rows,new Set(positions.keys()),baseline,budget,telemetry);
   const states=groups.map(ids=>({ids,best:null,last:null,seen:new Set(),attempt:0}));
   // Breadth across groups; every third arm restarts from a directional
   // stencil. Other arms use the last or best *actual oracle* conflict set.
@@ -187,6 +188,8 @@ export function* hybridTrials(graph,rows,positions,report,offset,budget,telemetr
       if(telemetry.bestConflictCount===null||actual.length<telemetry.bestConflictCount)telemetry.bestConflictCount=actual.length;
       telemetry.feedbackEvaluations++;
     }
-    if(!emitted&&round>=6)break;
+    // X7 alone exhausts the fixed round schedule rather than stop on a
+    // transient duplicate round; X56 historical scheduling is unchanged.
+    if(!minimumRecipe&&!emitted&&round>=6)break;
   }
 }
