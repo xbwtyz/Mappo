@@ -7,7 +7,7 @@ import { createProject } from '../src/core/city-model.js';
 import { normalizeSpatialRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
 import { searchSpatialUnifiedRoadGroup } from '../src/core/spatial-recovery-coordinator.js';
 import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
-import { defaultWorkspace } from '../src/data/project-format.js';
+import { defaultWorkspace, roundTripProjectDocument } from '../src/data/project-format.js';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 
 const file = new URL('../artifacts/c7/offline-p3.html',import.meta.url);
@@ -202,6 +202,120 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
     console.log('SRE_DESTRUCTIVE_OFFLINE '+JSON.stringify({browser:browserName,stopContinue:true,review:true,apply:true,undoRedo:true,retired:destructive.summary.retired.length}));
     console.log('SRE_INTERACTIVE_DIAGNOSTIC '+JSON.stringify(perf));
     await writeFile(new URL('../artifacts/c7/sre-interactive-'+browserName+'.json',import.meta.url),JSON.stringify(perf,null,2)+'\n');
+
+    // Full mounted standard regeneration uses the production schedule and
+    // host namespace, not the historical diversified diagnostic schedule.
+    // A retirement-only result does not count as positive regeneration.
+    async function beginRecoveryFixture(project,offset){
+      await page.evaluate(doc=>__buildingQA.apply(doc),{project,workspace:defaultWorkspace(project)});
+      await page.locator('#roadModeButton').click();
+      const before=await page.evaluate(offset=>{
+        const app=__buildingQA.state(),s=app.roadWorkspace.session;
+        s.select({kind:'road',id:'RD-0184'});
+        if(!s.requestSelectionA1({kind:'road',id:'RD-0186'},{toggle:true})||!s.roadGroupB1?.eligible)
+          throw Error('Advanced recovery fixture ineligible.');
+        s.updateRoadIntent(offset,{defer:false});
+        return {project:app.project,revision:app.files.revision,identityRevision:app.identityView.context.revision,
+          namespace:app.identityView.context.namespace};
+      },offset);
+      await page.locator('#roadSreStart').waitFor({state:'visible'});
+      for(const id of ['roadSreFrontage','roadSreScale','roadSreDestruction','roadSreRegeneration'])
+        assert.equal(await page.locator('#'+id).isChecked(),false);
+      await page.locator('#roadSreFrontage').check();
+      await page.locator('#roadSreScale').check();
+      await page.locator('#roadSreScaleLimit').selectOption('0.2');
+      await page.locator('#roadSreDestruction').check();
+      return before;
+    }
+    async function awaitAdvancedReview(label){
+      await page.waitForFunction(()=>['ready','refused','error'].includes(__buildingQA.state().roadWorkspace.sre.state?.phase),null,{timeout:480000});
+      const review=await page.evaluate(()=>{
+        const app=__buildingQA.state(),s=app.roadWorkspace.sre.state;
+        return {phase:s.phase,message:s.message,summary:s.review?.summary,candidate:s.review?.candidate,
+          fingerprint:s.review?.candidateFingerprint,progress:s.progress?.stats,accepted:app.project,
+          revision:app.files.revision,identityRevision:app.identityView.context.revision,
+          requests:s.reservationRequests,enabled:!document.querySelector('#roadApplyB4').disabled};
+      });
+      assert.equal(review.phase,'ready',browserName+': '+label+': '+review.message);
+      assert.equal(review.enabled,true);
+      return review;
+    }
+    async function acceptAdvancedReview(before,review){
+      assert.deepEqual(review.accepted,before.project);
+      assert.equal(review.revision,before.revision);
+      assert.equal(review.identityRevision,before.identityRevision);
+      await page.locator('#roadApplyB4').click();
+      await page.waitForFunction(()=>!__buildingQA.state().roadWorkspace.active,null,{timeout:120000});
+      const after=await page.evaluate(()=>{
+        const app=__buildingQA.state();
+        return {project:app.project,revision:app.files.revision,identityRevision:app.identityView.context.revision,
+          history:app.identityView.history.length};
+      });
+      assert.deepEqual(after.project,review.candidate);
+      assert.equal(after.revision,before.revision+1);
+      assert.equal(after.identityRevision,before.identityRevision+1);
+      assert.equal(after.history,1);
+      assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('undo')),true);
+      const undone=await page.evaluate(()=>__buildingQA.state().project);
+      assert.deepEqual(undone.city,before.project.city);
+      assert.deepEqual(undone.identityAllocation,after.project.identityAllocation);
+      assert.equal(await page.evaluate(()=>__buildingQA.moveRoadHistory('redo')),true);
+      assert.deepEqual(await page.evaluate(()=>__buildingQA.state().project),after.project);
+      // Exercise the actual document codec in the runner using the exact
+      // accepted browser candidate; browser file-picker QA remains separate.
+      const reopened=roundTripProjectDocument(after.project,defaultWorkspace(after.project));
+      assert.deepEqual(reopened.project,after.project);
+      return after;
+    }
+    const regenBefore=await beginRecoveryFixture(severe,{x:1.5026370360609105,y:18.69948056782279});
+    await page.locator('#roadSreRegeneration').check();
+    assert.equal(await page.locator('#roadSreQuality').isDisabled(),true);
+    assert.equal(await page.locator('#roadSreQuality').inputValue(),'standard');
+    await page.locator('#roadSreStart').click();
+    const regenReview=await awaitAdvancedReview('standard regeneration');
+    console.log('SRE_MOUNTED_REGENERATION_RESULT '+JSON.stringify({browser:browserName,
+      retired:regenReview.summary.retired.length,added:regenReview.summary.added,
+      progress:regenReview.progress,requests:regenReview.requests}));
+    assert.ok(regenReview.summary.added.length>0,browserName+': Standard production schedule did not reach a positive regeneration witness; positive live regeneration remains unqualified.');
+    assert.ok(regenReview.summary.regeneratedFootprint>0);
+    assert.ok(regenReview.requests?.length>0);
+    for(const {collection,id} of regenReview.summary.added){
+      assert.ok(!regenBefore.project.city[collection].some(r=>r.id===id));
+      assert.ok(regenReview.candidate.city[collection].some(r=>r.id===id));
+      assert.ok(id.includes(regenBefore.namespace),'Regenerated identity must use the host-owned namespace.');
+    }
+    const regenAfter=await acceptAdvancedReview(regenBefore,regenReview);
+    const counterTypes={properties:'property',plots:'plot',buildings:'building'};
+    for(const [collection,type] of Object.entries(counterTypes)){
+      const count=regenReview.summary.added.filter(r=>r.collection===collection).length;
+      const old=regenBefore.project.identityAllocation.namespaces[regenBefore.namespace]?.[type]??0;
+      const next=regenAfter.project.identityAllocation.namespaces[regenBefore.namespace]?.[type]??0;
+      assert.equal(next,old+count);
+    }
+    console.log('SRE_MOUNTED_REGENERATION '+JSON.stringify({browser:browserName,positive:true,
+      independentReservations:true,apply:true,undoRedo:true,portable:true,added:regenReview.summary.added.length}));
+
+    // Previously exact-qualified irregular severe reverse, now through the
+    // full production high-quality worker and mounted Review/Apply.
+    const highProject=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+      shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties:true});
+    const highBefore=await beginRecoveryFixture(highProject,{x:3.005274072121821,y:37.39896113564458});
+    await page.locator('#roadSreQuality').selectOption('high');
+    assert.equal(await page.locator('#roadSreRegeneration').isChecked(),false);
+    const highStarted=Date.now();
+    await page.locator('#roadSreStart').click();
+    const highReview=await awaitAdvancedReview('high quality');
+    assert.equal(highReview.fingerprint,'bbcbad96e73f85b19a2afd51743c9b6f00485daba564ee800576c5239bb80ec1');
+    assert.deepEqual(['properties','plots','buildings'].map(k=>highReview.summary.retired.filter(r=>r.collection===k).length),[10,19,14]);
+    assert.deepEqual(highReview.summary.added,[]);
+    assert.deepEqual(highReview.candidate.identityAllocation,highBefore.project.identityAllocation);
+    assert.equal(highReview.progress.work+highReview.progress.remainingWork,256000000);
+    const highSearchMs=Date.now()-highStarted;
+    const highApplyStarted=Date.now();
+    await acceptAdvancedReview(highBefore,highReview);
+    console.log('SRE_MOUNTED_HIGH_QUALITY '+JSON.stringify({browser:browserName,exactFingerprint:true,
+      retired:highReview.summary.retired.length,searchToReviewMs:highSearchMs,
+      applyUndoRedoPortableMs:Date.now()-highApplyStarted,positive:true}));
 
     await page.evaluate(doc=>__buildingQA.apply(doc),doc);
     await page.locator('#roadModeButton').scrollIntoViewIfNeeded();
