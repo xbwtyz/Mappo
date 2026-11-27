@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "source": "50271b8990f403797c49ecb4933521c77f63555a",
+  "run": 46081610845,
+  "attempt": 1,
+  "aggregate": 140783585854,
+  "job": 140781697477,
+  "rows": [
+    {
+      "id": "radial-small:eight-loop:100:diagonal",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "category": "search-refused",
+      "termination": "candidate-limit",
+      "attempts": 256,
+      "stats": {
+        "work": 1214530,
+        "expansions": 256,
+        "remainingWork": 6785470,
+        "remainingExpansions": 32512
+      },
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "analytical": {
+        "pairs": 8,
+        "subsets": 246,
+        "covering": 19,
+        "connectedGroups": 12,
+        "groupLimit": false,
+        "failures": {
+          "unnormalized-crossing": 256
+        }
+      },
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 0,
+        "firstScore": null,
+        "bestScore": null,
+        "bestAttempt": null
+      }
+    },
+    {
+      "id": "radial-small:eight-loop:100:x",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "category": "search-refused",
+      "termination": "candidate-limit",
+      "attempts": 256,
+      "stats": {
+        "work": 1231066,
+        "expansions": 256,
+        "remainingWork": 6768934,
+        "remainingExpansions": 32512
+      },
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "analytical": {
+        "pairs": 5,
+        "subsets": 154,
+        "covering": 46,
+        "connectedGroups": 21,
+        "groupLimit": false,
+        "failures": {
+          "unnormalized-crossing": 256
+        }
+      },
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 0,
+        "firstScore": null,
+        "bestScore": null,
+        "bestAttempt": null
+      }
+    },
+    {
+      "id": "radial-small:eight-loop:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "category": "search-refused",
+      "termination": "candidate-limit",
+      "attempts": 256,
+      "stats": {
+        "work": 1178540,
+        "expansions": 256,
+        "remainingWork": 6821460,
+        "remainingExpansions": 32512
+      },
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "analytical": {
+        "pairs": 2,
+        "subsets": 11,
+        "covering": 9,
+        "connectedGroups": 4,
+        "groupLimit": false,
+        "failures": {
+          "unnormalized-crossing": 256
+        }
+      },
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 0,
+        "firstScore": null,
+        "bestScore": null,
+        "bestAttempt": null
+      }
+    },
+    {
+      "id": "radial-small:eight-loop:75:x",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "category": "search-refused",
+      "termination": "candidate-limit",
+      "attempts": 256,
+      "stats": {
+        "work": 1217536,
+        "expansions": 256,
+        "remainingWork": 6782464,
+        "remainingExpansions": 32512
+      },
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "analytical": {
+        "pairs": 5,
+        "subsets": 154,
+        "covering": 46,
+        "connectedGroups": 21,
+        "groupLimit": false,
+        "failures": {
+          "unnormalized-crossing": 256
+        }
+      },
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 0,
+        "firstScore": null,
+        "bestScore": null,
+        "bestAttempt": null
+      }
+    },
+    {
+      "id": "radial-small:eight-loop:75:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "category": "search-refused",
+      "termination": "analytical-stream-exhausted",
+      "attempts": 120,
+      "stats": {
+        "work": 703771,
+        "expansions": 120,
+        "remainingWork": 7296229,
+        "remainingExpansions": 32648
+      },
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "analytical": {
+        "pairs": 8,
+        "subsets": 50,
+        "covering": 8,
+        "connectedGroups": 1,
+        "groupLimit": false,
+        "failures": {
+          "unnormalized-crossing": 120
+        }
+      },
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 0,
+        "firstScore": null,
+        "bestScore": null,
+        "bestAttempt": null
+      }
+    }
+  ]
+}
