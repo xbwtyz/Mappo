@@ -1,4 +1,4 @@
-import { polygonSignedArea } from './geometry.js';
+import { polygonSignedArea, roadFrameLength } from './geometry.js';
 import { shapeWellFormed, shapeContained } from './building-validation.js';
 import { insideOrOn } from './boundary.js';
 import { propertyFits } from './placement.js';
@@ -12,11 +12,11 @@ export function reshapeRoadParcelPolygon(property, plots, edge, edges, setback, 
   if(!shapeWellFormed(original)||original.length<3)
     throw Error('The existing parcel polygon is not valid.');
   validatePlotTiling027(original,plots);
-  const {a,b}=edge, length=Math.hypot(b.x-a.x,b.y-a.y);
+  const {a,b}=edge, length=roadFrameLength(b.x-a.x,b.y-a.y);
   if(length<1e-7)throw Error('The assigned frontage street has collapsed.');
   const tangent={x:(b.x-a.x)/length,y:(b.y-a.y)/length};
   const inward={x:-tangent.y,y:tangent.x}, frame={origin:a,tangent,inward};
-  const first=original[0],second=original[1],width=Math.hypot(second.x-first.x,second.y-first.y);
+  const first=original[0],second=original[1],width=roadFrameLength(second.x-first.x,second.y-first.y);
   if(width<1e-7)throw Error('The existing parcel has no usable frontage edge.');
   const oldT={x:(second.x-first.x)/width,y:(second.y-first.y)/width};
   const oldN={x:-oldT.y,y:oldT.x};

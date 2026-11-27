@@ -9,6 +9,7 @@ import {
 } from '../src/core/boundary.js';
 import {
   pointInPolygon,
+  roadFrameLength,
   polygonSignedArea
 } from '../src/core/geometry.js';
 
@@ -395,4 +396,15 @@ test('rotated, translated and perturbed user outlines retain valid topology acro
       verifyCityGeometry(city, `${preset}/transformed/${n}`);
       verifyCoverage(city, `${preset}/transformed/${n}`);
     }
+});
+
+test('road parcel frame length uses fixed finite scaled arithmetic without coordinate rounding',()=>{
+  assert.equal(roadFrameLength(0,-0),0);
+  assert.equal(roadFrameLength(3,4),5);
+  assert.equal(roadFrameLength(-4,3),5);
+  assert.equal(roadFrameLength(1e300,0),1e300);
+  assert.equal(roadFrameLength(0,1e-300),1e-300);
+  const dx=.05,dy=69.30700391030672,scale=Math.max(Math.abs(dx),Math.abs(dy));
+  assert.equal(roadFrameLength(dx,dy),scale*Math.sqrt((dx/scale)*(dx/scale)+(dy/scale)*(dy/scale)));
+  assert.ok(Math.abs(roadFrameLength(dx,dy)-Math.hypot(dx,dy))<=Number.EPSILON*2*scale);
 });

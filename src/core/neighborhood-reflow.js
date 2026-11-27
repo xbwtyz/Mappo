@@ -13,6 +13,7 @@ import { riBudget, riEqual, riIndex, riReporter } from './road-impact-model.js';
 import { classifyRoadProvenance, stampRoadGenerated } from './road-provenance.js';
 import { propertyDividerFractions3I, propertyGeometryPreview3I } from './property-geometry.js';
 import { reshapeRoadParcelPolygon } from './road-parcel-shape-reflow.js';
+import { roadFrameLength } from './geometry.js';
 import { PROPERTY_SETBACK, STREET_EDGE_WIDTH, STREET_WIDTHS, propertyFits, rectangleInFrame } from './placement.js';
 import { distanceToSegment, segmentCuts } from './boundary.js';
 import { iterateStoredProjectValidation } from '../data/project-validation.js';
@@ -61,7 +62,7 @@ function c2Parcel(city, property, road, edges, fixed) {
   }
   if(!legacy)return reshapeRoadParcelPolygon(property,ownPlots,edge,edges,c2Margin(road)+.05,fixed);
   const { a, b } = edge;
-  const length = Math.hypot(b.x - a.x, b.y - a.y);
+  const length = roadFrameLength(b.x - a.x, b.y - a.y);
   const tangent = { x: (b.x - a.x) / length, y: (b.y - a.y) / length };
   const inward = { x: -tangent.y, y: tangent.x };
   const frame = { origin: a, tangent, inward };
