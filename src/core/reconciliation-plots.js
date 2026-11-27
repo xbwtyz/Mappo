@@ -1,10 +1,11 @@
+import { roadFrameLength } from './geometry.js';
 import { validatePlotTiling027 } from './plot-partition-027.js';
 
 // Positive-length shared edges define plot adjacency. Point-only contacts do
 // not create adjacency. Compare using the same scale as existing geometry.
 const larePlotEps=1e-6;
 function lareSharedEdge(a,b,c,d){
-  const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy);
+  const dx=b.x-a.x,dy=b.y-a.y,len=roadFrameLength(dx,dy);
   if(len<larePlotEps)return false;
   const cross=p=>Math.abs(dx*(p.y-a.y)-dy*(p.x-a.x))/len;
   if(cross(c)>larePlotEps||cross(d)>larePlotEps)return false;

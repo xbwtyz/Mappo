@@ -1,3 +1,4 @@
+import { roadFrameLength } from './geometry.js';
 import { supportsCanonicalBuildingProjectSchema } from './project-schema-capabilities.js';
 import { classifyLareObject } from './reconciliation-policy.js';
 import { boundsOf } from './geometry.js';
@@ -57,7 +58,7 @@ export function discoverLareParcelScope(context, city, draft, changedBlocks, iss
   }
   const primary = context.properties.filter(parcel => changedBlockIds.has(parcel.blockId) &&
     (changedRoads.has(parcel.frontageRoadId) || implicated.has(parcel.id)));
-  const margin = Math.max(1, Math.hypot(draft.offset.x, draft.offset.y) + 1);
+  const margin = Math.max(1, roadFrameLength(draft.offset.x, draft.offset.y) + 1);
   const canReconcile = parcel => changedBlockIds.has(parcel.blockId) &&
     ['adaptive', 'authorized-reshape'].includes(parcel.policy.mode);
   const nearby = (first, second) => {

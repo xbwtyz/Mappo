@@ -139,6 +139,9 @@ import { DistrictEditor, restoreDistrictSnapshot } from './editor/districts.js';
 import { FortificationEditor, restoreFortificationSnapshot } from './editor/fortifications.js';
 import { RoadInspectionWorkspace } from './ui/road-inspection.js';
 import { createJunctionPreviewWorkerP1 } from './editor/junction-preview-worker-client.js';
+// Detached road recovery controller bundled for upcoming Review integration.
+import { createSpatialRoadWorkerClient } from './editor/spatial-recovery-worker-client.js';
+// Recovery Review/Apply is mounted by RoadInspectionWorkspace.
 import { drawRoadComparison } from './renderer/road-comparison.js';
 import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 // B1 candidate API is compiled for later editor integration; no Apply or UI hooks.
@@ -2624,6 +2627,7 @@ roadWorkspace = new RoadInspectionWorkspace({
   reconcile:prepareJunctionReflowC7,reconcileRoad:prepareRoadReconciliationB1,
   computeJunctionAsync:createJunctionPreviewWorkerP1(),
   getRevision:()=>files?.revision??0,applyEdit:applyRoadEditB4,
+  recoveryHost:secureIdentityHost,getSavedDistrictCount:()=>savedHistoryCount.districts,
   canEnter:()=>!project?.city?'Generate a city before inspecting roads.':
     workspaceShell.state.section!=='city'||editor.mode!=='pan'||buildingEditSession?.isActive
       ||propertyEditSession?.isActive||propertyCreationSessionE1?.active||propertySplitE2?.active||propertyMergeE3?.active||buildingPlacementSession?.isActive||identityWorkspace?.hasPending()
@@ -2640,6 +2644,17 @@ function applyRoadEditB4(session,baselineRevision,current){
     return {ok:false,message:'The road preview is stale. Reopen it before Apply.'};
   const workspace=captureWorkspace().workspace,draftRevision=session.revision;
   const junctionId=session.selection?.id??session.roadGroupB1?.selectedRoadIds[0];
+  const publish=accepted=>{
+    idaLifecycleActive=true;
+    try{roadWorkspace.exit({restore:true,focus:roadWorkspace.usesDesktopPanel});}
+    finally{publishAcceptedStateD01(accepted.historyStatus);idaLifecycleActive=false;}
+    return commitRoadEditB4(accepted,junctionId);
+  };
+  if(roadWorkspace.sre?.state){
+    if(!current()||baselineRevision!==revision||session.revision!==draftRevision)
+      return {ok:false,message:'The reviewed recovery is stale.'};
+    return roadWorkspace.sre.apply().then(publish,error=>({ok:false,message:error.message}));
+  }
   const asyncWorker=Boolean(!session.roadGroupB1&&session.selection?.kind==='junction'&&session.computeJunctionAsync);
   let begun;
   try{begun=beginRoadIdentityApply(secureIdentityHost,workspace,session,baselineRevision,revision,
@@ -2657,10 +2672,7 @@ function applyRoadEditB4(session,baselineRevision,current){
     // The accepted host has committed. Restore the transient road UI against
     // the outgoing render alias before switching it to the exact new view.
     // Suppress dirty callbacks during that synchronous reconciliation.
-    idaLifecycleActive=true;
-    try{roadWorkspace.exit({restore:true,focus:roadWorkspace.usesDesktopPanel});}
-    finally{publishAcceptedStateD01(accepted.historyStatus);idaLifecycleActive=false;}
-    return commitRoadEditB4(accepted,junctionId);
+    return publish(accepted);
   };
   if(!asyncWorker)return finish();
   return session.computeJunctionAsync(begun.workerRequest).then(finish,error=>{

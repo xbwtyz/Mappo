@@ -3,6 +3,7 @@ import { buildingFrame } from '../core/building-transform.js';
 import { roadRecoveryGuidanceD3, roadRecoveryIssueD3 } from './road-recovery-d3.js';
 import { ROAD_BEND_LIMIT } from '../core/road-shape.js';
 import { RoadPreviewSession, scheduleLareSlice } from '../editor/road-preview.js';
+import { createMountedSpatialRoadRecovery } from '../editor/spatial-recovery-mounted.js';
 import { roadInspectionDetails, roadReconciliationPreviewB3 } from '../core/road-inspection.js';
 
 
@@ -240,6 +241,8 @@ export class RoadInspectionWorkspace {
     reconcileRoad = null,
     computeJunctionAsync = null,
     getRevision = () => 0,
+    recoveryHost = null,
+    getSavedDistrictCount = () => null,
     applyEdit = () => ({ok:false,message:'Road Apply not configured.'}),
     afterExit = () => {},
     desktopLayout = null,
@@ -279,6 +282,8 @@ export class RoadInspectionWorkspace {
         this.draw();
       },
     });
+    this.sre = recoveryHost ? createMountedSpatialRoadRecovery(recoveryHost,()=>this.sreDraft(getSavedDistrictCount),()=>{this.render();this.draw();}) : null;
+    this.session.invalidateRecovery=()=>this.sre?.invalidate();
     this.limit = 50;
     this.reconciliationLimit = 50;
     this.dockMedia = window.matchMedia?.('(min-width: 1000px) and (min-height: 650px)');
@@ -419,7 +424,91 @@ export class RoadInspectionWorkspace {
       return result;
     }, { onChange: () => this.render() });
   }
+  sreEligible(){
+    const s=this.session;
+    return Boolean(s.current()&&s.roadGroupB1?.eligible&&s.pending&&!s.drag&&!s.checking&&
+      !s.roadIntentInputError&&!s.roadConnectionEdit&&s.settledRevision===s.revision&&
+      this.getRevision()===this.baseRevision&&!s.buildingDecisions.size&&!s.ownershipChoices.size&&!s.parcelChoices.size);
+  }
+  sreDraft(getSavedDistrictCount){
+    if(!this.sreEligible())return null;
+    const s=this.session;
+    return {draftRevision:s.revision,roadIds:s.roadGroupB1.selectedRoadIds,
+      offset:s.roadIntentOffset,workspace:this.baseline.workspace,savedDistrictCount:getSavedDistrictCount()};
+  }
+  bindSre(){
+    if(!this.sre)return;
+    const ids=['roadSreFrontage','roadSreScale','roadSreScaleLimit','roadSreDestruction','roadSreRegeneration','roadSreQuality'];
+    const policy=()=>{
+      const destruction=this.$('roadSreDestruction').checked,scaling=this.$('roadSreScale').checked;
+      const regeneration=destruction&&this.$('roadSreRegeneration').checked;
+      this.sre.setPolicy({permissions:{alternativeFrontage:this.$('roadSreFrontage').checked,
+        uniformScaling:scaling,maxLinearReduction:scaling?Number(this.$('roadSreScaleLimit').value||.1):0,
+        destruction,regeneration},quality:destruction&&!regeneration?this.$('roadSreQuality').value||'standard':'standard'});
+    };
+    for(const id of ids)this.$(id).addEventListener('change',policy);
+    this.$('roadSreStart').addEventListener('click',()=>{
+      if(!this.sreEligible()||this.drafts.read('road').status==='applying')return;
+      this.session.clearLareDemolition();
+      if(this.usesDesktopPanel&&!this.desktopReview)this.setDesktopReview(true);
+      this.sre.start();
+    });
+    this.$('roadSreStop').addEventListener('click',()=>this.sre.stop());
+    this.$('roadSreContinue').addEventListener('click',()=>this.sre.resume());
+    this.$('roadSreReviewBest').addEventListener('click',()=>this.sre.reviewBest());
+    this.$('roadSreCancel').addEventListener('click',()=>this.sre.cancel());
+  }
+  renderSre(recovery,applying){
+    const show=Boolean(this.sre&&this.sreEligible());
+    this.$('roadSrePanel').hidden=!show;
+    if(!show)return;
+    const {permissions:p,quality}=this.sre.policy;
+    const busy=this.sre.busy||applying;
+    for(const [id,value] of [['roadSreFrontage',p.alternativeFrontage],['roadSreScale',p.uniformScaling],
+        ['roadSreDestruction',p.destruction],['roadSreRegeneration',p.regeneration]]){
+      this.$(id).checked=value;this.$(id).disabled=busy||(id==='roadSreRegeneration'&&!p.destruction);
+    }
+    this.$('roadSreScaleLimit').value=String(p.uniformScaling?p.maxLinearReduction:.1);
+    this.$('roadSreScaleLimit').disabled=busy||!p.uniformScaling;
+    this.$('roadSreQuality').value=quality;
+    this.$('roadSreQuality').disabled=busy||!p.destruction||p.regeneration;
+    this.$('roadSreStart').disabled=busy||recovery?.phase==='paused';
+    this.$('roadSreStart').textContent=recovery?'Restart recovery':'Search recovery options';
+    this.$('roadSreStop').hidden=!['searching','stopping'].includes(recovery?.phase);
+    this.$('roadSreStop').disabled=recovery?.phase!=='searching'||applying;
+    this.$('roadSreContinue').hidden=recovery?.phase!=='paused';
+    this.$('roadSreReviewBest').hidden=recovery?.phase!=='paused'||recovery.incumbent?.status!=='verified-witness';
+    this.$('roadSreCancel').hidden=!recovery;
+    this.$('roadSreCancel').disabled=applying;
+    this.$('roadSreStatus').textContent=recovery?.message??'Search only the permitted changes. Nothing is applied automatically.';
+    const stats=recovery?.progress?.stats,bar=this.$('roadSreProgress');
+    bar.hidden=!stats;
+    if(stats){bar.max=stats.work+stats.remainingWork;bar.value=stats.work;}
+    this.$('roadSreWork').textContent=stats?recovery.progress.phase+' · '+stats.work.toLocaleString()+' / '+(stats.work+stats.remainingWork).toLocaleString()+' work units (not elapsed time)':'';
+    const summary=recovery?.review?.summary,audit=recovery?.review?.restorationAudit;
+    this.$('roadSreReview').hidden=!summary;
+    if(summary&&this.sreLastSummary!==summary){
+      this.sreLastSummary=summary;
+      const restoration=audit?.status==='unavailable'?
+        ' · Restoration statistics unavailable ('+(audit.reason==='witness-limit'?'evidence limit':'audit work limit')+'); final changes verified':
+        audit?' · '+audit.grossRetired.length+' temporarily retired (selected path) · '+audit.restored.length+' restored and retained':
+        audit===null?' · 0 restored (no retirement)':'';
+      this.$('roadSreTotals').textContent=summary.retired.length+' removed · '+summary.added.length+' added · '+summary.scaledBuildings.length+' scaled · '+summary.frontageSwitches.length+' frontage changes'+restoration;
+      this.$('roadSreAreas').textContent='Demolished footprint '+summary.demolishedFootprint.toFixed(2)+' · scaling loss '+summary.scaleLoss.toFixed(2)+' · regenerated footprint '+summary.regeneratedFootprint.toFixed(2);
+      const rows=[
+        ...summary.retired.map(r=>'Remove '+r.collection+' · '+r.id),
+        ...(audit?.restored??[]).map(r=>'Restored and retained '+r.collection+' · '+r.id),
+        ...summary.added.map(r=>'Add '+r.collection+' · '+r.id),
+        ...summary.scaledBuildings.map(r=>'Scale '+r.buildingId+' to '+(r.factor*100).toFixed(1)+'% · lost footprint '+r.footprintLoss.toFixed(2)),
+        ...summary.frontageSwitches.map(r=>'Frontage '+r.propertyId+' · '+r.from+' → '+r.to)
+      ];
+      this.$('roadSreChanges').replaceChildren(...rows.map(text=>{
+        const li=document.createElement('li');li.textContent=text;return li;
+      }));
+    }
+  }
   bind() {
+    this.bindSre();
     this.$('roadSelectionClearA1').addEventListener('click',()=>this.session.requestSelectionA1(null));
     this.$('roadSelectionLocateA1').addEventListener('click',()=>{
       const s=this.session;
@@ -752,11 +841,13 @@ export class RoadInspectionWorkspace {
         ? s.workerPreviewGeometry ?? roadReconciliationPreviewB3(s.project, s.reconciliation, s.topology)
         : null;
     }
-    s.previewGeometry = this.cachedPreviewGeometry;
+    const recovery=this.sre?.state??null;
+    s.previewGeometry = recovery ? recovery.geometry : this.cachedPreviewGeometry;
+    s.srePreviewSummary=recovery?.review?.summary??null;
     if(this.applyError && this.applyErrorRevision!==s.revision)this.applyError='';
     const demolition = s.demolition;
     const destructive = Boolean(demolition?.candidate && demolition.authorization);
-    const verified = Boolean(s.current() && s.pending && !s.checking && !s.drag && !s.error &&
+    const verified = recovery ? Boolean(recovery.phase==='ready'&&recovery.review&&s.current()) : Boolean(s.current() && s.pending && !s.checking && !s.drag && !s.error &&
       !s.roadIntentInputError && !s.reconciliationError && !demolition?.running &&
       (destructive || (s.hasApplyCandidate && s.reconciliation?.status==='candidate-only' &&
         !s.reconciliation.unresolved?.length && s.previewGeometry?.verified)) && s.settledRevision===s.revision &&
@@ -765,8 +856,8 @@ export class RoadInspectionWorkspace {
     const lastRejected = s.reconciliation?.lare?.lastRejectedCandidate;
     const issue = s.reconciliation?.unresolved?.find(hasRoadBuildingChoice) ??
       (lastRejected?.code === 'road-setback' ? lastRejected : s.reconciliation?.unresolved?.[0]);
-    const actionable = !s.checking && !s.drag && hasRoadBuildingChoice(issue);
-    const ownershipNeeded = !s.checking && !s.drag && s.reconciliation?.unresolved?.some(
+    const actionable = !recovery && !s.checking && !s.drag && hasRoadBuildingChoice(issue);
+    const ownershipNeeded = !recovery && !s.checking && !s.drag && s.reconciliation?.unresolved?.some(
       row=>row.code==='ownership-decision-required' || row.code==='ownership-invalid');
     const building = actionable && s.city.buildings.find(record => record.id === issue.id);
     this.$('roadResolveConflictC6').hidden = !actionable || this.desktopReview;
@@ -776,7 +867,7 @@ export class RoadInspectionWorkspace {
       this.$('roadMenuReviewCount').textContent = String(count);
     }
     this.$('roadApplyB4').classList.toggle('road-demolition-apply', Boolean(demolition?.candidate));
-    this.$('roadApplyB4').textContent = demolition?.candidate ? 'Apply and demolish' : this.usesDesktopPanel && s.roadConnectionEdit?.kind === 'remove'
+    this.$('roadApplyB4').textContent = recovery ? 'Apply reviewed recovery' : demolition?.candidate ? 'Apply and demolish' : this.usesDesktopPanel && s.roadConnectionEdit?.kind === 'remove'
       ? 'Apply deletion' : groupB1?'Apply road group':'Apply road edit';
     const problem = this.applyError || s.roadIntentInputError || s.error || s.reconciliationError;
     const topologyOnly = s.previewGeometry?.mode==='topology-only';
@@ -789,9 +880,10 @@ export class RoadInspectionWorkspace {
     let diagnostics = s.reconciliation?.unresolved?.length ? s.reconciliation.unresolved.map(row =>
       row.code?.endsWith('-decision-required') ? { ...row, severity: 'decision' } : row) : s.proposal?.issues ?? [];
     if (lastRejected?.code === 'road-setback') diagnostics = [...diagnostics, lastRejected];
+    if(recovery)diagnostics=recovery.phase==='error'||recovery.phase==='refused'?[{message:recovery.message}]:[];
     const draft = syncDraftControls(this.drafts, 'road', {
       baseline: s.city, key: s.project, intent: s.revision, dirty: s.selectionDraftLockedA1,
-      checking: Boolean(s.checking || s.drag || demolition?.running), stale, ready: verified, validatedIntent: s.settledRevision,
+      checking: Boolean(s.checking || s.drag || demolition?.running || (recovery&&this.sre.busy&&recovery.phase!=='applying')), stale, ready: verified, validatedIntent: s.settledRevision,
       issues: verified ? [] : diagnostics.length ? diagnostics : problem ? [{ message: problem }] : [],
       target: s.selection ?? (groupB1?s.selectionSet.primary:null),
     }, panel, this.$('roadApplyB4'));
@@ -799,12 +891,12 @@ export class RoadInspectionWorkspace {
     this.$('roadPreviewReset').disabled ||= applying;
     this.$('roadPreviewCancel').disabled = applying;
     this.$('roadPreviewBody').inert = applying;
-    const status = applying ? 'Applying road edit' : this.applyError ? 'Apply failed' : problem ? 'Preview blocked' :
+    const status = applying ? 'Applying road edit' : recovery ? recovery.phase==='ready'?'Recovery ready for review':recovery.message : this.applyError ? 'Apply failed' : problem ? 'Preview blocked' :
       s.drag ? 'Placement in progress' : s.checking ? 'Checking preview' :
       ready ? destructive ? 'Demolition authorized' : 'Preview ready' : stale ? 'Preview out of date' :
       actionable ? 'Building choice needed' : ownershipNeeded ? 'Block ownership needed' :
       topologyOnly ? 'Roads and blocks only' : s.pending ? 'Preview blocked' : 'Accepted position';
-    const message = applying ? 'Validating the road and neighborhood before Apply…' :
+    const message = applying ? 'Validating the road and neighborhood before Apply…' : recovery ? recovery.message :
       problem || (s.drag ? 'Release the handle to check this edit.' :
         s.checking || ready ? '' :
         actionable ? this.usesDesktopPanel
@@ -814,7 +906,9 @@ export class RoadInspectionWorkspace {
         issue?.message || s.proposal?.issues?.[0]?.message ||
         (s.pending ? 'The neighborhood change could not be verified.' : 'Drag a road or junction to preview an edit.'));
     let summary = '';
-    if (destructive) {
+    if (recovery) {
+      summary=recovery.review?'Apply accepts exactly the recovery changes listed below.':'';
+    } else if (destructive) {
       summary = 'Apply will remove ' + demolition.candidate.removalIds.length + ' reviewed building(s).';
     } else if (ready) {
       if (this.outcomePreview !== s.previewGeometry) {
@@ -841,7 +935,8 @@ export class RoadInspectionWorkspace {
       if (element.textContent !== text) element.textContent = text;
       if (element.hidden !== !text) element.hidden = !text;
     }
-    this.renderLareDemolition(demolition, hideDemolition);
+    this.renderLareDemolition(recovery?null:demolition, hideDemolition);
+    this.renderSre(recovery,applying);
     this.renderImpacts(stale);
     this.renderComparison(stale);
     this.renderOwnershipDecisions023();
@@ -853,7 +948,9 @@ export class RoadInspectionWorkspace {
     panel.setAttribute('data-report-status', ready ? 'safe' : s.checking || applying ? 'checking' :
       problem || status==='Preview blocked' ? 'invalid' : s.pending ? 'needs-review' : 'idle');
     if (this.lastReconciliation !== s.reconciliation || this.lastTopology !== s.topology ||
-        this.lastReconciliationError !== s.reconciliationError || this.lastChecking !== s.checking) {
+        this.lastReconciliationError !== s.reconciliationError || this.lastChecking !== s.checking ||
+        this.lastSreGeometry!==recovery?.geometry) {
+      this.lastSreGeometry=recovery?.geometry;
       this.lastReconciliation = s.reconciliation;
       this.lastTopology = s.topology;
       this.lastReconciliationError = s.reconciliationError;
@@ -995,6 +1092,8 @@ export class RoadInspectionWorkspace {
   }
   comparisonCandidate() {
     if (!this.comparisonOpen || this.comparisonUnavailable()) return null;
+    const recovered=this.sre?.state?.review?.candidate;
+    if(recovered)return recovered;
     const result = this.session.reconciliation;
     if (result !== this.comparisonResult) {
       this.comparisonResult = result;
@@ -1104,7 +1203,7 @@ export class RoadInspectionWorkspace {
     const buildings = new Map();
     if (fresh) {
       for (const row of s.city.buildings) if (row.customName) buildings.set(row.id, row.customName);
-      for (const row of s.reconciliation?.unresolved ?? [])
+      for (const row of this.sre?.state?[]:(s.reconciliation?.unresolved ?? []))
         add(row, hasRoadBuildingChoice(row) ? 'Placement needs review' : 'Blocks this edit', row.message);
       for (const id of s.buildingDecisions.keys())
         add({kind:'building', id}, 'Placement choice recorded', 'Review the placement choice for this draft.');
@@ -1360,7 +1459,7 @@ export class RoadInspectionWorkspace {
   }
   renderRoadRecoveryD3({ready,applying,status}) {
     const s = this.session, panel = this.$('roadRecoveryD3');
-    const fresh = s.current() && s.pending && !s.checking && !s.drag &&
+    const fresh = !this.sre?.state && s.current() && s.pending && !s.checking && !s.drag &&
       this.getRevision() === this.baseRevision && !ready && !applying &&
       status !== 'Preview out of date' && !this.applyError &&
       (s.settledRevision == null || s.settledRevision === s.revision);

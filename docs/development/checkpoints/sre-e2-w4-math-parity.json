@@ -1,0 +1,73 @@
+{
+  "version": 2,
+  "repository": "xbwtyz/Mappo",
+  "milestone": "SRE E2 W4 numerical parity blocker",
+  "appVersion": "0.2.25-dev",
+  "targetVersion": "0.2.26-dev",
+  "state": "active",
+  "source": {
+    "branch": "feature/sre-e2-live-road-worker",
+    "sha": "f04a447ecd4ae6b1f8d12a28ac68adb3573d265f",
+    "baseSha": "eae2b1f73af2b04d2e9b980954eaa94d5c9b576b",
+    "pr": 163
+  },
+  "scope": {
+    "approved": [
+      "Continue approved E2 qualification and safe bounded corrective research; maintain checkpoints."
+    ],
+    "prohibited": [
+      "No merge, release, deployment, other domain activation, altered schema, weakened acceptance or changed historic golden hashes without reviewed approval."
+    ],
+    "stopConditions": [
+      "Stop before changing numeric parity policy or rebaselining locked fixtures; manual acceptance and explicit merge approval."
+    ]
+  },
+  "completed": [
+    "Exact full green 4becfaef5457a40d2f15d268bcd504a04d9643b8 run 45926250551, 318 seconds; W1–W3 integration and standard destructive qualification.",
+    "Both Chromium and Firefox positive regeneration including independent reservations, accepted history and portable checks in run 45928614839.",
+    "Identical accepted snapshot, exact 43 retired IDs; candidate coordinate mismatch isolated from input and identity selection.",
+    "Research run 45930291616: Node and Chromium norm+trig both match locked exact candidate, independently verified, identical 43 retired IDs. Firefox failed at launch, not calculation.",
+    "Firefox-only research run 45930895650 success in 286s: both variants match original locked hash, 43 retired IDs, no additions, independent verification; all three engines now match on norm-trig variant.",
+    "Full CI 45931893779: Chromium mounted high-quality exact hash, Apply/Undo/Redo/portable passed. Firefox reduced to single access-path coordinate discrepancy.",
+    "Owner research 45933210617 green in 325s: 1188 topology attempts, 401 eligible, 19 matched cases/38 solves, 16/19 success each quality, 3 early planned +75Y refusals; all 396 100-axis attempts blocked before solver."
+  ],
+  "pending": [
+    "Verify localized B1R route tie arithmetic and offline attribution correction in hosted rebuild and exact full product CI.",
+    "Restored-identity audit, advanced high-quality Apply, remaining corpus/interactive evidence, manual acceptance, version and review-ready full gate.",
+    "Owner road-movement follow-up: propose bounded alternate initial search and detailed refusal diagnostics, plus sparse 100-axis fixture coverage; no new scheduling/topology architecture without approval."
+  ],
+  "decisions": [
+    "No full rerun on unproven production patch; isolated hosted pilot only. Exact candidate equality remains required."
+  ],
+  "blockers": [
+    "Exact f04a447 product CI 45931893779 failed in 628s: Firefox access-path endpoint ranking; standalone literal URL assertion. No changed golden tests.",
+    "Bounded rotation kernels cover finite |angle|<=1024; extreme legacy orientation inputs retain native trig and universal parity is not claimed. No schema change or new refusal.",
+    "Restored identity audit and manual acceptance still pending."
+  ],
+  "evidence": {
+    "qualification": "unqualified",
+    "full": {
+      "runId": 45931893779,
+      "attempt": 1,
+      "head": "f04a447ecd4ae6b1f8d12a28ac68adb3573d265f",
+      "nodeShards": 16,
+      "conclusion": "failure",
+      "durationSeconds": 628
+    },
+    "artifacts": [
+      {
+        "path": "index.html",
+        "blob": "21b7421285332d3c1951e39c3056d98e2f580626"
+      },
+      {
+        "path": "dist/mappo-0.2.25-dev.html",
+        "blob": "21b7421285332d3c1951e39c3056d98e2f580626"
+      }
+    ]
+  },
+  "rollback": {
+    "sourceSha": "4becfaef5457a40d2f15d268bcd504a04d9643b8",
+    "policy": "Reviewed reversion only; retain exact historic evidence and product gate."
+  },
+  "nextAction": "Verify scratch compiled pair, transfer verified generated outputs to PR163 and run exact full CI. Inspect route tie and historical checks. Preserve owner research 45933210617, discuss new search/topology strategy approval."
+}

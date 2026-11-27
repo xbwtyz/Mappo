@@ -61,3 +61,15 @@ export function polygonRingsProperlyCross(inner, outer, spend) {
   }
   return false;
 }
+
+// Persisted road-parcel frames require consistent binary64 arithmetic.
+// Math.hypot is implementation-approximated and its last bit can differ
+// between JS engines, propagating through boundaries and provenance stamps.
+// Scale the inputs to avoid intermediate overflow/underflow, then use a
+// fixed arithmetic order and square root. No coordinate rounding.
+export function roadFrameLength(dx,dy) {
+  const scale=Math.max(Math.abs(dx),Math.abs(dy));
+  if(scale===0||!Number.isFinite(scale))return scale;
+  const x=dx/scale,y=dy/scale;
+  return scale*Math.sqrt(x*x+y*y);
+}

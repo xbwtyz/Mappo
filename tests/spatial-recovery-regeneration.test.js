@@ -6,6 +6,11 @@ import { createSpatialDestructionBudget } from '../src/core/spatial-recovery-con
 import { searchSpatialShellRegeneration, verifySpatialShellRegeneration, searchSpatialGroupRegeneration, verifySpatialGroupRegeneration } from '../src/core/spatial-recovery-regeneration.js';
 import { issueIdentityReservation } from '../src/core/identity-verification.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
+import { AcceptedIdentitySession } from '../src/core/accepted-identity-session.js';
+import { defaultWorkspace } from '../src/data/project-format.js';
+import { calculateSpatialRoadReview,calculateSpatialRoadReservationPlan } from '../src/worker/spatial-recovery-worker.js';
+import { createSpatialRoadReviewGate } from '../src/editor/spatial-recovery-review-gate.js';
+import { verifySpatialRoadWorkerReservation } from '../src/core/spatial-recovery-worker-reservation.js';
 const budget=()=>createSpatialDestructionBudget();
 const clone=x=>JSON.parse(JSON.stringify(x));
 test('detached optional shell regeneration uses fresh Schema 11 reservations and preserves survivors',{timeout:300000},async()=>{
@@ -35,6 +40,16 @@ test('detached optional shell regeneration uses fresh Schema 11 reservations and
   const receipt=issueIdentityReservation(project.identityAllocation,project.city,context,requests);
   const auth={context,requests,receipt};
   assert.deepEqual(receipt,result.provisionalAuthorization.receipt);
+  // Explicit expected plan in this fixture; production must obtain its
+  // independent request policy from the trusted host, not the receipt.
+  const expected=requests.map(row=>({...row}));
+  assert.deepEqual(verifySpatialRoadWorkerReservation(project,op,context,expected,result.provisionalAuthorization),auth);
+  assert.throws(()=>verifySpatialRoadWorkerReservation(project,op,context,[],result.provisionalAuthorization),/host requests/);
+  const wrongHost=clone(expected);wrongHost[0].key+='-wrong';
+  assert.throws(()=>verifySpatialRoadWorkerReservation(project,op,context,wrongHost,result.provisionalAuthorization),/host requests/);
+  const wrongReceipt=clone(result.provisionalAuthorization);wrongReceipt.receipt.allocations[0].sequence++;
+  assert.throws(()=>verifySpatialRoadWorkerReservation(project,op,context,expected,wrongReceipt),/allocation/);
+  assert.throws(()=>verifySpatialRoadWorkerReservation(project,op,{...context,namespace:other},expected,result.provisionalAuthorization),/host requests/);
   const actual=await verifySpatialShellRegeneration(project,op,seed.delta,result.delta,auth,budget());
   assert.deepEqual(result.delta.retired,seed.delta.retired);
   assert.ok(result.delta.added.length>0&&result.delta.added.every(r=>r.ref.collection==='buildings'));
@@ -50,6 +65,26 @@ test('detached optional shell regeneration uses fresh Schema 11 reservations and
   await assert.rejects(()=>verifySpatialShellRegeneration(project,op,seed.delta,rebound,auth,budget()),/survivor/);
   const tiny=await searchSpatialShellRegeneration(project,op,seed.delta,context,createSpatialDestructionBudget({work:1,stateExpansions:1}));
   assert.equal(tiny.status,'refused');assert.equal(tiny.delta,null);
+  // Independent fixture-side planning pass, never a worker receipt as policy.
+  const planned=await searchSpatialShellRegeneration(project,op,seed.delta,context,budget());
+  assert.equal(planned.status,'verified-witness');
+  const host=new AcceptedIdentitySession({project,context:{projectId:'host-session-not-city',revision,namespace}});
+  const hostBefore=host.view(),draft={draftRevision:1,roadIds:ids,offset,permissions:op.permissions,
+    workspace:defaultWorkspace(hostBefore.project),reservationRequests:planned.provisionalAuthorization.requests};
+  const gate=createSpatialRoadReviewGate(host,()=>draft,{verify:calculateSpatialRoadReview});
+  const witness={status:'verified-witness',operation:op,kind:'shell-regeneration',delta:result.delta,
+    basisDelta:seed.delta,provisionalAuthorization:result.provisionalAuthorization};
+  const reviewed=await gate.review(witness);
+  assert.equal(host.view(),hostBefore);
+  assert.deepEqual(reviewed.summary.added,result.delta.added.map(row=>row.ref));
+  const published=await gate.apply(reviewed.token,reviewed);
+  assert.equal(published.historyStatus,'recorded');
+  assert.deepEqual(published.project,actual);
+  const undo=host.replay({direction:'undo',context:host.view().context,workspace:published.workspace});
+  assert.deepEqual(undo.project.city,project.city);
+  assert.deepEqual(undo.project.identityAllocation,actual.identityAllocation);
+  const redo=host.replay({direction:'redo',context:host.view().context,workspace:undo.workspace});
+  assert.deepEqual(redo.project,actual);
   assert.equal(JSON.stringify(project),before);
   console.log('SRE_SHELL_REGENERATION '+JSON.stringify({retired:result.delta.retired,added:result.delta.added.map(r=>r.ref),attempts:result.attempts,stats:shared.snapshot()}));
 });
@@ -92,6 +127,15 @@ test('detached complete property regeneration reserves every new identity and le
   await assert.rejects(()=>verifySpatialGroupRegeneration(project,op,seed.delta,rebound,auth,budget()),/survivor/);
   const tiny=await searchSpatialGroupRegeneration(project,op,seed.delta,context,createSpatialDestructionBudget({work:1,stateExpansions:1}));
   assert.equal(tiny.status,'refused');assert.equal(tiny.delta,null);
+  assert.equal(JSON.stringify(project),before);
+  // Fresh plan receives the accepted snapshot, verified retirement basis and
+  // permission/session context only, never the search's receipt or request keys.
+  const plan=await calculateSpatialRoadReservationPlan({kind:'plan-reservation',version:1,requestId:1,
+    sessionId:'independent-group-plan',projectJson:JSON.stringify(project),operation:op,quality:'standard',
+    reservationContext:context,basisDelta:seed.delta,regenerationKind:'group-regeneration'});
+  assert.equal(plan.kind,'planned-reservation');
+  assert.equal(plan.candidateFingerprint,result.delta.candidateFingerprint);
+  assert.deepEqual(plan.requests,requests);
   assert.equal(JSON.stringify(project),before);
   console.log('SRE_GROUP_REGENERATION '+JSON.stringify({counts,added:result.delta.added.map(r=>r.ref),stats:shared.snapshot()}));
 });

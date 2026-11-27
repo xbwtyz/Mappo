@@ -100,7 +100,15 @@ test('manual acceptance package is deterministic, exact-source bound, and never 
     assert.equal(doc.project.schemaVersion,first.manifest.projectSchema);
     assert.ok(['RD-0184','RD-0186'].every(r=>doc.project.city.roads.some(x=>x.id===r)));
   }
-  assert.match(first.files['CHECKLIST.md'].toString('utf8'),/SRE is detached/);
+  const checklist=first.files['CHECKLIST.md'].toString('utf8');
+  assert.match(checklist,/Live connected-road recovery/);
+  assert.match(checklist,/all four permission checkboxes default off/);
+  assert.match(checklist,/BLOCKED for the positive regeneration test/);
+  assert.doesNotMatch(checklist,/SRE is detached/);
+  const detachedHtml=Buffer.from('<html>detached baseline</html>');
+  const detached=buildAcceptancePackage({...input,html:detachedHtml,distHtml:detachedHtml});
+  assert.match(detached.files['CHECKLIST.md'].toString('utf8'),/SRE is detached/);
+  assert.doesNotMatch(detached.files['CHECKLIST.md'].toString('utf8'),/Live connected-road recovery/);
   assert.throws(()=>buildAcceptancePackage({...input,distHtml:Buffer.from('wrong')}));
   assert.throws(()=>verifyAcceptancePackage(first,'a'.repeat(40)));
   const bad={manifest:structuredClone(first.manifest),files:{...first.files}};

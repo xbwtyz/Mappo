@@ -1083,3 +1083,11 @@
 .road-demolition p:empty { display: none; }
 .road-demolition-apply { background: #982f39; border-color: #c95e69; color: #fff; }
 .road-demolition-apply:hover:not(:disabled) { background: #792430; }
+
+/* Spatial recovery stays inside the existing road Review and Apply footer. */
+.road-sre-panel { border:1px solid currentColor; border-radius:6px; padding:8px; margin:8px 0; }
+.road-sre-panel h4 { margin:0 0 6px; }
+.road-sre-permissions { display:grid; gap:4px; margin-bottom:8px; }
+.road-sre-permissions label { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.road-sre-panel progress { width:100%; }
+.road-sre-changes { max-height:140px; overflow:auto; padding-left:20px; overflow-wrap:anywhere; }

@@ -1,7 +1,7 @@
 import { buildingExteriorRingsS10 } from '../core/building-geometry-adapter-s10.js';
 import { buildingFrame, transformBuildingPoint } from '../core/building-transform.js';
 import { findCourtyardAccess, resolveCourtyardAccess, rerouteCourtyardOccupants } from '../core/courtyard-access.js';
-import { polygonSignedArea, pointInPolygon } from '../core/geometry.js';
+import { polygonSignedArea, pointInPolygon, roadFrameLength } from '../core/geometry.js';
 import { distanceToSegment, clearance, segmentCuts } from '../core/boundary.js';
 import { clipToConvexPolygon, PROPERTY_SETBACK, STREET_WIDTHS, STREET_EDGE_WIDTH } from '../core/placement.js';
 import { classifyRoad } from '../core/road-graph.js';
@@ -86,7 +86,7 @@ function searchBuildingFrontage(city, building, a, b, allowDiagonal = false, fro
         ? [.125,.25,.375,.5,.625,.75,.875].map(fraction=>b3gcPathPoint(start,end,fraction))
         : [b3gcNearestRoadPoint(door,start,end)];
       for(const destination of destinations){
-        const distance=Math.hypot(destination.x-door.x,destination.y-door.y);
+        const distance=(spend?roadFrameLength:Math.hypot)(destination.x-door.x,destination.y-door.y);
         if(best&&distance>=best.distance)continue;
         if(frontage && !segmentCuts(door,destination,frontage.edgeA,frontage.edgeB)
           .some(cut=>cut>B3GC_ACCESS_EPS&&cut<1-B3GC_ACCESS_EPS))continue;
@@ -212,7 +212,9 @@ export function resolveSameFrontageAccessB1R(city, candidate, {allowRepair=false
   const door=candidate.entrance;
   if(door&&candidate.footprint.some((p,i,ring)=>distanceToSegment(door,p,ring[(i+1)%ring.length])<=B3GC_ACCESS_EPS)){
     const ends=[b3gcNearestRoadPoint(door,a,b),...[.125,.25,.375,.5,.625,.75,.875].map(t=>b3gcPathPoint(a,b,t))];
-    const sorted=ends.map((p,i)=>({p,i,d:Math.hypot(p.x-door.x,p.y-door.y)})).sort((x,y)=>x.d-y.d||x.i-y.i);
+    // Fixed length arithmetic prevents engine-specific last-bit distances
+    // from reversing a tie between the projection and a sampled street point.
+    const sorted=ends.map((p,i)=>({p,i,d:roadFrameLength(p.x-door.x,p.y-door.y)})).sort((x,y)=>x.d-y.d||x.i-y.i);
     for(const {p} of sorted){spend();
       if(!b3gcRouteBlocker(city,candidate,door,p,spend))
         return {route:{entrance:{...door},accessPath:[{...door},p],frontageRoadId:road.id},changed:true};

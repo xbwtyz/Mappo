@@ -1,3 +1,5 @@
+import { roadFrameLength } from './geometry.js';
+import { sreMathSin, sreMathCos, sreMathAtan2 } from './spatial-recovery-math.js';
 import { finishLareSteps } from './reconciliation-steps.js';
 import { polygonRingsProperlyCross } from './geometry.js';
 import { riEqual } from './road-impact-model.js';
@@ -11,13 +13,13 @@ import { LARE_LIMITS,LareBudgetExceeded } from './reconciliation-budget.js';
 const lareRigidEps=1e-6;
 const lareBuildingWithout=(r,keys)=>Object.fromEntries(Object.entries(r).filter(([k])=>!keys.includes(k)));
 const lareBuildingClone=x=>JSON.parse(JSON.stringify(x));
-const lareBuildingAngle=a=>Math.atan2(Math.sin(a),Math.cos(a));
+const lareBuildingAngle=a=>sreMathAtan2(sreMathSin(a),sreMathCos(a));
 const lareBuildingZero=x=>Object.is(x,-0)?0:x;
 const lareBuildingPoint=(x,y)=>({x:lareBuildingZero(x),y:lareBuildingZero(y)});
 const lareBuildingVertices=b=>b.geometry.regions.flatMap(r=>r.ring);
 const lareBuildingCenter=points=>({x:points.reduce((n,p)=>n+p.x,0)/points.length,y:points.reduce((n,p)=>n+p.y,0)/points.length});
 const lareBuildingMap=(p,c,dx,dy,a)=>{
-  const x=p.x-c.x,y=p.y-c.y,co=Math.cos(a),si=Math.sin(a);
+  const x=p.x-c.x,y=p.y-c.y,co=sreMathCos(a),si=sreMathSin(a);
   return lareBuildingPoint(c.x+dx+x*co-y*si,c.y+dy+x*si+y*co);
 };
 function lareBuildingCharge(b,budget){
@@ -39,13 +41,13 @@ export function verifyLareRigidGeometry(before,after,budget){
     r.ring.length!==next[i].ring.length))return false;
   const [a,b]=old[0].ring,[c,d]=next[0].ring;
   const u={x:b.x-a.x,y:b.y-a.y},v={x:d.x-c.x,y:d.y-c.y};
-  const len=Math.hypot(u.x,u.y),other=Math.hypot(v.x,v.y);
+  const len=roadFrameLength(u.x,u.y),other=roadFrameLength(v.x,v.y);
   if(len<lareRigidEps||Math.abs(len-other)>lareRigidEps)return false;
-  const angle=Math.atan2(u.x*v.y-u.y*v.x,u.x*v.x+u.y*v.y);
+  const angle=sreMathAtan2(u.x*v.y-u.y*v.x,u.x*v.x+u.y*v.y);
   const map=p=>lareBuildingMap(p,a,c.x-a.x,c.y-a.y,angle);
   for(let i=0;i<old.length;i++)for(let j=0;j<old[i].ring.length;j++){
     budget.spend();const p=map(old[i].ring[j]),q=next[i].ring[j];
-    if(Math.hypot(p.x-q.x,p.y-q.y)>lareRigidEps)return false;
+    if(roadFrameLength(p.x-q.x,p.y-q.y)>lareRigidEps)return false;
   }
   if(Math.abs(lareBuildingAngle(after.orientation-before.orientation-angle))>lareRigidEps||
     !Number.isFinite(before.area)||!Number.isFinite(after.area)||Math.abs(before.area-after.area)>lareRigidEps)return false;
@@ -119,7 +121,7 @@ export function* iterateLareBuildingCandidates({source,permission,oldProperty,pr
       if(!b.plotIds.length)return;
       const moved=dx!==0||dy!==0||angle!==0?1:0;
       candidates.push({building:b,transform:{dx,dy,angle},family,moved,
-        displacement:Math.hypot(dx,dy),rotation:Math.abs(angle),order:rank});
+        displacement:roadFrameLength(dx,dy),rotation:Math.abs(angle),order:rank});
       candidates.sort(lareBuildingOrder);
       if(candidates.length>LARE_LIMITS.buildingCandidates){
         const groups=new Map();for(const c of candidates){const k=c.family==='packed-seed'?'packed-seed':c.rotation===0?'translation':'rotation';groups.set(k,(groups.get(k)??0)+1);}
@@ -136,13 +138,13 @@ export function* iterateLareBuildingCandidates({source,permission,oldProperty,pr
     const u=(center.x-old.origin.x)*old.tangent.x+(center.y-old.origin.y)*old.tangent.y+
       property.local.x+property.local.width/2-oldProperty.local.x-oldProperty.local.width/2;
     const v=(center.x-old.origin.x)*old.inward.x+(center.y-old.origin.y)*old.inward.y+property.local.y-oldProperty.local.y;
-    const w=world(u,v),angle=Math.atan2(frame.tangent.y,frame.tangent.x)-Math.atan2(old.tangent.y,old.tangent.x);
+    const w=world(u,v),angle=sreMathAtan2(frame.tangent.y,frame.tangent.x)-sreMathAtan2(old.tangent.y,old.tangent.x);
     yield* tryOne(frame.origin.x+w.x-center.x,frame.origin.y+w.y-center.y,angle,'frontage-frame');
   }
   const angles=[0,Math.PI/12,-Math.PI/12,Math.PI/6,-Math.PI/6,Math.PI/4,-Math.PI/4,Math.PI/2,-Math.PI/2,Math.PI];
   for(let i=0;i<property.boundary.length;i++){
     const p=property.boundary[i],q=property.boundary[(i+1)%property.boundary.length];
-    angles.push(lareBuildingAngle(Math.atan2(q.y-p.y,q.x-p.x)-source.orientation));
+    angles.push(lareBuildingAngle(sreMathAtan2(q.y-p.y,q.x-p.x)-source.orientation));
   }
   for(const angle of [...new Set(angles.map(a=>Math.round(lareBuildingAngle(a)*1e9)/1e9))]){
     if(attempts>=160)break;

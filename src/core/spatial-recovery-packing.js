@@ -1,3 +1,5 @@
+import { roadFrameLength } from './geometry.js';
+import { sreMathSin, sreMathCos, sreMathAtan2 } from './spatial-recovery-math.js';
 import { createSpatialPermissions } from './spatial-recovery-contract.js';
 import { riCompare, riFreeze } from './road-impact-model.js';
 import { shapeContained } from './building-validation.js';
@@ -35,7 +37,7 @@ export function* iterateSpatialPackingSeeds({property,policy,buildings,edge,edge
       throw Error('Unauthorized spatial packing frontage.');
   }
   const original=property.boundary,[f0,f1]=original;
-  const {a,b}=edge,len=Math.hypot(b.x-a.x,b.y-a.y),width=Math.hypot(f1.x-f0.x,f1.y-f0.y);
+  const {a,b}=edge,len=roadFrameLength(b.x-a.x,b.y-a.y),width=roadFrameLength(f1.x-f0.x,f1.y-f0.y);
   if(len<srePackEps||width<srePackEps)return [];
   const t={x:(b.x-a.x)/len,y:(b.y-a.y)/len},n={x:-t.y,y:t.x};
   const oldT={x:(f1.x-f0.x)/width,y:(f1.y-f0.y)/width},oldN={x:-oldT.y,y:oldT.x};
@@ -46,7 +48,7 @@ export function* iterateSpatialPackingSeeds({property,policy,buildings,edge,edge
   if(depth<srePackEps)return [];
   const front=(STREET_WIDTHS[edge.road.kind]+STREET_EDGE_WIDTH)/2+PROPERTY_SETBACK+.05;
   const center=srePackDot({x:(f0.x+f1.x)/2-a.x,y:(f0.y+f1.y)/2-a.y},t);
-  const align=Math.atan2(t.y,t.x)-Math.atan2(oldT.y,oldT.x);
+  const align=sreMathAtan2(t.y,t.x)-sreMathAtan2(oldT.y,oldT.x);
   if(!Number.isSafeInteger(maxProposals)||maxProposals<1||maxProposals>192)
     throw Error('Invalid packing proposal limit.');
   const shape=original.map(local);
@@ -61,7 +63,7 @@ export function* iterateSpatialPackingSeeds({property,policy,buildings,edge,edge
       const points=source.geometry.regions.flatMap(r=>r.ring);
       budget.spend(Math.max(1,points.length*4));
       const c={x:points.reduce((s,p)=>s+p.x,0)/points.length,y:points.reduce((s,p)=>s+p.y,0)/points.length};
-      const co=Math.cos(angle),si=Math.sin(angle);
+      const co=sreMathCos(angle),si=sreMathSin(angle);
       const project=p=>{const x=p.x-c.x,y=p.y-c.y,q={x:scale*(x*co-y*si),y:scale*(x*si+y*co)};return {u:srePackDot(q,t),v:srePackDot(q,n)};};
       const pts=points.map(project),minU=Math.min(...pts.map(p=>p.u)),minV=Math.min(...pts.map(p=>p.v));
       return {source,c,project,minU,minV,w:Math.max(...pts.map(p=>p.u))-minU,h:Math.max(...pts.map(p=>p.v))-minV};
@@ -86,7 +88,7 @@ export function* iterateSpatialPackingSeeds({property,policy,buildings,edge,edge
         if(fitMode&&edges.length){
           let lo=0,hi=len-span,valid=true;
           for(const e of edges){
-            const dx=e.b.x-e.a.x,dy=e.b.y-e.a.y,edgeLen=Math.hypot(dx,dy);
+            const dx=e.b.x-e.a.x,dy=e.b.y-e.a.y,edgeLen=roadFrameLength(dx,dy);
             if(edgeLen<srePackEps||!Number.isFinite(STREET_WIDTHS[e.road?.kind])){valid=false;break;}
             const inward={x:-dy/edgeLen,y:dx/edgeLen};
             const margin=(STREET_WIDTHS[e.road.kind]+STREET_EDGE_WIDTH)/2+PROPERTY_SETBACK+.05;

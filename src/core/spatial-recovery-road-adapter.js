@@ -1,3 +1,4 @@
+import { recordSpatialRestorationBasis } from './spatial-recovery-restoration-trail.js';
 import { createSpatialOperation, createSpatialInventory, createSpatialRef, spatialRefKey } from './spatial-recovery-contract.js';
 import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-delta.js';
 import { describeSpatialCapability, spatialConstraint } from './spatial-recovery-registry.js';
@@ -396,12 +397,14 @@ export async function searchSpatialGroupedRetirementRoadGroup(project,input,budg
 // Restore exact original records by deriving every trial anew from accepted
 // input. Restoring land alone leaves its originally retired children absent.
 // No new retirement or identity allocation; no accepted-project mutation.
-export async function restoreSpatialRoadRetirements(project,input,seedDelta,budget,{proposalPolicy='baseline'}={}){
+export async function restoreSpatialRoadRetirements(project,input,seedDelta,budget,{proposalPolicy='baseline',captureRestorationAudit=false}={}){
   if(!['baseline','diversified','shell-first'].includes(proposalPolicy))throw Error('Unsupported restoration proposal policy.');
   const operation=createSpatialOperation(input),attempts=[],restored=[];
+  const restorationTrail=captureRestorationAudit?[]:null;
   let incumbent=null,exhausted=null;
   const finish=()=>riFreeze({status:incumbent?'verified-witness':'refused',operation,
-    delta:incumbent?.delta??null,ledger:incumbent?.ledger??null,attempts,restored,exhausted,stats:budget.snapshot()});
+    delta:incumbent?.delta??null,ledger:incumbent?.ledger??null,attempts,restored,exhausted,stats:budget.snapshot(),
+    ...(restorationTrail===null?{}:{restorationTrail})});
   try{
     const snapshot=copyJson(project);
     budget.spend(Math.max(1,Math.ceil(new TextEncoder().encode(JSON.stringify(snapshot)).length/64)));
@@ -458,6 +461,7 @@ export async function restoreSpatialRoadRetirements(project,input,seedDelta,budg
       budget.spend(Math.max(1,returned.length));
       restored.push(...returned.map(ref=>({...ref})));
       incumbent={delta:result.delta,ledger:result.ledger};
+      recordSpatialRestorationBasis(restorationTrail,result.delta);
     };
     // Whole blocks first (at most two), then individual groups, then land
     // shells. Each phase has its own bounded proposal inventory; the same
@@ -522,8 +526,9 @@ export async function restoreSpatialRoadRetirements(project,input,seedDelta,budg
 // trial has its own small ceiling but charges the same operation parent;
 // no fresh overall allowance, no live activation. Never compare claims
 // from search: every accepted challenger passes original-to-final replay.
-export async function optimizeSpatialRoadRetirements(project,input,seedDelta,budget){
+export async function optimizeSpatialRoadRetirements(project,input,seedDelta,budget,{captureRestorationAudit=false}={}){
   const operation=createSpatialOperation(input),attempts=[];
+  const restorationTrail=captureRestorationAudit?[]:null;
   let incumbent=null,initial=null,exhausted=null;
   const finish=()=>{
     const finalKeys=new Set((incumbent?.delta.retired??[]).map(spatialRefKey));
@@ -533,7 +538,7 @@ export async function optimizeSpatialRoadRetirements(project,input,seedDelta,bud
       initialCost:initial?.cost??null,attempts,
       restored:initial?.delta.retired.filter(r=>!finalKeys.has(spatialRefKey(r)))??[],
       newlyRetired:incumbent?.delta.retired.filter(r=>!initialKeys.has(spatialRefKey(r)))??[],
-      exhausted,stats:budget.snapshot()});
+      exhausted,stats:budget.snapshot(),...(restorationTrail===null?{}:{restorationTrail})});
   };
   try{
     const snapshot=copyJson(project);
@@ -564,6 +569,7 @@ export async function optimizeSpatialRoadRetirements(project,input,seedDelta,bud
         row.cost=cost;
         if(improvesSpatialRetirementCost(cost,incumbent.cost)){
           incumbent={delta:result.delta,ledger:result.ledger,cost};row.selected=true;
+          recordSpatialRestorationBasis(restorationTrail,result.delta);
         }
       }catch(error){
         if(!(error instanceof LareBudgetExceeded))throw error;

@@ -121,6 +121,7 @@ export class RoadPreviewSession {
   }
   invalidate() {
     this.revision++;
+    this.invalidateRecovery?.();
     this.clearLareDemolition();
     this.cancelLareSlice?.();
     this.cancelLareSlice = null;
