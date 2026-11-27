@@ -64,6 +64,18 @@ test('workflow retains parity, exact gate precedence, and independent full CI',(
   assert.match(quick,/run: node scripts\/ci-focused\.mjs syntax/);
   assert.match(quick,/run: node scripts\/ci-focused\.mjs test/);
   assert.match(quick,/git diff --exit-code -- index\.html/);
-  assert.match(full,/shard: \[1, 2\]/);assert.match(full,/suite: \[desktop, roads, property, integration\]/);
+  assert.match(full,/shard: \[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16\]/);assert.match(full,/suite: \[desktop, roads, property, integration\]/);
   assert.match(full,/name: Build, Node tests and browser QA/);
+});
+
+test('sixteen-runner current gate rejects old or mixed architecture and missing late shards',()=>{
+  const run={head_sha:main,head_branch:'main',event:'push',name:'Mappo CI',status:'completed',conclusion:'success',id:12,run_attempt:2};
+  const jobs=MAIN_JOBS.map(name=>({name,run_id:12,run_attempt:2,status:'completed',conclusion:'success'}));
+  assert.equal(MAIN_JOBS.length,22);
+  const oldJobs=jobs.filter(j=>!j.name.startsWith('Node regression')).concat([1,2].map(i=>({...jobs[0],name:'Node regression (shard '+i+'/2)'})));
+  assert.equal(verifiedMainRun(main,run,{total_count:oldJobs.length,jobs:oldJobs}),false);
+  assert.equal(verifiedMainRun(main,run,{total_count:oldJobs.length,jobs:oldJobs},2),true);
+  for(const changed of [jobs.filter(j=>j.name!=='Node regression (shard 16/16)'),[...jobs,oldJobs.at(-1)],jobs.map(j=>j.name==='Node regression (shard 16/16)'?{...j,run_attempt:1}:j)]){
+    assert.equal(verifiedMainRun(main,run,{total_count:changed.length,jobs:changed}),false);
+  }
 });

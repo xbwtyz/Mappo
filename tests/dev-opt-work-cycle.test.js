@@ -47,11 +47,11 @@ test('DEV-OPT real baseline separates full CI from focused workflow-only evidenc
 
 function v2Checkpoint(state='active',qualification='focused-only'){
   const x=clone(c);x.version=2;x.state=state;x.evidence.qualification=qualification;
-  x.evidence.fast.attempt=1;x.evidence.full.attempt=1;
+  x.evidence.fast.attempt=1;x.evidence.full.attempt=1;x.evidence.full.nodeShards=16;
   if(state==='merged'){x.source.branch='main';x.source.prHeadSha='b'.repeat(40);}
   return x;
 }
-const mandatory=['Resolve full CI request','Node regression (shard 1/2)','Node regression (shard 2/2)',
+const mandatory=['Resolve full CI request',...Array.from({length:16},(_,i)=>'Node regression (shard '+(i+1)+'/16)'),
   'Browser QA (desktop)','Browser QA (roads)','Browser QA (property)','Browser QA (integration)','Build, Node tests and browser QA'];
 function v2Live(x){
   const l=observation(),e=x.evidence;
@@ -112,4 +112,17 @@ test('manual acceptance package is deterministic, exact-source bound, and never 
     assert.equal(readdirSync(dir).length,7);
     assert.throws(()=>writeAcceptancePackage(dir,first),/new or empty/);
   }finally{rmSync(dir,{recursive:true,force:true});}
+});
+
+test('V2 current full checkpoint and V2 metrics cannot qualify a missing sixteenth shard',()=>{
+  const x=v2Checkpoint('review-ready','full'),l=v2Live(x);
+  l.fullJobs=l.fullJobs.filter(j=>j.name!=='Node regression (shard 16/16)');
+  assert.throws(()=>reconstructDevelopmentCheckpoint(x,l),/Incomplete mandatory/);
+  const legacy=clone(x);legacy.evidence.full.nodeShards=2;
+  assert.throws(()=>validateDevelopmentCheckpoint(legacy),/current full gate/);
+  const good=v2Live(x);
+  const run={runId:x.evidence.full.runId,attempt:1,nodeShards:16,kind:'full-main',head:x.source.sha,status:'completed',conclusion:'success',
+    createdAt:'2026-11-27T00:00:00Z',updatedAt:'2026-11-27T00:05:00Z',jobs:good.fullJobs};
+  assert.equal(summarizeDevelopmentMetrics({version:2,runs:[run]})['full-main-16-node'].qualified,1);
+  assert.equal(summarizeDevelopmentMetrics({version:2,runs:[{...run,jobs:l.fullJobs}]})['full-main-16-node'].incomplete,1);
 });

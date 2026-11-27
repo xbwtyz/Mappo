@@ -65,12 +65,12 @@ test('native reporter preserves TAP and records real per-file summaries under No
     assert.notEqual(bad.status,0);assert.match(bad.stdout,/fixture failure/);
   }finally {rmSync(dir,{recursive:true,force:true});}
 });
-test('timing pilot is isolated from full CI and full workflow retains two Node jobs',()=>{
+test('timing pilot is isolated from full CI and full workflow retains sixteen Node jobs',()=>{
   const pilot=readFileSync(new URL('../.github/workflows/ci-node-timing.yml',import.meta.url),'utf8');
   const full=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8');
   assert.match(pilot,/\[node-timing-pilot-16\]/);assert.match(pilot,/shard: \[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16\]/);
   assert.match(pilot,/aggregate .* 16/);assert.doesNotMatch(pilot,/name: Build, Node tests and browser QA/);
-  assert.match(full,/shard: \[1, 2\]/);assert.match(full,/ci-node-timing\.mjs run/);
+  assert.match(full,/shard: \[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16\]/);assert.match(full,/ci-node-timing\.mjs run/);
   assert.match(full,/name: Build, Node tests and browser QA/);
 });
 
@@ -137,7 +137,7 @@ test('reviewed measured assignment includes each current Node test exactly once'
   assert.throws(()=>validateBalancedManifest(manifest,inventory.slice(1)));
 });
 
-test('sixteen-runner diagnostic reuses validated measured inventory without altering two-runner gate',()=>{
+test('sixteen-runner diagnostic reuses validated measured inventory and preserves historical two-runner assignment',()=>{
   const manifest=JSON.parse(readFileSync(new URL('../scripts/ci-node-weights.json',import.meta.url),'utf8'));
   const inventory=nodeInventory(),groups=measuredAssignments(manifest,inventory,16);
   assert.equal(groups.length,16);
@@ -154,4 +154,13 @@ test('sixteen-runner diagnostic reuses validated measured inventory without alte
   for(const change of [r=>r.pop(),r=>r[15].shard=1,r=>r[15].attempt='2',r=>r[15].total.success=false,r=>r[15].files[0].file=r[0].files[0].file]){
     const invalid=structuredClone(reports);change(invalid);assert.throws(()=>verifyTimingReports(invalid,options16));
   }
+});
+
+test('full CI requires all sixteen same-attempt reports in its existing aggregate',()=>{
+  const full=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8');
+  assert.match(full,/Node regression \(shard \$\{\{ matrix\.shard \}\}\/16\)/);
+  assert.match(full,/ci-node-timing\.mjs run \$\{\{ matrix\.shard \}\} 16/);
+  assert.match(full,/ci-node-timing\.mjs aggregate timing-input 16/);
+  assert.match(full,/pattern: mappo-node-timing-\*-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/);
+  assert.match(full,/needs: \[route, node, browser\]/);
 });

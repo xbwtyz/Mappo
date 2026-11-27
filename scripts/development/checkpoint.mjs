@@ -10,9 +10,7 @@ const require=(ok,msg)=>{if(!ok)throw Error(msg);};
 
 // V2 supports active/paused draft work, a ready candidate awaiting CI, and
 // verified main after an explicit merge. Evidence is never authorization.
-const FULL_NAMES=['Resolve full CI request','Node regression (shard 1/2)','Node regression (shard 2/2)',
-  'Browser QA (desktop)','Browser QA (roads)','Browser QA (property)','Browser QA (integration)',
-  'Build, Node tests and browser QA'];
+import { completeFullJobs, NODE_SHARDS } from '../ci-full-contract.mjs';
 const terminal=x=>x?.status==='completed'&&x.conclusion==='success';
 const runStates=['queued','in_progress','completed','requested','waiting','pending'];
 function validateV2(c){
@@ -31,7 +29,7 @@ function validateV2(c){
   if(e.qualification==='full-pending')require(c.state==='review-ready'||c.state==='merged','Invalid pending gate state.');
   for(const k of ['fast','full'])if(e[k]!=null)require(positive(e[k].runId)&&positive(e[k].attempt)&&e[k].head===s.sha,'Invalid exact run reference.');
   if(e.qualification==='focused-only')require(e.fast&&positive(e.fast.jobId)&&positive(e.fast.tests)&&e.fast.passed===e.fast.tests&&e.fast.failed===0,'Missing focused evidence.');
-  if(e.qualification.startsWith('full'))require(e.full,'Missing full run reference.');
+  if(e.qualification.startsWith('full'))require(e.full&&e.full.nodeShards===NODE_SHARDS,'Missing current full gate architecture.');
   require(Array.isArray(e.artifacts)&&e.artifacts.length===2,'Missing artifact pair.');
   const [a,b]=e.artifacts;
   require(a.path==='index.html'&&b.path==='dist/mappo-'+c.appVersion+'.html'&&sha(a.blob)&&a.blob===b.blob,'Artifact parity mismatch.');
@@ -59,10 +57,7 @@ function reconstructV2(c,live){
   if(e.qualification==='full'||e.qualification==='full-pending'){
     const r=checkRun('full');
     if(e.qualification==='full'){
-      require(terminal(r)&&Array.isArray(live.fullJobs)&&FULL_NAMES.every(name=>{
-        const rows=live.fullJobs.filter(j=>j.name===name);
-        return rows.length===1&&rows[0].run_id===r.id&&rows[0].run_attempt===r.run_attempt&&terminal(rows[0]);
-      }),'Incomplete mandatory full gate.');
+      require(terminal(r)&&completeFullJobs(live.fullJobs,r),'Incomplete mandatory full gate.');
       qualified='full';
     }else{
       require(r.status!=='completed','Pending checkpoint changed; reconstruct with current evidence.');

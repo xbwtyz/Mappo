@@ -6,22 +6,14 @@ import { join } from 'node:path';
 
 const SHA = /^[0-9a-f]{40}$/;
 const VALID = x => typeof x === 'string' && SHA.test(x) && !/^0+$/.test(x);
-export const MAIN_JOBS = [
-  'Resolve full CI request', 'Node regression (shard 1/2)', 'Node regression (shard 2/2)',
-  'Browser QA (desktop)', 'Browser QA (roads)', 'Browser QA (property)', 'Browser QA (integration)',
-  'Build, Node tests and browser QA'
-];
-export function verifiedMainRun(sha, run, response) {
+import { mandatoryJobNames, completeFullJobs, NODE_SHARDS } from './ci-full-contract.mjs';
+export const MAIN_JOBS = mandatoryJobNames();
+export function verifiedMainRun(sha, run, response, shards=NODE_SHARDS) {
   if (!VALID(sha) || run?.head_sha !== sha || run.head_branch !== 'main' || run.event !== 'push' ||
       run.name !== 'Mappo CI' || run.status !== 'completed' || run.conclusion !== 'success' ||
       !Number.isSafeInteger(run.id) || run.id < 1 || !Number.isSafeInteger(run.run_attempt) || run.run_attempt < 1 ||
       !Array.isArray(response?.jobs) || response.total_count !== response.jobs.length) return false;
-  return MAIN_JOBS.every(name => {
-    const matching = response.jobs.filter(j => j.name === name);
-    return matching.length === 1 && matching[0].run_id === run.id &&
-      matching[0].run_attempt === run.run_attempt && matching[0].status === 'completed' &&
-      matching[0].conclusion === 'success';
-  });
+  return completeFullJobs(response.jobs,run,shards);
 }
 export function changeRange({head,before,parents,mainAncestor,verifiedMain,isAncestor}) {
   if (!VALID(head) || !Array.isArray(parents) || parents.some(x=>!VALID(x))) throw Error('Invalid checkout identity');
@@ -58,7 +50,7 @@ function classify(path) {
   if (path==='tests/spatial-recovery-compression-support.js') return ['compression-partition'];
   if (/^tests\/[^/]+\.test\.js$/.test(path)) return [];
   if (path==='index.html' || /^dist\/mappo-[^/]+\.html$/.test(path)) return [];
-  if (/^(scripts\/ci-(trigger|focused|node-timing|node-timing-reporter)\.mjs|\.github\/workflows\/ci(-fast|-node-timing)?\.yml|scripts\/ci-node-weights\.json|scripts\/browser-suites\.json|scripts\/run-browser-suite\.mjs|scripts\/development\/.+)$/.test(path)) return ['infrastructure'];
+  if (/^(scripts\/ci-(trigger|focused|full-contract|node-timing|node-timing-reporter)\.mjs|\.github\/workflows\/ci(-fast|-node-timing)?\.yml|scripts\/ci-node-weights\.json|scripts\/browser-suites\.json|scripts\/run-browser-suite\.mjs|scripts\/development\/.+)$/.test(path)) return ['infrastructure'];
   if (/^src\/core\/(geometry|validate-|identity|secure-identity|accepted-|city-model|project-schema|prng|boundary|placement|reconciliation-|neighborhood-reflow|parcel-reconciliation|road-group-preservation)/.test(path) ||
       /^src\/data\/project-validation/.test(path)) return ['all'];
   if (/^src\/core\/spatial-recovery-/.test(path)) return ['sre','roads','schema'];
@@ -96,11 +88,16 @@ function mainEvidence(sha,env) {
   if (!VALID(sha)) return null;
   try {
     const api = path => JSON.parse(execFileSync('gh',['api','--method','GET','repos/'+env.GITHUB_REPOSITORY+'/'+path],{encoding:'utf8',maxBuffer:8*1024*1024}));
+    // Read the exact historical commit's workflow, not the present branch's policy.
+    const workflow=git(['show',sha+':.github/workflows/ci.yml']);
+    const matrix=workflow.match(/^\s+shard: \[([\d, ]+)\]\s*$/m);
+    const shards=matrix?matrix[1].split(',').map(Number):[];
+    if(![2,NODE_SHARDS].includes(shards.length)||shards.some((n,i)=>n!==i+1))return null;
     const result=api('actions/workflows/ci.yml/runs?branch=main&event=push&head_sha='+sha+'&status=success&per_page=10');
     for(const run of result.workflow_runs || []) {
       if(run.head_sha!==sha || !Number.isSafeInteger(run.id) || !Number.isSafeInteger(run.run_attempt)) continue;
       const jobs=api('actions/runs/'+run.id+'/attempts/'+run.run_attempt+'/jobs?per_page=100');
-      if(verifiedMainRun(sha,run,jobs)) return sha;
+      if(verifiedMainRun(sha,run,jobs,shards.length)) return sha;
     }
   } catch(error) { console.warn('::warning::Exact-main qualification lookup unavailable; keep conservative push selection.'); }
   return null;
