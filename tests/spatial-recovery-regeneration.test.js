@@ -6,6 +6,7 @@ import { createSpatialDestructionBudget } from '../src/core/spatial-recovery-con
 import { searchSpatialShellRegeneration, verifySpatialShellRegeneration, searchSpatialGroupRegeneration, verifySpatialGroupRegeneration } from '../src/core/spatial-recovery-regeneration.js';
 import { issueIdentityReservation } from '../src/core/identity-verification.js';
 import { createSpatialDelta } from '../src/core/spatial-recovery-delta.js';
+import { verifySpatialRoadWorkerReservation } from '../src/core/spatial-recovery-worker-reservation.js';
 const budget=()=>createSpatialDestructionBudget();
 const clone=x=>JSON.parse(JSON.stringify(x));
 test('detached optional shell regeneration uses fresh Schema 11 reservations and preserves survivors',{timeout:300000},async()=>{
@@ -35,6 +36,16 @@ test('detached optional shell regeneration uses fresh Schema 11 reservations and
   const receipt=issueIdentityReservation(project.identityAllocation,project.city,context,requests);
   const auth={context,requests,receipt};
   assert.deepEqual(receipt,result.provisionalAuthorization.receipt);
+  // Explicit expected plan in this fixture; production must obtain its
+  // independent request policy from the trusted host, not the receipt.
+  const expected=requests.map(row=>({...row}));
+  assert.deepEqual(verifySpatialRoadWorkerReservation(project,op,context,expected,result.provisionalAuthorization),auth);
+  assert.throws(()=>verifySpatialRoadWorkerReservation(project,op,context,[],result.provisionalAuthorization),/host requests/);
+  const wrongHost=clone(expected);wrongHost[0].key+='-wrong';
+  assert.throws(()=>verifySpatialRoadWorkerReservation(project,op,context,wrongHost,result.provisionalAuthorization),/host requests/);
+  const wrongReceipt=clone(result.provisionalAuthorization);wrongReceipt.receipt.allocations[0].sequence++;
+  assert.throws(()=>verifySpatialRoadWorkerReservation(project,op,context,expected,wrongReceipt),/allocation/);
+  assert.throws(()=>verifySpatialRoadWorkerReservation(project,op,{...context,namespace:other},expected,result.provisionalAuthorization),/host requests/);
   const actual=await verifySpatialShellRegeneration(project,op,seed.delta,result.delta,auth,budget());
   assert.deepEqual(result.delta.retired,seed.delta.retired);
   assert.ok(result.delta.added.length>0&&result.delta.added.every(r=>r.ref.collection==='buildings'));

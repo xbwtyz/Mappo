@@ -1,7 +1,8 @@
 import { createSpatialOperation } from './spatial-recovery-contract.js';
+import { validateAllocationNamespace } from './identity-allocation.js';
 
 export const SRE_ROAD_WORKER_VERSION = 1;
-const sreWorkerKeys = ['version','requestId','sessionId','projectJson','operation','quality'];
+const sreWorkerKeys = ['version','requestId','sessionId','projectJson','operation','quality','controlled','reservationContext'];
 export const sreWorkerId = id => Number.isSafeInteger(id) && id > 0;
 export const sreWorkerSession = id => typeof id === 'string' && id.length > 0 && id.length <= 200 && id.trim() === id;
 
@@ -20,11 +21,31 @@ export function normalizeSpatialRoadWorkerRequest(input) {
       !operation.geometry || operation.editedRefs.some(ref => ref.collection !== 'roads'))
     throw Error('Unsupported road worker operation.');
   const quality = input.quality ?? 'standard';
-  if (!['standard','high'].includes(quality) || (quality === 'high' && !operation.permissions.destruction))
+  if (!['standard','high'].includes(quality) || (quality === 'high' && (!operation.permissions.destruction||operation.permissions.regeneration)))
     throw Error('Invalid road worker quality policy.');
-  // Regeneration must wait for independently bound host reservation context.
-  if (operation.permissions.regeneration) throw Error('Road worker regeneration is not enabled.');
+  const controlled=input.controlled??false;
+  if(typeof controlled!=='boolean')throw Error('Invalid road worker control policy.');
+  const reservationContext=normalizeSpatialRoadReservationContext(operation,input.reservationContext??null);
   return Object.freeze({version:SRE_ROAD_WORKER_VERSION,requestId:input.requestId,
-    sessionId:input.sessionId,projectJson:input.projectJson,operation,quality});
+    sessionId:input.sessionId,projectJson:input.projectJson,operation,quality,controlled,reservationContext});
 }
 
+
+export function normalizeSpatialRoadReservationContext(operation,context){
+  if(!operation.permissions.regeneration){
+    if(context!==null)throw Error('Unexpected road regeneration context.');
+    return null;
+  }
+  if(!operation.permissions.destruction||!context||typeof context!=='object'||
+     Array.isArray(context)||Object.keys(context).length!==3||
+     !['projectId','revision','namespace'].every(k=>Object.hasOwn(context,k))||
+     context.projectId!==operation.projectId||context.revision!==operation.revision)
+    throw Error('Missing or stale road regeneration context.');
+  validateAllocationNamespace(context.namespace);
+  return Object.freeze({projectId:context.projectId,revision:context.revision,namespace:context.namespace});
+}
+
+export function spatialRoadControlMessage(request,command){
+  if(!['stop','continue'].includes(command))throw Error('Unsupported road recovery control.');
+  return {version:SRE_ROAD_WORKER_VERSION,requestId:request.requestId,sessionId:request.sessionId,command};
+}
