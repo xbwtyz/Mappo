@@ -51,7 +51,7 @@ function geometryId(road,phase){
   for(const p of points)for(const n of [p.x,p.y]){view.setFloat64(i,n);i+=8;}
   return phase+':'+Array.from(new Uint8Array(buffer),v=>v.toString(16).padStart(2,'0')).join('');
 }
-function makeQuery(context,snapshot,road,phase){
+export function makeAresRoadConstraintQuery(context,snapshot,road,phase){
   return {version:1,context,snapshotFingerprint:snapshot,
     geometryFingerprint:geometryId(road,phase),capability:'road-corridor-2d',phase,
     frame:{horizontal:'city-map-unit',vertical:null},
@@ -126,7 +126,7 @@ export async function discoverAresLandscape(project,context,budget){
       const original=city.roads.find(r=>r.id===road.ref.id);
       if(!original||classifyRoad(original).protected)throw Error('Protected road cannot enter ordinary landscape query.');
       for(const phase of ['swept','final'])
-        evidence.push(service.query(kind.id,makeQuery(observation.context,observation.snapshotFingerprint,road,phase),budget));
+        evidence.push(service.query(kind.id,makeAresRoadConstraintQuery(observation.context,observation.snapshotFingerprint,road,phase),budget));
     }
   }
   return riFreeze({version:ARES_LANDSCAPE_VERSION,context:observation.context,snapshotFingerprint:observation.snapshotFingerprint,
