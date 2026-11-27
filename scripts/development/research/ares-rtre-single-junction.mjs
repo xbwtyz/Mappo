@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { materializeAresP3Case } from './ares-p3-fixtures.mjs';
+import { materializeLockedRtreCase } from './ares-rtre-locked-recipes.mjs';
 import { inspectFreshRtreNeighborhood } from './ares-rtre-fresh-neighborhood.mjs';
 import { aresReplayJson } from '../../../src/core/ares-diagnostic-replay.js';
 import { iterateRoadGraph, classifyRoad } from '../../../src/core/road-graph.js';
@@ -103,7 +103,7 @@ function move(p,dx,dy){
 }
 async function openFreshRtre(caseId,options,budget){
   const report=await inspectFreshRtreNeighborhood(caseId,options,budget);
-  const f=materializeAresP3Case(caseId),source=f.project,before=aresReplayJson(source,budget);
+  const f=materializeLockedRtreCase(caseId),source=f.project,before=aresReplayJson(source,budget);
   const bytes=Buffer.from(before,'utf8');budget.spend(Math.max(1,Math.ceil(bytes.length/64)));
   if(createHash('sha256').update(bytes).digest('hex')!==report.snapshotFingerprint||
     aresReplayJson(f.context,budget)!==aresReplayJson(report.context,budget))
@@ -292,7 +292,12 @@ function betterScore(a,b){
 export async function probeFreshRtreRanked(caseId,o,budget){
   return probeCoordinated(caseId,o,budget,true,true,true);
 }
-async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false){
+// G2: first valid candidate, with zero neighbor adjustment when baseline works.
+// Existing F1A/F1B demonstration and ranking entrypoints remain unchanged.
+export async function probeFreshRtreFirstValid(caseId,o,budget){
+  return probeCoordinated(caseId,o,budget,true,true,false,true);
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -343,7 +348,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
       result.status=result.baseline.valid?'baseline-valid':'search-refused';result.termination='strict';return finish();
     }
     // Zero extra neighbor changes always win when exact intent is valid.
-    if(ranked&&result.baseline.valid){
+    if((ranked||preferBaseline)&&result.baseline.valid){
       result.status='baseline-valid';result.termination='baseline-preferred';return finish();
     }
     const blockers=new Set(result.baseline.blockingNodeIds??[]);

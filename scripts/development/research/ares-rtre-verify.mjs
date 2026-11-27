@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { materializeAresP3Case } from './ares-p3-fixtures.mjs';
+import { materializeLockedRtreCase } from './ares-rtre-locked-recipes.mjs';
 import { inspectFreshRtreNeighborhood } from './ares-rtre-fresh-neighborhood.mjs';
 import { aresReplayJson } from '../../../src/core/ares-diagnostic-replay.js';
 import { iterateRoadGraph,classifyRoad } from '../../../src/core/road-graph.js';
@@ -66,7 +66,7 @@ export async function verifyFreshRtreWitness(caseId,options,evidence,budget){
     need(options&&Number.isSafeInteger(options.maxCandidates)&&options.maxCandidates>=1&&Number.isSafeInteger(options.maxNeighbors)&&options.maxNeighbors>=2,'invalid-limits');
     const {mode,maxObjects,maxHops,maxNeighbors,maxCandidates}=options;
     const report=await inspectFreshRtreNeighborhood(caseId,{mode,maxObjects,maxHops},budget);
-    const {project,context}=materializeAresP3Case(caseId),city=project.city,before=aresReplayJson(project,budget);
+    const {project,context}=materializeLockedRtreCase(caseId),city=project.city,before=aresReplayJson(project,budget);
     const bytes=Buffer.from(before,'utf8');budget.spend(Math.max(1,Math.ceil(bytes.length/64)));
     need(createHash('sha256').update(bytes).digest('hex')===report.snapshotFingerprint,'source-mismatch');
     need(evidence&&evidence.caseId===caseId&&evidence.snapshotFingerprint===report.snapshotFingerprint&&equal(evidence.context,context)&&equal(evidence.limits,report.limits)&&evidence.maxNeighbors===maxNeighbors&&evidence.maxCandidates===maxCandidates,'evidence-mismatch');

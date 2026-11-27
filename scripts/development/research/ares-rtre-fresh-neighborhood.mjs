@@ -1,6 +1,5 @@
-import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { materializeAresP3Case } from './ares-p3-fixtures.mjs';
+import { lockedRtreCase,materializeLockedRtreCase } from './ares-rtre-locked-recipes.mjs';
 import { observeAresRtreGeometry } from '../../../src/core/ares-rtre-geometry.js';
 import { observeAresRtreNeighborhood } from '../../../src/core/ares-rtre-neighborhood.js';
 import { aresReplayJson } from '../../../src/core/ares-diagnostic-replay.js';
@@ -12,8 +11,6 @@ import { riFreeze, riCompare } from '../../../src/core/road-impact-model.js';
 // no supplied provenance, no caller-provided editable list. Fresh generation
 // is fixture setup (outside timed search); all ensuing observation and
 // eligibility accounting uses the one caller-owned root.
-const locks=riFreeze(JSON.parse(readFileSync(new URL(
-  '../../../tests/fixtures/ares-p3-frozen-identities.json',import.meta.url),'utf8')));
 const ref=(collection,id)=>createSpatialRef({collection,id});
 const key=spatialRefKey;
 const roadFields=new Set('id a b kind boundary plaza bank bridgeId waterBoundary foothill passId terrainBoundary'.split(' '));
@@ -42,17 +39,16 @@ function knownFields(row,allowed,budget){
 }
 export async function inspectFreshRtreNeighborhood(caseId,optionsInput,budget){
   if(typeof caseId!=='string')throw Error('Frozen RTRE recipe ID required, not a city.');
-  const lock=locks.rows.find(r=>r.id===caseId);
-  if(!lock)throw Error('Unknown frozen RTRE recipe.');
+  const lock=lockedRtreCase(caseId);
   const options=readOptions(optionsInput);
   checkBudget(budget,lock.limits);
   // The module itself creates and validates this city from the frozen P3
   // recipe, not a caller snapshot. No mutation/editor session intervenes.
-  const f=materializeAresP3Case(caseId),source=f.project;
+  const f=materializeLockedRtreCase(caseId),source=f.project;
   const before=aresReplayJson(source,budget),bytes=Buffer.from(before,'utf8');
   budget.spend(Math.max(1,Math.ceil(bytes.length/64)));
   const fingerprint=createHash('sha256').update(bytes).digest('hex');
-  if(fingerprint!==lock.source||!exact(f.context.operation,lock.operation)||!exact(f.limits,lock.limits))
+  if(fingerprint!==lock.source||(!lock.slot&&!exact(f.context.operation,lock.operation))||!exact(f.limits,lock.limits))
     throw Error('Frozen RTRE recipe identity changed.');
   const mode={mode:options.mode},limits={maxObjects:options.maxObjects,maxHops:options.maxHops};
   const geometry=await observeAresRtreGeometry(source,f.context,mode,budget);
