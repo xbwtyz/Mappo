@@ -1,0 +1,571 @@
+{
+  "version": 1,
+  "source": "276cd1bfc6d1250c016421d503ef2c502b249a98",
+  "diagnosticRun": 46079959187,
+  "method": "Read-only exact hitting-set branch-and-bound, deduplicate and remove supersets, branch on smallest remaining set, prune only at incumbent size. No candidate generation or authority. Minimum endpoint coverage, not geometric feasibility.",
+  "rows": [
+    {
+      "id": "linear-medium:eight-chain:100:diagonal",
+      "min": 3,
+      "cover": [
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ],
+      "branchVisits": 23,
+      "conflicts": 9,
+      "unique": 9,
+      "reduced": 7
+    },
+    {
+      "id": "linear-medium:eight-chain:100:y",
+      "min": 6,
+      "cover": [
+        "N-0137",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ],
+      "branchVisits": 7,
+      "conflicts": 71,
+      "unique": 21,
+      "reduced": 6
+    },
+    {
+      "id": "linear-medium:eight-chain:75:y",
+      "min": 5,
+      "cover": [
+        "N-0137",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ],
+      "branchVisits": 6,
+      "conflicts": 39,
+      "unique": 20,
+      "reduced": 5
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "min": 3,
+      "cover": [
+        "N-0145",
+        "N-0146",
+        "N-0147"
+      ],
+      "branchVisits": 23,
+      "conflicts": 9,
+      "unique": 9,
+      "reduced": 7
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "min": 4,
+      "cover": [
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147"
+      ],
+      "branchVisits": 5,
+      "conflicts": 30,
+      "unique": 14,
+      "reduced": 4
+    },
+    {
+      "id": "linear-medium:five-branch:100:diagonal",
+      "min": 3,
+      "cover": [
+        "N-0139",
+        "N-0140",
+        "N-0145"
+      ],
+      "branchVisits": 10,
+      "conflicts": 11,
+      "unique": 11,
+      "reduced": 6
+    },
+    {
+      "id": "linear-medium:five-branch:75:y",
+      "min": 4,
+      "cover": [
+        "N-0139",
+        "N-0140",
+        "N-0144",
+        "N-0145"
+      ],
+      "branchVisits": 5,
+      "conflicts": 32,
+      "unique": 16,
+      "reduced": 4
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "min": 4,
+      "cover": [
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0148"
+      ],
+      "branchVisits": 24,
+      "conflicts": 12,
+      "unique": 10,
+      "reduced": 6
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "min": 9,
+      "cover": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ],
+      "branchVisits": 21,
+      "conflicts": 71,
+      "unique": 36,
+      "reduced": 11
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "min": 4,
+      "cover": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140"
+      ],
+      "branchVisits": 5,
+      "conflicts": 30,
+      "unique": 12,
+      "reduced": 4
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "min": 5,
+      "cover": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0148"
+      ],
+      "branchVisits": 6,
+      "conflicts": 39,
+      "unique": 20,
+      "reduced": 5
+    },
+    {
+      "id": "organic-large:eight-chain:100:diagonal",
+      "min": 3,
+      "cover": [
+        "N-0153",
+        "N-0160",
+        "N-0168"
+      ],
+      "branchVisits": 31,
+      "conflicts": 11,
+      "unique": 8,
+      "reduced": 7
+    },
+    {
+      "id": "organic-large:eight-loop:100:y",
+      "min": 4,
+      "cover": [
+        "N-0155",
+        "N-0158",
+        "N-0159",
+        "N-0160"
+      ],
+      "branchVisits": 56,
+      "conflicts": 10,
+      "unique": 9,
+      "reduced": 8
+    },
+    {
+      "id": "organic-large:five-branch:100:y",
+      "min": 3,
+      "cover": [
+        "N-0153",
+        "N-0158",
+        "N-0159"
+      ],
+      "branchVisits": 12,
+      "conflicts": 10,
+      "unique": 10,
+      "reduced": 5
+    },
+    {
+      "id": "organic-large:five-branch:75:y",
+      "min": 2,
+      "cover": [
+        "N-0158",
+        "N-0159"
+      ],
+      "branchVisits": 11,
+      "conflicts": 6,
+      "unique": 6,
+      "reduced": 4
+    },
+    {
+      "id": "organic-large:five-chain:100:diagonal",
+      "min": 3,
+      "cover": [
+        "N-0148",
+        "N-0158",
+        "N-0167"
+      ],
+      "branchVisits": 8,
+      "conflicts": 9,
+      "unique": 7,
+      "reduced": 3
+    },
+    {
+      "id": "organic-large:five-chain:100:y",
+      "min": 3,
+      "cover": [
+        "N-0152",
+        "N-0158",
+        "N-0167"
+      ],
+      "branchVisits": 5,
+      "conflicts": 11,
+      "unique": 9,
+      "reduced": 3
+    },
+    {
+      "id": "organic-large:quad:100:y",
+      "min": 2,
+      "cover": [
+        "N-0158",
+        "N-0159"
+      ],
+      "branchVisits": 11,
+      "conflicts": 6,
+      "unique": 6,
+      "reduced": 4
+    },
+    {
+      "id": "organic-large:quad:75:y",
+      "min": 2,
+      "cover": [
+        "N-0158",
+        "N-0159"
+      ],
+      "branchVisits": 11,
+      "conflicts": 6,
+      "unique": 6,
+      "reduced": 4
+    },
+    {
+      "id": "planned-medium:eight-chain:100:diagonal",
+      "min": 9,
+      "cover": [
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140"
+      ],
+      "branchVisits": 67,
+      "conflicts": 30,
+      "unique": 27,
+      "reduced": 13
+    },
+    {
+      "id": "planned-medium:eight-chain:100:y",
+      "min": 9,
+      "cover": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139"
+      ],
+      "branchVisits": 10,
+      "conflicts": 65,
+      "unique": 29,
+      "reduced": 9
+    },
+    {
+      "id": "planned-medium:eight-chain:75:y",
+      "min": 9,
+      "cover": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139"
+      ],
+      "branchVisits": 10,
+      "conflicts": 65,
+      "unique": 29,
+      "reduced": 9
+    },
+    {
+      "id": "planned-medium:eight-loop:100:y",
+      "min": 4,
+      "cover": [
+        "N-0143",
+        "N-0144",
+        "N-0145",
+        "N-0146"
+      ],
+      "branchVisits": 5,
+      "conflicts": 30,
+      "unique": 14,
+      "reduced": 4
+    },
+    {
+      "id": "planned-medium:five-branch:100:y",
+      "min": 4,
+      "cover": [
+        "N-0133",
+        "N-0134",
+        "N-0143",
+        "N-0144"
+      ],
+      "branchVisits": 5,
+      "conflicts": 32,
+      "unique": 16,
+      "reduced": 4
+    },
+    {
+      "id": "planned-medium:five-chain:100:diagonal",
+      "min": 6,
+      "cover": [
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137"
+      ],
+      "branchVisits": 68,
+      "conflicts": 18,
+      "unique": 17,
+      "reduced": 11
+    },
+    {
+      "id": "planned-medium:five-chain:100:y",
+      "min": 6,
+      "cover": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136"
+      ],
+      "branchVisits": 7,
+      "conflicts": 44,
+      "unique": 20,
+      "reduced": 6
+    },
+    {
+      "id": "planned-medium:five-chain:75:y",
+      "min": 6,
+      "cover": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136"
+      ],
+      "branchVisits": 7,
+      "conflicts": 44,
+      "unique": 20,
+      "reduced": 6
+    },
+    {
+      "id": "radial-small:eight-loop:100:diagonal",
+      "min": 3,
+      "cover": [
+        "N-0105",
+        "N-0166",
+        "N-0187"
+      ],
+      "branchVisits": 9,
+      "conflicts": 8,
+      "unique": 8,
+      "reduced": 5
+    },
+    {
+      "id": "radial-small:eight-loop:100:x",
+      "min": 2,
+      "cover": [
+        "N-0101",
+        "N-0189"
+      ],
+      "branchVisits": 11,
+      "conflicts": 5,
+      "unique": 5,
+      "reduced": 5
+    },
+    {
+      "id": "radial-small:eight-loop:100:y",
+      "min": 5,
+      "cover": [
+        "N-0107",
+        "N-0108",
+        "N-0109",
+        "N-0142",
+        "N-0166"
+      ],
+      "branchVisits": 10,
+      "conflicts": 16,
+      "unique": 14,
+      "reduced": 7
+    },
+    {
+      "id": "radial-small:eight-loop:50:y",
+      "min": 2,
+      "cover": [
+        "N-0107",
+        "N-0108"
+      ],
+      "branchVisits": 7,
+      "conflicts": 2,
+      "unique": 2,
+      "reduced": 2
+    },
+    {
+      "id": "radial-small:eight-loop:75:x",
+      "min": 2,
+      "cover": [
+        "N-0101",
+        "N-0189"
+      ],
+      "branchVisits": 11,
+      "conflicts": 5,
+      "unique": 5,
+      "reduced": 5
+    },
+    {
+      "id": "radial-small:eight-loop:75:y",
+      "min": 3,
+      "cover": [
+        "N-0107",
+        "N-0108",
+        "N-0142"
+      ],
+      "branchVisits": 8,
+      "conflicts": 8,
+      "unique": 7,
+      "reduced": 5
+    },
+    {
+      "id": "radial-small:five-branch:100:diagonal",
+      "min": 5,
+      "cover": [
+        "N-0105",
+        "N-0141",
+        "N-0165",
+        "N-0187",
+        "N-0212"
+      ],
+      "branchVisits": 19,
+      "conflicts": 14,
+      "unique": 14,
+      "reduced": 6
+    },
+    {
+      "id": "radial-small:five-branch:100:y",
+      "min": 7,
+      "cover": [
+        "N-0103",
+        "N-0105",
+        "N-0107",
+        "N-0108",
+        "N-0141",
+        "N-0165",
+        "N-0188"
+      ],
+      "branchVisits": 37,
+      "conflicts": 16,
+      "unique": 15,
+      "reduced": 10
+    },
+    {
+      "id": "radial-small:five-branch:50:y",
+      "min": 5,
+      "cover": [
+        "N-0103",
+        "N-0104",
+        "N-0141",
+        "N-0165",
+        "N-0188"
+      ],
+      "branchVisits": 10,
+      "conflicts": 11,
+      "unique": 11,
+      "reduced": 5
+    },
+    {
+      "id": "radial-small:five-branch:75:diagonal",
+      "min": 4,
+      "cover": [
+        "N-0105",
+        "N-0141",
+        "N-0165",
+        "N-0188"
+      ],
+      "branchVisits": 11,
+      "conflicts": 11,
+      "unique": 10,
+      "reduced": 5
+    },
+    {
+      "id": "radial-small:five-branch:75:y",
+      "min": 6,
+      "cover": [
+        "N-0103",
+        "N-0104",
+        "N-0141",
+        "N-0142",
+        "N-0165",
+        "N-0189"
+      ],
+      "branchVisits": 21,
+      "conflicts": 14,
+      "unique": 13,
+      "reduced": 8
+    },
+    {
+      "id": "radial-small:five-chain:50:y",
+      "min": 4,
+      "cover": [
+        "N-0103",
+        "N-0140",
+        "N-0165",
+        "N-0188"
+      ],
+      "branchVisits": 38,
+      "conflicts": 9,
+      "unique": 9,
+      "reduced": 5
+    }
+  ]
+}
