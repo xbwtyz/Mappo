@@ -1,3 +1,5 @@
+import { roadFrameLength } from './geometry.js';
+import { sreMathSin, sreMathCos, sreMathAtan2 } from './spatial-recovery-math.js';
 import { createSpatialOperation, createSpatialInventory } from './spatial-recovery-contract.js';
 import { prepareRoadGroupIntentB1, readRoadGroupTopologyB1 } from './road-intent-c1.js';
 import { createLareContext } from './reconciliation-context.js';
@@ -56,7 +58,7 @@ function sreConcessionAdjacentFrontages(project,{op,context,changed,graph},prope
   const original=edges.findIndex(e=>e.road?.id===entry.frontageRoadId);
   if(original<0||edges.some(e=>!e.road||!sreConcessionFinitePoint(e.a)||!sreConcessionFinitePoint(e.b)))return Object.freeze([]);
   const out=[edges[(original+edges.length-1)%edges.length],edges[(original+1)%edges.length]]
-    .filter(e=>e.road.id!==entry.frontageRoadId&&Math.hypot(e.b.x-e.a.x,e.b.y-e.a.y)>sreConcessionEps)
+    .filter(e=>e.road.id!==entry.frontageRoadId&&roadFrameLength(e.b.x-e.a.x,e.b.y-e.a.y)>sreConcessionEps)
     .map(e=>e.road.id);
   return Object.freeze([...new Set(out)].sort(riCompare));
 }
@@ -94,17 +96,17 @@ function sreConcessionInspectSimilarity(project,{op,context,changed},buildingId,
   }
   const [p,q]=a[0].ring,[r,s]=b[0].ring;
   const u={x:q.x-p.x,y:q.y-p.y},v={x:s.x-r.x,y:s.y-r.y};
-  const len=Math.hypot(u.x,u.y),other=Math.hypot(v.x,v.y),factor=other/len;
+  const len=roadFrameLength(u.x,u.y),other=roadFrameLength(v.x,v.y),factor=other/len;
   if(len<=sreConcessionEps||!Number.isFinite(factor)||factor<=0||
     factor<1-op.permissions.maxLinearReduction-sreConcessionEps||factor>1+sreConcessionEps)fail();
-  const angle=Math.atan2(u.x*v.y-u.y*v.x,u.x*v.x+u.y*v.y),co=Math.cos(angle),si=Math.sin(angle);
+  const angle=sreMathAtan2(u.x*v.y-u.y*v.x,u.x*v.x+u.y*v.y),co=sreMathCos(angle),si=sreMathSin(angle);
   for(let i=0;i<a.length;i++)for(let j=0;j<a[i].ring.length;j++){
     budget.spend();const x=a[i].ring[j].x-p.x,y=a[i].ring[j].y-p.y;
     const z=b[i].ring[j];
-    if(Math.hypot(r.x+factor*(x*co-y*si)-z.x,r.y+factor*(x*si+y*co)-z.y)>sreConcessionEps)fail();
+    if(roadFrameLength(r.x+factor*(x*co-y*si)-z.x,r.y+factor*(x*si+y*co)-z.y)>sreConcessionEps)fail();
   }
   const delta=candidate.orientation-original.orientation-angle;
-  if(!Number.isFinite(delta)||Math.abs(Math.atan2(Math.sin(delta),Math.cos(delta)))>sreConcessionEps)fail();
+  if(!Number.isFinite(delta)||Math.abs(sreMathAtan2(sreMathSin(delta),sreMathCos(delta)))>sreConcessionEps)fail();
   const charge={charge:(n=1)=>{if(n>0)budget.spend(n);}};
   validateBuildingStructureS10(candidate.geometry,candidate.components,charge);
   const areaBefore=occupiedAreaS10(original.geometry,charge),areaAfter=occupiedAreaS10(candidate.geometry,charge);
@@ -221,7 +223,7 @@ function sreConcessionAlignmentFromDerived(project,{changed,graph},candidate,led
   const originals=new Map(project.city.properties.map(p=>[p.id,p]));
   const roads=new Map(project.city.roads.map(r=>[r.id,r]));
   budget.spend(properties.size+originals.size+roads.size);
-  const near=(a,b)=>sreConcessionFinitePoint(a)&&sreConcessionFinitePoint(b)&&Math.hypot(a.x-b.x,a.y-b.y)<=1e-5;
+  const near=(a,b)=>sreConcessionFinitePoint(a)&&sreConcessionFinitePoint(b)&&roadFrameLength(a.x-b.x,a.y-b.y)<=1e-5;
   for(const row of ledger.frontageSwitches){
     budget.spend();const old=originals.get(row.propertyId),p=properties.get(row.propertyId);
     if(!old||!p||p.frontageRoadId!==row.to||old.frontageRoadId!==row.from)
@@ -233,7 +235,7 @@ function sreConcessionAlignmentFromDerived(project,{changed,graph},candidate,led
       [road.a,road.b].includes(block.vertices[(i+1)%block.vertices.length]));
     if(index<0)throw Error('Concession frontage is outside the block.');
     const a=graph.nodesById.get(block.vertices[index]),b=graph.nodesById.get(block.vertices[(index+1)%block.vertices.length]);
-    const length=Math.hypot(b.x-a.x,b.y-a.y),tangent={x:(b.x-a.x)/length,y:(b.y-a.y)/length};
+    const length=roadFrameLength(b.x-a.x,b.y-a.y),tangent={x:(b.x-a.x)/length,y:(b.y-a.y)/length};
     const inward={x:-tangent.y,y:tangent.x};
     if(!Number.isFinite(length)||length<=sreConcessionEps||!p.frame||!near(p.frame.origin,a)||
       !near(p.frame.tangent,tangent)||!near(p.frame.inward,inward)||
@@ -241,7 +243,7 @@ function sreConcessionAlignmentFromDerived(project,{changed,graph},candidate,led
       !near(p.frontage[1],p.boundary[1]))throw Error('Concession frontage frame or edge mismatch.');
     const uv=q=>({u:(q.x-a.x)*tangent.x+(q.y-a.y)*tangent.y,v:(q.x-a.x)*inward.x+(q.y-a.y)*inward.y});
     const l=uv(p.frontage[0]),r=uv(p.frontage[1]);
-    const width=Math.hypot(old.boundary[1].x-old.boundary[0].x,old.boundary[1].y-old.boundary[0].y);
+    const width=roadFrameLength(old.boundary[1].x-old.boundary[0].x,old.boundary[1].y-old.boundary[0].y);
     const setback=(STREET_WIDTHS[road.kind]+STREET_EDGE_WIDTH)/2+PROPERTY_SETBACK;
     if(![l.u,l.v,r.u,r.v,width].every(Number.isFinite)||l.u< -sreConcessionEps||r.u>length+sreConcessionEps||
       r.u-l.u<Math.min(7,width)-sreConcessionEps||Math.abs(l.v-r.v)>1e-5||l.v<setback-sreConcessionEps)
@@ -315,11 +317,11 @@ function* sreConcessionParcelProposals(project,derived,propertyId,budget,{fronta
   if(!edge||edges.some(e=>!e.road||!sreConcessionFinitePoint(e.a)||!sreConcessionFinitePoint(e.b)))return [];
   const plots=entry.plotIds.map(id=>plotsById.get(id)),buildings=entry.buildings.map(permission=>({permission,source:buildingsById.get(permission.id)}));
   const seeds=yield* iterateSpatialPackingSeeds({property,policy:entry.policy,buildings,edge,edges,maxProposals:192,permissions:op.permissions,scale},budget);
-  const [f0,f1]=property.boundary,width=Math.hypot(f1.x-f0.x,f1.y-f0.y);
+  const [f0,f1]=property.boundary,width=roadFrameLength(f1.x-f0.x,f1.y-f0.y);
   const oldT={x:(f1.x-f0.x)/width,y:(f1.y-f0.y)/width},oldN={x:-oldT.y,y:oldT.x};
   const local=q=>({u:(q.x-f0.x)*oldT.x+(q.y-f0.y)*oldT.y,v:(q.x-f0.x)*oldN.x+(q.y-f0.y)*oldN.y});
   const oldDepth=Math.max(...property.boundary.map(q=>local(q).v));
-  const {a,b}=edge,len=Math.hypot(b.x-a.x,b.y-a.y),tangent={x:(b.x-a.x)/len,y:(b.y-a.y)/len},inward={x:-tangent.y,y:tangent.x};
+  const {a,b}=edge,len=roadFrameLength(b.x-a.x,b.y-a.y),tangent={x:(b.x-a.x)/len,y:(b.y-a.y)/len},inward={x:-tangent.y,y:tangent.x};
   const world=(u,v)=>({x:a.x+tangent.x*u+inward.x*v,y:a.y+tangent.y*u+inward.y*v});
   const blockRing=edges.map(e=>e.a),out=[];
   for(const seed of seeds){
@@ -342,7 +344,7 @@ function* sreConcessionParcelProposals(project,derived,propertyId,budget,{fronta
         const source=buildingsById.get(transform.id),points=source.geometry.regions.flatMap(r=>r.ring);
         budget.spend(points.length*4);
         const center={x:points.reduce((n,q)=>n+q.x,0)/points.length,y:points.reduce((n,q)=>n+q.y,0)/points.length};
-        const co=Math.cos(transform.angle),si=Math.sin(transform.angle),factor=transform.scale??1;
+        const co=sreMathCos(transform.angle),si=sreMathSin(transform.angle),factor=transform.scale??1;
         const place=q=>{const x=q.x-center.x,y=q.y-center.y;return {
           x:center.x+transform.dx+factor*(x*co-y*si),y:center.y+transform.dy+factor*(x*si+y*co)};};
         const next=JSON.parse(JSON.stringify(source));

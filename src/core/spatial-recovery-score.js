@@ -1,3 +1,5 @@
+import { roadFrameLength } from './geometry.js';
+import { sreMathSin, sreMathCos, sreMathAtan2 } from './spatial-recovery-math.js';
 import { riEqual, riFreeze } from './road-impact-model.js';
 import { inspectSpatialConcessionLedger } from './spatial-recovery-concessions.js';
 
@@ -10,7 +12,7 @@ const sreCenter=b=>{
   if(!points.length)throw Error('Missing spatial footprint.');
   return {x:points.reduce((n,p)=>n+p.x,0)/points.length,y:points.reduce((n,p)=>n+p.y,0)/points.length};
 };
-const sreDist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const sreDist=(a,b)=>roadFrameLength(a.x-b.x,a.y-b.y);
 function sreRingCost(a,b,budget){
   if(a.length!==b.length)throw Error('Unexpected preserving ring topology.');
   let sum=0;
@@ -40,7 +42,7 @@ function sreMeasurePreservation(before,after,budget,allowConcessions){
       budget.spend(Math.max(1,a.geometry.regions.reduce((n,r)=>n+r.ring.length,0)+b.geometry.regions.reduce((n,r)=>n+r.ring.length,0)));
       cost.movedBuildings++;
       cost.displacement+=sreDist(sreCenter(a),sreCenter(b));
-      cost.rotation+=Math.abs(Math.atan2(Math.sin(b.orientation-a.orientation),Math.cos(b.orientation-a.orientation)));
+      cost.rotation+=Math.abs(sreMathAtan2(sreMathSin(b.orientation-a.orientation),sreMathCos(b.orientation-a.orientation)));
     }
     if(!riEqual(a.entrance,b.entrance)||!riEqual(a.accessPath,b.accessPath))cost.accessChanges++;
   }
