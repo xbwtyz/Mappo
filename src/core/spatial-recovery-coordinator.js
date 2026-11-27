@@ -69,9 +69,10 @@ export async function verifySpatialUnifiedRoadWitness(project,input,witness,budg
 // Phase ceilings are scheduling boundaries within existing limits, not
 // new allowances. Reserve enough work to bind a verified witness to the
 // external operation before spending on optional improvements.
-export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{context=null,quality='standard',schedule=quality==='high'?'diversified-restoration':'baseline'}={}){
+export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{context=null,quality='standard',schedule=quality==='high'?'diversified-restoration':'baseline',checkpoint=null}={}){
   const {operation,retirement,preserving,building}=sreRoadOperations(input);
   const p=operation.permissions,attempts=[];
+  if(checkpoint!==null&&typeof checkpoint!=='function')throw Error('Invalid recovery checkpoint observer.');
   if(!['standard','high'].includes(quality))throw Error('Unsupported detached recovery quality.');
   const high=quality==='high';
   if(high){
@@ -89,13 +90,25 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
   const limits=high?SRE_HIGH_QUALITY_LIMITS:p.destruction?LARE_DEMOLITION_LIMITS:LARE_PRESERVATION_LIMITS;
   const ceiling=high?SRE_HIGH_QUALITY_LIMITS:LARE_DEMOLITION_LIMITS;
   const budget=sreChild(callerBudget,limits.work,limits.stateExpansions,0,ceiling);
-  let incumbent=null,exhausted=null;
+  let incumbent=null,exhausted=null,stopped=false;
+  // A checkpoint is a phase boundary, not a time-dependent search policy.
+  // An awaited observer can pause before the next phase without creating a
+  // new operation budget. A stop retains only the fully bound incumbent.
+  const stopSignal=Object.freeze({});
+  const observe=async phase=>{
+    const state=Object.freeze({phase,stats:callerBudget.snapshot(),
+      hasIncumbent:Boolean(incumbent),incumbentKind:incumbent?.kind??null});
+    const decision=await checkpoint(state);
+    if(decision==='stop'){stopped=true;throw stopSignal;}
+    if(decision!=='continue'&&decision!==undefined)throw Error('Invalid recovery checkpoint decision.');
+  };
   const finish=()=>riFreeze({status:incumbent?'verified-witness':'refused',operation,
     kind:incumbent?.kind??null,delta:incumbent?.delta??null,basisDelta:incumbent?.basisDelta??null,
     ledger:incumbent?.ledger??null,provisionalAuthorization:incumbent?.provisionalAuthorization??null,
-    attempts,exhausted,stats:callerBudget.snapshot()});
+    attempts,exhausted,stats:callerBudget.snapshot(),...(stopped?{stopped:true}:{})});
   if(!budget){exhausted='work';return finish();}
   const phase=async(name,cap,run,{expansions=131072,reserve=0}={})=>{
+    if(checkpoint)await observe(name);
     const child=sreChild(budget,cap,expansions,reserve,ceiling);
     if(!child){attempts.push({phase:name,status:'skipped-budget',stats:budget.snapshot()});return null;}
     const row={phase:name,status:'refused',stats:budget.snapshot()};attempts.push(row);
@@ -229,6 +242,7 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
     }
     return finish();
   }catch(error){
+    if(error===stopSignal)return finish();
     if(error instanceof LareBudgetExceeded){exhausted=error.resource;return finish();}
     throw error;
   }
