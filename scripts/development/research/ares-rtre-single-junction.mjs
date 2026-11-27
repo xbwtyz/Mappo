@@ -64,7 +64,7 @@ function rotation(graph,id,budget){
   for(let i=1;i<ids.length;i++)if(riCompare(ids[i],ids[first])<0)first=i;
   return [...ids.slice(first),...ids.slice(0,first)];
 }
-function checkGeometry(source,accepted,positions,budget){
+function checkGeometry(source,accepted,positions,budget,reuseIncidentChecks=false){
   for(const p of positions.values()){
     budget.spend();if(!finite(p))return {valid:false,issues:['coordinate-limit']};
   }
@@ -76,12 +76,17 @@ function checkGeometry(source,accepted,positions,budget){
   if(!graph.valid)return {valid:false,issues:[...new Set(graph.issues.map(i=>i.code))].sort(riCompare),
     blockingRoadIds:[...new Set(graph.issues.flatMap(i=>i.roadIds??[]))].sort(riCompare),
     blockingNodeIds:[...new Set(graph.issues.flatMap(i=>i.nodeIds??[]))].sort(riCompare)};
-  const boundary=source.city.survey.boundary,check=new Set();
+  const boundary=source.city.survey.boundary,check=new Set(),checkedRoads=reuseIncidentChecks?new Set():null;
   for(const id of positions.keys()){
     budget.spend();check.add(id);
     for(const other of accepted.adjacency.get(id)){budget.spend();check.add(other);}
     for(const roadId of accepted.incidentRoads.get(id)){
-      budget.spend();const road=accepted.roadsById.get(roadId);
+      budget.spend();
+      // A road with two moved endpoints has the same final geometry in both
+      // incident lists. Reuse only within this immutable candidate evaluation.
+      if(checkedRoads?.has(roadId))continue;
+      checkedRoads?.add(roadId);
+      const road=accepted.roadsById.get(roadId);
       if(!insideSegment(graph.nodesById.get(road.a),graph.nodesById.get(road.b),boundary,budget))
         return {valid:false,issues:['boundary-escape']};
     }
@@ -260,7 +265,11 @@ export async function probeFreshRtreCoordinated(caseId,o,budget){
 export async function probeFreshRtreConstrained(caseId,o,budget){
   return probeCoordinated(caseId,o,budget,true);
 }
-async function probeCoordinated(caseId,o,budget,constrained){
+// F1A: keep E2 as matched reference; no candidate order or permission change.
+export async function probeFreshRtreOptimized(caseId,o,budget){
+  return probeCoordinated(caseId,o,budget,true,true);
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -284,7 +293,7 @@ async function probeCoordinated(caseId,o,budget,constrained){
     const positions=new Map(report.requested.map(r=>[r.ref.id,r.point])),selected=new Set(positions.keys());
     const checkConstraints=constrained?constraintChecker(source,accepted,report,budget):null;
     function evaluate(proposed,baseline=false){
-      const geometry=checkGeometry(source,accepted,proposed,budget);
+      const geometry=checkGeometry(source,accepted,proposed,budget,reuseIncidentChecks);
       if(!constrained)return geometry;
       // For baseline keep actual blocker evidence even when graph invalid.
       // Nonplanar search candidates need not run expensive providers.
