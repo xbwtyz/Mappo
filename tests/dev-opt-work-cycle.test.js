@@ -172,3 +172,29 @@ test('actual historical adaptive checkpoint is structurally valid without granti
   assert.equal(record.evidence.fast.shards,2);
   assert.equal(record.evidence.fast.tests,130);
 });
+
+test('rolling performance history separates incomplete, failed, historical and current runs',async()=>{
+  const {collectRollingMetrics}=await import('../scripts/development/ci-run-report.mjs');
+  const {mandatoryJobNames,FAST_JOB}=await import('../scripts/ci-full-contract.mjs');
+  const common={run_attempt:1,head_sha:'a'.repeat(40),repository:{full_name:'xbwtyz/Mappo'},event:'push',status:'completed',conclusion:'success',run_started_at:'2026-11-27T00:00:00Z',updated_at:'2026-11-27T00:02:00Z'};
+  const fast=[{...common,id:1,name:'Mappo Fast Checks',head_branch:'chore/test'},{...common,id:2,name:'Mappo Fast Checks',head_branch:'chore/test',conclusion:'failure'},{...common,id:3,name:'Mappo Fast Checks',head_branch:'chore/test'}];
+  const full=[{...common,id:4,name:'Mappo CI',head_branch:'main'},{...common,id:5,name:'Mappo CI',head_branch:'main'}];
+  const jobs=(run,names)=>names.map((name,i)=>({id:run.id*100+i+1,name,run_id:run.id,run_attempt:1,head_sha:run.head_sha,status:'completed',conclusion:'success',started_at:run.run_started_at,completed_at:run.updated_at,steps:['Select exact-push incremental checks','Build and verify offline standalone parity','Run smoke tests and directly modified Node tests'].map(name=>({name,conclusion:'success'}))}));
+  const reader={json:path=>{
+    if(path.includes('/workflows/ci-fast.yml/'))return {workflow_runs:fast};
+    if(path.includes('/workflows/ci.yml/'))return {workflow_runs:full};
+    const id=Number(path.match(/runs\/(\d+)\//)[1]),run=[...fast,...full].find(x=>x.id===id);
+    const rows=jobs(run,id===4?mandatoryJobNames(2):id===5?mandatoryJobNames():[FAST_JOB]);
+    if(id===3)rows[0].steps=[];
+    return {total_count:rows.length,jobs:rows};
+  }};
+  const r=collectRollingMetrics(reader);
+  assert.equal(r.faults.length,0);
+  assert.equal(r.groups['fast-draft'].qualified,1);
+  assert.equal(r.groups['fast-draft'].failed,1);
+  assert.equal(r.groups['fast-draft'].unqualified,1);
+  assert.equal(r.groups['historical-full-main-2-node'].qualified,1);
+  assert.equal(r.groups['full-main-16-node'].qualified,1);
+  assert.equal(r.groups['full-main-16-node'].wallSeconds.median,120);
+  assert.throws(()=>collectRollingMetrics(reader,{limit:100}));
+});

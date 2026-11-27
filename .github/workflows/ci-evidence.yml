@@ -30,6 +30,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPORT_DIR: artifacts/ci-report
+          ROLLING_METRICS: '1'
         run: node scripts/development/ci-run-report.mjs
       - name: Replay exact successful parallel and failed historical runs
         if: github.event_name == 'push'
@@ -37,7 +38,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p artifacts
-          REPORT_DIR=artifacts/ci-report-green node scripts/development/ci-run-report.mjs 45916785118 b4ae118aed89063c8bffd6565a8b6e2524b06578 1
+          ROLLING_METRICS=1 REPORT_DIR=artifacts/ci-report-green node scripts/development/ci-run-report.mjs 45916785118 b4ae118aed89063c8bffd6565a8b6e2524b06578 1
           REPORT_DIR=artifacts/ci-report-red node scripts/development/ci-run-report.mjs 45916121413 13dab96d04b64ec995eba3cffccae635c287a69d 1
           node --input-type=module -e '
             import assert from "node:assert/strict";
@@ -46,6 +47,8 @@ jobs:
             const r=JSON.parse(readFileSync("artifacts/ci-report-red/report.json","utf8"));
             assert.equal(g.handoff.evidence,"focused-only");
             assert.equal(g.performance.focusedShards,2);
+            assert.ok(g.rolling.rows.some(x=>x.runId===45917169373&&x.qualified));
+            assert.ok(g.rolling.groups["fast-draft"].qualified>=1);
             assert.equal(g.source.originalConclusion,"success");
             assert.equal(r.source.originalConclusion,"failure");
             assert.equal(r.handoff.evidence,"unqualified");
