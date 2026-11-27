@@ -1,0 +1,474 @@
+{
+  "version": 1,
+  "source": "7dc78bfb4d5a1841b4c88573342c144ece28f56a",
+  "run": 45965464893,
+  "attempt": 1,
+  "job": 140393042881,
+  "rows": [
+    {
+      "id": "dry-positive",
+      "split": "known",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": false,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": -0.07513185180304553,
+            "y": -0.9349740283911147
+          }
+        }
+      },
+      "limits": {
+        "work": 8000000,
+        "stateExpansions": 32768
+      }
+    },
+    {
+      "id": "dry-permission-off",
+      "split": "known",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": false,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 1.5026370360609105,
+            "y": 18.69948056782229
+          }
+        }
+      },
+      "limits": {
+        "work": 8000000,
+        "stateExpansions": 32768
+      }
+    },
+    {
+      "id": "dry-retirement",
+      "split": "known",
+      "source": "9a537f0aa98abf8f5d1a6763a7eb84cc1299215eff305ea1b8804f7c32966fa6",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mappo-001",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0184"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0186"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 1.5026370360609105,
+            "y": 18.69948056782229
+          }
+        }
+      },
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      }
+    },
+    {
+      "id": "historical-five-chain",
+      "split": "known",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-sre-owner-motion-planned",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0220"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0221"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0226"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0252"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0254"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 0,
+            "y": 75
+          }
+        }
+      },
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      }
+    },
+    {
+      "id": "historical-five-branch",
+      "split": "known",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-sre-owner-motion-planned",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0221"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0226"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0252"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0254"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0256"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 0,
+            "y": 75
+          }
+        }
+      },
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      }
+    },
+    {
+      "id": "historical-three-junction",
+      "split": "known",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-sre-owner-motion-planned",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0226"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0254"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0256"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 0,
+            "y": 75
+          }
+        }
+      },
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      }
+    },
+    {
+      "id": "historical-quad-control",
+      "split": "known",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-sre-owner-motion-planned",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0224"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0225"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0228"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0338"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 50,
+            "y": 0
+          }
+        }
+      },
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      }
+    },
+    {
+      "id": "mixed-small",
+      "split": "known",
+      "source": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mountains",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0133"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0134"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": false,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 0.001,
+            "y": 0
+          }
+        }
+      },
+      "limits": {
+        "work": 8000000,
+        "stateExpansions": 32768
+      }
+    },
+    {
+      "id": "mixed-river",
+      "split": "known",
+      "source": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mountains",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0133"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0134"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 103.15404603689191,
+            "y": 459.0383763985676
+          }
+        }
+      },
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      }
+    },
+    {
+      "id": "holdout-radial",
+      "split": "reserved",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-ares-p3-reserved-radial-",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0100"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0152"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": false,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 1,
+            "y": 0
+          }
+        }
+      },
+      "limits": {
+        "work": 8000000,
+        "stateExpansions": 32768
+      }
+    },
+    {
+      "id": "holdout-linear",
+      "split": "reserved",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-ares-p3-reserved-linear-",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0138"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0139"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 100,
+            "y": 0
+          }
+        }
+      },
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      }
+    }
+  ]
+}
