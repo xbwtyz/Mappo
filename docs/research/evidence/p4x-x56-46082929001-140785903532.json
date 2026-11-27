@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "source": "c7d54281cc238cc2012f718836b876305bbcb0f0",
+  "run": 46082929001,
+  "attempt": 1,
+  "aggregate": 140786349708,
+  "job": 140785903532,
+  "rows": [
+    {
+      "id": "radial-small:eight-loop:75:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "category": "search-refused",
+      "termination": "hybrid-stream-exhausted",
+      "attempts": 17,
+      "stats": {
+        "work": 354730,
+        "expansions": 191,
+        "remainingWork": 7645270,
+        "remainingExpansions": 32577
+      },
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "hybrid": {
+        "baselinePairs": 8,
+        "subsets": 174,
+        "coveringGroups": 1,
+        "connectedGroups": 1,
+        "connectorGroups": 0,
+        "enumerationLimit": false,
+        "groupLimit": false,
+        "seedProposals": 6,
+        "feedbackProposals": 12,
+        "duplicates": 1,
+        "feedbackEvaluations": 17,
+        "bestConflictCount": 2,
+        "attempted": {
+          "hybrid-refinement": 11,
+          "hybrid-directional-seed": 6
+        },
+        "failures": {
+          "unnormalized-crossing": 17
+        }
+      },
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 0,
+        "firstScore": null,
+        "bestScore": null,
+        "bestAttempt": null
+      }
+    }
+  ]
+}
