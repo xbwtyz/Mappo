@@ -1,0 +1,1004 @@
+{
+  "version": 1,
+  "kind": "read-only-connected-coverage-minimum",
+  "sourceRevision": "b9e432dd8ee8a327145479cba534328a92f7b068",
+  "diagnosticSource": "0f6c99ccc330753392f8db650dd7a32f67740ed5",
+  "diagnosticRun": 46079959187,
+  "endpointEvidence": "tests/fixtures/ares-p4-evidence/p4x-x34-exact-cover-46079959187.json",
+  "scope": "17 owner-approved structurally blocked cases; historical audited X1-X2 observations; no geometry or movement authority",
+  "method": {
+    "primary": "Exact branch-and-bound of connected hitting sets on eligible adjacency contracted through exact-requested nodes; branch on uncovered clause or a component cut; complete component upper bounds, prior independently established endpoint lower bound; duplicates/supersets removed",
+    "audit": "Independent binary include/exclude feasibility search at minimum minus one on original unreduced clauses and original admitted adjacency; singleton propagation; optimistic reachable-node pruning; independent connectivity and coverage verification of witness",
+    "budget": "Per case per primary and audit: 8M metered read-only work, 32768 expansions. Zero geometry candidates. Diagnostic operation counts, not runtime solver effort.",
+    "limitations": "Necessary coverage and connectivity only. No coordinates solved; not sufficient for geometry, parcel, building or whole-city feasibility. Archived model, not fresh generator execution."
+  },
+  "histogram": {
+    "5": 4,
+    "6": 6,
+    "7": 2,
+    "9": 4,
+    "10": 1
+  },
+  "rows": [
+    {
+      "id": "linear-medium:eight-chain:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465175.json",
+      "endpointMinimum": 6,
+      "eligibleCount": 19,
+      "selectedCount": 9,
+      "conflicts": 71,
+      "connectedMinimum": 6,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0137",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ],
+      "primary": {
+        "minimum": 6,
+        "witness": [
+          "N-0137",
+          "N-0144",
+          "N-0145",
+          "N-0146",
+          "N-0147",
+          "N-0148"
+        ],
+        "complete": true,
+        "visits": 7,
+        "pruned": 0,
+        "components": [
+          19
+        ],
+        "reducedClauses": 6,
+        "stats": {
+          "work": 6736,
+          "expansions": 7,
+          "remainingWork": 7993264,
+          "remainingExpansions": 32761
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 1,
+        "complete": true,
+        "stats": {
+          "work": 4383,
+          "expansions": 1,
+          "remainingWork": 7995617,
+          "remainingExpansions": 32767
+        }
+      }
+    },
+    {
+      "id": "linear-medium:eight-chain:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465175.json",
+      "endpointMinimum": 5,
+      "eligibleCount": 19,
+      "selectedCount": 9,
+      "conflicts": 39,
+      "connectedMinimum": 5,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0137",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ],
+      "primary": {
+        "minimum": 5,
+        "witness": [
+          "N-0137",
+          "N-0145",
+          "N-0146",
+          "N-0147",
+          "N-0148"
+        ],
+        "complete": true,
+        "visits": 6,
+        "pruned": 0,
+        "components": [
+          19
+        ],
+        "reducedClauses": 5,
+        "stats": {
+          "work": 6148,
+          "expansions": 6,
+          "remainingWork": 7993852,
+          "remainingExpansions": 32762
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 1,
+        "complete": true,
+        "stats": {
+          "work": 3879,
+          "expansions": 1,
+          "remainingWork": 7996121,
+          "remainingExpansions": 32767
+        }
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465113.json",
+      "endpointMinimum": 9,
+      "eligibleCount": 22,
+      "selectedCount": 6,
+      "conflicts": 71,
+      "connectedMinimum": 9,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ],
+      "primary": {
+        "minimum": 9,
+        "witness": [
+          "N-0137",
+          "N-0138",
+          "N-0139",
+          "N-0140",
+          "N-0144",
+          "N-0145",
+          "N-0146",
+          "N-0147",
+          "N-0148"
+        ],
+        "complete": true,
+        "visits": 13,
+        "pruned": 0,
+        "components": [
+          22
+        ],
+        "reducedClauses": 11,
+        "stats": {
+          "work": 10764,
+          "expansions": 13,
+          "remainingWork": 7989236,
+          "remainingExpansions": 32755
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 5,
+        "complete": true,
+        "stats": {
+          "work": 8498,
+          "expansions": 5,
+          "remainingWork": 7991502,
+          "remainingExpansions": 32763
+        }
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465113.json",
+      "endpointMinimum": 5,
+      "eligibleCount": 20,
+      "selectedCount": 6,
+      "conflicts": 39,
+      "connectedMinimum": 5,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0148"
+      ],
+      "primary": {
+        "minimum": 5,
+        "witness": [
+          "N-0137",
+          "N-0138",
+          "N-0139",
+          "N-0140",
+          "N-0148"
+        ],
+        "complete": true,
+        "visits": 6,
+        "pruned": 0,
+        "components": [
+          20
+        ],
+        "reducedClauses": 5,
+        "stats": {
+          "work": 5932,
+          "expansions": 6,
+          "remainingWork": 7994068,
+          "remainingExpansions": 32762
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 1,
+        "complete": true,
+        "stats": {
+          "work": 3806,
+          "expansions": 1,
+          "remainingWork": 7996194,
+          "remainingExpansions": 32767
+        }
+      }
+    },
+    {
+      "id": "planned-medium:eight-chain:100:diagonal",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465302.json",
+      "endpointMinimum": 9,
+      "eligibleCount": 33,
+      "selectedCount": 9,
+      "conflicts": 30,
+      "connectedMinimum": 9,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140"
+      ],
+      "primary": {
+        "minimum": 9,
+        "witness": [
+          "N-0132",
+          "N-0133",
+          "N-0134",
+          "N-0135",
+          "N-0136",
+          "N-0137",
+          "N-0138",
+          "N-0139",
+          "N-0140"
+        ],
+        "complete": true,
+        "visits": 15,
+        "pruned": 0,
+        "components": [
+          33
+        ],
+        "reducedClauses": 13,
+        "stats": {
+          "work": 13006,
+          "expansions": 15,
+          "remainingWork": 7986994,
+          "remainingExpansions": 32753
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 15,
+        "complete": true,
+        "stats": {
+          "work": 16531,
+          "expansions": 15,
+          "remainingWork": 7983469,
+          "remainingExpansions": 32753
+        }
+      }
+    },
+    {
+      "id": "planned-medium:eight-chain:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465302.json",
+      "endpointMinimum": 9,
+      "eligibleCount": 31,
+      "selectedCount": 9,
+      "conflicts": 65,
+      "connectedMinimum": 9,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139"
+      ],
+      "primary": {
+        "minimum": 9,
+        "witness": [
+          "N-0131",
+          "N-0132",
+          "N-0133",
+          "N-0134",
+          "N-0135",
+          "N-0136",
+          "N-0137",
+          "N-0138",
+          "N-0139"
+        ],
+        "complete": true,
+        "visits": 10,
+        "pruned": 0,
+        "components": [
+          31
+        ],
+        "reducedClauses": 9,
+        "stats": {
+          "work": 12930,
+          "expansions": 10,
+          "remainingWork": 7987070,
+          "remainingExpansions": 32758
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 1,
+        "complete": true,
+        "stats": {
+          "work": 8238,
+          "expansions": 1,
+          "remainingWork": 7991762,
+          "remainingExpansions": 32767
+        }
+      }
+    },
+    {
+      "id": "planned-medium:eight-chain:75:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465302.json",
+      "endpointMinimum": 9,
+      "eligibleCount": 31,
+      "selectedCount": 9,
+      "conflicts": 65,
+      "connectedMinimum": 9,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139"
+      ],
+      "primary": {
+        "minimum": 9,
+        "witness": [
+          "N-0131",
+          "N-0132",
+          "N-0133",
+          "N-0134",
+          "N-0135",
+          "N-0136",
+          "N-0137",
+          "N-0138",
+          "N-0139"
+        ],
+        "complete": true,
+        "visits": 10,
+        "pruned": 0,
+        "components": [
+          31
+        ],
+        "reducedClauses": 9,
+        "stats": {
+          "work": 12930,
+          "expansions": 10,
+          "remainingWork": 7987070,
+          "remainingExpansions": 32758
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 1,
+        "complete": true,
+        "stats": {
+          "work": 8238,
+          "expansions": 1,
+          "remainingWork": 7991762,
+          "remainingExpansions": 32767
+        }
+      }
+    },
+    {
+      "id": "planned-medium:five-chain:100:diagonal",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465105.json",
+      "endpointMinimum": 6,
+      "eligibleCount": 24,
+      "selectedCount": 6,
+      "conflicts": 18,
+      "connectedMinimum": 6,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137"
+      ],
+      "primary": {
+        "minimum": 6,
+        "witness": [
+          "N-0132",
+          "N-0133",
+          "N-0134",
+          "N-0135",
+          "N-0136",
+          "N-0137"
+        ],
+        "complete": true,
+        "visits": 50,
+        "pruned": 19,
+        "components": [
+          24
+        ],
+        "reducedClauses": 11,
+        "stats": {
+          "work": 7635,
+          "expansions": 50,
+          "remainingWork": 7992365,
+          "remainingExpansions": 32718
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 19,
+        "complete": true,
+        "stats": {
+          "work": 10022,
+          "expansions": 19,
+          "remainingWork": 7989978,
+          "remainingExpansions": 32749
+        }
+      }
+    },
+    {
+      "id": "planned-medium:five-chain:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465105.json",
+      "endpointMinimum": 6,
+      "eligibleCount": 22,
+      "selectedCount": 6,
+      "conflicts": 44,
+      "connectedMinimum": 6,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136"
+      ],
+      "primary": {
+        "minimum": 6,
+        "witness": [
+          "N-0131",
+          "N-0132",
+          "N-0133",
+          "N-0134",
+          "N-0135",
+          "N-0136"
+        ],
+        "complete": true,
+        "visits": 7,
+        "pruned": 0,
+        "components": [
+          22
+        ],
+        "reducedClauses": 6,
+        "stats": {
+          "work": 6764,
+          "expansions": 7,
+          "remainingWork": 7993236,
+          "remainingExpansions": 32761
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 1,
+        "complete": true,
+        "stats": {
+          "work": 4488,
+          "expansions": 1,
+          "remainingWork": 7995512,
+          "remainingExpansions": 32767
+        }
+      }
+    },
+    {
+      "id": "planned-medium:five-chain:75:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465105.json",
+      "endpointMinimum": 6,
+      "eligibleCount": 22,
+      "selectedCount": 6,
+      "conflicts": 44,
+      "connectedMinimum": 6,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136"
+      ],
+      "primary": {
+        "minimum": 6,
+        "witness": [
+          "N-0131",
+          "N-0132",
+          "N-0133",
+          "N-0134",
+          "N-0135",
+          "N-0136"
+        ],
+        "complete": true,
+        "visits": 7,
+        "pruned": 0,
+        "components": [
+          22
+        ],
+        "reducedClauses": 6,
+        "stats": {
+          "work": 6764,
+          "expansions": 7,
+          "remainingWork": 7993236,
+          "remainingExpansions": 32761
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 1,
+        "complete": true,
+        "stats": {
+          "work": 4488,
+          "expansions": 1,
+          "remainingWork": 7995512,
+          "remainingExpansions": 32767
+        }
+      }
+    },
+    {
+      "id": "radial-small:eight-loop:100:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465123.json",
+      "endpointMinimum": 5,
+      "eligibleCount": 27,
+      "selectedCount": 8,
+      "conflicts": 16,
+      "connectedMinimum": 6,
+      "additionalConnectorsLowerBound": 1,
+      "witness": [
+        "N-0107",
+        "N-0108",
+        "N-0109",
+        "N-0142",
+        "N-0143",
+        "N-0166"
+      ],
+      "primary": {
+        "minimum": 6,
+        "witness": [
+          "N-0107",
+          "N-0108",
+          "N-0109",
+          "N-0142",
+          "N-0143",
+          "N-0166"
+        ],
+        "complete": true,
+        "visits": 23,
+        "pruned": 13,
+        "components": [
+          27
+        ],
+        "reducedClauses": 7,
+        "stats": {
+          "work": 5380,
+          "expansions": 23,
+          "remainingWork": 7994620,
+          "remainingExpansions": 32745
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 5,
+        "complete": true,
+        "stats": {
+          "work": 5056,
+          "expansions": 5,
+          "remainingWork": 7994944,
+          "remainingExpansions": 32763
+        }
+      }
+    },
+    {
+      "id": "radial-small:five-branch:100:diagonal",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465163.json",
+      "endpointMinimum": 5,
+      "eligibleCount": 22,
+      "selectedCount": 6,
+      "conflicts": 14,
+      "connectedMinimum": 7,
+      "additionalConnectorsLowerBound": 2,
+      "witness": [
+        "N-0102",
+        "N-0104",
+        "N-0105",
+        "N-0141",
+        "N-0165",
+        "N-0187",
+        "N-0212"
+      ],
+      "primary": {
+        "minimum": 7,
+        "witness": [
+          "N-0102",
+          "N-0104",
+          "N-0105",
+          "N-0141",
+          "N-0165",
+          "N-0187",
+          "N-0212"
+        ],
+        "complete": true,
+        "visits": 481,
+        "pruned": 409,
+        "components": [
+          22
+        ],
+        "reducedClauses": 6,
+        "stats": {
+          "work": 9833,
+          "expansions": 481,
+          "remainingWork": 7990167,
+          "remainingExpansions": 32287
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 67,
+        "complete": true,
+        "stats": {
+          "work": 20252,
+          "expansions": 67,
+          "remainingWork": 7979748,
+          "remainingExpansions": 32701
+        }
+      }
+    },
+    {
+      "id": "radial-small:five-branch:100:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465163.json",
+      "endpointMinimum": 7,
+      "eligibleCount": 30,
+      "selectedCount": 6,
+      "conflicts": 16,
+      "connectedMinimum": 10,
+      "additionalConnectorsLowerBound": 3,
+      "witness": [
+        "N-0103",
+        "N-0104",
+        "N-0105",
+        "N-0107",
+        "N-0108",
+        "N-0141",
+        "N-0142",
+        "N-0143",
+        "N-0165",
+        "N-0188"
+      ],
+      "primary": {
+        "minimum": 10,
+        "witness": [
+          "N-0103",
+          "N-0104",
+          "N-0105",
+          "N-0107",
+          "N-0108",
+          "N-0141",
+          "N-0142",
+          "N-0143",
+          "N-0165",
+          "N-0188"
+        ],
+        "complete": true,
+        "visits": 3556,
+        "pruned": 3082,
+        "components": [
+          30
+        ],
+        "reducedClauses": 10,
+        "stats": {
+          "work": 64950,
+          "expansions": 3556,
+          "remainingWork": 7935050,
+          "remainingExpansions": 29212
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 241,
+        "complete": true,
+        "stats": {
+          "work": 80566,
+          "expansions": 241,
+          "remainingWork": 7919434,
+          "remainingExpansions": 32527
+        }
+      }
+    },
+    {
+      "id": "radial-small:five-branch:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465163.json",
+      "endpointMinimum": 5,
+      "eligibleCount": 22,
+      "selectedCount": 6,
+      "conflicts": 11,
+      "connectedMinimum": 5,
+      "additionalConnectorsLowerBound": 0,
+      "witness": [
+        "N-0103",
+        "N-0104",
+        "N-0141",
+        "N-0165",
+        "N-0188"
+      ],
+      "primary": {
+        "minimum": 5,
+        "witness": [
+          "N-0103",
+          "N-0104",
+          "N-0141",
+          "N-0165",
+          "N-0188"
+        ],
+        "complete": true,
+        "visits": 8,
+        "pruned": 0,
+        "components": [
+          22
+        ],
+        "reducedClauses": 5,
+        "stats": {
+          "work": 3715,
+          "expansions": 8,
+          "remainingWork": 7996285,
+          "remainingExpansions": 32760
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 3,
+        "complete": true,
+        "stats": {
+          "work": 3265,
+          "expansions": 3,
+          "remainingWork": 7996735,
+          "remainingExpansions": 32765
+        }
+      }
+    },
+    {
+      "id": "radial-small:five-branch:75:diagonal",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465163.json",
+      "endpointMinimum": 4,
+      "eligibleCount": 21,
+      "selectedCount": 6,
+      "conflicts": 11,
+      "connectedMinimum": 5,
+      "additionalConnectorsLowerBound": 1,
+      "witness": [
+        "N-0104",
+        "N-0105",
+        "N-0141",
+        "N-0165",
+        "N-0188"
+      ],
+      "primary": {
+        "minimum": 5,
+        "witness": [
+          "N-0104",
+          "N-0105",
+          "N-0141",
+          "N-0165",
+          "N-0188"
+        ],
+        "complete": true,
+        "visits": 33,
+        "pruned": 23,
+        "components": [
+          21
+        ],
+        "reducedClauses": 5,
+        "stats": {
+          "work": 3673,
+          "expansions": 33,
+          "remainingWork": 7996327,
+          "remainingExpansions": 32735
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 7,
+        "complete": true,
+        "stats": {
+          "work": 4074,
+          "expansions": 7,
+          "remainingWork": 7995926,
+          "remainingExpansions": 32761
+        }
+      }
+    },
+    {
+      "id": "radial-small:five-branch:75:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465163.json",
+      "endpointMinimum": 6,
+      "eligibleCount": 24,
+      "selectedCount": 6,
+      "conflicts": 14,
+      "connectedMinimum": 7,
+      "additionalConnectorsLowerBound": 1,
+      "witness": [
+        "N-0103",
+        "N-0104",
+        "N-0105",
+        "N-0141",
+        "N-0142",
+        "N-0165",
+        "N-0188"
+      ],
+      "primary": {
+        "minimum": 7,
+        "witness": [
+          "N-0103",
+          "N-0104",
+          "N-0105",
+          "N-0141",
+          "N-0142",
+          "N-0165",
+          "N-0188"
+        ],
+        "complete": true,
+        "visits": 44,
+        "pruned": 28,
+        "components": [
+          24
+        ],
+        "reducedClauses": 8,
+        "stats": {
+          "work": 4913,
+          "expansions": 44,
+          "remainingWork": 7995087,
+          "remainingExpansions": 32724
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 9,
+        "complete": true,
+        "stats": {
+          "work": 5372,
+          "expansions": 9,
+          "remainingWork": 7994628,
+          "remainingExpansions": 32759
+        }
+      }
+    },
+    {
+      "id": "radial-small:five-chain:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "evidenceFile": "tests/fixtures/ares-p4-evidence/p4x-x12-46079959187-140776465079.json",
+      "endpointMinimum": 4,
+      "eligibleCount": 21,
+      "selectedCount": 6,
+      "conflicts": 9,
+      "connectedMinimum": 6,
+      "additionalConnectorsLowerBound": 2,
+      "witness": [
+        "N-0103",
+        "N-0104",
+        "N-0140",
+        "N-0141",
+        "N-0164",
+        "N-0188"
+      ],
+      "primary": {
+        "minimum": 6,
+        "witness": [
+          "N-0103",
+          "N-0104",
+          "N-0140",
+          "N-0141",
+          "N-0164",
+          "N-0188"
+        ],
+        "complete": true,
+        "visits": 194,
+        "pruned": 143,
+        "components": [
+          21
+        ],
+        "reducedClauses": 5,
+        "stats": {
+          "work": 5479,
+          "expansions": 194,
+          "remainingWork": 7994521,
+          "remainingExpansions": 32574
+        }
+      },
+      "audit": {
+        "witnessValid": true,
+        "proven": true,
+        "smaller": null,
+        "visits": 47,
+        "complete": true,
+        "stats": {
+          "work": 11427,
+          "expansions": 47,
+          "remainingWork": 7988573,
+          "remainingExpansions": 32721
+        }
+      }
+    }
+  ]
+}
