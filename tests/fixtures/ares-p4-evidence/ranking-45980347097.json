@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "source": "5c9e1431c9e809ff7bd0f0c08ed24527473c0136",
+  "run": 45980347097,
+  "attempt": 1,
+  "aggregate": 140444095613,
+  "rows": [
+    {
+      "job": 140442527950,
+      "id": "holdout-linear",
+      "referenceWork": 563316,
+      "rankedWork": 594170,
+      "referenceAttempts": 1,
+      "rankedAttempts": 4,
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 3,
+        "firstScore": [
+          0,
+          2,
+          12.5
+        ],
+        "bestScore": [
+          0,
+          2,
+          12.5
+        ],
+        "bestAttempt": 1
+      },
+      "termination": "candidate-limit",
+      "elapsedMs": 846.0821639999999
+    },
+    {
+      "job": 140442527950,
+      "id": "mixed-small",
+      "work": 484634,
+      "attempts": 0,
+      "termination": "baseline-preferred"
+    }
+  ]
+}
