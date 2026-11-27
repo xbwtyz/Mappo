@@ -1,0 +1,71 @@
+{
+  "version": 2,
+  "repository": "xbwtyz/Mappo",
+  "milestone": "SRE W4 A1 / approved ARES P0–P9",
+  "appVersion": "0.2.25-dev",
+  "targetVersion": "0.3.0",
+  "state": "active",
+  "source": {
+    "branch": "feature/sre-e2-live-road-worker",
+    "sha": "6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9",
+    "baseSha": "eae2b1f73af2b04d2e9b980954eaa94d5c9b576b",
+    "pr": 163
+  },
+  "scope": {
+    "approved": [
+      "Owner approved ARES-01–12 architecture, P0–P9, SAFE-01–15, proposed numerical targets; finish PR163 first.",
+      "Current W4 audit/interactive/manual qualification, approved dependent ARES tasks after separate merge and exact-main gate."
+    ],
+    "prohibited": [
+      "No schema/CI policy change, new protected-content rights, merge, release, tag or Pages without explicit separate approval."
+    ],
+    "stopConditions": [
+      "Manual acceptance, separate merge gate, schema or safety policy changes, any altered historical regression expectation."
+    ]
+  },
+  "completed": [
+    "Exact full CI 45934062728 22/22 success 709s at 6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9",
+    "Owner research 45933210617; forensics 45934318758 three setback refusals despite maximum eligible retirement.",
+    "ARES architecture and implementation plan approved; detailed plan recorded."
+  ],
+  "pending": [
+    "A1 detached restoration audit tests and focused validation.",
+    "A2 evidence capture/completeness/compact transport, independent review/apply and UI binding; remaining interactive evidence and manual acceptance.",
+    "Separate PR163 merge approval and exact-main verification, then ARES P1–P9."
+  ],
+  "decisions": [
+    "16 witness cap for detached prototype only, no runtime refusal policy or budget change.",
+    "Preserve current schema 11 and portable/workspace 1; defer E3–E6 and B2."
+  ],
+  "blockers": [
+    "A1 not wired to worker/Review/Apply; completeness/transport/verification cost unresolved.",
+    "Current PR163 not review-ready; manual acceptance pending.",
+    "Known setback and topology limitations remain until ARES."
+  ],
+  "evidence": {
+    "qualification": "full",
+    "full": {
+      "runId": 45934062728,
+      "attempt": 1,
+      "head": "6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9",
+      "nodeShards": 16,
+      "conclusion": "success",
+      "durationSeconds": 709
+    },
+    "artifacts": [
+      {
+        "path": "index.html",
+        "blob": "a363478401a916dea3dc84242c87bfe7e4de9617"
+      },
+      {
+        "path": "dist/mappo-0.2.25-dev.html",
+        "blob": "a363478401a916dea3dc84242c87bfe7e4de9617"
+      }
+    ]
+  },
+  "rollback": {
+    "sourceSha": "6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9",
+    "policy": "Reviewed revert only; preserve exact evidence."
+  },
+  "nextAction": "Verify A1 exact focused CI; then capture/measure complete selected incumbent evidence before live integration. No merge or release."
+}

@@ -1,0 +1,43 @@
+# Mappo 0.3.0 — Adaptive Road Editing System (ARES)
+Status: owner-approved architecture and detailed implementation direction, 2026-11-26 Pacific. Owner approved ARES-01–12, P0–P9, SAFE-01–15 and proposed numerical acceptance targets in two successive explicit approvals. Finish existing PR163 W4 first. Defer E3–E6 and B2 until ARES acceptance. No merge/release/Pages authorization. Schema 11 / portable 1 / workspace 1 remain current; stop for separately approved schema change, protected-content policy expansion or changed mandatory CI. Proposed 0.3.0 version is a milestone target, not current build or release.
+
+## Evidence and goal
+Owner reports frequent bounded-search refusal despite High, destruction, alternate frontage, 20% scaling. Stress research 45933210617 (frozen product f04a447) 1188 attempted movements: 401 eligible, 751 graph-blocked, 32 face-blocked, 4 boundary-blocked; all 396 max-axis-100 attempts blocked before solver. 19 stratified eligible moves, 16 verified and 3 refused in each quality. Not population success rates. Forensics 45934318758 four exact cases and 20 variants: all three planned +75Y failures remain blocked by road setback even after all eligible properties and buildings retired; 8.7 required, 8.211 proposed; PROP-00398/00406/00407. Need independently map blocker scope and provenance; do not assume permission to move/retire them. Existing graph and face validators require topology-preserving edits. Investigate graph normalization and ownership rather than bypass them. Product exact head 6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9 full CI 45934062728 passed 22 mandatory jobs in 709s, both mounted High exact locked candidate and Apply/history/portable; still restored audit, remaining interaction and manual acceptance.
+
+## ARES decisions
+- 01 exact requested selected junction positions; no hidden movement reduction.
+- 02 neighboring road reshaping only in authorized mode.
+- 03 automatic junction creation and road splitting with explicit restructuring permission.
+- 04 normalize overlaps, preserve identities/lineage and meaningful metadata.
+- 05 block split/merge/new support with independent ownership reconciliation.
+- 06 adaptive obstruction-driven scope discovery, separately authorize writes.
+- 07 feedback-driven RTRE/SRE cooperation, least-disruptive feasible candidate first; bounded deterministic improvement.
+- 08 shared operation budget, redistribute unused work without granting extra root budget or time-dependent geometry.
+- 09 explicit destruction permission; generated-only by default, protect authorship/infrastructure.
+- 10 offline dedicated workers; responsive UI, Stop/Continue/Cancel and stale suppression.
+- 11 independent final verification, explicit Review/Apply, atomic reversible history.
+- 12 modular contracts usable by future terrain/water/derived 3D. No speculative schema bump.
+
+Proposed modes: Strict = existing topology-preserving; Adaptive = authorized neighbor reshaping and scope expansion without new intersections; Restructure = separately enabled intersection/split/merge and generated road removal permissions. All concessions off until chosen; no automatic destructive escalation. Exact selected position constraint may make some requests impossible. Maintain protected infrastructure, road width/setback/domain rules. Distinguish genuine infeasibility from unsupported policy, incomplete search or verification failure.
+
+## P0–P9 implementation and gates
+| Phase | Work and acceptance |
+| --- | --- |
+| P0 | Complete current SRE live W4 restored identities, interactive/stale/Stop with incumbent evidence, manual acceptance package, version alignment, review-ready full CI. Separate merge approval and exact-main CI before ARES product branch. |
+| P1 | Structured refusal taxonomy, specific blocker references, stage/budget/permission/evidence, export reproducible snapshot + exact intent and version; no sensitive user data sent automatically. Verify replay and safe offline export; no accepted mutation. |
+| P2 | Derive conservative changed-road swept/final clearance, block and dependency inventory; expand through independently detected blockers, distinguish observable vs writable vs protected; investigate exact three setback failures. Bound expansion and affected-object count, verify original outside-scope records, preserve historical successes. Stop for any policy change. |
+| P3 | Compare bounded alternative initial candidate strategies, allocate unused shared budget to actual blockers, preserve incumbent and deterministic ranking, no extra root allowance. Independently verify recovered cases, report refusals and costs separately; no regression to qualified baseline. |
+| P4 | Detached RTRE neighbor geometry search: preserve exact selected junctions, adjustable unselected connections only with explicit authority, no crossing/overlap/protected changes; verify planar graph and unchanged external anchors. |
+| P5 | Detached topology normalization: explicit intersection/split/merge/overlap permissions, deterministic junction/segment candidates, identity reservations and lineage, no unauthorized road deletion, independent graph and connectivity verification. |
+| P6 | Reconcile faces and ownership, road/block ID survival rules, exact typed lineage, parcel/frontage/access/district/defense/water dependencies; fail closed on ambiguity, independently verify allocation and persistence. Separate schema decision if needed. |
+| P7 | Shared ARES coordinator integrates RTRE, scope, block reconciliation and SRE, feedback from independent blocker diagnostics, bounded deterministic alternative search, explicit tradeoff summary. Preserve exact user movement, compare least-disruptive cost and retain verified incumbent; no unverified Apply. |
+| P8 | Mount offline worker protocols, versioned compact evidence, controls, permission modes, progress, cancel/reset/stop/continue, stale suppression, review exact candidate + ID lineage + consequences; independent host reservation and Apply, atomic Undo/Redo/save. Firefox and Chromium on desktop and ultrawide. |
+| P9 | Frozen predeclared corpus, independent feasible references and negative controls, full existing CI, representative offline end-to-end, manual owner acceptance, version/release notes and separate merge/release gates. |
+
+## SAFE-01–15
+01 exact intent; 02 no accepted mutation during search; 03 no unauthorized authored destruction; 04 protected infrastructure not altered without authorized policy; 05 unaffected records unchanged; 06 exact road/block identity lineage; 07 independent verification; 08 atomic Undo/Redo; 09 responsive editing; 10 explicit Review/Apply; 11 actionable refusal diagnostics; 12 bounded deterministic search; 13 stale results never apply; 14 portable saves/offline; 15 existing regression coverage unchanged. Verify all before promotion. No automatic release or merge.
+
+## Qualification targets
+At least 10,000 topology and recovery scenarios (not a claim of 10,000 expensive full solves). Include dense and spacious fixtures, all morphologies, regular/irregular properties, small/moderate/large cities, 2/3/4/5/8+ road chains, quadrilateral/pentagon/branch/loop+tail, offsets ±1/10/25/50/75/100 each axis and diagonals, explicitly feasible 100-unit cases, protected/author-created content, repeated edits with undo/redo/save. Predeclare strata and feasible reference witness independently of tested search outcomes, held-out seeds; report all attempts, refusals by reason and denominator, selection gaps, severity and cost. Proposed minimum independently feasible recovery rates: small 99%, moderate 95%, large 90%, topology restructure 85%. Define size strata and reference-witness construction before qualification, not retroactively. Zero invalid accepted city, zero unauthorized data loss, 100% successful edits reversible. Existing strict/locked regression hashes remain unchanged unless separately approved policy. Full exact-head/main 16 Node + 4 browsers + route/aggregate; GitHub-first; no duplicated local full CI. Heavy C7 opt-in. 
+## Immediate bounded work order
+A: W4 audit foundation then evidence transport, review/Apply and UI, interactive acceptance. B: manual and PR163 closeout (separate merge). C: promote approved ARES plan and checkpoint to new branch from verified main. D: P1 diagnostics. E: P2 discovery research. F: three exact setback cases. Dependent phase execution under owner continuation; high-risk topology/identity isolated, stop at schema/safety/merge gates. 
