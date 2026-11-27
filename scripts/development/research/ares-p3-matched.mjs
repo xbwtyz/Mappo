@@ -12,6 +12,7 @@ import { adaptAresRecoveryRefusal } from '../../../src/core/ares-diagnostic-adap
 import { createSpatialPreservationBudget, createSpatialDestructionBudget } from '../../../src/core/spatial-recovery-contract.js';
 import { createLareBudget, LareBudgetExceeded, LARE_PRESERVATION_LIMITS, LARE_DEMOLITION_LIMITS } from '../../../src/core/reconciliation-budget.js';
 import { riFreeze } from '../../../src/core/road-impact-model.js';
+import { inspectAresP3Topology } from './ares-p3-topology-preflight.mjs';
 
 const frozen=riFreeze(JSON.parse(readFileSync(new URL(
   '../../../tests/fixtures/ares-p3-frozen-identities.json',import.meta.url),'utf8')));
@@ -107,9 +108,15 @@ export async function measureAresP3Case(id){
   const rows=[];
   for(const [order,arm] of manifest.arms.entries()){
     const root=rootFor(f),started=now(),heapBefore=heap();
-    let outcome;
+    let outcome,preflight=null,preflightMs=null,preflightWork=null;
     try{
-      outcome=arm.kind==='direct-standard-baseline'?await direct(f,root,started):await serial(f,arm,root,started);
+      const t=now(),before=root.snapshot().work;
+      preflight=inspectAresP3Topology(f.project,f.context,root);
+      preflightMs=now()-t;preflightWork=root.snapshot().work-before;
+      if(preflight.status==='preflight-refused'){
+        outcome={status:'refused',reason:'preflight-refused',incumbent:null,firstVerifiedMs:null,
+          searchMs:null,verificationMs:null,searchWork:0,overheadWork:root.snapshot().work,phases:[]};
+      }else outcome=arm.kind==='direct-standard-baseline'?await direct(f,root,started):await serial(f,arm,root,started);
     }catch(e){
       // Unknown exceptions are failures, not ordinary search refusals.
       outcome={status:'failure',reason:'exception',failure:String(e?.message??e).slice(0,1000),
@@ -117,7 +124,7 @@ export async function measureAresP3Case(id){
     }
     const row={version:1,protocol:manifest.protocol,caseId:id,split:f.case.split,stratum:f.case.stratum,
       source:sha(source),operation:f.context.operation,arm:arm.id,order,limits:f.limits,
-      referenceLabel:f.case.reference,...outcome,wallMs:now()-started,heapBefore,heapAfter:heap(),peakHeap:null,
+      referenceLabel:f.case.reference,measurementRevision:2,preflight,preflightMs,preflightWork,...outcome,wallMs:now()-started,heapBefore,heapAfter:heap(),peakHeap:null,
       stats:root.snapshot(),node:process.version,platform:process.platform,runner:process.env.RUNNER_OS??null};
     // Log each result before assertions so failed runs preserve evidence.
     console.log('ARES_P3_MATCHED '+JSON.stringify(row));

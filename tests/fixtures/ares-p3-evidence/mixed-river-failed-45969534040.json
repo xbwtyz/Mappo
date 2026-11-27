@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "source": "5309e7bbae4023f2f3c498c6a992c6fb94175ab5",
+  "run": 45969534040,
+  "attempt": 1,
+  "job": 140406452800,
+  "aggregate": 140408347014,
+  "rows": [
+    {
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "mixed-river",
+      "split": "known",
+      "stratum": "mixed-landscape",
+      "source": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mountains",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0133"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0134"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 103.15404603689191,
+            "y": 459.0383763985676
+          }
+        }
+      },
+      "arm": "sre-reference",
+      "order": 0,
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      },
+      "referenceLabel": "unknown",
+      "status": "failure",
+      "reason": "exception",
+      "failure": "Unsupported or unresolved road topology.",
+      "incumbent": null,
+      "firstVerifiedMs": null,
+      "searchMs": null,
+      "verificationMs": null,
+      "searchWork": null,
+      "overheadWork": null,
+      "phases": [],
+      "wallMs": 498.645536,
+      "heapBefore": 54508272,
+      "heapAfter": 63286936,
+      "peakHeap": null,
+      "stats": {
+        "work": 120571,
+        "expansions": 0,
+        "remainingWork": 31879429,
+        "remainingExpansions": 131072
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    },
+    {
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "mixed-river",
+      "split": "known",
+      "stratum": "mixed-landscape",
+      "source": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mountains",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0133"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0134"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 103.15404603689191,
+            "y": 459.0383763985676
+          }
+        }
+      },
+      "arm": "ares-single",
+      "order": 1,
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      },
+      "referenceLabel": "unknown",
+      "status": "failure",
+      "reason": "failed",
+      "failure": "strategy-result",
+      "incumbent": null,
+      "firstVerifiedMs": null,
+      "searchMs": null,
+      "verificationMs": null,
+      "searchWork": null,
+      "taskWork": 52752,
+      "overheadWork": 114805,
+      "observations": 1,
+      "phases": [
+        {
+          "taskId": "baseline",
+          "strategyId": "sre-baseline",
+          "status": "failed",
+          "work": 52752,
+          "expansions": 0,
+          "limits": {
+            "work": 29885195,
+            "stateExpansions": 131040
+          },
+          "event": {
+            "taskId": "baseline",
+            "status": "strategy-failed"
+          }
+        }
+      ],
+      "pending": [],
+      "wallMs": 482.0962550000004,
+      "heapBefore": 78458064,
+      "heapAfter": 92418528,
+      "peakHeap": null,
+      "stats": {
+        "work": 167557,
+        "expansions": 0,
+        "remainingWork": 31832443,
+        "remainingExpansions": 131072
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    },
+    {
+      "version": 1,
+      "protocol": "ares-p3-matched-standard-v1",
+      "caseId": "mixed-river",
+      "split": "known",
+      "stratum": "mixed-landscape",
+      "source": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+      "operation": {
+        "version": 1,
+        "family": "road",
+        "operation": "translate-road-group",
+        "projectId": "city-mountains",
+        "revision": 1,
+        "editedRefs": [
+          {
+            "collection": "roads",
+            "id": "RD-0133"
+          },
+          {
+            "collection": "roads",
+            "id": "RD-0134"
+          }
+        ],
+        "permissions": {
+          "alternativeFrontage": true,
+          "uniformScaling": true,
+          "maxLinearReduction": 0.2,
+          "destruction": true,
+          "regeneration": false
+        },
+        "geometry": {
+          "offset": {
+            "x": 103.15404603689191,
+            "y": 459.0383763985676
+          }
+        }
+      },
+      "arm": "ares-portfolio",
+      "order": 2,
+      "limits": {
+        "work": 32000000,
+        "stateExpansions": 131072
+      },
+      "referenceLabel": "unknown",
+      "status": "failure",
+      "reason": "failed",
+      "failure": "strategy-result",
+      "incumbent": null,
+      "firstVerifiedMs": null,
+      "searchMs": null,
+      "verificationMs": null,
+      "searchWork": null,
+      "taskWork": 52752,
+      "overheadWork": 114819,
+      "observations": 1,
+      "phases": [
+        {
+          "taskId": "baseline",
+          "strategyId": "sre-baseline",
+          "status": "failed",
+          "work": 52752,
+          "expansions": 0,
+          "limits": {
+            "work": 8000000,
+            "stateExpansions": 32768
+          },
+          "event": {
+            "taskId": "baseline",
+            "status": "strategy-failed"
+          }
+        }
+      ],
+      "pending": [
+        "grouped",
+        "area"
+      ],
+      "wallMs": 539.4509189999999,
+      "heapBefore": 90191064,
+      "heapAfter": 35660888,
+      "peakHeap": null,
+      "stats": {
+        "work": 167571,
+        "expansions": 0,
+        "remainingWork": 31832429,
+        "remainingExpansions": 131072
+      },
+      "node": "v22.23.5",
+      "platform": "linux",
+      "runner": "Linux"
+    }
+  ]
+}
