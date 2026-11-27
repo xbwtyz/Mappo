@@ -72,9 +72,25 @@ export async function calculateSpatialRoadReview(input){
     throw Error('Road review project identity mismatch.');
   const budget=operation.permissions.destruction?createSpatialDestructionBudget():createSpatialPreservationBudget();
   const candidate=await verifySpatialUnifiedRoadWitness(project,operation,witness,budget,authorization??null);
+  const auditFields=request.captureRestorationAudit?
+    {restorationAudit:await sreReplaySelectedRestoration(project,operation,witness,createSpatialDestructionBudget())}:{};
   return {version:request.version,requestId:request.requestId,sessionId:request.sessionId,
     operation,quality:request.quality,kind:'verified-review',
-    candidateJson:JSON.stringify(candidate),summary:spatialRoadReviewSummary(project,candidate)};
+    candidateJson:JSON.stringify(candidate),summary:spatialRoadReviewSummary(project,candidate),...auditFields};
+}
+
+// Shared independent replay after final candidate verification. No search
+// ledger or new search entitlement. The history is the supplied selected
+// lineage, not evidence of every trial explored.
+async function sreReplaySelectedRestoration(project,operation,witness,budget){
+  if(!Array.isArray(witness.restorationTrail))
+    throw Error('Missing road restoration audit witness.');
+  if(witness.kind==='nondestructive'){
+    if(witness.restorationTrail.length||witness.basisDelta.retired.length)
+      throw Error('Unexpected retirement evidence for nondestructive witness.');
+    return null;
+  }
+  return verifySpatialRestorationAudit(project,operation,witness.restorationTrail,witness.basisDelta,budget);
 }
 
 // Fresh detached verifier: independently replay the final candidate and supplied
@@ -97,13 +113,7 @@ export async function calculateSpatialRoadRestorationAudit(input){
   const project=hydrateProjectS10(raw);
   await verifySpatialUnifiedRoadWitness(project,operation,witness,createSpatialDestructionBudget(),authorization??null);
   const budget=createSpatialDestructionBudget();
-  let audit=null;
-  if(witness.kind==='nondestructive'){
-    if(witness.restorationTrail.length||witness.basisDelta.retired.length)
-      throw Error('Unexpected retirement evidence for nondestructive witness.');
-  }else{
-    audit=await verifySpatialRestorationAudit(project,operation,witness.restorationTrail,witness.basisDelta,budget);
-  }
+  const audit=await sreReplaySelectedRestoration(project,operation,witness,budget);
   return {kind:'verified-restoration-audit',version:request.version,requestId:request.requestId,
     sessionId:request.sessionId,operation,quality:request.quality,
     candidateFingerprint:witness.delta.candidateFingerprint,

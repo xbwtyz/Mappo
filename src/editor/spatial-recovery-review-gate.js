@@ -1,4 +1,4 @@
-import { createSpatialOperation } from '../core/spatial-recovery-contract.js';
+import { createSpatialOperation, spatialRefKey } from '../core/spatial-recovery-contract.js';
 import { SRE_ROAD_WORKER_VERSION } from '../core/spatial-recovery-worker-protocol.js';
 import { verifySpatialRoadWorkerReservation } from '../core/spatial-recovery-worker-reservation.js';
 import { spatialRoadReviewSummary, spatialRoadReviewFingerprint } from '../core/spatial-recovery-review-summary.js';
@@ -30,7 +30,10 @@ export function createSpatialRoadReviewGate(host,getDraft,{verify=createSpatialR
     sreReviewNeed(['standard','high'].includes(quality)&&
       (quality!=='high'||(op.permissions.destruction&&!op.permissions.regeneration)),
       'Unsupported road review quality.');
-    return copyJson({draftRevision:draft.draftRevision,operation:op,quality,workspace:draft.workspace,
+    const captureRestorationAudit=draft.captureRestorationAudit??false;
+    sreReviewNeed(typeof captureRestorationAudit==='boolean'&&(!captureRestorationAudit||op.permissions.destruction),
+      'Invalid road review restoration audit policy.');
+    return copyJson({draftRevision:draft.draftRevision,operation:op,quality,captureRestorationAudit,workspace:draft.workspace,
       savedDistrictCount:draft.savedDistrictCount??null,reservationRequests:draft.reservationRequests??null});
   };
   const current=state=>host.view()===state.view&&generation===state.generation&&
@@ -63,6 +66,7 @@ export function createSpatialRoadReviewGate(host,getDraft,{verify=createSpatialR
     const input={kind:'verify-review',version:SRE_ROAD_WORKER_VERSION,requestId:++requestId,
       sessionId:state.view.context.projectId,projectJson:JSON.stringify(state.view.project),
       operation:state.draft.operation,quality:state.draft.quality,reservationContext:auth.context,
+      captureRestorationAudit:state.draft.captureRestorationAudit,
       witness:copyJson(state.witness),authorization:auth.authorization};
     const proof=await verify(input);
     check(state);
@@ -77,7 +81,32 @@ export function createSpatialRoadReviewGate(host,getDraft,{verify=createSpatialR
     const summary=spatialRoadReviewSummary(state.view.project,candidate);
     sreReviewNeed(riEqual(summary,proof.summary)&&riEqual(candidate.identityAllocation,auth.receipt.nextState),
       'Verified road review ledger or allocation differs.');
-    return {candidate,candidateJson:proof.candidateJson,summary};
+    let restorationAudit=null;
+    if(state.draft.captureRestorationAudit){
+      sreReviewNeed(Object.hasOwn(proof,'restorationAudit'),'Missing independent restoration audit.');
+      const audit=proof.restorationAudit;
+      if(state.witness.kind==='nondestructive'){
+        sreReviewNeed(audit===null&&summary.retired.length===0,'Unexpected nondestructive restoration audit.');
+      }else{
+        const keys=rows=>rows.map(spatialRefKey).sort();
+        const original=new Set(['properties','plots','buildings'].flatMap(collection=>
+          state.view.project.city[collection].map(row=>spatialRefKey({collection,id:row.id}))));
+        const survivors=new Set(['properties','plots','buildings'].flatMap(collection=>
+          candidate.city[collection].map(row=>spatialRefKey({collection,id:row.id}))));
+        sreReviewNeed(audit?.version===1&&audit.finalBasisFingerprint===state.witness.basisDelta.candidateFingerprint&&
+          ['grossRetired','restored','finalRetired','transitions'].every(k=>Array.isArray(audit[k])),
+          'Invalid independent restoration audit binding.');
+        const gross=keys(audit.grossRetired),restored=keys(audit.restored),retired=keys(audit.finalRetired);
+        sreReviewNeed(riEqual(retired,keys(summary.retired))&&
+          riEqual(retired,keys(state.witness.basisDelta.retired))&&
+          new Set(gross).size===gross.length&&new Set(restored).size===restored.length&&
+          riEqual(gross,[...retired,...restored].sort())&&
+          gross.every(k=>original.has(k))&&restored.every(k=>survivors.has(k)),
+          'Restoration audit differs from verified candidate membership.');
+        restorationAudit=riFreeze(copyJson(audit));
+      }
+    }else sreReviewNeed(!Object.hasOwn(proof,'restorationAudit'),'Unexpected independent restoration audit.');
+    return {candidate,candidateJson:proof.candidateJson,summary,restorationAudit};
   };
   const review=async witness=>{
     cancel();
@@ -88,9 +117,9 @@ export function createSpatialRoadReviewGate(host,getDraft,{verify=createSpatialR
     const auth=authorize(state),proof=await replay(state,auth);
     check(state);
     const token=Object.freeze({});
-    tokens.set(token,{...state,summary:proof.summary,candidateJson:proof.candidateJson});
+    tokens.set(token,{...state,summary:proof.summary,restorationAudit:proof.restorationAudit,candidateJson:proof.candidateJson});
     return Object.freeze({token,summary:proof.summary,candidateFingerprint:state.witness.delta.candidateFingerprint,
-      candidate:riFreeze(proof.candidate)});
+      candidate:riFreeze(proof.candidate),...(draft.captureRestorationAudit?{restorationAudit:proof.restorationAudit}:{})});
   };
   const apply=async(token,consent)=>{
     const state=tokens.get(token);
@@ -98,10 +127,13 @@ export function createSpatialRoadReviewGate(host,getDraft,{verify=createSpatialR
     tokens.delete(token);
     check(state);
     sreReviewNeed(consent?.candidateFingerprint===state.witness.delta.candidateFingerprint&&
-      riEqual(consent.summary,state.summary),'Exact road review consent is required.');
+      riEqual(consent.summary,state.summary)&&(!state.draft.captureRestorationAudit||
+        Object.hasOwn(consent,'restorationAudit')&&riEqual(consent.restorationAudit,state.restorationAudit)),
+      'Exact road review consent is required.');
     const auth=authorize(state),proof=await replay(state,auth);
     check(state);
-    sreReviewNeed(proof.candidateJson===state.candidateJson&&riEqual(proof.summary,state.summary),
+    sreReviewNeed(proof.candidateJson===state.candidateJson&&riEqual(proof.summary,state.summary)&&
+      riEqual(proof.restorationAudit,state.restorationAudit),
       'Fresh road verification differs from the reviewed candidate.');
     const original=state.view.project;
     const workspace=reconcileRoadWorkspace(state.draft.workspace,original.city,proof.candidate.city);
@@ -126,7 +158,8 @@ export function createSpatialRoadReviewGate(host,getDraft,{verify=createSpatialR
     const committed=host.commit({requests:auth.requests,receipt:auth.receipt,candidateCity:proof.candidate.city,
       transaction,historyPolicy:'required',validateDomain:(a,b)=>current(state)&&
         JSON.stringify(a)===beforeJson&&JSON.stringify(b)===afterJson});
-    return {...committed,workspace:canonical.workspace,summary:proof.summary};
+    return {...committed,workspace:canonical.workspace,summary:proof.summary,
+      ...(state.draft.captureRestorationAudit?{restorationAudit:proof.restorationAudit}:{})};
   };
   return Object.freeze({review,apply,cancel});
 }

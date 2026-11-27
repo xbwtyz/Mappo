@@ -13,13 +13,13 @@ import { createSpatialRoadReviewGate } from '../src/editor/spatial-recovery-revi
 
 const clone=x=>JSON.parse(JSON.stringify(x));
 const small=()=>createProject({seed:'c2-planned',size:'small',morphology:'planned'});
-function fixture({project=small(),roadIds=['RD-0113','RD-0114'],offset={x:.05,y:0},permissions={},host=null,verify=calculateSpatialRoadReview}={}){
+function fixture({project=small(),roadIds=['RD-0113','RD-0114'],offset={x:.05,y:0},permissions={},host=null,verify=calculateSpatialRoadReview,captureRestorationAudit=false}={}){
   if(!host){host=new SecureIdentityHost();host.adopt(project);}
-  const draft={draftRevision:1,roadIds,offset,permissions,workspace:defaultWorkspace(host.view().project)};
+  const draft={draftRevision:1,roadIds,offset,permissions,captureRestorationAudit,workspace:defaultWorkspace(host.view().project)};
   const gate=createSpatialRoadReviewGate(host,()=>draft,{verify});
   const witness=()=>searchSpatialUnifiedRoadGroup(host.view().project,
     normalizeSpatialRoadGroup(host.view().project,host.view().context.revision,roadIds,offset,permissions),
-    permissions.destruction?createSpatialDestructionBudget():createSpatialPreservationBudget());
+    permissions.destruction?createSpatialDestructionBudget():createSpatialPreservationBudget(),{captureRestorationAudit});
   return {host,draft,gate,witness};
 }
 
@@ -102,5 +102,42 @@ test('road Review/Apply presents actual destructive concessions and supports ato
   const result=await f.gate.apply(reviewed.token,reviewed);
   assert.equal(result.historyStatus,'recorded');
   const undo=f.host.replay({direction:'undo',context:f.host.view().context,workspace:result.workspace});
+  assert.deepEqual(undo.project.city,before.project.city);
+});
+
+test('opt-in restoration audit is exact consent and fresh replay evidence, not search ledger',{timeout:300000},async()=>{
+  let mutateProof=false;
+  const project=createProject({seed:'mappo-001',size:'medium',morphology:'organic',
+    shapeOptions:{profile:'balanced',stretch:30,asymmetry:58,bend:44},irregularProperties:false});
+  const f=fixture({project,roadIds:['RD-0184','RD-0186'],offset:{x:1.5026370360609105,y:18.69948056782279},
+    permissions:{destruction:true,alternativeFrontage:true,uniformScaling:true,maxLinearReduction:.2},
+    captureRestorationAudit:true,verify:async input=>{
+      const proof=await calculateSpatialRoadReview(input);
+      if(mutateProof)return {...proof,restorationAudit:{...proof.restorationAudit,grossRetiredFootprint:proof.restorationAudit.grossRetiredFootprint+1}};
+      return proof;
+    }});
+  const before=f.host.view(),witness=await f.witness();
+  assert.equal(witness.kind,'retirement');assert.ok(witness.restorationTrail.length);
+  const altered={...clone(witness),ledger:{restored:['fabricated']}};
+  const a=await f.gate.review(altered);
+  assert.equal(a.restorationAudit.finalBasisFingerprint,witness.basisDelta.candidateFingerprint);
+  assert.equal(a.restorationAudit.finalRetired.length,a.summary.retired.length);
+  assert.ok(Object.isFrozen(a.restorationAudit));
+  await assert.rejects(()=>f.gate.apply(a.token,{...a,restorationAudit:null}),/consent/);
+  const b=await f.gate.review(witness);
+  mutateProof=true;
+  await assert.rejects(()=>f.gate.apply(b.token,b),/Fresh road verification/);
+  mutateProof=false;
+  const c=await f.gate.review(witness);
+  f.draft.captureRestorationAudit=false;
+  await assert.rejects(()=>f.gate.apply(c.token,c),/Stale/);
+  f.draft.captureRestorationAudit=true;
+  await assert.rejects(()=>f.gate.review({...witness,restorationTrail:[]}),/basis/);
+  assert.equal(f.host.view(),before);
+  const d=await f.gate.review(witness);
+  const applied=await f.gate.apply(d.token,d);
+  assert.deepEqual(applied.restorationAudit,d.restorationAudit);
+  assert.equal(applied.historyStatus,'recorded');
+  const undo=f.host.replay({direction:'undo',context:f.host.view().context,workspace:applied.workspace});
   assert.deepEqual(undo.project.city,before.project.city);
 });
