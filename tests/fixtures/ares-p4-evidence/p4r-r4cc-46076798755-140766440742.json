@@ -1,0 +1,356 @@
+{
+  "version": 1,
+  "source": "9a13278ed1e6f5bbb4fdfc9f7c1302bff17aeb21",
+  "run": 46076798755,
+  "attempt": 1,
+  "aggregate": 140767725293,
+  "job": 140766440742,
+  "rows": [
+    {
+      "id": "planned-medium:five-chain:100:diagonal",
+      "hops": 6,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2311275,
+      "result": {
+        "id": "planned-medium:five-chain:100:diagonal",
+        "cap": 256,
+        "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2315931,
+          "expansions": 256,
+          "remainingWork": 5684069,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1592.140593,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "planned-medium:five-chain:100:diagonal",
+      "hops": 10,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2317380,
+      "result": {
+        "id": "planned-medium:five-chain:100:diagonal",
+        "cap": 256,
+        "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2322036,
+          "expansions": 256,
+          "remainingWork": 5677964,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1445.220017,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "planned-medium:five-chain:100:y",
+      "hops": 6,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2314223,
+      "result": {
+        "id": "planned-medium:five-chain:100:y",
+        "cap": 256,
+        "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2317311,
+          "expansions": 256,
+          "remainingWork": 5682689,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1478.8917789999996,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "planned-medium:five-chain:100:y",
+      "hops": 10,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2319956,
+      "result": {
+        "id": "planned-medium:five-chain:100:y",
+        "cap": 256,
+        "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2323044,
+          "expansions": 256,
+          "remainingWork": 5676956,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1385.8758770000004,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "planned-medium:five-chain:75:y",
+      "hops": 6,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2314223,
+      "result": {
+        "id": "planned-medium:five-chain:75:y",
+        "cap": 256,
+        "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2316949,
+          "expansions": 256,
+          "remainingWork": 5683051,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1415.4589400000004,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "planned-medium:five-chain:75:y",
+      "hops": 10,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2319956,
+      "result": {
+        "id": "planned-medium:five-chain:75:y",
+        "cap": 256,
+        "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2322682,
+          "expansions": 256,
+          "remainingWork": 5677318,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1317.659146,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    }
+  ]
+}

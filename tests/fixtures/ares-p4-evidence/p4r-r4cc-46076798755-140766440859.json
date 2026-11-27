@@ -1,0 +1,470 @@
+{
+  "version": 1,
+  "source": "9a13278ed1e6f5bbb4fdfc9f7c1302bff17aeb21",
+  "run": 46076798755,
+  "attempt": 1,
+  "aggregate": 140767725293,
+  "job": 140766440859,
+  "rows": [
+    {
+      "id": "linear-medium:eight-chain:100:diagonal",
+      "hops": 6,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2261054,
+      "result": {
+        "id": "linear-medium:eight-chain:100:diagonal",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2266715,
+          "expansions": 256,
+          "remainingWork": 5733285,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1708.0275299999998,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "linear-medium:eight-chain:100:diagonal",
+      "hops": 10,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2264271,
+      "result": {
+        "id": "linear-medium:eight-chain:100:diagonal",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2269932,
+          "expansions": 256,
+          "remainingWork": 5730068,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1760.6764709999998,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "linear-medium:eight-chain:100:y",
+      "hops": 6,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2299617,
+      "result": {
+        "id": "linear-medium:eight-chain:100:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2303831,
+          "expansions": 256,
+          "remainingWork": 5696169,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1720.6726940000008,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "linear-medium:eight-chain:100:y",
+      "hops": 10,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2302834,
+      "result": {
+        "id": "linear-medium:eight-chain:100:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2307048,
+          "expansions": 256,
+          "remainingWork": 5692952,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1857.4642039999999,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "linear-medium:eight-chain:75:y",
+      "hops": 6,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2293598,
+      "result": {
+        "id": "linear-medium:eight-chain:75:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2297646,
+          "expansions": 256,
+          "remainingWork": 5702354,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1790.1007769999997,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "linear-medium:eight-chain:75:y",
+      "hops": 10,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2296815,
+      "result": {
+        "id": "linear-medium:eight-chain:75:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2300863,
+          "expansions": 256,
+          "remainingWork": 5699137,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1474.8110510000006,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "radial-small:five-chain:50:y",
+      "hops": 6,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 1173397,
+      "result": {
+        "id": "radial-small:five-chain:50:y",
+        "cap": 256,
+        "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 1177968,
+          "expansions": 256,
+          "remainingWork": 6822032,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1201.8048159999998,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "radial-small:five-chain:50:y",
+      "hops": 10,
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 1175590,
+      "result": {
+        "id": "radial-small:five-chain:50:y",
+        "cap": 256,
+        "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 1180161,
+          "expansions": 256,
+          "remainingWork": 6819839,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1038.562155,
+        "portfolio": {
+          "prefixSlots": 160,
+          "enumerated": {
+            "original": 160,
+            "breadth": 181,
+            "directional": 87
+          },
+          "scheduled": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 65
+          },
+          "attempted": {
+            "original": 160,
+            "breadth": 32,
+            "directional": 64
+          },
+          "duplicates": {
+            "original": 0,
+            "breadth": 149,
+            "directional": 0
+          },
+          "skippedParallel": 22,
+          "switches": 64,
+          "lastFailure": "crossing",
+          "feedback": {
+            "crossing": 256,
+            "other": 0
+          }
+        }
+      }
+    }
+  ]
+}
