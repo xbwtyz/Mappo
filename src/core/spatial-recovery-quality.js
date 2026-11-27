@@ -1,3 +1,4 @@
+import { recordSpatialRestorationBasis } from './spatial-recovery-restoration-trail.js';
 import { spatialRefKey } from './spatial-recovery-contract.js';
 import { createLareBudget, LareBudgetExceeded, LARE_DEMOLITION_LIMITS } from './reconciliation-budget.js';
 import { searchSpatialRetirementSubsetRoadGroup } from './spatial-recovery-road-adapter.js';
@@ -23,10 +24,11 @@ function sreQualityChildBudget(parent){
 // Restore eligible retired children of surviving properties, smaller
 // footprints first. Exact remaining-set deduplication spans coordinator
 // passes. No new retirements or additions; independently verified cost only.
-export async function restoreSpatialPriorityChildren(project,operation,seed,budget,seen){
+export async function restoreSpatialPriorityChildren(project,operation,seed,budget,seen,{captureRestorationAudit=false}={}){
   let incumbent={delta:seed.basisDelta,ledger:seed.ledger},exhausted=null;
-  const attempts=[];
-  const finish=()=>({status:'verified-witness',...incumbent,attempts,exhausted});
+  const attempts=[],restorationTrail=captureRestorationAudit?[]:null;
+  const finish=()=>({status:'verified-witness',...incumbent,attempts,exhausted,
+    ...(restorationTrail===null?{}:{restorationTrail})});
   try{
     const buildings=new Map(project.city.buildings.map(b=>[b.id,b]));
     budget.spend(Math.max(1,buildings.size));
@@ -63,6 +65,7 @@ export async function restoreSpatialPriorityChildren(project,operation,seed,budg
             result.delta.retired.some(r=>!expected.has(spatialRefKey(r))))throw Error('Unexpected priority child retirement membership.');
           if(improvesSpatialRetirementCost(measureSpatialRetirementCost(result.ledger,trialBudget),measureSpatialRetirementCost(incumbent.ledger,trialBudget))){
             incumbent={delta:result.delta,ledger:result.ledger};row.selected=true;
+            recordSpatialRestorationBasis(restorationTrail,result.delta);
           }
         }catch(error){
           if(!(error instanceof LareBudgetExceeded))throw error;

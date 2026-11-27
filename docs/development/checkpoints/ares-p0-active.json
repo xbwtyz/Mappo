@@ -7,7 +7,7 @@
   "state": "active",
   "source": {
     "branch": "feature/sre-e2-live-road-worker",
-    "sha": "6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9",
+    "sha": "fee3e566096be4c4fd611fd1eb1e0d9fefa38cae",
     "baseSha": "eae2b1f73af2b04d2e9b980954eaa94d5c9b576b",
     "pr": 163
   },
@@ -26,10 +26,11 @@
   "completed": [
     "Exact full CI 45934062728 22/22 success 709s at 6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9",
     "Owner research 45933210617; forensics 45934318758 three setback refusals despite maximum eligible retirement.",
-    "ARES architecture and implementation plan approved; detailed plan recorded."
+    "ARES architecture and implementation plan approved; detailed plan recorded.",
+    "A1 Fast Checks 45936188648 green exact fee3e566, 18 jobs, 964 tests / 105 files, 197s."
   ],
   "pending": [
-    "A1 detached restoration audit tests and focused validation.",
+    "A2 opt-in capture of selected retirement lineage, exact checkpoint basis and high/standard measurement; hosted build then focused qualification.",
     "A2 evidence capture/completeness/compact transport, independent review/apply and UI binding; remaining interactive evidence and manual acceptance.",
     "Separate PR163 merge approval and exact-main verification, then ARES P1–P9."
   ],
@@ -38,12 +39,12 @@
     "Preserve current schema 11 and portable/workspace 1; defer E3–E6 and B2."
   ],
   "blockers": [
-    "A1 not wired to worker/Review/Apply; completeness/transport/verification cost unresolved.",
+    "Live restoration capture still disabled; need A2 evidence size/replay and A3 binding, no new refusal rules.",
     "Current PR163 not review-ready; manual acceptance pending.",
     "Known setback and topology limitations remain until ARES."
   ],
   "evidence": {
-    "qualification": "full",
+    "qualification": "focused",
     "full": {
       "runId": 45934062728,
       "attempt": 1,
@@ -61,11 +62,21 @@
         "path": "dist/mappo-0.2.25-dev.html",
         "blob": "a363478401a916dea3dc84242c87bfe7e4de9617"
       }
-    ]
+    ],
+    "focused": {
+      "runId": 45936188648,
+      "attempt": 1,
+      "head": "fee3e566096be4c4fd611fd1eb1e0d9fefa38cae",
+      "conclusion": "success",
+      "durationSeconds": 197,
+      "tests": 964,
+      "files": 105,
+      "nodeShards": 16
+    }
   },
   "rollback": {
     "sourceSha": "6b4cb70d8ff71affcbf1699d33bb8ea1a76fb2d9",
     "policy": "Reviewed revert only; preserve exact evidence."
   },
-  "nextAction": "Verify A1 exact focused CI; then capture/measure complete selected incumbent evidence before live integration. No merge or release."
+  "nextAction": "Verify hosted compile/record, transfer exact artifact pair; focused tests and capture/replay evidence logs. Then qualify A3 independent live review integration."
 }

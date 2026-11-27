@@ -1,3 +1,4 @@
+import { recordSpatialRestorationBasis } from './spatial-recovery-restoration-trail.js';
 import { createSpatialOperation, spatialRefKey } from './spatial-recovery-contract.js';
 import { createSpatialDelta, reconstructSpatialDelta } from './spatial-recovery-delta.js';
 import { createLareBudget, LareBudgetExceeded, LARE_PRESERVATION_LIMITS, LARE_DEMOLITION_LIMITS } from './reconciliation-budget.js';
@@ -69,9 +70,12 @@ export async function verifySpatialUnifiedRoadWitness(project,input,witness,budg
 // Phase ceilings are scheduling boundaries within existing limits, not
 // new allowances. Reserve enough work to bind a verified witness to the
 // external operation before spending on optional improvements.
-export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{context=null,quality='standard',schedule=quality==='high'?'diversified-restoration':'baseline',checkpoint=null}={}){
+export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{context=null,quality='standard',schedule=quality==='high'?'diversified-restoration':'baseline',checkpoint=null,captureRestorationAudit=false}={}){
   const {operation,retirement,preserving,building}=sreRoadOperations(input);
   const p=operation.permissions,attempts=[];
+  if(typeof captureRestorationAudit!=='boolean')throw Error('Invalid restoration capture option.');
+  const restorationTrail=captureRestorationAudit?[]:null;
+  const auditFields=()=>restorationTrail===null?{}:{restorationTrail:restorationTrail.slice()};
   if(checkpoint!==null&&typeof checkpoint!=='function')throw Error('Invalid recovery checkpoint observer.');
   if(!['standard','high'].includes(quality))throw Error('Unsupported detached recovery quality.');
   const high=quality==='high';
@@ -101,7 +105,7 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
     const capture=()=>riFreeze({status:incumbent?'verified-witness':'refused',operation,
       kind:incumbent?.kind??null,delta:incumbent?.delta??null,basisDelta:incumbent?.basisDelta??null,
       ledger:incumbent?.ledger??null,provisionalAuthorization:incumbent?.provisionalAuthorization??null,
-      attempts:JSON.parse(JSON.stringify(attempts)),exhausted,stats:callerBudget.snapshot()});
+      attempts:JSON.parse(JSON.stringify(attempts)),exhausted,stats:callerBudget.snapshot(),...auditFields()});
     const decision=await checkpoint(state,capture);
     if(decision==='stop'){stopped=true;throw stopSignal;}
     if(decision!=='continue'&&decision!==undefined)throw Error('Invalid recovery checkpoint decision.');
@@ -109,7 +113,7 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
   const finish=()=>riFreeze({status:incumbent?'verified-witness':'refused',operation,
     kind:incumbent?.kind??null,delta:incumbent?.delta??null,basisDelta:incumbent?.basisDelta??null,
     ledger:incumbent?.ledger??null,provisionalAuthorization:incumbent?.provisionalAuthorization??null,
-    attempts,exhausted,stats:callerBudget.snapshot(),...(stopped?{stopped:true}:{})});
+    attempts,exhausted,stats:callerBudget.snapshot(),...auditFields(),...(stopped?{stopped:true}:{})});
   if(!budget){exhausted='work';return finish();}
   const phase=async(name,cap,run,{expansions=131072,reserve=0}={})=>{
     if(checkpoint)await observe(name);
@@ -131,6 +135,12 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
   const setRetirement=async(result)=>{
     const delta=await sreBind(project,retirement,operation,result.delta,budget);
     incumbent={kind:'retirement',delta,basisDelta:result.delta,ledger:result.ledger};
+    // Commit nested evidence only after this phase wins and rebinding succeeds.
+    // Discarded alternatives must never inflate the selected lineage.
+    if(restorationTrail!==null){
+      for(const basis of result.restorationTrail??[])recordSpatialRestorationBasis(restorationTrail,basis);
+      recordSpatialRestorationBasis(restorationTrail,result.delta);
+    }
   };
   try{
     const ordinary=await phase('nondestructive',8000000,
@@ -176,12 +186,12 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
     const regenerationReserve=p.regeneration?4000000:0;
     const restored=await phase('restoration',(schedule==='baseline'?6000000:12000000)+restoreExtra,
       b=>restoreSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b,
-        {proposalPolicy:schedule==='shell-first-restoration'?'shell-first':['diversified-restoration','area-deficit-seed','area-deficit-direct'].includes(schedule)?'diversified':'baseline'}),
+        {proposalPolicy:schedule==='shell-first-restoration'?'shell-first':['diversified-restoration','area-deficit-seed','area-deficit-direct'].includes(schedule)?'diversified':'baseline',captureRestorationAudit}),
       {reserve:bindReserve+regenerationReserve});
     if(restored&&restored.delta.candidateFingerprint!==incumbent.basisDelta.candidateFingerprint)
       await setRetirement(restored);
     const optimized=await phase('optimization',6000000+optimizeExtra,
-      b=>optimizeSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b),
+      b=>optimizeSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b,{captureRestorationAudit}),
       {reserve:bindReserve+regenerationReserve});
     if(optimized&&optimized.delta.candidateFingerprint!==incumbent.basisDelta.candidateFingerprint)
       await setRetirement(optimized);
@@ -202,10 +212,10 @@ export async function searchSpatialUnifiedRoadGroup(project,input,callerBudget,{
         // restoration of retired children on surviving properties.
         const policy=pass%2?'shell-first':'diversified';
         const restored=await phase('iterative-restoration-'+pass,45000000,
-          b=>restoreSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b,{proposalPolicy:policy}),{reserve:bindReserve});
+          b=>restoreSpatialRoadRetirements(project,retirement,incumbent.basisDelta,b,{proposalPolicy:policy,captureRestorationAudit}),{reserve:bindReserve});
         if(await improve(restored))changed=true;
         const optimized=await phase('iterative-child-'+pass,32000000,
-          b=>restoreSpatialPriorityChildren(project,retirement,incumbent,b,childSeen),{reserve:bindReserve});
+          b=>restoreSpatialPriorityChildren(project,retirement,incumbent,b,childSeen,{captureRestorationAudit}),{reserve:bindReserve});
         if(await improve(optimized))changed=true;
         if(!changed&&pass>=2)break; // explore both orderings once, then stop on plateau
         if(budget.snapshot().remainingWork<=bindReserve)break;
