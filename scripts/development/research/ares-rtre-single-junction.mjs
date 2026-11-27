@@ -10,6 +10,7 @@ import { appendSegmentCuts, insideOrOn, lerpPoint } from '../../../src/core/boun
 import { LareBudgetExceeded } from '../../../src/core/reconciliation-budget.js';
 import { riFreeze, riCompare } from '../../../src/core/road-impact-model.js';
 import { analyticalTrials,X34_IDS } from './ares-p4x-analytical.mjs';
+import { hybridTrials,X56_IDS } from './ares-p4x-hybrid.mjs';
 
 // C: bounded dry-land, single-unselected-junction geometry experiment.
 // A graph witness is NOT a city witness, property repair, or Apply authority.
@@ -65,7 +66,7 @@ function rotation(graph,id,budget){
   for(let i=1;i<ids.length;i++)if(riCompare(ids[i],ids[first])<0)first=i;
   return [...ids.slice(first),...ids.slice(0,first)];
 }
-function checkGeometry(source,accepted,positions,budget,reuseIncidentChecks=false){
+function checkGeometry(source,accepted,positions,budget,reuseIncidentChecks=false,capturePairs=false){
   for(const p of positions.values()){
     budget.spend();if(!finite(p))return {valid:false,issues:['coordinate-limit']};
   }
@@ -74,9 +75,13 @@ function checkGeometry(source,accepted,positions,budget,reuseIncidentChecks=fals
     return p?{...n,x:p.x,y:p.y}:n;
   })};
   const graph=graphFor(city,budget);
-  if(!graph.valid)return {valid:false,issues:[...new Set(graph.issues.map(i=>i.code))].sort(riCompare),
+  if(!graph.valid){
+    const conflictPairs=[];
+    if(capturePairs)for(const i of graph.issues){budget.spend();if(['unnormalized-crossing','overlapping-roads'].includes(i.code)){budget.spend(1+i.roadIds.length);conflictPairs.push({code:i.code,roadIds:[...i.roadIds]});}}
+    return {valid:false,...(capturePairs?{conflictPairs}:{}),issues:[...new Set(graph.issues.map(i=>i.code))].sort(riCompare),
     blockingRoadIds:[...new Set(graph.issues.flatMap(i=>i.roadIds??[]))].sort(riCompare),
     blockingNodeIds:[...new Set(graph.issues.flatMap(i=>i.nodeIds??[]))].sort(riCompare)};
+  }
   const boundary=source.city.survey.boundary,check=new Set(),checkedRoads=reuseIncidentChecks?new Set():null;
   for(const id of positions.keys()){
     budget.spend();check.add(id);
@@ -438,6 +443,13 @@ export async function probeFreshRtreAnalytical(caseId,o,budget){
     throw Error('Unapproved P4X analytical arm.');
   return probeCoordinated(caseId,o,budget,true,true,true,true,false,false,'analytical-independent');
 }
+// X56 uses the exact X34 research limits and only the ten frozen refusals.
+export async function probeFreshRtreHybrid(caseId,o,budget){
+  if(typeof caseId!=='string'||!caseId.startsWith('g:')||!X56_IDS.includes(caseId.slice(2))||
+    o?.mode!=='adaptive'||o.maxObjects!==10000||o.maxHops!==6||o.maxNeighbors!==4||o.maxCandidates!==256)
+    throw Error('Unapproved P4X hybrid arm.');
+  return probeCoordinated(caseId,o,budget,true,true,true,true,false,false,'hybrid-refinement');
+}
 async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
@@ -450,6 +462,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     baseline:null,attempts:0,adjustedWitness:null,termination:'preflight'};
   if(constrained){result.constraintMode='final-landscape-defense';result.constraintRejected=0;}
   if(combined==='adaptive-portfolio')result.portfolio=portfolioTelemetry();
+  if(combined==='hybrid-refinement')result.hybrid={baselinePairs:0,subsets:0,coveringGroups:0,connectedGroups:0,connectorGroups:0,enumerationLimit:false,groupLimit:false,seedProposals:0,feedbackProposals:0,duplicates:0,feedbackEvaluations:0,bestConflictCount:null,attempted:{'hybrid-refinement':0,'hybrid-directional-seed':0},failures:{}};
   if(combined==='analytical-independent')result.analytical={pairs:0,subsets:0,covering:0,connectedGroups:0,groupLimit:false,failures:{}};
   if(ranked)result.ranking={profile:'research-major-roads-neighbors-displacement-v1',verifiedCount:0,firstScore:null,bestScore:null,bestAttempt:null};
   const finish=()=>{
@@ -465,7 +478,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     const positions=new Map(report.requested.map(r=>[r.ref.id,r.point])),selected=new Set(positions.keys());
     const checkConstraints=constrained?constraintChecker(source,accepted,report,budget):null;
     function evaluate(proposed,baseline=false){
-      const geometry=checkGeometry(source,accepted,proposed,budget,reuseIncidentChecks);
+      const geometry=checkGeometry(source,accepted,proposed,budget,reuseIncidentChecks,!!result.hybrid);
       if(!constrained)return geometry;
       // For baseline keep actual blocker evidence even when graph invalid.
       // Nonplanar search candidates need not run expensive providers.
@@ -502,7 +515,9 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     const rows=[...report.eligibleJunctions].sort((a,b)=>Number(blockers.has(b.ref.id))-Number(blockers.has(a.ref.id))||
       a.primaryIncidentCount-b.primaryIncidentCount||a.depth-b.depth||riCompare(a.ref.id,b.ref.id));
     const byId=new Map(rows.map(r=>[r.ref.id,r])),offset=f.context.operation.geometry.offset;
-    const trials=result.analytical?analyticalTrials(accepted,rows,positions,report,offset,budget,result.analytical):
+    const feedback={value:null};
+    const trials=result.hybrid?hybridTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback):
+      result.analytical?analyticalTrials(accepted,rows,positions,report,offset,budget,result.analytical):
       result.portfolio?adaptiveTrials(accepted,rows,selected,maxNeighbors,budget,result.portfolio):
       combined?combinedTrials(accepted,rows,selected,maxNeighbors,budget,combined):
       orderedTrials(accepted,rows,selected,maxNeighbors,budget,breadth,directional);
@@ -523,9 +538,19 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
           proposed.set(id,point);neighbors.push({id,old:{...row.old},point:{...point}});
         }
         if(neighbors.length!==ids.length)continue;
+        if(result.hybrid){
+          budget.spend(1+neighbors.length);
+          if(neighbors.length<2||neighbors.length>4||new Set(ids).size!==ids.length||neighbors.some(n=>!byId.has(n.id)||selected.has(n.id)||!finite(n.point)||Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y)>Math.hypot(offset.x,offset.y)))throw Error('X56 candidate exceeded authority.');
+        }
         budget.expand();result.attempts++;
         if(result.portfolio)result.portfolio.attempted[strategy]++;
         const checked=evaluate(proposed);
+        if(result.hybrid){
+          budget.spend(1+checked.issues.length);
+          result.hybrid.attempted[strategy]++;
+          feedback.value=checked;
+          for(const issue of checked.issues)result.hybrid.failures[issue]=(result.hybrid.failures[issue]??0)+1;
+        }
         if(!checked.valid){
           if(result.analytical)for(const issue of checked.issues){budget.spend();result.analytical.failures[issue]=(result.analytical.failures[issue]??0)+1;}
           if(result.portfolio){
@@ -543,7 +568,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         for(const u of updates)for(const rid of accepted.incidentRoads.get(u.id)){budget.spend();roads.add(rid);}
         sortCharge(roads.size,budget);let displacement=0;
         for(const n of neighbors){budget.spend();displacement+=Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y);}
-        const w={kind:'geometry-only',neighbors,updates,changedRoadIds:[...roads].sort(riCompare),displacement,stencil:analyticalPoints?{strategy:'analytical-independent'}:direction!==undefined?{factor,taper,direction}:{factor,taper}};
+        const w={kind:'geometry-only',neighbors,updates,changedRoadIds:[...roads].sort(riCompare),displacement,stencil:analyticalPoints?{strategy:result.hybrid?strategy:'analytical-independent'}:direction!==undefined?{factor,taper,direction}:{factor,taper}};
         if(constrained){
           w.kind='geometry-with-final-constraints';
           w.constraints=checked.constraints;
@@ -562,7 +587,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         }
         // Continue only inside the original candidate/work/expansion limits.
     }
-    if(result.termination==='preflight')result.termination=result.analytical?'analytical-stream-exhausted':'cluster-stencil-exhausted';
+    if(result.termination==='preflight')result.termination=result.hybrid?'hybrid-stream-exhausted':result.analytical?'analytical-stream-exhausted':'cluster-stencil-exhausted';
     result.status=result.baseline.valid?'baseline-valid':result.adjustedWitness?'geometry-recovered':'search-refused';
   }catch(e){
     if(!(e instanceof LareBudgetExceeded))throw e;
