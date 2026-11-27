@@ -269,7 +269,30 @@ export async function probeFreshRtreConstrained(caseId,o,budget){
 export async function probeFreshRtreOptimized(caseId,o,budget){
   return probeCoordinated(caseId,o,budget,true,true);
 }
-async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false){
+// F1B: experimental bounded preference, not a production profile/default.
+// Only already geometry/domain-checked adjusted candidates enter ranking.
+// Distinct major roads touched by extra neighbor motion take precedence;
+// then fewer moved neighbors, then less total displacement. Stable first
+// occurrence breaks ties in the deterministic candidate stream.
+function leastDisruptiveScore(w,accepted,budget){
+  const major=new Set();
+  for(const n of w.neighbors){
+    budget.spend();
+    for(const id of accepted.incidentRoads.get(n.id)){
+      budget.spend();
+      if(accepted.roadsById.get(id).kind==='primary')major.add(id);
+    }
+  }
+  return [major.size,w.neighbors.length,w.displacement];
+}
+function betterScore(a,b){
+  for(let i=0;i<a.length;i++)if(a[i]!==b[i])return a[i]<b[i];
+  return false;
+}
+export async function probeFreshRtreRanked(caseId,o,budget){
+  return probeCoordinated(caseId,o,budget,true,true,true);
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -280,6 +303,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     limits:report.limits,maxCandidates,maxNeighbors,eligibilityStatus:report.status,status:'preflight-refused',
     baseline:null,attempts:0,adjustedWitness:null,termination:'preflight'};
   if(constrained){result.constraintMode='final-landscape-defense';result.constraintRejected=0;}
+  if(ranked)result.ranking={profile:'research-major-roads-neighbors-displacement-v1',verifiedCount:0,firstScore:null,bestScore:null,bestAttempt:null};
   const finish=()=>{
     if(aresReplayJson(source)!==before)throw Error('RTRE coordinated source mutated.');
     return riFreeze({...result,stats:budget.snapshot()});
@@ -318,6 +342,10 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     if(report.status==='strict-no-adjustment'){
       result.status=result.baseline.valid?'baseline-valid':'search-refused';result.termination='strict';return finish();
     }
+    // Zero extra neighbor changes always win when exact intent is valid.
+    if(ranked&&result.baseline.valid){
+      result.status='baseline-valid';result.termination='baseline-preferred';return finish();
+    }
     const blockers=new Set(result.baseline.blockingNodeIds??[]);
     for(const id of result.baseline.blockingRoadIds??[]){
       budget.spend();const r=accepted.roadsById.get(id);blockers.add(r.a);blockers.add(r.b);
@@ -355,7 +383,20 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
           w.kind='geometry-with-final-constraints';
           w.constraints=checked.constraints;
         }
-        aresReplayJson(w,budget);result.adjustedWitness=w;result.termination='first-valid-adjustment';break outer;
+        aresReplayJson(w,budget);
+        if(!ranked){
+          result.adjustedWitness=w;result.termination='first-valid-adjustment';break outer;
+        }
+        const score=leastDisruptiveScore(w,accepted,budget),ranking=result.ranking;
+        // Charge rank evidence before atomically updating the incumbent.
+        aresReplayJson(score,budget);budget.spend(3);
+        ranking.verifiedCount++;
+        if(ranking.firstScore===null)ranking.firstScore=score;
+        if(ranking.bestScore===null||betterScore(score,ranking.bestScore)){
+          ranking.bestScore=score;ranking.bestAttempt=result.attempts;result.adjustedWitness=w;
+        }
+        // Continue only inside the original candidate/work/expansion limits.
+
       }
     }
     if(result.termination==='preflight')result.termination='cluster-stencil-exhausted';
