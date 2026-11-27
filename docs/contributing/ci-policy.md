@@ -103,3 +103,6 @@ Measured Node assignments: scripts/ci-node-weights.json retains reviewed exact p
 
 
 Browser balance update: move G4 cross-editor to property and H4 recovery to integration from desktop based on three successful run medians. Preserve all 37 independent scripts, existing runner names and optional benchmark position. Estimated maximum script sum 214.35s to 191.04s; actual performance pending final qualification. Roll back via the prior reviewed browser manifest if needed.
+
+
+Owner-authorized 16-shard diagnostic (2026-11-26): the standing DEV-39 two-Node/four-browser mandatory allocation is a policy choice, not a platform limit. Evaluate 16 measured Node diagnostic shards using the explicit [node-timing-pilot-16] marker on PR162; preflight, exact checkout, standalone parity, native isolation, complete same-attempt inventory and per-assignment execution are required. No diagnostic result replaces a required full gate. Adopt any permanent runner-count change only after review of evidence and explicit owner approval. Do not overlap unnecessary full gates. Four browser suites, mandatory coverage and separate merge/publish approvals unchanged.

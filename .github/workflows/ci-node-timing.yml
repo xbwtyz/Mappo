@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   preflight:
-    if: contains(github.event.head_commit.message, '[node-timing-pilot]')
+    if: contains(github.event.head_commit.message, '[node-timing-pilot-16]')
     name: Node timing preflight
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -28,15 +28,15 @@ jobs:
           node --test tests/ci-node-timing.test.js
   measure:
     needs: preflight
-    if: contains(github.event.head_commit.message, '[node-timing-pilot]')
-    name: Node timing (shard ${{ matrix.shard }}/4)
+    if: contains(github.event.head_commit.message, '[node-timing-pilot-16]')
+    name: Node timing (shard ${{ matrix.shard }}/16)
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 16
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -51,7 +51,7 @@ jobs:
           npm run build
           git diff --exit-code -- index.html dist/
       - name: Measure native Node file summaries
-        run: node scripts/ci-node-timing.mjs run ${{ matrix.shard }} 4
+        run: node scripts/ci-node-timing.mjs run ${{ matrix.shard }} 16
       - name: Retain measured report
         if: always()
         uses: actions/upload-artifact@v4
@@ -62,7 +62,7 @@ jobs:
           retention-days: 14
   complete:
     needs: measure
-    if: contains(github.event.head_commit.message, '[node-timing-pilot]')
+    if: contains(github.event.head_commit.message, '[node-timing-pilot-16]')
     name: Node timing completeness
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -79,8 +79,8 @@ jobs:
           pattern: node-timing-${{ github.run_id }}-${{ github.run_attempt }}-*
           path: timing-input
           merge-multiple: true
-      - name: Verify complete same-attempt inventory and propose two-shard assignment
-        run: node scripts/ci-node-timing.mjs aggregate timing-input 4
+      - name: Verify all sixteen exact same-attempt assignments and summarize timing
+        run: node scripts/ci-node-timing.mjs aggregate timing-input 16
       - uses: actions/upload-artifact@v4
         with:
           name: node-timing-evidence-${{ github.run_id }}-${{ github.run_attempt }}

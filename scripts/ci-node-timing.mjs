@@ -102,17 +102,29 @@ export function validateBalancedManifest(manifest,inventory) {
   return expected;
 }
 
+export function measuredAssignments(manifest,inventory,shards){
+  if(![2,16].includes(shards))throw Error('Unsupported measured shard count');
+  const original=validateBalancedManifest(manifest,inventory);
+  if(shards===2)return original;
+  const groups=proposeBalanced(manifest.files,shards);
+  const assigned=groups.flatMap(g=>g.files);
+  if(groups.length!==shards||groups.some(g=>g.files.length===0)||new Set(assigned).size!==assigned.length||
+     JSON.stringify([...assigned].sort())!==JSON.stringify([...inventory].sort()))throw Error('Invalid measured diagnostic assignment');
+  return groups;
+}
+
 const source=()=>execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 const outdir=()=>resolve('artifacts','ci-timings');
 function run(shard,shards) {
-  if(!Number.isSafeInteger(shard)||!Number.isSafeInteger(shards)||shard<1||shard>shards||![2,4].includes(shards)) throw Error('Invalid native shard');
+  if(!Number.isSafeInteger(shard)||!Number.isSafeInteger(shards)||shard<1||shard>shards||![2,4,16].includes(shards)) throw Error('Invalid native shard');
   const root=process.cwd(),inventory=nodeInventory(root);
   mkdirSync(outdir(),{recursive:true});
   const raw=resolve(outdir(),'node-'+shard+'.ndjson');
   const reportPath=resolve(outdir(),'node-'+shard+'.json');
   const commit=source();
   if(!validSha(commit)) throw Error('Invalid source identity');
-  const assignment=shards===2?validateBalancedManifest(JSON.parse(readFileSync(resolve(root,'scripts/ci-node-weights.json'),'utf8')),inventory)[shard-1]:null;
+  const manifest=shards===4?null:JSON.parse(readFileSync(resolve(root,'scripts/ci-node-weights.json'),'utf8'));
+  const assignment=manifest?measuredAssignments(manifest,inventory,shards)[shard-1]:null;
   const selected=assignment?assignment.files:inventory;
   const flags=assignment?[]:['--test-shard='+shard+'/'+shards];
   if(assignment) console.log('NODE_BALANCED_ASSIGNMENT '+JSON.stringify({source:commit,shard,estimatedMs:assignment.ms,files:selected}));
@@ -136,8 +148,16 @@ function run(shard,shards) {
 function aggregate(directory,shards) {
   const reports=readdirSync(directory).filter(p=>/^node-\d+\.json$/.test(p)).map(p=>JSON.parse(readFileSync(resolve(directory,p),'utf8')));
   const evidence=verifyTimingReports(reports,{inventory:nodeInventory(),source:source(),runId:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,shards});
+  if(shards===16){
+    const groups=measuredAssignments(JSON.parse(readFileSync('scripts/ci-node-weights.json','utf8')),nodeInventory(),16);
+    for(const r of reports){
+      if(JSON.stringify(r.files.map(x=>x.file).sort())!==JSON.stringify([...groups[r.shard-1].files].sort()))
+        throw Error('Diagnostic shard executed a different assignment');
+    }
+  }
   const proposal=proposeBalanced(evidence.files,2);
-  const report={...evidence,proposal};
+  const report={...evidence,proposal,diagnosticProposal:shards===16?proposeBalanced(evidence.files,16):null,
+    shardTimes:reports.map(r=>({shard:r.shard,ms:r.total.duration_ms,files:r.files.length,tests:r.total.counts.tests})).sort((a,b)=>a.shard-b.shard)};
   mkdirSync(outdir(),{recursive:true});
   writeFileSync(resolve(outdir(),'node-timing-evidence.json'),JSON.stringify(report,null,2)+'\n');
   console.log('NODE_TIMING_EVIDENCE '+JSON.stringify(report));

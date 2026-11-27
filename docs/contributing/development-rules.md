@@ -11,6 +11,10 @@
 - **Repository state:** inspect current source, workflows, PRs and CI before claiming an action or status. Some older planning documents are time-stamped and can be stale. Preserve historical descriptions as historical context rather than accepting them as authoritative current release state.
 - **Approval boundary:** the policy adoption authorizes only this documentation PR. Future runtime changes, schema/CI updates, PR merges, releases and Pages deployments still need their own explicit approvals.
 
+## Standing restriction-review policy (owner authorized 2026-11-26)
+
+When any project rule materially limits speed, cost, architecture or capability, raise the issue promptly rather than silently working around it. Explain why the rule exists, whether its original rationale still holds, the expected/measured cost of retaining it, alternatives, risks and safeguards. Ask for a decision before substantial avoidable workaround effort or a policy change; continue only within approved bounds. Preserve preservation, coverage, exact-revision verification, and separate merge/release approvals. This requirement supplements the original 51 development and 48 output selections; it does not automatically turn any existing rule off. The owner explicitly authorized documenting this requirement and investigating 16 Node shards on 2026-11-26. DEV-39 remains the mandatory gate until a reviewed replacement is approved and qualified.
+
 ## 1. Development preferences — complete owner selection (51 rules)
 
 The table preserves every item in the original development checklist, with the owner's single subsequent change to legacy-save compatibility reflected as **OFF**. The other two defaults that were already OFF remain OFF.

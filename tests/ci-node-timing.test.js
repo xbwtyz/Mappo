@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { parseTiming, verifyTimingReports, proposeBalanced, validateBalancedManifest, nodeInventory } from '../scripts/ci-node-timing.mjs';
+import { parseTiming, verifyTimingReports, proposeBalanced, validateBalancedManifest, nodeInventory, measuredAssignments } from '../scripts/ci-node-timing.mjs';
 const files=['tests/a.test.js','tests/b.test.js','tests/c.test.js','tests/d.test.js'];
 const root=process.cwd(),sha='a'.repeat(40);
 const counts=n=>({tests:n,passed:n,failed:0,cancelled:0,skipped:0,todo:0});
@@ -68,8 +68,8 @@ test('native reporter preserves TAP and records real per-file summaries under No
 test('timing pilot is isolated from full CI and full workflow retains two Node jobs',()=>{
   const pilot=readFileSync(new URL('../.github/workflows/ci-node-timing.yml',import.meta.url),'utf8');
   const full=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8');
-  assert.match(pilot,/\[node-timing-pilot\]/);assert.match(pilot,/shard: \[1, 2, 3, 4\]/);
-  assert.match(pilot,/aggregate .* 4/);assert.doesNotMatch(pilot,/name: Build, Node tests and browser QA/);
+  assert.match(pilot,/\[node-timing-pilot-16\]/);assert.match(pilot,/shard: \[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16\]/);
+  assert.match(pilot,/aggregate .* 16/);assert.doesNotMatch(pilot,/name: Build, Node tests and browser QA/);
   assert.match(full,/shard: \[1, 2\]/);assert.match(full,/ci-node-timing\.mjs run/);
   assert.match(full,/name: Build, Node tests and browser QA/);
 });
@@ -135,4 +135,23 @@ test('reviewed measured assignment includes each current Node test exactly once'
   }
   assert.throws(()=>validateBalancedManifest(manifest,[...inventory,'tests/unmeasured.test.js']));
   assert.throws(()=>validateBalancedManifest(manifest,inventory.slice(1)));
+});
+
+test('sixteen-runner diagnostic reuses validated measured inventory without altering two-runner gate',()=>{
+  const manifest=JSON.parse(readFileSync(new URL('../scripts/ci-node-weights.json',import.meta.url),'utf8'));
+  const inventory=nodeInventory(),groups=measuredAssignments(manifest,inventory,16);
+  assert.equal(groups.length,16);
+  assert.deepEqual(groups.map(g=>g.shard),Array.from({length:16},(_,i)=>i+1));
+  assert.ok(groups.every(g=>g.files.length>0));
+  assert.deepEqual(groups.flatMap(g=>g.files).sort(),inventory);
+  assert.deepEqual(groups,measuredAssignments(manifest,inventory,16));
+  assert.deepEqual(measuredAssignments(manifest,inventory,2),manifest.proposal);
+  assert.throws(()=>measuredAssignments(manifest,inventory,15));
+  assert.throws(()=>measuredAssignments(manifest,inventory.slice(1),16));
+  const reports=groups.map(g=>({...report(g.shard,g.files),shards:16}));
+  const options16={inventory,source:sha,runId:'42',attempt:'1',shards:16};
+  assert.equal(verifyTimingReports(reports,options16).files.length,inventory.length);
+  for(const change of [r=>r.pop(),r=>r[15].shard=1,r=>r[15].attempt='2',r=>r[15].total.success=false,r=>r[15].files[0].file=r[0].files[0].file]){
+    const invalid=structuredClone(reports);change(invalid);assert.throws(()=>verifyTimingReports(invalid,options16));
+  }
 });
