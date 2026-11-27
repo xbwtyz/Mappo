@@ -6,9 +6,11 @@ import { inspectFreshRtreNeighborhood } from '../scripts/development/research/ar
 import { buildRoadGraph, classifyRoad } from '../src/core/road-graph.js';
 import { createSpatialPreservationBudget, createSpatialDestructionBudget } from '../src/core/spatial-recovery-contract.js';
 import { aresReplayJson } from '../src/core/ares-diagnostic-replay.js';
+import { reportRtreGeometryProbe } from '../scripts/development/research/ares-rtre-evidence.mjs';
 const opts={mode:'adaptive',maxObjects:10000,maxHops:4,maxCandidates:32};
 test('Fresh dry control produces a real single-neighbor geometry witness without replacing valid baseline',async()=>{
-  const r=await probeFreshRtreSingleJunction('dry-positive',opts,createSpatialPreservationBudget());
+  const started=performance.now(),r=await probeFreshRtreSingleJunction('dry-positive',opts,createSpatialPreservationBudget());
+  reportRtreGeometryProbe(r,performance.now()-started);
   assert.equal(r.status,'baseline-valid');assert.equal(r.baseline.valid,true);
   assert.ok(r.adjustedWitness,'Expected a detached adjustment demonstration on a graph-valid control');
   const f=materializeAresP3Case('dry-positive'),before=aresReplayJson(f.project);
@@ -34,7 +36,8 @@ test('Strict and incomplete scope dispatch no neighboring adjustment',async()=>{
   assert.equal(t.status,'preflight-refused');assert.equal(t.attempts,0);assert.equal(t.adjustedWitness,null);
 });
 test('Large frozen linear obstruction stays bounded; any retained witness is independently planar',async()=>{
-  const r=await probeFreshRtreSingleJunction('holdout-linear',{...opts,maxCandidates:3},createSpatialDestructionBudget());
+  const started=performance.now(),r=await probeFreshRtreSingleJunction('holdout-linear',{...opts,maxCandidates:3},createSpatialDestructionBudget());
+  reportRtreGeometryProbe(r,performance.now()-started);
   assert.ok(r.attempts<=3);
   if(r.adjustedWitness){
     const f=materializeAresP3Case('holdout-linear'),u=new Map(r.adjustedWitness.updates.map(x=>[x.id,x.point]));
