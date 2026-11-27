@@ -1,0 +1,352 @@
+{
+  "version": 1,
+  "source": "0cc3d0182717c7ff441485ae0429465fd78c8126",
+  "run": 46071853262,
+  "attempt": 1,
+  "aggregate": 140751762054,
+  "job": 140750534549,
+  "rows": [
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "cap": 64,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 985002,
+      "result": {
+        "id": "linear-medium:eight-loop:100:diagonal",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 985138,
+          "expansions": 64,
+          "remainingWork": 7014862,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1575.3602349999999
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "cap": 128,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1413948,
+      "result": {
+        "id": "linear-medium:eight-loop:100:diagonal",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1413502,
+          "expansions": 128,
+          "remainingWork": 6586498,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1313.0795030000002
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "cap": 256,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2269267,
+      "result": {
+        "id": "linear-medium:eight-loop:100:diagonal",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2270902,
+          "expansions": 256,
+          "remainingWork": 5729098,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1639.8911059999996
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "cap": 64,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 985002,
+      "result": {
+        "id": "linear-medium:eight-loop:100:diagonal",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 985124,
+          "expansions": 64,
+          "remainingWork": 7014876,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1017.6066389999996
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "cap": 128,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1413948,
+      "result": {
+        "id": "linear-medium:eight-loop:100:diagonal",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1413970,
+          "expansions": 128,
+          "remainingWork": 6586030,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1178.7962719999996
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "cap": 256,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2269267,
+      "result": {
+        "id": "linear-medium:eight-loop:100:diagonal",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2272253,
+          "expansions": 256,
+          "remainingWork": 5727747,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1500.1059300000006
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "cap": 64,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 992934,
+      "result": {
+        "id": "linear-medium:eight-loop:75:y",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 992432,
+          "expansions": 64,
+          "remainingWork": 7007568,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 898.0826780000007
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "cap": 128,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1425444,
+      "result": {
+        "id": "linear-medium:eight-loop:75:y",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1423990,
+          "expansions": 128,
+          "remainingWork": 6576010,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1237.4324990000005
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "cap": 256,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2290421,
+      "result": {
+        "id": "linear-medium:eight-loop:75:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2287556,
+          "expansions": 256,
+          "remainingWork": 5712444,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1516.549049000001
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "cap": 64,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 992934,
+      "result": {
+        "id": "linear-medium:eight-loop:75:y",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 993056,
+          "expansions": 64,
+          "remainingWork": 7006944,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1019.0348020000001
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "cap": 128,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1425444,
+      "result": {
+        "id": "linear-medium:eight-loop:75:y",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1424675,
+          "expansions": 128,
+          "remainingWork": 6575325,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1039.0150580000009
+      }
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "cap": 256,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2290421,
+      "result": {
+        "id": "linear-medium:eight-loop:75:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2288075,
+          "expansions": 256,
+          "remainingWork": 5711925,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1422.7064600000012
+      }
+    }
+  ]
+}

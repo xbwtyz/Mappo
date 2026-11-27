@@ -1,0 +1,514 @@
+{
+  "version": 1,
+  "source": "0cc3d0182717c7ff441485ae0429465fd78c8126",
+  "run": 46071853262,
+  "attempt": 1,
+  "aggregate": 140751762054,
+  "job": 140750534540,
+  "rows": [
+    {
+      "id": "organic-large:quad:100:diagonal",
+      "cap": 64,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 1938994,
+      "result": {
+        "id": "organic-large:quad:100:diagonal",
+        "cap": 64,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 1938995,
+          "expansions": 64,
+          "remainingWork": 6061005,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 2901.9937689999997
+      }
+    },
+    {
+      "id": "organic-large:quad:100:diagonal",
+      "cap": 128,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 2709522,
+      "result": {
+        "id": "organic-large:quad:100:diagonal",
+        "cap": 128,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 2708344,
+          "expansions": 128,
+          "remainingWork": 5291656,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 2400.9618080000005
+      }
+    },
+    {
+      "id": "organic-large:quad:100:diagonal",
+      "cap": 256,
+      "kind": "breadth-directional",
+      "referenceCategory": "geometry-recovered",
+      "referenceAttempts": 151,
+      "referenceWork": 2993282,
+      "result": {
+        "id": "organic-large:quad:100:diagonal",
+        "cap": 256,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 4246513,
+          "expansions": 256,
+          "remainingWork": 3753487,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 2680.6260379999994
+      }
+    },
+    {
+      "id": "organic-large:quad:100:diagonal",
+      "cap": 64,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 1938994,
+      "result": {
+        "id": "organic-large:quad:100:diagonal",
+        "cap": 64,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 1939069,
+          "expansions": 64,
+          "remainingWork": 6060931,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 2114.277128999999
+      }
+    },
+    {
+      "id": "organic-large:quad:100:diagonal",
+      "cap": 128,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 2709522,
+      "result": {
+        "id": "organic-large:quad:100:diagonal",
+        "cap": 128,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 2709448,
+          "expansions": 128,
+          "remainingWork": 5290552,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 2699.0468869999986
+      }
+    },
+    {
+      "id": "organic-large:quad:100:diagonal",
+      "cap": 256,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "geometry-recovered",
+      "referenceAttempts": 151,
+      "referenceWork": 2993282,
+      "result": {
+        "id": "organic-large:quad:100:diagonal",
+        "cap": 256,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 4250618,
+          "expansions": 256,
+          "remainingWork": 3749382,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 2584.541418999999
+      }
+    },
+    {
+      "id": "organic-large:quad:100:y",
+      "cap": 64,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 1928652,
+      "result": {
+        "id": "organic-large:quad:100:y",
+        "cap": 64,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 1929116,
+          "expansions": 64,
+          "remainingWork": 6070884,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1826.259868000001
+      }
+    },
+    {
+      "id": "organic-large:quad:100:y",
+      "cap": 128,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 2688249,
+      "result": {
+        "id": "organic-large:quad:100:y",
+        "cap": 128,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 2688540,
+          "expansions": 128,
+          "remainingWork": 5311460,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 2133.670585
+      }
+    },
+    {
+      "id": "organic-large:quad:100:y",
+      "cap": 256,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 4207389,
+      "result": {
+        "id": "organic-large:quad:100:y",
+        "cap": 256,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 4207794,
+          "expansions": 256,
+          "remainingWork": 3792206,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 2259.2761150000006
+      }
+    },
+    {
+      "id": "organic-large:quad:100:y",
+      "cap": 64,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 1928652,
+      "result": {
+        "id": "organic-large:quad:100:y",
+        "cap": 64,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 1928733,
+          "expansions": 64,
+          "remainingWork": 6071267,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1728.1771560000016
+      }
+    },
+    {
+      "id": "organic-large:quad:100:y",
+      "cap": 128,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 2688249,
+      "result": {
+        "id": "organic-large:quad:100:y",
+        "cap": 128,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 2689782,
+          "expansions": 128,
+          "remainingWork": 5310218,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 2159.4607209999995
+      }
+    },
+    {
+      "id": "organic-large:quad:100:y",
+      "cap": 256,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 4207389,
+      "result": {
+        "id": "organic-large:quad:100:y",
+        "cap": 256,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 4210436,
+          "expansions": 256,
+          "remainingWork": 3789564,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 2383.983840000001
+      }
+    },
+    {
+      "id": "organic-large:quad:75:y",
+      "cap": 64,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 1928652,
+      "result": {
+        "id": "organic-large:quad:75:y",
+        "cap": 64,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 1929103,
+          "expansions": 64,
+          "remainingWork": 6070897,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1617.9340019999981
+      }
+    },
+    {
+      "id": "organic-large:quad:75:y",
+      "cap": 128,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 2688249,
+      "result": {
+        "id": "organic-large:quad:75:y",
+        "cap": 128,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 2688613,
+          "expansions": 128,
+          "remainingWork": 5311387,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1961.9740669999992
+      }
+    },
+    {
+      "id": "organic-large:quad:75:y",
+      "cap": 256,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 4207389,
+      "result": {
+        "id": "organic-large:quad:75:y",
+        "cap": 256,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 4207691,
+          "expansions": 256,
+          "remainingWork": 3792309,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 2391.6013399999974
+      }
+    },
+    {
+      "id": "organic-large:quad:75:y",
+      "cap": 64,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 1928652,
+      "result": {
+        "id": "organic-large:quad:75:y",
+        "cap": 64,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 1928733,
+          "expansions": 64,
+          "remainingWork": 6071267,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1736.6819219999961
+      }
+    },
+    {
+      "id": "organic-large:quad:75:y",
+      "cap": 128,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 2688249,
+      "result": {
+        "id": "organic-large:quad:75:y",
+        "cap": 128,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 2689162,
+          "expansions": 128,
+          "remainingWork": 5310838,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1972.6633049999946
+      }
+    },
+    {
+      "id": "organic-large:quad:75:y",
+      "cap": 256,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 4207389,
+      "result": {
+        "id": "organic-large:quad:75:y",
+        "cap": 256,
+        "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 4208232,
+          "expansions": 256,
+          "remainingWork": 3791768,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 2543.582374999998
+      }
+    }
+  ]
+}
