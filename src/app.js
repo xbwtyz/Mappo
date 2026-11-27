@@ -139,6 +139,8 @@ import { DistrictEditor, restoreDistrictSnapshot } from './editor/districts.js';
 import { FortificationEditor, restoreFortificationSnapshot } from './editor/fortifications.js';
 import { RoadInspectionWorkspace } from './ui/road-inspection.js';
 import { createJunctionPreviewWorkerP1 } from './editor/junction-preview-worker-client.js';
+// Detached road recovery controller bundled for upcoming Review integration.
+import { createSpatialRoadWorkerClient } from './editor/spatial-recovery-worker-client.js';
 import { drawRoadComparison } from './renderer/road-comparison.js';
 import { drawRoadInspectionOverlay } from './renderer/road-inspection.js';
 // B1 candidate API is compiled for later editor integration; no Apply or UI hooks.

@@ -8,7 +8,7 @@ const entry = join(root, 'src/app.js');
 const metadata = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if (metadata.version.replace(/^(\d+\.\d+)\.0-/, '$1-') !== APP_VERSION) throw new Error('Package and app versions disagree');
 const imports = /^\s*import\s+[^;]+?\s+from\s+['"]([^'"]+)['"];?\s*$/gm;
-// Two independent module-closure builds: browser main thread and pure worker.
+// Independent module-closure builds: browser main thread and dedicated pure workers.
 async function bundle(entryFile) {
   const visited = new Set(), fragments = [];
   async function visit(file) {
@@ -28,8 +28,11 @@ async function bundle(entryFile) {
 }
 const workerScript = "(function(){\n'use strict';" +
   await bundle(join(root, 'src/worker/junction-preview-worker.js')) + "\n})();";
+const sreWorkerScript = "(function(){\n'use strict';" +
+  await bundle(join(root, 'src/worker/spatial-recovery-worker.js')) + "\n})();";
 const script = "(function(){\n'use strict';\nconst ROAD_JUNCTION_WORKER_SOURCE_P1 = " +
-  JSON.stringify(workerScript) + ";" + await bundle(entry) + "\n})();";
+  JSON.stringify(workerScript) + ";\nconst SRE_ROAD_WORKER_SOURCE_V1 = " +
+  JSON.stringify(sreWorkerScript) + ";" + await bundle(entry) + "\n})();";
 const css = await readFile(join(root, 'styles/app.css'), 'utf8');
 const template = (await readFile(join(root, 'index.template.html'), 'utf8')).replaceAll('{{APP_VERSION}}', APP_VERSION);
 if (!template.includes('<!-- INLINE_CSS -->') || !template.includes('<!-- INLINE_JS -->')) throw new Error('HTML template markers missing');

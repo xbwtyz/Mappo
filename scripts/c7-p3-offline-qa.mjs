@@ -4,15 +4,24 @@ import assert from 'node:assert/strict';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { chromium, firefox } from 'playwright';
 import { createProject } from '../src/core/city-model.js';
+import { normalizeSpatialRoadGroup } from '../src/core/spatial-recovery-road-adapter.js';
+import { searchSpatialUnifiedRoadGroup } from '../src/core/spatial-recovery-coordinator.js';
+import { createSpatialPreservationBudget } from '../src/core/spatial-recovery-contract.js';
 import { defaultWorkspace } from '../src/data/project-format.js';
 import { observeBuildingApp } from '../tests/helpers/building-app.js';
 
 const file = new URL('../artifacts/c7/offline-p3.html',import.meta.url);
 await mkdir(new URL('../artifacts/c7/',import.meta.url),{recursive:true});
-await writeFile(file,observeBuildingApp(await readFile(new URL('../index.html',import.meta.url),'utf8')));
+await writeFile(file,observeBuildingApp(await readFile(new URL('../index.html',import.meta.url),'utf8'),
+  'globalThis.__sreWorkerQA = createSpatialRoadWorkerClient;'));
 const url = file.href;
 const project = createProject({size:'small',seed:'c2-organic',morphology:'organic'});
 const doc = {project,workspace:defaultWorkspace(project)};
+const sreProject=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+const sreOperation=normalizeSpatialRoadGroup(sreProject,1,['RD-0113','RD-0114'],{x:.05,y:0});
+const sreDirect=await searchSpatialUnifiedRoadGroup(sreProject,sreOperation,createSpatialPreservationBudget());
+assert.equal(sreDirect.status,'verified-witness');
+
 for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) {
   const browser=await engine.launch({headless:true});
   try {
@@ -27,6 +36,26 @@ for (const [browserName,engine] of [['chromium',chromium],['firefox',firefox]]) 
       route.abort():route.continue());
     await page.goto(url,{waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>__buildingQA.state().files.ready);
+    const sreResult=await page.evaluate(async ({projectJson,operation})=>{
+      const binding={sessionId:'offline-browser-test',operation,quality:'standard'};
+      const compute=__sreWorkerQA(()=>binding);
+      const before=JSON.stringify(__buildingQA.state().project);
+      try{
+        const input={...binding,projectJson};
+        const first=compute(input);
+        const canceled=first.then(()=>false,error=>error.name==='AbortError');
+        compute.cancel();
+        if(!await canceled)throw Error('Offline SRE cancellation failed');
+        const result=await compute(input);
+        return {result:result.result,unchanged:before===JSON.stringify(__buildingQA.state().project)};
+      }finally{compute.dispose();}
+    },{projectJson:JSON.stringify(sreProject),operation:sreOperation});
+    assert.equal(sreResult.unchanged,true);
+    assert.equal(sreResult.result.status,'verified-witness');
+    assert.deepEqual(sreResult.result.delta,sreDirect.delta);
+    assert.deepEqual(sreResult.result.basisDelta,sreDirect.basisDelta);
+    console.log('SRE_OFFLINE '+JSON.stringify({browser:browserName,passed:true,parity:true,cancellation:true}));
+
     await page.evaluate(doc=>__buildingQA.apply(doc),doc);
     await page.locator('#roadModeButton').scrollIntoViewIfNeeded();
     await page.locator('#roadModeButton').click();
