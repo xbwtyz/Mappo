@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "source": "112faec59d419cbd5999beaf74c0492696e74896",
+  "run": 46084869809,
+  "attempt": 1,
+  "aggregate": 140792378117,
+  "job": 140792049302,
+  "rows": [
+    {
+      "id": "radial-small:eight-loop:100:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 6,
+      "minimum": 6,
+      "category": "work-limit",
+      "termination": "work-limit",
+      "attempts": 232,
+      "stats": {
+        "work": 8000000,
+        "expansions": 252,
+        "remainingWork": 0,
+        "remainingExpansions": 32516
+      },
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "hybrid": {
+        "baselinePairs": 16,
+        "subsets": 20,
+        "coveringGroups": 2,
+        "connectedGroups": 2,
+        "connectorGroups": 0,
+        "enumerationLimit": false,
+        "groupLimit": false,
+        "seedProposals": 66,
+        "feedbackProposals": 195,
+        "duplicates": 28,
+        "feedbackEvaluations": 232,
+        "bestConflictCount": 4,
+        "attempted": {
+          "radial-refinement": 167,
+          "radial-directional-seed": 65
+        },
+        "failures": {
+          "unnormalized-crossing": 232
+        },
+        "approvedMinimum": 6,
+        "seedValidated": true,
+        "approvedCap": 6,
+        "orientationChoices": 16370,
+        "alternateSigns": 5571,
+        "explore": 88,
+        "exploit": 173
+      },
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 0,
+        "firstScore": null,
+        "bestScore": null,
+        "bestAttempt": null
+      }
+    }
+  ]
+}
