@@ -41,6 +41,17 @@ function readCyclicArchive(){
  return cyclicArchive;
 }
 export const LOCAL_ANGULAR_CASES=Object.freeze(["h:linear-10","h:linear-25","h:organic-10","h:planned-10","h:radial-24"]);
+const localArchive=new Map();
+function readLocalArchive(){
+ if(localArchive.size===5)return localArchive;
+ for(const job of [140853267618,140853267634,140853267650,140853267660,140853267663,140853267667,140853267680,140853267686]){
+  const e=JSON.parse(readFileSync(new URL('../../../docs/research/evidence/holdout-local-angular-46104206507-'+job+'.json',import.meta.url),'utf8'));
+  if(e.run!==46104206507||e.attempt!==1||e.source!=='b1e9ab1501e07741573f0db79833db98e0f33cc6'||e.job!==job)throw Error('Local angular archive identity changed.');
+  for(const r of e.rows){const lock=holdoutLockedRow(r.caseId);if(localArchive.has(r.caseId)||!LOCAL_ANGULAR_CASES.includes(r.caseId)||r.source!==lock.source||r.authority!=='none'||JSON.stringify(r.offset)!==JSON.stringify(lock.offset)||r.seeds.length||r.geometrySeeds.length)throw Error('Local angular archive mismatch.');localArchive.set(r.caseId,riFreeze(r));}
+ }
+ if(localArchive.size!==5)throw Error('Incomplete local angular archive.');
+ return localArchive;
+}
 const rotationArchive=new Map();
 function readRotationArchive(){
  if(rotationArchive.size===11)return rotationArchive;
@@ -75,7 +86,8 @@ export async function searchHoldoutCombinedSeeds(caseId){return searchCombined(c
 export async function searchHoldoutRotationSeeds(caseId){return searchCombined(caseId,true);}
 export async function searchHoldoutCyclicSeeds(caseId){return searchCombined(caseId,true,true);}
 export async function searchHoldoutLocalAngular(caseId){return searchCombined(caseId,true,true,true);}
-async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=false){
+export async function searchHoldoutCoupledAngular(caseId){return searchCombined(caseId,true,true,true,true);}
+async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=false,coupledAware=false){
  const lock=holdoutLockedRow(caseId);
  if(!COMBINED_CASES.includes(caseId))throw Error('Frozen combined holdout case required.');
  if(localAware&&!LOCAL_ANGULAR_CASES.includes(caseId))throw Error('Frozen local angular case required.');
@@ -162,7 +174,9 @@ async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=
     base.strategy='local-angular';base.localProbes=0;base.localScope={outside:0,unchanged:0,displacement:0};base.geometrySeeds=[];
     const historical=readCyclicArchive().get(caseId),previous=readRotationArchive().get(caseId);
     if(historical.category!=='no-split-seed'||!cover.groups.length||JSON.stringify(historical.baselineRotation)!==JSON.stringify(rotationClauses))throw Error('Local angular cohort mismatch.');
-    const limit=Math.hypot(lock.offset.x,lock.offset.y),seeds=[historical.bestRotation,previous.bestRotation].filter(Boolean),starts=[],keys=new Set();
+    const fresh=coupledAware?readLocalArchive().get(caseId):null;
+    if(fresh&&JSON.stringify(fresh.baselineRotation)!==JSON.stringify(rotationClauses))throw Error('Coupled angular baseline changed.');
+    const limit=Math.hypot(lock.offset.x,lock.offset.y),seeds=[fresh?.bestRotation,historical.bestRotation,previous.bestRotation].filter(Boolean),starts=[],keys=new Set();
     for(const seed of seeds){
      const group=seed.neighbors.map(n=>n.id).sort(riCompare),key=JSON.stringify(seed.neighbors);
      if(keys.has(key))continue;keys.add(key);
@@ -182,6 +196,75 @@ async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=
      if(Math.hypot(p.x-old.x,p.y-old.y)>limit){base.localScope.displacement++;return false;}
      if(!insideOrOn(p,city.survey.boundary)){base.localScope.outside++;return false;}
      return true;
+    }
+    if(coupledAware){
+     base.strategy='coupled-angular';base.coupled={starts:starts.length,firstProbes:0,secondProbes:0,plateauIntermediate:0,uphillIntermediate:0,pairCandidates:0,bestLocal:null};
+     const seenLocal=new Set(),first=[],pairs=[];
+     const rank=(a,c)=>a.changed.length-c.changed.length||a.cost-c.cost;
+     function streams(state,variables,changed){
+      return variables.map(id=>({id,it:angularLineProposals(state.points.get(id),g.nodesById.get(id),limit,localAngularLines(g,positions,state.points,changed,id,b),b)}));
+     }
+     function sample(state,vars,targets,cap,stage,collector){
+      const iter=streams(state,vars,targets);let taken=0,active=true;
+      while(active&&taken<cap&&base.localProbes<192){
+       active=false;
+       for(const stream of iter){
+        if(taken>=cap||base.localProbes>=192)break;
+        const step=stream.it.next();if(step.done)continue;active=true;b.expand();taken++;base.localProbes++;base.coupled[stage+'Probes']++;
+        if(!admissible(stream.id,step.value))continue;
+        const next=new Map(state.points);next.set(stream.id,step.value);
+        const key=JSON.stringify(state.group.map(id=>[id,next.get(id)]));
+        if(seenLocal.has(key))continue;seenLocal.add(key);
+        const delta=changes(state.group,next);
+        const trial={group:state.group,points:next,changed:delta,firstId:state.firstId??stream.id,cost:(state.cost??0)+Math.hypot(step.value.x-state.points.get(stream.id).x,step.value.y-state.points.get(stream.id).y),original:state.original??state.changed};
+        if(stage==='first'){
+         if(delta.length===state.changed.length)base.coupled.plateauIntermediate++;
+         if(delta.length>state.changed.length)base.coupled.uphillIntermediate++;
+        }else base.coupled.pairCandidates++;
+        if(base.coupled.bestLocal===null||delta.length<base.coupled.bestLocal)base.coupled.bestLocal=delta.length;
+        collector.push(trial);
+       }
+      }
+     }
+     // Half the probe ceiling explores first moves across archived starts.
+     // Retain equal-score and bounded uphill intermediates: neither is a seed.
+     for(const start of starts){
+      const state={...start,changed:changes(start.group,start.points)};
+      const vars=state.group.filter(v=>state.changed.some(id=>id===v||[...g.adjacency.get(id)].includes(v)));
+      const local=[];sample(state,vars,state.changed,Math.floor(96/starts.length),'first',local);
+      local.sort(rank);
+      // Diversity by first moved variable, with both plateau and improving starts.
+      for(const v of vars){
+       const own=local.filter(t=>t.firstId===v);
+       if(own.length)first.push(own[0]);
+       const plateau=own.find(t=>t.changed.length===state.changed.length&&t!==own[0]);
+       if(plateau)first.push(plateau);
+       const uphill=own.find(t=>t.changed.length===state.changed.length+1);
+       if(uphill&&uphill!==own[0])first.push(uphill);
+      }
+     }
+     first.sort(rank);
+     const selected=[],covered=new Set();
+     for(const t of first){
+      const k=JSON.stringify([t.group,t.firstId]);if(covered.has(k))continue;covered.add(k);selected.push(t);if(selected.length===8)break;
+     }
+     for(const t of first){if(selected.length===8)break;if(!selected.includes(t))selected.push(t);}
+     // Recompute event lines after the first move, with a distinct second
+     // variable. No added neighbors, no mutation, no relaxed final gate.
+     for(let i=0;i<selected.length;i++){
+      const t=selected[i],targets=[...new Set([...t.original,...t.changed])].sort(riCompare);
+      const vars=t.group.filter(v=>v!==t.firstId&&targets.some(id=>id===v||[...g.adjacency.get(id)].includes(v)));
+      sample(t,vars,targets,Math.floor((192-base.localProbes)/(selected.length-i)),'second',pairs);
+     }
+     const ranked=[...first,...pairs].sort(rank);
+     for(const trial of ranked){
+      if(base.attempts>=48||base.seeds.length>=2)break;
+      const item=evaluate(trial.group,trial.points,'coupled-angular-event');
+      if(item&&item.score===0&&base.geometrySeeds.length<2)base.geometrySeeds.push({neighbors:trial.group.map(id=>({id,old:point(g.nodesById.get(id)),point:point(trial.points.get(id))})),attempt:base.attempts});
+     }
+     if(aresReplayJson(f.project,b)!==before)throw Error('Coupled angular search mutated source.');
+     aresReplayJson(base,b);
+     return finish(base.seeds.length?'split-seeds-found':base.geometrySeeds.length?'geometry-seeds-found':'no-split-seed');
     }
     // Interleave the historical near misses; each local proposal uses only
     // one existing group variable, all selected endpoints stay exact.
