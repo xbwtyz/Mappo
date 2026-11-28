@@ -6,6 +6,7 @@ import {inspectFreshRtreNeighborhood} from './ares-rtre-fresh-neighborhood.mjs';
 import {combinedCoverTrial,pairsFor} from './ares-p4x-hybrid.mjs';
 import {analyticalTrials} from './ares-p4x-analytical.mjs';
 import {rotationCoverGroups,rotationTriplets,projectRotation} from './ares-p5-holdout-rotation.mjs';
+import {measureConnectedMinimum,projectCyclic} from './ares-p5-holdout-cyclic.mjs';
 import {classifyP5Contact,P5_LIMITS} from './ares-p5-topology-contract.mjs';
 import {iterateRoadGraph,classifyRoad} from '../../../src/core/road-graph.js';
 import {insideOrOn} from '../../../src/core/boundary.js';
@@ -27,6 +28,17 @@ for(const job of jobs){
 if(archive.size!==29)throw Error('Incomplete cluster archive.');
 export const COMBINED_CASES=Object.freeze([...archive.values()].filter(r=>r.arms.optimisticSplit.connected.status==='within-four').map(r=>r.caseId).sort(riCompare));
 if(COMBINED_CASES.length!==11)throw Error('Combined cohort changed.');
+const rotationArchive=new Map();
+function readRotationArchive(){
+ if(rotationArchive.size===11)return rotationArchive;
+ for(const job of [140850938491,140850938494,140850938506,140850938510,140850938515,140850938539,140850938542,140850938712]){
+  const e=JSON.parse(readFileSync(new URL('../../../docs/research/evidence/holdout-rotation-46103464314-'+job+'.json',import.meta.url),'utf8'));
+  if(e.run!==46103464314||e.attempt!==1||e.source!=='62b986bc3208027bd41b67d73a42042e5abbde9a'||e.job!==job)throw Error('Rotation archive identity changed.');
+  for(const r of e.rows){const lock=holdoutLockedRow(r.caseId);if(rotationArchive.has(r.caseId)||!COMBINED_CASES.includes(r.caseId)||r.source!==lock.source||r.authority!=='none'||JSON.stringify(r.offset)!==JSON.stringify(lock.offset)||r.seeds.length)throw Error('Rotation archive mismatch.');rotationArchive.set(r.caseId,riFreeze(r));}
+ }
+ if(rotationArchive.size!==11)throw Error('Incomplete rotation archive.');
+ return rotationArchive;
+}
 const root=()=>createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
 const point=n=>({x:n.x,y:n.y});
 const nodeFields=new Set(['id','x','y']);
@@ -48,7 +60,8 @@ function cyclicEqual(a,c){if(a.length!==c.length)return false;if(!a.length)retur
 // a recovered city or an authority-bearing witness.
 export async function searchHoldoutCombinedSeeds(caseId){return searchCombined(caseId,false);}
 export async function searchHoldoutRotationSeeds(caseId){return searchCombined(caseId,true);}
-async function searchCombined(caseId,rotationAware){
+export async function searchHoldoutCyclicSeeds(caseId){return searchCombined(caseId,true,true);}
+async function searchCombined(caseId,rotationAware,cyclicAware=false){
  const lock=holdoutLockedRow(caseId);
  if(!COMBINED_CASES.includes(caseId))throw Error('Frozen combined holdout case required.');
  const r=archive.get(caseId),b=root(),base={caseId,source:lock.source,morphology:lock.options.morphology,offset:lock.offset,authority:'none',attempts:0,rotationRefused:0,scopeRefused:0,contactRefused:0,duplicates:0,geometryOnly:0,seeds:[],best:null};
@@ -130,6 +143,42 @@ async function searchCombined(caseId,rotationAware){
    for(const id of [...writable].sort(riCompare)){const q=[id],seen=new Set(q),next=new Set();for(const n of q)for(const v of g.adjacency.get(n)){b.spend();if(positions.has(v)&&!seen.has(v)){seen.add(v);q.push(v);}else if(v!==id&&writable.has(v))next.add(v);}adj.set(id,[...next].sort(riCompare));}
    const cover=base.earlyScope.selectedClosure.length?{status:'selected-closure-held',groups:[],states:0}:rotationCoverGroups([...mandatoryClauses,...rotationClauses.map(c=>c.eligible)],adj,b);
    base.rotationCover={status:cover.status,groups:cover.groups,states:cover.states,limited:cover.limited??false,emptyMandatory:mandatoryClauses.filter(c=>!c.length).length,emptyRotation:rotationClauses.filter(c=>!c.eligible.length).length};
+   if(cyclicAware){
+    base.strategy='cyclic-aware';
+    const historical=readRotationArchive().get(caseId);
+    if(JSON.stringify(historical.baselineRotation)!==JSON.stringify(rotationClauses)||historical.rotationCover.status!==cover.status)throw Error('Rotation baseline changed.');
+    if(!cover.groups.length&&!base.earlyScope.selectedClosure.length){
+     base.minimum=measureConnectedMinimum([...mandatoryClauses,...rotationClauses.map(c=>c.eligible)],adj,b);
+     // This witness is diagnostic only. It is never passed to an evaluator.
+     if(base.minimum.status==='exact'&&base.minimum.minimum<=4)throw Error('Four-neighbor proof contradicted.');
+    }else if(cover.groups.length){
+     const retained=historical.bestRotation?.neighbors??[],retainedIds=retained.map(n=>n.id).sort(riCompare);
+     const ordered=[...cover.groups];
+     const match=ordered.findIndex(group=>JSON.stringify(group)===JSON.stringify(retainedIds));
+     if(match>=0)ordered.unshift(...ordered.splice(match,1));
+     const states=ordered.slice(0,16).map(group=>{
+      const affected=new Set(exactChanged);for(const id of [...positions.keys(),...group]){b.spend();affected.add(id);for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}}
+      let prior=null;
+      if(JSON.stringify(group)===JSON.stringify(retainedIds)){
+       prior=new Map();for(const n of retained){b.spend(8);const old=g.nodesById.get(n.id);if(!old||old.x!==n.old.x||old.y!==n.old.y||!Number.isFinite(n.point.x)||!Number.isFinite(n.point.y)||Math.hypot(n.point.x-old.x,n.point.y-old.y)>Math.hypot(lock.offset.x,lock.offset.y))throw Error('Archived residual seed changed.');prior.set(n.id,n.point);}
+      }
+      return {group,affected:[...affected].sort(riCompare),prior,best:null,feedback:mandatory};
+     });
+     for(let round=0;round<48&&base.attempts<48&&base.seeds.length<2;round++)for(const state of states){
+      if(base.attempts>=48||base.seeds.length>=2)break;
+      const {group,affected}=state,usePrior=state.prior&&round%4!==3;
+      // First refine archived angular near misses directly. Later alternate
+      // contact projection and exact cyclic-slot correction.
+      const points=usePrior&&(round%2===0)?new Map(state.prior):combinedCoverTrial(g,positions,group,state.feedback.length?state.feedback:mandatory,lock.offset,round,b,usePrior?state.prior:null);
+      projectCyclic(g,positions,points,affected,oldOrders,lock.offset,round,b);
+      const item=evaluate(group,points,usePrior?'cyclic-residual':'cyclic-directional');
+      if(item&&(!state.best||item.score<state.best.score)){state.best=item;state.prior=item.points;state.feedback=item.feedback;}
+     }
+    }
+    if(aresReplayJson(f.project,b)!==before)throw Error('Cyclic search mutated source.');
+    aresReplayJson(base,b);
+    return finish(base.seeds.length?'split-seeds-found':cover.groups.length?'no-split-seed':'structural-held');
+   }
    const states=cover.groups.slice(0,16).map(group=>{
     const affected=new Set(exactChanged);for(const id of [...positions.keys(),...group]){b.spend();affected.add(id);for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}}
     return {group,triplets:rotationTriplets(g,[...affected].sort(riCompare),new Set(group),b),prior:null,feedback:mandatory,best:null};
