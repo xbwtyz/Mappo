@@ -21,6 +21,12 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
  assert.ok(['diagnostics-complete','pipeline-refused','work-limit'].includes(r.status));
  assert.ok(r.stats.work<=8000000);
  if(r.pipeline){assert.equal(r.sourceUnchanged,true);assert.equal(r.pipeline.valid,false);assert.equal(r.pipeline.authority,'none');}
+ if(id==='t:t-linear-08'){
+  assert.equal(r.status,'diagnostics-complete',JSON.stringify(r));
+  assert.equal(r.pipeline.blockPlan.status,'block-plan-observed');
+  assert.equal(r.pipeline.districts.passed,true);
+  assert.equal(r.pipeline.defenses.passed,true);
+ }
  // Legacy execution is a test-only oracle, not extra P6 search or work allowance.
  if(id==='t:t-linear-04'||id==='t:t-radial-09'){
   assert.equal(r.status,'pipeline-refused');

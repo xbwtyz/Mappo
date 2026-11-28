@@ -9,7 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
-import {planP6BlockRecords} from '../scripts/development/research/ares-p6-block-record-plan.mjs';
+import {planP6BlockRecords,equalP6BlockRecord} from '../scripts/development/research/ares-p6-block-record-plan.mjs';
 import {observeP6DryPipeline} from '../scripts/development/research/ares-p6-budgeted-pipeline.mjs';
 import {buildP6BudgetedLineage} from '../scripts/development/research/ares-p6-budgeted-lineage.mjs';
 import {generateFortifications} from '../src/generators/fortifications.js';
@@ -68,6 +68,9 @@ function verify(source,candidate,legacy,extraction,label){
   }
  }
  assert.equal(plan.structural>0,label!=='fortified-unchanged');
+ const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
+ const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
+ assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
  assert.equal(planP6BlockRecords(source,extraction,result.identity,{...result.lineage,faces:result.lineage.faces.slice(1)},root(8000000)).status,'refused');
  assert.equal(planP6BlockRecords(source,extraction,result.identity,{...result.lineage,reverse:[]},root(8000000)).reason,'reverse-lineage-mismatch');
  console.log('P6_BLOCK_RECORD_PLAN '+JSON.stringify({label,retained:plan.retained,structural:plan.structural,sourceBlocks:source.blocks.length,successorBlocks:plan.rows.length,authority:'none'}));
@@ -93,4 +96,14 @@ test('P6 combined dry refusal controls',()=>{
  assert.equal(r.reason,'invalid-candidate-graph');assert.equal(r.valid,false);assert.equal(r.diagnosticsComplete,false);
  assert.equal(observeP6DryPipeline({...source,waterFeatures:[{}]},source,b).reason,'unsupported-landscape');
  assert.throws(()=>observeP6DryPipeline(source,source),/Shared P6 budget/);
+});
+
+test('P6 block record semantic equality accepts key order only',()=>{
+ const a={id:'b',data:{z:-0,a:[1,2]},area:1};
+ const c={area:1,data:{a:[1,2],z:-0},id:'b'};
+ assert.ok(equalP6BlockRecord(a,c,root(8000000)));
+ assert.ok(!equalP6BlockRecord(a,{...c,data:{...c.data,z:0}},root(8000000)));
+ assert.ok(!equalP6BlockRecord(a,{...c,data:{...c.data,a:[2,1]}},root(8000000)));
+ assert.ok(!equalP6BlockRecord(a,{...c,extra:true},root(8000000)));
+ assert.throws(()=>equalP6BlockRecord(a,c,root(1)),LareBudgetExceeded);
 });

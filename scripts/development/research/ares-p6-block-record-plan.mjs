@@ -9,6 +9,17 @@ const cycle=(vs,b)=>{
  let i=0;for(let j=1;j<vs.length;j++)if(vs[j]<vs[i])i=j;
  return JSON.stringify([...vs.slice(i),...vs.slice(0,i)]);
 };
+// Identity matching canonicalizes object keys. Compare all values and own
+// keys irrespective of insertion order, preserving array order and signed zero.
+export function equalP6BlockRecord(a,c,b){
+ b.spend();
+ if(Object.is(a,c))return true;
+ if(!a||!c||typeof a!=='object'||typeof c!=='object'||Array.isArray(a)!==Array.isArray(c))return false;
+ if(Array.isArray(a)&&a.length!==c.length)return false;
+ const ak=Object.keys(a),ck=Object.keys(c);
+ charge(b,ak.length+ck.length);
+ return ak.length===ck.length&&ak.every(k=>Object.hasOwn(c,k)&&equalP6BlockRecord(a[k],c[k],b));
+}
 const detached=(v,b)=>{const json=aresReplayJson(v,b);charge(b,Math.ceil(Buffer.byteLength(json)/64));return JSON.parse(json);};
 export function planP6BlockRecords(source,extraction,identity,lineage,b){
  if(!b?.spend||!b?.snapshot)throw Error('Shared P6 budget required.');
@@ -44,7 +55,7 @@ export function planP6BlockRecords(source,extraction,identity,lineage,b){
    const record=detached(prior,b);
    if(relation==='reshaped')record.area=Math.round(f.area*100)/100;
    // Match the qualified legacy record, including opaque fields.
-   if(aresReplayJson(record,b)!==aresReplayJson(m.record,b))return refuse('record-mismatch');
+   if(!equalP6BlockRecord(record,m.record,b))return refuse('record-mismatch');
    rows.push({key:f.key,relation,status:'retained-record-proposal',record,predecessorIds:[m.id]});
   }else{
    if(!['split','merge','many-to-many'].includes(l.relation)||[...ids].some(id=>seenOld.has(id)))return refuse('unresolved-structural-lineage');
