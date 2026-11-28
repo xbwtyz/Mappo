@@ -23,6 +23,20 @@ const same=(a,b)=>a&&b&&Object.is(a.x,b.x)&&Object.is(a.y,b.y);
 const compare=(a,b)=>riCompare(a.id,b.id);
 const sortCharge=(n,b)=>b.spend(Math.max(1,n*Math.ceil(Math.log2(n+1))));
 const known=(row,keys,b)=>{for(const k of Object.keys(row)){b.spend();if(!keys.has(k))return false;}return true;};
+// The graph oracle copies records with sorted object keys. Compare record
+// contents independently of key insertion order, preserving signed zero,
+// every own enumerable field and array order. Keep exact source/witness
+// serialization checks unchanged; this is only graph-record equivalence.
+export function equalP5GraphRecord(a,c,b){
+  b.spend();
+  if(Object.is(a,c))return true;
+  if(!a||!c||typeof a!=='object'||typeof c!=='object'||Array.isArray(a)!==Array.isArray(c))return false;
+  const ak=Object.keys(a),ck=Object.keys(c);
+  b.spend(Math.max(1,ak.length+ck.length));
+  if(ak.length!==ck.length)return false;
+  if(Array.isArray(a)&&a.length!==c.length)return false;
+  return ak.every(k=>Object.hasOwn(c,k)&&equalP5GraphRecord(a[k],c[k],b));
+}
 function graph(city,b){
   b.spend(Math.max(1,city.nodes.length+city.roads.length));
   const it=iterateRoadGraph(city);let paid=0;
@@ -171,8 +185,10 @@ export async function auditP5SplitPilot(caseId,permissions,evidence){
     need(rebuilt.valid&&rebuilt.components.length===1&&rebuilt.nodesById.size===original.nodesById.size+additions.length&&
       rebuilt.roadsById.size===original.roadsById.size+newIds.length,'final-graph');
     need(eq(w.graph,{nodes:rebuilt.nodesById.size,roads:rebuilt.roadsById.size,components:1}),'graph-evidence');
-    for(const [id,n] of original.nodesById){b.spend();need(eq(rebuilt.nodesById.get(id),requested.has(id)?{...n,...requested.get(id)}:n),'node-preservation');}
-    for(const [id,road] of original.roadsById){b.spend();need(eq(rebuilt.roadsById.get(id),parts.get(id)?.[0]??road),'road-preservation');}
+    for(const [id,n] of original.nodesById){b.spend();need(equalP5GraphRecord(rebuilt.nodesById.get(id),requested.has(id)?{...n,...requested.get(id)}:n,b),'node-preservation');}
+    for(const [id,road] of original.roadsById){b.spend();need(equalP5GraphRecord(rebuilt.roadsById.get(id),parts.get(id)?.[0]??road,b),'road-preservation');}
+    for(const n of additions){b.spend();need(equalP5GraphRecord(rebuilt.nodesById.get(n.id),n,b),'new-node-preservation');}
+    for(const children of parts.values())for(const child of children){b.spend();need(equalP5GraphRecord(rebuilt.roadsById.get(child.id),child,b),'child-road-preservation');}
     // All non-road/non-node collections remain identical by construction.
     for(const k of Object.keys(city)){b.spend();if(k!=='nodes'&&k!=='roads')need(candidate[k]===city[k],'outside-graph-change');}
     const landscape=createAresLandscapeSegmentObserver(city,b),defense=createAresDefenseSegmentObserver(city,b);
