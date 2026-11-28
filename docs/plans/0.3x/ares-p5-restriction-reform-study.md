@@ -47,3 +47,7 @@ Radial-16 independently verified under eight-neighbor/100% arm with zero cyclic 
 
 ## Radial-12 multi-contact results
 All five original target crossings locally clear in 14 cyclic-preserving proposals, but best full graph retains two blockers (14 total contacts). No seeds. Adaptive follow-up reconstructs actual residual pairs at each retained full check, tracks original recurrence, bounds to four rounds/two states, same 192 local and 48 full ceilings, same seven neighbors and original displacement. No protected or cyclic acceptance change. Expanded 23/49 remains unchanged.
+
+
+## Town square hypothesis (owner-requested read-only investigation)
+Radial-12 adaptive repair reduced blocking contacts 5→2→1 with original gates; last RD-0278/RD-0286. Before further tuning, census all 100 cases with exact archived outcome join, actual plaza vertices and incident protection reasons, nearest edge distance normalized to outline diagonal and minimum road-network hops, attached ordinary roads vs protected plaza roads, contact attribution and specific radial anchor records. No new permission, no removal/movement of plaza, no relaxed split rule, no claim of causation. Compare admitted by morphology and distance/attachment after CI; separately report boundary refusals and confounders. Any controlled counterfactual or split rule expansion requires separate approval.
