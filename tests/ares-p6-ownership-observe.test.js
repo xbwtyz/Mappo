@@ -1,5 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {auditP6Geometry} from '../scripts/development/research/ares-p6-geometry-audit.mjs';
+import {createProject} from '../src/core/city-model.js';
+import {WaterEditor} from '../src/editor/water.js';
+import {TerrainEditor} from '../src/editor/terrain.js';
+import {validateStoredProject} from '../src/data/project-validation.js';
 import {observeP6LandClosure} from '../scripts/development/research/ares-p6-land-closure.mjs';
 import {auditP6ExternalContext} from '../scripts/development/research/ares-p6-context-audit.mjs';
 import {observeP6GeometricImpact} from '../scripts/development/research/ares-p6-geometric-impact.mjs';
@@ -10,11 +15,12 @@ for(const id of P6_A_CASES)test('P6-A1 detached ownership inventory '+id,async()
  const r=await observeP6Ownership(id);
  const o0=r.observation,classes={};
  for(const row of o0?.objects??[])classes[row.classification]=(classes[row.classification]??0)+1;
- console.log('ARES_P6_OWNERSHIP_SUMMARY '+JSON.stringify({id:r.id,status:r.status,reason:r.reason,roadAudit:r.roadAudit?.stats,stats:r.stats,counts:o0?.counts,roots:o0?.roots.length,objects:o0?.objects.length,external:o0?.external.length,omitted:o0?.omitted.length,relationships:o0?.relationships.length,classes,plaza:o0?.plaza,inventoryAudit:r.inventoryAudit,externalAudit:r.externalAudit,landClosure:r.landClosure&&{status:r.landClosure.status,added:r.landClosure.added,counts:r.landClosure.counts,geometricSeeds:r.landClosure.geometricSeeds,unionSize:r.landClosure.unionSize,objects:r.landClosure.inventory?.objects.length,external:r.landClosure.external?.length,omitted:r.landClosure.inventory?.omitted.length,audit:r.landClosure.audit},opaqueContext:r.opaqueContext&&{status:r.opaqueContext.status,count:r.opaqueContext.rows.length,fields:[...new Set(r.opaqueContext.rows.map(x=>x.field))].slice(0,30)},geometricImpact:r.geometricImpact&&{...r.geometricImpact,rows:undefined,unsupportedCount:r.geometricImpact.unsupported.length,candidates:r.geometricImpact.rows.length,outsideExplicit:r.geometricImpact.rows.filter(x=>x.membership==='outside-explicit').length}}));
+ console.log('ARES_P6_OWNERSHIP_SUMMARY '+JSON.stringify({id:r.id,status:r.status,reason:r.reason,roadAudit:r.roadAudit?.stats,stats:r.stats,counts:o0?.counts,roots:o0?.roots.length,objects:o0?.objects.length,external:o0?.external.length,omitted:o0?.omitted.length,relationships:o0?.relationships.length,classes,plaza:o0?.plaza,inventoryAudit:r.inventoryAudit,externalAudit:r.externalAudit,geometryAudit:r.geometryAudit,landClosure:r.landClosure&&{status:r.landClosure.status,added:r.landClosure.added,counts:r.landClosure.counts,geometricSeeds:r.landClosure.geometricSeeds,unionSize:r.landClosure.unionSize,objects:r.landClosure.inventory?.objects.length,external:r.landClosure.external?.length,omitted:r.landClosure.inventory?.omitted.length,audit:r.landClosure.audit},opaqueContext:r.opaqueContext&&{status:r.opaqueContext.status,count:r.opaqueContext.rows.length,fields:[...new Set(r.opaqueContext.rows.map(x=>x.field))].slice(0,30)},geometricImpact:r.geometricImpact&&{...r.geometricImpact,rows:undefined,unsupportedCount:r.geometricImpact.unsupported.length,candidates:r.geometricImpact.rows.length,outsideExplicit:r.geometricImpact.rows.filter(x=>x.membership==='outside-explicit').length}}));
  console.log('ARES_P6_OWNERSHIP '+JSON.stringify(r));
  assert.equal(r.authority,'none');assert.equal(r.landVerified,false);assert.equal(r.geometryCoverage,'not-evaluated');
  if(id==='t:t-radial-01'){assert.equal(r.status,'road-refused');assert.equal(r.roadAudit,null);assert.equal(r.observation,undefined);return;}
  assert.equal(r.roadAudit.status,'topology-final-verified');assert.equal(r.status,'observed');
+ assert.equal(r.geometryAudit.status,'matched');assert.equal(r.geometryAudit.authority,'none');
  assert.equal(r.landClosure.status,'closure-observed');assert.equal(r.landClosure.audit.status,'matched');
  assert.equal(r.landClosure.authority,'none');assert.equal(r.landClosure.landVerified,false);
  assert.ok(r.landClosure.inventory.objects.every(x=>x.classification==='observe-only'&&x.depth<=6));
@@ -97,4 +103,38 @@ test('P6 A2d follows geometric land ownership without fanning out across shared 
  assert.ok(r.inventory.objects.every(x=>x.classification==='observe-only'));
  const bad=run(edges.filter(e=>e.to.id!=='q'&&e.from.id!=='q'));
  assert.equal(bad.status,'inventory-mismatch');assert.equal(bad.audit.differences.objects.missing.length,1);
+});
+
+test('P6 A2d2 independent geometry oracle detects omitted hits and false phase claims',()=>{
+ const p=(x,y)=>({x,y}),city={nodes:[{id:'a',...p(0,0)},{id:'b',...p(10,0)}],roads:[{id:'r',a:'a',b:'b',kind:'lane'}],properties:[{id:'p',boundary:[p(4,18),p(6,18),p(6,20),p(4,20)]},{id:'unknown'}]};
+ const w={requested:[{ref:{id:'a'},point:p(0,40)},{ref:{id:'b'},point:p(10,40)}],neighbors:[],lineage:[]},o={objects:[],external:[]};
+ const b=createSpatialPreservationBudget({work:8000000,stateExpansions:32768}),g=observeP6GeometricImpact(city,w,o,b);
+ assert.equal(auditP6Geometry(city,w,o,g,b).status,'matched');
+ const bad=auditP6Geometry(city,w,o,{...g,rows:[],unsupported:[]},b);
+ assert.equal(bad.status,'geometry-mismatch');assert.equal(bad.missing.length,1);assert.equal(bad.missingUnsupported.length,1);
+ const wrong=auditP6Geometry(city,w,o,{...g,rows:g.rows.map(r=>({...r,hits:r.hits.map(h=>({...h,final:true}))}))},b);
+ assert.equal(wrong.wrong.length,1);
+});
+test('P6 A2d2 real mixed landscape and defenses remain observed context, never write authority',()=>{
+ // Same accepted source recipe as the existing P2 mixed-landscape test.
+ const base=createProject({seed:'mountains',morphology:'organic'}),water=new WaterEditor();
+ water.generateCoastline(base.options.boundary,base.options.center,{seed:'mountains',direction:'east'});
+ water.generate(base.options.boundary,base.options.center,{seed:'mountains',width:24});
+ water.generateLakeDraft(base.options.boundary,base.options.center,{seed:'mountains',radius:18});
+ const wet=createProject({...base.options,seed:base.seed,water:water.definition()}),terrain=new TerrainEditor();
+ terrain.generate(base.options.boundary,base.options.center,{seed:'mixed-mountains',placement:'inside',size:40,water:{features:wet.city.waterFeatures,bridges:wet.city.bridges}});
+ const project=createProject({...wet.options,seed:wet.seed,water:water.definition(),terrain:terrain.definition(),fortifications:{enabled:true}});
+ validateStoredProject(project);
+ const city=project.city,before=JSON.stringify(project),r=city.roads.find(r=>!r.boundary&&!r.plaza&&!r.bank&&!r.bridgeId&&!r.foothill&&!r.passId&&!r.waterBoundary&&!r.terrainBoundary);
+ assert.ok(r);const nodes=new Map(city.nodes.map(n=>[n.id,n])),a=nodes.get(r.a),c=nodes.get(r.b),target=city.waterFeatures.find(f=>f.kind==='lake').center;
+ const dx=target.x-(a.x+c.x)/2,dy=target.y-(a.y+c.y)/2;
+ const w={requested:[a,c].map(n=>({ref:{id:n.id},point:{x:n.x+dx,y:n.y+dy}})),neighbors:[],lineage:[]};
+ // Diagnostic-only artificial offset, NOT a qualified road witness.
+ const o={objects:[],external:[]},b=createSpatialPreservationBudget({work:8000000,stateExpansions:32768}),g=observeP6GeometricImpact(city,w,o,b),audit=auditP6Geometry(city,w,o,g,b);
+ assert.equal(audit.status,'matched');assert.equal(g.authority,'none');assert.equal(g.landVerified,false);
+ assert.ok(g.rows.some(x=>x.ref.collection==='waterFeatures'&&x.protectedContext));
+ assert.ok(g.rows.filter(x=>!['blocks','properties','plots','buildings','openSpaces'].includes(x.ref.collection)).every(x=>x.protectedContext));
+ const count=['blocks','properties','plots','buildings','openSpaces','waterFaces','terrainFaces','waterFeatures','terrainFeatures','bridges','terrainPasses','walls','towers','gates','districts'].reduce((sum,k)=>sum+(city[k]?.length??0),1);
+ assert.equal(g.scanned,count);assert.equal(JSON.stringify(project),before);
+ console.log('ARES_P6_MIXED_GEOMETRY '+JSON.stringify({status:g.status,scanned:g.scanned,counts:g.counts,unsupported:g.unsupported,audit,stats:b.snapshot()}));
 });

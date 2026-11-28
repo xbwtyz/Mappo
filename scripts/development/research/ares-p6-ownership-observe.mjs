@@ -1,3 +1,4 @@
+import {auditP6Geometry} from './ares-p6-geometry-audit.mjs';
 import {observeP6LandClosure} from './ares-p6-land-closure.mjs';
 import {auditP6ExternalContext,observeP6OpaqueContext} from './ares-p6-context-audit.mjs';
 import {observeP6GeometricImpact} from './ares-p6-geometric-impact.mjs';
@@ -116,11 +117,13 @@ export async function observeP6Ownership(id){
   aresReplayJson(inventoryAudit,b);
   const geometricImpact=inventoryAudit.status==='matched'?observeP6GeometricImpact(city,w,observation,b):null;
   aresReplayJson(geometricImpact,b);
+  const geometryAudit=geometricImpact?auditP6Geometry(city,w,observation,geometricImpact,b):null;
+  aresReplayJson(geometryAudit,b);
   const externalAudit=auditP6ExternalContext(observation,b),opaqueContext=observeP6OpaqueContext(f.project,b);
   aresReplayJson([externalAudit,opaqueContext],b);
-  const landClosure=geometricImpact&&externalAudit.status==='matched'?observeP6LandClosure(city,w,observation,geometricImpact,edges,b):null;
+  const landClosure=geometryAudit?.status==='matched'&&externalAudit.status==='matched'?observeP6LandClosure(city,w,observation,geometricImpact,edges,b):null;
   aresReplayJson(landClosure,b);
   if(aresReplayJson(f.project,b)!==before)throw Error('P6 source mutated.');
-  return finish(limited||omitted.length?'scope-incomplete':inventoryAudit.status!=='matched'?'inventory-unverified':'observed',{observation,inventoryAudit,geometricImpact,externalAudit,opaqueContext,landClosure});
+  return finish(limited||omitted.length?'scope-incomplete':inventoryAudit.status!=='matched'?'inventory-unverified':'observed',{observation,inventoryAudit,geometricImpact,externalAudit,opaqueContext,landClosure,geometryAudit});
  }catch(e){if(e instanceof LareBudgetExceeded)return finish('work-limit',{reason:e.resource});throw e;}
 }
