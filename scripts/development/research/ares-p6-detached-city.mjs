@@ -7,10 +7,12 @@ import {stampRoadGenerated} from '../../../src/core/road-provenance.js';
 import {polygonSignedArea,roadFrameLength} from '../../../src/core/geometry.js';
 import {propertyLocalBounds3I} from '../../../src/core/property-geometry.js';
 import {transformLareBuilding,verifyLareRigidGeometry} from '../../../src/core/reconciliation-buildings.js';
+import {reconcileLareAccess} from '../../../src/core/reconciliation-access.js';
+import {hydrateCityS10} from '../../../src/core/building-project-s10.js';
 import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
 const charge=(b,n)=>b.spend(Math.max(1,n));
 const clone=(x,b)=>{const s=aresReplayJson(x,b);charge(b,Math.ceil(Buffer.byteLength(s)/64));return JSON.parse(s);};
-export function assembleP6DetachedCity(source,candidateRoads,extraction,e,b){
+export function assembleP6DetachedCity(source,candidateRoads,extraction,e,b,{frontageBundles=null}={}){
  if(!b?.spend||!b?.snapshot)throw Error('Shared P6 budget required.');
  b.spend();
  const {identity,blockPlan,propertyAudit,parcelReshapes,fixedBuildings,rigidTranslations,relocationExtension,relocatedAccess}=e;
@@ -48,7 +50,7 @@ export function assembleP6DetachedCity(source,candidateRoads,extraction,e,b){
   }
  }
  const unresolved=[];
- for(const id of audit.keys()){b.spend();if(!selected.has(id))unresolved.push(id);}
+ for(const id of audit.keys()){b.spend();if(!selected.has(id)&&!frontageBundles?.has(id))unresolved.push(id);}
  for(const id of selected.keys()){b.spend();if(!audit.has(id)||!rows.has(id))return refuse('selection-outside-audit');}
  if(unresolved.length)return refuse('incomplete-land-selection',{unresolved:unresolved.length,structuralBlocks:blockPlan.structural,complexOwners:complexOwners.size});
  if(blockPlan.structural!==0||blockPlan.rows.length!==blocks.size||identity.changed.some(x=>x.kind!=='block'))return refuse('structural-or-protected-face-reconstruction-required',{structuralBlocks:blockPlan.structural,complexOwners:complexOwners.size});
@@ -66,9 +68,28 @@ export function assembleP6DetachedCity(source,candidateRoads,extraction,e,b){
   b.spend();const a=oldRoads.get(id),c=nextRoads.get(id);
   return !!a&&!!c&&equal(a,c,b)&&equal(oldNodes.get(a.a),nextNodes.get(c.a),b)&&equal(oldNodes.get(a.b),nextNodes.get(c.b),b);
  };
- const nextProperties=new Map(),nextPlots=new Map(),nextBuildings=new Map();
+ const nextProperties=new Map(),nextPlots=new Map(),nextBuildings=new Map(),switchedBuildings=new Map();
+ if(frontageBundles)for(const id of frontageBundles.keys()){b.spend();if(!audit.has(id)||selected.has(id))return refuse('invalid-frontage-bundle-owner');}
  for(const p of props.values()){
-  b.spend();const s=selected.get(p.id);
+  b.spend();const s=selected.get(p.id),bundle=frontageBundles?.get(p.id);
+  if(bundle){
+   const q=bundle.property,own=p.plotIds.map(id=>plots.get(id));
+   aresReplayJson([p,own,bundle],b);const policy=classifyLareProperty(p,own);
+   if(complexOwners.has(p.id)||policy.mode!=='adaptive'||policy.provenance!=='generated'||!changedBlocks.has(p.blockId)||bundle.scale!==1||q.id!==p.id||q.blockId!==p.blockId||q.frontageRoadId===p.frontageRoadId||!equal(q.plotIds,p.plotIds,b)||!equal(q.buildingIds,p.buildingIds,b)||bundle.plots.length!==own.length||bundle.buildings.length!==p.buildingIds.length)return refuse('invalid-frontage-bundle');
+   for(let i=0;i<own.length;i++){
+    b.spend();const old=own[i],plot=bundle.plots[i];
+    if(!old||plot.id!==old.id||plot.propertyId!==p.id||plot.blockId!==old.blockId||plot.frontageRoadId!==q.frontageRoadId)return refuse('invalid-frontage-plot');
+    nextPlots.set(plot.id,plot);
+   }
+   for(let i=0;i<p.buildingIds.length;i++){
+    b.spend();const old=buildings.get(p.buildingIds[i]),next=bundle.buildings[i];
+    if(!old||next.id!==old.id||next.propertyId!==p.id||next.frontageRoadId!==q.frontageRoadId)return refuse('invalid-frontage-building');
+    const permission=classifyLareBuilding(old,policy,false);
+    if(permission.mode!=='rigid'||permission.provenance!=='generated'||!verifyLareRigidGeometry(old,{...next,frontageRoadId:old.frontageRoadId},b))return refuse('protected-frontage-building');
+    nextBuildings.set(old.id,next);switchedBuildings.set(old.id,{old,permission});
+   }
+   nextProperties.set(p.id,q);continue;
+  }
   if(!s){if(changedBlocks.has(p.blockId))return refuse('unaccounted-changed-block-property');continue;}
   const row=rows.get(p.id),w=rigid.get(p.id)?.witness;
   const o=s.kind==='ordinary'?row.options[s.index]:s.kind==='relocated'?row.conditionalOptions?.[s.index]:null;
@@ -126,10 +147,23 @@ export function assembleP6DetachedCity(source,candidateRoads,extraction,e,b){
  const assembled=clone({...source,nodes:candidateRoads.nodes,roads:candidateRoads.roads,
   blocks:source.blocks.map(x=>nextBlocks.get(x.id)),properties:source.properties.map(x=>nextProperties.get(x.id)??x),
   plots:source.plots.map(x=>nextPlots.get(x.id)??x),buildings:source.buildings.map(x=>nextBuildings.get(x.id)??x)},b);
+ if(switchedBuildings.size){
+  // Route repair takes place only after all actual candidate roofs and
+  // parcels are present. The independent concession gate rechecks the city.
+  hydrateCityS10(assembled);
+  for(let i=0;i<assembled.buildings.length;i++){
+   b.spend();const placement=assembled.buildings[i],entry=switchedBuildings.get(placement.id);
+   if(!entry)continue;
+   aresReplayJson(placement,b);
+   const route=reconcileLareAccess(assembled,entry.old,placement,entry.permission,b,{allowAlternativeFrontage:true});
+   if(!route.ok)return refuse('alternative-frontage-access-refused',{buildingId:placement.id,code:route.code});
+   assembled.buildings[i]=route.building;
+  }
+ }
  const areaByBlock=new Map();
  for(const p of assembled.properties){b.spend();if(changedBlocks.has(p.blockId))areaByBlock.set(p.blockId,(areaByBlock.get(p.blockId)??0)+p.area);}
  for(const s of assembled.openSpaces){b.spend();if(changedBlocks.has(s.blockId))s.area=Math.max(0,nextBlocks.get(s.blockId).area-(areaByBlock.get(s.blockId)??0));}
  return {status:'candidate-assembled',reason:null,authority:'none',valid:false,landVerified:false,candidate:assembled,
-  counts:{propertiesUpdated:nextProperties.size,plotsUpdated:nextPlots.size,buildingsUpdated:nextBuildings.size,complexOwnersPreserved:complexOwners.size},
+  counts:{propertiesUpdated:nextProperties.size,plotsUpdated:nextPlots.size,buildingsUpdated:nextBuildings.size,complexOwnersPreserved:complexOwners.size,...(frontageBundles?{frontageSwitches:frontageBundles.size}:{})},
   limitations:['independent-road-authorization-required','independent-whole-city-verification-required','no-apply']};
 }

@@ -9,6 +9,7 @@ import {observeP6UnmatchedGeometry,observeP6SmallFaceGeometry} from './ares-p6-r
 import {observeP6TopologyIdentity} from './ares-p6-topology-identity.mjs';
 import {observeP6BlockCapacity} from './ares-p6-block-capacity.mjs';
 import {observeP6RelocationCompatibility,observeP6RelocationExtension} from './ares-p6-relocation-compatibility.mjs';
+import {tryP6AlternativeFrontageAssembly} from './ares-p6-frontage-assembly.mjs';
 import {tryP6CollectiveAssembly} from './ares-p6-collective-assembly.mjs';
 import {assembleP6DetachedCity} from './ares-p6-detached-city.mjs';
 import {observeP6RigidTranslations} from './ares-p6-rigid-translations.mjs';
@@ -27,7 +28,7 @@ import {planP6BlockRecords} from './ares-p6-block-record-plan.mjs';
 import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
 import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
 
-export function observeP6DryPipeline(source,candidateRoads,budget,{collective=false}={}){
+export function observeP6DryPipeline(source,candidateRoads,budget,{collective=false,frontageContext=null}={}){
  if(!budget?.spend||!budget?.snapshot)throw Error('Shared P6 budget required.');
  const ledger=[];
  function stage(name,fn){
@@ -94,6 +95,9 @@ export function observeP6DryPipeline(source,candidateRoads,budget,{collective=fa
  let assembly=stage('detached-city-assembly',()=>assembleP6DetachedCity(source,candidateRoads,extraction,{identity,blockPlan,propertyAudit,parcelReshapes,fixedBuildings,rigidTranslations,relocationExtension,relocatedAccess},budget));
  if(collective&&assembly.status==='assembly-refused'&&assembly.reason==='incomplete-land-selection'&&blockPlan.structural===0){
   assembly=stage('collective-city-assembly',()=>tryP6CollectiveAssembly(source,candidateRoads,extraction,{identity,blockPlan,propertyAudit,propertyFit,parcelReshapes,rigidTranslations,relocationExtension},budget));
+ }
+ if(frontageContext&&frontageContext.project.city===source&&assembly.status==='assembly-refused'&&blockPlan.structural===0&&relocationExtension.unresolved.length){
+  assembly=stage('alternative-frontage-assembly',()=>tryP6AlternativeFrontageAssembly(frontageContext.project,frontageContext.operation,candidateRoads,extraction,{identity,blockPlan,propertyAudit,parcelReshapes,fixedBuildings,rigidTranslations,relocationExtension,relocatedAccess,alternativeFrontages},budget));
  }
  // This is only the legacy mapped-block snapshot, NOT rebuilt land.
  const snapshot=stage('diagnostic-snapshot',()=>{

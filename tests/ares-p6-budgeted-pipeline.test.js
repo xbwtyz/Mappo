@@ -10,6 +10,7 @@ import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-cont
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
 import {observeP6RelocationCompatibility,observeP6RelocationExtension} from '../scripts/development/research/ares-p6-relocation-compatibility.mjs';
+import {tryP6AlternativeFrontageAssembly} from '../scripts/development/research/ares-p6-frontage-assembly.mjs';
 import {selectP6JointArrangement,focusP6JointOwners} from '../scripts/development/research/ares-p6-collective-assembly.mjs';
 import {qualifyP6RoadMovement,verifyP6AssembledRoadCity} from '../scripts/development/research/ares-p6-road-qualification.mjs';
 import {normalizeSpatialRoadGroup} from '../src/core/spatial-recovery-road-adapter.js';
@@ -636,4 +637,27 @@ test('P6 focused collective search expands unresolved block and candidate-face n
  assert.equal(focusP6JointOwners(fit,{unresolved:[]},root(8000000)).size,0);
  assert.throws(()=>focusP6JointOwners(fit,extension,root(1)),LareBudgetExceeded);
  assert.equal(JSON.stringify([fit,extension]),before);
+});
+
+test('P6 alternative frontage requires explicit operation permission and retains strict recovery',async()=>{
+ const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+ const ids=['RD-0113','RD-0114'],offset={x:.05,y:0},before=JSON.stringify(project),op=normalizeSpatialRoadGroup(project,1,ids,offset);
+ assert.equal(tryP6AlternativeFrontageAssembly(project,op,null,null,null,root(8000000)).reason,'alternative-frontage-not-authorized');
+ const result=await qualifyP6RoadMovement(project,1,ids,offset,root(8000000),{permissions:{alternativeFrontage:true}});
+ assert.equal(result.status,'verified-detached-road-movement',JSON.stringify(result));
+ assert.equal(result.counts.retired,0);assert.equal(result.counts.added,0);
+ assert.equal(result.operation.permissions.alternativeFrontage,true);assert.equal(result.frontageDetails,null);
+ const denied=await qualifyP6RoadMovement(project,1,ids,offset,root(8000000),{permissions:{destruction:true}});
+ assert.equal(denied.status,'refused');assert.equal(denied.delta,null);
+ assert.equal(JSON.stringify(project),before);
+});
+test('P6 permitted linear frontage fallback records complete movement or bounded refusal',async()=>{
+ const project=createProject({seed:'b1-linear',size:'small',morphology:'linear',irregularProperties:true});
+ const before=JSON.stringify(project),b=root(8000000);
+ const result=await qualifyP6RoadMovement(project,1,['RD-0122','RD-0123'],{x:1,y:1},b,{permissions:{alternativeFrontage:true}});
+ assert.equal(result.authority,'none');assert.ok(b.snapshot().work<=8000000);assert.ok(b.snapshot().expansions<=32768);
+ if(result.status==='verified-detached-road-movement'){assert.equal(result.counts.added,0);assert.equal(result.counts.retired,0);assert.equal(result.landVerified,true);}
+ else{assert.equal(result.status,'refused');assert.equal(result.delta,null);assert.ok(result.reason);}
+ assert.equal(JSON.stringify(project),before);
+ console.log('P6_FRONTAGE_MOVEMENT '+JSON.stringify({status:result.status,stage:result.stage,reason:result.reason,details:result.details??null,frontageDetails:result.frontageDetails??null,counts:result.counts??null,stats:result.stats,authority:'none'}));
 });
