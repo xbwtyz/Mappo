@@ -1,3 +1,5 @@
+import {holdoutRtreLock} from './ares-p5-holdout-lock.mjs';
+import {materializeHoldoutCity} from './ares-p5-holdout-inventory.mjs';
 import { readFileSync } from 'node:fs';
 import { G_MANIFEST,enumerateGSlots,materializeGCorpusCity } from './ares-p4-g-corpus.mjs';
 import { createAresDiagnosticContext } from '../../../src/core/ares-diagnostic-contract.js';
@@ -15,6 +17,7 @@ export function lockedRtreCase(id){
   if(typeof id!=='string')throw Error('Frozen RTRE recipe ID required, not a city.');
   const old=original.rows.find(r=>r.id===id);
   if(old)return old;
+  if(id.startsWith('h:'))return holdoutRtreLock(id);
   const slot=slots.get(id);
   if(!slot)throw Error('Unknown frozen RTRE recipe.');
   const city=inventory.rows.find(r=>r.id===slot.city),group=city?.groups.find(g=>g.id===slot.group);
@@ -24,7 +27,7 @@ export function lockedRtreCase(id){
 export function materializeLockedRtreCase(id){
   const lock=lockedRtreCase(id);
   if(!lock.slot)return materializeAresP3Case(id);
-  const project=materializeGCorpusCity(lock.slot.city);
+  const project=lock.holdout?materializeHoldoutCity(lock.slot.city):materializeGCorpusCity(lock.slot.city);
   const operation=normalizeSpatialRoadGroup(project,1,[...lock.selectedRoadIds],lock.slot.offset,G_MANIFEST.permissions);
   if(aresReplayJson(operation.editedRefs.map(r=>r.id))!==aresReplayJson(lock.selectedRoadIds)||
      operation.editedRefs.some(r=>r.collection!=='roads')||

@@ -1,3 +1,4 @@
+import {holdoutLockedRow,HOLDOUT_OPTIONS} from './ares-p5-holdout-lock.mjs';
 import { createHash } from 'node:crypto';
 import { materializeLockedRtreCase } from './ares-rtre-locked-recipes.mjs';
 import { inspectFreshRtreNeighborhood } from './ares-rtre-fresh-neighborhood.mjs';
@@ -79,6 +80,11 @@ async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial
     need(typeof caseId==='string','recipe-required');
     need(options&&Number.isSafeInteger(options.maxCandidates)&&options.maxCandidates>=1&&Number.isSafeInteger(options.maxNeighbors)&&options.maxNeighbors>=2,'invalid-limits');
     const {mode,maxObjects,maxHops,maxNeighbors,maxCandidates}=options;
+    const holdout=caseId.startsWith('h:');
+    if(holdout){
+      holdoutLockedRow(caseId);
+      need(!minimumRecipe&&!radial&&Object.keys(HOLDOUT_OPTIONS).every(k=>options[k]===HOLDOUT_OPTIONS[k]),'holdout-limits');
+    }
     const report=await inspectFreshRtreNeighborhood(caseId,{mode,maxObjects,maxHops},budget);
     const {project,context}=materializeLockedRtreCase(caseId),city=project.city,before=aresReplayJson(project,budget);
     const bytes=Buffer.from(before,'utf8');budget.spend(Math.max(1,Math.ceil(bytes.length/64)));
@@ -108,7 +114,7 @@ async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial
         need(n&&eligible.has(n.id)&&!requested.has(n.id)&&!neighbors.has(n.id),'neighbor-authority');
         const old=accepted.nodesById.get(n.id);
         need(validPoint(n.old)&&validPoint(n.point)&&same(n.old,old)&&!same(n.point,old),'neighbor-coordinate');
-        if(minimumRecipe||radial){budget.spend();need(Math.hypot(n.point.x-old.x,n.point.y-old.y)<=Math.hypot(offset.x,offset.y),radial?'radial-displacement-limit':'x7-displacement-limit');}
+        if(minimumRecipe||radial||holdout){budget.spend();need(Math.hypot(n.point.x-old.x,n.point.y-old.y)<=Math.hypot(offset.x,offset.y),holdout?'holdout-displacement-limit':radial?'radial-displacement-limit':'x7-displacement-limit');}
         neighbors.add(n.id);positions.set(n.id,n.point);
       }
       const seen=new Set();

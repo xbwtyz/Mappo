@@ -1,3 +1,4 @@
+import {holdoutLockedRow,HOLDOUT_OPTIONS,HOLDOUT_ARMS} from './ares-p5-holdout-lock.mjs';
 import { createHash } from 'node:crypto';
 import { materializeLockedRtreCase } from './ares-rtre-locked-recipes.mjs';
 import { inspectFreshRtreNeighborhood } from './ares-rtre-fresh-neighborhood.mjs';
@@ -122,6 +123,7 @@ async function openFreshRtre(caseId,options,budget){
   return {report,f,source,before};
 }
 export async function probeFreshRtreSingleJunction(caseId,optionsInput,budget){
+  if(typeof caseId==='string'&&caseId.startsWith('h:'))throw Error('Use fixed holdout arms.');
   const {maxCandidates,...options}=readOptions(optionsInput);
   const {report,f,source,before}=await openFreshRtre(caseId,options,budget);
   const result={version:1,caseId,context:f.context,snapshotFingerprint:report.snapshotFingerprint,
@@ -475,7 +477,16 @@ export async function probeFreshRtreResidual(caseId,budget){
   const recipe=radialRecipe(caseId);
   return probeCoordinated(caseId,radialOptions(caseId),budget,true,true,true,true,false,false,'residual-repair',recipe.minimumRecipe,recipe,null,true);
 }
-async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null,minimumRecipe=null,radial=null,diagnostic=null,residual=false){
+// Fixed holdout adapters dispatch unchanged algorithm bodies. No caller
+// options, enlarged neighbor cap, old case selection, or sequential fallback.
+export async function probeFreshRtreHoldout(caseId,arm,budget){
+  holdoutLockedRow(caseId);
+  if(!HOLDOUT_ARMS.includes(arm))throw Error('Unknown fixed holdout arm.');
+  const combined=arm==='analytical'?'analytical-independent':arm==='hybrid'?'hybrid-refinement':null;
+  return probeCoordinated(caseId,HOLDOUT_OPTIONS,budget,true,true,arm!=='R5',true,false,false,combined,null,null,null,false,true);
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null,minimumRecipe=null,radial=null,diagnostic=null,residual=false,holdout=false){
+  if((typeof caseId==='string'&&caseId.startsWith('h:'))!==holdout)throw Error('Use fixed holdout arms.');
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
