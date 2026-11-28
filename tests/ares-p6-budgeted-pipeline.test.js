@@ -10,6 +10,9 @@ import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-cont
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
 import {observeP6RelocationCompatibility,observeP6RelocationExtension} from '../scripts/development/research/ares-p6-relocation-compatibility.mjs';
+import {qualifyP6RoadMovement,verifyP6AssembledRoadCity} from '../scripts/development/research/ares-p6-road-qualification.mjs';
+import {normalizeSpatialRoadGroup} from '../src/core/spatial-recovery-road-adapter.js';
+import {prepareRoadGroupReflowB1} from '../src/core/neighborhood-reflow.js';
 import {assembleP6DetachedCity} from '../scripts/development/research/ares-p6-detached-city.mjs';
 import {observeP6RigidTranslations} from '../scripts/development/research/ares-p6-rigid-translations.mjs';
 import {observeP6FixedBuildings} from '../scripts/development/research/ares-p6-fixed-buildings.mjs';
@@ -567,4 +570,38 @@ test('P6 monotonic relocation extension preserves ordinary choices and unresolve
  assert.deepEqual(noExtension.counts,{ordinary:1,relocated:0,unresolved:3});assert.deepEqual(noExtension.blockers.map(r=>[r.id,r.blockers]),[['b',['c']],['c',['fixed']]]);
  assert.equal(JSON.stringify([source,reshapes,rigid,ordinary]),before);
  assert.equal(result.landVerified,false);assert.equal(result.access,'not-verified');
+});
+
+test('P6 whole-project independent gate accepts legacy positive control and rejects forged complete assembly',async()=>{
+ const project=createProject({seed:'c2-planned',size:'small',morphology:'planned'});
+ const ids=['RD-0113','RD-0114'],offset={x:.05,y:0},before=JSON.stringify(project);
+ const op=normalizeSpatialRoadGroup(project,1,ids,offset);
+ const legacy=prepareRoadGroupReflowB1(project,ids,offset);
+ assert.ok(legacy.candidateProject,JSON.stringify(legacy.unresolved));
+ const assembly={status:'candidate-assembled',authority:'none',valid:false,landVerified:false,candidate:legacy.candidateProject.city};
+ const control=await verifyP6AssembledRoadCity(project,op,assembly,root(8000000));
+ assert.equal(control.status,'verified-detached-road-movement');assert.ok(control.counts.modified>0);assert.equal(control.counts.retired,0);
+ const forged=structuredClone(assembly);forged.candidate.roads[0].opaque='unauthorized';
+ await assert.rejects(verifyP6AssembledRoadCity(project,op,forged,root(8000000)),/preservation refused/);
+ const wrongIntent=normalizeSpatialRoadGroup(project,1,ids,{x:.06,y:0});
+ await assert.rejects(verifyP6AssembledRoadCity(project,wrongIntent,assembly,root(8000000)));
+ await assert.rejects(verifyP6AssembledRoadCity(project,op,{...assembly,candidate:null},root(8000000)),/Complete detached/);
+ await assert.rejects(verifyP6AssembledRoadCity(project,op,assembly,root(1)),LareBudgetExceeded);
+ assert.equal(JSON.stringify(project),before);
+ console.log('P6_WHOLE_CITY_GATE_CONTROL '+JSON.stringify({status:control.status,counts:control.counts,source:'legacy-positive-control-not-P6-recovery',authority:'none'}));
+});
+for(const f of [
+ {label:'planned-small',seed:'c2-planned',morphology:'planned',ids:['RD-0113','RD-0114'],offset:{x:.05,y:0}},
+ {label:'linear-small',seed:'b1-linear',morphology:'linear',irregularProperties:true,ids:['RD-0122','RD-0123'],offset:{x:1,y:1}}
+])test('P6 first actual road movement qualification '+f.label,async()=>{
+ const project=createProject({seed:f.seed,size:'small',morphology:f.morphology,...(f.irregularProperties?{irregularProperties:true}:{})});
+ const before=JSON.stringify(project),b=root(8000000);
+ const result=await qualifyP6RoadMovement(project,1,f.ids,f.offset,b);
+ assert.equal(result.authority,'none');assert.ok(b.snapshot().work<=8000000);assert.ok(b.snapshot().expansions<=32768);
+ if(result.status==='verified-detached-road-movement'){
+  assert.equal(result.landVerified,true);assert.ok(result.counts.modified>0);assert.equal(result.counts.added,0);assert.equal(result.counts.retired,0);
+  assert.ok(result.delta.modified.some(row=>row.collection==='nodes'||row.ref?.collection==='nodes'));
+ }else{assert.equal(result.status,'refused');assert.equal(result.landVerified,false);assert.equal(result.delta,null);assert.ok(result.reason);}
+ assert.equal(JSON.stringify(project),before);
+ console.log('P6_ACTUAL_MOVEMENT '+JSON.stringify({label:f.label,status:result.status,stage:result.stage,reason:result.reason,details:result.details??null,counts:result.counts??null,assemblyCounts:result.assemblyCounts??null,stats:result.stats,authority:'none'}));
 });
