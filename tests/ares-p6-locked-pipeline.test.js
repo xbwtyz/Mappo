@@ -151,11 +151,15 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
    assert.deepEqual(row.witness.buildings.map(b=>b.id),p.buildingIds);
    for(const b of row.witness.buildings){
     const original=source.buildings.find(x=>x.id===b.id);
-    assert.equal(b.transform.angle,0);assert.ok(Math.abs(b.area-original.area)<=.02);
+    if(row.witness.phase==='translation')assert.equal(b.transform.angle,0);
+    assert.ok(Number.isFinite(b.transform.angle));assert.ok(Math.abs(b.area-original.area)<=.02);
     assert.ok(shapeContained(b.geometry.regions[0].ring,option.boundary));
     assert.ok(b.occupiedPlotIds.every(id=>p.plotIds.includes(id)));
    }
   }
+  assert.equal(rigid.rows.filter(row=>row.witness?.phase==='translation').length,16);
+  assert.ok(rigid.rows.filter(row=>row.witness?.phase==='translation').every(row=>row.rotationAttempts===0));
+  console.log('P6_LOCKED_RIGID_ROTATION_FALLBACK '+JSON.stringify({id,translation:rigid.rows.filter(row=>row.witness?.phase==='translation').length,rotation:rigid.rows.filter(row=>row.witness?.phase==='rotation').length,rotationAttempts:rigid.rows.reduce((n,r)=>n+r.rotationAttempts,0),authority:'none'}));
   console.log('P6_LOCKED_RIGID_TRANSLATIONS '+JSON.stringify({id,counts:rigid.counts,conditional:rigid.rows.reduce((n,r)=>n+r.conditionalCount,0),attempts:rigid.rows.reduce((n,r)=>n+r.attempts,0),moved:rigid.rows.reduce((n,r)=>n+(r.witness?.buildings.filter(b=>b.transform.dx!==0||b.transform.dy!==0).length??0),0),authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);

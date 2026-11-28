@@ -1,4 +1,4 @@
-// D1b1: individual conditional parcel + bounded rigid translation evidence.
+// D1b1/b2: individual conditional parcel + bounded rigid placement evidence.
 // Not a city solution: no cross-property compatibility or access authority.
 import {classifyLareProperty,classifyLareBuilding} from '../../../src/core/reconciliation-policy.js';
 import {transformLareBuilding,verifyLareRigidGeometry} from '../../../src/core/reconciliation-buildings.js';
@@ -25,7 +25,7 @@ export function observeP6RigidTranslations(source,reshapes,fixed,b){
  const geometryBudget={charge:(n=1)=>charge(b,n)};
  for(const row of reshapes.rows){
   b.spend();const p=props.get(row.id);if(!p||!Array.isArray(row.conditionalOptions)||row.conditionalOptions.length>LARE_LIMITS.parcelCandidates)return refuse('invalid-parcel-census');
-  const out={id:p.id,classification:null,attempts:0,conditionalCount:row.conditionalOptions.length,witness:null};
+  const out={id:p.id,classification:null,attempts:0,rotationAttempts:0,conditionalCount:row.conditionalOptions.length,witness:null};
   const finish=kind=>{out.classification=kind;counts[kind]++;rows.push(out);};
   if(row.options.length){finish('notNeeded');continue;}
   if(!row.conditionalOptions.length){finish('noConditional');continue;}
@@ -41,7 +41,9 @@ export function observeP6RigidTranslations(source,reshapes,fixed,b){
   }
   if(!eligible){finish('protected');continue;}
   const oldCenter=center(p.boundary,b);
-  for(let i=0;i<row.conditionalOptions.length&&!out.witness;i++){
+  // Exhaust the original translation pass first; never replace its witness
+  // with an unnecessary rotation. The second pass is a bounded fallback.
+  for(const phase of ['translation','rotation'])for(let i=0;i<row.conditionalOptions.length&&!out.witness;i++){
    b.spend();const o=row.conditionalOptions[i];
    if(o.authority!=='none'||o.requiresRigidPlacement!==true||o.frontageRoadId!==p.frontageRoadId||!ringOK(o.boundary,b)||o.plots.length!==own.length||o.plots.some((q,j)=>q.id!==own[j].id||!ringOK(q.boundary,b)))return refuse('invalid-conditional-option');
    const target=center(o.boundary,b),placed=[];
@@ -49,11 +51,18 @@ export function observeP6RigidTranslations(source,reshapes,fixed,b){
     b.spend();const s=member.source,origin=center(s.geometry.regions[0].ring,b);
     let found=null;
     const transforms=[{dx:0,dy:0,angle:0},{dx:target.x-oldCenter.x,dy:target.y-oldCenter.y,angle:0},{dx:target.x-origin.x,dy:target.y-origin.y,angle:0}];
+    if(phase==='rotation'){
+     for(const angle of [Math.PI/2,-Math.PI/2,Math.PI/4,-Math.PI/4,Math.PI/6,-Math.PI/6,Math.PI/12,-Math.PI/12,Math.PI]){
+      b.spend();
+      transforms.push({dx:target.x-oldCenter.x,dy:target.y-oldCenter.y,angle},
+       {dx:target.x-origin.x,dy:target.y-origin.y,angle});
+     }
+    }
     const tried=new Set();
     for(const t of transforms){
      b.spend();const key=JSON.stringify(t);if(tried.has(key))continue;tried.add(key);
      if(out.attempts>=LARE_LIMITS.stateExpansions)break;
-     b.expand();out.attempts++;
+     b.expand();out.attempts++;if(t.angle!==0)out.rotationAttempts++;
      try{
       // Existing LARE/SRE rigid transform; prepay bounded simple-ring validation.
       const n=s.geometry.regions[0].ring.length;
@@ -82,12 +91,12 @@ export function observeP6RigidTranslations(source,reshapes,fixed,b){
     if(!found)break;
     placed.push(found);
    }
-   if(placed.length===members.length&&placed.some(x=>x.transform.dx!==0||x.transform.dy!==0))
-    out.witness={optionIndex:i,key:o.key,buildings:placed,authority:'none',access:'not-verified',crossProperty:'not-verified'};
+   if(placed.length===members.length&&placed.some(x=>x.transform.dx!==0||x.transform.dy!==0||x.transform.angle!==0))
+    out.witness={optionIndex:i,key:o.key,phase,buildings:placed,authority:'none',access:'not-verified',crossProperty:'not-verified'};
   }
   finish(out.witness?'placementObserved':'noPlacement');
  }
  const result={status:'rigid-translations-observed',authority:'none',valid:false,landVerified:false,rows,counts,
-  coverage:'conditional-same-frontage-individual-parcel-simple-translation-only',selection:'not-performed',access:'not-verified'};
+  coverage:'conditional-same-frontage-individual-parcel-simple-rigid-placement',selection:'not-performed',access:'not-verified'};
  const json=aresReplayJson(result,b);charge(b,Math.ceil(Buffer.byteLength(json)/64));return JSON.parse(json);
 }

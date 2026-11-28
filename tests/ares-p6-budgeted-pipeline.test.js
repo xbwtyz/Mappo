@@ -265,7 +265,7 @@ function verify(source,candidate,legacy,extraction,label){
  const rigid=result.rigidTranslations;
  assert.equal(rigid.status,'rigid-translations-observed');assert.equal(rigid.authority,'none');assert.equal(rigid.landVerified,false);
  assert.equal(Object.values(rigid.counts).reduce((n,v)=>n+v,0),reshapes.rows.length);
- for(const row of rigid.rows)if(row.witness){assert.ok(row.witness.buildings.some(b=>b.transform.dx!==0||b.transform.dy!==0));assert.equal(row.witness.access,'not-verified');}
+ for(const row of rigid.rows)if(row.witness){assert.ok(row.witness.buildings.some(b=>b.transform.dx!==0||b.transform.dy!==0||b.transform.angle!==0));assert.equal(row.witness.access,'not-verified');}
  assert.throws(()=>observeP6RigidTranslations(source,reshapes,fixed,root(1)),LareBudgetExceeded);
  console.log('P6_RIGID_TRANSLATIONS '+JSON.stringify({label,counts:rigid.counts,conditional:rigid.rows.reduce((n,r)=>n+r.conditionalCount,0),attempts:rigid.rows.reduce((n,r)=>n+r.attempts,0),authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
@@ -463,10 +463,29 @@ test('P6 conditional parcel enables rigid translation without authorizing protec
  const fixed=observeP6FixedBuildings(source,reshapes,cooperative,root(8000000));
  const result=observeP6RigidTranslations(source,reshapes,fixed,root(8000000));
  assert.equal(result.rows[0].classification,'placementObserved');
- const moved=result.rows[0].witness.buildings[0];assert.equal(moved.area,4);assert.deepEqual(moved.occupiedPlotIds,['q']);assert.equal(moved.transform.angle,0);
+ const moved=result.rows[0].witness.buildings[0];assert.equal(moved.area,4);assert.deepEqual(moved.occupiedPlotIds,['q']);assert.equal(moved.transform.angle,0);assert.equal(result.rows[0].witness.phase,'translation');assert.equal(result.rows[0].rotationAttempts,0);
  assert.equal(result.rows[0].witness.access,'not-verified');assert.equal(JSON.stringify(source),before);
  const {roadProvenance:stamp,...authored}=building;assert.ok(stamp);
  const protectedSource={...source,buildings:[authored]};
  assert.equal(observeP6ParcelReshapes(protectedSource,extraction,fit,root(8000000)).rows[0].conditionalOptions.length,0);
  assert.equal(observeP6RigidTranslations(protectedSource,reshapes,fixed,root(8000000)).rows[0].classification,'protected');
+});
+
+test('P6 rigid fallback rotates an otherwise too-wide building without scaling',()=>{
+ const rect=(x,y,w,d)=>[{x,y},{x:x+w,y},{x:x+w,y:y+d},{x,y:y+d}];
+ const p={id:'p',blockId:'old',plotIds:['q'],buildingIds:['b'],frontageRoadId:'r',boundary:rect(0,0,20,20)};
+ const q={id:'q',propertyId:'p',blockId:'old',frontageRoadId:'r',boundary:p.boundary};stampRoadGenerated(p,[q]);
+ const door={x:10,y:8};
+ const building={id:'b',blockId:'old',propertyId:'p',plotIds:['q'],frontageRoadId:'r',geometry:{version:1,regions:[{id:'reg',parentId:null,kind:'solid',componentId:'comp',ring:rect(4,8,12,4)}]},components:[{id:'comp',parentId:null,name:'Main'}],entrance:door,orientation:0,area:48,accessPath:[door,{x:10,y:0}]};
+ stampRoadGenerated(building);
+ const boundary=rect(7,3,6,14),option={key:'face',authority:'none',requiresRigidPlacement:true,frontageRoadId:'r',boundary,plots:[{id:'q',boundary}]};
+ const reshapes={status:'parcel-reshape-observed',authority:'none',rows:[{id:'p',options:[],conditionalOptions:[option]}]};
+ const cooperative={status:'cooperative-parcels-observed',authority:'none',selected:[],unresolved:['p']};
+ const source={properties:[p],plots:[q],buildings:[building]},before=JSON.stringify(source);
+ const fixed=observeP6FixedBuildings(source,reshapes,cooperative,root(8000000));
+ const result=observeP6RigidTranslations(source,reshapes,fixed,root(8000000)),row=result.rows[0];
+ assert.equal(row.classification,'placementObserved');assert.equal(row.witness.phase,'rotation');assert.ok(row.rotationAttempts>0);
+ const placed=row.witness.buildings[0];assert.ok(Math.abs(Math.abs(placed.transform.angle)-Math.PI/2)<1e-6);
+ assert.ok(Math.abs(placed.area-building.area)<1e-6);assert.ok(shapeContained(placed.geometry.regions[0].ring,boundary));assert.deepEqual(placed.occupiedPlotIds,['q']);
+ assert.equal(JSON.stringify(source),before);assert.deepEqual(observeP6RigidTranslations(source,reshapes,fixed,root(8000000)),result);
 });
