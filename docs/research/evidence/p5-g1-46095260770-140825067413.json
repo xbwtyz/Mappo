@@ -1,0 +1,1398 @@
+{
+  "run": 46095260770,
+  "attempt": 1,
+  "job": 140825067413,
+  "source": "3e339a6615f6c3d696f58482cf20ee99b305bc7d",
+  "rows": [
+    {
+      "version": 1,
+      "caseId": "g:radial-small:eight-loop:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 4,
+      "minimum": null,
+      "authority": "none",
+      "status": "observed",
+      "reason": null,
+      "topologyChanged": false,
+      "cityRecovery": false,
+      "attempts": 2,
+      "rows": [
+        {
+          "arm": "prior",
+          "sourceAttempt": 98,
+          "neighbors": 4,
+          "status": "held",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0104",
+                "RD-0157"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.5848312868532392
+                ],
+                "ba": [
+                  0.20186685920351202
+                ],
+                "point": {
+                  "x": 33.78082445899471,
+                  "y": 42.68490800248202
+                }
+              },
+              "reasons": [
+                "split-endpoint-closure:N-0090"
+              ]
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0109",
+            "RD-0110",
+            "RD-0111",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0157",
+            "RD-0158",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0192",
+            "RD-0193",
+            "RD-0194",
+            "RD-0223"
+          ],
+          "finalChecks": 72,
+          "sweptChecks": 72,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        },
+        {
+          "arm": "radial",
+          "sourceAttempt": 5,
+          "neighbors": 3,
+          "status": "held",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0104",
+                "RD-0157"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.62327981438328
+                ],
+                "ba": [
+                  0.9255407837610367
+                ],
+                "point": {
+                  "x": 35.266375440218724,
+                  "y": 45.38932712605971
+                }
+              },
+              "reasons": [
+                "split-endpoint-closure:N-0090"
+              ]
+            },
+            {
+              "roadIds": [
+                "RD-0105",
+                "RD-0192"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.5512196479862056
+                ],
+                "ba": [
+                  0.8806969096639574
+                ],
+                "point": {
+                  "x": 80.97816508325353,
+                  "y": 88.28798279769671
+                }
+              },
+              "reasons": []
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0109",
+            "RD-0110",
+            "RD-0111",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0157",
+            "RD-0158",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0192",
+            "RD-0193",
+            "RD-0194",
+            "RD-0223"
+          ],
+          "finalChecks": 72,
+          "sweptChecks": 72,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        }
+      ],
+      "stats": {
+        "work": 297215,
+        "expansions": 2,
+        "remainingWork": 7702785,
+        "remainingExpansions": 32766
+      }
+    },
+    {
+      "version": 1,
+      "caseId": "g:radial-small:eight-loop:100:x",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 4,
+      "minimum": null,
+      "authority": "none",
+      "status": "observed",
+      "reason": null,
+      "topologyChanged": false,
+      "cityRecovery": false,
+      "attempts": 2,
+      "rows": [
+        {
+          "arm": "prior",
+          "sourceAttempt": 163,
+          "neighbors": 3,
+          "status": "split-research-opportunity",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0106",
+                "RD-0225"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.048528357623120244
+                ],
+                "ba": [
+                  0.1474496884212922
+                ],
+                "point": {
+                  "x": 204.23445194954562,
+                  "y": 53.08460055100809
+                }
+              },
+              "reasons": []
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0192",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0259"
+          ],
+          "finalChecks": 63,
+          "sweptChecks": 63,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        },
+        {
+          "arm": "radial",
+          "sourceAttempt": 38,
+          "neighbors": 3,
+          "status": "split-research-opportunity",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0188",
+                "RD-0224"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.21289749525484425
+                ],
+                "ba": [
+                  0.24202307437117762
+                ],
+                "point": {
+                  "x": 220.72410279831507,
+                  "y": -8.118782123379466
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0190",
+                "RD-0225"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.7134143637715189
+                ],
+                "ba": [
+                  0.7348560338241507
+                ],
+                "point": {
+                  "x": 208.81351913709358,
+                  "y": 45.755941344697185
+                }
+              },
+              "reasons": []
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0107",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0226",
+            "RD-0227",
+            "RD-0259"
+          ],
+          "finalChecks": 69,
+          "sweptChecks": 69,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        }
+      ],
+      "stats": {
+        "work": 296635,
+        "expansions": 2,
+        "remainingWork": 7703365,
+        "remainingExpansions": 32766
+      }
+    },
+    {
+      "version": 1,
+      "caseId": "g:radial-small:eight-loop:75:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 4,
+      "minimum": null,
+      "authority": "none",
+      "status": "observed",
+      "reason": null,
+      "topologyChanged": false,
+      "cityRecovery": false,
+      "attempts": 2,
+      "rows": [
+        {
+          "arm": "radial",
+          "sourceAttempt": 6,
+          "neighbors": 4,
+          "status": "split-research-opportunity",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0105",
+                "RD-0193"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.0029732629815677285
+                ],
+                "ba": [
+                  0.7974618243057854
+                ],
+                "point": {
+                  "x": 49.98991861148825,
+                  "y": 96.97579675239074
+                }
+              },
+              "reasons": []
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0109",
+            "RD-0110",
+            "RD-0111",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0193",
+            "RD-0194",
+            "RD-0223"
+          ],
+          "finalChecks": 72,
+          "sweptChecks": 72,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        },
+        {
+          "arm": "prior",
+          "sourceAttempt": 1,
+          "neighbors": 4,
+          "status": "held",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0104",
+                "RD-0156"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.47479489166302197
+                ],
+                "ba": [
+                  0.9963657521951506
+                ],
+                "point": {
+                  "x": 29.529304690975998,
+                  "y": 46.81496421893051
+                }
+              },
+              "reasons": [
+                "split-endpoint-closure:N-0090"
+              ]
+            },
+            {
+              "roadIds": [
+                "RD-0105",
+                "RD-0193"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.19900441616147665
+                ],
+                "ba": [
+                  0.7585881709959567
+                ],
+                "point": {
+                  "x": 61.0700859541913,
+                  "y": 102.80838722413549
+                }
+              },
+              "reasons": []
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0109",
+            "RD-0110",
+            "RD-0111",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0193",
+            "RD-0194",
+            "RD-0223"
+          ],
+          "finalChecks": 72,
+          "sweptChecks": 72,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        }
+      ],
+      "stats": {
+        "work": 298810,
+        "expansions": 2,
+        "remainingWork": 7701190,
+        "remainingExpansions": 32766
+      }
+    },
+    {
+      "version": 1,
+      "caseId": "g:radial-small:five-branch:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 5,
+      "minimum": 5,
+      "authority": "none",
+      "status": "observed",
+      "reason": null,
+      "topologyChanged": false,
+      "cityRecovery": false,
+      "attempts": 2,
+      "rows": [
+        {
+          "arm": "prior",
+          "sourceAttempt": 6,
+          "neighbors": 5,
+          "status": "held",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0105",
+                "RD-0157"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.022944711774896227
+                ],
+                "ba": [
+                  0.6186031807149771
+                ],
+                "point": {
+                  "x": 30.753404773363613,
+                  "y": 43.59268966908253
+                }
+              },
+              "reasons": [
+                "split-endpoint-closure:N-0107"
+              ]
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0186",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0259"
+          ],
+          "finalChecks": 66,
+          "sweptChecks": 63,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        },
+        {
+          "arm": "radial",
+          "sourceAttempt": 67,
+          "neighbors": 5,
+          "status": "held",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0104",
+                "RD-0156"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.6357241131552315
+                ],
+                "ba": [
+                  0.5757969098739566
+                ],
+                "point": {
+                  "x": 39.443711591445364,
+                  "y": 35.95717391736241
+                }
+              },
+              "reasons": [
+                "split-endpoint-closure:N-0090"
+              ]
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0186",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0259"
+          ],
+          "finalChecks": 66,
+          "sweptChecks": 63,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        }
+      ],
+      "stats": {
+        "work": 296304,
+        "expansions": 2,
+        "remainingWork": 7703696,
+        "remainingExpansions": 32766
+      }
+    },
+    {
+      "version": 1,
+      "caseId": "g:radial-small:five-chain:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 6,
+      "minimum": 6,
+      "authority": "none",
+      "status": "observed",
+      "reason": null,
+      "topologyChanged": false,
+      "cityRecovery": false,
+      "attempts": 1,
+      "rows": [
+        {
+          "arm": "prior",
+          "sourceAttempt": 131,
+          "neighbors": 6,
+          "status": "split-research-opportunity",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0100",
+                "RD-0154"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.004324296615402047
+                ],
+                "ba": [
+                  0.8822506680366364
+                ],
+                "point": {
+                  "x": 57.40198358935698,
+                  "y": 39.62910823712546
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0101",
+                "RD-0189"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.07685102100250694
+                ],
+                "ba": [
+                  0.9200792744420173
+                ],
+                "point": {
+                  "x": 125.85771579879734,
+                  "y": 36.954169374552194
+                }
+              },
+              "reasons": []
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0103",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0259",
+            "RD-0260",
+            "RD-0261",
+            "RD-0262",
+            "RD-0274"
+          ],
+          "finalChecks": 75,
+          "sweptChecks": 75,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        }
+      ],
+      "stats": {
+        "work": 285829,
+        "expansions": 1,
+        "remainingWork": 7714171,
+        "remainingExpansions": 32767
+      }
+    },
+    {
+      "version": 1,
+      "caseId": "g:radial-small:eight-loop:100:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 6,
+      "minimum": 6,
+      "authority": "none",
+      "status": "observed",
+      "reason": null,
+      "topologyChanged": false,
+      "cityRecovery": false,
+      "attempts": 1,
+      "rows": [
+        {
+          "arm": "prior",
+          "sourceAttempt": 9,
+          "neighbors": 6,
+          "status": "held",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0100",
+                "RD-0191"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.48239324470695216
+                ],
+                "ba": [
+                  0.9755249987428635
+                ],
+                "point": {
+                  "x": 87.91549821241273,
+                  "y": 88.43677877888247
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0100",
+                "RD-0193"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.31896466408580887
+                ],
+                "ba": [
+                  0.05788104135372527
+                ],
+                "point": {
+                  "x": 77.48440787593361,
+                  "y": 88.84437837674656
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0104",
+                "RD-0156"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.3333862556260729
+                ],
+                "ba": [
+                  0.9323299989265554
+                ],
+                "point": {
+                  "x": 24.065643232052608,
+                  "y": 41.66790625722737
+                }
+              },
+              "reasons": [
+                "split-endpoint-closure:N-0090"
+              ]
+            },
+            {
+              "roadIds": [
+                "RD-0105",
+                "RD-0193"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.017839925137444406
+                ],
+                "ba": [
+                  0.9707765608859114
+                ],
+                "point": {
+                  "x": 50.83021925678092,
+                  "y": 122.41813028270178
+                }
+              },
+              "reasons": []
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0109",
+            "RD-0110",
+            "RD-0111",
+            "RD-0112",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0192",
+            "RD-0193",
+            "RD-0194",
+            "RD-0223",
+            "RD-0229",
+            "RD-0230"
+          ],
+          "finalChecks": 84,
+          "sweptChecks": 84,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        }
+      ],
+      "stats": {
+        "work": 290778,
+        "expansions": 1,
+        "remainingWork": 7709222,
+        "remainingExpansions": 32767
+      }
+    },
+    {
+      "version": 1,
+      "caseId": "g:radial-small:five-branch:75:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 7,
+      "minimum": 7,
+      "authority": "none",
+      "status": "observed",
+      "reason": null,
+      "topologyChanged": false,
+      "cityRecovery": false,
+      "attempts": 1,
+      "rows": [
+        {
+          "arm": "radial",
+          "sourceAttempt": 229,
+          "neighbors": 7,
+          "status": "held",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0105",
+                "RD-0152"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.06330381609993714
+                ],
+                "ba": [
+                  0.05194404831865924
+                ],
+                "point": {
+                  "x": 57.098106225283416,
+                  "y": 65.21757667187917
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0105",
+                "RD-0193"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.44497232063581393
+                ],
+                "ba": [
+                  0.022407700074925867
+                ],
+                "point": {
+                  "x": 78.77712793319611,
+                  "y": 87.01762170720058
+                }
+              },
+              "reasons": [
+                "split-endpoint-closure:N-0108"
+              ]
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0186",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0226",
+            "RD-0259"
+          ],
+          "finalChecks": 72,
+          "sweptChecks": 69,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        }
+      ],
+      "stats": {
+        "work": 286973,
+        "expansions": 1,
+        "remainingWork": 7713027,
+        "remainingExpansions": 32767
+      }
+    },
+    {
+      "version": 1,
+      "caseId": "g:radial-small:five-branch:100:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 10,
+      "minimum": 10,
+      "authority": "none",
+      "status": "observed",
+      "reason": null,
+      "topologyChanged": false,
+      "cityRecovery": false,
+      "attempts": 1,
+      "rows": [
+        {
+          "arm": "prior",
+          "sourceAttempt": 12,
+          "neighbors": 10,
+          "status": "held",
+          "reasons": [],
+          "pairs": [
+            {
+              "roadIds": [
+                "RD-0099",
+                "RD-0155"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.7829140060542661
+                ],
+                "ba": [
+                  0.3177125373285741
+                ],
+                "point": {
+                  "x": 47.15271965724545,
+                  "y": 68.32100349098991
+                }
+              },
+              "reasons": [
+                "split-endpoint-closure:N-0089"
+              ]
+            },
+            {
+              "roadIds": [
+                "RD-0099",
+                "RD-0157"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.5126898572991854
+                ],
+                "ba": [
+                  0.11784578546581155
+                ],
+                "point": {
+                  "x": 34.7382136919895,
+                  "y": 41.78369108088986
+                }
+              },
+              "reasons": [
+                "split-endpoint-closure:N-0089"
+              ]
+            },
+            {
+              "roadIds": [
+                "RD-0102",
+                "RD-0225"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.1593788800721527
+                ],
+                "ba": [
+                  0.866315104378274
+                ],
+                "point": {
+                  "x": 194.95178641235518,
+                  "y": 68.3163991413734
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0104",
+                "RD-0157"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.5402095173297389
+                ],
+                "ba": [
+                  0.3756931662452895
+                ],
+                "point": {
+                  "x": 31.45911620027056,
+                  "y": 46.944937122114084
+                }
+              },
+              "reasons": [
+                "split-endpoint-closure:N-0090"
+              ]
+            },
+            {
+              "roadIds": [
+                "RD-0105",
+                "RD-0152"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.6652329268394276
+                ],
+                "ba": [
+                  0.29197072271025126
+                ],
+                "point": {
+                  "x": 56.96931232230127,
+                  "y": 92.88697637866395
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0105",
+                "RD-0153"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.224312643257638
+                ],
+                "ba": [
+                  0.18501340502707275
+                ],
+                "point": {
+                  "x": 51.49867175452513,
+                  "y": 88.04602472222254
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0106",
+                "RD-0193"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.1322386576416291
+                ],
+                "ba": [
+                  0.24809428535443503
+                ],
+                "point": {
+                  "x": 72.49943594598945,
+                  "y": 99.25344727211167
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0106",
+                "RD-0228"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.9119435485264076
+                ],
+                "ba": [
+                  0.2298605968274522
+                ],
+                "point": {
+                  "x": 139.57785191914573,
+                  "y": 115.12008687757096
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0153",
+                "RD-0155"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.3052456415486913
+                ],
+                "ba": [
+                  0.10675375277048552
+                ],
+                "point": {
+                  "x": 48.19042897984984,
+                  "y": 79.783009025996
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0153",
+                "RD-0157"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.8334131686820223
+                ],
+                "ba": [
+                  0.20281306211976877
+                ],
+                "point": {
+                  "x": 33.6576675840092,
+                  "y": 43.48445305465176
+                }
+              },
+              "reasons": []
+            },
+            {
+              "roadIds": [
+                "RD-0154",
+                "RD-0157"
+              ],
+              "contact": {
+                "kind": "interior-interior",
+                "required": [
+                  "intersection",
+                  "split"
+                ],
+                "ab": [
+                  0.2209656056267773
+                ],
+                "ba": [
+                  0.22196766607108925
+                ],
+                "point": {
+                  "x": 33.41407459663128,
+                  "y": 43.86786444908249
+                }
+              },
+              "reasons": []
+            }
+          ],
+          "movedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0107",
+            "RD-0109",
+            "RD-0110",
+            "RD-0111",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0157",
+            "RD-0158",
+            "RD-0186",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0192",
+            "RD-0193",
+            "RD-0194",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0226",
+            "RD-0227",
+            "RD-0259"
+          ],
+          "finalChecks": 99,
+          "sweptChecks": 96,
+          "finalBlockers": [],
+          "sweptUnresolved": [],
+          "replayMatches": true
+        }
+      ],
+      "stats": {
+        "work": 294203,
+        "expansions": 1,
+        "remainingWork": 7705797,
+        "remainingExpansions": 32767
+      }
+    }
+  ]
+}

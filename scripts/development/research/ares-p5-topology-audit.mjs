@@ -1,3 +1,4 @@
+import {g2Seed} from './ares-p5-topology-g2-lock.mjs';
 import {inspectP5IdentityLedger} from './ares-p5-topology-lineage.mjs';
 import {createHash} from 'node:crypto';
 import {materializeLockedRtreCase,lockedRtreCase} from './ares-rtre-locked-recipes.mjs';
@@ -59,6 +60,12 @@ function contained(a,c,outline,b){
 }
 export async function auditP5SplitPilot(caseId,permissions,evidence){
   if(!cases.has(caseId))throw Error('Frozen P5 C2 pilot ID required.');
+  return auditSplit(caseId,permissions,evidence,null);
+}
+export async function auditP5CombinedPilot(caseId,permissions,evidence){
+  return auditSplit(caseId,permissions,evidence,g2Seed(caseId));
+}
+async function auditSplit(caseId,permissions,evidence,combined){
   // No caller-supplied budget or scope, no search retry. This root is
   // independent evidence only, never a continuation of construction.
   const b=createSpatialPreservationBudget({work:8000000,stateExpansions:32768});
@@ -110,6 +117,24 @@ export async function auditP5SplitPilot(caseId,permissions,evidence){
     }
     for(const n of report.requested){b.spend();need(same(requested.get(n.ref.id),n.point),'observer-intent');}
     for(const id of requested.keys()){b.spend();need(inScope('nodes',id)&&!fixed.has(id)&&known(original.nodesById.get(id),nodeKeys,b),'protected-node');}
+    if(combined){
+      const {recipe,seed}=combined,neighbors=seed.best.neighbors;
+      need(result.source===recipe.source&&report.status==='research-eligible'&&w.seedArm===seed.arm&&eq(w.neighbors,neighbors),'seed-evidence');
+      need(neighbors.length>=2&&neighbors.length<=recipe.cap&&(!recipe.minimum||neighbors.length===recipe.minimum),'neighbor-cap');
+      const seen=new Set();
+      for(const n of neighbors){
+        b.spend(8);const old=original.nodesById.get(n.id),p=n.point;
+        need(old&&qualified.has(n.id)&&!requested.has(n.id)&&!seen.has(n.id)&&inScope('nodes',n.id)&&!fixed.has(n.id)&&
+          admitted.get('nodes:'+n.id)?.role!=='protected-anchor'&&known(old,nodeKeys,b)&&same(n.old,old)&&!same(p,old)&&
+          Number.isFinite(p.x)&&Number.isFinite(p.y)&&Math.abs(p.x)<=100000&&Math.abs(p.y)<=100000&&
+          Math.hypot(p.x-old.x,p.y-old.y)<=Math.hypot(offset.x,offset.y),'neighbor-authority');
+        seen.add(n.id);requested.set(n.id,p);
+      }
+      const reached=new Set(),queue=[neighbors[0].id];
+      for(let i=0;i<queue.length;i++){b.spend();const id=queue[i];if(reached.has(id))continue;reached.add(id);
+        for(const n of original.adjacency.get(id)){b.spend();if(!reached.has(n)&&requested.has(n))queue.push(n);}}
+      need(neighbors.every(n=>reached.has(n.id)),'disconnected-neighbor-cluster');
+    }else need(!Object.hasOwn(w,'neighbors')&&!Object.hasOwn(w,'seedArm'),'unexpected-neighbor-evidence');
     const nodes=city.nodes.map(n=>{b.spend();return requested.has(n.id)?{...n,...requested.get(n.id)}:{...n};});
     const positions=new Map(nodes.map(n=>[n.id,n]));
     const roads=[...city.roads].sort(compare),byRoad=new Map(roads.map(r=>[r.id,r]));
@@ -149,6 +174,11 @@ export async function auditP5SplitPilot(caseId,permissions,evidence){
     }
     sortCharge(contacts.length,b);contacts.sort((a,c)=>riCompare(JSON.stringify(a.roadIds),JSON.stringify(c.roadIds)));
     result.contacts=contacts.length;need(contacts.length>0&&contacts.length===w.contacts.length,'contact-inventory');
+    if(combined){
+      const expectedPairs=combined.seed.best.pairs.map(x=>{b.spend(4);return JSON.stringify([x.code,[...x.roadIds].sort(riCompare)]);}).sort(riCompare);
+      const actualPairs=contacts.map(x=>{b.spend(4);return JSON.stringify(['unnormalized-crossing',x.roadIds]);}).sort(riCompare);
+      need(eq(expectedPairs,actualPairs),'frozen-contact-inventory');
+    }
     const occupied=new Set([...original.nodesById.keys(),...original.roadsById.keys()]);
     b.spend(Math.max(1,occupied.size));
     function reserve(prefix,serial){
@@ -190,6 +220,22 @@ export async function auditP5SplitPilot(caseId,permissions,evidence){
     for(const [id,road] of original.roadsById){b.spend();need(equalP5GraphRecord(rebuilt.roadsById.get(id),parts.get(id)?.[0]??road,b),'road-preservation');}
     for(const n of additions){b.spend();need(equalP5GraphRecord(rebuilt.nodesById.get(n.id),n,b),'new-node-preservation');}
     for(const children of parts.values())for(const child of children){b.spend();need(equalP5GraphRecord(rebuilt.roadsById.get(child.id),child,b),'child-road-preservation');}
+    // At existing junctions, compare original incident-parent cyclic order.
+    // New crossing junctions are allowed; unrelated incident order changes are not.
+    if(combined){
+      const parentByChild=new Map();
+      for(const [parent,children] of parts)for(const child of children){b.spend();parentByChild.set(child.id,parent);}
+      const cyclic=(g,id,parents)=>{
+        const n=g.nodesById.get(id),ids=[...g.incidentRoads.get(id)];sortCharge(ids.length,b);
+        const angle=rid=>{const r=g.roadsById.get(rid),p=g.nodesById.get(r.a===id?r.b:r.a);return Math.atan2(p.y-n.y,p.x-n.x);};
+        return ids.sort((a,c)=>angle(a)-angle(c)||riCompare(a,c)).map(rid=>parents.get(rid)??rid);
+      };
+      for(const id of original.nodesById.keys()){
+        b.spend();const prior=cyclic(original,id,new Map()),next=cyclic(rebuilt,id,parentByChild);
+        const start=next.indexOf(prior[0]);b.spend(Math.max(1,prior.length*2));
+        need(prior.length===next.length&&(!prior.length||start>=0&&prior.every((rid,i)=>rid===next[(start+i)%next.length])),'cyclic-parent-order-changed');
+      }
+    }
     const identityLedger=inspectP5IdentityLedger({kind:'split',original:city,candidate,
       splitChains:expected.map(l=>({parent:l.parent,children:l.children.map(x=>x.id)}))},b);
     need(identityLedger.status==='complete','identity-ledger:'+identityLedger.reason);

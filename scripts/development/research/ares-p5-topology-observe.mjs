@@ -1,3 +1,4 @@
+import {g2Seed} from './ares-p5-topology-g2-lock.mjs';
 import {createHash} from 'node:crypto';
 import {materializeLockedRtreCase,lockedRtreCase} from './ares-rtre-locked-recipes.mjs';
 import {inspectFreshRtreNeighborhood} from './ares-rtre-fresh-neighborhood.mjs';
@@ -99,6 +100,12 @@ function p5Graph(city,budget){
 }
 export async function constructP5SplitPilot(caseId,input){
   if(!c1Cases.has(caseId))throw Error('Frozen P5 C1 pilot ID required.');
+  return constructSplit(caseId,input,null);
+}
+export async function constructP5CombinedPilot(caseId,input){
+  return constructSplit(caseId,input,g2Seed(caseId));
+}
+async function constructSplit(caseId,input,combined){
   const permissions=p5Permissions(input),budget=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
   let sourceHash=null,attempts=0,translationEvidence=null;
   const finish=(status,reason,extra={})=>riFreeze({version:1,caseId,source:sourceHash,status,reason,attempts,
@@ -106,9 +113,11 @@ export async function constructP5SplitPilot(caseId,input){
   try{
     const {evidence,f,source,report}=await observeP5WithBudget(caseId,permissions,budget);
     sourceHash=evidence.source;
-    if(!evidence.scope.mandatoryComplete||evidence.other.length||!evidence.conflicts.length||
-      evidence.conflicts.some(c=>c.status!=='research-contact-only'||c.contact.kind!=='interior-interior'))
+    if(!evidence.scope.mandatoryComplete||(!combined&&(evidence.other.length||!evidence.conflicts.length||
+      evidence.conflicts.some(c=>c.status!=='research-contact-only'||c.contact.kind!=='interior-interior'))))
       return finish('preflight-refused','contact-closure');
+    if(combined&&(permissions.mode!=='restructure'||!permissions.intersection||!permissions.split||permissions.merge||permissions.overlap))
+      return finish('preflight-refused','permission');
     const city=f.project.city,accepted=p5Graph(city,budget);
     if(!accepted.valid)return finish('preflight-refused','invalid-source-graph');
     const admitted=new Set(report.entries.map(e=>e.ref.collection+':'+e.ref.id));
@@ -117,6 +126,32 @@ export async function constructP5SplitPilot(caseId,input){
     for(const k of ['waterFaces','terrainFaces'])for(const row of city[k]??[])for(const id of row.vertices??[]){budget.spend();protectedNodes.add(id);}
     for(const road of city.roads){budget.spend();if(classifyRoad(road).protected||terminal.has(road.id)){protectedNodes.add(road.a);protectedNodes.add(road.b);}}
     const requested=new Map(report.requested.map(r=>[r.ref.id,r.point]));
+    const neighbors=combined?combined.seed.best.neighbors:[];
+    const eligible=new Set(report.eligibleJunctions.map(e=>e.ref.id));
+    budget.spend(Math.max(1,eligible.size));
+    if(combined){
+      const {recipe,seed}=combined,offset=f.context.operation.geometry.offset;
+      if(report.status!=='research-eligible'||sourceHash!==recipe.source||neighbors.length<2||neighbors.length>recipe.cap||
+        (recipe.minimum&&neighbors.length!==recipe.minimum))return finish('preflight-refused','neighbor-cap-or-source');
+      const exactIds=new Set(f.context.operation.editedRefs.map(x=>x.id)),exact=new Map();
+      for(const road of city.roads){budget.spend();if(exactIds.has(road.id))for(const id of [road.a,road.b]){
+        budget.spend();const n=accepted.nodesById.get(id);exact.set(id,{x:offset.x===0?n.x:n.x+offset.x,y:offset.y===0?n.y:n.y+offset.y});}}
+      if(exact.size!==requested.size||[...exact].some(([id,p])=>!requested.has(id)||!samePoint(p,requested.get(id))))
+        return finish('preflight-refused','exact-intent');
+      for(const entry of report.entries){budget.spend();if(entry.ref.collection==='nodes'&&entry.role==='protected-anchor')protectedNodes.add(entry.ref.id);}
+      for(const n of neighbors){
+        budget.spend(8);const old=accepted.nodesById.get(n.id),p=n.point;
+        if(!old||!eligible.has(n.id)||requested.has(n.id)||protectedNodes.has(n.id)||!admitted.has('nodes:'+n.id)||
+          opaque(old,nodeFields,budget)||!samePoint(old,n.old)||samePoint(old,p)||!Number.isFinite(p.x)||!Number.isFinite(p.y)||
+          Math.abs(p.x)>100000||Math.abs(p.y)>100000||Math.hypot(p.x-old.x,p.y-old.y)>Math.hypot(offset.x,offset.y))
+          return finish('preflight-refused','neighbor-authority');
+        requested.set(n.id,p);
+      }
+      const seen=new Set(),queue=[neighbors[0].id];
+      for(let i=0;i<queue.length;i++){budget.spend();const id=queue[i];if(seen.has(id))continue;seen.add(id);
+        for(const n of accepted.adjacency.get(id)){budget.spend();if(!seen.has(n)&&requested.has(n))queue.push(n);}}
+      if(!neighbors.every(n=>seen.has(n.id)))return finish('preflight-refused','disconnected-neighbor-cluster');
+    }
     const nodes=city.nodes.map(n=>{budget.spend();return requested.has(n.id)?{...n,...requested.get(n.id)}:{...n};});
     const byId=new Map(nodes.map(n=>[n.id,n])),roads=new Map(city.roads.map(r=>[r.id,r]));
     const used=new Set([...byId.keys(),...roads.keys()]);budget.spend(Math.max(1,used.size+admitted.size+requested.size));
@@ -152,12 +187,24 @@ export async function constructP5SplitPilot(caseId,input){
     // Reserve typed IDs deterministically from sorted contact pairs and
     // original road order. All existing IDs remain occupied throughout.
     const reserve=(prefix,i)=>{let id=prefix+i;for(let n=1;used.has(id);n++){budget.spend();id=prefix+i+'-'+n;}budget.spend();used.add(id);return id;};
+    let conflicts=evidence.conflicts;
+    if(combined){
+      const replay=p5Graph({...city,nodes},budget),pairs=replay.issues.map(i=>({code:i.code,roadIds:[...(i.roadIds??[])].sort(riCompare)}));
+      const keys=rows=>rows.map(x=>JSON.stringify([x.code,[...x.roadIds].sort(riCompare)])).sort(riCompare);
+      budget.spend(Math.max(1,pairs.length*8));p5Sort(pairs.length,budget);
+      if(replay.valid||pairs.some(p=>p.code!=='unnormalized-crossing'||p.roadIds.length!==2)||
+        aresReplayJson(keys(pairs),budget)!==aresReplayJson(keys(combined.seed.best.pairs),budget))
+        return finish('preflight-refused','frozen-conflict-replay-mismatch');
+      conflicts=pairs.map(p=>{budget.spend(16);const [a,b]=p.roadIds.map(id=>roads.get(id));
+        return {roadIds:p.roadIds,contact:classifyP5Contact(byId.get(a.a),byId.get(a.b),byId.get(b.a),byId.get(b.b))};});
+      conflicts.sort((a,b)=>riCompare(JSON.stringify(a.roadIds),JSON.stringify(b.roadIds)));
+    }
     budget.expand();attempts=1;
     const cuts=new Map(),added=[],contacts=[];
-    for(const c of evidence.conflicts){
+    for(const c of conflicts){
       budget.spend(16);
       const [a,b]=c.roadIds.map(id=>roads.get(id));
-      if(!admissible(a)||!admissible(b))return finish('candidate-refused','split-road-closure');
+      if(!admissible(a)||!admissible(b)||(combined&&[a.a,a.b,b.a,b.b].some(id=>!requested.has(id)&&!eligible.has(id))))return finish('candidate-refused','split-road-closure');
       const fresh=classifyP5Contact(byId.get(a.a),byId.get(a.b),byId.get(b.a),byId.get(b.b));
       if(fresh.kind!=='interior-interior'||aresReplayJson(fresh,budget)!==aresReplayJson(c.contact,budget))
         return finish('candidate-refused','contact-mismatch');
@@ -198,7 +245,7 @@ export async function constructP5SplitPilot(caseId,input){
       [...accepted.roadsById.keys()].some(id=>!final.roadsById.has(id)))
       return finish('candidate-refused','identity-or-connectivity');
     for(const [id,n] of accepted.nodesById){budget.spend();if(!samePoint(final.nodesById.get(id),requested.get(id)??n))return finish('candidate-refused','exact-intent');}
-    const witness={requested:report.requested,translatedRoadIds:translated.sort(riCompare),contacts,lineage,
+    const witness={requested:report.requested,...(combined?{seedArm:combined.seed.arm,neighbors:neighbors.map(n=>({id:n.id,old:{...n.old},point:{...n.point}}))}:{}),translatedRoadIds:translated.sort(riCompare),contacts,lineage,
       reservedNodeIds:added.map(n=>n.id),reservedRoadIds:lineage.flatMap(l=>l.children.slice(1).map(c=>c.id)),
       graph:{nodes:final.nodesById.size,roads:final.roadsById.size,components:final.components.length}};
     aresReplayJson(witness,budget);

@@ -10,6 +10,7 @@ for(const [id,count] of [['g:radial-small:eight-loop:100:x',5],['g:linear-medium
   const r=await auditP5SplitPilot(id,permissions,c);
   console.log('ARES_P5_EF_SPLIT '+JSON.stringify(r));
   assert.equal(r.source,c.source);assert.equal(r.authority,'none');assert.equal(r.contacts,count);
+  assert.equal(r.status,'topology-final-verified');assert.equal(r.reason,null);
   assert.ok(r.pairComparisons>0);assert.ok(r.stats.work<=8000000);assert.ok(r.stats.expansions<=32768);
   assert.equal(r.splitParents,c.witness.lineage.length);
   assert.ok(!['node-preservation','road-preservation','new-node-preservation','child-road-preservation'].includes(r.reason));
