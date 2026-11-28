@@ -14,6 +14,7 @@ import { hybridTrials,X56_IDS } from './ares-p4x-hybrid.mjs';
 import { x7Recipe,x7Options } from './ares-p4x-x7-scope.mjs';
 import { radialRecipe,radialOptions } from './ares-p4x-radial-scope.mjs';
 import { radialTrials } from './ares-p4x-radial.mjs';
+import {residualTrials} from './ares-p4x-residual.mjs';
 import {createDiagnosticCapture} from './ares-p4x-diagnostic-capture.mjs';
 
 // C: bounded dry-land, single-unselected-junction geometry experiment.
@@ -470,7 +471,11 @@ export async function probeFreshRtreRadialDiagnostic(caseId,arm,budget){
   if(!['prior','radial'].includes(arm))throw Error('Unapproved diagnostic arm.');
   return probeCoordinated(caseId,options,budget,true,true,true,true,false,false,arm==='radial'?'radial-refinement':recipe.minimum?'x7-minimum-cluster':'hybrid-refinement',recipe.minimumRecipe,arm==='radial'?recipe:null,createDiagnosticCapture());
 }
-async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null,minimumRecipe=null,radial=null,diagnostic=null){
+export async function probeFreshRtreResidual(caseId,budget){
+  const recipe=radialRecipe(caseId);
+  return probeCoordinated(caseId,radialOptions(caseId),budget,true,true,true,true,false,false,'residual-repair',recipe.minimumRecipe,recipe,null,true);
+}
+async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=false,ranked=false,preferBaseline=false,breadth=false,directional=false,combined=null,minimumRecipe=null,radial=null,diagnostic=null,residual=false){
   if(!o||Array.isArray(o)||![Object.prototype,null].includes(Object.getPrototypeOf(o))||
     Reflect.ownKeys(o).length!==5||
     !['mode','maxObjects','maxHops','maxCandidates','maxNeighbors'].every(k=>Object.hasOwn(o,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(o,k),'value'))||
@@ -485,6 +490,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
   if(combined==='hybrid-refinement'||minimumRecipe||radial)result.hybrid={baselinePairs:0,subsets:0,coveringGroups:0,connectedGroups:0,connectorGroups:0,enumerationLimit:false,groupLimit:false,seedProposals:0,feedbackProposals:0,duplicates:0,feedbackEvaluations:0,bestConflictCount:null,attempted:{'hybrid-refinement':0,'hybrid-directional-seed':0},failures:{}};
   if(minimumRecipe){result.hybrid.approvedMinimum=minimumRecipe.minimum;result.hybrid.seedValidated=false;}
   if(radial){result.hybrid.attempted={'radial-refinement':0,'radial-directional-seed':0};Object.assign(result.hybrid,{approvedCap:radial.cap,orientationChoices:0,alternateSigns:0,explore:0,exploit:0});}
+  if(residual){result.hybrid.attempted={'residual-seed-replay':0,'residual-repair':0};Object.assign(result.hybrid,{seedCount:0,seedValidated:0,cacheHits:0,cacheMisses:0,cacheInvalidations:0,cacheEvictions:0,guardProjections:0,preservationRejected:0,preservedPromotions:0});}
   if(combined==='analytical-independent')result.analytical={pairs:0,subsets:0,covering:0,connectedGroups:0,groupLimit:false,failures:{}};
   if(ranked)result.ranking={profile:'research-major-roads-neighbors-displacement-v1',verifiedCount:0,firstScore:null,bestScore:null,bestAttempt:null};
   const finish=()=>{
@@ -540,7 +546,8 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
     const feedback={value:null};
     if(minimumRecipe&&report.snapshotFingerprint!==minimumRecipe.source)throw Error('X7 frozen source changed.');
     if(radial&&report.snapshotFingerprint!==radial.source)throw Error('Radial frozen source changed.');
-    const stream=radial?radialTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,radial,diagnostic):
+    const stream=residual?residualTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,radial,caseId):
+      radial?radialTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,radial,diagnostic):
       result.hybrid?hybridTrials(accepted,rows,positions,report,offset,budget,result.hybrid,feedback,minimumRecipe,diagnostic):
       result.analytical?analyticalTrials(accepted,rows,positions,report,offset,budget,result.analytical):
       result.portfolio?adaptiveTrials(accepted,rows,selected,maxNeighbors,budget,result.portfolio):
@@ -615,7 +622,7 @@ async function probeCoordinated(caseId,o,budget,constrained,reuseIncidentChecks=
         }
         // Continue only inside the original candidate/work/expansion limits.
     }
-    if(result.termination==='preflight')result.termination=radial?'radial-stream-exhausted':result.hybrid?'hybrid-stream-exhausted':result.analytical?'analytical-stream-exhausted':'cluster-stencil-exhausted';
+    if(result.termination==='preflight')result.termination=residual?'residual-stream-exhausted':radial?'radial-stream-exhausted':result.hybrid?'hybrid-stream-exhausted':result.analytical?'analytical-stream-exhausted':'cluster-stencil-exhausted';
     result.status=result.baseline.valid?'baseline-valid':result.adjustedWitness?'geometry-recovered':'search-refused';
   }catch(e){
     if(!(e instanceof LareBudgetExceeded))throw e;
