@@ -127,6 +127,10 @@ export async function searchHoldoutMultiContact(caseId){
  if(caseId!=='h:radial-12')throw Error('Frozen multi-contact case required.');
  return searchCombined(caseId,true,true,false,false,REFORM_ARMS.find(x=>x.id==='c8-d100'),false,'multi');
 }
+export async function searchHoldoutAdaptiveContact(caseId){
+ if(caseId!=='h:radial-12')throw Error('Frozen adaptive contact case required.');
+ return searchCombined(caseId,true,true,false,false,REFORM_ARMS.find(x=>x.id==='c8-d100'),false,'adaptive-contact');
+}
 async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=false,coupledAware=false,reform=null,repair=false,precision=false){
  const lock=holdoutLockedRow(caseId);
  if(!COMBINED_CASES.includes(caseId))throw Error('Frozen combined holdout case required.');
@@ -233,6 +237,88 @@ async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=
     groups.sort((a,c)=>a.length-c.length||riCompare(JSON.stringify(a),JSON.stringify(c)));
     const retained=historical.bestRotation?.neighbors??[];
     const residual=LOCAL_ANGULAR_CASES.includes(caseId)?readLocalArchive().get(caseId).bestRotation?.neighbors??[]:[];
+    if(precision==='adaptive-contact'){
+     base.strategy='precision-adaptive-contact';base.localProbes=0;
+     const anchors=['N-0108','N-0109'],original=[['RD-0125','RD-0356'],['RD-0125','RD-0357'],['RD-0278','RD-0286'],['RD-0286','RD-0356'],['RD-0286','RD-0357']];
+     base.adaptive={protectedAnchors:anchors,controlScore:2014,controlPairs:[],rounds:[],scopeLocal:0,localRotationClear:0,localTargetClear:0,localBoth:0};
+     const e=JSON.parse(readFileSync(new URL('../../../docs/research/evidence/holdout-multi-contact-46106722973-140861107149.json',import.meta.url),'utf8'));
+     if(e.run!==46106722973||e.attempt!==1||e.source!=='3d819f0eb40a82134fabd8e3485e062c23231257'||e.job!==140861107149||e.rows.length!==1)throw Error('Adaptive contact archive identity mismatch.');
+     const row=e.rows[0],seed=row.best;
+     if(row.caseId!==caseId||row.source!==lock.source||row.authority!=='none'||row.profile.cap!==8||row.profile.multiplier!==1||seed?.score!==2014||seed.blocking!==2||seed.contacts!==14||seed.neighbors.length!==7)throw Error('Adaptive contact witness mismatch.');
+     const group=seed.neighbors.map(n=>n.id).sort(riCompare),points=new Map();
+     for(const n of seed.neighbors){b.spend(8);const old=g.nodesById.get(n.id);if(!old||old.x!==n.old.x||old.y!==n.old.y||!eligible.has(n.id)||positions.has(n.id)||!nodeOK(n.id)||Math.hypot(n.point.x-old.x,n.point.y-old.y)>displacementLimit)throw Error('Adaptive contact coordinates mismatch.');points.set(n.id,n.point);}
+     if(anchors.some(id=>!fixed.has(id)||positions.has(id)||points.has(id)))throw Error('Adaptive contact anchor mismatch.');
+     const start=evaluate(group,points,'adaptive-contact-control');
+     if(!start||start.score!==2014||start.feedback.length!==2)throw Error('Adaptive contact control mismatch.');
+     base.adaptive.controlPairs=start.feedback.map(x=>x.ids);
+     const affected=new Set([...positions.keys(),...group]);
+     for(const id of [...affected])for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}
+     const now=(state,id)=>state.get(id)??positions.get(id)??g.nodesById.get(id),seenProbe=new Set();
+     const countContacts=(state,pairs)=>pairs.reduce((n,[a,c])=>{b.spend(16);return n+(classifyP5Contact(now(state,a.a),now(state,a.b),now(state,c.a),now(state,c.b)).kind==='none'?0:1);},0);
+     const roadsFor=ids=>ids.map(x=>x.map(id=>g.roadsById.get(id)));
+     const originalPairs=roadsFor(original);
+     const costOf=state=>group.reduce((n,id)=>{b.spend(4);const p=state.get(id),o=points.get(id);return n+Math.hypot(p.x-o.x,p.y-o.y);},0);
+     let beam=[{item:start,cost:0}],best=start.score;
+     for(let round=0;round<4&&beam.length&&base.attempts<48&&base.localProbes<192&&base.seeds.length<2;round++){
+      const telemetry={round:round+1,starts:beam.map(x=>({score:x.item.score,pairs:x.item.feedback.map(p=>p.ids)})),probes:0,evaluated:0,bestBefore:best,bestAfter:best,localBoth:0};
+      base.adaptive.rounds.push(telemetry);
+      const candidates=[],quota=Math.min(48,192-base.localProbes);
+      const rank=(a,c)=>a.rotation-c.rotation||a.remaining-c.remaining||a.original-c.original||a.cost-c.cost;
+      for(let j=0;j<beam.length;j++){
+       const state=beam[j],target=roadsFor(state.item.feedback.map(p=>p.ids)),ends=target.map(([a,c])=>[a.a,a.b,c.a,c.b]),vars=group.filter(id=>ends.some(es=>es.includes(id)));
+       if(!vars.length)continue;
+       const streams=vars.map(variable=>{
+        const lines=[],keys=new Set();
+        for(const es of ends.filter(x=>x.includes(variable))){
+         const others=es.filter(id=>id!==variable);
+         for(let i=0;i<others.length;i++)for(let k=i+1;k<others.length;k++){b.spend(4);const key=JSON.stringify([others[i],others[k]].sort(riCompare));if(keys.has(key))continue;keys.add(key);lines.push([now(state.item.points,others[i]),now(state.item.points,others[k])]);}
+        }
+        lines.push(...localAngularLines(g,positions,state.item.points,[...affected],variable,b));
+        return {variable,it:angularLineProposals(state.item.points.get(variable),g.nodesById.get(variable),displacementLimit,lines,b)};
+       });
+       const share=Math.floor((quota-telemetry.probes)/(beam.length-j));let taken=0,active=true;
+       while(active&&taken<share&&base.localProbes<192){
+        active=false;
+        for(const stream of streams){
+         if(taken>=share||base.localProbes>=192)break;
+         const next=stream.it.next();if(next.done)continue;active=true;taken++;telemetry.probes++;base.localProbes++;b.expand();b.spend(city.survey.boundary.length);
+         if(!insideOrOn(next.value,city.survey.boundary)){base.adaptive.scopeLocal++;continue;}
+         const statePoints=new Map(state.item.points);statePoints.set(stream.variable,next.value);
+         const key=JSON.stringify(group.map(id=>statePoints.get(id)));if(seenProbe.has(key))continue;seenProbe.add(key);
+         const pos=new Map([...positions,...statePoints]);let rotation=0;
+         for(const id of affected){b.spend();if(!cyclicEqual(oldOrders.get(id),order(g,id,pos,b)))rotation++;}
+         const remaining=countContacts(statePoints,target),original=countContacts(statePoints,originalPairs);
+         if(!rotation)base.adaptive.localRotationClear++;if(!remaining)base.adaptive.localTargetClear++;
+         if(!rotation&&!remaining){base.adaptive.localBoth++;telemetry.localBoth++;}
+         candidates.push({points:statePoints,rotation,remaining,original,cost:costOf(statePoints),variable:stream.variable});
+        }
+       }
+      }
+      candidates.sort(rank);
+      // Full evaluation determines new blocking inventory. Never assume
+      // local target clearance implies graph or split eligibility.
+      const nextBeam=[],roundCap=Math.min(48-base.attempts,round===3?48:11);
+      for(const c of candidates){
+       if(telemetry.evaluated>=roundCap||base.attempts>=48||base.seeds.length>=2||c.rotation)break;
+       const priorAttempts=base.attempts,item=evaluate(group,c.points,'adaptive-contact-event');
+       telemetry.evaluated+=base.attempts-priorAttempts;
+       if(!item)continue;
+       if(item.score===0&&base.geometrySeeds.length<2)base.geometrySeeds.push({neighbors:group.map(id=>({id,old:point(g.nodesById.get(id)),point:point(c.points.get(id))})),attempt:base.attempts});
+       if(item.score<best)best=item.score;
+       if(item.feedback?.length)nextBeam.push({item,cost:c.cost});
+      }
+      telemetry.bestAfter=best;
+      // Retain two distinct residual inventories, including plateau moves
+      // when they expose different obstructions. No extra candidate budget.
+      nextBeam.sort((a,c)=>a.item.score-c.item.score||a.cost-c.cost);
+      beam=[];const signatures=new Set();
+      for(const t of nextBeam){const key=JSON.stringify(t.item.feedback.map(p=>p.ids));if(signatures.has(key))continue;signatures.add(key);beam.push(t);if(beam.length===2)break;}
+      for(const t of nextBeam){if(beam.length===2)break;if(!beam.includes(t))beam.push(t);}
+      if(!beam.length)break;
+     }
+     if(aresReplayJson(f.project,b)!==before)throw Error('Adaptive contact source mutated.');aresReplayJson(base,b);
+     return finish(base.seeds.length?'split-seeds-found':base.geometrySeeds.length?'geometry-seeds-found':'no-split-seed');
+    }
     if(precision==='multi'){
      base.strategy='precision-multi-contact';base.localProbes=0;
      const expected=[['RD-0125','RD-0356'],['RD-0125','RD-0357'],['RD-0278','RD-0286'],['RD-0286','RD-0356'],['RD-0286','RD-0357']];

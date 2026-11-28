@@ -43,3 +43,7 @@ All nine dependency cases diagnosed; 114 blocks, 330 properties, 458 plots, 361 
 
 ## Precision audit qualified; multi-contact follow-up
 Radial-16 independently verified under eight-neighbor/100% arm with zero cyclic changes, 19 intersections and no original identities retired. Expanded 23/49, strict 21/49. Owner agreed to retain cyclic gate and original displacement allowance. Next radial-12 five-contact precision pilot uses only its existing seven neighbors and original displacement; no protected anchor movement or split permission changes. Test single and coupled variable moves under same bounded root. No P6/live approval.
+
+
+## Radial-12 multi-contact results
+All five original target crossings locally clear in 14 cyclic-preserving proposals, but best full graph retains two blockers (14 total contacts). No seeds. Adaptive follow-up reconstructs actual residual pairs at each retained full check, tracks original recurrence, bounds to four rounds/two states, same 192 local and 48 full ceilings, same seven neighbors and original displacement. No protected or cyclic acceptance change. Expanded 23/49 remains unchanged.
