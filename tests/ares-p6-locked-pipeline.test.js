@@ -173,6 +173,17 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
   assert.equal(extension.counts.ordinary+extension.counts.relocated+extension.counts.unresolved,60);
   assert.ok(extension.counts.relocated<=16);assert.equal(extension.access,'not-verified');
   console.log('P6_LOCKED_RELOCATION_EXTENSION '+JSON.stringify({id,counts:extension.counts,attempts:extension.attempts,passes:extension.passes,reason:extension.reason,blocked:extension.blockers.length,authority:'none'}));
+  const relocatedAccess=r.pipeline.relocatedAccess;
+  assert.equal(relocatedAccess.status,'relocated-access-observed');assert.equal(relocatedAccess.authority,'none');assert.equal(relocatedAccess.landVerified,false);
+  const extendedIds=new Set(extension.selected.map(s=>s.id));
+  assert.deepEqual(relocatedAccess.rows.map(row=>row.id).sort(),source.buildings.filter(b=>extendedIds.has(b.propertyId)).map(b=>b.id).sort());
+  for(const row of relocatedAccess.rows)if(row.route){
+   const original=source.buildings.find(b=>b.id===row.id);
+   const chosen=extension.selected.find(s=>s.id===row.propertyId);
+   const w=chosen.kind==='relocated'?rigid.rows.find(x=>x.id===row.propertyId).witness.buildings.find(x=>x.id===row.id):original;
+   assert.deepEqual(row.route.entrance,w.entrance);assert.equal(row.route.frontageRoadId,original.frontageRoadId);
+  }
+  console.log('P6_LOCKED_RELOCATED_ACCESS '+JSON.stringify({id,counts:relocatedAccess.counts,relocatedCounts:relocatedAccess.relocatedCounts,propertiesWithAllRoutes:relocatedAccess.propertiesWithAllRoutes.length,authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
   assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);

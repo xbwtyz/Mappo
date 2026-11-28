@@ -13,7 +13,7 @@ import {observeP6RelocationCompatibility,observeP6RelocationExtension} from '../
 import {observeP6RigidTranslations} from '../scripts/development/research/ares-p6-rigid-translations.mjs';
 import {observeP6FixedBuildings} from '../scripts/development/research/ares-p6-fixed-buildings.mjs';
 import {observeP6AlternativeFrontages} from '../scripts/development/research/ares-p6-alternative-frontages.mjs';
-import {observeP6SameFrontageAccess} from '../scripts/development/research/ares-p6-same-frontage-access.mjs';
+import {observeP6SameFrontageAccess,observeP6RelocatedAccess} from '../scripts/development/research/ares-p6-same-frontage-access.mjs';
 import {observeP6CooperativeParcels} from '../scripts/development/research/ares-p6-cooperative-parcels.mjs';
 import {observeP6ParcelConflicts} from '../scripts/development/research/ares-p6-parcel-conflicts.mjs';
 import {observeP6ParcelReshapes} from '../scripts/development/research/ares-p6-parcel-reshapes.mjs';
@@ -67,7 +67,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,23);
+ assert.equal(result.ledger.length,24);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -283,6 +283,14 @@ function verify(source,candidate,legacy,extraction,label){
  assert.deepEqual(extension.selected.filter(s=>s.kind==='ordinary').map(s=>s.id),cooperative.selected.map(s=>s.id).sort((a,c)=>source.properties.findIndex(p=>p.id===a)-source.properties.findIndex(p=>p.id===c)));
  assert.throws(()=>observeP6RelocationExtension(source,reshapes,rigid,cooperative,compatibility,root(1)),LareBudgetExceeded);
  console.log('P6_RELOCATION_EXTENSION '+JSON.stringify({label,counts:extension.counts,attempts:extension.attempts,passes:extension.passes,reason:extension.reason,authority:'none'}));
+ const relocatedAccess=result.relocatedAccess;
+ assert.equal(relocatedAccess.status,'relocated-access-observed');assert.equal(relocatedAccess.authority,'none');assert.equal(relocatedAccess.landVerified,false);
+ const extendedIds=new Set(extension.selected.map(s=>s.id));
+ assert.deepEqual(relocatedAccess.rows.map(r=>r.id).sort(),source.buildings.filter(b=>extendedIds.has(b.propertyId)).map(b=>b.id).sort());
+ assert.equal(Object.values(relocatedAccess.counts).reduce((n,v)=>n+v,0),relocatedAccess.rows.length);
+ assert.deepEqual(relocatedAccess.unresolvedProperties,extension.unresolved);
+ assert.throws(()=>observeP6RelocatedAccess(source,extraction,reshapes,rigid,extension,root(1)),LareBudgetExceeded);
+ console.log('P6_RELOCATED_ACCESS '+JSON.stringify({label,counts:relocatedAccess.counts,relocatedCounts:relocatedAccess.relocatedCounts,propertiesWithAllRoutes:relocatedAccess.propertiesWithAllRoutes.length,authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
@@ -480,6 +488,16 @@ test('P6 conditional parcel enables rigid translation without authorizing protec
  assert.equal(result.rows[0].classification,'placementObserved');
  const moved=result.rows[0].witness.buildings[0];assert.equal(moved.area,4);assert.deepEqual(moved.occupiedPlotIds,['q']);assert.equal(moved.transform.angle,0);assert.equal(result.rows[0].witness.phase,'translation');assert.equal(result.rows[0].rotationAttempts,0);
  assert.equal(result.rows[0].witness.access,'not-verified');assert.equal(JSON.stringify(source),before);
+ const w=result.rows[0].witness;
+ const extended={status:'relocation-extension-observed',authority:'none',selected:[{id:'p',kind:'relocated',index:w.optionIndex,key:w.key}],unresolved:[]};
+ const graph={...extraction.graph,roadsById:new Map([['r0',{id:'r0',a:'a',b:'z',kind:'lane'}]]),nodesById:new Map([['a',{x:0,y:0}],['z',{x:60,y:0}]])};
+ const access=observeP6RelocatedAccess(source,{...extraction,graph},reshapes,result,extended,root(8000000));
+ assert.equal(access.status,'relocated-access-observed');assert.equal(access.relocatedCounts.repaired,1);
+ assert.deepEqual(access.rows[0].route.entrance,moved.entrance);assert.equal(access.rows[0].route.accessPath.at(-1).y,0);
+ assert.deepEqual(access.propertiesWithAllRoutes,['p']);assert.equal(JSON.stringify(source),before);
+ const tampered={...result,rows:[{...result.rows[0],witness:{...w,buildings:[{...moved,area:moved.area+1}]}}]};
+ assert.equal(observeP6RelocatedAccess(source,{...extraction,graph},reshapes,tampered,extended,root(8000000)).reason,'rigid-witness-mismatch');
+
  const {roadProvenance:stamp,...authored}=building;assert.ok(stamp);
  const protectedSource={...source,buildings:[authored]};
  assert.equal(observeP6ParcelReshapes(protectedSource,extraction,fit,root(8000000)).rows[0].conditionalOptions.length,0);

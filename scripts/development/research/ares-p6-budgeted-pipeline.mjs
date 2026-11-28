@@ -12,7 +12,7 @@ import {observeP6RelocationCompatibility,observeP6RelocationExtension} from './a
 import {observeP6RigidTranslations} from './ares-p6-rigid-translations.mjs';
 import {observeP6FixedBuildings} from './ares-p6-fixed-buildings.mjs';
 import {observeP6AlternativeFrontages} from './ares-p6-alternative-frontages.mjs';
-import {observeP6SameFrontageAccess} from './ares-p6-same-frontage-access.mjs';
+import {observeP6SameFrontageAccess,observeP6RelocatedAccess} from './ares-p6-same-frontage-access.mjs';
 import {observeP6CooperativeParcels} from './ares-p6-cooperative-parcels.mjs';
 import {observeP6ParcelConflicts} from './ares-p6-parcel-conflicts.mjs';
 import {observeP6ParcelReshapes} from './ares-p6-parcel-reshapes.mjs';
@@ -87,6 +87,8 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  if(relocationCompatibility.status!=='relocation-compatibility-observed')return refuse('relocation-compatibility-observation-refused',{reason:relocationCompatibility.reason});
  const relocationExtension=stage('relocation-extension-observation',()=>observeP6RelocationExtension(source,parcelReshapes,rigidTranslations,cooperativeParcels,relocationCompatibility,budget));
  if(relocationExtension.status!=='relocation-extension-observed')return refuse('relocation-extension-observation-refused',{reason:relocationExtension.reason});
+ const relocatedAccess=stage('relocated-access-observation',()=>observeP6RelocatedAccess(source,extraction,parcelReshapes,rigidTranslations,relocationExtension,budget));
+ if(relocatedAccess.status!=='relocated-access-observed')return refuse('relocated-access-observation-refused',{reason:relocatedAccess.reason});
  // This is only the legacy mapped-block snapshot, NOT rebuilt land.
  const snapshot=stage('diagnostic-snapshot',()=>{
   budget.spend(Math.max(1,identity.preserved.length+identity.changed.length+candidate.nodesById.size+candidate.roadsById.size));
@@ -102,6 +104,6 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  }
  const districts=check('district-diagnostic',!!source.districtState,validateP6BudgetedDistricts);
  const defenses=check('defense-diagnostic',!!source.fortificationState,validateP6BudgetedDefenses);
- return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,blockOwnership,blockLabels,affectedProperties,propertyAudit,propertyFit,parcelReshapes,parcelConflicts,cooperativeParcels,sameFrontageAccess,alternativeFrontages,fixedBuildings,rigidTranslations,relocationCompatibility,relocationExtension,districts,defenses,
+ return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,blockOwnership,blockLabels,affectedProperties,propertyAudit,propertyFit,parcelReshapes,parcelConflicts,cooperativeParcels,sameFrontageAccess,alternativeFrontages,fixedBuildings,rigidTranslations,relocationCompatibility,relocationExtension,relocatedAccess,districts,defenses,
   limitations:['no-independent-road-authorization','no-rebuilt-land','no-mixed-landscape','no-apply']};
 }
