@@ -3,13 +3,15 @@ import {createHash} from 'node:crypto';
 import {createProject} from '../../../src/core/city-model.js';
 import {generateSurvey} from '../../../src/generators/survey.js';
 import {findCityCenter,insideOrOn,clearance} from '../../../src/core/boundary.js';
+import {generateLayout} from '../../../src/generators/layout.js';
+import {validateLayout} from '../../../src/core/validate-layout.js';
 import {generateSquarelessLayout} from './squareless-layout.mjs';
 import {validateSquarelessLayout} from './squareless-layout-validation.mjs';
 import {generateBuildings} from '../../../src/generators/buildings.js';
 import {validateDevelopment} from '../../../src/core/validate-development.js';
 import {generateDistricts} from '../../../src/generators/districts.js';
 import {prepareWater} from '../../../src/generators/water.js';
-import {validateWaterCity} from '../../../src/core/water-model.js';
+import {validateWaterDefinition} from '../../../src/core/water-model.js';
 import {validateTerrainCity} from '../../../src/core/terrain-model.js';
 import {stampRoadGenerated} from '../../../src/core/road-provenance.js';
 import {migrateSchema9ProjectS10,hydrateProjectS10} from '../../../src/core/building-project-s10.js';
@@ -38,14 +40,38 @@ function surveyFor(r){
 // Independent experimental generation; a failed control cannot prevent
 // the experimental arm from being measured. Same dry generation stages
 // and canonical migrations, but never a valid persisted squareless save.
-function squareless(r,survey){
- const center=survey.anchors[0],water=prepareWater(),l=generateSquarelessLayout(r.seed,r.size,survey,r.morphology);
- validateSquarelessLayout(l,survey.boundary);
+function detachedDryLandscape(city){
+ // Existing water city validator dereferences mandatory plaza.center before
+ // its dry early return. Reproduce its dry-only checks with the survey
+ // anchor instead. Wet/terrain fixtures are not admitted by this adapter.
+ const state=city.waterState;
+ if(!state||state.version!==1||state.status!=='dry'||typeof state.seed!=='string'||state.seed.length>64||state.algorithm!=='ribbon-v1')throw Error('Invalid detached dry water state.');
+ for(const k of ['waterFeatures','bridges','waterFaces','terrainFeatures','terrainPasses','terrainFaces'])if(!Array.isArray(city[k])||city[k].length)throw Error('Detached trial is dry only.');
+ validateWaterDefinition(city.waterFeatures,city.bridges,city.survey.boundary,city.survey.anchors[0]);
+ if(city.roads.some(r=>r.waterBoundary||r.bridgeId||r.bank))throw Error('Dry cities cannot contain water topology.');
+ validateTerrainCity(city);
+}
+const hubId='BLK-TRIAL-HUB';
+function squareless(r,survey,adaptive=false){
+ const center=survey.anchors[0],water=prepareWater();
+ let l=adaptive?generateLayout(r.seed,r.size,survey,r.morphology):generateSquarelessLayout(r.seed,r.size,survey,r.morphology);
+ if(adaptive)validateLayout(l,survey.boundary);else validateSquarelessLayout(l,survey.boundary);
  const dev=generateBuildings(r.seed,l);validateDevelopment(l,dev);
+ if(adaptive){
+  if(r.morphology!=='radial'||!l.plaza)throw Error('Adaptive hub only allowed for radial trial.');
+  const {plaza,...rest}=l;
+  // Retain EXACT original perimeter/vertices and all surrounding land.
+  // Represent hub as undeveloped ordinary block, not a protected plaza.
+  // No new properties/buildings are generated on the reserved hub.
+  l={...rest,roads:rest.roads.map(x=>x.plaza?{...x,plaza:false}:x),blocks:[...rest.blocks,{id:hubId,vertices:[...plaza.vertices],area:plaza.area,ring:0,sector:rest.blocks.length,usage:'unassigned'}]};
+  dev.openSpaces.push({id:'OPEN-'+hubId,blockId:hubId,kind:'undeveloped',area:plaza.area});
+  validateSquarelessLayout(l,survey.boundary);
+  if(dev.properties.some(x=>x.blockId===hubId)||dev.buildings.some(x=>x.blockId===hubId))throw Error('Adaptive hub developed.');
+ }
  if(Object.hasOwn(l,'plaza')||l.roads.some(x=>x.plaza))throw Error('Experimental plaza survived.');
  let city={id:'city-'+r.seed.slice(0,24),name:'Trial '+r.id,survey,waterState:water.state,waterFeatures:[],bridges:[],terrainFeatures:[],terrainPasses:[],
   ...l,...dev,districts:[],districtState:{version:1,status:'unassigned'},walls:[],gates:[],towers:[],fortificationState:{version:1,status:'unbuilt',enabled:false}};
- validateWaterCity(city);validateTerrainCity(city);
+ detachedDryLandscape(city);
  city=generateDistricts(city,{seed:r.seed,count:'auto'});
  const plots=new Map(city.plots.map(p=>[p.id,p]));
  for(const p of city.properties)stampRoadGenerated(p,p.plotIds.map(id=>plots.get(id)));
@@ -64,17 +90,20 @@ export function materializeSquareTournamentArm(id,arm){
   return p;
  }
  if(arm==='experimental')return squareless(r,survey);
+ if(arm==='adaptive'&&r.morphology==='radial')return squareless(r,survey,true);
  throw Error('Unknown square tournament arm.');
 }
 function inventory(r,arm,target){
  let project;
- try{project=materializeSquareTournamentArm(r.id,arm);}catch(e){return {status:'generation-refused',reason:e.message};}
+ try{project=materializeSquareTournamentArm(r.id,arm);}catch(e){if(e instanceof TypeError||e instanceof ReferenceError||e instanceof SyntaxError)throw e;return {status:'generation-refused',reason:e.message};}
  const source=hash(project),g=buildRoadGraph(project.city);
  if(!g.valid)return {status:'graph-refused',source,issues:g.issues.map(x=>x.code)};
  const selection=selectSquareTrialChain(g,target,r.count);
  const protectedRoads=[...g.roadsById.values()].filter(x=>g.roadClasses.get(x.id).protected);
  if(hash(project)!==source)throw Error('Tournament selection mutated source.');
- return {status:selection.status,source,selection,nodes:g.nodesById.size,roads:g.roadsById.size,blocks:project.city.blocks.length,
+ const hub=arm==='adaptive'?project.city.blocks.find(x=>x.id===hubId):null;
+ if(arm==='adaptive'&&!hub)throw Error('Missing adaptive hub.');
+ return {status:selection.status,source,selection,...(hub?{hub:{id:hub.id,vertices:hub.vertices,area:hub.area,roadIds:project.city.roads.filter(r=>hub.vertices.some((v,i)=>{const n=hub.vertices[(i+1)%hub.vertices.length];return r.a===v&&r.b===n||r.b===v&&r.a===n;})).map(r=>r.id)}}:{}),nodes:g.nodesById.size,roads:g.roadsById.size,blocks:project.city.blocks.length,
   properties:project.city.properties.length,buildings:project.city.buildings.length,protectedRoads:protectedRoads.length,
   protectedNodes:new Set(protectedRoads.flatMap(x=>[x.a,x.b])).size,maxDegree:Math.max(...[...g.adjacency.values()].map(x=>x.length))};
 }
@@ -84,5 +113,7 @@ export function inventorySquareTournament(id){
  const c=inventory(r,'control',target),e=inventory(r,'experimental',target),a=c.selection,b=e.selection;
  const separation=a?.centroid&&b?.centroid?Math.hypot(a.centroid.x-b.centroid.x,a.centroid.y-b.centroid.y):null;
  const matched=c.status==='selected'&&e.status==='selected'&&separation<=scale*.25&&a.distance<=scale*.55&&b.distance<=scale*.55&&Math.max(a.length,b.length)<=2*Math.min(a.length,b.length);
- return riFreeze({id,recipe:r,survey:hash(survey),target,matched,separation,control:c,experimental:e,authority:'none',recovery:'not-run'});
+ const adaptive=r.morphology==='radial'?inventory(r,'adaptive',target):null;
+ const match=(x,y)=>x.status==='selected'&&y.status==='selected'&&Math.hypot(x.selection.centroid.x-y.selection.centroid.x,x.selection.centroid.y-y.selection.centroid.y)<=scale*.25&&x.selection.distance<=scale*.55&&y.selection.distance<=scale*.55&&Math.max(x.selection.length,y.selection.length)<=2*Math.min(x.selection.length,y.selection.length);
+ return riFreeze({id,recipe:r,survey:hash(survey),target,matched,separation,control:c,experimental:e,...(adaptive?{adaptive,adaptiveMatchedControl:match(c,adaptive),adaptiveMatchedExperimental:match(e,adaptive)}:{}),authority:'none',recovery:'not-run'});
 }
