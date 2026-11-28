@@ -194,3 +194,18 @@ export function* hybridTrials(graph,rows,positions,report,offset,budget,telemetr
     if(!minimumRecipe&&!emitted&&round>=6)break;
   }
 }
+
+// Detached Stage 2E seed generation only. The caller owns the root and
+// validates the frozen cover, eligibility, cap and all resulting geometry.
+// Existing hybridTrials scheduling and historical experiments are unchanged.
+export function combinedCoverTrial(graph,positions,ids,pairs,offset,variant,budget,prior=null){
+  if(!ids.length||ids.length>4||new Set(ids).size!==ids.length)throw Error('Invalid combined cover.');
+  const points=prior?new Map(prior):seed(graph,ids,offset,variant,budget);
+  project(graph,positions,points,ids,pairs,offset,variant,budget);
+  const limit=Math.hypot(offset.x,offset.y);
+  for(const id of ids){
+    budget.spend(4);const old=graph.nodesById.get(id),p=points.get(id);
+    if(p.x===old.x&&p.y===old.y)points.set(id,clamp(old,{x:old.x+offset.x*.001,y:old.y+offset.y*.001},limit));
+  }
+  return points;
+}
