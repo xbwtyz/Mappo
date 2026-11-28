@@ -2,7 +2,7 @@
 // Every existing building is held fixed in this pass. No assignment or Apply.
 import {shapeWellFormed,shapeContained} from '../../../src/core/building-validation.js';
 import {propertyFits,STREET_WIDTHS,STREET_EDGE_WIDTH,PROPERTY_SETBACK} from '../../../src/core/placement.js';
-import {classifyLareProperty} from '../../../src/core/reconciliation-policy.js';
+import {classifyLareProperty,classifyLareBuilding} from '../../../src/core/reconciliation-policy.js';
 import {larePlotAdjacency,verifyLarePlotDeformation} from '../../../src/core/reconciliation-plots.js';
 import {LareBudgetExceeded,LARE_LIMITS} from '../../../src/core/reconciliation-budget.js';
 import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
@@ -18,6 +18,14 @@ export function observeP6ParcelReshapes(source,extraction,fit,b){
  const index=(records,field='id')=>{const map=new Map();for(const r of records){b.spend();const key=r[field];if(typeof key!=='string'||map.has(key))return null;map.set(key,r);}return map;};
  const properties=index(source.properties),plots=index(source.plots),buildings=index(source.buildings),faces=index(extraction.faces.filter(f=>f.kind==='block'),'key');
  if(!properties||!plots||!buildings||!faces)return refuse('duplicate-inventory');
+ const dependent=new Set();
+ for(const building of buildings.values()){
+  b.spend();const g=building.geometry?.courtyardAccess;
+  if(g){dependent.add(building.id);for(const o of g.occupants??[]){b.spend();dependent.add(o.buildingId);}}
+ }
+ for(const p of properties.values())for(const c of p.buildingCompounds??[]){
+  b.spend();for(const id of c.memberBuildingIds??[]){b.spend();dependent.add(id);}
+ }
  const rows=[],seen=new Set(),counts={worldPreserved:0,reshaped:0,noCandidate:0,protected:0,unsupported:0};
  for(const item of fit.rows){
   b.spend();const p=properties.get(item.id);
@@ -27,14 +35,17 @@ export function observeP6ParcelReshapes(source,extraction,fit,b){
   for(const id of p.plotIds){b.spend();const plot=plots.get(id);if(!plot||plot.propertyId!==p.id)return refuse('invalid-plot-owner');own.push(plot);}
   aresReplayJson([p,own],b);
   const policy=classifyLareProperty(p,own);
-  const row={id:p.id,policy,options:[],attempts:0,rejections:{frontage:0,boundary:0,setback:0,fixedBuilding:0,plotTiling:0},classification:'noCandidate'};
+  const row={id:p.id,policy,options:[],conditionalOptions:[],attempts:0,rejections:{frontage:0,boundary:0,setback:0,fixedBuilding:0,plotTiling:0},classification:'noCandidate'};
   const finish=classification=>{row.classification=classification;counts[classification]++;rows.push(row);};
   if(policy.mode!=='adaptive'){finish('protected');continue;}
-  let supported=true;
+  let supported=true,allMovable=p.buildingIds.length>0&&!p.buildingCompounds?.length;
   for(const id of p.buildingIds){
    b.spend();const building=buildings.get(id);
    if(!building||building.propertyId!==p.id)return refuse('invalid-building-owner');
+   aresReplayJson(building,b);
    const regions=building.geometry?.regions;
+   const permission=classifyLareBuilding(building,policy,dependent.has(id));
+   if(permission.mode!=='rigid'||permission.provenance!=='generated'||regions?.length!==1||regions[0].kind!=='solid'||regions[0].parentId!==null||building.components?.length!==1)allMovable=false;
    if(!Array.isArray(regions)||!regions.length){supported=false;continue;}
    for(const region of regions){
     b.spend();const ring=region.ring,n=Array.isArray(ring)?ring.length:0;
@@ -85,11 +96,13 @@ export function observeP6ParcelReshapes(source,extraction,fit,b){
     if(l.u< -eps||r.u>length+eps||r.u-l.u<minWidth-eps||Math.abs(l.v-r.v)>1e-5||l.v<setback-eps){row.rejections.frontage++;return false;}
     if(!shapeWellFormed(boundary)||!shapeContained(boundary,points)){row.rejections.boundary++;return false;}
     if(!propertyFits(boundary,points,streetEdges)){row.rejections.setback++;return false;}
-    if(fixed.some(ring=>!shapeContained(ring,boundary))){row.rejections.fixedBuilding++;return false;}
+    const obstructed=fixed.some(ring=>!shapeContained(ring,boundary));
+    if(obstructed){row.rejections.fixedBuilding++;if(!allMovable||row.conditionalOptions.length>=LARE_LIMITS.parcelCandidates)return false;}
     const next=own.map(q=>({...q,boundary:q.boundary.map(map)}));
     try{verifyLarePlotDeformation(boundary,own,next,b,adjacency);}
-    catch(error){if(error instanceof LareBudgetExceeded)throw error;row.rejections.plotTiling++;return false;}
+    catch(error){if(error instanceof LareBudgetExceeded)throw error;if(!obstructed)row.rejections.plotTiling++;return false;}
     const geometry={key:option.key,family,boundary,plots:next.map(q=>({id:q.id,boundary:q.boundary})),frontageRoadId:p.frontageRoadId,authority:'none'};
+    if(obstructed){row.conditionalOptions.push({...geometry,requiresRigidPlacement:true});return false;}
     row.options.push(geometry);return true;
    };
    // Preserve exact coordinates and plot layout first. Do not speculate

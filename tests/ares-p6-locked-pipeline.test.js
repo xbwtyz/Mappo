@@ -144,6 +144,19 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
   const deferredPolicy={rigid:0,fixed:0};
   for(const row of fixed.rows)if(!selectedIds.has(row.propertyId))deferredPolicy[row.permission.mode]++;
   console.log('P6_LOCKED_FIXED_BUILDINGS '+JSON.stringify({id,counts:fixed.counts,policies:fixed.policies,deferredPolicy,authority:'none'}));
+  const rigid=r.pipeline.rigidTranslations;
+  assert.equal(rigid.status,'rigid-translations-observed');assert.equal(rigid.authority,'none');assert.equal(rigid.landVerified,false);
+  for(const row of rigid.rows)if(row.witness){
+   const p=rawProperties.get(row.id),option=r.pipeline.parcelReshapes.rows.find(x=>x.id===row.id).conditionalOptions[row.witness.optionIndex];
+   assert.deepEqual(row.witness.buildings.map(b=>b.id),p.buildingIds);
+   for(const b of row.witness.buildings){
+    const original=source.buildings.find(x=>x.id===b.id);
+    assert.equal(b.transform.angle,0);assert.ok(Math.abs(b.area-original.area)<=.02);
+    assert.ok(shapeContained(b.geometry.regions[0].ring,option.boundary));
+    assert.ok(b.occupiedPlotIds.every(id=>p.plotIds.includes(id)));
+   }
+  }
+  console.log('P6_LOCKED_RIGID_TRANSLATIONS '+JSON.stringify({id,counts:rigid.counts,conditional:rigid.rows.reduce((n,r)=>n+r.conditionalCount,0),attempts:rigid.rows.reduce((n,r)=>n+r.attempts,0),moved:rigid.rows.reduce((n,r)=>n+(r.witness?.buildings.filter(b=>b.transform.dx!==0||b.transform.dy!==0).length??0),0),authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
   assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);

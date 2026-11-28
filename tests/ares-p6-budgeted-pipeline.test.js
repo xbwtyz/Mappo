@@ -9,6 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {observeP6RigidTranslations} from '../scripts/development/research/ares-p6-rigid-translations.mjs';
 import {observeP6FixedBuildings} from '../scripts/development/research/ares-p6-fixed-buildings.mjs';
 import {observeP6AlternativeFrontages} from '../scripts/development/research/ares-p6-alternative-frontages.mjs';
 import {observeP6SameFrontageAccess} from '../scripts/development/research/ares-p6-same-frontage-access.mjs';
@@ -65,7 +66,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,20);
+ assert.equal(result.ledger.length,21);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -261,6 +262,12 @@ function verify(source,candidate,legacy,extraction,label){
  }
  assert.throws(()=>observeP6FixedBuildings(source,reshapes,cooperative,root(1)),LareBudgetExceeded);
  console.log('P6_FIXED_BUILDINGS '+JSON.stringify({label,counts:fixed.counts,policies:fixed.policies,authority:'none'}));
+ const rigid=result.rigidTranslations;
+ assert.equal(rigid.status,'rigid-translations-observed');assert.equal(rigid.authority,'none');assert.equal(rigid.landVerified,false);
+ assert.equal(Object.values(rigid.counts).reduce((n,v)=>n+v,0),reshapes.rows.length);
+ for(const row of rigid.rows)if(row.witness){assert.ok(row.witness.buildings.some(b=>b.transform.dx!==0||b.transform.dy!==0));assert.equal(row.witness.access,'not-verified');}
+ assert.throws(()=>observeP6RigidTranslations(source,reshapes,fixed,root(1)),LareBudgetExceeded);
+ console.log('P6_RIGID_TRANSLATIONS '+JSON.stringify({label,counts:rigid.counts,conditional:rigid.rows.reduce((n,r)=>n+r.conditionalCount,0),attempts:rigid.rows.reduce((n,r)=>n+r.attempts,0),authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
@@ -436,4 +443,30 @@ test('P6 fixed building occupancy distinguishes retained geometry, plot referenc
  const {roadProvenance:stamp,...authored}=building;assert.ok(stamp);
  assert.equal(run(reshapes,cooperative,{...source,buildings:[authored]}).rows[0].permission.mode,'fixed');
  assert.equal(JSON.stringify(source),before);
+});
+
+test('P6 conditional parcel enables rigid translation without authorizing protected buildings',()=>{
+ const rect=(x,y,w,d)=>[{x,y},{x:x+w,y},{x:x+w,y:y+d},{x,y:y+d}];
+ const p={id:'p',blockId:'old',plotIds:['q'],buildingIds:['b'],frontageRoadId:'r0',boundary:rect(10,2,20,12)};
+ const q={id:'q',propertyId:'p',blockId:'old',frontageRoadId:'r0',boundary:p.boundary};
+ stampRoadGenerated(p,[q]);
+ const door={x:13,y:2.2};
+ const building={id:'b',blockId:'old',propertyId:'p',plotIds:['q'],frontageRoadId:'r0',geometry:{version:1,regions:[{id:'reg',parentId:null,kind:'solid',componentId:'comp',ring:rect(12,2.2,2,2)}]},components:[{id:'comp',parentId:null,name:'Main'}],entrance:door,orientation:0,area:4,accessPath:[door,{x:13,y:0}]};
+ stampRoadGenerated(building);
+ const face={kind:'block',key:'face',polygon:rect(0,0,60,40),roadIds:['r0','r1','r2','r3']};
+ const extraction={valid:true,faces:[face],graph:{roadsById:new Map(face.roadIds.map(id=>[id,{id,kind:'lane'}]))}};
+ const fit={status:'property-fit-observed',authority:'none',rows:[{id:'p',oldBlockId:'old',options:[{key:'face',originalFrontagePresent:true}]}]};
+ const cooperative={status:'cooperative-parcels-observed',authority:'none',selected:[],unresolved:['p']};
+ const source={properties:[p],plots:[q],buildings:[building]},before=JSON.stringify(source);
+ const reshapes=observeP6ParcelReshapes(source,extraction,fit,root(8000000));
+ assert.equal(reshapes.rows[0].options.length,0);assert.ok(reshapes.rows[0].conditionalOptions.length>0);
+ const fixed=observeP6FixedBuildings(source,reshapes,cooperative,root(8000000));
+ const result=observeP6RigidTranslations(source,reshapes,fixed,root(8000000));
+ assert.equal(result.rows[0].classification,'placementObserved');
+ const moved=result.rows[0].witness.buildings[0];assert.equal(moved.area,4);assert.deepEqual(moved.occupiedPlotIds,['q']);assert.equal(moved.transform.angle,0);
+ assert.equal(result.rows[0].witness.access,'not-verified');assert.equal(JSON.stringify(source),before);
+ const {roadProvenance:stamp,...authored}=building;assert.ok(stamp);
+ const protectedSource={...source,buildings:[authored]};
+ assert.equal(observeP6ParcelReshapes(protectedSource,extraction,fit,root(8000000)).rows[0].conditionalOptions.length,0);
+ assert.equal(observeP6RigidTranslations(protectedSource,reshapes,fixed,root(8000000)).rows[0].classification,'protected');
 });
