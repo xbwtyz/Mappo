@@ -93,3 +93,6 @@ export function enumerateGSlots(){
     rows.push({id:[city.id,group.id,magnitude,direction.id].join(':'),city:city.id,group:group.id,magnitude,direction:direction.id,offset:{x:magnitude*direction.x,y:magnitude*direction.y}});
   return riFreeze(rows);
 }
+
+// Shared input-selection primitive only; no solver, permit or altered G recipe.
+export { selection as selectGCorpusGroup };
