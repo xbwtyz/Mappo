@@ -9,6 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {observeP6RelocationCompatibility} from '../scripts/development/research/ares-p6-relocation-compatibility.mjs';
 import {observeP6RigidTranslations} from '../scripts/development/research/ares-p6-rigid-translations.mjs';
 import {observeP6FixedBuildings} from '../scripts/development/research/ares-p6-fixed-buildings.mjs';
 import {observeP6AlternativeFrontages} from '../scripts/development/research/ares-p6-alternative-frontages.mjs';
@@ -66,7 +67,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,21);
+ assert.equal(result.ledger.length,22);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -268,6 +269,13 @@ function verify(source,candidate,legacy,extraction,label){
  for(const row of rigid.rows)if(row.witness){assert.ok(row.witness.buildings.some(b=>b.transform.dx!==0||b.transform.dy!==0||b.transform.angle!==0));assert.equal(row.witness.access,'not-verified');}
  assert.throws(()=>observeP6RigidTranslations(source,reshapes,fixed,root(1)),LareBudgetExceeded);
  console.log('P6_RIGID_TRANSLATIONS '+JSON.stringify({label,counts:rigid.counts,conditional:rigid.rows.reduce((n,r)=>n+r.conditionalCount,0),attempts:rigid.rows.reduce((n,r)=>n+r.attempts,0),authority:'none'}));
+ const compatibility=result.relocationCompatibility;
+ assert.equal(compatibility.status,'relocation-compatibility-observed');assert.equal(compatibility.authority,'none');assert.equal(compatibility.landVerified,false);
+ assert.equal(compatibility.counts.relocationCandidates,rigid.rows.filter(r=>r.witness).length);
+ assert.equal(compatibility.counts.selectedOrdinary+compatibility.counts.selectedRelocated,compatibility.cooperative.selected.length);
+ assert.equal(compatibility.access,'not-verified');
+ assert.throws(()=>observeP6RelocationCompatibility(source,reshapes,rigid,root(1)),LareBudgetExceeded);
+ console.log('P6_RELOCATION_COMPATIBILITY '+JSON.stringify({label,counts:compatibility.counts,selection:compatibility.cooperative.selection,reason:compatibility.cooperative.reason,authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
@@ -488,4 +496,21 @@ test('P6 rigid fallback rotates an otherwise too-wide building without scaling',
  const placed=row.witness.buildings[0];assert.ok(Math.abs(Math.abs(placed.transform.angle)-Math.PI/2)<1e-6);
  assert.ok(Math.abs(placed.area-building.area)<1e-6);assert.ok(shapeContained(placed.geometry.regions[0].ring,boundary));assert.deepEqual(placed.occupiedPlotIds,['q']);
  assert.equal(JSON.stringify(source),before);assert.deepEqual(observeP6RigidTranslations(source,reshapes,fixed,root(8000000)),result);
+});
+
+test('P6 combined relocation compatibility retains unresolved obstacles and rejects overlapping proposals',()=>{
+ const rect=(x,y,w,d)=>[{x,y},{x:x+w,y},{x:x+w,y:y+d},{x,y:y+d}];
+ const source={properties:[{id:'a',buildingIds:[],frontageRoadId:'r',boundary:rect(0,0,10,10)},{id:'b',buildingIds:['house'],frontageRoadId:'r',boundary:rect(20,0,10,10)},{id:'u',buildingIds:[],frontageRoadId:'r',boundary:rect(40,0,10,10)}]};
+ const ordinary={key:'face',family:'world-preserved',authority:'none',boundary:source.properties[0].boundary};
+ const conditional=x=>({key:'face',family:'positive-affine',authority:'none',requiresRigidPlacement:true,frontageRoadId:'r',boundary:rect(x,0,10,10)});
+ const run=x=>{
+  const reshapes={status:'parcel-reshape-observed',authority:'none',rows:[{id:'a',options:[ordinary]},{id:'b',options:[],conditionalOptions:[conditional(x)]},{id:'u',options:[]}]};
+  const witness={optionIndex:0,key:'face',authority:'none',access:'not-verified',buildings:[{id:'house',authority:'none',geometry:{regions:[{ring:rect(x+1,1,2,2)}]}}]};
+  const rigid={status:'rigid-translations-observed',authority:'none',rows:[{id:'a',witness:null},{id:'b',classification:'placementObserved',witness},{id:'u',witness:null}]};
+  const before=JSON.stringify([source,reshapes,rigid]),result=observeP6RelocationCompatibility(source,reshapes,rigid,root(8000000));
+  assert.equal(JSON.stringify([source,reshapes,rigid]),before);return result;
+ };
+ const good=run(22);assert.equal(good.counts.selectedRelocated,1);assert.equal(good.counts.selectedOrdinary,1);assert.deepEqual(good.cooperative.unresolved,['u']);assert.equal(good.landVerified,false);
+ const pair=run(5);assert.equal(pair.counts.relocationPairConflicts,1);assert.equal(pair.cooperative.selection,'no-selection');
+ const unresolved=run(42);assert.equal(unresolved.counts.relocationUnresolvedContact,1);assert.equal(unresolved.cooperative.reason,'blocked-owner');assert.deepEqual(unresolved.cooperative.selected,[]);
 });

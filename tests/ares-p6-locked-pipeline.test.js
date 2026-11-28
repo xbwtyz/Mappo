@@ -161,6 +161,12 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
   assert.ok(rigid.rows.filter(row=>row.witness?.phase==='translation').every(row=>row.rotationAttempts===0));
   console.log('P6_LOCKED_RIGID_ROTATION_FALLBACK '+JSON.stringify({id,translation:rigid.rows.filter(row=>row.witness?.phase==='translation').length,rotation:rigid.rows.filter(row=>row.witness?.phase==='rotation').length,rotationAttempts:rigid.rows.reduce((n,r)=>n+r.rotationAttempts,0),authority:'none'}));
   console.log('P6_LOCKED_RIGID_TRANSLATIONS '+JSON.stringify({id,counts:rigid.counts,conditional:rigid.rows.reduce((n,r)=>n+r.conditionalCount,0),attempts:rigid.rows.reduce((n,r)=>n+r.attempts,0),moved:rigid.rows.reduce((n,r)=>n+(r.witness?.buildings.filter(b=>b.transform.dx!==0||b.transform.dy!==0).length??0),0),authority:'none'}));
+  const compatibility=r.pipeline.relocationCompatibility;
+  assert.equal(compatibility.status,'relocation-compatibility-observed');assert.equal(compatibility.authority,'none');assert.equal(compatibility.landVerified,false);
+  assert.equal(compatibility.counts.relocationCandidates,16);assert.equal(compatibility.counts.ordinaryCandidates,32);
+  assert.equal(compatibility.counts.selectedOrdinary+compatibility.counts.selectedRelocated,compatibility.cooperative.selected.length);
+  assert.equal(compatibility.access,'not-verified');
+  console.log('P6_LOCKED_RELOCATION_COMPATIBILITY '+JSON.stringify({id,counts:compatibility.counts,selection:compatibility.cooperative.selection,reason:compatibility.cooperative.reason,unresolved:compatibility.cooperative.unresolved.length,authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
   assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);
