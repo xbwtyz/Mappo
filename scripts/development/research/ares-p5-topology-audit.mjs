@@ -1,0 +1,207 @@
+import {createHash} from 'node:crypto';
+import {materializeLockedRtreCase,lockedRtreCase} from './ares-rtre-locked-recipes.mjs';
+import {inspectFreshRtreNeighborhood} from './ares-rtre-fresh-neighborhood.mjs';
+import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
+import {iterateRoadGraph,classifyRoad} from '../../../src/core/road-graph.js';
+import {segmentCuts,insideOrOn,lerpPoint} from '../../../src/core/boundary.js';
+import {createAresLandscapeSegmentObserver} from '../../../src/core/ares-landscape-observation.js';
+import {createAresDefenseSegmentObserver} from '../../../src/core/ares-defense-observation.js';
+import {createSpatialRef,createSpatialPreservationBudget} from '../../../src/core/spatial-recovery-contract.js';
+import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
+import {riFreeze,riCompare} from '../../../src/core/road-impact-model.js';
+
+// C2 independent reconstruction: no import of P5 construction or contact
+// classifier. Shared graph/domain predicates and fresh P4 scope observer are
+// intentional; independent pair enumeration, lineage and authority checks.
+const cases=new Set(['g:radial-small:eight-loop:100:x','g:linear-medium:eight-chain:100:diagonal']);
+const nodeKeys=new Set(['id','x','y']);
+const roadKeys=new Set('id a b kind boundary plaza bank bridgeId waterBoundary foothill passId terrainBoundary'.split(' '));
+class Rejected extends Error{}
+const need=(v,code)=>{if(!v)throw new Rejected(code);};
+const point=n=>({x:n.x,y:n.y});
+const same=(a,b)=>a&&b&&Object.is(a.x,b.x)&&Object.is(a.y,b.y);
+const compare=(a,b)=>riCompare(a.id,b.id);
+const sortCharge=(n,b)=>b.spend(Math.max(1,n*Math.ceil(Math.log2(n+1))));
+const known=(row,keys,b)=>{for(const k of Object.keys(row)){b.spend();if(!keys.has(k))return false;}return true;};
+function graph(city,b){
+  b.spend(Math.max(1,city.nodes.length+city.roads.length));
+  const it=iterateRoadGraph(city);let paid=0;
+  try{for(;;){
+    const s=it.next();
+    if(s.done){if(s.value.work>paid)b.spend(s.value.work-paid);return s.value;}
+    if(s.value.stage==='road-graph-intersections'){b.spend(64);paid+=64;}else b.spend();
+  }}finally{it.return();}
+}
+function contained(a,c,outline,b){
+  const cuts=[0,1];
+  for(let i=0;i<outline.length;i++){b.spend();cuts.push(...segmentCuts(a,c,outline[i],outline[(i+1)%outline.length]));}
+  sortCharge(cuts.length,b);cuts.sort((x,y)=>x-y);
+  for(let i=0;i<cuts.length;i++){
+    b.spend(outline.length);if(!insideOrOn(lerpPoint(a,c,cuts[i]),outline))return false;
+    if(i){b.spend(outline.length);if(!insideOrOn(lerpPoint(a,c,(cuts[i-1]+cuts[i])/2),outline))return false;}
+  }
+  return true;
+}
+export async function auditP5SplitPilot(caseId,permissions,evidence){
+  if(!cases.has(caseId))throw Error('Frozen P5 C2 pilot ID required.');
+  // No caller-supplied budget or scope, no search retry. This root is
+  // independent evidence only, never a continuation of construction.
+  const b=createSpatialPreservationBudget({work:8000000,stateExpansions:32768});
+  const result={version:1,caseId,source:null,status:'unverified',reason:null,authority:'none',
+    pairComparisons:0,contacts:0,splitParents:0,finalChecks:0,sweptChecks:0,finalBlockers:[],sweptUnresolved:[]};
+  const finish=()=>riFreeze({...result,stats:b.snapshot()});
+  const eq=(x,y)=>aresReplayJson(x,b)===aresReplayJson(y,b);
+  try{
+    const required=['mode','intersection','split','merge','overlap'];
+    need(permissions&&[Object.prototype,null].includes(Object.getPrototypeOf(permissions))&&Reflect.ownKeys(permissions).length===required.length&&
+      required.every(k=>Object.hasOwn(Object.getOwnPropertyDescriptor(permissions,k)??{},'value'))&&
+      permissions.mode==='restructure'&&permissions.intersection===true&&permissions.split===true&&permissions.merge===false&&permissions.overlap===false,'permission');
+    const lock=lockedRtreCase(caseId),f=materializeLockedRtreCase(caseId),city=f.project.city;
+    const before=aresReplayJson(f.project,b),bytes=Buffer.from(before,'utf8');
+    b.spend(Math.max(1,Math.ceil(bytes.length/64)));result.source=createHash('sha256').update(bytes).digest('hex');
+    need(result.source===lock.source,'source-lock');
+    const report=await inspectFreshRtreNeighborhood(caseId,{mode:'adaptive',maxObjects:10000,maxHops:6},b);
+    need(report.snapshotFingerprint===result.source&&eq(report.context,f.context)&&
+      ['research-eligible','no-eligible-neighbors'].includes(report.status),'scope-source');
+    need(evidence&&evidence.caseId===caseId&&evidence.source===result.source&&evidence.status==='graph-candidate'&&
+      evidence.authority==='none'&&evidence.independentlyVerified===false&&evidence.attempts===1&&evidence.witness,'witness-source');
+    const w=evidence.witness;
+    need(Array.isArray(w.requested)&&Array.isArray(w.contacts)&&Array.isArray(w.lineage)&&Array.isArray(w.reservedNodeIds)&&Array.isArray(w.reservedRoadIds)&&Array.isArray(w.translatedRoadIds),'witness-shape');
+    // Check accepted graph, rebuild exact requested node positions solely
+    // from frozen operation road IDs and offset, not witness coordinates.
+    const original=graph(city,b);need(original.valid&&original.components.length===1,'source-graph');
+    const selected=new Set(f.context.operation.editedRefs.map(r=>r.id)),offset=f.context.operation.geometry.offset;
+    const requested=new Map(),fixed=new Set(city.plaza?.vertices??[]),terminal=new Set(original.terminalRoadIds);
+    for(const road of city.roads){
+      b.spend();
+      if(classifyRoad(road).protected||terminal.has(road.id)){fixed.add(road.a);fixed.add(road.b);}
+      if(selected.has(road.id))for(const id of [road.a,road.b]){
+        b.spend();const n=original.nodesById.get(id);
+        requested.set(id,{x:offset.x===0?n.x:n.x+offset.x,y:offset.y===0?n.y:n.y+offset.y});
+      }
+    }
+    for(const gate of city.gates??[]){b.spend();if(gate.connection?.cityNodeId!=null)fixed.add(gate.connection.cityNodeId);}
+    for(const k of ['waterFaces','terrainFaces'])for(const row of city[k]??[])for(const id of row.vertices??[]){b.spend();fixed.add(id);}
+    const admitted=new Map(report.entries.map(e=>[e.ref.collection+':'+e.ref.id,e]));
+    const qualified=new Set(report.eligibleJunctions.map(e=>e.ref.id));
+    b.spend(Math.max(1,admitted.size+qualified.size+requested.size));
+    const inScope=(k,id)=>{const e=admitted.get(k+':'+id);return e&&e.depth<=6;};
+    need(requested.size===w.requested.length&&requested.size===report.requested.length,'exact-intent-count');
+    const observed=new Set();
+    for(const entry of w.requested){
+      b.spend();const id=entry.ref?.id;
+      need(entry.ref.collection==='nodes'&&!observed.has(id)&&same(requested.get(id),entry.point),'exact-intent');
+      observed.add(id);
+    }
+    for(const n of report.requested){b.spend();need(same(requested.get(n.ref.id),n.point),'observer-intent');}
+    for(const id of requested.keys()){b.spend();need(inScope('nodes',id)&&!fixed.has(id)&&known(original.nodesById.get(id),nodeKeys,b),'protected-node');}
+    const nodes=city.nodes.map(n=>{b.spend();return requested.has(n.id)?{...n,...requested.get(n.id)}:{...n};});
+    const positions=new Map(nodes.map(n=>[n.id,n]));
+    const roads=[...city.roads].sort(compare),byRoad=new Map(roads.map(r=>[r.id,r]));
+    sortCharge(roads.length,b);
+    const moved=new Set();
+    for(const road of roads){b.spend();if(requested.has(road.a)||requested.has(road.b))moved.add(road.id);}
+    const scopeRoad=(road,split)=>{
+      b.spend();
+      need(inScope('roads',road.id)&&!classifyRoad(road).protected&&!terminal.has(road.id)&&known(road,roadKeys,b),'protected-or-unadmitted-road');
+      for(const id of [road.a,road.b]){
+        b.spend();need(inScope('nodes',id)&&known(original.nodesById.get(id),nodeKeys,b),'endpoint-scope');
+        if(split)need(!fixed.has(id)&&(requested.has(id)||qualified.has(id)),'split-protected-or-unqualified-endpoint');
+      }
+    };
+    for(const id of moved)scopeRoad(byRoad.get(id),false);
+    need(eq([...moved].sort(riCompare),w.translatedRoadIds),'translated-inventory');
+    // Independent all-pairs traversal over every moved/other road pair;
+    // no candidate contact list or graph diagnostic is used to seed pairs.
+    const contacts=[];
+    for(let i=0;i<roads.length;i++)for(let j=i+1;j<roads.length;j++){
+      b.spend();const r=roads[i],s=roads[j];if(!moved.has(r.id)&&!moved.has(s.id))continue;
+      result.pairComparisons++;
+      const a=positions.get(r.a),c=positions.get(r.b),d=positions.get(s.a),e=positions.get(s.b);
+      if(Math.max(a.x,c.x)+1e-6<Math.min(d.x,e.x)||Math.max(d.x,e.x)+1e-6<Math.min(a.x,c.x)||
+        Math.max(a.y,c.y)+1e-6<Math.min(d.y,e.y)||Math.max(d.y,e.y)+1e-6<Math.min(a.y,c.y))continue;
+      b.spend(16);const ab=segmentCuts(a,c,d,e),ba=segmentCuts(d,e,a,c),shared=[r.a,r.b].filter(id=>id===s.a||id===s.b);
+      if(!ab.length&&!ba.length)continue;
+      const interior=t=>t>1e-9&&t<1-1e-9;
+      if(shared.length===1&&![...ab,...ba].some(interior))continue;
+      need(!shared.length&&ab.length===1&&ba.length===1&&interior(ab[0])&&interior(ba[0]),'unsupported-contact');
+      const cross=(c.x-a.x)*(e.y-d.y)-(c.y-a.y)*(e.x-d.x);
+      need(Math.abs(cross)>1e-9,'collinear-contact');
+      const p={x:a.x+(c.x-a.x)*ab[0],y:a.y+(c.y-a.y)*ab[0]},q={x:d.x+(e.x-d.x)*ba[0],y:d.y+(e.y-d.y)*ba[0]};
+      need(Math.hypot(p.x-q.x,p.y-q.y)<=1e-7,'intersection-coordinate');
+      scopeRoad(r,true);scopeRoad(s,true);
+      contacts.push({roadIds:[r.id,s.id],point:p,parameters:[ab[0],ba[0]]});
+    }
+    sortCharge(contacts.length,b);contacts.sort((a,c)=>riCompare(JSON.stringify(a.roadIds),JSON.stringify(c.roadIds)));
+    result.contacts=contacts.length;need(contacts.length>0&&contacts.length===w.contacts.length,'contact-inventory');
+    const occupied=new Set([...original.nodesById.keys(),...original.roadsById.keys()]);
+    b.spend(Math.max(1,occupied.size));
+    function reserve(prefix,serial){
+      let id=prefix+serial,suffix=1;
+      while(occupied.has(id)){b.spend();id=prefix+serial+'-'+suffix++;}
+      b.spend();occupied.add(id);return id;
+    }
+    const additions=[],cutLists=new Map();
+    for(let i=0;i<contacts.length;i++){
+      b.spend();const c=contacts[i],claimed=w.contacts[i],id=reserve('N-P5-',i+1);
+      const node={id,...c.point};
+      need(eq(claimed,{roadIds:c.roadIds,node,parameters:c.parameters}),'contact-witness');
+      for(const n of [...nodes,...additions]){b.spend();need(Math.hypot(n.x-node.x,n.y-node.y)>1e-7,'coincident-contact');}
+      additions.push(node);
+      c.roadIds.forEach((rid,k)=>{b.spend();if(!cutLists.has(rid))cutLists.set(rid,[]);cutLists.get(rid).push({id,t:c.parameters[k]});});
+    }
+    need(eq(w.reservedNodeIds,additions.map(n=>n.id)),'node-reservations');
+    const expected=[],newIds=[],parts=new Map();let serial=0;
+    for(const road of roads){
+      b.spend();const cuts=cutLists.get(road.id);
+      if(!cuts)continue;
+      sortCharge(cuts.length,b);cuts.sort((x,y)=>x.t-y.t||riCompare(x.id,y.id));
+      need(cuts.every((c,i)=>i===0||c.t-cuts[i-1].t>1e-9),'cut-order');
+      const ids=[road.a,...cuts.map(c=>c.id),road.b],children=[];
+      for(let i=0;i<ids.length-1;i++){
+        b.spend();const id=i?reserve('RD-P5-',++serial):road.id;
+        if(i)newIds.push(id);children.push({...road,id,a:ids[i],b:ids[i+1]});
+      }
+      expected.push({parent:road.id,originalEndpoints:[road.a,road.b],children});parts.set(road.id,children);
+    }
+    result.splitParents=expected.length;
+    need(eq(w.lineage,expected)&&eq(w.reservedRoadIds,newIds),'road-lineage-or-reservation');
+    const candidate={...city,nodes:[...nodes,...additions],roads:city.roads.flatMap(r=>{b.spend();return parts.get(r.id)??[{...r}];})};
+    const rebuilt=graph(candidate,b);
+    need(rebuilt.valid&&rebuilt.components.length===1&&rebuilt.nodesById.size===original.nodesById.size+additions.length&&
+      rebuilt.roadsById.size===original.roadsById.size+newIds.length,'final-graph');
+    need(eq(w.graph,{nodes:rebuilt.nodesById.size,roads:rebuilt.roadsById.size,components:1}),'graph-evidence');
+    for(const [id,n] of original.nodesById){b.spend();need(eq(rebuilt.nodesById.get(id),requested.has(id)?{...n,...requested.get(id)}:n),'node-preservation');}
+    for(const [id,road] of original.roadsById){b.spend();need(eq(rebuilt.roadsById.get(id),parts.get(id)?.[0]??road),'road-preservation');}
+    // All non-road/non-node collections remain identical by construction.
+    for(const k of Object.keys(city)){b.spend();if(k!=='nodes'&&k!=='roads')need(candidate[k]===city[k],'outside-graph-change');}
+    const landscape=createAresLandscapeSegmentObserver(city,b),defense=createAresDefenseSegmentObserver(city,b);
+    const affected=roads.filter(r=>moved.has(r.id)||parts.has(r.id));b.spend(Math.max(1,roads.length));
+    for(const road of affected){
+      b.spend();const a=point(original.nodesById.get(road.a)),c=point(original.nodesById.get(road.b)),p=point(positions.get(road.a)),q=point(positions.get(road.b));
+      need(contained(p,q,city.survey.boundary,b),'boundary-escape');
+      const segment={ref:createSpatialRef({collection:'roads',id:road.id}),endpointRefs:[road.a,road.b].map(id=>createSpatialRef({collection:'nodes',id})),old:{a,b:c},proposed:{a:p,b:q}};
+      // Original parent corridor spans the union of all split children.
+      // Recheck each child's outline too; preserve road kind/width by lineage.
+      for(const child of parts.get(road.id)??[]){b.spend();need(contained(rebuilt.nodesById.get(child.a),rebuilt.nodesById.get(child.b),city.survey.boundary,b),'child-boundary');}
+      for(const phase of moved.has(road.id)?['final','swept']:['final']){
+        b.spend();const items=[...landscape.observe(f.context,result.source,segment,phase,b),defense.observe(f.context,result.source,segment,phase,b).constraint];
+        need(items.length===3,'constraint-inventory');
+        for(const item of items){
+          b.spend();if(phase==='final')result.finalChecks++;else result.sweptChecks++;
+          if(item.summary!=='observed-satisfied')(phase==='final'?result.finalBlockers:result.sweptUnresolved).push(item);
+        }
+      }
+    }
+    need(result.finalChecks===3*affected.length&&result.sweptChecks===3*moved.size,'constraint-coverage');
+    need(aresReplayJson(f.project,b)===before,'source-mutated');
+    aresReplayJson(result,b);
+    if(result.finalBlockers.length){result.status='rejected';result.reason='final-constraint-blocked';}
+    else{result.status='topology-final-verified';result.reason=result.sweptUnresolved.length?'swept-unresolved':null;}
+  }catch(e){
+    if(e instanceof Rejected){result.status='rejected';result.reason=e.message;}
+    else if(e instanceof LareBudgetExceeded){result.status='unverified';result.reason='work-limit';}
+    else throw e;
+  }
+  return finish();
+}
