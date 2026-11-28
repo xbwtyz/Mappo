@@ -259,6 +259,7 @@ test('P6 bounded affine parcel candidates preserve plot IDs and refuse protected
  const extraction={valid:true,faces:[face],graph:{roadsById:new Map(face.roadIds.map(id=>[id,{id,kind:'lane'}]))}};
  const fit={status:'property-fit-observed',authority:'none',rows:[{id:'p',oldBlockId:'old',options:[{key:'face',originalFrontagePresent:true}]}]};
  const source={properties:[p],plots:[q],buildings:[]};
+ assert.equal(observeP6ParcelReshapes(source,{...extraction,faces:[face,{...face}]},fit,root(8000000)).reason,'duplicate-inventory');
  const before=JSON.stringify(source),result=observeP6ParcelReshapes(source,extraction,fit,root(8000000));
  assert.equal(result.rows[0].classification,'reshaped');
  assert.ok(result.rows[0].options.every(o=>o.family==='positive-affine'&&o.plots[0].id==='q'));

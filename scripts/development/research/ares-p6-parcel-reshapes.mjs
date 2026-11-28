@@ -15,8 +15,8 @@ export function observeP6ParcelReshapes(source,extraction,fit,b){
  b.spend();
  const refuse=reason=>({status:'refused',reason,valid:false,authority:'none',landVerified:false});
  if(!extraction?.valid||fit?.status!=='property-fit-observed'||fit.authority!=='none')return refuse('unqualified-input');
- const index=records=>{const map=new Map();for(const r of records){b.spend();if(map.has(r.id))return null;map.set(r.id,r);}return map;};
- const properties=index(source.properties),plots=index(source.plots),buildings=index(source.buildings),faces=index(extraction.faces.filter(f=>f.kind==='block'));
+ const index=(records,field='id')=>{const map=new Map();for(const r of records){b.spend();const key=r[field];if(typeof key!=='string'||map.has(key))return null;map.set(key,r);}return map;};
+ const properties=index(source.properties),plots=index(source.plots),buildings=index(source.buildings),faces=index(extraction.faces.filter(f=>f.kind==='block'),'key');
  if(!properties||!plots||!buildings||!faces)return refuse('duplicate-inventory');
  const rows=[],seen=new Set(),counts={worldPreserved:0,reshaped:0,noCandidate:0,protected:0,unsupported:0};
  for(const item of fit.rows){
