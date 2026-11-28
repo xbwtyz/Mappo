@@ -1,3 +1,4 @@
+import {inspectP5IdentityLedger} from './ares-p5-topology-lineage.mjs';
 import {createHash} from 'node:crypto';
 import {materializeD4Control} from './ares-p5-topology-d4.mjs';
 import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
@@ -83,7 +84,10 @@ export function auditD4Control(id,permission,evidence){
       retainedRoadIds:f.city.roads.map(e=>e.id),graph:{nodes:final.nodesById.size,roads:final.roadsById.size,components:final.components.length}};
     need(evidence&&evidence.id===id&&evidence.source===source&&evidence.status==='graph-control-candidate'&&evidence.authority==='none'&&evidence.independentlyVerified===false&&evidence.cityRecovery===false&&evidence.attempts===1,'witness-source');
     need(eq(evidence.witness,expected),'witness-lineage');
+    const identityLedger=inspectP5IdentityLedger({kind:'synthetic-merge',original:f.city,candidate:city,
+      junctionAliases:[expected.junctionLineage]},b);
+    need(identityLedger.status==='complete','identity-ledger:'+identityLedger.reason);
     need(aresReplayJson(f,b)===before,'source-mutated');
-    return finish('graph-control-verified',null,{contacts:distinct,retainedRoads:roads.length,retiredJunctions:1});
+    return finish('graph-control-verified',null,{contacts:distinct,retainedRoads:roads.length,retiredJunctions:1,identityLedger});
   }catch(e){if(e instanceof Reject)return finish('rejected',e.message);if(e instanceof LareBudgetExceeded)return finish('unverified',e.resource);throw e;}
 }

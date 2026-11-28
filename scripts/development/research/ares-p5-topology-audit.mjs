@@ -1,3 +1,4 @@
+import {inspectP5IdentityLedger} from './ares-p5-topology-lineage.mjs';
 import {createHash} from 'node:crypto';
 import {materializeLockedRtreCase,lockedRtreCase} from './ares-rtre-locked-recipes.mjs';
 import {inspectFreshRtreNeighborhood} from './ares-rtre-fresh-neighborhood.mjs';
@@ -189,6 +190,9 @@ export async function auditP5SplitPilot(caseId,permissions,evidence){
     for(const [id,road] of original.roadsById){b.spend();need(equalP5GraphRecord(rebuilt.roadsById.get(id),parts.get(id)?.[0]??road,b),'road-preservation');}
     for(const n of additions){b.spend();need(equalP5GraphRecord(rebuilt.nodesById.get(n.id),n,b),'new-node-preservation');}
     for(const children of parts.values())for(const child of children){b.spend();need(equalP5GraphRecord(rebuilt.roadsById.get(child.id),child,b),'child-road-preservation');}
+    const identityLedger=inspectP5IdentityLedger({kind:'split',original:city,candidate,
+      splitChains:expected.map(l=>({parent:l.parent,children:l.children.map(x=>x.id)}))},b);
+    need(identityLedger.status==='complete','identity-ledger:'+identityLedger.reason);
     // All non-road/non-node collections remain identical by construction.
     for(const k of Object.keys(city)){b.spend();if(k!=='nodes'&&k!=='roads')need(candidate[k]===city[k],'outside-graph-change');}
     const landscape=createAresLandscapeSegmentObserver(city,b),defense=createAresDefenseSegmentObserver(city,b);
@@ -213,7 +217,7 @@ export async function auditP5SplitPilot(caseId,permissions,evidence){
     need(aresReplayJson(f.project,b)===before,'source-mutated');
     aresReplayJson(result,b);
     if(result.finalBlockers.length){result.status='rejected';result.reason='final-constraint-blocked';}
-    else{result.status='topology-final-verified';result.reason=result.sweptUnresolved.length?'swept-unresolved':null;}
+    else{result.status='topology-final-verified';result.reason=result.sweptUnresolved.length?'swept-unresolved':null;result.identityLedger=identityLedger;}
   }catch(e){
     if(e instanceof Rejected){result.status='rejected';result.reason=e.message;}
     else if(e instanceof LareBudgetExceeded){result.status='unverified';result.reason='work-limit';}

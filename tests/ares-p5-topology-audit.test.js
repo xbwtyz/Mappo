@@ -8,7 +8,7 @@ for(const [id,count] of [['g:radial-small:eight-loop:100:x',5],['g:linear-medium
   const c=await constructP5SplitPilot(id,permissions);
   assert.equal(c.status,'graph-candidate');
   const r=await auditP5SplitPilot(id,permissions,c);
-  console.log('ARES_P5_C2B '+JSON.stringify(r));
+  console.log('ARES_P5_EF_SPLIT '+JSON.stringify(r));
   assert.equal(r.source,c.source);assert.equal(r.authority,'none');assert.equal(r.contacts,count);
   assert.ok(r.pairComparisons>0);assert.ok(r.stats.work<=8000000);assert.ok(r.stats.expansions<=32768);
   assert.equal(r.splitParents,c.witness.lineage.length);
@@ -16,7 +16,11 @@ for(const [id,count] of [['g:radial-small:eight-loop:100:x',5],['g:linear-medium
   if(r.status==='rejected')assert.ok(['boundary-escape','child-boundary','final-constraint-blocked'].includes(r.reason));
   assert.ok(['topology-final-verified','rejected'].includes(r.status));
   if(r.status==='topology-final-verified'){
-    assert.deepEqual(r.finalBlockers,[]);assert.ok(r.finalChecks>=3*c.witness.translatedRoadIds.length);
+    assert.deepEqual(r.finalBlockers,[]);
+    const l=r.identityLedger;assert.equal(l.status,'complete');assert.equal(l.authority,'none');assert.deepEqual(l.nodes.retired,[]);assert.deepEqual(l.roads.retired,[]);
+    assert.deepEqual(l.nodes.created,[...c.witness.reservedNodeIds].sort());assert.deepEqual(l.roads.created,[...c.witness.reservedRoadIds].sort());
+    assert.equal(l.splitChains.length,c.witness.lineage.length);assert.equal(l.nodes.retained.length+l.nodes.created.length,c.witness.graph.nodes);
+    assert.equal(l.roads.retained.length+l.roads.created.length,c.witness.graph.roads);assert.ok(r.finalChecks>=3*c.witness.translatedRoadIds.length);
     assert.equal(r.sweptChecks,3*c.witness.translatedRoadIds.length);
     assert.equal(r.reason,r.sweptUnresolved.length?'swept-unresolved':null);
   }else assert.ok(r.reason);
