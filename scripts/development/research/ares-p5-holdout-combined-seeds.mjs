@@ -123,6 +123,10 @@ export async function searchHoldoutPrecisionContact(caseId){
  if(caseId!=='h:radial-16')throw Error('Frozen precision contact case required.');
  return searchCombined(caseId,true,true,false,false,REFORM_ARMS.find(x=>x.id==='c8-d100'),false,true);
 }
+export async function searchHoldoutMultiContact(caseId){
+ if(caseId!=='h:radial-12')throw Error('Frozen multi-contact case required.');
+ return searchCombined(caseId,true,true,false,false,REFORM_ARMS.find(x=>x.id==='c8-d100'),false,'multi');
+}
 async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=false,coupledAware=false,reform=null,repair=false,precision=false){
  const lock=holdoutLockedRow(caseId);
  if(!COMBINED_CASES.includes(caseId))throw Error('Frozen combined holdout case required.');
@@ -229,6 +233,73 @@ async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=
     groups.sort((a,c)=>a.length-c.length||riCompare(JSON.stringify(a),JSON.stringify(c)));
     const retained=historical.bestRotation?.neighbors??[];
     const residual=LOCAL_ANGULAR_CASES.includes(caseId)?readLocalArchive().get(caseId).bestRotation?.neighbors??[]:[];
+    if(precision==='multi'){
+     base.strategy='precision-multi-contact';base.localProbes=0;
+     const expected=[['RD-0125','RD-0356'],['RD-0125','RD-0357'],['RD-0278','RD-0286'],['RD-0286','RD-0356'],['RD-0286','RD-0357']];
+     const anchors=['N-0108','N-0109'];
+     base.multi={blockingPairs:expected,protectedAnchors:anchors,variables:[],firstProbes:0,secondProbes:0,localBoth:0,minRemaining:5,minRemainingRotationClear:5,scopeLocal:0};
+     const e=JSON.parse(readFileSync(new URL('../../../docs/research/evidence/holdout-reform-repair-46105648256-140857711740.json',import.meta.url),'utf8'));
+     if(e.run!==46105648256||e.attempt!==1||e.source!=='908acc432ab4e1a3ccc9356829c89ad74f1e52d4'||e.job!==140857711740)throw Error('Multi-contact archive identity mismatch.');
+     const row=e.rows.find(x=>x.caseId===caseId),seed=row?.best;
+     if(!seed||row.source!==lock.source||row.authority!=='none'||seed.blocking!==5||seed.contacts!==19||seed.neighbors.length!==7)throw Error('Multi-contact witness mismatch.');
+     const group=seed.neighbors.map(n=>n.id).sort(riCompare),points=new Map();
+     for(const n of seed.neighbors){b.spend(8);const old=g.nodesById.get(n.id);if(!old||old.x!==n.old.x||old.y!==n.old.y||!eligible.has(n.id)||positions.has(n.id)||!nodeOK(n.id)||Math.hypot(n.point.x-old.x,n.point.y-old.y)>displacementLimit)throw Error('Multi-contact coordinates mismatch.');points.set(n.id,n.point);}
+     const start=evaluate(group,points,'multi-contact-control');
+     if(!start||start.score!==5019||JSON.stringify(start.feedback.map(x=>x.ids))!==JSON.stringify(expected))throw Error('Multi-contact blocker inventory mismatch.');
+     if(anchors.some(id=>!fixed.has(id)||positions.has(id)||points.has(id)))throw Error('Multi-contact anchor mismatch.');
+     const pairs=expected.map(ids=>ids.map(id=>g.roadsById.get(id))),ends=pairs.map(([a,c])=>[a.a,a.b,c.a,c.b]);
+     const vars=group.filter(id=>ends.some(es=>es.includes(id)));base.multi.variables=vars;
+     const affected=new Set([...positions.keys(),...group]);
+     for(const id of [...affected])for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}
+     const now=(state,id)=>state.get(id)??positions.get(id)??g.nodesById.get(id);
+     const seenProbe=new Set(),probes=[];
+     const rank=(a,c)=>(a.remaining+a.rotation*2)-(c.remaining+c.rotation*2)||a.rotation-c.rotation||a.remaining-c.remaining||a.cost-c.cost;
+     function sample(state,variable,quota,stage){
+      if(!quota)return;
+      const lines=[],keys=new Set();
+      for(const es of ends.filter(x=>x.includes(variable))){
+       const others=es.filter(id=>id!==variable);
+       for(let i=0;i<others.length;i++)for(let j=i+1;j<others.length;j++){
+        b.spend(4);const k=JSON.stringify([others[i],others[j]].sort(riCompare));if(keys.has(k))continue;keys.add(k);lines.push([now(state,others[i]),now(state,others[j])]);
+       }
+      }
+      lines.push(...localAngularLines(g,positions,state,[...affected],variable,b));
+      let taken=0;
+      for(const p of angularLineProposals(state.get(variable),g.nodesById.get(variable),displacementLimit,lines,b)){
+       if(taken>=quota||base.localProbes>=192)break;
+       taken++;base.localProbes++;base.multi[stage+'Probes']++;b.expand();b.spend(city.survey.boundary.length);
+       if(!insideOrOn(p,city.survey.boundary)){base.multi.scopeLocal++;continue;}
+       const next=new Map(state);next.set(variable,p);
+       const key=JSON.stringify(group.map(id=>next.get(id)));if(seenProbe.has(key))continue;seenProbe.add(key);
+       let remaining=0;for(const [a,c] of pairs){b.spend(16);if(classifyP5Contact(now(next,a.a),now(next,a.b),now(next,c.a),now(next,c.b)).kind!=='none')remaining++;}
+       const pos=new Map([...positions,...next]);let rotation=0;
+       for(const id of affected){b.spend();if(!cyclicEqual(oldOrders.get(id),order(g,id,pos,b)))rotation++;}
+       base.multi.minRemaining=Math.min(base.multi.minRemaining,remaining);
+       if(!rotation)base.multi.minRemainingRotationClear=Math.min(base.multi.minRemainingRotationClear,remaining);
+       if(!remaining&&!rotation)base.multi.localBoth++;
+       const cost=group.reduce((sum,id)=>{b.spend(4);const p=next.get(id),o=points.get(id);return sum+Math.hypot(p.x-o.x,p.y-o.y);},0);
+       probes.push({points:next,variable,remaining,rotation,cost});
+      }
+     }
+     for(const v of vars)sample(points,v,Math.floor(96/Math.max(1,vars.length)),'first');
+     probes.sort(rank);const first=[],used=new Set();
+     for(const t of probes){if(used.has(t.variable))continue;used.add(t.variable);first.push(t);if(first.length===8)break;}
+     for(const t of probes){if(first.length===8)break;if(!first.includes(t))first.push(t);}
+     for(let i=0;i<first.length;i++){
+      const t=first[i],others=vars.filter(v=>v!==t.variable);
+      for(const v of others)sample(t.points,v,Math.floor((192-base.localProbes)/Math.max(1,(first.length-i)*others.length)),'second');
+     }
+     // Full graph check only for cyclic-preserving proposals; retain partial
+     // contact improvements as diagnostic evidence even if still refused.
+     probes.sort((a,c)=>a.rotation-c.rotation||a.remaining-c.remaining||a.cost-c.cost);
+     for(const t of probes){
+      if(base.attempts>=48||base.seeds.length>=2||t.rotation)break;
+      const item=evaluate(group,t.points,'multi-contact-event');
+      if(item?.score===0&&base.geometrySeeds.length<2)base.geometrySeeds.push({neighbors:group.map(id=>({id,old:point(g.nodesById.get(id)),point:point(t.points.get(id))})),attempt:base.attempts});
+     }
+     if(aresReplayJson(f.project,b)!==before)throw Error('Multi-contact source mutated.');aresReplayJson(base,b);
+     return finish(base.seeds.length?'split-seeds-found':base.geometrySeeds.length?'geometry-seeds-found':'no-split-seed');
+    }
     if(precision){
      base.strategy='precision-contact';base.localProbes=0;base.precision={localClear:0,rotationClear:0,scopeLocal:0,variables:[],blockingPair:['RD-0099','RD-0221'],protectedAnchor:'N-0089'};
      const locked=JSON.parse(readFileSync(new URL('../../../docs/research/evidence/holdout-reform-repair-46105648256-140857711740.json',import.meta.url),'utf8'));

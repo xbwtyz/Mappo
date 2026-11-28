@@ -39,3 +39,7 @@ Single reordered junction changes three or four original closed walks, and all a
 
 ## II-B exposure and precision result
 All nine dependency cases diagnosed; 114 blocks, 330 properties, 458 plots, 361 buildings exposed across nine angular witnesses, no unresolved original block edges. Exposure is not loss, actual movement, ownership or access certification. Retain the original cyclic gate pending separate downstream reconciliation decision. Radial-16 targeted one eligible endpoint, kept protected anchor fixed and produced two strict-cyclic split seeds under approved eight-neighbor/100% arm. Freeze first qualifying seed for independent construction and audit (separate existing roots); no retry. No benchmark increment until independently verified. Next diagnostics may investigate Radial-12 protected-anchor contacts without changing protection; no live/P6 approval inferred.
+
+
+## Precision audit qualified; multi-contact follow-up
+Radial-16 independently verified under eight-neighbor/100% arm with zero cyclic changes, 19 intersections and no original identities retired. Expanded 23/49, strict 21/49. Owner agreed to retain cyclic gate and original displacement allowance. Next radial-12 five-contact precision pilot uses only its existing seven neighbors and original displacement; no protected anchor movement or split permission changes. Test single and coupled variable moves under same bounded root. No P6/live approval.
