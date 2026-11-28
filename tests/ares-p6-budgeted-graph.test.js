@@ -1,0 +1,32 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createProject} from '../src/core/city-model.js';
+import {buildRoadGraph} from '../src/core/road-graph.js';
+import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
+import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
+import {buildP6BudgetedRoadGraph} from '../scripts/development/research/ares-p6-budgeted-graph.mjs';
+import {extractP6BudgetedDryFaces} from '../scripts/development/research/ares-p6-budgeted-dry-faces.mjs';
+const root=work=>createSpatialPreservationBudget({work,stateExpansions:32768});
+const comparable=g=>({...g,nodesById:[...g.nodesById],roadsById:[...g.roadsById],adjacency:[...g.adjacency],incidentRoads:[...g.incidentRoads],roadClasses:[...g.roadClasses]});
+for(const morphology of ['radial','organic','linear','planned'])test('P6 shared graph parity '+morphology,()=>{
+ const p=createProject({seed:'p6-b1a-budget-'+morphology,size:'small',morphology});
+ const before=JSON.stringify(p),b=root(8000000),g=buildP6BudgetedRoadGraph(p.city,b);
+ assert.ok(g.valid,JSON.stringify(g.issues));assert.deepEqual(comparable(g),comparable(buildRoadGraph(p.city)));
+ const graphWork=b.snapshot().work;assert.ok(graphWork>g.work);
+ const faces=extractP6BudgetedDryFaces(g,p.city,b);assert.ok(faces.valid,JSON.stringify(faces.issues));
+ const combined=b.snapshot().work;
+ assert.deepEqual(comparable(buildP6BudgetedRoadGraph(p.city,b)),comparable(g));
+ assert.equal(b.snapshot().work,combined+graphWork);
+ assert.throws(()=>buildP6BudgetedRoadGraph(p.city,root(graphWork-1)),LareBudgetExceeded);
+ const short=root(combined-1), sg=buildP6BudgetedRoadGraph(p.city,short);
+ assert.throws(()=>extractP6BudgetedDryFaces(sg,p.city,short),LareBudgetExceeded);
+ assert.equal(JSON.stringify(p),before);
+ console.log('P6_GRAPH_BUDGET '+JSON.stringify({morphology,graphWork,combined,legacyParity:true,authority:'none'}));
+});
+test('P6 graph invalid controls retain legacy diagnostics',()=>{
+ const p=createProject({seed:'p6-graph-control',size:'small',morphology:'planned'});
+ const malformed={...p.city,roads:[...p.city.roads,{...p.city.roads[0]}]};
+ const b=root(8000000),g=buildP6BudgetedRoadGraph(malformed,b);
+ assert.equal(g.valid,false);assert.deepEqual(comparable(g),comparable(buildRoadGraph(malformed)));
+ assert.throws(()=>buildP6BudgetedRoadGraph(p.city),/Shared P6 budget/);
+});
