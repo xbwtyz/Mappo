@@ -93,7 +93,7 @@ export function observeP6DryPipeline(source,candidateRoads,budget,{collective=fa
  if(relocatedAccess.status!=='relocated-access-observed')return refuse('relocated-access-observation-refused',{reason:relocatedAccess.reason});
  let assembly=stage('detached-city-assembly',()=>assembleP6DetachedCity(source,candidateRoads,extraction,{identity,blockPlan,propertyAudit,parcelReshapes,fixedBuildings,rigidTranslations,relocationExtension,relocatedAccess},budget));
  if(collective&&assembly.status==='assembly-refused'&&assembly.reason==='incomplete-land-selection'&&blockPlan.structural===0){
-  assembly=stage('collective-city-assembly',()=>tryP6CollectiveAssembly(source,candidateRoads,extraction,{identity,blockPlan,propertyAudit,propertyFit},budget));
+  assembly=stage('collective-city-assembly',()=>tryP6CollectiveAssembly(source,candidateRoads,extraction,{identity,blockPlan,propertyAudit,propertyFit,parcelReshapes,rigidTranslations,relocationExtension},budget));
  }
  // This is only the legacy mapped-block snapshot, NOT rebuilt land.
  const snapshot=stage('diagnostic-snapshot',()=>{

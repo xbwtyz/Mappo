@@ -36,6 +36,7 @@ export function observeP6ParcelReshapes(source,extraction,fit,b,{collective=fals
   aresReplayJson([p,own],b);
   const policy=classifyLareProperty(p,own);
   const row={id:p.id,policy,options:[],conditionalOptions:[],attempts:0,rejections:{frontage:0,boundary:0,setback:0,fixedBuilding:0,plotTiling:0},classification:'noCandidate'};
+  const optionCap=collective?8:LARE_LIMITS.parcelCandidates,attemptedGeometry=new Set();
   const finish=classification=>{row.classification=classification;counts[classification]++;rows.push(row);};
   if(policy.mode!=='adaptive'){finish('protected');continue;}
   let supported=true,allMovable=p.buildingIds.length>0&&!p.buildingCompounds?.length;
@@ -88,22 +89,26 @@ export function observeP6ParcelReshapes(source,extraction,fit,b,{collective=fals
    const fixedCorners=fixed.reduce((sum,r)=>sum+r.length,0),plotCorners=own.reduce((sum,r)=>sum+r.boundary.length,0);
    const streetEdges=edges.map(e=>({a:e.a,b:e.c,road:e.road}));
    const attempt=(family,map)=>{
-    if(row.options.length>=LARE_LIMITS.parcelCandidates&&(!collective||row.conditionalOptions.length>=LARE_LIMITS.parcelCandidates))return false;
+    if(row.options.length>=optionCap&&(!collective||row.conditionalOptions.length>=optionCap))return false;
     b.expand();row.attempts++;
     charge(b,8*n*n+24*n*m+8*n*fixedCorners+n+plotCorners);
     const boundary=original.map(map),l=project(boundary[0]),r=project(boundary[1]);
+    if(collective){
+     const key=JSON.stringify(boundary);charge(b,Math.ceil(Buffer.byteLength(key)/64));
+     if(attemptedGeometry.has(key))return false;attemptedGeometry.add(key);
+    }
     // First failing predicate only; retain original evaluation order.
     if(l.u< -eps||r.u>length+eps||r.u-l.u<minWidth-eps||Math.abs(l.v-r.v)>1e-5||l.v<setback-eps){row.rejections.frontage++;return false;}
     if(!shapeWellFormed(boundary)||!shapeContained(boundary,points)){row.rejections.boundary++;return false;}
     if(!propertyFits(boundary,points,streetEdges)){row.rejections.setback++;return false;}
     const obstructed=fixed.some(ring=>!shapeContained(ring,boundary));
-    if(obstructed){row.rejections.fixedBuilding++;if(!allMovable||row.conditionalOptions.length>=LARE_LIMITS.parcelCandidates)return false;}
+    if(obstructed){row.rejections.fixedBuilding++;if(!allMovable||row.conditionalOptions.length>=optionCap)return false;}
     const next=own.map(q=>({...q,boundary:q.boundary.map(map)}));
     try{verifyLarePlotDeformation(boundary,own,next,b,adjacency);}
     catch(error){if(error instanceof LareBudgetExceeded)throw error;if(!obstructed)row.rejections.plotTiling++;return false;}
     const geometry={key:option.key,family,boundary,plots:next.map(q=>({id:q.id,boundary:q.boundary})),frontageRoadId:p.frontageRoadId,authority:'none'};
     if(obstructed){row.conditionalOptions.push({...geometry,requiresRigidPlacement:true});return false;}
-    if(row.options.length<LARE_LIMITS.parcelCandidates)row.options.push(geometry);return true;
+    if(row.options.length<optionCap)row.options.push(geometry);return true;
    };
    // Preserve exact coordinates and plot layout first. Do not speculate
    // on reshapes for this face if the unchanged candidate already works.

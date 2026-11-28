@@ -45,9 +45,9 @@ export function observeP6RigidTranslations(source,reshapes,fixed,b,{collective=f
   // Exhaust the original translation pass first; never replace its witness
   // with an unnecessary rotation. The second pass is a bounded fallback.
   const foundIndices=new Set();
-  const cap=collective?Math.min(6,LARE_LIMITS.parcelCandidates):1;
+  const cap=collective?3:1,attemptLimit=collective?128:LARE_LIMITS.stateExpansions;
   for(const phase of ['translation','rotation'])for(let i=0;i<row.conditionalOptions.length&&(collective?out.witnesses.length<cap:!out.witness);i++){
-   b.spend();if(foundIndices.has(i))continue;
+   b.spend();if(out.attempts>=attemptLimit)break;if(foundIndices.has(i))continue;
    b.spend();const o=row.conditionalOptions[i];
    if(o.authority!=='none'||o.requiresRigidPlacement!==true||o.frontageRoadId!==p.frontageRoadId||!ringOK(o.boundary,b)||o.plots.length!==own.length||o.plots.some((q,j)=>q.id!==own[j].id||!ringOK(q.boundary,b)))return refuse('invalid-conditional-option');
    const target=center(o.boundary,b),placed=[];
@@ -65,7 +65,7 @@ export function observeP6RigidTranslations(source,reshapes,fixed,b,{collective=f
     const tried=new Set();
     for(const t of transforms){
      b.spend();const key=JSON.stringify(t);if(tried.has(key))continue;tried.add(key);
-     if(out.attempts>=LARE_LIMITS.stateExpansions)break;
+     if(out.attempts>=attemptLimit)break;
      b.expand();out.attempts++;if(t.angle!==0)out.rotationAttempts++;
      try{
       // Existing LARE/SRE rigid transform; prepay bounded simple-ring validation.

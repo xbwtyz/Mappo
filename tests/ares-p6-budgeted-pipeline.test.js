@@ -10,7 +10,7 @@ import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-cont
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
 import {observeP6RelocationCompatibility,observeP6RelocationExtension} from '../scripts/development/research/ares-p6-relocation-compatibility.mjs';
-import {selectP6JointArrangement} from '../scripts/development/research/ares-p6-collective-assembly.mjs';
+import {selectP6JointArrangement,focusP6JointOwners} from '../scripts/development/research/ares-p6-collective-assembly.mjs';
 import {qualifyP6RoadMovement,verifyP6AssembledRoadCity} from '../scripts/development/research/ares-p6-road-qualification.mjs';
 import {normalizeSpatialRoadGroup} from '../src/core/spatial-recovery-road-adapter.js';
 import {prepareRoadGroupReflowB1} from '../src/core/neighborhood-reflow.js';
@@ -623,4 +623,17 @@ test('P6 joint arrangement changes ordinary choice to admit a rigid relocation w
  const blocked={...source,properties:[...source.properties,{id:'fixed',boundary:rect(0)}]};
  const refused=selectP6JointArrangement(blocked,reshapes,rigid,root(8000000));assert.equal(refused.complete,false);assert.deepEqual(refused.selected,[]);
  assert.equal(JSON.stringify([source,reshapes,rigid]),before);
+});
+
+test('P6 focused collective search expands unresolved block and candidate-face neighbors only',()=>{
+ const fit={rows:[
+ {id:'a',oldBlockId:'A',options:[{key:'X'}]},
+ {id:'b',oldBlockId:'A',options:[{key:'Y'}]},
+ {id:'c',oldBlockId:'B',options:[{key:'X'}]},
+ {id:'d',oldBlockId:'C',options:[{key:'Z'}]}]};
+ const extension={unresolved:['a']},before=JSON.stringify([fit,extension]);
+ assert.deepEqual([...focusP6JointOwners(fit,extension,root(8000000))],['a','b','c']);
+ assert.equal(focusP6JointOwners(fit,{unresolved:[]},root(8000000)).size,0);
+ assert.throws(()=>focusP6JointOwners(fit,extension,root(1)),LareBudgetExceeded);
+ assert.equal(JSON.stringify([fit,extension]),before);
 });
