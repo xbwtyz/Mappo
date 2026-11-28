@@ -3,6 +3,14 @@ import {riCompare} from '../../../src/core/road-impact-model.js';
 // may enter a clause. A clause is necessary, not sufficient for feasibility.
 export function rotationCoverGroups(clauses,adj,b,cap=4){
  if(cap!==4)throw Error('Rotation cover cap must be four.');
+ return enumerateRotationCovers(clauses,adj,b,cap);
+}
+// Detached, owner-approved fixed numerical study only. Historical API remains locked.
+export function reformRotationCoverGroups(clauses,adj,b,cap){
+ if(cap!==4&&cap!==8)throw Error('Invalid reform cluster cap.');
+ return enumerateRotationCovers(clauses,adj,b,cap);
+}
+function enumerateRotationCovers(clauses,adj,b,cap){
  const unique=new Map();
  for(const c of clauses){b.spend(1+c.length);const ids=[...new Set(c)].sort(riCompare);unique.set(JSON.stringify(ids),ids);}
  const rows=[...unique.values()];b.spend(Math.max(1,rows.length*Math.ceil(Math.log2(rows.length+1))));rows.sort((a,c)=>a.length-c.length||riCompare(JSON.stringify(a),JSON.stringify(c)));

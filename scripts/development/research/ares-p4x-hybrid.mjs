@@ -199,7 +199,15 @@ export function* hybridTrials(graph,rows,positions,report,offset,budget,telemetr
 // validates the frozen cover, eligibility, cap and all resulting geometry.
 // Existing hybridTrials scheduling and historical experiments are unchanged.
 export function combinedCoverTrial(graph,positions,ids,pairs,offset,variant,budget,prior=null){
-  if(!ids.length||ids.length>4||new Set(ids).size!==ids.length)throw Error('Invalid combined cover.');
+  return boundedCombinedCoverTrial(graph,positions,ids,pairs,offset,variant,budget,prior,4);
+}
+// Fixed research arms only; exact selected coordinates remain in positions.
+export function reformCoverTrial(graph,positions,ids,pairs,offset,variant,budget,prior,cap){
+  if(cap!==4&&cap!==8)throw Error('Invalid reform cluster cap.');
+  return boundedCombinedCoverTrial(graph,positions,ids,pairs,offset,variant,budget,prior,cap);
+}
+function boundedCombinedCoverTrial(graph,positions,ids,pairs,offset,variant,budget,prior,cap){
+  if(!ids.length||ids.length>cap||new Set(ids).size!==ids.length)throw Error('Invalid combined cover.');
   const points=prior?new Map(prior):seed(graph,ids,offset,variant,budget);
   project(graph,positions,points,ids,pairs,offset,variant,budget);
   const limit=Math.hypot(offset.x,offset.y);
