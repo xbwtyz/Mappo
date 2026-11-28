@@ -1,3 +1,4 @@
+import {auditP6ExplicitInventory} from './ares-p6-inventory-audit.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {tournamentLockedRow} from './ares-p5-tournament-lock.mjs';
@@ -108,7 +109,9 @@ export async function observeP6Ownership(id){
    movedNodes:ordered(moved),changedParentRoads:ordered(changedRoads),plaza:{id:city.plaza.id,classification:'protected',geometry:'not-reconciled'},
    limits:{maxObjects:10000,maxHops:6},coverage:'explicit-references-only'};
   aresReplayJson(observation,b);
+  const inventoryAudit=limited?{status:'scope-limit',authority:'none'}:auditP6ExplicitInventory(city,w,observation,b);
+  aresReplayJson(inventoryAudit,b);
   if(aresReplayJson(f.project,b)!==before)throw Error('P6 source mutated.');
-  return finish(limited||omitted.length?'scope-incomplete':'observed',{observation});
+  return finish(limited||omitted.length?'scope-incomplete':inventoryAudit.status!=='matched'?'inventory-unverified':'observed',{observation,inventoryAudit});
  }catch(e){if(e instanceof LareBudgetExceeded)return finish('work-limit',{reason:e.resource});throw e;}
 }
