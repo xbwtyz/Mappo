@@ -138,6 +138,12 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
    assert.equal(option.authority,'none');
   }
   console.log('P6_LOCKED_ALTERNATIVE_FRONTAGES '+JSON.stringify({id,counts:alternatives.counts,options:alternatives.rows.reduce((n,r)=>n+r.options.length,0),authority:'none'}));
+  const fixed=r.pipeline.fixedBuildings;
+  assert.equal(fixed.status,'fixed-buildings-observed');assert.equal(fixed.authority,'none');assert.equal(fixed.landVerified,false);
+  assert.deepEqual(fixed.rows.map(row=>row.id).sort(),source.buildings.filter(b=>fitRows.has(b.propertyId)).map(b=>b.id).sort());
+  const deferredPolicy={rigid:0,fixed:0};
+  for(const row of fixed.rows)if(!selectedIds.has(row.propertyId))deferredPolicy[row.permission.mode]++;
+  console.log('P6_LOCKED_FIXED_BUILDINGS '+JSON.stringify({id,counts:fixed.counts,policies:fixed.policies,deferredPolicy,authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
   assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);
