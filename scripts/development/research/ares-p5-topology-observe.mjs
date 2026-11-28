@@ -100,9 +100,9 @@ function p5Graph(city,budget){
 export async function constructP5SplitPilot(caseId,input){
   if(!c1Cases.has(caseId))throw Error('Frozen P5 C1 pilot ID required.');
   const permissions=p5Permissions(input),budget=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
-  let sourceHash=null,attempts=0;
+  let sourceHash=null,attempts=0,translationEvidence=null;
   const finish=(status,reason,extra={})=>riFreeze({version:1,caseId,source:sourceHash,status,reason,attempts,
-    authority:'none',independentlyVerified:false,...extra,stats:budget.snapshot()});
+    authority:'none',independentlyVerified:false,...(translationEvidence?{translationEvidence}:{}),...extra,stats:budget.snapshot()});
   try{
     const {evidence,f,source,report}=await observeP5WithBudget(caseId,permissions,budget);
     sourceHash=evidence.source;
@@ -122,12 +122,33 @@ export async function constructP5SplitPilot(caseId,input){
     const used=new Set([...byId.keys(),...roads.keys()]);budget.spend(Math.max(1,used.size+admitted.size+requested.size));
     const admissible=road=>[road.a,road.b].every(id=>admitted.has('nodes:'+id)&&!protectedNodes.has(id)&&!opaque(byId.get(id),nodeFields,budget))&&
       admitted.has('roads:'+road.id)&&!classifyRoad(road).protected&&!terminal.has(road.id)&&!opaque(road,roadFields,budget);
-    const translated=[];
+    // Geometry-only changes may retain a stationary protected endpoint,
+    // as in the qualified P4 verifier. Never move it, split its incident
+    // protected infrastructure, or relax the separate split-road guard.
+    const translated=[],translatedBlockers=[],stationaryAnchors=[];
     for(const road of city.roads){
       budget.spend();if(!requested.has(road.a)&&!requested.has(road.b))continue;
-      if(!admissible(road))return finish('preflight-refused','translated-road-closure');
+      const reasons=[];
+      if(!admitted.has('roads:'+road.id))reasons.push('outside-scope-road');
+      if(classifyRoad(road).protected)reasons.push('protected-road');
+      if(terminal.has(road.id))reasons.push('terminal-road');
+      if(opaque(road,roadFields,budget))reasons.push('opaque-road');
+      for(const id of [road.a,road.b]){
+        budget.spend();
+        const prior=accepted.nodesById.get(id),next=byId.get(id);
+        if(!admitted.has('nodes:'+id))reasons.push('outside-scope-node:'+id);
+        if(opaque(next,nodeFields,budget))reasons.push('opaque-node:'+id);
+        if(protectedNodes.has(id)){
+          if(requested.has(id)||!samePoint(prior,next))reasons.push('protected-node-motion:'+id);
+          else stationaryAnchors.push({roadId:road.id,nodeId:id,point:p5Point(prior)});
+        }
+      }
+      if(reasons.length)translatedBlockers.push({roadId:road.id,reasons});
       translated.push(road.id);
     }
+    translationEvidence={translatedRoadIds:[...translated].sort(riCompare),stationaryAnchors,translatedBlockers};
+    aresReplayJson(translationEvidence,budget);
+    if(translatedBlockers.length)return finish('preflight-refused','translated-road-closure',{translationEvidence});
     // Reserve typed IDs deterministically from sorted contact pairs and
     // original road order. All existing IDs remain occupied throughout.
     const reserve=(prefix,i)=>{let id=prefix+i;for(let n=1;used.has(id);n++){budget.spend();id=prefix+i+'-'+n;}budget.spend();used.add(id);return id;};

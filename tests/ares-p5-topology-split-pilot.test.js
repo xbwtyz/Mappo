@@ -4,10 +4,28 @@ import {constructP5SplitPilot} from '../scripts/development/research/ares-p5-top
 const permissions={mode:'restructure',intersection:true,split:true,merge:false,overlap:false};
 for(const [id,count] of [['g:radial-small:eight-loop:100:x',5],['g:linear-medium:eight-chain:100:diagonal',9]])test('P5 C1 detached graph construction '+id,async()=>{
   const r=await constructP5SplitPilot(id,permissions);
-  console.log('ARES_P5_C1 '+JSON.stringify(r));
+  console.log('ARES_P5_C1B '+JSON.stringify(r));
   assert.equal(r.caseId,id);assert.equal(r.authority,'none');assert.equal(r.independentlyVerified,false);
   assert.ok(r.stats.work<=8000000);assert.ok(r.stats.expansions<=32768);assert.ok(r.attempts<=1);
   assert.ok(['graph-candidate','preflight-refused','candidate-refused','work-limit'].includes(r.status));
+  // A stationary protected anchor is evidence, not permission to move or split it.
+  if(r.translationEvidence){
+    const e=r.translationEvidence;
+    assert.ok(Object.isFrozen(e));assert.ok(e.translatedRoadIds.length>0);
+    assert.equal(new Set(e.translatedRoadIds).size,e.translatedRoadIds.length);
+    for(const anchor of e.stationaryAnchors){
+      assert.ok(e.translatedRoadIds.includes(anchor.roadId));
+      assert.ok(Number.isFinite(anchor.point.x)&&Number.isFinite(anchor.point.y));
+    }
+    if(e.translatedBlockers.length){assert.equal(r.status,'preflight-refused');assert.equal(r.attempts,0);}
+    if(r.witness){
+      assert.deepEqual(r.witness.translatedRoadIds,e.translatedRoadIds);
+      for(const anchor of e.stationaryAnchors){
+        assert.ok(!r.witness.requested.some(n=>n.ref.id===anchor.nodeId));
+        assert.ok(!r.witness.lineage.some(l=>l.parent===anchor.roadId));
+      }
+    }
+  }
   if(r.status==='graph-candidate'){
     assert.equal(r.attempts,1);assert.equal(r.witness.contacts.length,count);
     assert.equal(r.witness.reservedNodeIds.length,count);
