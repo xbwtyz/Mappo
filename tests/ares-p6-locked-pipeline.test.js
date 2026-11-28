@@ -167,6 +167,12 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
   assert.equal(compatibility.counts.selectedOrdinary+compatibility.counts.selectedRelocated,compatibility.cooperative.selected.length);
   assert.equal(compatibility.access,'not-verified');
   console.log('P6_LOCKED_RELOCATION_COMPATIBILITY '+JSON.stringify({id,counts:compatibility.counts,selection:compatibility.cooperative.selection,reason:compatibility.cooperative.reason,unresolved:compatibility.cooperative.unresolved.length,authority:'none'}));
+  const extension=r.pipeline.relocationExtension;
+  assert.equal(extension.status,'relocation-extension-observed');assert.equal(extension.authority,'none');assert.equal(extension.landVerified,false);
+  assert.equal(extension.counts.ordinary,32);
+  assert.equal(extension.counts.ordinary+extension.counts.relocated+extension.counts.unresolved,60);
+  assert.ok(extension.counts.relocated<=16);assert.equal(extension.access,'not-verified');
+  console.log('P6_LOCKED_RELOCATION_EXTENSION '+JSON.stringify({id,counts:extension.counts,attempts:extension.attempts,passes:extension.passes,reason:extension.reason,blocked:extension.blockers.length,authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
   assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);

@@ -9,7 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
-import {observeP6RelocationCompatibility} from '../scripts/development/research/ares-p6-relocation-compatibility.mjs';
+import {observeP6RelocationCompatibility,observeP6RelocationExtension} from '../scripts/development/research/ares-p6-relocation-compatibility.mjs';
 import {observeP6RigidTranslations} from '../scripts/development/research/ares-p6-rigid-translations.mjs';
 import {observeP6FixedBuildings} from '../scripts/development/research/ares-p6-fixed-buildings.mjs';
 import {observeP6AlternativeFrontages} from '../scripts/development/research/ares-p6-alternative-frontages.mjs';
@@ -67,7 +67,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,22);
+ assert.equal(result.ledger.length,23);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -276,6 +276,13 @@ function verify(source,candidate,legacy,extraction,label){
  assert.equal(compatibility.access,'not-verified');
  assert.throws(()=>observeP6RelocationCompatibility(source,reshapes,rigid,root(1)),LareBudgetExceeded);
  console.log('P6_RELOCATION_COMPATIBILITY '+JSON.stringify({label,counts:compatibility.counts,selection:compatibility.cooperative.selection,reason:compatibility.cooperative.reason,authority:'none'}));
+ const extension=result.relocationExtension;
+ assert.equal(extension.status,'relocation-extension-observed');assert.equal(extension.authority,'none');assert.equal(extension.landVerified,false);
+ assert.equal(extension.counts.ordinary,cooperative.selected.length);
+ assert.equal(extension.counts.ordinary+extension.counts.relocated+extension.counts.unresolved,reshapes.rows.length);
+ assert.deepEqual(extension.selected.filter(s=>s.kind==='ordinary').map(s=>s.id),cooperative.selected.map(s=>s.id).sort((a,c)=>source.properties.findIndex(p=>p.id===a)-source.properties.findIndex(p=>p.id===c)));
+ assert.throws(()=>observeP6RelocationExtension(source,reshapes,rigid,cooperative,compatibility,root(1)),LareBudgetExceeded);
+ console.log('P6_RELOCATION_EXTENSION '+JSON.stringify({label,counts:extension.counts,attempts:extension.attempts,passes:extension.passes,reason:extension.reason,authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
@@ -513,4 +520,25 @@ test('P6 combined relocation compatibility retains unresolved obstacles and reje
  const good=run(22);assert.equal(good.counts.selectedRelocated,1);assert.equal(good.counts.selectedOrdinary,1);assert.deepEqual(good.cooperative.unresolved,['u']);assert.equal(good.landVerified,false);
  const pair=run(5);assert.equal(pair.counts.relocationPairConflicts,1);assert.equal(pair.cooperative.selection,'no-selection');
  const unresolved=run(42);assert.equal(unresolved.counts.relocationUnresolvedContact,1);assert.equal(unresolved.cooperative.reason,'blocked-owner');assert.deepEqual(unresolved.cooperative.selected,[]);
+});
+
+test('P6 monotonic relocation extension preserves ordinary choices and unresolved original boundaries',()=>{
+ const rect=(x)=>[{x,y:0},{x:x+10,y:0},{x:x+10,y:10},{x,y:10}];
+ const p=(id,x,buildingIds=[])=>({id,buildingIds,frontageRoadId:'r',boundary:rect(x)});
+ const source={properties:[p('a',0),p('b',20,['house-b']),p('c',40,['house-c']),p('u',80)]};
+ const ordinaryOption={key:'face',family:'world-preserved',authority:'none',boundary:rect(0)};
+ const option=x=>({key:'face',authority:'none',requiresRigidPlacement:true,frontageRoadId:'r',boundary:rect(x)});
+ const reshapes={status:'parcel-reshape-observed',authority:'none',rows:[{id:'a',options:[ordinaryOption]},{id:'b',options:[],conditionalOptions:[option(40)]},{id:'c',options:[],conditionalOptions:[option(60)]},{id:'u',options:[]}]};
+ const witness=(id,x)=>({optionIndex:0,key:'face',authority:'none',access:'not-verified',buildings:[{id:'house-'+id,authority:'none',geometry:{regions:[{ring:rect(x)}]}}]});
+ const rigid={status:'rigid-translations-observed',authority:'none',rows:[{id:'a',witness:null},{id:'b',classification:'placementObserved',witness:witness('b',40)},{id:'c',classification:'placementObserved',witness:witness('c',60)},{id:'u',witness:null}]};
+ const ordinary={status:'cooperative-parcels-observed',authority:'none',selection:'compatible-candidate-bearing-subset',selected:[{id:'a',index:0,key:'face'}]};
+ const before=JSON.stringify([source,reshapes,rigid,ordinary]);
+ const compatibility=observeP6RelocationCompatibility(source,reshapes,rigid,root(8000000));
+ const result=observeP6RelocationExtension(source,reshapes,rigid,ordinary,compatibility,root(8000000));
+ assert.deepEqual(result.counts,{ordinary:1,relocated:2,unresolved:1});assert.deepEqual(result.selected.map(s=>s.id),['a','c','b']);assert.deepEqual(result.unresolved,['u']);assert.equal(result.passes,2);
+ const blocked={...source,properties:[...source.properties,p('fixed',60)]};
+ const noExtension=observeP6RelocationExtension(blocked,reshapes,rigid,ordinary,observeP6RelocationCompatibility(blocked,reshapes,rigid,root(8000000)),root(8000000));
+ assert.deepEqual(noExtension.counts,{ordinary:1,relocated:0,unresolved:3});assert.deepEqual(noExtension.blockers.map(r=>[r.id,r.blockers]),[['b',['c']],['c',['fixed']]]);
+ assert.equal(JSON.stringify([source,reshapes,rigid,ordinary]),before);
+ assert.equal(result.landVerified,false);assert.equal(result.access,'not-verified');
 });
