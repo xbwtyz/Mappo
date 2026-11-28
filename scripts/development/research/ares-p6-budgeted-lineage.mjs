@@ -9,13 +9,13 @@ const lineage023Compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 const lineage023CloseArea = (a, b) => Math.abs(a-b) <= Math.max(0.02,Math.max(Math.abs(a),Math.abs(b))*1e-8);
 const lineage023AllowedBlockFields = new Set(['id','vertices','area','ring','sector','usage','districtId']);
 
-export function buildP6BudgetedLineage(acceptedCity, extraction, matching, budget) {
+function computeLineage(acceptedCity, extraction, matching, budget, diagnostic) {
   if(!budget?.spend || !budget?.snapshot)throw Error('Shared P6 budget required.');
   let spent=0;
   const spend=(n=1)=>{budget.spend(n);spent+=n;};
   spend();
   const blocked=(code,message)=>({valid:false,faces:[],groups:[],reverse:[],issues:[{code,message}],workUnits:spent});
-  if(!extraction?.valid||!matching?.valid||matching.added?.length||matching.removed?.length)
+  if(!extraction?.valid||!(diagnostic ? matching?.correspondenceValid && matching.authority==='none' && matching.valid===false : matching?.valid)||matching.added?.length||matching.removed?.length)
     return blocked('lineage-unproven','Complete accepted and proposed face matches are required.');
   try {
     charge(spend,2*acceptedCity.blocks.length+2*acceptedCity.nodes.length+3*extraction.faces.length);
@@ -111,4 +111,13 @@ export function buildP6BudgetedLineage(acceptedCity, extraction, matching, budge
       reverse:[...reverse].map(([oldId,keys])=>({oldId,candidateKeys:[...keys].sort(lineage023Compare)}))
         .sort((a,b)=>lineage023Compare(a.oldId,b.oldId)),issues:[],workUnits:spent};
   }catch(error){if(error instanceof LareBudgetExceeded)throw error;return blocked('lineage-unproven',error.message);}
+}
+
+// This separate diagnostic path cannot promote correspondence to validated matching.
+export function buildP6BudgetedLineage(acceptedCity,extraction,matching,budget){
+ return computeLineage(acceptedCity,extraction,matching,budget,false);
+}
+export function observeP6BudgetedLineage(acceptedCity,extraction,correspondence,budget){
+ const result=computeLineage(acceptedCity,extraction,correspondence,budget,true);
+ return {...result,lineageValid:result.valid,valid:false,authority:'none'};
 }
