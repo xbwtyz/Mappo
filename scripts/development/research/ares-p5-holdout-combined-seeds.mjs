@@ -5,6 +5,7 @@ import {materializeLockedRtreCase} from './ares-rtre-locked-recipes.mjs';
 import {inspectFreshRtreNeighborhood} from './ares-rtre-fresh-neighborhood.mjs';
 import {combinedCoverTrial,pairsFor} from './ares-p4x-hybrid.mjs';
 import {analyticalTrials} from './ares-p4x-analytical.mjs';
+import {rotationCoverGroups,rotationTriplets,projectRotation} from './ares-p5-holdout-rotation.mjs';
 import {classifyP5Contact,P5_LIMITS} from './ares-p5-topology-contract.mjs';
 import {iterateRoadGraph,classifyRoad} from '../../../src/core/road-graph.js';
 import {insideOrOn} from '../../../src/core/boundary.js';
@@ -45,7 +46,9 @@ function cyclicEqual(a,c){if(a.length!==c.length)return false;if(!a.length)retur
 // No caller geometry, city, group, permissions, or budget. This pass
 // produces only seeds for a later separate construction and audit, never
 // a recovered city or an authority-bearing witness.
-export async function searchHoldoutCombinedSeeds(caseId){
+export async function searchHoldoutCombinedSeeds(caseId){return searchCombined(caseId,false);}
+export async function searchHoldoutRotationSeeds(caseId){return searchCombined(caseId,true);}
+async function searchCombined(caseId,rotationAware){
  const lock=holdoutLockedRow(caseId);
  if(!COMBINED_CASES.includes(caseId))throw Error('Frozen combined holdout case required.');
  const r=archive.get(caseId),b=root(),base={caseId,source:lock.source,morphology:lock.options.morphology,offset:lock.offset,authority:'none',attempts:0,rotationRefused:0,scopeRefused:0,contactRefused:0,duplicates:0,geometryOnly:0,seeds:[],best:null};
@@ -92,8 +95,8 @@ export async function searchHoldoutCombinedSeeds(caseId){
    }
    const moved=new Set(),affected=new Set(pos.keys());
    for(const id of pos.keys()){b.spend();if(!nodeOK(id)){base.scopeRefused++;return null;}for(const rid of g.incidentRoads.get(id)){b.spend();const road=g.roadsById.get(rid);if(!roadOK(road)||![road.a,road.b].every(v=>admitted.has('nodes:'+v)&&known(g.nodesById.get(v),nodeFields,b))){base.scopeRefused++;return null;}moved.add(rid);affected.add(road.a);affected.add(road.b);}}
-   let rotations=0;for(const id of affected){b.spend();if(!cyclicEqual(oldOrders.get(id),order(g,id,pos,b)))rotations++;}
-   if(rotations){base.rotationRefused++;return {score:100000+rotations,points,feedback:mandatory};}
+   const changed=[];for(const id of affected){b.spend();if(!cyclicEqual(oldOrders.get(id),order(g,id,pos,b)))changed.push(id);}
+   if(changed.length){base.rotationRefused++;if(rotationAware&&(!base.bestRotation||changed.length<base.bestRotation.count))base.bestRotation={count:changed.length,ids:changed.sort(riCompare),neighbors,arm};return {score:100000+changed.length,points,feedback:mandatory,changed};}
    const candidate={...city,nodes:city.nodes.map(n=>{b.spend();return pos.has(n.id)?{...n,...pos.get(n.id)}:n;})};
    const checked=graph(candidate,b);
    if(checked.valid){base.geometryOnly++;return {score:0,points,feedback:[]};}
@@ -114,6 +117,37 @@ export async function searchHoldoutCombinedSeeds(caseId){
   // refinement. The same root and 256 ceiling cover every evaluation.
   // Existing analytical independent-vector trials are attempted after the
   // fixed-cover stream, and never granted a larger neighborhood.
+  if(rotationAware){
+   base.strategy='rotation-aware';base.bestRotation=null;
+   const exactChanged=[];for(const id of g.nodesById.keys()){b.spend();if(!cyclicEqual(oldOrders.get(id),order(g,id,positions,b)))exactChanged.push(id);}
+   const closureOK=id=>nodeOK(id)&&[...g.incidentRoads.get(id)].every(rid=>{b.spend();const road=g.roadsById.get(rid);return roadOK(road)&&[road.a,road.b].every(v=>admitted.has('nodes:'+v)&&known(g.nodesById.get(v),nodeFields,b));});
+   const writable=new Set([...eligible].filter(id=>{b.spend();return !positions.has(id)&&closureOK(id);}));
+   base.earlyScope={eligible:eligible.size,writable:writable.size,selectedClosure:[...positions.keys()].filter(id=>!closureOK(id))};
+   const rotationClauses=exactChanged.map(id=>{b.spend();const vars=[id,...g.adjacency.get(id)];return {id,eligible:[...new Set(vars.filter(v=>writable.has(v)))].sort(riCompare)};});
+   base.baselineRotation=rotationClauses;
+   const mandatoryClauses=mandatory.map(p=>p.movable.filter(id=>writable.has(id)));
+   const adj=new Map();
+   for(const id of [...writable].sort(riCompare)){const q=[id],seen=new Set(q),next=new Set();for(const n of q)for(const v of g.adjacency.get(n)){b.spend();if(positions.has(v)&&!seen.has(v)){seen.add(v);q.push(v);}else if(v!==id&&writable.has(v))next.add(v);}adj.set(id,[...next].sort(riCompare));}
+   const cover=base.earlyScope.selectedClosure.length?{status:'selected-closure-held',groups:[],states:0}:rotationCoverGroups([...mandatoryClauses,...rotationClauses.map(c=>c.eligible)],adj,b);
+   base.rotationCover={status:cover.status,groups:cover.groups,states:cover.states,limited:cover.limited??false,emptyMandatory:mandatoryClauses.filter(c=>!c.length).length,emptyRotation:rotationClauses.filter(c=>!c.eligible.length).length};
+   const states=cover.groups.slice(0,16).map(group=>{
+    const affected=new Set(exactChanged);for(const id of [...positions.keys(),...group]){b.spend();affected.add(id);for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}}
+    return {group,triplets:rotationTriplets(g,[...affected].sort(riCompare),new Set(group),b),prior:null,feedback:mandatory,best:null};
+   });
+   // Breadth before refinement. At most 48 actual evaluations, same root.
+   // Alternate existing contact projection with angular correction.
+   for(let round=0;round<16&&base.attempts<48&&base.seeds.length<2;round++)for(const state of states){
+    if(base.attempts>=48||base.seeds.length>=2)break;
+    const {group,triplets}=state,usePrior=round%3!==0&&state.prior;
+    const points=combinedCoverTrial(g,positions,group,usePrior&&state.feedback.length?state.feedback:mandatory,lock.offset,round,b,usePrior?state.prior:null);
+    projectRotation(g,positions,points,triplets,lock.offset,round,b);
+    const item=evaluate(group,points,usePrior?'rotation-residual':'rotation-analytical');
+    if(item&&(!state.best||item.score<state.best.score)){state.best=item;state.prior=item.points;state.feedback=item.feedback;}
+   }
+   if(aresReplayJson(f.project,b)!==before)throw Error('Rotation search mutated source.');
+   aresReplayJson(base,b);
+   return finish(base.seeds.length?'split-seeds-found':cover.groups.length?'no-split-seed':'structural-held');
+  }
   let best=null;
   for(let v=0;v<24&&base.seeds.length<2;v++){
    const usePrior=v%3!==0&&prior;
