@@ -28,7 +28,7 @@ import {planP6BlockRecords} from './ares-p6-block-record-plan.mjs';
 import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
 import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
 
-export function observeP6DryPipeline(source,candidateRoads,budget,{collective=false,frontageContext=null}={}){
+export function observeP6DryPipeline(source,candidateRoads,budget,{collective=false,frontageContext=null,landscape=false}={}){
  if(!budget?.spend||!budget?.snapshot)throw Error('Shared P6 budget required.');
  const ledger=[];
  function stage(name,fn){
@@ -46,12 +46,13 @@ export function observeP6DryPipeline(source,candidateRoads,budget,{collective=fa
   return {valid:false,authority:'none',diagnosticsComplete:false,reason,ledger,...(evidence?{evidence}: {})};
  };
  if(!source||!Array.isArray(candidateRoads?.nodes)||!Array.isArray(candidateRoads?.roads))return refuse('missing-road-records');
- if(source.waterFeatures?.length||source.terrainFeatures?.length||source.waterFaces?.length||source.terrainFaces?.length)return refuse('unsupported-landscape');
+ const mixed=!!(source.waterFeatures?.length||source.terrainFeatures?.length||source.waterFaces?.length||source.terrainFaces?.length);
+ if(mixed&&!landscape)return refuse('unsupported-landscape');
  const accepted=stage('accepted-graph',()=>buildP6BudgetedRoadGraph(source,budget));
  if(!accepted.valid)return refuse('invalid-accepted-graph',{issues:accepted.issues});
  const candidate=stage('candidate-graph',()=>buildP6BudgetedRoadGraph({nodes:candidateRoads.nodes,roads:candidateRoads.roads},budget));
  if(!candidate.valid)return refuse('invalid-candidate-graph',{issues:candidate.issues});
- const extraction=stage('candidate-extraction',()=>extractP6BudgetedDryFaces(candidate,source,budget));
+ const extraction=stage('candidate-extraction',()=>extractP6BudgetedDryFaces(candidate,source,budget,{landscape:mixed}));
  if(!extraction.valid)return refuse('invalid-candidate-extraction',{issues:extraction.issues,coverage:extraction.coverage,faceCount:extraction.faces.length,smallFaces:stage('small-face-observation',()=>observeP6SmallFaceGeometry(extraction,budget))});
  const identity=stage('correspondence',()=>matchP6BudgetedIdentity(source,extraction,accepted,budget));
  if(!identity.correspondenceValid)return refuse('unproven-correspondence',{issues:identity.issues});
@@ -115,5 +116,5 @@ export function observeP6DryPipeline(source,candidateRoads,budget,{collective=fa
  const districts=check('district-diagnostic',!!source.districtState,validateP6BudgetedDistricts);
  const defenses=check('defense-diagnostic',!!source.fortificationState,validateP6BudgetedDefenses);
  return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,blockOwnership,blockLabels,affectedProperties,propertyAudit,propertyFit,parcelReshapes,parcelConflicts,cooperativeParcels,sameFrontageAccess,alternativeFrontages,fixedBuildings,rigidTranslations,relocationCompatibility,relocationExtension,relocatedAccess,assembly,districts,defenses,
-  limitations:['no-independent-road-authorization','no-rebuilt-land','no-mixed-landscape','no-apply']};
+  limitations:['no-independent-road-authorization',...(assembly.status==='candidate-assembled'?[]:['no-rebuilt-land']),...(mixed?['mixed-landscape-topology-requires-independent-verification']:['no-mixed-landscape']),'no-apply']};
 }

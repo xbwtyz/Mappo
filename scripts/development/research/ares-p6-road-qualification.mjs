@@ -54,7 +54,7 @@ export async function qualifyP6RoadMovement(project,revision,ids,offset,b,{permi
   const draft=prepareRoadGroupIntentB1(project,ids,offset);
   if(!draft.group?.eligible||!draft.draftable||!draft.topologyResolved||!draft.facesResolved||draft.status==='unchanged'||!draft.proposedCity)return refuse(stage,'unresolved-road-intent');
   stage='land-reconstruction';
-  const result=observeP6DryPipeline(project.city,{nodes:draft.proposedCity.nodes,roads:draft.proposedCity.roads},b,{collective:true,...(op.permissions.alternativeFrontage?{frontageContext:{project,operation:op}}:{})});
+  const result=observeP6DryPipeline(project.city,{nodes:draft.proposedCity.nodes,roads:draft.proposedCity.roads},b,{collective:true,landscape:true,...(op.permissions.alternativeFrontage?{frontageContext:{project,operation:op}}:{})});
   if(!result.diagnosticsComplete)return refuse(stage,result.reason);
   if(result.assembly?.status!=='candidate-assembled')return refuse('assembly',result.assembly?.reason??'missing-assembly',result.assembly?.details??null);
   stage='independent-verification';

@@ -110,16 +110,25 @@ function* rfWalk(graph, spend) {
 }
 
 // Detached, dry-only budget experiment. No private root; no production callers.
-export function* iterateP6BudgetedDryFaces(graph, protectedGeometry, budget) {
+export function* iterateP6BudgetedDryFaces(graph, protectedGeometry, budget,{landscape=false}={}) {
   if(!budget?.spend||!budget?.snapshot)throw Error('Shared P6 budget required.');
   const spend=n=>budget.spend(n??1);
-  // Refuse rather than silently skip mixed landscape validators that own private budgets.
+  // Mixed mode is an explicitly detached classification pilot. The existing
+  // operation-bound verifier still owns full water/terrain topology validation.
+  let landscapeCorners=0;
   for(const key of ['waterFeatures','bridges','waterFaces','terrainFeatures','terrainPasses','terrainFaces']){
-    spend();if(!Array.isArray(protectedGeometry?.[key])||protectedGeometry[key].length)throw Error('P6 dry face pilot requires empty landscape collections.');
+    spend();if(!Array.isArray(protectedGeometry?.[key])||(!landscape&&protectedGeometry[key].length))throw Error('P6 dry face pilot requires empty landscape collections.');
+    if(landscape&&(key==='waterFeatures'||key==='terrainFeatures'))for(const feature of protectedGeometry[key]){
+      spend();const ring=feature.corridor;
+      if(!Array.isArray(ring)||ring.length<3)throw Error('Invalid P6 landscape corridor.');
+      charge(spend,ring.length);
+      if(ring.some(p=>!Number.isFinite(p?.x)||!Number.isFinite(p?.y)))throw Error('Invalid P6 landscape corridor point.');
+      landscapeCorners+=ring.length;
+    }
   }
-  if(protectedGeometry.waterState?.status!=='dry')throw Error('P6 dry face pilot requires dry water state.');
+  if(!landscape&&protectedGeometry.waterState?.status!=='dry')throw Error('P6 dry face pilot requires dry water state.');
   charge(spend,graph?.roadsById?.size??0);
-  if(graph?.valid&&[...graph.roadsById.values()].some(r=>r.waterBoundary||r.bridgeId||r.bank||r.foothill||r.terrainBoundary||r.passId))throw Error('P6 dry face pilot rejects landscape flags.');
+  if(!landscape&&graph?.valid&&[...graph.roadsById.values()].some(r=>r.waterBoundary||r.bridgeId||r.bank||r.foothill||r.terrainBoundary||r.passId))throw Error('P6 dry face pilot rejects landscape flags.');
   const issues = [],
     faces = [];
   let exterior = null,
@@ -217,6 +226,7 @@ export function* iterateP6BudgetedDryFaces(graph, protectedGeometry, budget) {
     for (const face of bounded) {
       yield { stage: 'bounded-face-validation' };
       charge(spend,10*face.vertices.length);
+      if(landscape)charge(spend,2*landscapeCorners);
       const interior = waterFaceInterior(face.vertices, graph.nodesById),
         wet = waterSetContains(interior, waters),
         mountain = waterSetContains(interior, terrain);
@@ -235,6 +245,14 @@ export function* iterateP6BudgetedDryFaces(graph, protectedGeometry, budget) {
         issues.push(
           rfIssue('degenerate-face', 'A face is too small for its accepted role.', [], face.roadIds),
         );
+      if(landscape&&(wet||mountain)){
+        // Prepay both directed overlap scans and strict-inside tests before
+        // using the existing deterministic feature ownership function.
+        const n=face.vertices.length;
+        for(const f of [...(wet?waters:[]),...(mountain?terrain:[])]){
+          const m=f.corridor.length;charge(spend,8*(n*n+m*m+2*n*m));
+        }
+      }
       faces.push({
         ...face,
         orientation: 'ccw',
@@ -262,7 +280,7 @@ export function* iterateP6BudgetedDryFaces(graph, protectedGeometry, budget) {
       issues.push(rfIssue('face-coverage', 'The bounded faces do not cover exactly the accepted outline.'));
     sortCharge(spend,faces.length);
     faces.sort((a, b) => rfCompare(a.key, b.key));
-    if (!issues.length) {
+    if (!issues.length&&!landscape) {
       charge(spend,4*faces.length+4*graph.nodesById.size+4*graph.roadsById.size);
       const snapshot = {
         ...protectedGeometry,
@@ -301,11 +319,11 @@ export function* iterateP6BudgetedDryFaces(graph, protectedGeometry, budget) {
     issues.push(rfIssue('face-traversal', error.message));
   }
   // All geometries are copies; graph indexes are already detached and immutable.
-  return rfFreeze({ valid: issues.length === 0, issues: rfIssues(issues), faces, exterior, coverage, graph });
+  return rfFreeze({ valid: issues.length === 0, issues: rfIssues(issues), faces, exterior, coverage, graph,...(landscape?{landscapeValidation:'deferred-to-independent-operation-verifier'}:{}) });
 }
 
 
-export function extractP6BudgetedDryFaces(graph,context,budget){
- const it=iterateP6BudgetedDryFaces(graph,context,budget);
+export function extractP6BudgetedDryFaces(graph,context,budget,options){
+ const it=iterateP6BudgetedDryFaces(graph,context,budget,options);
  for(let step=it.next();;step=it.next())if(step.done)return step.value;
 }

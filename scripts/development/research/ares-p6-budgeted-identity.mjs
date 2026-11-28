@@ -135,7 +135,7 @@ export function* iterateP6BudgetedIdentity(oldCity, extraction, accepted, budget
     return rfFreeze(result);
   }
   yield { stage: 'accepted-face-graph' };
-  const baseline = extractP6BudgetedDryFaces(accepted, oldCity,budget);
+  const baseline = extractP6BudgetedDryFaces(accepted, oldCity,budget,{landscape:extraction.landscapeValidation==='deferred-to-independent-operation-verifier'});
   if (!baseline.valid) {
     result.issues.push(rfIssue('invalid-accepted-faces', 'The accepted road/face network is not valid.'));
     return rfFreeze(result);
