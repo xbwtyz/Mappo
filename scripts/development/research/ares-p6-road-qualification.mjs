@@ -53,12 +53,12 @@ export async function qualifyP6RoadMovement(project,revision,ids,offset,b){
   const draft=prepareRoadGroupIntentB1(project,ids,offset);
   if(!draft.group?.eligible||!draft.draftable||!draft.topologyResolved||!draft.facesResolved||draft.status==='unchanged'||!draft.proposedCity)return refuse(stage,'unresolved-road-intent');
   stage='land-reconstruction';
-  const result=observeP6DryPipeline(project.city,{nodes:draft.proposedCity.nodes,roads:draft.proposedCity.roads},b);
+  const result=observeP6DryPipeline(project.city,{nodes:draft.proposedCity.nodes,roads:draft.proposedCity.roads},b,{collective:true});
   if(!result.diagnosticsComplete)return refuse(stage,result.reason);
   if(result.assembly?.status!=='candidate-assembled')return refuse('assembly',result.assembly?.reason??'missing-assembly',result.assembly?.details??null);
   stage='independent-verification';
   const verified=await verifyP6AssembledRoadCity(project,op,result.assembly,b);
-  return {...verified,stage:'complete',reason:null,stats:b.snapshot(),assemblyCounts:result.assembly.counts};
+  return {...verified,stage:'complete',reason:null,stats:b.snapshot(),assemblyCounts:result.assembly.counts,jointCounts:result.assembly.jointCounts??null};
  }catch(error){
   if(error instanceof LareBudgetExceeded)return refuse(stage,'budget-exhausted',{resource:error.resource});
   return refuse(stage,error.message);

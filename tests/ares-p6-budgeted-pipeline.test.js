@@ -10,6 +10,7 @@ import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-cont
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
 import {observeP6RelocationCompatibility,observeP6RelocationExtension} from '../scripts/development/research/ares-p6-relocation-compatibility.mjs';
+import {selectP6JointArrangement} from '../scripts/development/research/ares-p6-collective-assembly.mjs';
 import {qualifyP6RoadMovement,verifyP6AssembledRoadCity} from '../scripts/development/research/ares-p6-road-qualification.mjs';
 import {normalizeSpatialRoadGroup} from '../src/core/spatial-recovery-road-adapter.js';
 import {prepareRoadGroupReflowB1} from '../src/core/neighborhood-reflow.js';
@@ -604,5 +605,22 @@ for(const f of [
   assert.ok(result.delta.modified.some(row=>row.collection==='nodes'||row.ref?.collection==='nodes'));
  }else{assert.equal(result.status,'refused');assert.equal(result.landVerified,false);assert.equal(result.delta,null);assert.ok(result.reason);}
  assert.equal(JSON.stringify(project),before);
- console.log('P6_ACTUAL_MOVEMENT '+JSON.stringify({label:f.label,status:result.status,stage:result.stage,reason:result.reason,details:result.details??null,counts:result.counts??null,assemblyCounts:result.assemblyCounts??null,stats:result.stats,authority:'none'}));
+ console.log('P6_ACTUAL_MOVEMENT '+JSON.stringify({label:f.label,status:result.status,stage:result.stage,reason:result.reason,details:result.details??null,counts:result.counts??null,assemblyCounts:result.assemblyCounts??null,jointCounts:result.jointCounts??null,stats:result.stats,authority:'none'}));
+});
+
+test('P6 joint arrangement changes ordinary choice to admit a rigid relocation without dropping any owner',()=>{
+ const rect=x=>[{x,y:0},{x:x+10,y:0},{x:x+10,y:10},{x,y:10}];
+ const source={properties:[{id:'a',boundary:rect(0)},{id:'b',boundary:rect(20)}]};
+ const option=(x,family='positive-affine')=>({key:'face',authority:'none',family,boundary:rect(x)});
+ const reshapes={status:'parcel-reshape-observed',authority:'none',rows:[
+  {id:'a',options:[option(0,'world-preserved'),option(10)],conditionalOptions:[]},
+  {id:'b',options:[],conditionalOptions:[{...option(0),requiresRigidPlacement:true}]}]};
+ const w={optionIndex:0,key:'face',authority:'none',access:'not-verified'};
+ const rigid={status:'rigid-translations-observed',authority:'none',rows:[{id:'a',witnesses:[]},{id:'b',witnesses:[w]}]};
+ const before=JSON.stringify([source,reshapes,rigid]),result=selectP6JointArrangement(source,reshapes,rigid,root(8000000));
+ assert.equal(result.complete,true);assert.equal(result.selected.find(r=>r.id==='a').index,1);
+ assert.equal(result.selected.find(r=>r.id==='b').kind,'relocated');assert.deepEqual(result.chosenWitnesses,[{id:'b',witness:w}]);
+ const blocked={...source,properties:[...source.properties,{id:'fixed',boundary:rect(0)}]};
+ const refused=selectP6JointArrangement(blocked,reshapes,rigid,root(8000000));assert.equal(refused.complete,false);assert.deepEqual(refused.selected,[]);
+ assert.equal(JSON.stringify([source,reshapes,rigid]),before);
 });

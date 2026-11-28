@@ -9,6 +9,7 @@ import {observeP6UnmatchedGeometry,observeP6SmallFaceGeometry} from './ares-p6-r
 import {observeP6TopologyIdentity} from './ares-p6-topology-identity.mjs';
 import {observeP6BlockCapacity} from './ares-p6-block-capacity.mjs';
 import {observeP6RelocationCompatibility,observeP6RelocationExtension} from './ares-p6-relocation-compatibility.mjs';
+import {tryP6CollectiveAssembly} from './ares-p6-collective-assembly.mjs';
 import {assembleP6DetachedCity} from './ares-p6-detached-city.mjs';
 import {observeP6RigidTranslations} from './ares-p6-rigid-translations.mjs';
 import {observeP6FixedBuildings} from './ares-p6-fixed-buildings.mjs';
@@ -26,7 +27,7 @@ import {planP6BlockRecords} from './ares-p6-block-record-plan.mjs';
 import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
 import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
 
-export function observeP6DryPipeline(source,candidateRoads,budget){
+export function observeP6DryPipeline(source,candidateRoads,budget,{collective=false}={}){
  if(!budget?.spend||!budget?.snapshot)throw Error('Shared P6 budget required.');
  const ledger=[];
  function stage(name,fn){
@@ -90,7 +91,10 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  if(relocationExtension.status!=='relocation-extension-observed')return refuse('relocation-extension-observation-refused',{reason:relocationExtension.reason});
  const relocatedAccess=stage('relocated-access-observation',()=>observeP6RelocatedAccess(source,extraction,parcelReshapes,rigidTranslations,relocationExtension,budget));
  if(relocatedAccess.status!=='relocated-access-observed')return refuse('relocated-access-observation-refused',{reason:relocatedAccess.reason});
- const assembly=stage('detached-city-assembly',()=>assembleP6DetachedCity(source,candidateRoads,extraction,{identity,blockPlan,propertyAudit,parcelReshapes,fixedBuildings,rigidTranslations,relocationExtension,relocatedAccess},budget));
+ let assembly=stage('detached-city-assembly',()=>assembleP6DetachedCity(source,candidateRoads,extraction,{identity,blockPlan,propertyAudit,parcelReshapes,fixedBuildings,rigidTranslations,relocationExtension,relocatedAccess},budget));
+ if(collective&&assembly.status==='assembly-refused'&&assembly.reason==='incomplete-land-selection'&&blockPlan.structural===0){
+  assembly=stage('collective-city-assembly',()=>tryP6CollectiveAssembly(source,candidateRoads,extraction,{identity,blockPlan,propertyAudit,propertyFit},budget));
+ }
  // This is only the legacy mapped-block snapshot, NOT rebuilt land.
  const snapshot=stage('diagnostic-snapshot',()=>{
   budget.spend(Math.max(1,identity.preserved.length+identity.changed.length+candidate.nodesById.size+candidate.roadsById.size));

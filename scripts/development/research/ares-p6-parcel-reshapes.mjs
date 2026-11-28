@@ -10,7 +10,7 @@ const charge=(b,n)=>b.spend(Math.max(1,n));
 const eps=1e-6;
 const dot=(p,o,t)=>(p.x-o.x)*t.x+(p.y-o.y)*t.y;
 const clip=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
-export function observeP6ParcelReshapes(source,extraction,fit,b){
+export function observeP6ParcelReshapes(source,extraction,fit,b,{collective=false}={}){
  if(!b?.spend||!b?.expand||!b?.snapshot)throw Error('Shared P6 budget required.');
  b.spend();
  const refuse=reason=>({status:'refused',reason,valid:false,authority:'none',landVerified:false});
@@ -88,7 +88,7 @@ export function observeP6ParcelReshapes(source,extraction,fit,b){
    const fixedCorners=fixed.reduce((sum,r)=>sum+r.length,0),plotCorners=own.reduce((sum,r)=>sum+r.boundary.length,0);
    const streetEdges=edges.map(e=>({a:e.a,b:e.c,road:e.road}));
    const attempt=(family,map)=>{
-    if(row.options.length>=LARE_LIMITS.parcelCandidates)return false;
+    if(row.options.length>=LARE_LIMITS.parcelCandidates&&(!collective||row.conditionalOptions.length>=LARE_LIMITS.parcelCandidates))return false;
     b.expand();row.attempts++;
     charge(b,8*n*n+24*n*m+8*n*fixedCorners+n+plotCorners);
     const boundary=original.map(map),l=project(boundary[0]),r=project(boundary[1]);
@@ -103,11 +103,11 @@ export function observeP6ParcelReshapes(source,extraction,fit,b){
     catch(error){if(error instanceof LareBudgetExceeded)throw error;if(!obstructed)row.rejections.plotTiling++;return false;}
     const geometry={key:option.key,family,boundary,plots:next.map(q=>({id:q.id,boundary:q.boundary})),frontageRoadId:p.frontageRoadId,authority:'none'};
     if(obstructed){row.conditionalOptions.push({...geometry,requiresRigidPlacement:true});return false;}
-    row.options.push(geometry);return true;
+    if(row.options.length<LARE_LIMITS.parcelCandidates)row.options.push(geometry);return true;
    };
    // Preserve exact coordinates and plot layout first. Do not speculate
    // on reshapes for this face if the unchanged candidate already works.
-   if(attempt('world-preserved',q=>({...q})))continue;
+   if(attempt('world-preserved',q=>({...q}))&&!collective)continue;
    // Limited positive affine family from the existing LARE approach:
    // no reflection, retiling, changed frontage, or building movement.
    for(const su of [1,.9,.75])for(const sv of [1,.8]){
@@ -117,6 +117,19 @@ export function observeP6ParcelReshapes(source,extraction,fit,b){
      attempt('positive-affine',q=>{
       const uv=local(q);return {...q,x:a.x+t.x*(left+uv.u*su)+inward.x*(front+uv.v*sv),y:a.y+t.y*(left+uv.u*su)+inward.y*(front+uv.v*sv)};
      });
+    }
+   }
+   if(collective){
+    // Give neighboring owners alternate allocations along their existing
+    // street, not a single first-fit parcel. Preserve plot connectivity.
+    for(const su of [.9,.75,.6])for(const sv of [1,.75,.55]){
+     const span=width*su;if(span>length||span<minWidth-eps)continue;
+     for(const shift of [-.25,.25,-.5,.5,0]){
+      const left=clip(center-span/2+span*shift,0,length-span),front=setback+.05;
+      attempt('collective-affine',q=>{
+       const uv=local(q);return {...q,x:a.x+t.x*(left+uv.u*su)+inward.x*(front+uv.v*sv),y:a.y+t.y*(left+uv.u*su)+inward.y*(front+uv.v*sv)};
+      });
+     }
     }
    }
   }

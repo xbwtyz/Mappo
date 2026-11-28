@@ -10,7 +10,7 @@ import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
 const charge=(b,n)=>b.spend(Math.max(1,n));
 const center=(r,b)=>{let x=0,y=0;for(const p of r){b.spend();x+=p.x;y+=p.y;}return {x:x/r.length,y:y/r.length};};
 const ringOK=(r,b)=>{const n=Array.isArray(r)?r.length:0;charge(b,8*n*n+n);return shapeWellFormed(r);};
-export function observeP6RigidTranslations(source,reshapes,fixed,b){
+export function observeP6RigidTranslations(source,reshapes,fixed,b,{collective=false}={}){
  if(!b?.spend||!b?.expand||!b?.snapshot)throw Error('Shared P6 budget required.');
  b.spend();
  const refuse=reason=>({status:'refused',reason,authority:'none',valid:false,landVerified:false});
@@ -27,7 +27,8 @@ export function observeP6RigidTranslations(source,reshapes,fixed,b){
   b.spend();const p=props.get(row.id);if(!p||!Array.isArray(row.conditionalOptions)||row.conditionalOptions.length>LARE_LIMITS.parcelCandidates)return refuse('invalid-parcel-census');
   const out={id:p.id,classification:null,attempts:0,rotationAttempts:0,conditionalCount:row.conditionalOptions.length,witness:null};
   const finish=kind=>{out.classification=kind;counts[kind]++;rows.push(out);};
-  if(row.options.length){finish('notNeeded');continue;}
+  if(collective)out.witnesses=[];
+  if(row.options.length&&!collective){finish('notNeeded');continue;}
   if(!row.conditionalOptions.length){finish('noConditional');continue;}
   const own=[];for(const id of p.plotIds){b.spend();const q=plots.get(id);if(!q||q.propertyId!==p.id)return refuse('invalid-plot-owner');own.push(q);}
   aresReplayJson([p,own],b);const policy=classifyLareProperty(p,own),members=[];
@@ -43,7 +44,10 @@ export function observeP6RigidTranslations(source,reshapes,fixed,b){
   const oldCenter=center(p.boundary,b);
   // Exhaust the original translation pass first; never replace its witness
   // with an unnecessary rotation. The second pass is a bounded fallback.
-  for(const phase of ['translation','rotation'])for(let i=0;i<row.conditionalOptions.length&&!out.witness;i++){
+  const foundIndices=new Set();
+  const cap=collective?Math.min(6,LARE_LIMITS.parcelCandidates):1;
+  for(const phase of ['translation','rotation'])for(let i=0;i<row.conditionalOptions.length&&(collective?out.witnesses.length<cap:!out.witness);i++){
+   b.spend();if(foundIndices.has(i))continue;
    b.spend();const o=row.conditionalOptions[i];
    if(o.authority!=='none'||o.requiresRigidPlacement!==true||o.frontageRoadId!==p.frontageRoadId||!ringOK(o.boundary,b)||o.plots.length!==own.length||o.plots.some((q,j)=>q.id!==own[j].id||!ringOK(q.boundary,b)))return refuse('invalid-conditional-option');
    const target=center(o.boundary,b),placed=[];
@@ -91,8 +95,11 @@ export function observeP6RigidTranslations(source,reshapes,fixed,b){
     if(!found)break;
     placed.push(found);
    }
-   if(placed.length===members.length&&placed.some(x=>x.transform.dx!==0||x.transform.dy!==0||x.transform.angle!==0))
-    out.witness={optionIndex:i,key:o.key,phase,buildings:placed,authority:'none',access:'not-verified',crossProperty:'not-verified'};
+   if(placed.length===members.length&&placed.some(x=>x.transform.dx!==0||x.transform.dy!==0||x.transform.angle!==0)){
+    const witness={optionIndex:i,key:o.key,phase,buildings:placed,authority:'none',access:'not-verified',crossProperty:'not-verified'};
+    foundIndices.add(i);if(!out.witness)out.witness=witness;
+    if(collective)out.witnesses.push(witness);
+   }
   }
   finish(out.witness?'placementObserved':'noPlacement');
  }
