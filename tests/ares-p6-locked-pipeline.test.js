@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {observeP6LockedDryPipeline,bindP6RoadRecords} from '../scripts/development/research/ares-p6-locked-pipeline.mjs';
 import {observeP6TopologyIdentity} from '../scripts/development/research/ares-p6-topology-identity.mjs';
+import {observeP6ConvexClearance} from '../scripts/development/research/ares-p6-block-capacity.mjs';
 import {extractRoadFaces,matchExistingFaces} from '../src/core/road-faces.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
 import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
@@ -67,6 +68,14 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
    assert.equal(topology.valid,false);assert.equal(topology.authority,'none');
    assert.equal(topology.ownership,'not-assigned');
    assert.equal(topology.landFit,'not-evaluated');
+   const capacity=e.capacity;
+   assert.equal(capacity.status,'capacity-observed');
+   assert.equal(capacity.authority,'none');assert.equal(capacity.landVerified,false);
+   assert.equal(capacity.properties.length,4);assert.equal(capacity.buildings.length,4);
+   assert.ok(capacity.buildingArea>capacity.faceArea);
+   assert.equal(capacity.rigidInBlockAreaImpossible,true);
+   assert.ok(capacity.areaUpperBound<=capacity.faceArea);
+   assert.equal(capacity.relocation,'not-evaluated');
    assert.ok(topology.retainedAreaRatio<0.01);
    assert.deepEqual(topology.directBlockReferences.properties,source.properties.filter(p=>p.blockId===topology.oldId).map(p=>p.id));
    const identity={...match,valid:false,correspondenceValid:true,authority:'none'};
@@ -93,4 +102,15 @@ test('P6 locked pipeline refuses arbitrary recipes and detects changed graph rec
  const tampered={...w,requested:[{ref:{id:'a'},point:{x:2,y:4}}]};
  const r=bindP6RoadRecords(city,tampered,expected,root());
  assert.equal(r.status,'mismatch');assert.equal(r.candidate,undefined);
+});
+
+test('P6 convex clearance necessary bounds, empty and nonconvex controls',()=>{
+ const square=(size)=>({polygon:[{x:0,y:0},{x:size,y:0},{x:size,y:size},{x:0,y:size}],roadIds:['a','b','c','d']});
+ const graph={roadsById:new Map(['a','b','c','d'].map(id=>[id,{kind:'lane'}]))};
+ const normal=observeP6ConvexClearance(square(20),graph,root());
+ assert.equal(normal.status,'bounded-convex');
+ assert.ok(Math.abs(normal.areaUpperBound-10.1*10.1)<.001);
+ assert.equal(observeP6ConvexClearance(square(5),graph,root()).areaUpperBound,0);
+ const concave={...square(20),polygon:[{x:0,y:0},{x:20,y:0},{x:10,y:5},{x:20,y:20},{x:0,y:20}]};
+ assert.equal(observeP6ConvexClearance(concave,graph,root()).status,'unsupported-nonconvex');
 });
