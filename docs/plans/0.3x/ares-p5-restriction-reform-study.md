@@ -31,3 +31,7 @@ All three Linear-09 witnesses independently verified under their fixed experimen
 
 ## Combined repair qualified — Campaign II-A begins
 No new seeds after 432 full evaluations and 1728 probes. Two radial cases pass rotation but are contact-held; four other cases have one remaining order violation (radial-14/17, planned-10, organic-20). Existing rates unchanged. Replay archived angular and contact witnesses independently, inspect half-edge walk changes and residual contact endpoint closure, record graph validity separately. This diagnoses combinatorial embedding effects only; not geometric face validity, ownership, access or building reconciliation. No changes to acceptance policy. Read-only dependency mapping is still pending. Numerical cap expansion remains detached.
+
+
+## Campaign II-A findings; concurrent II-B and precision pilot
+Single reordered junction changes three or four original closed walks, and all angular witnesses remain graph-invalid. Radial-16 has one blocked crossing at an ordinary road incident to a stationary protected anchor; no relaxation of that split guard. Target that crossing by moving existing eligible neighbors only, plus read-only original block/frontage/land exposure mapping. No ownership or access certification, no reordered-face acceptance. Both investigations share CI but have separate existing roots. Strict and expanded benchmarks unchanged.

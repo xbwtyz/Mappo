@@ -118,7 +118,12 @@ function readReformRepairArchive(){
  if(reformRepairArchive.size!==11)throw Error('Incomplete reform repair archive.');
  return reformRepairArchive;
 }
-async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=false,coupledAware=false,reform=null,repair=false){
+// Frozen one-blocker radial pilot, no new movement permission.
+export async function searchHoldoutPrecisionContact(caseId){
+ if(caseId!=='h:radial-16')throw Error('Frozen precision contact case required.');
+ return searchCombined(caseId,true,true,false,false,REFORM_ARMS.find(x=>x.id==='c8-d100'),false,true);
+}
+async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=false,coupledAware=false,reform=null,repair=false,precision=false){
  const lock=holdoutLockedRow(caseId);
  if(!COMBINED_CASES.includes(caseId))throw Error('Frozen combined holdout case required.');
  if(localAware&&!LOCAL_ANGULAR_CASES.includes(caseId))throw Error('Frozen local angular case required.');
@@ -224,6 +229,57 @@ async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=
     groups.sort((a,c)=>a.length-c.length||riCompare(JSON.stringify(a),JSON.stringify(c)));
     const retained=historical.bestRotation?.neighbors??[];
     const residual=LOCAL_ANGULAR_CASES.includes(caseId)?readLocalArchive().get(caseId).bestRotation?.neighbors??[]:[];
+    if(precision){
+     base.strategy='precision-contact';base.localProbes=0;base.precision={localClear:0,rotationClear:0,scopeLocal:0,variables:[],blockingPair:['RD-0099','RD-0221'],protectedAnchor:'N-0089'};
+     const locked=JSON.parse(readFileSync(new URL('../../../docs/research/evidence/holdout-reform-repair-46105648256-140857711740.json',import.meta.url),'utf8'));
+     if(locked.run!==46105648256||locked.attempt!==1||locked.source!=='908acc432ab4e1a3ccc9356829c89ad74f1e52d4'||locked.job!==140857711740)throw Error('Precision archive identity mismatch.');
+     const archived=locked.rows.find(x=>x.caseId===caseId),seed=archived?.best;
+     if(!seed||archived.source!==lock.source||archived.authority!=='none'||seed.blocking!==1||seed.contacts!==19||seed.neighbors.length!==8)throw Error('Precision witness mismatch.');
+     const group=seed.neighbors.map(n=>n.id).sort(riCompare),points=new Map();
+     for(const n of seed.neighbors){b.spend(8);const old=g.nodesById.get(n.id);if(!old||old.x!==n.old.x||old.y!==n.old.y||!eligible.has(n.id)||positions.has(n.id)||!nodeOK(n.id)||Math.hypot(n.point.x-old.x,n.point.y-old.y)>displacementLimit)throw Error('Precision coordinates changed.');points.set(n.id,n.point);}
+     const oldItem=evaluate(group,points,'precision-control');
+     if(!oldItem||oldItem.score!==1019||oldItem.feedback.length!==1||JSON.stringify(oldItem.feedback[0].ids)!==JSON.stringify(base.precision.blockingPair))throw Error('Precision blocker changed.');
+     const [ra,rb]=base.precision.blockingPair.map(id=>g.roadsById.get(id)),ends=[ra.a,ra.b,rb.a,rb.b];
+     if(!ends.includes('N-0089')||!fixed.has('N-0089')||positions.has('N-0089')||points.has('N-0089'))throw Error('Protected anchor mismatch.');
+     const vars=group.filter(id=>ends.includes(id));base.precision.variables=vars;
+     const affected=new Set([...positions.keys(),...group]);
+     for(const id of [...affected])for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}
+     const rank=(a,c)=>a.cross-c.cross||a.rotation-c.rotation||a.cost-c.cost;
+     const now=(state,id)=>state.get(id)??positions.get(id)??g.nodesById.get(id);
+     const probes=[],seenProbe=new Set();
+     function sample(state,variable,quota){
+      const others=ends.filter(id=>id!==variable),lines=[];
+      for(let i=0;i<others.length;i++)for(let j=i+1;j<others.length;j++){b.spend(4);lines.push([now(state,others[i]),now(state,others[j])]);}
+      // Include cyclic event lines at all affected stars for this variable.
+      lines.push(...localAngularLines(g,positions,state,[...affected],variable,b));
+      let taken=0;
+      for(const point of angularLineProposals(state.get(variable),g.nodesById.get(variable),displacementLimit,lines,b)){
+       if(taken>=quota||base.localProbes>=192)break;
+       taken++;base.localProbes++;b.expand();b.spend(city.survey.boundary.length);
+       if(!insideOrOn(point,city.survey.boundary)){base.precision.scopeLocal++;continue;}
+       const next=new Map(state);next.set(variable,point);
+       const key=JSON.stringify(group.map(id=>next.get(id)));if(seenProbe.has(key))continue;seenProbe.add(key);
+       b.spend(16);const contact=classifyP5Contact(now(next,ra.a),now(next,ra.b),now(next,rb.a),now(next,rb.b));
+       const cross=contact.kind==='none'?0:1,pos=new Map([...positions,...next]);
+       let rotation=0;for(const id of affected){b.spend();if(!cyclicEqual(oldOrders.get(id),order(g,id,pos,b)))rotation++;}
+       if(!cross)base.precision.localClear++;if(!rotation)base.precision.rotationClear++;
+       const cost=group.reduce((sum,id)=>{b.spend(4);const p=next.get(id),o=points.get(id);return sum+Math.hypot(p.x-o.x,p.y-o.y);},0);
+       probes.push({points:next,variable,cross,rotation,cost});
+      }
+     }
+     for(const v of vars)sample(points,v,Math.floor(96/Math.max(1,vars.length)));
+     probes.sort(rank);const first=probes.slice(0,8);
+     for(let i=0;i<first.length;i++){
+      const t=first[i],other=vars.filter(v=>v!==t.variable);
+      for(const v of other)sample(t.points,v,Math.floor((192-base.localProbes)/Math.max(1,(first.length-i)*other.length)));
+     }
+     probes.sort(rank);
+     for(const t of probes){if(base.attempts>=48||base.seeds.length>=2)break;if(t.cross||t.rotation)continue;const item=evaluate(group,t.points,'precision-contact-event');
+      if(item?.score===0&&base.geometrySeeds.length<2)base.geometrySeeds.push({neighbors:group.map(id=>({id,old:point(g.nodesById.get(id)),point:point(t.points.get(id))})),attempt:base.attempts});}
+     base.precision.localBoth=probes.filter(x=>!x.cross&&!x.rotation).length;
+     if(aresReplayJson(f.project,b)!==before)throw Error('Precision source mutated.');aresReplayJson(base,b);
+     return finish(base.seeds.length?'split-seeds-found':base.geometrySeeds.length?'geometry-seeds-found':'no-split-seed');
+    }
     if(repair){
      const old=readReformRepairArchive().get(caseId);
      if(JSON.stringify(old.baselineRotation)!==JSON.stringify(rotationClauses))throw Error('Repair baseline changed.');
