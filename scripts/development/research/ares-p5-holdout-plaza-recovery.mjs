@@ -3,7 +3,12 @@ import {plazaExperimentCase,PLAZA_EXPERIMENT_CASES} from './ares-p5-holdout-plaz
 import {holdoutLockedRow} from './ares-p5-holdout-lock.mjs';
 import {materializeLockedRtreCase} from './ares-rtre-locked-recipes.mjs';
 import {inspectFreshRtreNeighborhood} from './ares-rtre-fresh-neighborhood.mjs';
-import {pairsFor} from './ares-p4x-hybrid.mjs';
+import {pairsFor,reformCoverTrial} from './ares-p4x-hybrid.mjs';
+import {projectCyclic} from './ares-p5-holdout-cyclic.mjs';
+import {angularLineProposals,localAngularLines} from './ares-p5-holdout-local-angular.mjs';
+import {constructP5CoordinatedCandidate} from './ares-p5-topology-observe.mjs';
+import {auditP5CoordinatedCandidate} from './ares-p5-topology-audit.mjs';
+import {insideOrOn} from '../../../src/core/boundary.js';
 import {measureConnectedMinimum} from './ares-p5-holdout-cyclic.mjs';
 import {classifyP5Contact,P5_LIMITS} from './ares-p5-topology-contract.mjs';
 import {classifyRoad,iterateRoadGraph} from '../../../src/core/road-graph.js';
@@ -79,4 +84,88 @@ export async function diagnosePlazaRecovery(caseId){
   if(aresReplayJson(x.f.project,b)!==x.before)throw Error('Plaza recovery preparation mutated source.');
   aresReplayJson(base,b);return finish('diagnosed');
  }catch(e){if(e instanceof LareBudgetExceeded)return finish('work-limit');throw e;}
+}
+
+// Batch II pilot. All proposal generation, full evaluations and the one
+// construction share one root. The independent audit is a separate,
+// non-search replay under its previously qualified fixed bound.
+export async function searchCoordinatedPlazaRecovery(caseId){
+ const prior=plazaExperimentCase(caseId,'plaza-attached'),b=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
+ const base={caseId,source:prior.source,authority:'none',attempts:0,localProbes:0,minimum:null,best:null,construction:null,audit:null};
+ const finish=(status,reason=null)=>riFreeze({...base,status,reason,stats:b.snapshot()});
+ try{
+  const x=await prepare(caseId,b),{g,positions,city,orders,writable}=x,offset=x.lock.offset,limit=Math.hypot(offset.x,offset.y);
+  if(!x.selectedClosure)return finish('refused','selected-closure');
+  const mandatory=x.mandatoryFor('plaza-attached'),clauses=[...mandatory.map(p=>p.movable),...x.rotation.map(r=>r.eligible)];
+  const minimum=measureConnectedMinimum(clauses,x.adj,b);base.minimum=minimum;
+  if(minimum.status!=='exact'||minimum.minimum>8)return finish('refused','necessary-cover-not-established');
+  const ids=minimum.witness;
+  if(ids.some(id=>!writable.has(id))||!clauses.every(c=>c.some(id=>ids.includes(id))))throw Error('Invalid coordinated cover.');
+  const affected=new Set([...positions.keys(),...ids]);
+  for(const id of [...affected])for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}
+  const affectedIds=sort(affected),point=n=>({x:n.x,y:n.y}),seen=new Set(),seenLocal=new Set();
+  const scope=points=>ids.every(id=>{b.spend(4+city.survey.boundary.length);const old=g.nodesById.get(id),p=points.get(id);return p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&Math.abs(p.x)<=100000&&Math.abs(p.y)<=100000&&Math.hypot(p.x-old.x,p.y-old.y)<=limit&&(p.x!==old.x||p.y!==old.y)&&insideOrOn(p,city.survey.boundary);});
+  const rotation=pos=>affectedIds.filter(id=>{b.spend();return !samePlazaRecoveryOrder(orders.get(id),plazaRecoveryOrder(g,id,pos,b));});
+  const full=points=>{
+   if(base.attempts>=47||base.attempts+base.localProbes>=255)return null;
+   const key=JSON.stringify(ids.map(id=>points.get(id)));b.spend(1+ids.length);if(seen.has(key))return null;seen.add(key);b.expand();base.attempts++;
+   if(!scope(points))return null;
+   const pos=new Map([...positions,...points]),changed=rotation(pos);
+   // Evaluate the exact graph even if angular constraints remain, so
+   // the next coupled proposal can target both actual residual types.
+   const candidate={...city,nodes:city.nodes.map(n=>{b.spend();return pos.has(n.id)?{...n,...pos.get(n.id)}:n;})},checked=graph(candidate,b);
+   const bad=[],pairs=[],at=id=>pos.get(id)??g.nodesById.get(id);
+   for(const issue of checked.issues){b.spend();
+    if(!['unnormalized-crossing','overlapping-roads'].includes(issue.code)||issue.roadIds?.length!==2){bad.push(issue);continue;}
+    const roadIds=sort(issue.roadIds),[a,c]=roadIds.map(id=>g.roadsById.get(id));b.spend(16);
+    const kind=classifyP5Contact(at(a.a),at(a.b),at(c.a),at(c.b)).kind;
+    if(kind!=='interior-interior'||!x.splitOK(a,'plaza-attached')||!x.splitOK(c,'plaza-attached')||![a.a,a.b,c.a,c.b].some(id=>pos.has(id)))bad.push(issue);
+    pairs.push({code:issue.code,roadIds});
+   }
+   const feedback=pairsFor(g,bad.filter(i=>['unnormalized-crossing','overlapping-roads'].includes(i.code)&&i.roadIds?.length===2),writable,b);
+   const score=changed.length*100000+bad.length*1000+pairs.length;
+   const item={points,changed,feedback,score,ready:!changed.length&&!bad.length&&(checked.valid||pairs.length>0),pairs};
+   if(!base.best||score<base.best.score)base.best={score,rotation:changed.length,blocking:bad.length,contacts:pairs.length};
+   return item;
+  };
+  const local=(item,quota)=>{
+   const vars=ids.filter(id=>item.feedback.some(p=>p.ends.includes(id))||item.changed.some(v=>v===id||[...g.adjacency.get(v)].includes(id)));
+   const at=id=>item.points.get(id)??positions.get(id)??g.nodesById.get(id);
+   const streams=vars.map(variable=>{
+    const lines=localAngularLines(g,positions,item.points,affectedIds,variable,b);
+    for(const p of item.feedback.filter(p=>p.ends.includes(variable))){const other=[...new Set(p.ends.filter(id=>id!==variable))];for(let i=0;i<other.length;i++)for(let j=i+1;j<other.length;j++){b.spend(4);lines.push([at(other[i]),at(other[j])]);}}
+    return {variable,it:angularLineProposals(item.points.get(variable),g.nodesById.get(variable),limit,lines,b)};
+   });
+   const ranked=[];let count=0,active=true;
+   while(active&&count<quota&&base.localProbes<192){active=false;for(const stream of streams){
+    if(count>=quota||base.localProbes>=192||base.attempts+base.localProbes>=255)break;
+    const step=stream.it.next();if(step.done)continue;active=true;count++;base.localProbes++;b.expand();
+    const points=new Map(item.points);points.set(stream.variable,step.value);
+    const key=JSON.stringify(ids.map(id=>points.get(id)));b.spend(1+ids.length);if(seenLocal.has(key)||!scope(points))continue;seenLocal.add(key);
+    const pos=new Map([...positions,...points]),now=id=>pos.get(id)??g.nodesById.get(id);
+    let residual=0;for(const p of item.feedback){const [a,c]=p.ids.map(id=>g.roadsById.get(id));b.spend(16);if(classifyP5Contact(now(a.a),now(a.b),now(c.a),now(c.b)).kind!=='none')residual++;}
+    ranked.push({points,score:rotation(pos).length*100000+residual*1000});
+   }}
+   ranked.sort((a,c)=>a.score-c.score);return ranked.slice(0,3);
+  };
+  let best=null,ready=null;
+  const take=item=>{if(!item)return;if(item.ready&&(!ready||item.score<ready.score))ready=item;if(!best||item.score<best.score)best=item;};
+  if(!ids.length)take(full(new Map()));
+  // Reserve work for the one construction; this is a conservative
+  // scheduling reserve, not an increased ceiling or guaranteed fit.
+  for(let round=0;ids.length&&!ready&&round<12&&base.attempts<47&&b.snapshot().remainingWork>2500000;round++){
+   const points=reformCoverTrial(g,positions,ids,best?.feedback.length?best.feedback:mandatory,offset,round,b,round%3&&best?best.points:null,8);
+   projectCyclic(g,positions,points,affectedIds,orders,offset,round,b);take(full(points));
+   if(!ready&&best&&round%2===1&&b.snapshot().remainingWork>2500000){
+    for(const p of local(best,Math.min(48,192-base.localProbes))){if(ready||base.attempts>=47||b.snapshot().remainingWork<=2500000)break;take(full(p.points));}
+   }
+  }
+  if(aresReplayJson(x.f.project,b)!==x.before)throw Error('Coordinated source mutated.');
+  if(!ready)return finish('refused','no-geometric-seed');
+  const neighbors=ids.map(id=>({id,old:point(g.nodesById.get(id)),point:point(ready.points.get(id))}));
+  const c=await constructP5CoordinatedCandidate(caseId,neighbors,ready.pairs,b);base.construction=c;
+  if(c.status!=='graph-candidate')return finish('refused',c.reason);
+  const audit=await auditP5CoordinatedCandidate(caseId,c);base.audit=audit;
+  return finish(audit.status==='topology-final-verified'&&!audit.sweptUnresolved.length?'verified':'unverified',audit.reason);
+ }catch(e){if(e instanceof LareBudgetExceeded)return finish('work-limit',e.resource);throw e;}
 }

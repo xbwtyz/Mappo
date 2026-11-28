@@ -142,8 +142,14 @@ export async function constructP5PlazaExperiment(caseId,arm,precision=false){
  const seed=precision?plazaExperimentSeed(caseId):null;
  return constructSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,seed,arm==='plaza-attached');
 }
-async function constructSplit(caseId,input,combined,plazaException=false){
-  const permissions=p5Permissions(input),budget=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
+// Detached coordinated search only. The caller's existing root charges construction;
+// this is not an authority token or a live editing API.
+export async function constructP5CoordinatedCandidate(caseId,neighbors,pairs,budget){
+ plazaExperimentCase(caseId,'plaza-attached');
+ return constructSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,{recipe:{source:holdoutLockedRow(caseId).source,cap:8},seed:{arm:'coordinated',best:{neighbors,pairs}}},true,budget,true);
+}
+async function constructSplit(caseId,input,combined,plazaException=false,sharedBudget=null,coordinated=false){
+  const permissions=p5Permissions(input),budget=sharedBudget??createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
   let sourceHash=null,attempts=0,translationEvidence=null;
   const finish=(status,reason,extra={})=>riFreeze({version:1,caseId,source:sourceHash,status,reason,attempts,
     authority:'none',independentlyVerified:false,...(translationEvidence?{translationEvidence}:{}),...extra,stats:budget.snapshot()});
@@ -168,7 +174,7 @@ async function constructSplit(caseId,input,combined,plazaException=false){
     budget.spend(Math.max(1,eligible.size));
     if(combined){
       const {recipe,seed}=combined,offset=f.context.operation.geometry.offset;
-      if(report.status!=='research-eligible'||sourceHash!==recipe.source||neighbors.length<2||neighbors.length>recipe.cap||
+      if((report.status!=='research-eligible'&&!(coordinated&&!neighbors.length&&report.status==='no-eligible-neighbors'))||sourceHash!==recipe.source||neighbors.length<(coordinated?0:2)||neighbors.length>recipe.cap||new Set(neighbors.map(n=>n.id)).size!==neighbors.length||
         (recipe.minimum&&neighbors.length!==recipe.minimum))return finish('preflight-refused','neighbor-cap-or-source');
       const exactIds=new Set(f.context.operation.editedRefs.map(x=>x.id)),exact=new Map();
       for(const road of city.roads){budget.spend();if(exactIds.has(road.id))for(const id of [road.a,road.b]){
@@ -184,7 +190,7 @@ async function constructSplit(caseId,input,combined,plazaException=false){
           return finish('preflight-refused','neighbor-authority');
         requested.set(n.id,p);
       }
-      const seen=new Set(),queue=[neighbors[0].id];
+      const seen=new Set(),queue=neighbors.length?[neighbors[0].id]:[];
       for(let i=0;i<queue.length;i++){budget.spend();const id=queue[i];if(seen.has(id))continue;seen.add(id);
         for(const n of accepted.adjacency.get(id)){budget.spend();if(!seen.has(n)&&requested.has(n))queue.push(n);}}
       if(!neighbors.every(n=>seen.has(n.id)))return finish('preflight-refused','disconnected-neighbor-cluster');
@@ -231,7 +237,7 @@ async function constructSplit(caseId,input,combined,plazaException=false){
       const replay=p5Graph({...city,nodes},budget),pairs=replay.issues.map(i=>({code:i.code,roadIds:[...(i.roadIds??[])].sort(riCompare)}));
       const keys=rows=>rows.map(x=>JSON.stringify([x.code,[...x.roadIds].sort(riCompare)])).sort(riCompare);
       budget.spend(Math.max(1,pairs.length*8));p5Sort(pairs.length,budget);
-      if(replay.valid||pairs.some(p=>p.code!=='unnormalized-crossing'||p.roadIds.length!==2)||
+      if((replay.valid&&!coordinated)||pairs.some(p=>p.code!=='unnormalized-crossing'||p.roadIds.length!==2)||
         (combined.seed.best.pairs?aresReplayJson(keys(pairs),budget)!==aresReplayJson(keys(combined.seed.best.pairs),budget):
           pairs.length!==combined.seed.best.expectedContactCount||!pairs.some(p=>aresReplayJson(p.roadIds,budget)===aresReplayJson(combined.seed.best.requiredPair,budget))))
         return finish('preflight-refused','frozen-conflict-replay-mismatch');

@@ -17,7 +17,7 @@ function difference(a,c,b){const out=[];for(const id of a.keys()){b.spend();if(!
 function retained(a,c,b){const out=[];for(const id of a.keys()){b.spend();if(c.has(id))out.push(id);}return ordered(out,b);}
 export function inspectP5IdentityLedger({kind,original,candidate,splitChains=[],junctionAliases=[]},b){
   try{
-    need(['split','synthetic-merge'].includes(kind),'unsupported-operation');
+    need(['split','synthetic-merge','translation'].includes(kind),'unsupported-operation');
     const n0=inventory(original.nodes,b),r0=inventory(original.roads,b),n1=inventory(candidate.nodes,b),r1=inventory(candidate.roads,b);
     const nodes={retained:retained(n0,n1,b),created:difference(n1,n0,b),retired:difference(n0,n1,b)};
     const roads={retained:retained(r0,r1,b),created:difference(r1,r0,b),retired:difference(r0,r1,b)};
@@ -47,6 +47,9 @@ export function inspectP5IdentityLedger({kind,original,candidate,splitChains=[],
       for(const id of roads.created){b.spend();need(claimed.has(id),'unclaimed-new-road');}
       for(const count of junctionUses.values()){b.spend();need(count>=2,'unclaimed-new-junction');}
       for(const [id,e] of r0){b.spend();if(!parents.has(id)){const next=r1.get(id);need(next.a===e.a&&next.b===e.b&&next.kind===e.kind,'unrelated-road-rewire');}}
+    }else if(kind==='translation'){
+      need(!splitChains.length&&!junctionAliases.length&&!nodes.created.length&&!nodes.retired.length&&!roads.created.length&&!roads.retired.length,'translation-inventory');
+      for(const [id,e] of r0){b.spend();const next=r1.get(id);need(next.a===e.a&&next.b===e.b&&next.kind===e.kind,'translation-rewire');}
     }else{
       need(!splitChains.length&&!nodes.created.length&&!roads.created.length&&junctionAliases.length===1&&nodes.retired.length===1,'merge-inventory');
       const alias=junctionAliases[0];

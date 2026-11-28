@@ -84,7 +84,13 @@ export async function auditP5PlazaExperiment(caseId,arm,evidence,precision=false
  plazaExperimentCase(caseId,arm);
  return auditSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,evidence,precision?plazaExperimentSeed(caseId):null,true,arm==='plaza-attached');
 }
-async function auditSplit(caseId,permissions,evidence,combined,holdout=false,plazaException=false){
+// Independent replay: coordinates are untrusted claims. No search feedback,
+// no caller budget or permission, no reliance on the search contact inventory.
+export async function auditP5CoordinatedCandidate(caseId,evidence){
+ plazaExperimentCase(caseId,'plaza-attached');
+ return auditSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,evidence,null,true,true,true);
+}
+async function auditSplit(caseId,permissions,evidence,combined,holdout=false,plazaException=false,coordinated=false){
   // No caller-supplied budget or scope, no search retry. This root is
   // independent evidence only, never a continuation of construction.
   const b=createSpatialPreservationBudget({work:8000000,stateExpansions:32768});
@@ -136,10 +142,10 @@ async function auditSplit(caseId,permissions,evidence,combined,holdout=false,pla
     }
     for(const n of report.requested){b.spend();need(same(requested.get(n.ref.id),n.point),'observer-intent');}
     for(const id of requested.keys()){b.spend();need(inScope('nodes',id)&&!fixed.has(id)&&known(original.nodesById.get(id),nodeKeys,b),'protected-node');}
-    if(combined){
-      const {recipe,seed}=combined,neighbors=seed.best.neighbors;
-      need(result.source===recipe.source&&report.status==='research-eligible'&&w.seedArm===seed.arm&&eq(w.neighbors,neighbors),'seed-evidence');
-      need(neighbors.length>=2&&neighbors.length<=recipe.cap&&(!recipe.minimum||neighbors.length===recipe.minimum),'neighbor-cap');
+    if(combined||coordinated){
+      const recipe=combined?.recipe??{source:lock.source,cap:8},seed=combined?.seed,neighbors=coordinated?w.neighbors:seed.best.neighbors;
+      need(Array.isArray(neighbors)&&result.source===recipe.source&&(report.status==='research-eligible'||coordinated&&!neighbors.length&&report.status==='no-eligible-neighbors')&&w.seedArm===(coordinated?'coordinated':seed.arm)&&(coordinated||eq(w.neighbors,neighbors)),'seed-evidence');
+      need(neighbors.length>=(coordinated?0:2)&&neighbors.length<=recipe.cap&&(!recipe.minimum||neighbors.length===recipe.minimum),'neighbor-cap');
       const seen=new Set();
       for(const n of neighbors){
         b.spend(8);const old=original.nodesById.get(n.id),p=n.point;
@@ -149,7 +155,7 @@ async function auditSplit(caseId,permissions,evidence,combined,holdout=false,pla
           Math.hypot(p.x-old.x,p.y-old.y)<=Math.hypot(offset.x,offset.y),'neighbor-authority');
         seen.add(n.id);requested.set(n.id,p);
       }
-      const reached=new Set(),queue=[neighbors[0].id];
+      const reached=new Set(),queue=neighbors.length?[neighbors[0].id]:[];
       for(let i=0;i<queue.length;i++){b.spend();const id=queue[i];if(reached.has(id))continue;reached.add(id);
         for(const n of original.adjacency.get(id)){b.spend();if(!reached.has(n)&&requested.has(n))queue.push(n);}}
       need(neighbors.every(n=>reached.has(n.id)),'disconnected-neighbor-cluster');
@@ -207,7 +213,7 @@ async function auditSplit(caseId,permissions,evidence,combined,holdout=false,pla
       contacts.push({roadIds:[r.id,s.id],point:p,parameters:[ab[0],ba[0]]});
     }
     sortCharge(contacts.length,b);contacts.sort((a,c)=>riCompare(JSON.stringify(a.roadIds),JSON.stringify(c.roadIds)));
-    result.contacts=contacts.length;need(contacts.length>0&&contacts.length===w.contacts.length,'contact-inventory');
+    result.contacts=contacts.length;need((coordinated||contacts.length>0)&&contacts.length===w.contacts.length,'contact-inventory');
     if(combined&&!combined.seed.best.pairs){
       need(contacts.length===combined.seed.best.expectedContactCount&&contacts.some(x=>eq(x.roadIds,combined.seed.best.requiredPair)),'frozen-precision-contact-inventory');
     }
@@ -309,7 +315,7 @@ async function auditSplit(caseId,permissions,evidence,combined,holdout=false,pla
       for(const r of roads){b.spend();if(!r.plaza)continue;protectedRoads++;need(!parts.has(r.id)&&equalP5GraphRecord(r,rebuilt.roadsById.get(r.id),b),'plaza-road-changed');}
       result.plazaPreservation={vertices:square.size,protectedRoads,exceptedAnchors:[...usedExceptions].sort(riCompare),geometry:'unchanged',parentIncidence:'unchanged',landAccess:'not-verified'};
     }
-    const identityLedger=inspectP5IdentityLedger({kind:'split',original:city,candidate,
+    const identityLedger=inspectP5IdentityLedger({kind:coordinated&&!expected.length?'translation':'split',original:city,candidate,
       splitChains:expected.map(l=>({parent:l.parent,children:l.children.map(x=>x.id)}))},b);
     need(identityLedger.status==='complete','identity-ledger:'+identityLedger.reason);
     // All non-road/non-node collections remain identical by construction.
