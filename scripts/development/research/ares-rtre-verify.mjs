@@ -1,3 +1,4 @@
+import {reformAuditSeed} from './ares-p5-holdout-reform-audit-lock.mjs';
 import {holdoutLockedRow,HOLDOUT_OPTIONS} from './ares-p5-holdout-lock.mjs';
 import { createHash } from 'node:crypto';
 import { materializeLockedRtreCase } from './ares-rtre-locked-recipes.mjs';
@@ -72,7 +73,12 @@ export async function verifyFreshRtreRadialWitness(caseId,evidence,budget){
   const recipe=radialRecipe(caseId);
   return verifyWitness(caseId,radialOptions(caseId),evidence,budget,recipe.minimumRecipe,recipe);
 }
-async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial=null){
+// Detached, fixed archived reform candidates only. No caller coordinates or bounds.
+export async function verifyFreshRtreReformWitness(caseId,arm,budget){
+ const locked=reformAuditSeed(caseId,arm);
+ return verifyWitness(caseId,locked.options,null,budget,null,null,locked);
+}
+async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial=null,reform=null){
   const result={version:1,caseId,status:'unverified',reason:null,changedRoadIds:[],finalChecked:0,sweptUnresolved:0};
   const finish=()=>riFreeze({...result,stats:budget.snapshot()});
   const equal=(a,b)=>aresReplayJson(a,budget)===aresReplayJson(b,budget);
@@ -83,13 +89,14 @@ async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial
     const holdout=caseId.startsWith('h:');
     if(holdout){
       holdoutLockedRow(caseId);
-      need(!minimumRecipe&&!radial&&Object.keys(HOLDOUT_OPTIONS).every(k=>options[k]===HOLDOUT_OPTIONS[k]),'holdout-limits');
+      need(!minimumRecipe&&!radial&&Object.keys(HOLDOUT_OPTIONS).every(k=>options[k]===(reform&&k==='maxNeighbors'?8:HOLDOUT_OPTIONS[k])),'holdout-limits');
     }
     const report=await inspectFreshRtreNeighborhood(caseId,{mode,maxObjects,maxHops},budget);
     const {project,context}=materializeLockedRtreCase(caseId),city=project.city,before=aresReplayJson(project,budget);
     const bytes=Buffer.from(before,'utf8');budget.spend(Math.max(1,Math.ceil(bytes.length/64)));
     need(createHash('sha256').update(bytes).digest('hex')===report.snapshotFingerprint,'source-mismatch');
-    need(evidence&&evidence.caseId===caseId&&evidence.snapshotFingerprint===report.snapshotFingerprint&&equal(evidence.context,context)&&equal(evidence.limits,report.limits)&&evidence.maxNeighbors===maxNeighbors&&evidence.maxCandidates===maxCandidates,'evidence-mismatch');
+    if(reform)need(report.snapshotFingerprint===reform.source,'reform-source-lock');
+    else need(evidence&&evidence.caseId===caseId&&evidence.snapshotFingerprint===report.snapshotFingerprint&&equal(evidence.context,context)&&equal(evidence.limits,report.limits)&&evidence.maxNeighbors===maxNeighbors&&evidence.maxCandidates===maxCandidates,'evidence-mismatch');
     need(['research-eligible','no-eligible-neighbors','strict-no-adjustment'].includes(report.status),'scope-refused');
     const accepted=graph(city,budget);need(accepted.valid,'invalid-source-graph');
     const requested=new Map(),selectedRoads=new Set(context.operation.editedRefs.map(r=>r.id)),offset=context.operation.geometry.offset;
@@ -101,7 +108,8 @@ async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial
       }
     }
     need(requested.size===report.requested.length&&report.requested.every(r=>same(requested.get(r.ref.id),r.point)),'exact-intent-mismatch');
-    const positions=new Map(requested),neighbors=new Set(),w=evidence.adjustedWitness;
+    const positions=new Map(requested),neighbors=new Set(),w=reform?{kind:'geometry-with-final-constraints',neighbors:reform.neighbors,updates:[...requested].map(([id,point])=>({id,point})).concat(reform.neighbors.map(n=>({id:n.id,point:n.point})))}:evidence.adjustedWitness;
+    if(reform){result.arm=reform.arm;result.source=reform.source;result.seedAttempt=reform.attempt;result.neighborCount=reform.neighbors.length;result.displacement={max:Math.max(...reform.neighbors.map(n=>Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y))),total:reform.neighbors.reduce((sum,n)=>sum+Math.hypot(n.point.x-n.old.x,n.point.y-n.old.y),0)};}
     const eligible=new Set(report.eligibleJunctions.map(r=>r.ref.id)),admitted=new Map(report.entries.map(r=>[key(r.ref),r]));
     budget.spend(Math.max(1,eligible.size+admitted.size));
     if(minimumRecipe)need(report.snapshotFingerprint===minimumRecipe.source&&w&&Array.isArray(w.neighbors)&&w.neighbors.length===minimumRecipe.minimum,'x7-frozen-minimum');
@@ -114,7 +122,7 @@ async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial
         need(n&&eligible.has(n.id)&&!requested.has(n.id)&&!neighbors.has(n.id),'neighbor-authority');
         const old=accepted.nodesById.get(n.id);
         need(validPoint(n.old)&&validPoint(n.point)&&same(n.old,old)&&!same(n.point,old),'neighbor-coordinate');
-        if(minimumRecipe||radial||holdout){budget.spend();need(Math.hypot(n.point.x-old.x,n.point.y-old.y)<=Math.hypot(offset.x,offset.y),holdout?'holdout-displacement-limit':radial?'radial-displacement-limit':'x7-displacement-limit');}
+        if(minimumRecipe||radial||holdout){budget.spend();need(Math.hypot(n.point.x-old.x,n.point.y-old.y)<=Math.hypot(offset.x,offset.y)*(reform?.multiplier??1),holdout?'holdout-displacement-limit':radial?'radial-displacement-limit':'x7-displacement-limit');}
         neighbors.add(n.id);positions.set(n.id,n.point);
       }
       const seen=new Set();
@@ -135,6 +143,13 @@ async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial
       need(evidence.baseline?.valid===true,'no-valid-witness');claimed=evidence.baseline.constraints;
     }
     const affected=new Set(),changed=[],terminal=new Set(accepted.terminalRoadIds);
+    if(reform){
+      const fixed=new Set(city.plaza?.vertices??[]),nodeKeys=new Set(['id','x','y']);
+      for(const road of city.roads){budget.spend();if(classifyRoad(road).protected||terminal.has(road.id)){fixed.add(road.a);fixed.add(road.b);}}
+      for(const gate of city.gates??[]){budget.spend();if(gate.connection?.cityNodeId!=null)fixed.add(gate.connection.cityNodeId);}
+      for(const kind of ['waterFaces','terrainFaces'])for(const row of city[kind]??[])for(const id of row.vertices??[]){budget.spend();fixed.add(id);}
+      for(const id of positions.keys()){budget.spend();const node=accepted.nodesById.get(id);need(node&&!fixed.has(id)&&Object.keys(node).every(k=>{budget.spend();return nodeKeys.has(k);})&&insideOrOn(positions.get(id),city.survey.boundary),'reform-protected-or-opaque-node');budget.spend(city.survey.boundary.length);}
+    }
     const candidate={...city,nodes:city.nodes.map(n=>{budget.spend();return positions.has(n.id)?{...n,...point(positions.get(n.id))}:n;})};
     // Independently scan every original road; do not use solver incident list.
     const next=new Map(candidate.nodes.map(n=>[n.id,n]));budget.spend(Math.max(1,next.size));
@@ -143,6 +158,10 @@ async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial
       const a=accepted.nodesById.get(road.a),b=accepted.nodesById.get(road.b),p=next.get(road.a),q=next.get(road.b);
       if(same(a,p)&&same(b,q))continue;
       need(!classifyRoad(road).protected&&!terminal.has(road.id),'protected-road');
+      if(reform){
+       const keys=new Set('id a b kind boundary plaza bank bridgeId waterBoundary foothill passId terrainBoundary'.split(' '));
+       need(Object.keys(road).every(k=>{budget.spend();return keys.has(k);})&&[a,b].every(n=>Object.keys(n).every(k=>{budget.spend();return ['id','x','y'].includes(k);})),'reform-opaque-closure');
+      }
       for(const k of [ref('roads',road.id),ref('nodes',road.a),ref('nodes',road.b)]){
         budget.spend();const row=admitted.get(key(k));need(row&&row.depth<=maxHops,'outside-scope');
         if(k.collection==='nodes'&&positions.has(k.id))need(row.role!=='protected-anchor'&&!(city.plaza?.vertices??[]).includes(k.id),'protected-anchor');
@@ -159,7 +178,7 @@ async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial
     }
     chargeSort(changed.length,budget);changed.sort((a,b)=>riCompare(a.ref.id,b.ref.id));
     const ids=changed.map(r=>r.ref.id);
-    need(claimed&&equal(claimed.changedRoadIds,ids)&&(!w||equal(w.changedRoadIds,ids)),'changed-road-evidence');
+    if(!reform)need(claimed&&equal(claimed.changedRoadIds,ids)&&(!w||equal(w.changedRoadIds,ids)),'changed-road-evidence');
     // Independently reconstruct all final and swept provider queries. Shared
     // authoritative predicates are intentional; orchestration and enumeration
     // are separate from the candidate search.
@@ -174,7 +193,8 @@ async function verifyWitness(caseId,options,evidence,budget,minimumRecipe,radial
       }
     }
     need(finalChecked===3*ids.length&&blockers.length===0,'final-constraint-blocked');
-    need(claimed.finalChecked===finalChecked&&equal(claimed.finalBlockers,blockers)&&equal(claimed.sweptUnresolved,swept),'constraint-evidence-mismatch');
+    if(reform)need(swept.length===0,'reform-swept-unresolved');
+    else need(claimed.finalChecked===finalChecked&&equal(claimed.finalBlockers,blockers)&&equal(claimed.sweptUnresolved,swept),'constraint-evidence-mismatch');
     need(aresReplayJson(project,budget)===before,'source-mutated');
     // Only coordinates changed by construction; never accept external
     // records, identity allocations, roads, properties or a supplied city.
