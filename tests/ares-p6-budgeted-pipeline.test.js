@@ -598,6 +598,7 @@ for(const f of [
  const before=JSON.stringify(project),b=root(8000000);
  const result=await qualifyP6RoadMovement(project,1,f.ids,f.offset,b);
  assert.equal(result.authority,'none');assert.ok(b.snapshot().work<=8000000);assert.ok(b.snapshot().expansions<=32768);
+ if(f.label==='planned-small')assert.equal(result.status,'verified-detached-road-movement',JSON.stringify(result));
  if(result.status==='verified-detached-road-movement'){
   assert.equal(result.landVerified,true);assert.ok(result.counts.modified>0);assert.equal(result.counts.added,0);assert.equal(result.counts.retired,0);
   assert.ok(result.delta.modified.some(row=>row.collection==='nodes'||row.ref?.collection==='nodes'));

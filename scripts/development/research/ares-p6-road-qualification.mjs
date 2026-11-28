@@ -5,7 +5,6 @@ import {normalizeSpatialRoadGroup,verifySpatialStrictRoadWitness} from '../../..
 import {createSpatialDelta} from '../../../src/core/spatial-recovery-delta.js';
 import {createSpatialOperation} from '../../../src/core/spatial-recovery-contract.js';
 import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
-import {equalP6BlockRecord} from './ares-p6-block-record-plan.mjs';
 import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
 import {observeP6DryPipeline} from './ares-p6-budgeted-pipeline.mjs';
 
@@ -29,7 +28,15 @@ export async function verifyP6AssembledRoadCity(project,input,assembly,b){
  const delta=await createSpatialDelta(project,candidate,op,1,b);
  if(delta.added.length||delta.retired.length)throw Error('P6 must preserve all identities.');
  const verified=await verifySpatialStrictRoadWitness(project,op,delta,b);
- if(!equalP6BlockRecord(candidate,verified,b))throw Error('P6 independent replay differs from assembly.');
+ // SRE delta v2 fingerprints and copyJson use standard persisted JSON.
+ // Compare those exact bytes, not ARES replay's signed-zero-sensitive
+ // in-memory records. The strict domain gate above is unchanged.
+ // Validate and meter both JSON trees before ordinary serialization.
+ const verifiedText=aresReplayJson(verified,b);
+ b.spend(Math.max(1,Math.ceil(Buffer.byteLength(verifiedText)/64)));
+ const persistedCandidate=JSON.stringify(candidate),persistedVerified=JSON.stringify(JSON.parse(verifiedText));
+ b.spend(Math.max(1,Math.ceil((Buffer.byteLength(persistedCandidate)+Buffer.byteLength(persistedVerified))/64)));
+ if(persistedCandidate!==persistedVerified)throw Error('P6 independent persisted replay differs from assembly.');
  return {status:'verified-detached-road-movement',authority:'none',landVerified:true,operation:op,delta,
   counts:{modified:delta.modified.length,added:delta.added.length,retired:delta.retired.length}};
 }
