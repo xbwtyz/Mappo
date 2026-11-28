@@ -4,7 +4,7 @@ import {holdoutLockedRow} from './ares-p5-holdout-lock.mjs';
 import {materializeLockedRtreCase} from './ares-rtre-locked-recipes.mjs';
 import {inspectFreshRtreNeighborhood} from './ares-rtre-fresh-neighborhood.mjs';
 import {pairsFor,reformCoverTrial} from './ares-p4x-hybrid.mjs';
-import {projectCyclic} from './ares-p5-holdout-cyclic.mjs';
+import {projectCyclic,cyclicTargets} from './ares-p5-holdout-cyclic.mjs';
 import {reformRotationCoverGroups,rotationTriplets,projectRotation} from './ares-p5-holdout-rotation.mjs';
 import {angularLineProposals,localAngularLines} from './ares-p5-holdout-local-angular.mjs';
 import {constructP5CoordinatedCandidate} from './ares-p5-topology-observe.mjs';
@@ -92,7 +92,8 @@ export async function diagnosePlazaRecovery(caseId){
 // non-search replay under its previously qualified fixed bound.
 export async function searchCoordinatedPlazaRecovery(caseId){return coordinatedPlazaSearch(caseId,false);}
 export async function searchDiversifiedPlazaRecovery(caseId){return coordinatedPlazaSearch(caseId,true);}
-async function coordinatedPlazaSearch(caseId,diversified){
+export async function searchResidualPlazaRecovery(caseId){return coordinatedPlazaSearch(caseId,true,true);}
+async function coordinatedPlazaSearch(caseId,diversified,residual=false){
  const prior=plazaExperimentCase(caseId,'plaza-attached'),b=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
  const base={caseId,source:prior.source,authority:'none',attempts:0,localProbes:0,minimum:null,best:null,construction:null,audit:null};
  const finish=(status,reason=null)=>riFreeze({...base,status,reason,stats:b.snapshot()});
@@ -110,6 +111,18 @@ async function coordinatedPlazaSearch(caseId,diversified){
   const point=n=>({x:n.x,y:n.y}),seen=new Set(),seenLocal=new Set();
   const scope=points=>ids.every(id=>{b.spend(4+city.survey.boundary.length);const old=g.nodesById.get(id),p=points.get(id);return p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&Math.abs(p.x)<=100000&&Math.abs(p.y)<=100000&&Math.hypot(p.x-old.x,p.y-old.y)<=limit&&(p.x!==old.x||p.y!==old.y)&&insideOrOn(p,city.survey.boundary);});
   const rotation=pos=>affectedIds.filter(id=>{b.spend();return !samePlazaRecoveryOrder(orders.get(id),plazaRecoveryOrder(g,id,pos,b));});
+  // A continuous tie-break among equal discrete cyclic failure counts.
+  // It only ranks research proposals; the full exact gate remains mandatory.
+  const angularCost=(pos,changed)=>{
+   let cost=0;
+   for(const id of changed){
+    const n=pos.get(id)??g.nodesById.get(id),prior=orders.get(id);
+    const actual=prior.map(rid=>{b.spend(4);const r=g.roadsById.get(rid),v=r.a===id?r.b:r.a,p=pos.get(v)??g.nodesById.get(v);return {rid,angle:Math.atan2(p.y-n.y,p.x-n.x)};});
+    for(const t of cyclicTargets(prior,actual,b)){b.spend();cost+=t.delta*t.delta;}
+   }
+   return cost;
+  };
+  const better=(a,c)=>!c||a.score<c.score||residual&&a.score===c.score&&a.angular<c.angular;
   const full=points=>{
    if(base.attempts>=47||base.attempts+base.localProbes>=255)return null;
    const key=JSON.stringify(ids.map(id=>[id,points.get(id)]));b.spend(1+ids.length);if(seen.has(key))return null;seen.add(key);b.expand();base.attempts++;
@@ -128,16 +141,24 @@ async function coordinatedPlazaSearch(caseId,diversified){
    }
    const feedback=pairsFor(g,bad.filter(i=>['unnormalized-crossing','overlapping-roads'].includes(i.code)&&i.roadIds?.length===2),writable,b);
    const score=changed.length*100000+bad.length*1000+pairs.length;
-   const item={points,changed,feedback,score,ready:!changed.length&&!bad.length&&(checked.valid||pairs.length>0),pairs};
-   if(!base.best||score<base.best.score)base.best={score,rotation:changed.length,blocking:bad.length,contacts:pairs.length};
+   const item={points,changed,feedback,score,angular:residual?angularCost(pos,changed):0,ready:!changed.length&&!bad.length&&(checked.valid||pairs.length>0),pairs};
+   if(better(item,base.best))base.best={score,rotation:changed.length,blocking:bad.length,contacts:pairs.length,...(residual?{angular:item.angular,group:[...ids],changed:[...changed],blockedPairs:feedback.map(p=>p.ids),neighbors:ids.map(id=>({id,old:point(g.nodesById.get(id)),point:point(points.get(id))}))}:{})};
    return item;
   };
   const local=(item,quota)=>{
    const vars=ids.filter(id=>item.feedback.some(p=>p.ends.includes(id))||item.changed.some(v=>v===id||[...g.adjacency.get(v)].includes(id)));
    const at=id=>item.points.get(id)??positions.get(id)??g.nodesById.get(id);
    const streams=vars.map(variable=>{
-    const lines=localAngularLines(g,positions,item.points,affectedIds,variable,b);
+    const lines=localAngularLines(g,positions,item.points,residual?item.changed:affectedIds,variable,b);
     for(const p of item.feedback.filter(p=>p.ends.includes(variable))){const other=[...new Set(p.ends.filter(id=>id!==variable))];for(let i=0;i<other.length;i++)for(let j=i+1;j<other.length;j++){b.spend(4);lines.push([at(other[i]),at(other[j])]);}}
+    if(residual){
+     // Interleave distinct event lines instead of exhausting the first line.
+     // A current-point projection on each obstruction gets a fair turn.
+     const iterators=lines.map(line=>angularLineProposals(item.points.get(variable),g.nodesById.get(variable),limit,[line],b));
+     iterators.push(angularLineProposals(item.points.get(variable),g.nodesById.get(variable),limit,[],b));
+     const interleaved=function*(){let active=iterators;while(active.length){const next=[];for(const it of active){b.spend();const step=it.next();if(!step.done){yield step.value;next.push(it);}}active=next;}};
+     return {variable,it:interleaved()};
+    }
     return {variable,it:angularLineProposals(item.points.get(variable),g.nodesById.get(variable),limit,lines,b)};
    });
    const ranked=[];let count=0,active=true;
@@ -147,12 +168,14 @@ async function coordinatedPlazaSearch(caseId,diversified){
     const points=new Map(item.points);points.set(stream.variable,step.value);
     const key=JSON.stringify(ids.map(id=>[id,points.get(id)]));b.spend(1+ids.length);if(seenLocal.has(key)||!scope(points))continue;seenLocal.add(key);
     const pos=new Map([...positions,...points]),now=id=>pos.get(id)??g.nodesById.get(id);
-    let residual=0;for(const p of item.feedback){const [a,c]=p.ids.map(id=>g.roadsById.get(id));b.spend(16);if(classifyP5Contact(now(a.a),now(a.b),now(c.a),now(c.b)).kind!=='none')residual++;}
-    ranked.push({points,score:rotation(pos).length*100000+residual*1000});
+    let remaining=0;for(const p of item.feedback){const [a,c]=p.ids.map(id=>g.roadsById.get(id));b.spend(16);if(classifyP5Contact(now(a.a),now(a.b),now(c.a),now(c.b)).kind!=='none')remaining++;}
+    const changed=rotation(pos);
+    ranked.push({points,score:changed.length*100000+remaining*1000,angular:residual?angularCost(pos,changed):0});
    }}
-   ranked.sort((a,c)=>a.score-c.score);return ranked.slice(0,3);
+   ranked.sort((a,c)=>a.score-c.score||a.angular-c.angular);return ranked.slice(0,3);
   };
   let best=null,ready=null;
+  if(residual)base.residual={rank:'discrete-plus-angular-severity',schedule:'breadth-then-focused',focusedRounds:0};
   const take=item=>{if(!item)return;if(item.ready&&(!ready||item.score<ready.score))ready=item;if(!best||item.score<best.score)best=item;};
   if(!ids.length)take(full(new Map()));
   // Reserve work for the one construction; this is a conservative
@@ -187,20 +210,31 @@ async function coordinatedPlazaSearch(caseId,diversified){
    let selected=null;
    for(let round=0;round<12&&!ready&&base.attempts<47&&b.snapshot().remainingWork>2500000;round++){
     // Fair initial breadth, then allocate by best actual residual score.
-    const order=round<2?states:[...states].sort((a,c)=>(a.best?.score??Infinity)-(c.best?.score??Infinity)||a.group.length-c.group.length||riCompare(JSON.stringify(a.group),JSON.stringify(c.group)));
+    const rankedStates=[...states].sort((a,c)=>(a.best?.score??Infinity)-(c.best?.score??Infinity)||(residual?(a.best?.angular??Infinity)-(c.best?.angular??Infinity):0)||a.group.length-c.group.length||riCompare(JSON.stringify(a.group),JSON.stringify(c.group)));
+    const order=round<2?states:residual?rankedStates.slice(0,round<4?3:2):rankedStates;
+    if(residual&&round>=2)base.residual.focusedRounds++;
     for(const st of order){
      if(ready||base.attempts>=47||b.snapshot().remainingWork<=2500000)break;
      ids=st.group;affectedIds=st.affected;
      const prevAttempts=base.attempts,prevProbes=base.localProbes;
-     const accept=item=>{if(!item)return;if(!st.best||item.score<st.best.score)st.best=item;if(item.ready){ready=item;selected=st;}};
+     const accept=item=>{if(!item)return;if(better(item,st.best))st.best=item;if(item.ready){ready=item;selected=st;}};
      const points=reformCoverTrial(g,positions,ids,st.best?.feedback.length?st.best.feedback:mandatory,offset,round,b,round%3&&st.best?st.best.points:null,8);
      // Alternate exact-cyclic projection with conservative pairwise
      // orientation assistance, never changing the actual cyclic gate.
      if(round%3===2)projectRotation(g,positions,points,st.triplets,offset,round,b);
+     if(residual&&round>=3&&st.best&&round%3===0){
+      // Additional bounded seed: interpolate each independent neighbor
+      // toward its original position, with deterministic mixed weights.
+      // Selected requested coordinates are never modified.
+      for(let i=0;i<ids.length;i++){
+       const id=ids[i],p=st.best.points.get(id),old=g.nodesById.get(id),k=[.35,.65,.9][(round+i)%3];b.spend(4);
+       points.set(id,{x:old.x+(p.x-old.x)*k,y:old.y+(p.y-old.y)*k});
+      }
+     }
      projectCyclic(g,positions,points,affectedIds,orders,offset,round,b);accept(full(points));
      if(!ready&&st.best&&round>=1&&base.localProbes<192&&b.snapshot().remainingWork>2500000){
-      const quota=Math.min(round<3?8:16,192-base.localProbes);
-      for(const p of local(st.best,quota).slice(0,2)){if(ready||base.attempts>=47||b.snapshot().remainingWork<=2500000)break;accept(full(p.points));}
+      const quota=Math.min(residual?(round<2?4:round<4?12:24):(round<3?8:16),192-base.localProbes);
+      for(const p of local(st.best,quota).slice(0,residual?3:2)){if(ready||base.attempts>=47||b.snapshot().remainingWork<=2500000)break;accept(full(p.points));}
      }
      st.attempts+=base.attempts-prevAttempts;st.probes+=base.localProbes-prevProbes;
      const info=base.diversified.groups[states.indexOf(st)];info.attempts=st.attempts;info.probes=st.probes;info.best=st.best?.score??null;
