@@ -1,4 +1,5 @@
 import {STREET_WIDTHS,STREET_EDGE_WIDTH,PROPERTY_SETBACK} from '../../../src/core/placement.js';
+import {WALL_EDGE_WIDTH} from '../../../src/core/fortification-geometry.js';
 import {riCompare,riFreeze} from '../../../src/core/road-impact-model.js';
 
 // Detached A2b conservative broad phase. The envelope of both old and new
@@ -80,10 +81,48 @@ export function observeP6GeometricImpact(city,w,observation,b){
   report('buildings',r.id,ok?q:null);
  }
  for(const r of city.openSpaces??[]){b.spend();report('openSpaces',r.id,blockBoxes.get(r.blockId)??null);}
- // Node-backed protected faces and square only. Other infrastructure is
- // still handled by the P5 road audit and requires A2c land/context review.
+ // Node-backed protected faces and square. Other protected context uses
+ // conservative source bounds, never a grant of land or crossing authority.
  for(const c of ['waterFaces','terrainFaces'])for(const r of city[c]??[]){b.spend();report(c,r.id,vertexBox(r),true);}
  if(city.plaza)report('plaza',city.plaza.id,vertexBox(city.plaza),true);
+ const featureBoxes=new Map(),wallBoxes=new Map(),crossingBoxes=new Map();
+ const expanded=(q,m)=>q&&Number.isFinite(m)&&m>=0?inflate(q,m):null;
+ for(const collection of ['waterFeatures','terrainFeatures'])for(const r of city[collection]??[]){
+  b.spend();const q=ringBox(r.corridor);featureBoxes.set(key(collection,r.id),q);report(collection,r.id,q,true);
+ }
+ for(const r of city.roads){
+  b.spend();
+  for(const [collection,id] of [['bridges',r.bridgeId],['terrainPasses',r.passId]]){
+   if(id==null)continue;
+   b.spend();const k=key(collection,id),q=expanded(box([old.get(r.a),old.get(r.b)],b),(STREET_WIDTHS[r.kind]+STREET_EDGE_WIDTH)/2);
+   if(!q){crossingBoxes.set(k,null);continue;}
+   if(crossingBoxes.has(k)){const prior=crossingBoxes.get(k);crossingBoxes.set(k,prior?merge(prior,q):null);}else crossingBoxes.set(k,q);
+  }
+ }
+ for(const [collection,ownerCollection,ownerField] of [['bridges','waterFeatures','waterId'],['terrainPasses','terrainFeatures','terrainId']])for(const r of city[collection]??[]){
+  b.spend();const owner=featureBoxes.get(key(ownerCollection,r[ownerField])),crossing=crossingBoxes.get(key(collection,r.id));
+  // Include the whole owner envelope as context; missing actual crossing
+  // geometry is unsupported rather than silently guessed from owner alone.
+  const q=owner&&crossing&&Number.isFinite(r.width)&&r.width>=0?expanded(merge(owner,crossing),r.width):null;
+  report(collection,r.id,q,true);
+ }
+ for(const r of city.walls??[]){
+  b.spend();const q=expanded(box(r.path,b),(r.width+(r.edgeWidth??WALL_EDGE_WIDTH))/2+.5);
+  wallBoxes.set(r.id,q);report('walls',r.id,q,true);
+ }
+ for(const r of city.towers??[]){b.spend();report('towers',r.id,expanded(box([r.center],b),r.radius+.5),true);}
+ for(const r of city.gates??[]){
+  b.spend();const owner=wallBoxes.get(r.wallId),approach=box(r.connection?.points,b);
+  const q=owner&&approach&&Number.isFinite(r.postRadius)&&r.postRadius>=0&&Number.isFinite(r.opening)&&r.opening>=0&&Number.isFinite(r.connection?.width)&&r.connection.width>=0?
+   expanded(merge(owner,approach),Math.max(r.postRadius,r.connection.width/2)):null;
+  report('gates',r.id,q,true);
+ }
+ // District membership is context, not permission to change every parcel.
+ for(const r of city.districts??[]){
+  b.spend();let q=null,ok=Array.isArray(r.blockIds)&&r.blockIds.length>0;
+  for(const id of r.blockIds??[]){b.spend();const v=blockBoxes.get(id);if(!v){ok=false;continue;}q=q?merge(q,v):v;}
+  report('districts',r.id,ok?q:null,true);
+ }
  const order=(a,c)=>riCompare(key(a.ref?.collection??a.collection,a.ref?.id??a.id),key(c.ref?.collection??c.collection,c.ref?.id??c.id));
  for(const a of [rows,unsupported]){b.spend(Math.max(1,a.length*Math.ceil(Math.log2(a.length+1))));a.sort(order);}
  return riFreeze({authority:'none',status:limit?'scope-limit':unsupported.length?'unsupported-geometry':'broad-phase-observed',
