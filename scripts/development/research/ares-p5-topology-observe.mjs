@@ -30,7 +30,14 @@ export async function observeP5Topology(caseId,input){
   for(const e of report.eligibleJunctions){budget.spend();eligible.add(e.ref.id);}
   for(const id of city.plaza?.vertices??[]){budget.spend();fixed.add(id);}
   const conflicts=[],other=[],seen=new Set();
-  // P4 fresh eligibility already checks all mandatory roots and selected\n  // incident closure; omitted frontier observations are NOT admitted.\n  // Retain the old conservative whole-neighborhood gate as evidence,\n  // but separately classify each pair's local closure for research only.\n  const mandatoryComplete=['research-eligible','no-eligible-neighbors'].includes(report.status);\n  const complete=mandatoryComplete&&!report.omittedRefs.length;\n  const excluded=new Map(report.excluded.map(e=>[e.ref.id,e.reason]));\n  budget.spend(report.excluded.length+report.omittedRefs.length);
+  // P4 fresh eligibility already checks all mandatory roots and selected
+  // incident closure; omitted frontier observations are NOT admitted.
+  // Retain the old conservative whole-neighborhood gate as evidence,
+  // but separately classify each pair's local closure for research only.
+  const mandatoryComplete=['research-eligible','no-eligible-neighbors'].includes(report.status);
+  const complete=mandatoryComplete&&!report.omittedRefs.length;
+  const excluded=new Map(report.excluded.map(e=>[e.ref.id,e.reason]));
+  budget.spend(report.excluded.length+report.omittedRefs.length);
   for(const d of report.geometryDiagnostics){
     budget.spend();
     const ids=d.refs.filter(r=>r.collection==='roads').map(r=>r.id).sort(riCompare);
