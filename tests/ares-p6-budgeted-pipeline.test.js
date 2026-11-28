@@ -9,6 +9,9 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {observeP6PropertyFit} from '../scripts/development/research/ares-p6-property-fit.mjs';
+import {shapeContained} from '../src/core/building-validation.js';
+import {propertyFits} from '../src/core/placement.js';
 import {auditP6AffectedProperties} from '../scripts/development/research/ares-p6-property-audit.mjs';
 import {observeP6AffectedProperties} from '../scripts/development/research/ares-p6-affected-properties.mjs';
 import {previewP6BlockLabels} from '../scripts/development/research/ares-p6-block-label-preview.mjs';
@@ -54,7 +57,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,13);
+ assert.equal(result.ledger.length,14);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -166,6 +169,25 @@ function verify(source,candidate,legacy,extraction,label){
   assert.ok(expanded.rows.find(r=>r.id===other.propertyId)?.dependentGeometryHits.some(r=>r.id===other.id&&r.roadIds.includes(roadId)));
  }
  console.log('P6_PROPERTY_AUDIT '+JSON.stringify({label,base:audit.baseCount,expanded:audit.expandedCount,extra:audit.extraCount,knownScope:audit.knownScopeCount,unsupported:audit.unsupportedDependentGeometry.length,coverage:audit.geometryCoverage,authority:'none'}));
+ const fit=result.propertyFit;
+ assert.equal(fit.status,'property-fit-observed');assert.equal(fit.authority,'none');assert.equal(fit.landVerified,false);
+ assert.deepEqual(fit.rows.map(r=>r.id),audit.rows.map(r=>r.id));
+ for(const r of fit.rows){
+  const p=source.properties.find(x=>x.id===r.id);
+  assert.deepEqual(r.options.map(x=>x.key),audit.rows.find(x=>x.id===r.id).candidateKeys);
+  for(const option of r.options){
+   const face=extraction.faces.find(x=>x.key===option.key);
+   const edges=face.polygon.map((a,i)=>({a,b:face.polygon[(i+1)%face.polygon.length],road:extraction.graph.roadsById.get(face.roadIds[i])}));
+   const expected=shapeContained(p.boundary,face.polygon)&&propertyFits(p.boundary,face.polygon,edges);
+   assert.equal(option.fixedGeometry,expected?'fits-original-boundary':'original-boundary-does-not-fit');
+   assert.equal(option.originalFrontagePresent,face.roadIds.includes(p.frontageRoadId));
+   assert.equal(option.ownership,'not-assigned');
+  }
+ }
+ assert.equal(fit.counts.unchangedShapeOption+fit.counts.noUnchangedShapeOption+fit.counts.unresolved,fit.rows.length);
+ assert.throws(()=>observeP6PropertyFit(source,extraction,audit,root(1)),LareBudgetExceeded);
+ if(audit.rows.length)assert.equal(observeP6PropertyFit(source,extraction,{...audit,rows:[{...audit.rows[0],candidateKeys:['absent']}]},root(8000000)).reason,'invalid-successor-face');
+ console.log('P6_PROPERTY_FIT '+JSON.stringify({label,rows:fit.rows.length,counts:fit.counts,authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');

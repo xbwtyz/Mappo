@@ -8,6 +8,7 @@ import {validateP6BudgetedDefenses} from './ares-p6-budgeted-defenses.mjs';
 import {observeP6UnmatchedGeometry,observeP6SmallFaceGeometry} from './ares-p6-refusal-geometry.mjs';
 import {observeP6TopologyIdentity} from './ares-p6-topology-identity.mjs';
 import {observeP6BlockCapacity} from './ares-p6-block-capacity.mjs';
+import {observeP6PropertyFit} from './ares-p6-property-fit.mjs';
 import {auditP6AffectedProperties} from './ares-p6-property-audit.mjs';
 import {observeP6AffectedProperties} from './ares-p6-affected-properties.mjs';
 import {previewP6BlockLabels} from './ares-p6-block-label-preview.mjs';
@@ -58,6 +59,8 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  if(affectedProperties.status==='refused')return refuse('affected-property-observation-refused',{reason:affectedProperties.reason});
  const propertyAudit=stage('affected-property-audit',()=>auditP6AffectedProperties(source,candidateRoads,identity,lineage,affectedProperties,budget));
  if(propertyAudit.status!=='matched')return refuse('affected-property-audit-refused',{reason:propertyAudit.reason});
+ const propertyFit=stage('property-fit-observation',()=>observeP6PropertyFit(source,extraction,propertyAudit,budget));
+ if(propertyFit.status!=='property-fit-observed')return refuse('property-fit-observation-refused',{reason:propertyFit.reason});
  // This is only the legacy mapped-block snapshot, NOT rebuilt land.
  const snapshot=stage('diagnostic-snapshot',()=>{
   budget.spend(Math.max(1,identity.preserved.length+identity.changed.length+candidate.nodesById.size+candidate.roadsById.size));
@@ -73,6 +76,6 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  }
  const districts=check('district-diagnostic',!!source.districtState,validateP6BudgetedDistricts);
  const defenses=check('defense-diagnostic',!!source.fortificationState,validateP6BudgetedDefenses);
- return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,blockOwnership,blockLabels,affectedProperties,propertyAudit,districts,defenses,
+ return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,blockOwnership,blockLabels,affectedProperties,propertyAudit,propertyFit,districts,defenses,
   limitations:['no-independent-road-authorization','no-rebuilt-land','no-mixed-landscape','no-apply']};
 }
