@@ -34,7 +34,7 @@ function order(g,id){
  return g.incidentRoads.get(id).map(r=>{const e=g.roadsById.get(r),q=g.nodesById.get(e.a===id?e.b:e.a);return {r,angle:Math.atan2(q.y-p.y,q.x-p.x)};}).sort((a,b)=>a.angle-b.angle||riCompare(a.r,b.r)).map(x=>x.r);
 }
 const same=(a,b)=>a.length===b.length&&(!a.length||b.includes(a[0])&&a.every((v,i)=>v===b[(b.indexOf(a[0])+i)%b.length]));
-function direct(l,g,selection,offset,boundary){
+export function measureSquareTrialDirect(l,g,selection,offset,boundary){
  if(selection.status!=='selected')return {status:'not-selected'};
  const intent=proposeRoadGroupNodesB1(g,selection.ids,offset);
  if(!intent.draftable)return {status:'intent-refused',issues:intent.issues.map(x=>x.code)};
@@ -63,7 +63,7 @@ export function runSquareMovementPilot(id){
   const c=selectSquareTrialChain(cg,x.target,x.count),e=selectSquareTrialChain(eg,x.target,x.count);
   const matched=c.status==='selected'&&e.status==='selected'&&dist(c.centroid,e.centroid)<=scale*.25&&c.distance<=scale*.55&&e.distance<=scale*.55&&Math.max(c.length,e.length)<=2*Math.min(c.length,e.length);
   return {...x,matched,centroidSeparation:c.centroid&&e.centroid?dist(c.centroid,e.centroid):null,
-   control:{selection:c,result:direct(control,cg,c,x.offset,survey.boundary)},experimental:{selection:e,result:direct(experimental,eg,e,x.offset,survey.boundary)}};
+   control:{selection:c,result:measureSquareTrialDirect(control,cg,c,x.offset,survey.boundary)},experimental:{selection:e,result:measureSquareTrialDirect(experimental,eg,e,x.offset,survey.boundary)}};
  });
  if(hash([control,experimental,survey])!==before)throw Error('Movement pilot mutated source');
  return riFreeze({id,authority:'none',qualification:'direct-road-graph-and-cyclic-only',rows});
