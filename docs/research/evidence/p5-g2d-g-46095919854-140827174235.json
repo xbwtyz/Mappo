@@ -1,0 +1,1463 @@
+{
+  "run": 46095919854,
+  "attempt": 1,
+  "job": 140827174235,
+  "source": "83d167122c7050deeca3b16430026d22d3f88f99",
+  "rows": [
+    {
+      "caseId": "g:radial-small:eight-loop:100:x",
+      "arm": "prior",
+      "construction": {
+        "version": 1,
+        "caseId": "g:radial-small:eight-loop:100:x",
+        "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+        "status": "graph-candidate",
+        "reason": "independent-audit-pending",
+        "attempts": 1,
+        "authority": "none",
+        "independentlyVerified": false,
+        "translationEvidence": {
+          "translatedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0192",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0259"
+          ],
+          "stationaryAnchors": [
+            {
+              "roadId": "RD-0099",
+              "nodeId": "N-0089",
+              "point": {
+                "x": 11.184466474764555,
+                "y": -8.564921266741003
+              }
+            },
+            {
+              "roadId": "RD-0104",
+              "nodeId": "N-0090",
+              "point": {
+                "x": 11.184466474764555,
+                "y": 1.5486404302926537
+              }
+            }
+          ],
+          "translatedBlockers": []
+        },
+        "witness": {
+          "requested": [
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0099"
+              },
+              "point": {
+                "x": 157.12597844713798,
+                "y": -10.36010673644414
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0100"
+              },
+              "point": {
+                "x": 220.95257656622854,
+                "y": -12.854160079592166
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0103"
+              },
+              "point": {
+                "x": 149.82186240789392,
+                "y": 21.88733211268947
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0104"
+              },
+              "point": {
+                "x": 206.34434448774044,
+                "y": 51.640717618675055
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0140"
+              },
+              "point": {
+                "x": 156.589396822164,
+                "y": 0.7611559880052958
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0141"
+              },
+              "point": {
+                "x": 154.1297800723099,
+                "y": 11.620285320982479
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0164"
+              },
+              "point": {
+                "x": 219.8794133162806,
+                "y": 9.388365369306705
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0165"
+              },
+              "point": {
+                "x": 214.9601798165724,
+                "y": 31.10662403526107
+              }
+            }
+          ],
+          "seedArm": "prior",
+          "neighbors": [
+            {
+              "id": "N-0101",
+              "old": {
+                "x": 184.77917468531916,
+                "y": -15.348213422740196
+              },
+              "point": {
+                "x": 226.29179090930347,
+                "y": -9.140939554176727
+              }
+            },
+            {
+              "id": "N-0166",
+              "old": {
+                "x": 94.29369512642819,
+                "y": 70.36672807676936
+              },
+              "point": {
+                "x": 102.87973469030014,
+                "y": 42.31371142529133
+              }
+            },
+            {
+              "id": "N-0188",
+              "old": {
+                "x": 183.16942981039716,
+                "y": 18.01557475060811
+              },
+              "point": {
+                "x": 209.15385678026357,
+                "y": 53.51553255876833
+              }
+            }
+          ],
+          "translatedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0192",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0259"
+          ],
+          "contacts": [
+            {
+              "roadIds": [
+                "RD-0106",
+                "RD-0225"
+              ],
+              "node": {
+                "id": "N-P5-1",
+                "x": 204.23445194954562,
+                "y": 53.08460055100809
+              },
+              "parameters": [
+                0.048528357623120244,
+                0.1474496884212922
+              ]
+            }
+          ],
+          "lineage": [
+            {
+              "parent": "RD-0106",
+              "originalEndpoints": [
+                "N-0104",
+                "N-0105"
+              ],
+              "children": [
+                {
+                  "id": "RD-0106",
+                  "a": "N-0104",
+                  "b": "N-P5-1",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                },
+                {
+                  "id": "RD-P5-1",
+                  "a": "N-P5-1",
+                  "b": "N-0105",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                }
+              ]
+            },
+            {
+              "parent": "RD-0225",
+              "originalEndpoints": [
+                "N-0188",
+                "N-0189"
+              ],
+              "children": [
+                {
+                  "id": "RD-0225",
+                  "a": "N-0188",
+                  "b": "N-P5-1",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                },
+                {
+                  "id": "RD-P5-2",
+                  "a": "N-P5-1",
+                  "b": "N-0189",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                }
+              ]
+            }
+          ],
+          "reservedNodeIds": [
+            "N-P5-1"
+          ],
+          "reservedRoadIds": [
+            "RD-P5-1",
+            "RD-P5-2"
+          ],
+          "graph": {
+            "nodes": 221,
+            "roads": 277,
+            "components": 1
+          }
+        },
+        "stats": {
+          "work": 312869,
+          "expansions": 1,
+          "remainingWork": 7687131,
+          "remainingExpansions": 32767
+        }
+      },
+      "audit": {
+        "version": 1,
+        "caseId": "g:radial-small:eight-loop:100:x",
+        "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+        "status": "rejected",
+        "reason": "cyclic-parent-order-changed",
+        "authority": "none",
+        "pairComparisons": 5544,
+        "contacts": 1,
+        "splitParents": 2,
+        "finalChecks": 0,
+        "sweptChecks": 0,
+        "finalBlockers": [],
+        "sweptUnresolved": [],
+        "rotationDiagnostic": {
+          "authority": "none",
+          "policy": "required",
+          "checked": 220,
+          "geometryChanged": 1,
+          "splitChanged": 0,
+          "finalChanged": 1,
+          "changes": [
+            {
+              "nodeId": "N-0105",
+              "role": "stationary",
+              "degree": 4,
+              "geometry": true,
+              "split": false,
+              "final": true,
+              "prior": [
+                {
+                  "roadId": "RD-0106",
+                  "parent": "RD-0106",
+                  "other": "N-0104",
+                  "angle": -2.6570494628980947
+                },
+                {
+                  "roadId": "RD-0226",
+                  "parent": "RD-0226",
+                  "other": "N-0189",
+                  "angle": -1.1735195987029146
+                },
+                {
+                  "roadId": "RD-0107",
+                  "parent": "RD-0107",
+                  "other": "N-0106",
+                  "angle": 0.48454319069169843
+                },
+                {
+                  "roadId": "RD-0227",
+                  "parent": "RD-0227",
+                  "other": "N-0190",
+                  "angle": 2.1426059800863113
+                }
+              ],
+              "proposed": [
+                {
+                  "roadId": "RD-0226",
+                  "parent": "RD-0226",
+                  "other": "N-0189",
+                  "angle": -1.1735195987029146
+                },
+                {
+                  "roadId": "RD-0106",
+                  "parent": "RD-0106",
+                  "other": "N-0104",
+                  "angle": -0.6001380974520722
+                },
+                {
+                  "roadId": "RD-0107",
+                  "parent": "RD-0107",
+                  "other": "N-0106",
+                  "angle": 0.48454319069169843
+                },
+                {
+                  "roadId": "RD-0227",
+                  "parent": "RD-0227",
+                  "other": "N-0190",
+                  "angle": 2.1426059800863113
+                }
+              ],
+              "normalized": [
+                {
+                  "roadId": "RD-0226",
+                  "parent": "RD-0226",
+                  "other": "N-0189",
+                  "angle": -1.1735195987029146
+                },
+                {
+                  "roadId": "RD-P5-1",
+                  "parent": "RD-0106",
+                  "other": "N-P5-1",
+                  "angle": -0.6001380974520722
+                },
+                {
+                  "roadId": "RD-0107",
+                  "parent": "RD-0107",
+                  "other": "N-0106",
+                  "angle": 0.48454319069169843
+                },
+                {
+                  "roadId": "RD-0227",
+                  "parent": "RD-0227",
+                  "other": "N-0190",
+                  "angle": 2.1426059800863113
+                }
+              ],
+              "originalPoint": {
+                "x": 162.86682656758697,
+                "y": 81.39410312466063
+              },
+              "proposedPoint": {
+                "x": 162.86682656758697,
+                "y": 81.39410312466063
+              }
+            }
+          ]
+        },
+        "stats": {
+          "work": 311319,
+          "expansions": 0,
+          "remainingWork": 7688681,
+          "remainingExpansions": 32768
+        }
+      }
+    },
+    {
+      "caseId": "g:radial-small:eight-loop:75:y",
+      "arm": "radial",
+      "construction": {
+        "version": 1,
+        "caseId": "g:radial-small:eight-loop:75:y",
+        "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+        "status": "graph-candidate",
+        "reason": "independent-audit-pending",
+        "attempts": 1,
+        "authority": "none",
+        "independentlyVerified": false,
+        "translationEvidence": {
+          "translatedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0109",
+            "RD-0110",
+            "RD-0111",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0193",
+            "RD-0194",
+            "RD-0223"
+          ],
+          "stationaryAnchors": [
+            {
+              "roadId": "RD-0099",
+              "nodeId": "N-0089",
+              "point": {
+                "x": 11.184466474764555,
+                "y": -8.564921266741003
+              }
+            },
+            {
+              "roadId": "RD-0104",
+              "nodeId": "N-0090",
+              "point": {
+                "x": 11.184466474764555,
+                "y": 1.5486404302926537
+              }
+            },
+            {
+              "roadId": "RD-0109",
+              "nodeId": "N-0092",
+              "point": {
+                "x": 4.5786708262154345,
+                "y": 10.019032753421051
+              }
+            }
+          ],
+          "translatedBlockers": []
+        },
+        "witness": {
+          "requested": [
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0099"
+              },
+              "point": {
+                "x": 57.12597844713797,
+                "y": 64.63989326355586
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0100"
+              },
+              "point": {
+                "x": 120.95257656622854,
+                "y": 62.14583992040784
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0103"
+              },
+              "point": {
+                "x": 49.82186240789392,
+                "y": 96.88733211268948
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0104"
+              },
+              "point": {
+                "x": 106.34434448774044,
+                "y": 126.64071761867505
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0140"
+              },
+              "point": {
+                "x": 56.589396822163984,
+                "y": 75.7611559880053
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0141"
+              },
+              "point": {
+                "x": 54.1297800723099,
+                "y": 86.62028532098248
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0164"
+              },
+              "point": {
+                "x": 119.87941331628058,
+                "y": 84.38836536930671
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0165"
+              },
+              "point": {
+                "x": 114.9601798165724,
+                "y": 106.10662403526106
+              }
+            }
+          ],
+          "seedArm": "radial",
+          "neighbors": [
+            {
+              "id": "N-0107",
+              "old": {
+                "x": 27.372592941152377,
+                "y": 46.162375343402374
+              },
+              "point": {
+                "x": 20.19938587824431,
+                "y": 45.307939225762254
+              }
+            },
+            {
+              "id": "N-0108",
+              "old": {
+                "x": 61.44580555425736,
+                "y": 100.19080408010086
+              },
+              "point": {
+                "x": 42.57769106289125,
+                "y": 99.58164729862087
+              }
+            },
+            {
+              "id": "N-0142",
+              "old": {
+                "x": 43.79653772723779,
+                "y": 31.250337341736625
+              },
+              "point": {
+                "x": 23.002289625035218,
+                "y": 36.40172619120571
+              }
+            },
+            {
+              "id": "N-0143",
+              "old": {
+                "x": 36.23688247180185,
+                "y": 39.424810832148594
+              },
+              "point": {
+                "x": 23.489017506614825,
+                "y": 41.12948910755859
+              }
+            }
+          ],
+          "translatedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0109",
+            "RD-0110",
+            "RD-0111",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0193",
+            "RD-0194",
+            "RD-0223"
+          ],
+          "contacts": [
+            {
+              "roadIds": [
+                "RD-0105",
+                "RD-0193"
+              ],
+              "node": {
+                "id": "N-P5-1",
+                "x": 49.98991861148825,
+                "y": 96.97579675239074
+              },
+              "parameters": [
+                0.0029732629815677285,
+                0.7974618243057854
+              ]
+            }
+          ],
+          "lineage": [
+            {
+              "parent": "RD-0105",
+              "originalEndpoints": [
+                "N-0103",
+                "N-0104"
+              ],
+              "children": [
+                {
+                  "id": "RD-0105",
+                  "a": "N-0103",
+                  "b": "N-P5-1",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                },
+                {
+                  "id": "RD-P5-1",
+                  "a": "N-P5-1",
+                  "b": "N-0104",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                }
+              ]
+            },
+            {
+              "parent": "RD-0193",
+              "originalEndpoints": [
+                "N-0167",
+                "N-0108"
+              ],
+              "children": [
+                {
+                  "id": "RD-0193",
+                  "a": "N-0167",
+                  "b": "N-P5-1",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                },
+                {
+                  "id": "RD-P5-2",
+                  "a": "N-P5-1",
+                  "b": "N-0108",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                }
+              ]
+            }
+          ],
+          "reservedNodeIds": [
+            "N-P5-1"
+          ],
+          "reservedRoadIds": [
+            "RD-P5-1",
+            "RD-P5-2"
+          ],
+          "graph": {
+            "nodes": 221,
+            "roads": 277,
+            "components": 1
+          }
+        },
+        "stats": {
+          "work": 314191,
+          "expansions": 1,
+          "remainingWork": 7685809,
+          "remainingExpansions": 32767
+        }
+      },
+      "audit": {
+        "version": 1,
+        "caseId": "g:radial-small:eight-loop:75:y",
+        "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+        "status": "rejected",
+        "reason": "cyclic-parent-order-changed",
+        "authority": "none",
+        "pairComparisons": 6300,
+        "contacts": 1,
+        "splitParents": 2,
+        "finalChecks": 0,
+        "sweptChecks": 0,
+        "finalBlockers": [],
+        "sweptUnresolved": [],
+        "rotationDiagnostic": {
+          "authority": "none",
+          "policy": "required",
+          "checked": 220,
+          "geometryChanged": 1,
+          "splitChanged": 0,
+          "finalChanged": 1,
+          "changes": [
+            {
+              "nodeId": "N-0104",
+              "role": "selected",
+              "degree": 4,
+              "geometry": true,
+              "split": false,
+              "final": true,
+              "prior": [
+                {
+                  "roadId": "RD-0105",
+                  "parent": "RD-0105",
+                  "other": "N-0103",
+                  "angle": -2.6570494628980947
+                },
+                {
+                  "roadId": "RD-0190",
+                  "parent": "RD-0190",
+                  "other": "N-0165",
+                  "angle": -1.1735195987029146
+                },
+                {
+                  "roadId": "RD-0106",
+                  "parent": "RD-0106",
+                  "other": "N-0105",
+                  "angle": 0.48454319069169827
+                },
+                {
+                  "roadId": "RD-0191",
+                  "parent": "RD-0191",
+                  "other": "N-0166",
+                  "angle": 2.1426059800863113
+                }
+              ],
+              "proposed": [
+                {
+                  "roadId": "RD-0105",
+                  "parent": "RD-0105",
+                  "other": "N-0103",
+                  "angle": -2.6570494628980947
+                },
+                {
+                  "roadId": "RD-0191",
+                  "parent": "RD-0191",
+                  "other": "N-0166",
+                  "angle": -1.7817526706515256
+                },
+                {
+                  "roadId": "RD-0190",
+                  "parent": "RD-0190",
+                  "other": "N-0165",
+                  "angle": -1.1735195987029148
+                },
+                {
+                  "roadId": "RD-0106",
+                  "parent": "RD-0106",
+                  "other": "N-0105",
+                  "angle": -0.6750497094701999
+                }
+              ],
+              "normalized": [
+                {
+                  "roadId": "RD-P5-1",
+                  "parent": "RD-0105",
+                  "other": "N-P5-1",
+                  "angle": -2.6570494628980947
+                },
+                {
+                  "roadId": "RD-0191",
+                  "parent": "RD-0191",
+                  "other": "N-0166",
+                  "angle": -1.7817526706515256
+                },
+                {
+                  "roadId": "RD-0190",
+                  "parent": "RD-0190",
+                  "other": "N-0165",
+                  "angle": -1.1735195987029148
+                },
+                {
+                  "roadId": "RD-0106",
+                  "parent": "RD-0106",
+                  "other": "N-0105",
+                  "angle": -0.6750497094701999
+                }
+              ],
+              "originalPoint": {
+                "x": 106.34434448774044,
+                "y": 51.640717618675055
+              },
+              "proposedPoint": {
+                "x": 106.34434448774044,
+                "y": 126.64071761867505
+              }
+            }
+          ]
+        },
+        "stats": {
+          "work": 312912,
+          "expansions": 0,
+          "remainingWork": 7687088,
+          "remainingExpansions": 32768
+        }
+      }
+    },
+    {
+      "caseId": "g:radial-small:five-chain:50:y",
+      "arm": "prior",
+      "construction": {
+        "version": 1,
+        "caseId": "g:radial-small:five-chain:50:y",
+        "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+        "status": "graph-candidate",
+        "reason": "independent-audit-pending",
+        "attempts": 1,
+        "authority": "none",
+        "independentlyVerified": false,
+        "translationEvidence": {
+          "translatedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0103",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0259",
+            "RD-0260",
+            "RD-0261",
+            "RD-0262",
+            "RD-0274"
+          ],
+          "stationaryAnchors": [
+            {
+              "roadId": "RD-0099",
+              "nodeId": "N-0089",
+              "point": {
+                "x": 11.184466474764555,
+                "y": -8.564921266741003
+              }
+            },
+            {
+              "roadId": "RD-0103",
+              "nodeId": "N-0080",
+              "point": {
+                "x": 304.5365693222618,
+                "y": -20.027788071285162
+              }
+            },
+            {
+              "roadId": "RD-0104",
+              "nodeId": "N-0090",
+              "point": {
+                "x": 11.184466474764555,
+                "y": 1.5486404302926537
+              }
+            }
+          ],
+          "translatedBlockers": []
+        },
+        "witness": {
+          "requested": [
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0099"
+              },
+              "point": {
+                "x": 57.12597844713797,
+                "y": 39.63989326355586
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0100"
+              },
+              "point": {
+                "x": 120.95257656622854,
+                "y": 37.14583992040784
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0101"
+              },
+              "point": {
+                "x": 184.77917468531916,
+                "y": 34.651786577259806
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0102"
+              },
+              "point": {
+                "x": 248.6057728044097,
+                "y": 32.15773323411178
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0212"
+              },
+              "point": {
+                "x": 246.45944630451376,
+                "y": 76.64278413190952
+              }
+            },
+            {
+              "ref": {
+                "collection": "nodes",
+                "id": "N-0213"
+              },
+              "point": {
+                "x": 236.62097930509742,
+                "y": 120.07930146381825
+              }
+            }
+          ],
+          "seedArm": "prior",
+          "neighbors": [
+            {
+              "id": "N-0103",
+              "old": {
+                "x": 49.82186240789392,
+                "y": 21.88733211268947
+              },
+              "point": {
+                "x": 57.1232062773297,
+                "y": 42.913816384681745
+              }
+            },
+            {
+              "id": "N-0104",
+              "old": {
+                "x": 106.34434448774044,
+                "y": 51.640717618675055
+              },
+              "point": {
+                "x": 105.52302183432754,
+                "y": 58.213338842727715
+              }
+            },
+            {
+              "id": "N-0140",
+              "old": {
+                "x": 56.589396822163984,
+                "y": 0.7611559880052958
+              },
+              "point": {
+                "x": 57.8970460106059,
+                "y": 2.846212200926609
+              }
+            },
+            {
+              "id": "N-0141",
+              "old": {
+                "x": 54.1297800723099,
+                "y": 11.620285320982479
+              },
+              "point": {
+                "x": 59.49075526787527,
+                "y": 15.018047527340887
+              }
+            },
+            {
+              "id": "N-0165",
+              "old": {
+                "x": 114.9601798165724,
+                "y": 31.10662403526107
+              },
+              "point": {
+                "x": 126.37700830464972,
+                "y": 39.348614198911946
+              }
+            },
+            {
+              "id": "N-0188",
+              "old": {
+                "x": 183.16942981039716,
+                "y": 18.01557475060811
+              },
+              "point": {
+                "x": 200.11754075484026,
+                "y": 34.302623737406996
+              }
+            }
+          ],
+          "translatedRoadIds": [
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0103",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0187",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190",
+            "RD-0191",
+            "RD-0223",
+            "RD-0224",
+            "RD-0225",
+            "RD-0259",
+            "RD-0260",
+            "RD-0261",
+            "RD-0262",
+            "RD-0274"
+          ],
+          "contacts": [
+            {
+              "roadIds": [
+                "RD-0100",
+                "RD-0154"
+              ],
+              "node": {
+                "id": "N-P5-1",
+                "x": 57.40198358935698,
+                "y": 39.62910823712546
+              },
+              "parameters": [
+                0.004324296615402047,
+                0.8822506680366364
+              ]
+            },
+            {
+              "roadIds": [
+                "RD-0101",
+                "RD-0189"
+              ],
+              "node": {
+                "id": "N-P5-2",
+                "x": 125.85771579879734,
+                "y": 36.954169374552194
+              },
+              "parameters": [
+                0.07685102100250694,
+                0.9200792744420173
+              ]
+            }
+          ],
+          "lineage": [
+            {
+              "parent": "RD-0100",
+              "originalEndpoints": [
+                "N-0099",
+                "N-0100"
+              ],
+              "children": [
+                {
+                  "id": "RD-0100",
+                  "a": "N-0099",
+                  "b": "N-P5-1",
+                  "kind": "primary",
+                  "boundary": false,
+                  "plaza": false
+                },
+                {
+                  "id": "RD-P5-1",
+                  "a": "N-P5-1",
+                  "b": "N-0100",
+                  "kind": "primary",
+                  "boundary": false,
+                  "plaza": false
+                }
+              ]
+            },
+            {
+              "parent": "RD-0101",
+              "originalEndpoints": [
+                "N-0100",
+                "N-0101"
+              ],
+              "children": [
+                {
+                  "id": "RD-0101",
+                  "a": "N-0100",
+                  "b": "N-P5-2",
+                  "kind": "primary",
+                  "boundary": false,
+                  "plaza": false
+                },
+                {
+                  "id": "RD-P5-2",
+                  "a": "N-P5-2",
+                  "b": "N-0101",
+                  "kind": "primary",
+                  "boundary": false,
+                  "plaza": false
+                }
+              ]
+            },
+            {
+              "parent": "RD-0154",
+              "originalEndpoints": [
+                "N-0141",
+                "N-0103"
+              ],
+              "children": [
+                {
+                  "id": "RD-0154",
+                  "a": "N-0141",
+                  "b": "N-P5-1",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                },
+                {
+                  "id": "RD-P5-3",
+                  "a": "N-P5-1",
+                  "b": "N-0103",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                }
+              ]
+            },
+            {
+              "parent": "RD-0189",
+              "originalEndpoints": [
+                "N-0164",
+                "N-0165"
+              ],
+              "children": [
+                {
+                  "id": "RD-0189",
+                  "a": "N-0164",
+                  "b": "N-P5-2",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                },
+                {
+                  "id": "RD-P5-4",
+                  "a": "N-P5-2",
+                  "b": "N-0165",
+                  "kind": "secondary",
+                  "boundary": false,
+                  "plaza": false
+                }
+              ]
+            }
+          ],
+          "reservedNodeIds": [
+            "N-P5-1",
+            "N-P5-2"
+          ],
+          "reservedRoadIds": [
+            "RD-P5-1",
+            "RD-P5-2",
+            "RD-P5-3",
+            "RD-P5-4"
+          ],
+          "graph": {
+            "nodes": 222,
+            "roads": 279,
+            "components": 1
+          }
+        },
+        "stats": {
+          "work": 313156,
+          "expansions": 1,
+          "remainingWork": 7686844,
+          "remainingExpansions": 32767
+        }
+      },
+      "audit": {
+        "version": 1,
+        "caseId": "g:radial-small:five-chain:50:y",
+        "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+        "status": "rejected",
+        "reason": "cyclic-parent-order-changed",
+        "authority": "none",
+        "pairComparisons": 6550,
+        "contacts": 2,
+        "splitParents": 4,
+        "finalChecks": 0,
+        "sweptChecks": 0,
+        "finalBlockers": [],
+        "sweptUnresolved": [],
+        "rotationDiagnostic": {
+          "authority": "none",
+          "policy": "required",
+          "checked": 220,
+          "geometryChanged": 2,
+          "splitChanged": 0,
+          "finalChanged": 2,
+          "changes": [
+            {
+              "nodeId": "N-0099",
+              "role": "selected",
+              "degree": 4,
+              "geometry": true,
+              "split": false,
+              "final": true,
+              "prior": [
+                {
+                  "roadId": "RD-0187",
+                  "parent": "RD-0187",
+                  "other": "N-0163",
+                  "angle": -1.697118374301214
+                },
+                {
+                  "roadId": "RD-0100",
+                  "parent": "RD-0100",
+                  "other": "N-0100",
+                  "angle": -0.0390555849066004
+                },
+                {
+                  "roadId": "RD-0152",
+                  "parent": "RD-0152",
+                  "other": "N-0140",
+                  "angle": 1.6190072044880122
+                },
+                {
+                  "roadId": "RD-0099",
+                  "parent": "RD-0099",
+                  "other": "N-0089",
+                  "angle": 3.102537068683193
+                }
+              ],
+              "proposed": [
+                {
+                  "roadId": "RD-0099",
+                  "parent": "RD-0099",
+                  "other": "N-0089",
+                  "angle": -2.33215885566766
+                },
+                {
+                  "roadId": "RD-0187",
+                  "parent": "RD-0187",
+                  "other": "N-0163",
+                  "angle": -1.5937711709652098
+                },
+                {
+                  "roadId": "RD-0152",
+                  "parent": "RD-0152",
+                  "other": "N-0140",
+                  "angle": -1.5498428724824007
+                },
+                {
+                  "roadId": "RD-0100",
+                  "parent": "RD-0100",
+                  "other": "N-0100",
+                  "angle": -0.039055584906600375
+                }
+              ],
+              "normalized": [
+                {
+                  "roadId": "RD-0099",
+                  "parent": "RD-0099",
+                  "other": "N-0089",
+                  "angle": -2.33215885566766
+                },
+                {
+                  "roadId": "RD-0187",
+                  "parent": "RD-0187",
+                  "other": "N-0163",
+                  "angle": -1.5937711709652098
+                },
+                {
+                  "roadId": "RD-0152",
+                  "parent": "RD-0152",
+                  "other": "N-0140",
+                  "angle": -1.5498428724824007
+                },
+                {
+                  "roadId": "RD-0100",
+                  "parent": "RD-0100",
+                  "other": "N-P5-1",
+                  "angle": -0.0390555849065914
+                }
+              ],
+              "originalPoint": {
+                "x": 57.12597844713797,
+                "y": -10.36010673644414
+              },
+              "proposedPoint": {
+                "x": 57.12597844713797,
+                "y": 39.63989326355586
+              }
+            },
+            {
+              "nodeId": "N-0100",
+              "role": "selected",
+              "degree": 4,
+              "geometry": true,
+              "split": false,
+              "final": true,
+              "prior": [
+                {
+                  "roadId": "RD-0223",
+                  "parent": "RD-0223",
+                  "other": "N-0187",
+                  "angle": -1.697118374301214
+                },
+                {
+                  "roadId": "RD-0101",
+                  "parent": "RD-0101",
+                  "other": "N-0101",
+                  "angle": -0.03905558490660044
+                },
+                {
+                  "roadId": "RD-0188",
+                  "parent": "RD-0188",
+                  "other": "N-0164",
+                  "angle": 1.6190072044880122
+                },
+                {
+                  "roadId": "RD-0100",
+                  "parent": "RD-0100",
+                  "other": "N-0099",
+                  "angle": 3.102537068683193
+                }
+              ],
+              "proposed": [
+                {
+                  "roadId": "RD-0223",
+                  "parent": "RD-0223",
+                  "other": "N-0187",
+                  "angle": -1.6096930114895616
+                },
+                {
+                  "roadId": "RD-0188",
+                  "parent": "RD-0188",
+                  "other": "N-0164",
+                  "angle": -1.6094392162834705
+                },
+                {
+                  "roadId": "RD-0101",
+                  "parent": "RD-0101",
+                  "other": "N-0101",
+                  "angle": -0.039055584906600466
+                },
+                {
+                  "roadId": "RD-0100",
+                  "parent": "RD-0100",
+                  "other": "N-0099",
+                  "angle": 3.102537068683193
+                }
+              ],
+              "normalized": [
+                {
+                  "roadId": "RD-0223",
+                  "parent": "RD-0223",
+                  "other": "N-0187",
+                  "angle": -1.6096930114895616
+                },
+                {
+                  "roadId": "RD-0188",
+                  "parent": "RD-0188",
+                  "other": "N-0164",
+                  "angle": -1.6094392162834705
+                },
+                {
+                  "roadId": "RD-0101",
+                  "parent": "RD-0101",
+                  "other": "N-P5-2",
+                  "angle": -0.039055584906600806
+                },
+                {
+                  "roadId": "RD-P5-1",
+                  "parent": "RD-0100",
+                  "other": "N-P5-1",
+                  "angle": 3.102537068683193
+                }
+              ],
+              "originalPoint": {
+                "x": 120.95257656622854,
+                "y": -12.854160079592166
+              },
+              "proposedPoint": {
+                "x": 120.95257656622854,
+                "y": 37.14583992040784
+              }
+            }
+          ]
+        },
+        "stats": {
+          "work": 311992,
+          "expansions": 0,
+          "remainingWork": 7688008,
+          "remainingExpansions": 32768
+        }
+      }
+    }
+  ]
+}
