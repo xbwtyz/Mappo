@@ -93,7 +93,12 @@ export async function auditP5CoordinatedCandidate(caseId,evidence){
  if(typeof caseId==='string'&&caseId.startsWith('sq:'))squareRecoveryLockedRow(caseId);else if(typeof caseId==='string'&&caseId.startsWith('t:'))tournamentLockedRow(caseId);else plazaExperimentCase(caseId,'plaza-attached');
  return auditSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,evidence,null,true,true,true);
 }
-async function auditSplit(caseId,permissions,evidence,combined,holdout=false,plazaException=false,coordinated=false){
+// P6-only diagnostic binding; same independent audit and unchanged ceiling.
+export async function auditP5CoordinatedCandidateForP6(caseId,evidence){
+ tournamentLockedRow(caseId);
+ return auditSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,evidence,null,true,true,true,true);
+}
+async function auditSplit(caseId,permissions,evidence,combined,holdout=false,plazaException=false,coordinated=false,bindP6=false){
   // No caller-supplied budget or scope, no search retry. This root is
   // independent evidence only, never a continuation of construction.
   const b=createSpatialPreservationBudget({work:8000000,stateExpansions:32768});
@@ -345,6 +350,11 @@ async function auditSplit(caseId,permissions,evidence,combined,holdout=false,pla
     need(result.finalChecks===3*affected.length&&result.sweptChecks===3*moved.size,'constraint-coverage');
     need(aresReplayJson(f.project,b)===before,'source-mutated');
     aresReplayJson(result,b);
+    if(bindP6&&!result.finalBlockers.length&&!result.sweptUnresolved.length){
+      const json=aresReplayJson({nodes:candidate.nodes,roads:candidate.roads},b);
+      b.spend(Math.max(1,Math.ceil(Buffer.byteLength(json)/64)));
+      result.p6RoadFingerprint=createHash('sha256').update(json,'utf8').digest('hex');
+    }
     if(result.finalBlockers.length){result.status='rejected';result.reason='final-constraint-blocked';}
     else{result.status='topology-final-verified';result.reason=result.sweptUnresolved.length?'swept-unresolved':null;result.identityLedger=identityLedger;}
   }catch(e){

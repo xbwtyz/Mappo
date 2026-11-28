@@ -27,7 +27,7 @@ const land=new Set(['blocks','properties','plots','buildings','openSpaces']);
 const protectedCollections=new Set(['waterFeatures','bridges','waterFaces','terrainFeatures','terrainPasses','terrainFaces','walls','gates','towers']);
 const ownershipRelations=new Set(['block','property','plot','building','compound-member','courtyard-occupant']);
 const hash=s=>createHash('sha256').update(s,'utf8').digest('hex');
-function archived(id){
+export function readP6ArchivedRoadEvidence(id){
  if(!recipes.has(id))throw Error('Frozen P6-A recipe ID required.');
  const job=recipes.get(id),e=JSON.parse(readFileSync(new URL('../../../docs/research/evidence/tournament-recovery-46110819768-'+job+'.json',import.meta.url),'utf8'));
  if(e.version!==1||e.source!==sourceRevision||e.run!==46110819768||e.attempt!==1||e.aggregate!==140875497212||e.job!==job)throw Error('P6 archive identity mismatch.');
@@ -40,7 +40,7 @@ function archived(id){
 // independent, non-search P5 audit root before opening the single P6 root.
 // No call to a road search, construction, editor, or allocation authority.
 export async function observeP6Ownership(id){
- const prior=archived(id),base={version:1,id,source:prior.source,authority:'none',landVerified:false,geometryCoverage:'not-evaluated',roadAudit:null};
+ const prior=readP6ArchivedRoadEvidence(id),base={version:1,id,source:prior.source,authority:'none',landVerified:false,geometryCoverage:'not-evaluated',roadAudit:null};
  if(prior.status!=='verified')return riFreeze({...base,status:'road-refused',reason:prior.reason});
  const w=prior.construction?.witness;
  if(prior.audit?.status!=='topology-final-verified'||prior.audit.sweptUnresolved.length||!w)throw Error('Missing qualified P5 witness.');
