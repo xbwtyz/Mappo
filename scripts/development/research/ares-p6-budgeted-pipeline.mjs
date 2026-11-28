@@ -5,6 +5,7 @@ import {matchP6BudgetedIdentity} from './ares-p6-budgeted-identity.mjs';
 import {observeP6BudgetedLineage} from './ares-p6-budgeted-lineage.mjs';
 import {validateP6BudgetedDistricts} from './ares-p6-budgeted-districts.mjs';
 import {validateP6BudgetedDefenses} from './ares-p6-budgeted-defenses.mjs';
+import {observeP6UnmatchedGeometry,observeP6SmallFaceGeometry} from './ares-p6-refusal-geometry.mjs';
 import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
 import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
 
@@ -32,11 +33,11 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  const candidate=stage('candidate-graph',()=>buildP6BudgetedRoadGraph({nodes:candidateRoads.nodes,roads:candidateRoads.roads},budget));
  if(!candidate.valid)return refuse('invalid-candidate-graph',{issues:candidate.issues});
  const extraction=stage('candidate-extraction',()=>extractP6BudgetedDryFaces(candidate,source,budget));
- if(!extraction.valid)return refuse('invalid-candidate-extraction',{issues:extraction.issues,coverage:extraction.coverage,faceCount:extraction.faces.length});
+ if(!extraction.valid)return refuse('invalid-candidate-extraction',{issues:extraction.issues,coverage:extraction.coverage,faceCount:extraction.faces.length,smallFaces:stage('small-face-observation',()=>observeP6SmallFaceGeometry(extraction,budget))});
  const identity=stage('correspondence',()=>matchP6BudgetedIdentity(source,extraction,accepted,budget));
  if(!identity.correspondenceValid)return refuse('unproven-correspondence',{issues:identity.issues});
  const lineage=stage('lineage-observation',()=>observeP6BudgetedLineage(source,extraction,identity,budget));
- if(!lineage.lineageValid)return refuse('unproven-lineage',{issues:lineage.issues,added:identity.added,removed:identity.removed,split:identity.split,merged:identity.merged,ambiguous:identity.ambiguous,preservedCount:identity.preserved.length,changedCount:identity.changed.length});
+ if(!lineage.lineageValid)return refuse('unproven-lineage',{issues:lineage.issues,added:identity.added,removed:identity.removed,split:identity.split,merged:identity.merged,ambiguous:identity.ambiguous,preservedCount:identity.preserved.length,changedCount:identity.changed.length,unmatchedGeometry:stage('unmatched-geometry-observation',()=>observeP6UnmatchedGeometry(source,extraction,identity,budget))});
  // This is only the legacy mapped-block snapshot, NOT rebuilt land.
  const snapshot=stage('diagnostic-snapshot',()=>{
   budget.spend(Math.max(1,identity.preserved.length+identity.changed.length+candidate.nodesById.size+candidate.roadsById.size));

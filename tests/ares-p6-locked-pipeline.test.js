@@ -37,6 +37,11 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
    assert.deepEqual(e.issues,legacy.issues);
    assert.deepEqual(e.coverage,legacy.coverage);
    assert.equal(e.faceCount,legacy.faces.length);
+   assert.equal(e.smallFaces.authority,'none');
+   const tiny=legacy.faces.filter(f=>f.kind==='block'&&f.area<=1);
+   assert.equal(tiny.length,6);
+   assert.deepEqual(e.smallFaces.rows.map(x=>[x.key,x.area]),tiny.map(f=>[f.key,f.area]));
+   assert.ok(e.smallFaces.rows.every(x=>x.edges.length===x.vertices&&x.edges.every(y=>y.length>0)));
   }else{
    assert.equal(r.pipeline.reason,'unproven-lineage');
    assert.ok(legacy.valid);
@@ -47,6 +52,13 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
    for(const key of ['added','removed','split','merged','ambiguous'])assert.deepEqual(e[key],match[key]);
    assert.equal(e.preservedCount,match.preserved.length);
    assert.equal(e.changedCount,match.changed.length);
+   assert.equal(e.unmatchedGeometry.authority,'none');
+   assert.equal(e.unmatchedGeometry.rows.length,1);
+   const pair=e.unmatchedGeometry.rows[0];
+   assert.equal(pair.oldId,'BLK-0053');
+   assert.equal(pair.candidateKey,match.added[0].candidateKey);
+   assert.ok(pair.oldArea>0&&pair.newArea>0&&pair.overlap>=0);
+   assert.ok(Number.isFinite(pair.meanDisplacement));
   }
   console.log('P6_REFUSAL_EVIDENCE '+JSON.stringify({id,legacyParity:true,...e}));
  }
