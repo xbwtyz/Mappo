@@ -5,6 +5,7 @@ import {matchP6BudgetedIdentity} from './ares-p6-budgeted-identity.mjs';
 import {observeP6BudgetedLineage} from './ares-p6-budgeted-lineage.mjs';
 import {validateP6BudgetedDistricts} from './ares-p6-budgeted-districts.mjs';
 import {validateP6BudgetedDefenses} from './ares-p6-budgeted-defenses.mjs';
+import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
 import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
 
 export function observeP6DryPipeline(source,candidateRoads,budget){
@@ -17,19 +18,25 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
   ledger.push({name,work:budget.snapshot().work-before});
   return value;
  }
- const refuse=reason=>({valid:false,authority:'none',diagnosticsComplete:false,reason,ledger});
+ const refuse=(reason,evidence=null)=>{
+  if(evidence)stage('refusal-evidence',()=>{
+   const serialized=aresReplayJson(evidence,budget);
+   budget.spend(Math.max(1,Math.ceil(Buffer.byteLength(serialized)/64)));
+  });
+  return {valid:false,authority:'none',diagnosticsComplete:false,reason,ledger,...(evidence?{evidence}: {})};
+ };
  if(!source||!Array.isArray(candidateRoads?.nodes)||!Array.isArray(candidateRoads?.roads))return refuse('missing-road-records');
  if(source.waterFeatures?.length||source.terrainFeatures?.length||source.waterFaces?.length||source.terrainFaces?.length)return refuse('unsupported-landscape');
  const accepted=stage('accepted-graph',()=>buildP6BudgetedRoadGraph(source,budget));
- if(!accepted.valid)return refuse('invalid-accepted-graph');
+ if(!accepted.valid)return refuse('invalid-accepted-graph',{issues:accepted.issues});
  const candidate=stage('candidate-graph',()=>buildP6BudgetedRoadGraph({nodes:candidateRoads.nodes,roads:candidateRoads.roads},budget));
- if(!candidate.valid)return refuse('invalid-candidate-graph');
+ if(!candidate.valid)return refuse('invalid-candidate-graph',{issues:candidate.issues});
  const extraction=stage('candidate-extraction',()=>extractP6BudgetedDryFaces(candidate,source,budget));
- if(!extraction.valid)return refuse('invalid-candidate-extraction');
+ if(!extraction.valid)return refuse('invalid-candidate-extraction',{issues:extraction.issues,coverage:extraction.coverage,faceCount:extraction.faces.length});
  const identity=stage('correspondence',()=>matchP6BudgetedIdentity(source,extraction,accepted,budget));
- if(!identity.correspondenceValid)return refuse('unproven-correspondence');
+ if(!identity.correspondenceValid)return refuse('unproven-correspondence',{issues:identity.issues});
  const lineage=stage('lineage-observation',()=>observeP6BudgetedLineage(source,extraction,identity,budget));
- if(!lineage.lineageValid)return refuse('unproven-lineage');
+ if(!lineage.lineageValid)return refuse('unproven-lineage',{issues:lineage.issues,added:identity.added,removed:identity.removed,split:identity.split,merged:identity.merged,ambiguous:identity.ambiguous,preservedCount:identity.preserved.length,changedCount:identity.changed.length});
  // This is only the legacy mapped-block snapshot, NOT rebuilt land.
  const snapshot=stage('diagnostic-snapshot',()=>{
   budget.spend(Math.max(1,identity.preserved.length+identity.changed.length+candidate.nodesById.size+candidate.roadsById.size));
