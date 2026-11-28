@@ -220,22 +220,48 @@ async function auditSplit(caseId,permissions,evidence,combined){
     for(const [id,road] of original.roadsById){b.spend();need(equalP5GraphRecord(rebuilt.roadsById.get(id),parts.get(id)?.[0]??road,b),'road-preservation');}
     for(const n of additions){b.spend();need(equalP5GraphRecord(rebuilt.nodesById.get(n.id),n,b),'new-node-preservation');}
     for(const children of parts.values())for(const child of children){b.spend();need(equalP5GraphRecord(rebuilt.roadsById.get(child.id),child,b),'child-road-preservation');}
-    // At existing junctions, compare original incident-parent cyclic order.
-    // New crossing junctions are allowed; unrelated incident order changes are not.
-    if(combined){
-      const parentByChild=new Map();
-      for(const [parent,children] of parts)for(const child of children){b.spend();parentByChild.set(child.id,parent);}
-      const cyclic=(g,id,parents)=>{
-        const n=g.nodesById.get(id),ids=[...g.incidentRoads.get(id)];sortCharge(ids.length,b);
-        const angle=rid=>{const r=g.roadsById.get(rid),p=g.nodesById.get(r.a===id?r.b:r.a);return Math.atan2(p.y-n.y,p.x-n.x);};
-        return ids.sort((a,c)=>angle(a)-angle(c)||riCompare(a,c)).map(rid=>parents.get(rid)??rid);
-      };
-      for(const id of original.nodesById.keys()){
-        b.spend();const prior=cyclic(original,id,new Map()),next=cyclic(rebuilt,id,parentByChild);
-        const start=next.indexOf(prior[0]);b.spend(Math.max(1,prior.length*2));
-        need(prior.length===next.length&&(!prior.length||start>=0&&prior.every((rid,i)=>rid===next[(start+i)%next.length])),'cyclic-parent-order-changed');
+    // G2D: inspect all original junctions under the SAME gate, without
+    // changing coordinates, permissions or candidate selection. Compare
+    // original -> proposed unsplit -> normalized parent-bearing orders.
+    // C controls are observation-only: their original gate is unchanged.
+    const parentByChild=new Map();
+    for(const [parent,children] of parts)for(const child of children){b.spend();parentByChild.set(child.id,parent);}
+    const cyclic=(g,id,coords,parents)=>{
+      const n=coords.get(id),ids=[...g.incidentRoads.get(id)];sortCharge(ids.length,b);
+      const bearings=ids.map(rid=>{
+        b.spend();const r=g.roadsById.get(rid),other=r.a===id?r.b:r.a,p=coords.get(other);
+        return {roadId:rid,parent:parents.get(rid)??rid,other,angle:Math.atan2(p.y-n.y,p.x-n.x)};
+      });
+      return bearings.sort((a,c)=>a.angle-c.angle||riCompare(a.roadId,c.roadId));
+    };
+    const equalOrder=(a,c)=>{
+      b.spend(Math.max(1,a.length*2));
+      if(a.length!==c.length)return false;
+      if(!a.length)return true;
+      const start=c.findIndex(x=>x.parent===a[0].parent);
+      return start>=0&&a.every((x,i)=>x.parent===c[(start+i)%c.length].parent);
+    };
+    const noParents=new Map(),changes=[];
+    const selectedNodes=new Set(report.requested.map(x=>x.ref.id));
+    let checked=0,geometryChanged=0,splitChanged=0,finalChanged=0;
+    for(const id of original.nodesById.keys()){
+      b.spend();checked++;
+      const prior=cyclic(original,id,original.nodesById,noParents);
+      const proposed=cyclic(original,id,positions,noParents);
+      const normalized=cyclic(rebuilt,id,rebuilt.nodesById,parentByChild);
+      const geometry=!equalOrder(prior,proposed),split=!equalOrder(proposed,normalized),final=!equalOrder(prior,normalized);
+      if(geometry)geometryChanged++;
+      if(split)splitChanged++;
+      if(final)finalChanged++;
+      if(geometry||split||final){
+        b.spend();changes.push({nodeId:id,role:selectedNodes.has(id)?'selected':requested.has(id)?'adaptive-neighbor':fixed.has(id)?'protected-anchor':'stationary',
+          degree:prior.length,geometry,split,final,prior,proposed,normalized,
+          originalPoint:point(original.nodesById.get(id)),proposedPoint:point(positions.get(id))});
       }
     }
+    result.rotationDiagnostic={authority:'none',policy:combined?'required':'observation-only',checked,geometryChanged,splitChanged,finalChanged,changes};
+    aresReplayJson(result.rotationDiagnostic,b);
+    if(combined)need(finalChanged===0,'cyclic-parent-order-changed');
     const identityLedger=inspectP5IdentityLedger({kind:'split',original:city,candidate,
       splitChains:expected.map(l=>({parent:l.parent,children:l.children.map(x=>x.id)}))},b);
     need(identityLedger.status==='complete','identity-ledger:'+identityLedger.reason);

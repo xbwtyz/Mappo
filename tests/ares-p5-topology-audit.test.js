@@ -11,6 +11,11 @@ for(const [id,count] of [['g:radial-small:eight-loop:100:x',5],['g:linear-medium
   console.log('ARES_P5_EF_SPLIT '+JSON.stringify(r));
   assert.equal(r.source,c.source);assert.equal(r.authority,'none');assert.equal(r.contacts,count);
   assert.equal(r.status,'topology-final-verified');assert.equal(r.reason,null);
+  const d=r.rotationDiagnostic;
+  assert.equal(d.authority,'none');assert.equal(d.policy,'observation-only');assert.ok(d.checked>0);
+  assert.equal(d.geometryChanged,d.changes.filter(x=>x.geometry).length);
+  assert.equal(d.splitChanged,d.changes.filter(x=>x.split).length);
+  assert.equal(d.finalChanged,d.changes.filter(x=>x.final).length);
   assert.ok(r.pairComparisons>0);assert.ok(r.stats.work<=8000000);assert.ok(r.stats.expansions<=32768);
   assert.equal(r.splitParents,c.witness.lineage.length);
   assert.ok(!['node-preservation','road-preservation','new-node-preservation','child-road-preservation'].includes(r.reason));

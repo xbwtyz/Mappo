@@ -8,6 +8,7 @@ for(const id of Object.keys(G2_CASES))test('P5 G2 combined detached pilot '+id,a
   const {recipe,seed}=g2Seed(id),c=await constructP5CombinedPilot(id,permissions);
   assert.equal(c.source,recipe.source);assert.equal(c.authority,'none');assert.equal(c.independentlyVerified,false);
   assert.ok(c.stats.work<=8000000);assert.ok(c.stats.expansions<=32768);assert.ok(c.attempts<=1);
+  assert.equal(c.status,'graph-candidate');
   if(c.status!=='graph-candidate'){
     console.log('ARES_P5_G2 '+JSON.stringify({caseId:id,arm:seed.arm,construction:c,audit:null}));
     assert.ok(['preflight-refused','candidate-refused','work-limit'].includes(c.status));assert.ok(c.reason);return;
@@ -17,6 +18,19 @@ for(const id of Object.keys(G2_CASES))test('P5 G2 combined detached pilot '+id,a
   const r=await auditP5CombinedPilot(id,permissions,c);
   console.log('ARES_P5_G2 '+JSON.stringify({caseId:id,arm:seed.arm,construction:c,audit:r}));
   assert.equal(r.source,c.source);assert.equal(r.authority,'none');assert.ok(r.stats.work<=8000000);assert.ok(r.stats.expansions<=32768);
+  // Frozen G2 qualification: these exact inputs must remain refused.
+  assert.equal(r.status,'rejected');assert.equal(r.reason,'cyclic-parent-order-changed');
+  const d=r.rotationDiagnostic;
+  assert.equal(d.authority,'none');assert.equal(d.policy,'required');assert.ok(d.checked>0);assert.ok(d.finalChanged>0);
+  assert.equal(d.geometryChanged,d.changes.filter(x=>x.geometry).length);
+  assert.equal(d.splitChanged,d.changes.filter(x=>x.split).length);
+  assert.equal(d.finalChanged,d.changes.filter(x=>x.final).length);
+  assert.equal(new Set(d.changes.map(x=>x.nodeId)).size,d.changes.length);
+  for(const x of d.changes){
+    assert.equal(x.prior.length,x.degree);assert.equal(x.proposed.length,x.degree);assert.equal(x.normalized.length,x.degree);
+    for(const y of [x.proposed,x.normalized])assert.deepEqual(y.map(z=>z.parent).sort(),x.prior.map(z=>z.parent).sort());
+    assert.ok(x.geometry||x.split||x.final);
+  }
   assert.ok(['topology-final-verified','rejected','unverified'].includes(r.status));
   if(r.status==='topology-final-verified'){
     assert.equal(r.contacts,seed.best.pairs.length);assert.equal(r.identityLedger.status,'complete');
