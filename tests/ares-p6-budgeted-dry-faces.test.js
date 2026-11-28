@@ -1,0 +1,31 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createProject} from '../src/core/city-model.js';
+import {buildRoadGraph} from '../src/core/road-graph.js';
+import {extractRoadFaces} from '../src/core/road-faces.js';
+import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
+import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
+import {extractP6BudgetedDryFaces} from '../scripts/development/research/ares-p6-budgeted-dry-faces.mjs';
+const budget=work=>createSpatialPreservationBudget({work,stateExpansions:32768});
+const recipe=morphology=>createProject({seed:'p6-b1a-budget-'+morphology,size:'small',morphology});
+const comparable=r=>({valid:r.valid,issues:r.issues,faces:r.faces,exterior:r.exterior,coverage:r.coverage});
+for(const morphology of ['radial','organic','linear','planned'])test('P6 B1a dry face parity '+morphology,()=>{
+ const p=recipe(morphology),before=JSON.stringify(p),g=buildRoadGraph(p.city);
+ assert.ok(g.valid);
+ const legacy=extractRoadFaces(g,p.city),b=budget(8000000),first=extractP6BudgetedDryFaces(g,p.city,b);
+ assert.ok(legacy.valid);assert.deepEqual(comparable(first),comparable(legacy));
+ const w=b.snapshot().work;assert.ok(w>0);
+ const second=extractP6BudgetedDryFaces(g,p.city,b);
+ assert.deepEqual(comparable(first),comparable(second));assert.equal(b.snapshot().work,2*w);
+ const short=budget(w);
+ short.spend();
+ assert.throws(()=>extractP6BudgetedDryFaces(g,p.city,short),LareBudgetExceeded);
+ assert.equal(JSON.stringify(p),before);
+ console.log('P6_FACE_BUDGET '+JSON.stringify({morphology,faces:first.faces.length,work:w,twoPassWork:b.snapshot().work,legacyParity:true,authority:'none'}));
+});
+test('P6 dry face pilot fails closed on missing budget or unsupported landscape',()=>{
+ const p=recipe('radial'),g=buildRoadGraph(p.city);
+ assert.throws(()=>extractP6BudgetedDryFaces(g,p.city),/Shared P6 budget/);
+ assert.throws(()=>extractP6BudgetedDryFaces(g,{...p.city,waterFeatures:[{id:'unsupported'}]},budget(8000000)),/empty landscape/);
+ assert.throws(()=>extractP6BudgetedDryFaces(g,{...p.city,terrainFeatures:[{id:'unsupported'}]},budget(8000000)),/empty landscape/);
+});
