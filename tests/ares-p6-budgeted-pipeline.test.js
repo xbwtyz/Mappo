@@ -9,6 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {observeP6AffectedProperties} from '../scripts/development/research/ares-p6-affected-properties.mjs';
 import {previewP6BlockLabels} from '../scripts/development/research/ares-p6-block-label-preview.mjs';
 import {observeP6BlockOwnership} from '../scripts/development/research/ares-p6-block-ownership.mjs';
 import {planP6BlockRecords,equalP6BlockRecord} from '../scripts/development/research/ares-p6-block-record-plan.mjs';
@@ -52,7 +53,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,11);
+ assert.equal(result.ledger.length,12);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -112,6 +113,36 @@ function verify(source,candidate,legacy,extraction,label){
   assert.ok(flagged.rows.find(r=>r.key===k).blockers.includes('opaque-predecessor'));
  }
  console.log('P6_BLOCK_LABEL_PREVIEW '+JSON.stringify({label,newLabels:preview.newLabels,potentialRetirements:preview.potentialRetirements,blockedChoices:preview.blockedChoices,authority:'none'}));
+ const discovery=result.affectedProperties;
+ assert.equal(discovery.status,'affected-properties-observed',JSON.stringify(discovery));
+ assert.equal(discovery.authority,'none');assert.equal(discovery.valid,false);assert.equal(discovery.landVerified,false);
+ assert.equal(discovery.scanned,source.properties.length);
+ const changedBlocks=new Set([...legacy.changed.filter(r=>r.kind==='block').map(r=>r.id),...[...legacy.split,...legacy.merged,...legacy.ambiguous].flatMap(g=>g.oldIds)]);
+ assert.deepEqual(discovery.affectedBlockIds,[...changedBlocks].sort());
+ const beforeNodes=new Map(source.nodes.map(r=>[r.id,r])),afterNodes=new Map(candidate.nodes.map(r=>[r.id,r]));
+ const beforeRoads=new Map(source.roads.map(r=>[r.id,r])),afterRoads=new Map(candidate.roads.map(r=>[r.id,r]));
+ const expectedRoads=[...new Set([...beforeRoads.keys(),...afterRoads.keys()])].filter(id=>{
+  const x=beforeRoads.get(id),y=afterRoads.get(id);
+  return !x||!y||x.a!==y.a||x.b!==y.b||x.kind!==y.kind||[x.a,x.b].some(k=>beforeNodes.get(k).x!==afterNodes.get(k)?.x||beforeNodes.get(k).y!==afterNodes.get(k)?.y);
+ }).sort();
+ assert.deepEqual(discovery.changedRoadIds,expectedRoads);
+ const found=new Map(discovery.rows.map(r=>[r.id,r]));
+ for(const p of source.properties){
+  if(changedBlocks.has(p.blockId))assert.ok(found.get(p.id)?.reasons.includes('changed-block'));
+  if(expectedRoads.includes(p.frontageRoadId))assert.ok(found.get(p.id)?.reasons.includes('changed-frontage'));
+ }
+ for(const r of discovery.rows){
+  const p=source.properties.find(p=>p.id===r.id);
+  assert.deepEqual(r.plotIds,[...p.plotIds].sort());assert.deepEqual(r.buildingIds,[...p.buildingIds].sort());
+  assert.deepEqual(r.candidateKeys,old.reverse.find(x=>x.oldId===p.blockId).candidateKeys);
+  assert.equal(r.classification,'observe-only');
+ }
+ if(label==='fortified-unchanged')assert.equal(discovery.rows.length,0);
+ const oldGraph=buildRoadGraph(source),newGraph=buildRoadGraph(candidate);
+ assert.throws(()=>observeP6AffectedProperties(source,oldGraph,newGraph,plan,ownership,root(1)),LareBudgetExceeded);
+ const invalid={...source,properties:source.properties.map((p,i)=>i===0?{...p,blockId:'missing'}:p)};
+ assert.equal(observeP6AffectedProperties(invalid,oldGraph,newGraph,plan,ownership,root(8000000)).reason,'missing-property-block');
+ console.log('P6_AFFECTED_PROPERTIES '+JSON.stringify({label,scanned:discovery.scanned,affected:discovery.rows.length,changedRoads:discovery.changedRoadIds.length,counts:discovery.counts,authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
