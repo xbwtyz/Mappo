@@ -184,6 +184,9 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
    assert.deepEqual(row.route.entrance,w.entrance);assert.equal(row.route.frontageRoadId,original.frontageRoadId);
   }
   console.log('P6_LOCKED_RELOCATED_ACCESS '+JSON.stringify({id,counts:relocatedAccess.counts,relocatedCounts:relocatedAccess.relocatedCounts,propertiesWithAllRoutes:relocatedAccess.propertiesWithAllRoutes.length,authority:'none'}));
+  const assembly=r.pipeline.assembly;
+  assert.equal(assembly.status,'assembly-refused');assert.equal(assembly.reason,'incomplete-land-selection');assert.equal(assembly.details.unresolved,26);assert.equal(assembly.candidate,null);
+  console.log('P6_LOCKED_DETACHED_ASSEMBLY '+JSON.stringify({id,status:assembly.status,reason:assembly.reason,details:assembly.details,authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
   assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);

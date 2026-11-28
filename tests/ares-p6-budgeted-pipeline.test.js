@@ -10,6 +10,7 @@ import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-cont
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
 import {observeP6RelocationCompatibility,observeP6RelocationExtension} from '../scripts/development/research/ares-p6-relocation-compatibility.mjs';
+import {assembleP6DetachedCity} from '../scripts/development/research/ares-p6-detached-city.mjs';
 import {observeP6RigidTranslations} from '../scripts/development/research/ares-p6-rigid-translations.mjs';
 import {observeP6FixedBuildings} from '../scripts/development/research/ares-p6-fixed-buildings.mjs';
 import {observeP6AlternativeFrontages} from '../scripts/development/research/ares-p6-alternative-frontages.mjs';
@@ -67,7 +68,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,24);
+ assert.equal(result.ledger.length,25);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -291,6 +292,13 @@ function verify(source,candidate,legacy,extraction,label){
  assert.deepEqual(relocatedAccess.unresolvedProperties,extension.unresolved);
  assert.throws(()=>observeP6RelocatedAccess(source,extraction,reshapes,rigid,extension,root(1)),LareBudgetExceeded);
  console.log('P6_RELOCATED_ACCESS '+JSON.stringify({label,counts:relocatedAccess.counts,relocatedCounts:relocatedAccess.relocatedCounts,propertiesWithAllRoutes:relocatedAccess.propertiesWithAllRoutes.length,authority:'none'}));
+ const assembly=result.assembly;
+ assert.equal(assembly.authority,'none');assert.equal(assembly.valid,false);assert.equal(assembly.landVerified,false);
+ if(label==='fortified-unchanged'){
+  assert.equal(assembly.status,'candidate-assembled');assert.deepEqual(assembly.candidate,structuredClone(source));
+  assert.notEqual(assembly.candidate,source);
+ }else{assert.equal(assembly.status,'assembly-refused');assert.equal(assembly.candidate,null);}
+ console.log('P6_DETACHED_ASSEMBLY '+JSON.stringify({label,status:assembly.status,reason:assembly.reason,counts:assembly.counts??assembly.details,authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
