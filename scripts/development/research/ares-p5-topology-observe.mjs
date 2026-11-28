@@ -30,7 +30,7 @@ export async function observeP5Topology(caseId,input){
   for(const e of report.eligibleJunctions){budget.spend();eligible.add(e.ref.id);}
   for(const id of city.plaza?.vertices??[]){budget.spend();fixed.add(id);}
   const conflicts=[],other=[],seen=new Set();
-  const complete=['research-eligible','no-eligible-neighbors'].includes(report.status)&&!report.omittedRefs.length;
+  // P4 fresh eligibility already checks all mandatory roots and selected\n  // incident closure; omitted frontier observations are NOT admitted.\n  // Retain the old conservative whole-neighborhood gate as evidence,\n  // but separately classify each pair's local closure for research only.\n  const mandatoryComplete=['research-eligible','no-eligible-neighbors'].includes(report.status);\n  const complete=mandatoryComplete&&!report.omittedRefs.length;\n  const excluded=new Map(report.excluded.map(e=>[e.ref.id,e.reason]));\n  budget.spend(report.excluded.length+report.omittedRefs.length);
   for(const d of report.geometryDiagnostics){
     budget.spend();
     const ids=d.refs.filter(r=>r.collection==='roads').map(r=>r.id).sort(riCompare);
@@ -42,7 +42,7 @@ export async function observeP5Topology(caseId,input){
     const [a,b]=ids.map(id=>roads.get(id)),ends=[a.a,a.b,b.a,b.b],at=id=>positions.get(id)??nodes.get(id);
     budget.spend(16);
     const contact=classifyP5Contact(...ends.map(at)),reasons=[...p5PermissionReasons(permissions,contact)];
-    if(!complete)reasons.push('incomplete-or-refused-preflight');
+    if(!mandatoryComplete)reasons.push('incomplete-or-refused-preflight');
     for(const road of [a,b]){
       budget.spend();
       if(classifyRoad(road).protected)reasons.push('protected-road:'+road.id);
@@ -55,14 +55,16 @@ export async function observeP5Topology(caseId,input){
       if(fixed.has(id)||(!positions.has(id)&&!eligible.has(id)))reasons.push('unqualified-node:'+id);
       if(opaque(nodes.get(id),nodeFields,budget))reasons.push('opaque-node:'+id);
     }
-    conflicts.push({roadIds:ids,endpointIds:ends,code:d.code,contact,reasons:[...new Set(reasons)].sort(riCompare)});
+    conflicts.push({roadIds:ids,endpointIds:ends,code:d.code,contact,reasons:[...new Set(reasons)].sort(riCompare),
+      endpointExclusions:[...new Set(ends)].filter(id=>excluded.has(id)).map(id=>({id,reason:excluded.get(id)})),
+      wholeNeighborhoodComplete:complete});
   }
   // Any unclassified/non-pair blocker prevents candidate consideration.
-  for(const c of conflicts){budget.spend();if(other.length)c.reasons.push('other-preflight-blockers');c.status=c.reasons.length?'blocked':'research-contact-only';}
+  for(const c of conflicts){budget.spend();if(other.length)c.reasons.push('other-preflight-blockers');c.status=c.reasons.length?'blocked':'research-contact-only';c.originalWholeNeighborhoodGate=complete?c.status:'blocked';}
   budget.spend(Math.max(1,conflicts.length*Math.ceil(Math.log2(conflicts.length+1))));
   conflicts.sort((a,b)=>riCompare(JSON.stringify(a.roadIds),JSON.stringify(b.roadIds)));
   if(aresReplayJson(f.project,budget)!==source)throw Error('P5 observation mutated source.');
-  const evidence={version:1,caseId,source:fingerprint,authorship:'fresh-frozen-generator-recipe',permissions,preflight:report.status,requested:report.requested,conflicts,other,authority:'none',topologyChanged:false};
+  const evidence={version:2,caseId,source:fingerprint,authorship:'fresh-frozen-generator-recipe',permissions,preflight:report.status,requested:report.requested,conflicts,other,scope:{mandatoryComplete,wholeNeighborhoodComplete:complete,admittedCount:report.entries.length,omittedRefs:report.omittedRefs},authority:'none',topologyChanged:false};
   aresReplayJson(evidence,budget);
   return riFreeze({...evidence,stats:budget.snapshot()});
 }
