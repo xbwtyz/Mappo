@@ -1,0 +1,778 @@
+{
+  "version": 1,
+  "source": "85a0ac2d2fe595c44272c882318889c30fdd1444",
+  "qualifiedSource": "098c7210537eb963857c5e7925e9825ced535280",
+  "run": 46077453323,
+  "limits": {
+    "maxHops": 6,
+    "maxObjects": 10000,
+    "maxNeighbors": 4,
+    "maxCandidates": 256
+  },
+  "cases": [
+    {
+      "id": "linear-medium:eight-chain:100:diagonal",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ]
+    },
+    {
+      "id": "linear-medium:eight-chain:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ]
+    },
+    {
+      "id": "linear-medium:eight-chain:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ]
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0142",
+        "RD-0145",
+        "RD-0153",
+        "RD-0155",
+        "RD-0157"
+      ]
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0142",
+        "RD-0145",
+        "RD-0153",
+        "RD-0155",
+        "RD-0157"
+      ]
+    },
+    {
+      "id": "linear-medium:five-branch:100:diagonal",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ]
+    },
+    {
+      "id": "linear-medium:five-branch:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ]
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147"
+      ]
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147"
+      ]
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147"
+      ]
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147"
+      ]
+    },
+    {
+      "id": "organic-large:eight-chain:100:diagonal",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166",
+        "RD-0170",
+        "RD-0183",
+        "RD-0185"
+      ]
+    },
+    {
+      "id": "organic-large:eight-loop:100:y",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0158",
+        "RD-0161",
+        "RD-0167",
+        "RD-0169",
+        "RD-0171"
+      ]
+    },
+    {
+      "id": "organic-large:five-branch:100:y",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0157"
+      ]
+    },
+    {
+      "id": "organic-large:five-branch:75:y",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0157"
+      ]
+    },
+    {
+      "id": "organic-large:five-chain:100:diagonal",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166"
+      ]
+    },
+    {
+      "id": "organic-large:five-chain:100:y",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166"
+      ]
+    },
+    {
+      "id": "organic-large:quad:100:y",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0157",
+        "RD-0167"
+      ]
+    },
+    {
+      "id": "organic-large:quad:75:y",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0157",
+        "RD-0167"
+      ]
+    },
+    {
+      "id": "planned-medium:eight-chain:100:diagonal",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0146"
+      ]
+    },
+    {
+      "id": "planned-medium:eight-chain:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0146"
+      ]
+    },
+    {
+      "id": "planned-medium:eight-chain:75:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0146"
+      ]
+    },
+    {
+      "id": "planned-medium:eight-loop:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0136",
+        "RD-0139",
+        "RD-0157",
+        "RD-0159",
+        "RD-0161"
+      ]
+    },
+    {
+      "id": "planned-medium:five-branch:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0136"
+      ]
+    },
+    {
+      "id": "planned-medium:five-chain:100:diagonal",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ]
+    },
+    {
+      "id": "planned-medium:five-chain:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ]
+    },
+    {
+      "id": "planned-medium:five-chain:75:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "issues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ]
+    },
+    {
+      "id": "radial-small:eight-loop:100:diagonal",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ]
+    },
+    {
+      "id": "radial-small:eight-loop:100:x",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ]
+    },
+    {
+      "id": "radial-small:eight-loop:100:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ]
+    },
+    {
+      "id": "radial-small:eight-loop:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ]
+    },
+    {
+      "id": "radial-small:eight-loop:75:x",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ]
+    },
+    {
+      "id": "radial-small:eight-loop:75:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ]
+    },
+    {
+      "id": "radial-small:five-branch:100:diagonal",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ]
+    },
+    {
+      "id": "radial-small:five-branch:100:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ]
+    },
+    {
+      "id": "radial-small:five-branch:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ]
+    },
+    {
+      "id": "radial-small:five-branch:75:diagonal",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ]
+    },
+    {
+      "id": "radial-small:five-branch:75:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ]
+    },
+    {
+      "id": "radial-small:five-chain:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "issues": [
+        "unnormalized-crossing"
+      ],
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0102",
+        "RD-0260",
+        "RD-0261"
+      ]
+    }
+  ]
+}

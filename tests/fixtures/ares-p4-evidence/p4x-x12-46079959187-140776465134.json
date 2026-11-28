@@ -1,0 +1,4822 @@
+{
+  "version": 1,
+  "source": "0f6c99ccc330753392f8db650dd7a32f67740ed5",
+  "run": 46079959187,
+  "attempt": 1,
+  "aggregate": 140778235701,
+  "job": 140776465134,
+  "decode": "connector doubled backslashes before embedded quotes; normalized one layer and checked all pair keys",
+  "rows": [
+    {
+      "version": 1,
+      "id": "organic-large:five-branch:100:y",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0157"
+      ],
+      "baselineCodes": [
+        "unnormalized-crossing"
+      ],
+      "unsupported": [],
+      "conflicts": [
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0150\",\"RD-0171\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0150",
+            "RD-0171"
+          ],
+          "endpoints": [
+            "N-0103",
+            "N-0148",
+            "N-0153",
+            "N-0154"
+          ],
+          "movable": [
+            "N-0153",
+            "N-0154"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              1551.3696730786487,
+              -13000.922621530131,
+              -13257.59012970734,
+              1294.7021649014396
+            ],
+            "cutsAB": [
+              0.911031050044185
+            ],
+            "cutsBA": [
+              0.10660654979101733
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0155\",\"RD-0183\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0155",
+            "RD-0183"
+          ],
+          "endpoints": [
+            "N-0146",
+            "N-0151",
+            "N-0157",
+            "N-0158"
+          ],
+          "movable": [
+            "N-0157",
+            "N-0158"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              7242.536286942394,
+              -1050.7373772712929,
+              -5798.767923205054,
+              2494.5057410086333
+            ],
+            "cutsAB": [
+              0.6992133815898689
+            ],
+            "cutsBA": [
+              0.8733024593405944
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0156\",\"RD-0169\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0156",
+            "RD-0169"
+          ],
+          "endpoints": [
+            "N-0147",
+            "N-0148",
+            "N-0152",
+            "N-0153"
+          ],
+          "movable": [
+            "N-0153"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              5126.064446521192,
+              -661.2791068933933,
+              -4021.304007898584,
+              1766.0395455160005
+            ],
+            "cutsAB": [
+              0.6948445294086573
+            ],
+            "cutsBA": [
+              0.8857370223851264
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0156\",\"RD-0172\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0156",
+            "RD-0172"
+          ],
+          "endpoints": [
+            "N-0147",
+            "N-0148",
+            "N-0153",
+            "N-0160"
+          ],
+          "movable": [
+            "N-0153",
+            "N-0160"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              -661.2791068933933,
+              3205.0209741403096,
+              3385.357302179671,
+              -480.9427788540321
+            ],
+            "cutsAB": [
+              0.8756064535152568
+            ],
+            "cutsBA": [
+              0.1710366740898684
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0157\",\"RD-0187\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0157",
+            "RD-0187"
+          ],
+          "endpoints": [
+            "N-0147",
+            "N-0152",
+            "N-0159",
+            "N-0160"
+          ],
+          "movable": [
+            "N-0159",
+            "N-0160"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              1190.8416471897056,
+              -6752.362157246419,
+              -5181.58758955636,
+              2761.616214879764
+            ],
+            "cutsAB": [
+              0.65232967919853
+            ],
+            "cutsBA": [
+              0.14991956350467098
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0158\",\"RD-0171\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0158",
+            "RD-0171"
+          ],
+          "endpoints": [
+            "N-0148",
+            "N-0149",
+            "N-0153",
+            "N-0154"
+          ],
+          "movable": [
+            "N-0149",
+            "N-0153",
+            "N-0154"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              -2042.5700167028126,
+              5242.658009897228,
+              1294.7021649014396,
+              -5990.525861698601
+            ],
+            "cutsAB": [
+              0.1777160797402888
+            ],
+            "cutsBA": [
+              0.2803714597875208
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0165\",\"RD-0183\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0165",
+            "RD-0183"
+          ],
+          "endpoints": [
+            "N-0150",
+            "N-0151",
+            "N-0157",
+            "N-0158"
+          ],
+          "movable": [
+            "N-0150",
+            "N-0157",
+            "N-0158"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              4813.586192472143,
+              -3472.3750303852394,
+              -5791.455481848749,
+              2494.5057410086333
+            ],
+            "cutsAB": [
+              0.6989479344741113
+            ],
+            "cutsBA": [
+              0.5809327443137847
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0167\",\"RD-0186\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0167",
+            "RD-0186"
+          ],
+          "endpoints": [
+            "N-0151",
+            "N-0152",
+            "N-0158",
+            "N-0168"
+          ],
+          "movable": [
+            "N-0158",
+            "N-0168"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              -2558.1259214645916,
+              3537.1572673123383,
+              445.96365547693904,
+              -5649.319533299991
+            ],
+            "cutsAB": [
+              0.07316537093765867
+            ],
+            "cutsBA": [
+              0.4196894290612773
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0167\",\"RD-0188\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0167",
+            "RD-0188"
+          ],
+          "endpoints": [
+            "N-0151",
+            "N-0152",
+            "N-0159",
+            "N-0169"
+          ],
+          "movable": [
+            "N-0159",
+            "N-0169"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              -2637.473741511052,
+              2513.3399830195403,
+              4543.673475255129,
+              -607.1402492754637
+            ],
+            "cutsAB": [
+              0.8821273139069316
+            ],
+            "cutsBA": [
+              0.5120499172684433
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0169\",\"RD-0187\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0169",
+            "RD-0187"
+          ],
+          "endpoints": [
+            "N-0152",
+            "N-0153",
+            "N-0159",
+            "N-0160"
+          ],
+          "movable": [
+            "N-0153",
+            "N-0159",
+            "N-0160"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              -2723.34039201864,
+              6116.415451527507,
+              2761.616214879764,
+              -6078.139628666382
+            ],
+            "cutsAB": [
+              0.31240865288106384
+            ],
+            "cutsBA": [
+              0.30807868907453306
+            ]
+          }
+        }
+      ],
+      "model": {
+        "version": 1,
+        "status": "observation-only",
+        "variables": [
+          {
+            "id": "N-0149",
+            "old": {
+              "x": 50.494206961432795,
+              "y": -555.3855775918202
+            },
+            "depth": 1,
+            "primaryIncidentCount": 2,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0105"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0107"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0148"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0149"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0154"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0151"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0158"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0160"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0161"
+              }
+            ]
+          },
+          {
+            "id": "N-0150",
+            "old": {
+              "x": -272.9333715295192,
+              "y": -463.0386184661498
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0092"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0093"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0150"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0151"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0157"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0153"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0164"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0165"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0166"
+              }
+            ]
+          },
+          {
+            "id": "N-0153",
+            "old": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0148"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0152"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0153"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0154"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0160"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0159"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0169"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0171"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0172"
+              }
+            ]
+          },
+          {
+            "id": "N-0154",
+            "old": {
+              "x": 41.703172658294534,
+              "y": -486.6771167034857
+            },
+            "depth": 1,
+            "primaryIncidentCount": 2,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0149"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0153"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0154"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0155"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0161"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0161"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0171"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0173"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0174"
+              }
+            ]
+          },
+          {
+            "id": "N-0155",
+            "old": {
+              "x": 107.68994101897525,
+              "y": -480.3546194957792
+            },
+            "depth": 3,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0108"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0154"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0155"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0156"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0162"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0162"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0173"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0175"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0176"
+              }
+            ]
+          },
+          {
+            "id": "N-0157",
+            "old": {
+              "x": -269.4583177193241,
+              "y": -401.17380152053477
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0090"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0150"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0157"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0158"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0167"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0166"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0182"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0183"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0184"
+              }
+            ]
+          },
+          {
+            "id": "N-0158",
+            "old": {
+              "x": -176.238305417659,
+              "y": -408.20001937840635
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0151"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0157"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0158"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0159"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0168"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0168"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0183"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0185"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0186"
+              }
+            ]
+          },
+          {
+            "id": "N-0159",
+            "old": {
+              "x": -114.50742985558126,
+              "y": -395.491698836105
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0152"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0158"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0159"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0160"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0169"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0170"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0185"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0187"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0188"
+              }
+            ]
+          },
+          {
+            "id": "N-0160",
+            "old": {
+              "x": -32.00717739394693,
+              "y": -396.3532329421409
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0153"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0159"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0160"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0161"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0170"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0172"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0187"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0189"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0190"
+              }
+            ]
+          },
+          {
+            "id": "N-0161",
+            "old": {
+              "x": 43.55138333328217,
+              "y": -399.3655205228661
+            },
+            "depth": 3,
+            "primaryIncidentCount": 2,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0154"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0160"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0161"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0162"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0171"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0174"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0189"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0191"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0192"
+              }
+            ]
+          },
+          {
+            "id": "N-0167",
+            "old": {
+              "x": -285.45322226092435,
+              "y": -312.79246388080634
+            },
+            "depth": 3,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0087"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0157"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0167"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0168"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0179"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0184"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0204"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0206"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0207"
+              }
+            ]
+          },
+          {
+            "id": "N-0168",
+            "old": {
+              "x": -195.783570431632,
+              "y": -338.6953043665552
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0158"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0167"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0168"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0169"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0180"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0186"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0206"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0208"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0209"
+              }
+            ]
+          },
+          {
+            "id": "N-0169",
+            "old": {
+              "x": -120.65866333903978,
+              "y": -334.4615057229459
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0159"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0168"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0169"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0170"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0181"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0188"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0208"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0210"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0211"
+              }
+            ]
+          },
+          {
+            "id": "N-0170",
+            "old": {
+              "x": -50.3698171599795,
+              "y": -311.0632518115475
+            },
+            "depth": 3,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0160"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0169"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0170"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0171"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0182"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0190"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0210"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0212"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0213"
+              }
+            ]
+          },
+          {
+            "id": "N-0180",
+            "old": {
+              "x": -175.54258350059712,
+              "y": -263.4721517196267
+            },
+            "depth": 3,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0168"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0179"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0180"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0181"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0194"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0209"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0233"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0235"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0236"
+              }
+            ]
+          },
+          {
+            "id": "N-0181",
+            "old": {
+              "x": -113.33174481037379,
+              "y": -240.98918771057663
+            },
+            "depth": 3,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 100,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0169"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0180"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0181"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0182"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0195"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0211"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0235"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0237"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0238"
+              }
+            ]
+          }
+        ],
+        "fixedNodes": [
+          {
+            "id": "N-0087",
+            "point": {
+              "x": -337.49382626286604,
+              "y": -327.9180880251807
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0090",
+            "point": {
+              "x": -305.5533615385255,
+              "y": -400.52029347324816
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0092",
+            "point": {
+              "x": -282.4828923994351,
+              "y": -463.002007665422
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0093",
+            "point": {
+              "x": -274.0138508173463,
+              "y": -482.9945192064121
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0095",
+            "point": {
+              "x": -221.19272029574284,
+              "y": -567.0080762009651
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0097",
+            "point": {
+              "x": -179.044374644066,
+              "y": -598.4488169623006
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0100",
+            "point": {
+              "x": -112.78580988772207,
+              "y": -623.0420744717231
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0103",
+            "point": {
+              "x": -35.33801836153301,
+              "y": -620.5753818040592
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0105",
+            "point": {
+              "x": 47.97834898964582,
+              "y": -589.2083829956355
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0107",
+            "point": {
+              "x": 93.88446744865277,
+              "y": -561.9055967084453
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0108",
+            "point": {
+              "x": 116.57565459066171,
+              "y": -546.6273633512355
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0145",
+            "point": {
+              "x": -112.88726590725457,
+              "y": -522.0508908168224
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0146",
+            "point": {
+              "x": -182.39469681589486,
+              "y": -469.9411802505758
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0147",
+            "point": {
+              "x": -91.28070859904379,
+              "y": -458.5411810726496
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0148",
+            "point": {
+              "x": -38.38233897256955,
+              "y": -457.1135608405
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0151",
+            "point": {
+              "x": -190.4814340687887,
+              "y": -380.3671431340549
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0152",
+            "point": {
+              "x": -107.926156084746,
+              "y": -362.0863922966293
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0156",
+            "point": {
+              "x": 193.1752512041626,
+              "y": -463.79238871238573
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0162",
+            "point": {
+              "x": 125.9426621148562,
+              "y": -393.35749910946674
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0171",
+            "point": {
+              "x": 32.440884791994094,
+              "y": -310.1392063820166
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0179",
+            "point": {
+              "x": -262.03392407301925,
+              "y": -243.96493022029796
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0182",
+            "point": {
+              "x": -25.327910926286673,
+              "y": -237.88102033163025
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0194",
+            "point": {
+              "x": -192.9823598987904,
+              "y": -185.91929060374207
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0195",
+            "point": {
+              "x": -107.4019691009239,
+              "y": -191.07872926662313
+            },
+            "role": "stationary"
+          }
+        ],
+        "segments": [
+          {
+            "id": "RD-0145",
+            "kind": "lane",
+            "endpoints": [
+              "N-0100",
+              "N-0145"
+            ],
+            "a": {
+              "x": -112.78580988772207,
+              "y": -623.0420744717231
+            },
+            "b": {
+              "x": -112.88726590725457,
+              "y": -522.0508908168224
+            }
+          },
+          {
+            "id": "RD-0147",
+            "kind": "lane",
+            "endpoints": [
+              "N-0097",
+              "N-0146"
+            ],
+            "a": {
+              "x": -179.044374644066,
+              "y": -598.4488169623006
+            },
+            "b": {
+              "x": -182.39469681589486,
+              "y": -469.9411802505758
+            }
+          },
+          {
+            "id": "RD-0149",
+            "kind": "lane",
+            "endpoints": [
+              "N-0145",
+              "N-0147"
+            ],
+            "a": {
+              "x": -112.88726590725457,
+              "y": -522.0508908168224
+            },
+            "b": {
+              "x": -91.28070859904379,
+              "y": -458.5411810726496
+            }
+          },
+          {
+            "id": "RD-0150",
+            "kind": "lane",
+            "endpoints": [
+              "N-0103",
+              "N-0148"
+            ],
+            "a": {
+              "x": -35.33801836153301,
+              "y": -620.5753818040592
+            },
+            "b": {
+              "x": -38.38233897256955,
+              "y": -457.1135608405
+            }
+          },
+          {
+            "id": "RD-0151",
+            "kind": "primary",
+            "endpoints": [
+              "N-0105",
+              "N-0149"
+            ],
+            "a": {
+              "x": 47.97834898964582,
+              "y": -589.2083829956355
+            },
+            "b": {
+              "x": 50.494206961432795,
+              "y": -555.3855775918202
+            }
+          },
+          {
+            "id": "RD-0152",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0095",
+              "N-0146"
+            ],
+            "a": {
+              "x": -221.19272029574284,
+              "y": -567.0080762009651
+            },
+            "b": {
+              "x": -182.39469681589486,
+              "y": -469.9411802505758
+            }
+          },
+          {
+            "id": "RD-0153",
+            "kind": "lane",
+            "endpoints": [
+              "N-0093",
+              "N-0150"
+            ],
+            "a": {
+              "x": -274.0138508173463,
+              "y": -482.9945192064121
+            },
+            "b": {
+              "x": -272.9333715295192,
+              "y": -463.0386184661498
+            }
+          },
+          {
+            "id": "RD-0154",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0146",
+              "N-0147"
+            ],
+            "a": {
+              "x": -182.39469681589486,
+              "y": -469.9411802505758
+            },
+            "b": {
+              "x": -91.28070859904379,
+              "y": -458.5411810726496
+            }
+          },
+          {
+            "id": "RD-0155",
+            "kind": "lane",
+            "endpoints": [
+              "N-0146",
+              "N-0151"
+            ],
+            "a": {
+              "x": -182.39469681589486,
+              "y": -469.9411802505758
+            },
+            "b": {
+              "x": -190.4814340687887,
+              "y": -380.3671431340549
+            }
+          },
+          {
+            "id": "RD-0156",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0147",
+              "N-0148"
+            ],
+            "a": {
+              "x": -91.28070859904379,
+              "y": -458.5411810726496
+            },
+            "b": {
+              "x": -38.38233897256955,
+              "y": -457.1135608405
+            }
+          },
+          {
+            "id": "RD-0157",
+            "kind": "lane",
+            "endpoints": [
+              "N-0147",
+              "N-0152"
+            ],
+            "a": {
+              "x": -91.28070859904379,
+              "y": -458.5411810726496
+            },
+            "b": {
+              "x": -107.926156084746,
+              "y": -362.0863922966293
+            }
+          },
+          {
+            "id": "RD-0158",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0148",
+              "N-0149"
+            ],
+            "a": {
+              "x": -38.38233897256955,
+              "y": -457.1135608405
+            },
+            "b": {
+              "x": 50.494206961432795,
+              "y": -555.3855775918202
+            }
+          },
+          {
+            "id": "RD-0159",
+            "kind": "lane",
+            "endpoints": [
+              "N-0148",
+              "N-0153"
+            ],
+            "a": {
+              "x": -38.38233897256955,
+              "y": -457.1135608405
+            },
+            "b": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            }
+          },
+          {
+            "id": "RD-0160",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0149",
+              "N-0107"
+            ],
+            "a": {
+              "x": 50.494206961432795,
+              "y": -555.3855775918202
+            },
+            "b": {
+              "x": 93.88446744865277,
+              "y": -561.9055967084453
+            }
+          },
+          {
+            "id": "RD-0161",
+            "kind": "primary",
+            "endpoints": [
+              "N-0149",
+              "N-0154"
+            ],
+            "a": {
+              "x": 50.494206961432795,
+              "y": -555.3855775918202
+            },
+            "b": {
+              "x": 41.703172658294534,
+              "y": -486.6771167034857
+            }
+          },
+          {
+            "id": "RD-0162",
+            "kind": "lane",
+            "endpoints": [
+              "N-0108",
+              "N-0155"
+            ],
+            "a": {
+              "x": 116.57565459066171,
+              "y": -546.6273633512355
+            },
+            "b": {
+              "x": 107.68994101897525,
+              "y": -480.3546194957792
+            }
+          },
+          {
+            "id": "RD-0164",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0092",
+              "N-0150"
+            ],
+            "a": {
+              "x": -282.4828923994351,
+              "y": -463.002007665422
+            },
+            "b": {
+              "x": -272.9333715295192,
+              "y": -463.0386184661498
+            }
+          },
+          {
+            "id": "RD-0165",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0150",
+              "N-0151"
+            ],
+            "a": {
+              "x": -272.9333715295192,
+              "y": -463.0386184661498
+            },
+            "b": {
+              "x": -190.4814340687887,
+              "y": -380.3671431340549
+            }
+          },
+          {
+            "id": "RD-0166",
+            "kind": "lane",
+            "endpoints": [
+              "N-0150",
+              "N-0157"
+            ],
+            "a": {
+              "x": -272.9333715295192,
+              "y": -463.0386184661498
+            },
+            "b": {
+              "x": -269.4583177193241,
+              "y": -401.17380152053477
+            }
+          },
+          {
+            "id": "RD-0167",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0151",
+              "N-0152"
+            ],
+            "a": {
+              "x": -190.4814340687887,
+              "y": -380.3671431340549
+            },
+            "b": {
+              "x": -107.926156084746,
+              "y": -362.0863922966293
+            }
+          },
+          {
+            "id": "RD-0168",
+            "kind": "lane",
+            "endpoints": [
+              "N-0151",
+              "N-0158"
+            ],
+            "a": {
+              "x": -190.4814340687887,
+              "y": -380.3671431340549
+            },
+            "b": {
+              "x": -176.238305417659,
+              "y": -408.20001937840635
+            }
+          },
+          {
+            "id": "RD-0169",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0152",
+              "N-0153"
+            ],
+            "a": {
+              "x": -107.926156084746,
+              "y": -362.0863922966293
+            },
+            "b": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            }
+          },
+          {
+            "id": "RD-0170",
+            "kind": "lane",
+            "endpoints": [
+              "N-0152",
+              "N-0159"
+            ],
+            "a": {
+              "x": -107.926156084746,
+              "y": -362.0863922966293
+            },
+            "b": {
+              "x": -114.50742985558126,
+              "y": -395.491698836105
+            }
+          },
+          {
+            "id": "RD-0171",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0153",
+              "N-0154"
+            ],
+            "a": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            },
+            "b": {
+              "x": 41.703172658294534,
+              "y": -486.6771167034857
+            }
+          },
+          {
+            "id": "RD-0172",
+            "kind": "lane",
+            "endpoints": [
+              "N-0153",
+              "N-0160"
+            ],
+            "a": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            },
+            "b": {
+              "x": -32.00717739394693,
+              "y": -396.3532329421409
+            }
+          },
+          {
+            "id": "RD-0173",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0154",
+              "N-0155"
+            ],
+            "a": {
+              "x": 41.703172658294534,
+              "y": -486.6771167034857
+            },
+            "b": {
+              "x": 107.68994101897525,
+              "y": -480.3546194957792
+            }
+          },
+          {
+            "id": "RD-0174",
+            "kind": "primary",
+            "endpoints": [
+              "N-0154",
+              "N-0161"
+            ],
+            "a": {
+              "x": 41.703172658294534,
+              "y": -486.6771167034857
+            },
+            "b": {
+              "x": 43.55138333328217,
+              "y": -399.3655205228661
+            }
+          },
+          {
+            "id": "RD-0175",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0155",
+              "N-0156"
+            ],
+            "a": {
+              "x": 107.68994101897525,
+              "y": -480.3546194957792
+            },
+            "b": {
+              "x": 193.1752512041626,
+              "y": -463.79238871238573
+            }
+          },
+          {
+            "id": "RD-0176",
+            "kind": "lane",
+            "endpoints": [
+              "N-0155",
+              "N-0162"
+            ],
+            "a": {
+              "x": 107.68994101897525,
+              "y": -480.3546194957792
+            },
+            "b": {
+              "x": 125.9426621148562,
+              "y": -393.35749910946674
+            }
+          },
+          {
+            "id": "RD-0182",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0090",
+              "N-0157"
+            ],
+            "a": {
+              "x": -305.5533615385255,
+              "y": -400.52029347324816
+            },
+            "b": {
+              "x": -269.4583177193241,
+              "y": -401.17380152053477
+            }
+          },
+          {
+            "id": "RD-0183",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0157",
+              "N-0158"
+            ],
+            "a": {
+              "x": -269.4583177193241,
+              "y": -401.17380152053477
+            },
+            "b": {
+              "x": -176.238305417659,
+              "y": -408.20001937840635
+            }
+          },
+          {
+            "id": "RD-0184",
+            "kind": "lane",
+            "endpoints": [
+              "N-0157",
+              "N-0167"
+            ],
+            "a": {
+              "x": -269.4583177193241,
+              "y": -401.17380152053477
+            },
+            "b": {
+              "x": -285.45322226092435,
+              "y": -312.79246388080634
+            }
+          },
+          {
+            "id": "RD-0185",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0158",
+              "N-0159"
+            ],
+            "a": {
+              "x": -176.238305417659,
+              "y": -408.20001937840635
+            },
+            "b": {
+              "x": -114.50742985558126,
+              "y": -395.491698836105
+            }
+          },
+          {
+            "id": "RD-0186",
+            "kind": "lane",
+            "endpoints": [
+              "N-0158",
+              "N-0168"
+            ],
+            "a": {
+              "x": -176.238305417659,
+              "y": -408.20001937840635
+            },
+            "b": {
+              "x": -195.783570431632,
+              "y": -338.6953043665552
+            }
+          },
+          {
+            "id": "RD-0187",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0159",
+              "N-0160"
+            ],
+            "a": {
+              "x": -114.50742985558126,
+              "y": -395.491698836105
+            },
+            "b": {
+              "x": -32.00717739394693,
+              "y": -396.3532329421409
+            }
+          },
+          {
+            "id": "RD-0188",
+            "kind": "lane",
+            "endpoints": [
+              "N-0159",
+              "N-0169"
+            ],
+            "a": {
+              "x": -114.50742985558126,
+              "y": -395.491698836105
+            },
+            "b": {
+              "x": -120.65866333903978,
+              "y": -334.4615057229459
+            }
+          },
+          {
+            "id": "RD-0189",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0160",
+              "N-0161"
+            ],
+            "a": {
+              "x": -32.00717739394693,
+              "y": -396.3532329421409
+            },
+            "b": {
+              "x": 43.55138333328217,
+              "y": -399.3655205228661
+            }
+          },
+          {
+            "id": "RD-0190",
+            "kind": "lane",
+            "endpoints": [
+              "N-0160",
+              "N-0170"
+            ],
+            "a": {
+              "x": -32.00717739394693,
+              "y": -396.3532329421409
+            },
+            "b": {
+              "x": -50.3698171599795,
+              "y": -311.0632518115475
+            }
+          },
+          {
+            "id": "RD-0191",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0161",
+              "N-0162"
+            ],
+            "a": {
+              "x": 43.55138333328217,
+              "y": -399.3655205228661
+            },
+            "b": {
+              "x": 125.9426621148562,
+              "y": -393.35749910946674
+            }
+          },
+          {
+            "id": "RD-0192",
+            "kind": "primary",
+            "endpoints": [
+              "N-0161",
+              "N-0171"
+            ],
+            "a": {
+              "x": 43.55138333328217,
+              "y": -399.3655205228661
+            },
+            "b": {
+              "x": 32.440884791994094,
+              "y": -310.1392063820166
+            }
+          },
+          {
+            "id": "RD-0204",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0087",
+              "N-0167"
+            ],
+            "a": {
+              "x": -337.49382626286604,
+              "y": -327.9180880251807
+            },
+            "b": {
+              "x": -285.45322226092435,
+              "y": -312.79246388080634
+            }
+          },
+          {
+            "id": "RD-0206",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0167",
+              "N-0168"
+            ],
+            "a": {
+              "x": -285.45322226092435,
+              "y": -312.79246388080634
+            },
+            "b": {
+              "x": -195.783570431632,
+              "y": -338.6953043665552
+            }
+          },
+          {
+            "id": "RD-0207",
+            "kind": "lane",
+            "endpoints": [
+              "N-0167",
+              "N-0179"
+            ],
+            "a": {
+              "x": -285.45322226092435,
+              "y": -312.79246388080634
+            },
+            "b": {
+              "x": -262.03392407301925,
+              "y": -243.96493022029796
+            }
+          },
+          {
+            "id": "RD-0208",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0168",
+              "N-0169"
+            ],
+            "a": {
+              "x": -195.783570431632,
+              "y": -338.6953043665552
+            },
+            "b": {
+              "x": -120.65866333903978,
+              "y": -334.4615057229459
+            }
+          },
+          {
+            "id": "RD-0209",
+            "kind": "lane",
+            "endpoints": [
+              "N-0168",
+              "N-0180"
+            ],
+            "a": {
+              "x": -195.783570431632,
+              "y": -338.6953043665552
+            },
+            "b": {
+              "x": -175.54258350059712,
+              "y": -263.4721517196267
+            }
+          },
+          {
+            "id": "RD-0210",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0169",
+              "N-0170"
+            ],
+            "a": {
+              "x": -120.65866333903978,
+              "y": -334.4615057229459
+            },
+            "b": {
+              "x": -50.3698171599795,
+              "y": -311.0632518115475
+            }
+          },
+          {
+            "id": "RD-0211",
+            "kind": "lane",
+            "endpoints": [
+              "N-0169",
+              "N-0181"
+            ],
+            "a": {
+              "x": -120.65866333903978,
+              "y": -334.4615057229459
+            },
+            "b": {
+              "x": -113.33174481037379,
+              "y": -240.98918771057663
+            }
+          },
+          {
+            "id": "RD-0212",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0170",
+              "N-0171"
+            ],
+            "a": {
+              "x": -50.3698171599795,
+              "y": -311.0632518115475
+            },
+            "b": {
+              "x": 32.440884791994094,
+              "y": -310.1392063820166
+            }
+          },
+          {
+            "id": "RD-0213",
+            "kind": "lane",
+            "endpoints": [
+              "N-0170",
+              "N-0182"
+            ],
+            "a": {
+              "x": -50.3698171599795,
+              "y": -311.0632518115475
+            },
+            "b": {
+              "x": -25.327910926286673,
+              "y": -237.88102033163025
+            }
+          },
+          {
+            "id": "RD-0233",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0179",
+              "N-0180"
+            ],
+            "a": {
+              "x": -262.03392407301925,
+              "y": -243.96493022029796
+            },
+            "b": {
+              "x": -175.54258350059712,
+              "y": -263.4721517196267
+            }
+          },
+          {
+            "id": "RD-0235",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0180",
+              "N-0181"
+            ],
+            "a": {
+              "x": -175.54258350059712,
+              "y": -263.4721517196267
+            },
+            "b": {
+              "x": -113.33174481037379,
+              "y": -240.98918771057663
+            }
+          },
+          {
+            "id": "RD-0236",
+            "kind": "lane",
+            "endpoints": [
+              "N-0180",
+              "N-0194"
+            ],
+            "a": {
+              "x": -175.54258350059712,
+              "y": -263.4721517196267
+            },
+            "b": {
+              "x": -192.9823598987904,
+              "y": -185.91929060374207
+            }
+          },
+          {
+            "id": "RD-0237",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0181",
+              "N-0182"
+            ],
+            "a": {
+              "x": -113.33174481037379,
+              "y": -240.98918771057663
+            },
+            "b": {
+              "x": -25.327910926286673,
+              "y": -237.88102033163025
+            }
+          },
+          {
+            "id": "RD-0238",
+            "kind": "lane",
+            "endpoints": [
+              "N-0181",
+              "N-0195"
+            ],
+            "a": {
+              "x": -113.33174481037379,
+              "y": -240.98918771057663
+            },
+            "b": {
+              "x": -107.4019691009239,
+              "y": -191.07872926662313
+            }
+          },
+          {
+            "id": "RD-0264",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0194",
+              "N-0195"
+            ],
+            "a": {
+              "x": -192.9823598987904,
+              "y": -185.91929060374207
+            },
+            "b": {
+              "x": -107.4019691009239,
+              "y": -191.07872926662313
+            }
+          }
+        ],
+        "incompleteRoadIds": [
+          "RD-0163",
+          "RD-0177",
+          "RD-0178",
+          "RD-0193",
+          "RD-0194",
+          "RD-0214",
+          "RD-0215",
+          "RD-0231",
+          "RD-0234",
+          "RD-0239",
+          "RD-0240",
+          "RD-0262",
+          "RD-0265",
+          "RD-0266",
+          "RD-0267"
+        ],
+        "boundary": [
+          {
+            "x": 574.4211963228473,
+            "y": 2.243850691625058
+          },
+          {
+            "x": 522.2249980758306,
+            "y": 43.56312825377829
+          },
+          {
+            "x": 459.85607781910767,
+            "y": 75.61189738632233
+          },
+          {
+            "x": 405.76482642594857,
+            "y": 100.87398067826838
+          },
+          {
+            "x": 376.7493634350957,
+            "y": 127.29939741216114
+          },
+          {
+            "x": 380.10148559938204,
+            "y": 165.2237576646826
+          },
+          {
+            "x": 409.63831485067305,
+            "y": 222.07684545519075
+          },
+          {
+            "x": 447.7874741901473,
+            "y": 297.589049649831
+          },
+          {
+            "x": 472.85603253549255,
+            "y": 382.2443367969989
+          },
+          {
+            "x": 468.0008230710964,
+            "y": 460.1944955241852
+          },
+          {
+            "x": 427.62863295180114,
+            "y": 515.5297219638362
+          },
+          {
+            "x": 358.38353702308905,
+            "y": 538.9643868379211
+          },
+          {
+            "x": 274.70759188366685,
+            "y": 531.6782387742675
+          },
+          {
+            "x": 191.63510571883904,
+            "y": 504.4585769167333
+          },
+          {
+            "x": 118.58723836444864,
+            "y": 472.6693993925042
+          },
+          {
+            "x": 56.98226740491272,
+            "y": 449.6413222552949
+          },
+          {
+            "x": 2.136519372870108,
+            "y": 441.72616409375905
+          },
+          {
+            "x": -52.397220185226395,
+            "y": 447.18607009167755
+          },
+          {
+            "x": -110.92048810088342,
+            "y": 458.93941883590446
+          },
+          {
+            "x": -174.21429764559912,
+            "y": 469.1865060729116
+          },
+          {
+            "x": -240.8767327844916,
+            "y": 473.1779033811729
+          },
+          {
+            "x": -309.7285321262691,
+            "y": 470.2139914699329
+          },
+          {
+            "x": -381.0665567764046,
+            "y": 461.8049789080838
+          },
+          {
+            "x": -455.5380289445767,
+            "y": 448.6482579011003
+          },
+          {
+            "x": -531.2881992247205,
+            "y": 428.68085106442726
+          },
+          {
+            "x": -601.5467302149066,
+            "y": 397.6305431492574
+          },
+          {
+            "x": -654.9206737097014,
+            "y": 351.7798341265096
+          },
+          {
+            "x": -679.1827784751662,
+            "y": 291.14756125813426
+          },
+          {
+            "x": -667.1173976931187,
+            "y": 220.9217960521956
+          },
+          {
+            "x": -621.3728437752513,
+            "y": 149.98083535753833
+          },
+          {
+            "x": -555.3388446982027,
+            "y": 87.111681139012
+          },
+          {
+            "x": -488.93337864452315,
+            "y": 36.99610055223663
+          },
+          {
+            "x": -440.8853050432012,
+            "y": -1.722221956608486
+          },
+          {
+            "x": -421.12805243094465,
+            "y": -35.12979161646571
+          },
+          {
+            "x": -427.07915108521973,
+            "y": -70.22254680386338
+          },
+          {
+            "x": -445.6951188625742,
+            "y": -110.80073451548117
+          },
+          {
+            "x": -460.2383837446421,
+            "y": -155.50940387118436
+          },
+          {
+            "x": -458.2724729755539,
+            "y": -199.20337827648538
+          },
+          {
+            "x": -436.8400426346574,
+            "y": -236.82369329192235
+          },
+          {
+            "x": -402.37785138235614,
+            "y": -267.410879702653
+          },
+          {
+            "x": -365.7885613058161,
+            "y": -295.6938188449043
+          },
+          {
+            "x": -335.6342980294826,
+            "y": -330.03586499852616
+          },
+          {
+            "x": -313.2574822169717,
+            "y": -377.64903999917374
+          },
+          {
+            "x": -292.363197581501,
+            "y": -439.67798528740974
+          },
+          {
+            "x": -262.99429258763683,
+            "y": -509.0079285100113
+          },
+          {
+            "x": -217.39717867098216,
+            "y": -572.2744325300062
+          },
+          {
+            "x": -154.36882621361795,
+            "y": -615.2889752527603
+          },
+          {
+            "x": -79.73791130635732,
+            "y": -629.2038121069023
+          },
+          {
+            "x": -2.9711453073447913,
+            "y": -614.2853822174367
+          },
+          {
+            "x": 67.8898020153185,
+            "y": -579.4080994222769
+          },
+          {
+            "x": 129.93903080149954,
+            "y": -537.6296507630132
+          },
+          {
+            "x": 185.73708828122574,
+            "y": -500.21919369730773
+          },
+          {
+            "x": 240.37281863366286,
+            "y": -472.18801515653223
+          },
+          {
+            "x": 297.3301255992276,
+            "y": -451.3913657953626
+          },
+          {
+            "x": 355.8434219214152,
+            "y": -431.23769596874524
+          },
+          {
+            "x": 411.35280736699764,
+            "y": -405.1313143614277
+          },
+          {
+            "x": 458.6152351647965,
+            "y": -370.04316980585025
+          },
+          {
+            "x": 495.2867560101817,
+            "y": -327.39125975567043
+          },
+          {
+            "x": 523.4610102715401,
+            "y": -281.1684449079411
+          },
+          {
+            "x": 547.9569114406297,
+            "y": -234.89452838991895
+          },
+          {
+            "x": 572.3012603425392,
+            "y": -189.5225979040802
+          },
+          {
+            "x": 595.0082323187394,
+            "y": -143.6172060329928
+          },
+          {
+            "x": 608.8383384551718,
+            "y": -95.50373021994477
+          },
+          {
+            "x": 604.0776507097031,
+            "y": -45.70871714459788
+          }
+        ],
+        "limits": {
+          "maxHops": 6,
+          "maxObjects": 10000,
+          "maxNeighbors": 4,
+          "maxCandidates": 256
+        },
+        "hardRequirements": [
+          "exact-selected-coordinates",
+          "fixed-boundary",
+          "protected-and-unknown-authorship-fixed",
+          "complete-incident-scope",
+          "maximum-four-neighbors",
+          "bounded-displacement",
+          "road-graph-validity",
+          "cyclic-order",
+          "landscape-defense",
+          "independent-witness-verification"
+        ]
+      },
+      "audit": {
+        "intentMatches": true,
+        "missing": [],
+        "extra": [],
+        "comparisons": 8600,
+        "pairCount": 10
+      },
+      "stats": {
+        "work": 1282637,
+        "expansions": 0,
+        "remainingWork": 6717363,
+        "remainingExpansions": 32768
+      },
+      "auditStats": {
+        "work": 344443,
+        "expansions": 0,
+        "remainingWork": 7655557,
+        "remainingExpansions": 32768
+      }
+    },
+    {
+      "version": 1,
+      "id": "organic-large:five-branch:75:y",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0157"
+      ],
+      "baselineCodes": [
+        "unnormalized-crossing"
+      ],
+      "unsupported": [],
+      "conflicts": [
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0155\",\"RD-0183\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0155",
+            "RD-0183"
+          ],
+          "endpoints": [
+            "N-0146",
+            "N-0151",
+            "N-0157",
+            "N-0158"
+          ],
+          "movable": [
+            "N-0157",
+            "N-0158"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              7040.367855620048,
+              -1252.905808593639,
+              -8129.268230746681,
+              164.00543346700613
+            ],
+            "cutsAB": [
+              0.9802242829421264
+            ],
+            "cutsBA": [
+              0.8489250615230446
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0157\",\"RD-0187\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0157",
+            "RD-0187"
+          ],
+          "endpoints": [
+            "N-0147",
+            "N-0152",
+            "N-0159",
+            "N-0160"
+          ],
+          "movable": [
+            "N-0159",
+            "N-0160"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              774.7054600471504,
+              -7168.498344388974,
+              -7244.093901097219,
+              699.1099033389055
+            ],
+            "cutsAB": [
+              0.9119864074306558
+            ],
+            "cutsBA": [
+              0.09753060340897869
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0165\",\"RD-0183\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0165",
+            "RD-0183"
+          ],
+          "endpoints": [
+            "N-0150",
+            "N-0151",
+            "N-0157",
+            "N-0158"
+          ],
+          "movable": [
+            "N-0150",
+            "N-0157",
+            "N-0158"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              4900.462537727021,
+              -1054.998377588734,
+              -5791.455481848749,
+              164.00543346700613
+            ],
+            "cutsAB": [
+              0.9724613366120444
+            ],
+            "cutsBA": [
+              0.822851934956776
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0167\",\"RD-0186\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0167",
+            "RD-0186"
+          ],
+          "endpoints": [
+            "N-0151",
+            "N-0152",
+            "N-0158",
+            "N-0168"
+          ],
+          "movable": [
+            "N-0158",
+            "N-0168"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              -494.2439718635239,
+              5601.039216913406,
+              934.5952808262639,
+              -5160.687907950666
+            ],
+            "cutsAB": [
+              0.15333090389419599
+            ],
+            "cutsBA": [
+              0.08108630174452947
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0167\",\"RD-0188\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0167",
+            "RD-0188"
+          ],
+          "endpoints": [
+            "N-0151",
+            "N-0152",
+            "N-0159",
+            "N-0169"
+          ],
+          "movable": [
+            "N-0159",
+            "N-0169"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              -573.5917919099845,
+              4577.221932620608,
+              4697.454312341592,
+              -453.35941218900086
+            ],
+            "cutsAB": [
+              0.9119829532895182
+            ],
+            "cutsBA": [
+              0.11135945164902221
+            ]
+          }
+        },
+        {
+          "key": "[\"unnormalized-crossing\",[\"RD-0169\",\"RD-0187\"]]",
+          "code": "unnormalized-crossing",
+          "roadIds": [
+            "RD-0169",
+            "RD-0187"
+          ],
+          "endpoints": [
+            "N-0152",
+            "N-0153",
+            "N-0159",
+            "N-0160"
+          ],
+          "movable": [
+            "N-0153",
+            "N-0159",
+            "N-0160"
+          ],
+          "outsideAdmitted": [],
+          "geometry": {
+            "orientations": [
+              -1051.544289686876,
+              5725.705242318412,
+              699.1099033389055,
+              -6078.139628666382
+            ],
+            "cutsAB": [
+              0.10315540250324076
+            ],
+            "cutsBA": [
+              0.15515797149286012
+            ]
+          }
+        }
+      ],
+      "model": {
+        "version": 1,
+        "status": "observation-only",
+        "variables": [
+          {
+            "id": "N-0149",
+            "old": {
+              "x": 50.494206961432795,
+              "y": -555.3855775918202
+            },
+            "depth": 2,
+            "primaryIncidentCount": 2,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0105"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0107"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0148"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0149"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0154"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0151"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0158"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0160"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0161"
+              }
+            ]
+          },
+          {
+            "id": "N-0150",
+            "old": {
+              "x": -272.9333715295192,
+              "y": -463.0386184661498
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0092"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0093"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0150"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0151"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0157"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0153"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0164"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0165"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0166"
+              }
+            ]
+          },
+          {
+            "id": "N-0153",
+            "old": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0148"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0152"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0153"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0154"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0160"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0159"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0169"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0171"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0172"
+              }
+            ]
+          },
+          {
+            "id": "N-0154",
+            "old": {
+              "x": 41.703172658294534,
+              "y": -486.6771167034857
+            },
+            "depth": 3,
+            "primaryIncidentCount": 2,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0149"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0153"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0154"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0155"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0161"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0161"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0171"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0173"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0174"
+              }
+            ]
+          },
+          {
+            "id": "N-0157",
+            "old": {
+              "x": -269.4583177193241,
+              "y": -401.17380152053477
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0090"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0150"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0157"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0158"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0167"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0166"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0182"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0183"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0184"
+              }
+            ]
+          },
+          {
+            "id": "N-0158",
+            "old": {
+              "x": -176.238305417659,
+              "y": -408.20001937840635
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0151"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0157"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0158"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0159"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0168"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0168"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0183"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0185"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0186"
+              }
+            ]
+          },
+          {
+            "id": "N-0159",
+            "old": {
+              "x": -114.50742985558126,
+              "y": -395.491698836105
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0152"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0158"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0159"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0160"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0169"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0170"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0185"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0187"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0188"
+              }
+            ]
+          },
+          {
+            "id": "N-0160",
+            "old": {
+              "x": -32.00717739394693,
+              "y": -396.3532329421409
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0153"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0159"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0160"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0161"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0170"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0172"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0187"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0189"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0190"
+              }
+            ]
+          },
+          {
+            "id": "N-0161",
+            "old": {
+              "x": 43.55138333328217,
+              "y": -399.3655205228661
+            },
+            "depth": 3,
+            "primaryIncidentCount": 2,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0154"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0160"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0161"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0162"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0171"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0174"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0189"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0191"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0192"
+              }
+            ]
+          },
+          {
+            "id": "N-0167",
+            "old": {
+              "x": -285.45322226092435,
+              "y": -312.79246388080634
+            },
+            "depth": 3,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0087"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0157"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0167"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0168"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0179"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0184"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0204"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0206"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0207"
+              }
+            ]
+          },
+          {
+            "id": "N-0168",
+            "old": {
+              "x": -195.783570431632,
+              "y": -338.6953043665552
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0158"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0167"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0168"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0169"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0180"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0186"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0206"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0208"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0209"
+              }
+            ]
+          },
+          {
+            "id": "N-0169",
+            "old": {
+              "x": -120.65866333903978,
+              "y": -334.4615057229459
+            },
+            "depth": 1,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0159"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0168"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0169"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0170"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0181"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0188"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0208"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0210"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0211"
+              }
+            ]
+          },
+          {
+            "id": "N-0170",
+            "old": {
+              "x": -50.3698171599795,
+              "y": -311.0632518115475
+            },
+            "depth": 3,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0160"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0169"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0170"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0171"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0182"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0190"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0210"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0212"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0213"
+              }
+            ]
+          },
+          {
+            "id": "N-0180",
+            "old": {
+              "x": -175.54258350059712,
+              "y": -263.4721517196267
+            },
+            "depth": 3,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0168"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0179"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0180"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0181"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0194"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0209"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0233"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0235"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0236"
+              }
+            ]
+          },
+          {
+            "id": "N-0181",
+            "old": {
+              "x": -113.33174481037379,
+              "y": -240.98918771057663
+            },
+            "depth": 3,
+            "primaryIncidentCount": 0,
+            "maxDisplacement": 75,
+            "incidentRefs": [
+              {
+                "collection": "nodes",
+                "id": "N-0169"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0180"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0181"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0182"
+              },
+              {
+                "collection": "nodes",
+                "id": "N-0195"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0211"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0235"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0237"
+              },
+              {
+                "collection": "roads",
+                "id": "RD-0238"
+              }
+            ]
+          }
+        ],
+        "fixedNodes": [
+          {
+            "id": "N-0087",
+            "point": {
+              "x": -337.49382626286604,
+              "y": -327.9180880251807
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0090",
+            "point": {
+              "x": -305.5533615385255,
+              "y": -400.52029347324816
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0092",
+            "point": {
+              "x": -282.4828923994351,
+              "y": -463.002007665422
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0093",
+            "point": {
+              "x": -274.0138508173463,
+              "y": -482.9945192064121
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0095",
+            "point": {
+              "x": -221.19272029574284,
+              "y": -567.0080762009651
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0097",
+            "point": {
+              "x": -179.044374644066,
+              "y": -598.4488169623006
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0100",
+            "point": {
+              "x": -112.78580988772207,
+              "y": -623.0420744717231
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0103",
+            "point": {
+              "x": -35.33801836153301,
+              "y": -620.5753818040592
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0105",
+            "point": {
+              "x": 47.97834898964582,
+              "y": -589.2083829956355
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0107",
+            "point": {
+              "x": 93.88446744865277,
+              "y": -561.9055967084453
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0145",
+            "point": {
+              "x": -112.88726590725457,
+              "y": -547.0508908168224
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0146",
+            "point": {
+              "x": -182.39469681589486,
+              "y": -494.9411802505758
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0147",
+            "point": {
+              "x": -91.28070859904379,
+              "y": -483.5411810726496
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0148",
+            "point": {
+              "x": -38.38233897256955,
+              "y": -482.1135608405
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0151",
+            "point": {
+              "x": -190.4814340687887,
+              "y": -405.3671431340549
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0152",
+            "point": {
+              "x": -107.926156084746,
+              "y": -387.0863922966293
+            },
+            "role": "exact-requested"
+          },
+          {
+            "id": "N-0155",
+            "point": {
+              "x": 107.68994101897525,
+              "y": -480.3546194957792
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0162",
+            "point": {
+              "x": 125.9426621148562,
+              "y": -393.35749910946674
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0171",
+            "point": {
+              "x": 32.440884791994094,
+              "y": -310.1392063820166
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0179",
+            "point": {
+              "x": -262.03392407301925,
+              "y": -243.96493022029796
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0182",
+            "point": {
+              "x": -25.327910926286673,
+              "y": -237.88102033163025
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0194",
+            "point": {
+              "x": -192.9823598987904,
+              "y": -185.91929060374207
+            },
+            "role": "stationary"
+          },
+          {
+            "id": "N-0195",
+            "point": {
+              "x": -107.4019691009239,
+              "y": -191.07872926662313
+            },
+            "role": "stationary"
+          }
+        ],
+        "segments": [
+          {
+            "id": "RD-0145",
+            "kind": "lane",
+            "endpoints": [
+              "N-0100",
+              "N-0145"
+            ],
+            "a": {
+              "x": -112.78580988772207,
+              "y": -623.0420744717231
+            },
+            "b": {
+              "x": -112.88726590725457,
+              "y": -547.0508908168224
+            }
+          },
+          {
+            "id": "RD-0147",
+            "kind": "lane",
+            "endpoints": [
+              "N-0097",
+              "N-0146"
+            ],
+            "a": {
+              "x": -179.044374644066,
+              "y": -598.4488169623006
+            },
+            "b": {
+              "x": -182.39469681589486,
+              "y": -494.9411802505758
+            }
+          },
+          {
+            "id": "RD-0149",
+            "kind": "lane",
+            "endpoints": [
+              "N-0145",
+              "N-0147"
+            ],
+            "a": {
+              "x": -112.88726590725457,
+              "y": -547.0508908168224
+            },
+            "b": {
+              "x": -91.28070859904379,
+              "y": -483.5411810726496
+            }
+          },
+          {
+            "id": "RD-0150",
+            "kind": "lane",
+            "endpoints": [
+              "N-0103",
+              "N-0148"
+            ],
+            "a": {
+              "x": -35.33801836153301,
+              "y": -620.5753818040592
+            },
+            "b": {
+              "x": -38.38233897256955,
+              "y": -482.1135608405
+            }
+          },
+          {
+            "id": "RD-0151",
+            "kind": "primary",
+            "endpoints": [
+              "N-0105",
+              "N-0149"
+            ],
+            "a": {
+              "x": 47.97834898964582,
+              "y": -589.2083829956355
+            },
+            "b": {
+              "x": 50.494206961432795,
+              "y": -555.3855775918202
+            }
+          },
+          {
+            "id": "RD-0152",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0095",
+              "N-0146"
+            ],
+            "a": {
+              "x": -221.19272029574284,
+              "y": -567.0080762009651
+            },
+            "b": {
+              "x": -182.39469681589486,
+              "y": -494.9411802505758
+            }
+          },
+          {
+            "id": "RD-0153",
+            "kind": "lane",
+            "endpoints": [
+              "N-0093",
+              "N-0150"
+            ],
+            "a": {
+              "x": -274.0138508173463,
+              "y": -482.9945192064121
+            },
+            "b": {
+              "x": -272.9333715295192,
+              "y": -463.0386184661498
+            }
+          },
+          {
+            "id": "RD-0154",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0146",
+              "N-0147"
+            ],
+            "a": {
+              "x": -182.39469681589486,
+              "y": -494.9411802505758
+            },
+            "b": {
+              "x": -91.28070859904379,
+              "y": -483.5411810726496
+            }
+          },
+          {
+            "id": "RD-0155",
+            "kind": "lane",
+            "endpoints": [
+              "N-0146",
+              "N-0151"
+            ],
+            "a": {
+              "x": -182.39469681589486,
+              "y": -494.9411802505758
+            },
+            "b": {
+              "x": -190.4814340687887,
+              "y": -405.3671431340549
+            }
+          },
+          {
+            "id": "RD-0156",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0147",
+              "N-0148"
+            ],
+            "a": {
+              "x": -91.28070859904379,
+              "y": -483.5411810726496
+            },
+            "b": {
+              "x": -38.38233897256955,
+              "y": -482.1135608405
+            }
+          },
+          {
+            "id": "RD-0157",
+            "kind": "lane",
+            "endpoints": [
+              "N-0147",
+              "N-0152"
+            ],
+            "a": {
+              "x": -91.28070859904379,
+              "y": -483.5411810726496
+            },
+            "b": {
+              "x": -107.926156084746,
+              "y": -387.0863922966293
+            }
+          },
+          {
+            "id": "RD-0158",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0148",
+              "N-0149"
+            ],
+            "a": {
+              "x": -38.38233897256955,
+              "y": -482.1135608405
+            },
+            "b": {
+              "x": 50.494206961432795,
+              "y": -555.3855775918202
+            }
+          },
+          {
+            "id": "RD-0159",
+            "kind": "lane",
+            "endpoints": [
+              "N-0148",
+              "N-0153"
+            ],
+            "a": {
+              "x": -38.38233897256955,
+              "y": -482.1135608405
+            },
+            "b": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            }
+          },
+          {
+            "id": "RD-0160",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0149",
+              "N-0107"
+            ],
+            "a": {
+              "x": 50.494206961432795,
+              "y": -555.3855775918202
+            },
+            "b": {
+              "x": 93.88446744865277,
+              "y": -561.9055967084453
+            }
+          },
+          {
+            "id": "RD-0161",
+            "kind": "primary",
+            "endpoints": [
+              "N-0149",
+              "N-0154"
+            ],
+            "a": {
+              "x": 50.494206961432795,
+              "y": -555.3855775918202
+            },
+            "b": {
+              "x": 41.703172658294534,
+              "y": -486.6771167034857
+            }
+          },
+          {
+            "id": "RD-0164",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0092",
+              "N-0150"
+            ],
+            "a": {
+              "x": -282.4828923994351,
+              "y": -463.002007665422
+            },
+            "b": {
+              "x": -272.9333715295192,
+              "y": -463.0386184661498
+            }
+          },
+          {
+            "id": "RD-0165",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0150",
+              "N-0151"
+            ],
+            "a": {
+              "x": -272.9333715295192,
+              "y": -463.0386184661498
+            },
+            "b": {
+              "x": -190.4814340687887,
+              "y": -405.3671431340549
+            }
+          },
+          {
+            "id": "RD-0166",
+            "kind": "lane",
+            "endpoints": [
+              "N-0150",
+              "N-0157"
+            ],
+            "a": {
+              "x": -272.9333715295192,
+              "y": -463.0386184661498
+            },
+            "b": {
+              "x": -269.4583177193241,
+              "y": -401.17380152053477
+            }
+          },
+          {
+            "id": "RD-0167",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0151",
+              "N-0152"
+            ],
+            "a": {
+              "x": -190.4814340687887,
+              "y": -405.3671431340549
+            },
+            "b": {
+              "x": -107.926156084746,
+              "y": -387.0863922966293
+            }
+          },
+          {
+            "id": "RD-0168",
+            "kind": "lane",
+            "endpoints": [
+              "N-0151",
+              "N-0158"
+            ],
+            "a": {
+              "x": -190.4814340687887,
+              "y": -405.3671431340549
+            },
+            "b": {
+              "x": -176.238305417659,
+              "y": -408.20001937840635
+            }
+          },
+          {
+            "id": "RD-0169",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0152",
+              "N-0153"
+            ],
+            "a": {
+              "x": -107.926156084746,
+              "y": -387.0863922966293
+            },
+            "b": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            }
+          },
+          {
+            "id": "RD-0170",
+            "kind": "lane",
+            "endpoints": [
+              "N-0152",
+              "N-0159"
+            ],
+            "a": {
+              "x": -107.926156084746,
+              "y": -387.0863922966293
+            },
+            "b": {
+              "x": -114.50742985558126,
+              "y": -395.491698836105
+            }
+          },
+          {
+            "id": "RD-0171",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0153",
+              "N-0154"
+            ],
+            "a": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            },
+            "b": {
+              "x": 41.703172658294534,
+              "y": -486.6771167034857
+            }
+          },
+          {
+            "id": "RD-0172",
+            "kind": "lane",
+            "endpoints": [
+              "N-0153",
+              "N-0160"
+            ],
+            "a": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            },
+            "b": {
+              "x": -32.00717739394693,
+              "y": -396.3532329421409
+            }
+          },
+          {
+            "id": "RD-0173",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0154",
+              "N-0155"
+            ],
+            "a": {
+              "x": 41.703172658294534,
+              "y": -486.6771167034857
+            },
+            "b": {
+              "x": 107.68994101897525,
+              "y": -480.3546194957792
+            }
+          },
+          {
+            "id": "RD-0174",
+            "kind": "primary",
+            "endpoints": [
+              "N-0154",
+              "N-0161"
+            ],
+            "a": {
+              "x": 41.703172658294534,
+              "y": -486.6771167034857
+            },
+            "b": {
+              "x": 43.55138333328217,
+              "y": -399.3655205228661
+            }
+          },
+          {
+            "id": "RD-0176",
+            "kind": "lane",
+            "endpoints": [
+              "N-0155",
+              "N-0162"
+            ],
+            "a": {
+              "x": 107.68994101897525,
+              "y": -480.3546194957792
+            },
+            "b": {
+              "x": 125.9426621148562,
+              "y": -393.35749910946674
+            }
+          },
+          {
+            "id": "RD-0182",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0090",
+              "N-0157"
+            ],
+            "a": {
+              "x": -305.5533615385255,
+              "y": -400.52029347324816
+            },
+            "b": {
+              "x": -269.4583177193241,
+              "y": -401.17380152053477
+            }
+          },
+          {
+            "id": "RD-0183",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0157",
+              "N-0158"
+            ],
+            "a": {
+              "x": -269.4583177193241,
+              "y": -401.17380152053477
+            },
+            "b": {
+              "x": -176.238305417659,
+              "y": -408.20001937840635
+            }
+          },
+          {
+            "id": "RD-0184",
+            "kind": "lane",
+            "endpoints": [
+              "N-0157",
+              "N-0167"
+            ],
+            "a": {
+              "x": -269.4583177193241,
+              "y": -401.17380152053477
+            },
+            "b": {
+              "x": -285.45322226092435,
+              "y": -312.79246388080634
+            }
+          },
+          {
+            "id": "RD-0185",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0158",
+              "N-0159"
+            ],
+            "a": {
+              "x": -176.238305417659,
+              "y": -408.20001937840635
+            },
+            "b": {
+              "x": -114.50742985558126,
+              "y": -395.491698836105
+            }
+          },
+          {
+            "id": "RD-0186",
+            "kind": "lane",
+            "endpoints": [
+              "N-0158",
+              "N-0168"
+            ],
+            "a": {
+              "x": -176.238305417659,
+              "y": -408.20001937840635
+            },
+            "b": {
+              "x": -195.783570431632,
+              "y": -338.6953043665552
+            }
+          },
+          {
+            "id": "RD-0187",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0159",
+              "N-0160"
+            ],
+            "a": {
+              "x": -114.50742985558126,
+              "y": -395.491698836105
+            },
+            "b": {
+              "x": -32.00717739394693,
+              "y": -396.3532329421409
+            }
+          },
+          {
+            "id": "RD-0188",
+            "kind": "lane",
+            "endpoints": [
+              "N-0159",
+              "N-0169"
+            ],
+            "a": {
+              "x": -114.50742985558126,
+              "y": -395.491698836105
+            },
+            "b": {
+              "x": -120.65866333903978,
+              "y": -334.4615057229459
+            }
+          },
+          {
+            "id": "RD-0189",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0160",
+              "N-0161"
+            ],
+            "a": {
+              "x": -32.00717739394693,
+              "y": -396.3532329421409
+            },
+            "b": {
+              "x": 43.55138333328217,
+              "y": -399.3655205228661
+            }
+          },
+          {
+            "id": "RD-0190",
+            "kind": "lane",
+            "endpoints": [
+              "N-0160",
+              "N-0170"
+            ],
+            "a": {
+              "x": -32.00717739394693,
+              "y": -396.3532329421409
+            },
+            "b": {
+              "x": -50.3698171599795,
+              "y": -311.0632518115475
+            }
+          },
+          {
+            "id": "RD-0191",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0161",
+              "N-0162"
+            ],
+            "a": {
+              "x": 43.55138333328217,
+              "y": -399.3655205228661
+            },
+            "b": {
+              "x": 125.9426621148562,
+              "y": -393.35749910946674
+            }
+          },
+          {
+            "id": "RD-0192",
+            "kind": "primary",
+            "endpoints": [
+              "N-0161",
+              "N-0171"
+            ],
+            "a": {
+              "x": 43.55138333328217,
+              "y": -399.3655205228661
+            },
+            "b": {
+              "x": 32.440884791994094,
+              "y": -310.1392063820166
+            }
+          },
+          {
+            "id": "RD-0204",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0087",
+              "N-0167"
+            ],
+            "a": {
+              "x": -337.49382626286604,
+              "y": -327.9180880251807
+            },
+            "b": {
+              "x": -285.45322226092435,
+              "y": -312.79246388080634
+            }
+          },
+          {
+            "id": "RD-0206",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0167",
+              "N-0168"
+            ],
+            "a": {
+              "x": -285.45322226092435,
+              "y": -312.79246388080634
+            },
+            "b": {
+              "x": -195.783570431632,
+              "y": -338.6953043665552
+            }
+          },
+          {
+            "id": "RD-0207",
+            "kind": "lane",
+            "endpoints": [
+              "N-0167",
+              "N-0179"
+            ],
+            "a": {
+              "x": -285.45322226092435,
+              "y": -312.79246388080634
+            },
+            "b": {
+              "x": -262.03392407301925,
+              "y": -243.96493022029796
+            }
+          },
+          {
+            "id": "RD-0208",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0168",
+              "N-0169"
+            ],
+            "a": {
+              "x": -195.783570431632,
+              "y": -338.6953043665552
+            },
+            "b": {
+              "x": -120.65866333903978,
+              "y": -334.4615057229459
+            }
+          },
+          {
+            "id": "RD-0209",
+            "kind": "lane",
+            "endpoints": [
+              "N-0168",
+              "N-0180"
+            ],
+            "a": {
+              "x": -195.783570431632,
+              "y": -338.6953043665552
+            },
+            "b": {
+              "x": -175.54258350059712,
+              "y": -263.4721517196267
+            }
+          },
+          {
+            "id": "RD-0210",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0169",
+              "N-0170"
+            ],
+            "a": {
+              "x": -120.65866333903978,
+              "y": -334.4615057229459
+            },
+            "b": {
+              "x": -50.3698171599795,
+              "y": -311.0632518115475
+            }
+          },
+          {
+            "id": "RD-0211",
+            "kind": "lane",
+            "endpoints": [
+              "N-0169",
+              "N-0181"
+            ],
+            "a": {
+              "x": -120.65866333903978,
+              "y": -334.4615057229459
+            },
+            "b": {
+              "x": -113.33174481037379,
+              "y": -240.98918771057663
+            }
+          },
+          {
+            "id": "RD-0212",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0170",
+              "N-0171"
+            ],
+            "a": {
+              "x": -50.3698171599795,
+              "y": -311.0632518115475
+            },
+            "b": {
+              "x": 32.440884791994094,
+              "y": -310.1392063820166
+            }
+          },
+          {
+            "id": "RD-0213",
+            "kind": "lane",
+            "endpoints": [
+              "N-0170",
+              "N-0182"
+            ],
+            "a": {
+              "x": -50.3698171599795,
+              "y": -311.0632518115475
+            },
+            "b": {
+              "x": -25.327910926286673,
+              "y": -237.88102033163025
+            }
+          },
+          {
+            "id": "RD-0233",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0179",
+              "N-0180"
+            ],
+            "a": {
+              "x": -262.03392407301925,
+              "y": -243.96493022029796
+            },
+            "b": {
+              "x": -175.54258350059712,
+              "y": -263.4721517196267
+            }
+          },
+          {
+            "id": "RD-0235",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0180",
+              "N-0181"
+            ],
+            "a": {
+              "x": -175.54258350059712,
+              "y": -263.4721517196267
+            },
+            "b": {
+              "x": -113.33174481037379,
+              "y": -240.98918771057663
+            }
+          },
+          {
+            "id": "RD-0236",
+            "kind": "lane",
+            "endpoints": [
+              "N-0180",
+              "N-0194"
+            ],
+            "a": {
+              "x": -175.54258350059712,
+              "y": -263.4721517196267
+            },
+            "b": {
+              "x": -192.9823598987904,
+              "y": -185.91929060374207
+            }
+          },
+          {
+            "id": "RD-0237",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0181",
+              "N-0182"
+            ],
+            "a": {
+              "x": -113.33174481037379,
+              "y": -240.98918771057663
+            },
+            "b": {
+              "x": -25.327910926286673,
+              "y": -237.88102033163025
+            }
+          },
+          {
+            "id": "RD-0238",
+            "kind": "lane",
+            "endpoints": [
+              "N-0181",
+              "N-0195"
+            ],
+            "a": {
+              "x": -113.33174481037379,
+              "y": -240.98918771057663
+            },
+            "b": {
+              "x": -107.4019691009239,
+              "y": -191.07872926662313
+            }
+          },
+          {
+            "id": "RD-0264",
+            "kind": "secondary",
+            "endpoints": [
+              "N-0194",
+              "N-0195"
+            ],
+            "a": {
+              "x": -192.9823598987904,
+              "y": -185.91929060374207
+            },
+            "b": {
+              "x": -107.4019691009239,
+              "y": -191.07872926662313
+            }
+          }
+        ],
+        "incompleteRoadIds": [
+          "RD-0162",
+          "RD-0175",
+          "RD-0193",
+          "RD-0194",
+          "RD-0214",
+          "RD-0215",
+          "RD-0231",
+          "RD-0234",
+          "RD-0239",
+          "RD-0240",
+          "RD-0262",
+          "RD-0265",
+          "RD-0266",
+          "RD-0267"
+        ],
+        "boundary": [
+          {
+            "x": 574.4211963228473,
+            "y": 2.243850691625058
+          },
+          {
+            "x": 522.2249980758306,
+            "y": 43.56312825377829
+          },
+          {
+            "x": 459.85607781910767,
+            "y": 75.61189738632233
+          },
+          {
+            "x": 405.76482642594857,
+            "y": 100.87398067826838
+          },
+          {
+            "x": 376.7493634350957,
+            "y": 127.29939741216114
+          },
+          {
+            "x": 380.10148559938204,
+            "y": 165.2237576646826
+          },
+          {
+            "x": 409.63831485067305,
+            "y": 222.07684545519075
+          },
+          {
+            "x": 447.7874741901473,
+            "y": 297.589049649831
+          },
+          {
+            "x": 472.85603253549255,
+            "y": 382.2443367969989
+          },
+          {
+            "x": 468.0008230710964,
+            "y": 460.1944955241852
+          },
+          {
+            "x": 427.62863295180114,
+            "y": 515.5297219638362
+          },
+          {
+            "x": 358.38353702308905,
+            "y": 538.9643868379211
+          },
+          {
+            "x": 274.70759188366685,
+            "y": 531.6782387742675
+          },
+          {
+            "x": 191.63510571883904,
+            "y": 504.4585769167333
+          },
+          {
+            "x": 118.58723836444864,
+            "y": 472.6693993925042
+          },
+          {
+            "x": 56.98226740491272,
+            "y": 449.6413222552949
+          },
+          {
+            "x": 2.136519372870108,
+            "y": 441.72616409375905
+          },
+          {
+            "x": -52.397220185226395,
+            "y": 447.18607009167755
+          },
+          {
+            "x": -110.92048810088342,
+            "y": 458.93941883590446
+          },
+          {
+            "x": -174.21429764559912,
+            "y": 469.1865060729116
+          },
+          {
+            "x": -240.8767327844916,
+            "y": 473.1779033811729
+          },
+          {
+            "x": -309.7285321262691,
+            "y": 470.2139914699329
+          },
+          {
+            "x": -381.0665567764046,
+            "y": 461.8049789080838
+          },
+          {
+            "x": -455.5380289445767,
+            "y": 448.6482579011003
+          },
+          {
+            "x": -531.2881992247205,
+            "y": 428.68085106442726
+          },
+          {
+            "x": -601.5467302149066,
+            "y": 397.6305431492574
+          },
+          {
+            "x": -654.9206737097014,
+            "y": 351.7798341265096
+          },
+          {
+            "x": -679.1827784751662,
+            "y": 291.14756125813426
+          },
+          {
+            "x": -667.1173976931187,
+            "y": 220.9217960521956
+          },
+          {
+            "x": -621.3728437752513,
+            "y": 149.98083535753833
+          },
+          {
+            "x": -555.3388446982027,
+            "y": 87.111681139012
+          },
+          {
+            "x": -488.93337864452315,
+            "y": 36.99610055223663
+          },
+          {
+            "x": -440.8853050432012,
+            "y": -1.722221956608486
+          },
+          {
+            "x": -421.12805243094465,
+            "y": -35.12979161646571
+          },
+          {
+            "x": -427.07915108521973,
+            "y": -70.22254680386338
+          },
+          {
+            "x": -445.6951188625742,
+            "y": -110.80073451548117
+          },
+          {
+            "x": -460.2383837446421,
+            "y": -155.50940387118436
+          },
+          {
+            "x": -458.2724729755539,
+            "y": -199.20337827648538
+          },
+          {
+            "x": -436.8400426346574,
+            "y": -236.82369329192235
+          },
+          {
+            "x": -402.37785138235614,
+            "y": -267.410879702653
+          },
+          {
+            "x": -365.7885613058161,
+            "y": -295.6938188449043
+          },
+          {
+            "x": -335.6342980294826,
+            "y": -330.03586499852616
+          },
+          {
+            "x": -313.2574822169717,
+            "y": -377.64903999917374
+          },
+          {
+            "x": -292.363197581501,
+            "y": -439.67798528740974
+          },
+          {
+            "x": -262.99429258763683,
+            "y": -509.0079285100113
+          },
+          {
+            "x": -217.39717867098216,
+            "y": -572.2744325300062
+          },
+          {
+            "x": -154.36882621361795,
+            "y": -615.2889752527603
+          },
+          {
+            "x": -79.73791130635732,
+            "y": -629.2038121069023
+          },
+          {
+            "x": -2.9711453073447913,
+            "y": -614.2853822174367
+          },
+          {
+            "x": 67.8898020153185,
+            "y": -579.4080994222769
+          },
+          {
+            "x": 129.93903080149954,
+            "y": -537.6296507630132
+          },
+          {
+            "x": 185.73708828122574,
+            "y": -500.21919369730773
+          },
+          {
+            "x": 240.37281863366286,
+            "y": -472.18801515653223
+          },
+          {
+            "x": 297.3301255992276,
+            "y": -451.3913657953626
+          },
+          {
+            "x": 355.8434219214152,
+            "y": -431.23769596874524
+          },
+          {
+            "x": 411.35280736699764,
+            "y": -405.1313143614277
+          },
+          {
+            "x": 458.6152351647965,
+            "y": -370.04316980585025
+          },
+          {
+            "x": 495.2867560101817,
+            "y": -327.39125975567043
+          },
+          {
+            "x": 523.4610102715401,
+            "y": -281.1684449079411
+          },
+          {
+            "x": 547.9569114406297,
+            "y": -234.89452838991895
+          },
+          {
+            "x": 572.3012603425392,
+            "y": -189.5225979040802
+          },
+          {
+            "x": 595.0082323187394,
+            "y": -143.6172060329928
+          },
+          {
+            "x": 608.8383384551718,
+            "y": -95.50373021994477
+          },
+          {
+            "x": 604.0776507097031,
+            "y": -45.70871714459788
+          }
+        ],
+        "limits": {
+          "maxHops": 6,
+          "maxObjects": 10000,
+          "maxNeighbors": 4,
+          "maxCandidates": 256
+        },
+        "hardRequirements": [
+          "exact-selected-coordinates",
+          "fixed-boundary",
+          "protected-and-unknown-authorship-fixed",
+          "complete-incident-scope",
+          "maximum-four-neighbors",
+          "bounded-displacement",
+          "road-graph-validity",
+          "cyclic-order",
+          "landscape-defense",
+          "independent-witness-verification"
+        ]
+      },
+      "audit": {
+        "intentMatches": true,
+        "missing": [],
+        "extra": [],
+        "comparisons": 8600,
+        "pairCount": 6
+      },
+      "stats": {
+        "work": 1281334,
+        "expansions": 0,
+        "remainingWork": 6718666,
+        "remainingExpansions": 32768
+      },
+      "auditStats": {
+        "work": 344229,
+        "expansions": 0,
+        "remainingWork": 7655771,
+        "remainingExpansions": 32768
+      }
+    }
+  ]
+}

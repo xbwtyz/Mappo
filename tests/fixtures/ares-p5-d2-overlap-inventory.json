@@ -1,0 +1,5732 @@
+{
+  "version": 1,
+  "source": "d7600d316600439e1125ea978c93f900eba7b845",
+  "run": 46091838570,
+  "rows": [
+    {
+      "id": "g:linear-medium:eight-chain:100:x",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0144",
+            "RD-0146"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0087"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0086",
+          "RD-0144"
+        ],
+        [
+          "RD-0087",
+          "RD-0144"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:eight-chain:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0171"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0077"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0077"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0175"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0177"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0179"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0171"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0057"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0175"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0177"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0147",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0147",
+            "RD-0179"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0156",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0158",
+            "RD-0175"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0160",
+            "RD-0177"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0162",
+            "RD-0179"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0131",
+          "RD-0151"
+        ],
+        [
+          "RD-0131",
+          "RD-0153"
+        ],
+        [
+          "RD-0131",
+          "RD-0169"
+        ],
+        [
+          "RD-0131",
+          "RD-0170"
+        ],
+        [
+          "RD-0132",
+          "RD-0170"
+        ],
+        [
+          "RD-0132",
+          "RD-0172"
+        ],
+        [
+          "RD-0133",
+          "RD-0172"
+        ],
+        [
+          "RD-0133",
+          "RD-0174"
+        ],
+        [
+          "RD-0134",
+          "RD-0174"
+        ],
+        [
+          "RD-0134",
+          "RD-0176"
+        ],
+        [
+          "RD-0135",
+          "RD-0176"
+        ],
+        [
+          "RD-0135",
+          "RD-0178"
+        ],
+        [
+          "RD-0136",
+          "RD-0171"
+        ],
+        [
+          "RD-0138",
+          "RD-0156"
+        ],
+        [
+          "RD-0138",
+          "RD-0171"
+        ],
+        [
+          "RD-0138",
+          "RD-0173"
+        ],
+        [
+          "RD-0139",
+          "RD-0169"
+        ],
+        [
+          "RD-0139",
+          "RD-0170"
+        ],
+        [
+          "RD-0140",
+          "RD-0156"
+        ],
+        [
+          "RD-0140",
+          "RD-0158"
+        ],
+        [
+          "RD-0140",
+          "RD-0173"
+        ],
+        [
+          "RD-0140",
+          "RD-0175"
+        ],
+        [
+          "RD-0142",
+          "RD-0158"
+        ],
+        [
+          "RD-0142",
+          "RD-0160"
+        ],
+        [
+          "RD-0142",
+          "RD-0175"
+        ],
+        [
+          "RD-0142",
+          "RD-0177"
+        ],
+        [
+          "RD-0144",
+          "RD-0160"
+        ],
+        [
+          "RD-0144",
+          "RD-0162"
+        ],
+        [
+          "RD-0144",
+          "RD-0177"
+        ],
+        [
+          "RD-0144",
+          "RD-0179"
+        ],
+        [
+          "RD-0146",
+          "RD-0162"
+        ],
+        [
+          "RD-0146",
+          "RD-0179"
+        ],
+        [
+          "RD-0153",
+          "RD-0173"
+        ],
+        [
+          "RD-0155",
+          "RD-0173"
+        ],
+        [
+          "RD-0155",
+          "RD-0175"
+        ],
+        [
+          "RD-0157",
+          "RD-0175"
+        ],
+        [
+          "RD-0157",
+          "RD-0177"
+        ],
+        [
+          "RD-0159",
+          "RD-0177"
+        ],
+        [
+          "RD-0159",
+          "RD-0179"
+        ],
+        [
+          "RD-0161",
+          "RD-0179"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:eight-chain:50:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0131",
+          "RD-0151"
+        ],
+        [
+          "RD-0131",
+          "RD-0153"
+        ],
+        [
+          "RD-0136",
+          "RD-0154"
+        ],
+        [
+          "RD-0138",
+          "RD-0154"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:eight-chain:75:x",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0144",
+            "RD-0146"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0087"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0086",
+          "RD-0144"
+        ],
+        [
+          "RD-0087",
+          "RD-0144"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:eight-chain:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0175"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0177"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0147",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0147",
+            "RD-0179"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0156",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0158",
+            "RD-0175"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0160",
+            "RD-0177"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0162",
+            "RD-0179"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0131",
+          "RD-0151"
+        ],
+        [
+          "RD-0131",
+          "RD-0153"
+        ],
+        [
+          "RD-0136",
+          "RD-0154"
+        ],
+        [
+          "RD-0138",
+          "RD-0154"
+        ],
+        [
+          "RD-0141",
+          "RD-0170"
+        ],
+        [
+          "RD-0141",
+          "RD-0172"
+        ],
+        [
+          "RD-0143",
+          "RD-0172"
+        ],
+        [
+          "RD-0143",
+          "RD-0174"
+        ],
+        [
+          "RD-0145",
+          "RD-0174"
+        ],
+        [
+          "RD-0145",
+          "RD-0176"
+        ],
+        [
+          "RD-0147",
+          "RD-0176"
+        ],
+        [
+          "RD-0147",
+          "RD-0178"
+        ],
+        [
+          "RD-0153",
+          "RD-0173"
+        ],
+        [
+          "RD-0155",
+          "RD-0173"
+        ],
+        [
+          "RD-0155",
+          "RD-0175"
+        ],
+        [
+          "RD-0157",
+          "RD-0175"
+        ],
+        [
+          "RD-0157",
+          "RD-0177"
+        ],
+        [
+          "RD-0159",
+          "RD-0177"
+        ],
+        [
+          "RD-0159",
+          "RD-0179"
+        ],
+        [
+          "RD-0161",
+          "RD-0179"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:eight-loop:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0154"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0074",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0171"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0074",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0156"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0077",
+            "unqualified-node:N-0145"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0173"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0077",
+            "unqualified-node:N-0145",
+            "unqualified-node:N-0153"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0080",
+            "unqualified-node:N-0146"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0175"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0080",
+            "unqualified-node:N-0146",
+            "unqualified-node:N-0154"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0160"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0082",
+            "unqualified-node:N-0147"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0177"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0082",
+            "unqualified-node:N-0147",
+            "unqualified-node:N-0155"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0171"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0145"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0173"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0145",
+            "unqualified-node:N-0153"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0158"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0146"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0175"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0146",
+            "unqualified-node:N-0154"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0160"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0147"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0177"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0147",
+            "unqualified-node:N-0155"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0154",
+            "RD-0171"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0156",
+            "RD-0173"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0145",
+            "unqualified-node:N-0153"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0158",
+            "RD-0175"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0146",
+            "unqualified-node:N-0154"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0160",
+            "RD-0177"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0147",
+            "unqualified-node:N-0155"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0131",
+          "RD-0169"
+        ],
+        [
+          "RD-0131",
+          "RD-0170"
+        ],
+        [
+          "RD-0132",
+          "RD-0170"
+        ],
+        [
+          "RD-0132",
+          "RD-0172"
+        ],
+        [
+          "RD-0133",
+          "RD-0172"
+        ],
+        [
+          "RD-0133",
+          "RD-0174"
+        ],
+        [
+          "RD-0134",
+          "RD-0174"
+        ],
+        [
+          "RD-0134",
+          "RD-0176"
+        ],
+        [
+          "RD-0136",
+          "RD-0154"
+        ],
+        [
+          "RD-0136",
+          "RD-0171"
+        ],
+        [
+          "RD-0138",
+          "RD-0154"
+        ],
+        [
+          "RD-0138",
+          "RD-0156"
+        ],
+        [
+          "RD-0138",
+          "RD-0171"
+        ],
+        [
+          "RD-0138",
+          "RD-0173"
+        ],
+        [
+          "RD-0056",
+          "RD-0139"
+        ],
+        [
+          "RD-0057",
+          "RD-0139"
+        ],
+        [
+          "RD-0140",
+          "RD-0156"
+        ],
+        [
+          "RD-0140",
+          "RD-0158"
+        ],
+        [
+          "RD-0140",
+          "RD-0173"
+        ],
+        [
+          "RD-0140",
+          "RD-0175"
+        ],
+        [
+          "RD-0142",
+          "RD-0158"
+        ],
+        [
+          "RD-0142",
+          "RD-0160"
+        ],
+        [
+          "RD-0142",
+          "RD-0175"
+        ],
+        [
+          "RD-0142",
+          "RD-0177"
+        ],
+        [
+          "RD-0144",
+          "RD-0160"
+        ],
+        [
+          "RD-0144",
+          "RD-0177"
+        ],
+        [
+          "RD-0153",
+          "RD-0173"
+        ],
+        [
+          "RD-0056",
+          "RD-0154"
+        ],
+        [
+          "RD-0057",
+          "RD-0154"
+        ],
+        [
+          "RD-0155",
+          "RD-0173"
+        ],
+        [
+          "RD-0155",
+          "RD-0175"
+        ],
+        [
+          "RD-0157",
+          "RD-0175"
+        ],
+        [
+          "RD-0157",
+          "RD-0177"
+        ],
+        [
+          "RD-0159",
+          "RD-0177"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:eight-loop:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0171"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0057"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0175"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0177"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0154",
+            "RD-0171"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0057"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0156",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0158",
+            "RD-0175"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0160",
+            "RD-0177"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0139",
+          "RD-0169"
+        ],
+        [
+          "RD-0139",
+          "RD-0170"
+        ],
+        [
+          "RD-0141",
+          "RD-0170"
+        ],
+        [
+          "RD-0141",
+          "RD-0172"
+        ],
+        [
+          "RD-0143",
+          "RD-0172"
+        ],
+        [
+          "RD-0143",
+          "RD-0174"
+        ],
+        [
+          "RD-0145",
+          "RD-0174"
+        ],
+        [
+          "RD-0145",
+          "RD-0176"
+        ],
+        [
+          "RD-0151",
+          "RD-0171"
+        ],
+        [
+          "RD-0153",
+          "RD-0171"
+        ],
+        [
+          "RD-0153",
+          "RD-0173"
+        ],
+        [
+          "RD-0155",
+          "RD-0173"
+        ],
+        [
+          "RD-0155",
+          "RD-0175"
+        ],
+        [
+          "RD-0157",
+          "RD-0175"
+        ],
+        [
+          "RD-0157",
+          "RD-0177"
+        ],
+        [
+          "RD-0159",
+          "RD-0177"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:five-branch:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0154"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0074",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0171"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0074",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0156"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0077",
+            "unqualified-node:N-0145"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0173"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0077",
+            "unqualified-node:N-0145",
+            "unqualified-node:N-0153"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0143"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0080",
+            "unqualified-node:N-0139"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0080",
+            "unqualified-node:N-0139",
+            "unqualified-node:N-0146"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0175"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0080",
+            "unqualified-node:N-0146",
+            "unqualified-node:N-0154"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0145"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0082",
+            "unqualified-node:N-0140"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0160"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0082",
+            "unqualified-node:N-0140",
+            "unqualified-node:N-0147"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0177"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0082",
+            "unqualified-node:N-0147",
+            "unqualified-node:N-0155"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0171"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0145"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0173"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0145",
+            "unqualified-node:N-0153"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0158"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0139",
+            "unqualified-node:N-0146"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0175"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0139",
+            "unqualified-node:N-0146",
+            "unqualified-node:N-0154"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0160"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0140",
+            "unqualified-node:N-0147"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0177"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0140",
+            "unqualified-node:N-0147",
+            "unqualified-node:N-0155"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0154",
+            "RD-0171"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0156",
+            "RD-0173"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0145",
+            "unqualified-node:N-0153"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0131",
+          "RD-0169"
+        ],
+        [
+          "RD-0131",
+          "RD-0170"
+        ],
+        [
+          "RD-0132",
+          "RD-0170"
+        ],
+        [
+          "RD-0132",
+          "RD-0172"
+        ],
+        [
+          "RD-0133",
+          "RD-0155"
+        ],
+        [
+          "RD-0133",
+          "RD-0157"
+        ],
+        [
+          "RD-0133",
+          "RD-0172"
+        ],
+        [
+          "RD-0133",
+          "RD-0174"
+        ],
+        [
+          "RD-0134",
+          "RD-0157"
+        ],
+        [
+          "RD-0134",
+          "RD-0159"
+        ],
+        [
+          "RD-0134",
+          "RD-0174"
+        ],
+        [
+          "RD-0134",
+          "RD-0176"
+        ],
+        [
+          "RD-0136",
+          "RD-0154"
+        ],
+        [
+          "RD-0136",
+          "RD-0171"
+        ],
+        [
+          "RD-0138",
+          "RD-0154"
+        ],
+        [
+          "RD-0138",
+          "RD-0156"
+        ],
+        [
+          "RD-0138",
+          "RD-0171"
+        ],
+        [
+          "RD-0138",
+          "RD-0173"
+        ],
+        [
+          "RD-0056",
+          "RD-0139"
+        ],
+        [
+          "RD-0057",
+          "RD-0139"
+        ],
+        [
+          "RD-0140",
+          "RD-0156"
+        ],
+        [
+          "RD-0140",
+          "RD-0173"
+        ],
+        [
+          "RD-0140",
+          "RD-0175"
+        ],
+        [
+          "RD-0142",
+          "RD-0175"
+        ],
+        [
+          "RD-0142",
+          "RD-0177"
+        ],
+        [
+          "RD-0143",
+          "RD-0172"
+        ],
+        [
+          "RD-0143",
+          "RD-0174"
+        ],
+        [
+          "RD-0144",
+          "RD-0177"
+        ],
+        [
+          "RD-0145",
+          "RD-0174"
+        ],
+        [
+          "RD-0145",
+          "RD-0176"
+        ],
+        [
+          "RD-0153",
+          "RD-0173"
+        ],
+        [
+          "RD-0056",
+          "RD-0154"
+        ],
+        [
+          "RD-0057",
+          "RD-0154"
+        ],
+        [
+          "RD-0155",
+          "RD-0173"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:five-branch:50:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0143"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0145"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0133",
+          "RD-0155"
+        ],
+        [
+          "RD-0133",
+          "RD-0157"
+        ],
+        [
+          "RD-0134",
+          "RD-0157"
+        ],
+        [
+          "RD-0134",
+          "RD-0159"
+        ],
+        [
+          "RD-0140",
+          "RD-0158"
+        ],
+        [
+          "RD-0142",
+          "RD-0158"
+        ],
+        [
+          "RD-0142",
+          "RD-0160"
+        ],
+        [
+          "RD-0144",
+          "RD-0160"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:five-branch:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0143"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0145"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0171"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0057"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0154",
+            "RD-0171"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0057"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0156",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0133",
+          "RD-0155"
+        ],
+        [
+          "RD-0133",
+          "RD-0157"
+        ],
+        [
+          "RD-0134",
+          "RD-0157"
+        ],
+        [
+          "RD-0134",
+          "RD-0159"
+        ],
+        [
+          "RD-0139",
+          "RD-0169"
+        ],
+        [
+          "RD-0139",
+          "RD-0170"
+        ],
+        [
+          "RD-0140",
+          "RD-0158"
+        ],
+        [
+          "RD-0141",
+          "RD-0170"
+        ],
+        [
+          "RD-0141",
+          "RD-0172"
+        ],
+        [
+          "RD-0142",
+          "RD-0158"
+        ],
+        [
+          "RD-0142",
+          "RD-0160"
+        ],
+        [
+          "RD-0144",
+          "RD-0160"
+        ],
+        [
+          "RD-0151",
+          "RD-0171"
+        ],
+        [
+          "RD-0153",
+          "RD-0171"
+        ],
+        [
+          "RD-0153",
+          "RD-0173"
+        ],
+        [
+          "RD-0155",
+          "RD-0173"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:five-chain:100:x",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0144",
+            "RD-0146"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0087"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0086",
+          "RD-0144"
+        ],
+        [
+          "RD-0087",
+          "RD-0144"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:five-chain:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0171"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0141"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0077"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0077"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0077"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0143"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0175"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0145"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0177"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0179"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0171"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0057"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0175"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0177"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0147",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0147",
+            "RD-0179"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0162",
+            "RD-0179"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0131",
+          "RD-0151"
+        ],
+        [
+          "RD-0131",
+          "RD-0153"
+        ],
+        [
+          "RD-0131",
+          "RD-0169"
+        ],
+        [
+          "RD-0131",
+          "RD-0170"
+        ],
+        [
+          "RD-0132",
+          "RD-0153"
+        ],
+        [
+          "RD-0132",
+          "RD-0155"
+        ],
+        [
+          "RD-0132",
+          "RD-0170"
+        ],
+        [
+          "RD-0132",
+          "RD-0172"
+        ],
+        [
+          "RD-0133",
+          "RD-0155"
+        ],
+        [
+          "RD-0133",
+          "RD-0157"
+        ],
+        [
+          "RD-0133",
+          "RD-0172"
+        ],
+        [
+          "RD-0133",
+          "RD-0174"
+        ],
+        [
+          "RD-0134",
+          "RD-0157"
+        ],
+        [
+          "RD-0134",
+          "RD-0159"
+        ],
+        [
+          "RD-0134",
+          "RD-0174"
+        ],
+        [
+          "RD-0134",
+          "RD-0176"
+        ],
+        [
+          "RD-0135",
+          "RD-0176"
+        ],
+        [
+          "RD-0135",
+          "RD-0178"
+        ],
+        [
+          "RD-0136",
+          "RD-0171"
+        ],
+        [
+          "RD-0138",
+          "RD-0171"
+        ],
+        [
+          "RD-0138",
+          "RD-0173"
+        ],
+        [
+          "RD-0139",
+          "RD-0169"
+        ],
+        [
+          "RD-0139",
+          "RD-0170"
+        ],
+        [
+          "RD-0140",
+          "RD-0173"
+        ],
+        [
+          "RD-0140",
+          "RD-0175"
+        ],
+        [
+          "RD-0141",
+          "RD-0170"
+        ],
+        [
+          "RD-0141",
+          "RD-0172"
+        ],
+        [
+          "RD-0142",
+          "RD-0175"
+        ],
+        [
+          "RD-0142",
+          "RD-0177"
+        ],
+        [
+          "RD-0143",
+          "RD-0172"
+        ],
+        [
+          "RD-0143",
+          "RD-0174"
+        ],
+        [
+          "RD-0144",
+          "RD-0162"
+        ],
+        [
+          "RD-0144",
+          "RD-0177"
+        ],
+        [
+          "RD-0144",
+          "RD-0179"
+        ],
+        [
+          "RD-0145",
+          "RD-0174"
+        ],
+        [
+          "RD-0145",
+          "RD-0176"
+        ],
+        [
+          "RD-0146",
+          "RD-0162"
+        ],
+        [
+          "RD-0146",
+          "RD-0179"
+        ],
+        [
+          "RD-0159",
+          "RD-0179"
+        ],
+        [
+          "RD-0161",
+          "RD-0179"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:five-chain:50:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0141"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0077"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0077"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0143"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0145"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0131",
+          "RD-0151"
+        ],
+        [
+          "RD-0131",
+          "RD-0153"
+        ],
+        [
+          "RD-0132",
+          "RD-0153"
+        ],
+        [
+          "RD-0132",
+          "RD-0155"
+        ],
+        [
+          "RD-0133",
+          "RD-0155"
+        ],
+        [
+          "RD-0133",
+          "RD-0157"
+        ],
+        [
+          "RD-0134",
+          "RD-0157"
+        ],
+        [
+          "RD-0134",
+          "RD-0159"
+        ],
+        [
+          "RD-0136",
+          "RD-0154"
+        ],
+        [
+          "RD-0138",
+          "RD-0154"
+        ],
+        [
+          "RD-0138",
+          "RD-0156"
+        ],
+        [
+          "RD-0140",
+          "RD-0156"
+        ],
+        [
+          "RD-0140",
+          "RD-0158"
+        ],
+        [
+          "RD-0142",
+          "RD-0158"
+        ],
+        [
+          "RD-0142",
+          "RD-0160"
+        ],
+        [
+          "RD-0144",
+          "RD-0160"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:five-chain:75:x",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0144",
+            "RD-0146"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0087"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0086",
+          "RD-0144"
+        ],
+        [
+          "RD-0087",
+          "RD-0144"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:five-chain:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0141"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0077"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0077"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0143"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0080"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0145"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0147",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0147",
+            "RD-0179"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0162",
+            "RD-0179"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0131",
+          "RD-0151"
+        ],
+        [
+          "RD-0131",
+          "RD-0153"
+        ],
+        [
+          "RD-0132",
+          "RD-0153"
+        ],
+        [
+          "RD-0132",
+          "RD-0155"
+        ],
+        [
+          "RD-0133",
+          "RD-0155"
+        ],
+        [
+          "RD-0133",
+          "RD-0157"
+        ],
+        [
+          "RD-0134",
+          "RD-0157"
+        ],
+        [
+          "RD-0134",
+          "RD-0159"
+        ],
+        [
+          "RD-0136",
+          "RD-0154"
+        ],
+        [
+          "RD-0138",
+          "RD-0154"
+        ],
+        [
+          "RD-0138",
+          "RD-0156"
+        ],
+        [
+          "RD-0140",
+          "RD-0156"
+        ],
+        [
+          "RD-0140",
+          "RD-0158"
+        ],
+        [
+          "RD-0142",
+          "RD-0158"
+        ],
+        [
+          "RD-0142",
+          "RD-0160"
+        ],
+        [
+          "RD-0144",
+          "RD-0160"
+        ],
+        [
+          "RD-0147",
+          "RD-0176"
+        ],
+        [
+          "RD-0147",
+          "RD-0178"
+        ],
+        [
+          "RD-0159",
+          "RD-0179"
+        ],
+        [
+          "RD-0161",
+          "RD-0179"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:quad:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0154"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0074",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0131",
+            "RD-0171"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0074",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0156"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0077",
+            "unqualified-node:N-0145"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0173"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0077",
+            "unqualified-node:N-0145",
+            "unqualified-node:N-0153"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0171"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0145"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0173"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0145",
+            "unqualified-node:N-0153"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0154",
+            "RD-0171"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0057",
+            "unqualified-node:N-0144"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0156",
+            "RD-0173"
+          ],
+          "reasons": [
+            "mandatory-preflight-refused",
+            "overlap-resolution-held",
+            "unqualified-node:N-0145",
+            "unqualified-node:N-0153"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0131",
+          "RD-0169"
+        ],
+        [
+          "RD-0131",
+          "RD-0170"
+        ],
+        [
+          "RD-0132",
+          "RD-0170"
+        ],
+        [
+          "RD-0132",
+          "RD-0172"
+        ],
+        [
+          "RD-0136",
+          "RD-0154"
+        ],
+        [
+          "RD-0136",
+          "RD-0171"
+        ],
+        [
+          "RD-0138",
+          "RD-0154"
+        ],
+        [
+          "RD-0138",
+          "RD-0156"
+        ],
+        [
+          "RD-0138",
+          "RD-0171"
+        ],
+        [
+          "RD-0138",
+          "RD-0173"
+        ],
+        [
+          "RD-0056",
+          "RD-0139"
+        ],
+        [
+          "RD-0057",
+          "RD-0139"
+        ],
+        [
+          "RD-0140",
+          "RD-0156"
+        ],
+        [
+          "RD-0140",
+          "RD-0173"
+        ],
+        [
+          "RD-0153",
+          "RD-0173"
+        ],
+        [
+          "RD-0056",
+          "RD-0154"
+        ],
+        [
+          "RD-0057",
+          "RD-0154"
+        ],
+        [
+          "RD-0155",
+          "RD-0173"
+        ]
+      ]
+    },
+    {
+      "id": "g:linear-medium:quad:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0154"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0171"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0057"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0156"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0154",
+            "RD-0171"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0057"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0156",
+            "RD-0173"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0139",
+          "RD-0169"
+        ],
+        [
+          "RD-0139",
+          "RD-0170"
+        ],
+        [
+          "RD-0141",
+          "RD-0170"
+        ],
+        [
+          "RD-0141",
+          "RD-0172"
+        ],
+        [
+          "RD-0151",
+          "RD-0171"
+        ],
+        [
+          "RD-0153",
+          "RD-0171"
+        ],
+        [
+          "RD-0153",
+          "RD-0173"
+        ],
+        [
+          "RD-0155",
+          "RD-0173"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:eight-chain:100:x",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0146",
+            "RD-0148"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0146",
+            "RD-0150"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0148",
+            "RD-0150"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0127",
+          "RD-0150"
+        ],
+        [
+          "RD-0128",
+          "RD-0146"
+        ],
+        [
+          "RD-0146",
+          "RD-0151"
+        ],
+        [
+          "RD-0149",
+          "RD-0150"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:eight-chain:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0119",
+            "RD-0133"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0119",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0120",
+            "RD-0135"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0078"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0120",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0078"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0137"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0123",
+            "RD-0141"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0084"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0123",
+            "RD-0166"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0084"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0124",
+            "RD-0143"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0124",
+            "RD-0168"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0125",
+            "RD-0145"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0086"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0125",
+            "RD-0170"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0086"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0126",
+            "RD-0147"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0087"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0126",
+            "RD-0172"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0087"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0127",
+            "RD-0149"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0088"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0127",
+            "RD-0174"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0088"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0137",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0166"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0168"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0170"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0147",
+            "RD-0172"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0149",
+            "RD-0174"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0119",
+          "RD-0156"
+        ],
+        [
+          "RD-0119",
+          "RD-0157"
+        ],
+        [
+          "RD-0120",
+          "RD-0157"
+        ],
+        [
+          "RD-0120",
+          "RD-0159"
+        ],
+        [
+          "RD-0121",
+          "RD-0159"
+        ],
+        [
+          "RD-0121",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0163"
+        ],
+        [
+          "RD-0123",
+          "RD-0163"
+        ],
+        [
+          "RD-0123",
+          "RD-0165"
+        ],
+        [
+          "RD-0124",
+          "RD-0165"
+        ],
+        [
+          "RD-0124",
+          "RD-0167"
+        ],
+        [
+          "RD-0125",
+          "RD-0167"
+        ],
+        [
+          "RD-0125",
+          "RD-0169"
+        ],
+        [
+          "RD-0126",
+          "RD-0169"
+        ],
+        [
+          "RD-0126",
+          "RD-0171"
+        ],
+        [
+          "RD-0127",
+          "RD-0171"
+        ],
+        [
+          "RD-0127",
+          "RD-0173"
+        ],
+        [
+          "RD-0131",
+          "RD-0158"
+        ],
+        [
+          "RD-0132",
+          "RD-0158"
+        ],
+        [
+          "RD-0132",
+          "RD-0160"
+        ],
+        [
+          "RD-0134",
+          "RD-0160"
+        ],
+        [
+          "RD-0134",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0164"
+        ],
+        [
+          "RD-0138",
+          "RD-0164"
+        ],
+        [
+          "RD-0138",
+          "RD-0166"
+        ],
+        [
+          "RD-0140",
+          "RD-0166"
+        ],
+        [
+          "RD-0140",
+          "RD-0168"
+        ],
+        [
+          "RD-0142",
+          "RD-0168"
+        ],
+        [
+          "RD-0142",
+          "RD-0170"
+        ],
+        [
+          "RD-0144",
+          "RD-0170"
+        ],
+        [
+          "RD-0144",
+          "RD-0172"
+        ],
+        [
+          "RD-0146",
+          "RD-0172"
+        ],
+        [
+          "RD-0146",
+          "RD-0174"
+        ],
+        [
+          "RD-0148",
+          "RD-0174"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:eight-chain:75:x",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0146",
+            "RD-0148"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0146",
+            "RD-0150"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0148",
+            "RD-0150"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0127",
+          "RD-0150"
+        ],
+        [
+          "RD-0128",
+          "RD-0146"
+        ],
+        [
+          "RD-0146",
+          "RD-0151"
+        ],
+        [
+          "RD-0149",
+          "RD-0150"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:eight-chain:75:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0119",
+            "RD-0133"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0119",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0120",
+            "RD-0135"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0078"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0120",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0078"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0137"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0123",
+            "RD-0141"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0084"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0123",
+            "RD-0166"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0084"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0124",
+            "RD-0143"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0124",
+            "RD-0168"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0125",
+            "RD-0145"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0086"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0125",
+            "RD-0170"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0086"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0126",
+            "RD-0147"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0087"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0126",
+            "RD-0172"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0087"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0127",
+            "RD-0149"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0088"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0127",
+            "RD-0174"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0088"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0137",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0166"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0168"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0145",
+            "RD-0170"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0147",
+            "RD-0172"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0149",
+            "RD-0174"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0119",
+          "RD-0156"
+        ],
+        [
+          "RD-0119",
+          "RD-0157"
+        ],
+        [
+          "RD-0120",
+          "RD-0157"
+        ],
+        [
+          "RD-0120",
+          "RD-0159"
+        ],
+        [
+          "RD-0121",
+          "RD-0159"
+        ],
+        [
+          "RD-0121",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0163"
+        ],
+        [
+          "RD-0123",
+          "RD-0163"
+        ],
+        [
+          "RD-0123",
+          "RD-0165"
+        ],
+        [
+          "RD-0124",
+          "RD-0165"
+        ],
+        [
+          "RD-0124",
+          "RD-0167"
+        ],
+        [
+          "RD-0125",
+          "RD-0167"
+        ],
+        [
+          "RD-0125",
+          "RD-0169"
+        ],
+        [
+          "RD-0126",
+          "RD-0169"
+        ],
+        [
+          "RD-0126",
+          "RD-0171"
+        ],
+        [
+          "RD-0127",
+          "RD-0171"
+        ],
+        [
+          "RD-0127",
+          "RD-0173"
+        ],
+        [
+          "RD-0131",
+          "RD-0158"
+        ],
+        [
+          "RD-0132",
+          "RD-0158"
+        ],
+        [
+          "RD-0132",
+          "RD-0160"
+        ],
+        [
+          "RD-0134",
+          "RD-0160"
+        ],
+        [
+          "RD-0134",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0164"
+        ],
+        [
+          "RD-0138",
+          "RD-0164"
+        ],
+        [
+          "RD-0138",
+          "RD-0166"
+        ],
+        [
+          "RD-0140",
+          "RD-0166"
+        ],
+        [
+          "RD-0140",
+          "RD-0168"
+        ],
+        [
+          "RD-0142",
+          "RD-0168"
+        ],
+        [
+          "RD-0142",
+          "RD-0170"
+        ],
+        [
+          "RD-0144",
+          "RD-0170"
+        ],
+        [
+          "RD-0144",
+          "RD-0172"
+        ],
+        [
+          "RD-0146",
+          "RD-0172"
+        ],
+        [
+          "RD-0146",
+          "RD-0174"
+        ],
+        [
+          "RD-0148",
+          "RD-0174"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:eight-loop:100:x",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0136",
+            "RD-0138"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0136",
+            "RD-0140"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0138",
+            "RD-0140"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0161",
+            "RD-0163"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0161",
+            "RD-0165"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0163",
+            "RD-0165"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0122",
+          "RD-0140"
+        ],
+        [
+          "RD-0123",
+          "RD-0136"
+        ],
+        [
+          "RD-0136",
+          "RD-0141"
+        ],
+        [
+          "RD-0139",
+          "RD-0140"
+        ],
+        [
+          "RD-0139",
+          "RD-0165"
+        ],
+        [
+          "RD-0141",
+          "RD-0161"
+        ],
+        [
+          "RD-0161",
+          "RD-0166"
+        ],
+        [
+          "RD-0164",
+          "RD-0165"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:eight-loop:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0183"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0185"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0137",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0137",
+            "RD-0187"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0189"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0158",
+            "RD-0183"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0160",
+            "RD-0185"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0162",
+            "RD-0187"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0164",
+            "RD-0189"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0133",
+          "RD-0181"
+        ],
+        [
+          "RD-0133",
+          "RD-0182"
+        ],
+        [
+          "RD-0135",
+          "RD-0182"
+        ],
+        [
+          "RD-0135",
+          "RD-0184"
+        ],
+        [
+          "RD-0137",
+          "RD-0184"
+        ],
+        [
+          "RD-0137",
+          "RD-0186"
+        ],
+        [
+          "RD-0139",
+          "RD-0186"
+        ],
+        [
+          "RD-0139",
+          "RD-0188"
+        ],
+        [
+          "RD-0156",
+          "RD-0183"
+        ],
+        [
+          "RD-0157",
+          "RD-0183"
+        ],
+        [
+          "RD-0157",
+          "RD-0185"
+        ],
+        [
+          "RD-0159",
+          "RD-0185"
+        ],
+        [
+          "RD-0159",
+          "RD-0187"
+        ],
+        [
+          "RD-0161",
+          "RD-0187"
+        ],
+        [
+          "RD-0161",
+          "RD-0189"
+        ],
+        [
+          "RD-0163",
+          "RD-0189"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:five-branch:100:x",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0136",
+            "RD-0138"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0136",
+            "RD-0140"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0138",
+            "RD-0140"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0157",
+            "RD-0159"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0157",
+            "RD-0161"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0159",
+            "RD-0161"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0122",
+          "RD-0140"
+        ],
+        [
+          "RD-0135",
+          "RD-0161"
+        ],
+        [
+          "RD-0123",
+          "RD-0136"
+        ],
+        [
+          "RD-0136",
+          "RD-0141"
+        ],
+        [
+          "RD-0137",
+          "RD-0157"
+        ],
+        [
+          "RD-0139",
+          "RD-0140"
+        ],
+        [
+          "RD-0157",
+          "RD-0162"
+        ],
+        [
+          "RD-0160",
+          "RD-0161"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:five-branch:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0137"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0183"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0185"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0137",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0158",
+            "RD-0183"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0160",
+            "RD-0185"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0121",
+          "RD-0159"
+        ],
+        [
+          "RD-0121",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0163"
+        ],
+        [
+          "RD-0133",
+          "RD-0181"
+        ],
+        [
+          "RD-0133",
+          "RD-0182"
+        ],
+        [
+          "RD-0134",
+          "RD-0162"
+        ],
+        [
+          "RD-0135",
+          "RD-0182"
+        ],
+        [
+          "RD-0135",
+          "RD-0184"
+        ],
+        [
+          "RD-0136",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0164"
+        ],
+        [
+          "RD-0138",
+          "RD-0164"
+        ],
+        [
+          "RD-0156",
+          "RD-0183"
+        ],
+        [
+          "RD-0157",
+          "RD-0183"
+        ],
+        [
+          "RD-0157",
+          "RD-0185"
+        ],
+        [
+          "RD-0159",
+          "RD-0185"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:five-branch:75:x",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0157",
+            "RD-0159"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0157",
+            "RD-0161"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0159",
+            "RD-0161"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0135",
+          "RD-0161"
+        ],
+        [
+          "RD-0137",
+          "RD-0157"
+        ],
+        [
+          "RD-0157",
+          "RD-0162"
+        ],
+        [
+          "RD-0160",
+          "RD-0161"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:five-branch:75:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0137"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0137",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0121",
+          "RD-0159"
+        ],
+        [
+          "RD-0121",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0163"
+        ],
+        [
+          "RD-0134",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0164"
+        ],
+        [
+          "RD-0138",
+          "RD-0164"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:five-chain:100:x",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0140",
+            "RD-0142"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0140",
+            "RD-0144"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0142",
+            "RD-0144"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0124",
+          "RD-0144"
+        ],
+        [
+          "RD-0125",
+          "RD-0140"
+        ],
+        [
+          "RD-0140",
+          "RD-0145"
+        ],
+        [
+          "RD-0143",
+          "RD-0144"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:five-chain:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0119",
+            "RD-0133"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0119",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0120",
+            "RD-0135"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0078"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0120",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0078"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0137"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0123",
+            "RD-0141"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0084"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0123",
+            "RD-0166"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0084"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0124",
+            "RD-0143"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0124",
+            "RD-0168"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0137",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0166"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0168"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0119",
+          "RD-0156"
+        ],
+        [
+          "RD-0119",
+          "RD-0157"
+        ],
+        [
+          "RD-0120",
+          "RD-0157"
+        ],
+        [
+          "RD-0120",
+          "RD-0159"
+        ],
+        [
+          "RD-0121",
+          "RD-0159"
+        ],
+        [
+          "RD-0121",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0163"
+        ],
+        [
+          "RD-0123",
+          "RD-0163"
+        ],
+        [
+          "RD-0123",
+          "RD-0165"
+        ],
+        [
+          "RD-0124",
+          "RD-0165"
+        ],
+        [
+          "RD-0124",
+          "RD-0167"
+        ],
+        [
+          "RD-0131",
+          "RD-0158"
+        ],
+        [
+          "RD-0132",
+          "RD-0158"
+        ],
+        [
+          "RD-0132",
+          "RD-0160"
+        ],
+        [
+          "RD-0134",
+          "RD-0160"
+        ],
+        [
+          "RD-0134",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0164"
+        ],
+        [
+          "RD-0138",
+          "RD-0164"
+        ],
+        [
+          "RD-0138",
+          "RD-0166"
+        ],
+        [
+          "RD-0140",
+          "RD-0166"
+        ],
+        [
+          "RD-0140",
+          "RD-0168"
+        ],
+        [
+          "RD-0142",
+          "RD-0168"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:five-chain:75:x",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0140",
+            "RD-0142"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0140",
+            "RD-0144"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0142",
+            "RD-0144"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0124",
+          "RD-0144"
+        ],
+        [
+          "RD-0125",
+          "RD-0140"
+        ],
+        [
+          "RD-0140",
+          "RD-0145"
+        ],
+        [
+          "RD-0143",
+          "RD-0144"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:five-chain:75:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0119",
+            "RD-0133"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0119",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0074"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0120",
+            "RD-0135"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0078"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0120",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0078"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0137"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0121",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0081"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0139"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0122",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0082"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0123",
+            "RD-0141"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0084"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0123",
+            "RD-0166"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0084"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0124",
+            "RD-0143"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0124",
+            "RD-0168"
+          ],
+          "reasons": [
+            "overlap-resolution-held",
+            "unqualified-node:N-0085"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0137",
+            "RD-0162"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0139",
+            "RD-0164"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0141",
+            "RD-0166"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0143",
+            "RD-0168"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0119",
+          "RD-0156"
+        ],
+        [
+          "RD-0119",
+          "RD-0157"
+        ],
+        [
+          "RD-0120",
+          "RD-0157"
+        ],
+        [
+          "RD-0120",
+          "RD-0159"
+        ],
+        [
+          "RD-0121",
+          "RD-0159"
+        ],
+        [
+          "RD-0121",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0161"
+        ],
+        [
+          "RD-0122",
+          "RD-0163"
+        ],
+        [
+          "RD-0123",
+          "RD-0163"
+        ],
+        [
+          "RD-0123",
+          "RD-0165"
+        ],
+        [
+          "RD-0124",
+          "RD-0165"
+        ],
+        [
+          "RD-0124",
+          "RD-0167"
+        ],
+        [
+          "RD-0131",
+          "RD-0158"
+        ],
+        [
+          "RD-0132",
+          "RD-0158"
+        ],
+        [
+          "RD-0132",
+          "RD-0160"
+        ],
+        [
+          "RD-0134",
+          "RD-0160"
+        ],
+        [
+          "RD-0134",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0162"
+        ],
+        [
+          "RD-0136",
+          "RD-0164"
+        ],
+        [
+          "RD-0138",
+          "RD-0164"
+        ],
+        [
+          "RD-0138",
+          "RD-0166"
+        ],
+        [
+          "RD-0140",
+          "RD-0166"
+        ],
+        [
+          "RD-0140",
+          "RD-0168"
+        ],
+        [
+          "RD-0142",
+          "RD-0168"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:quad:100:x",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0134"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0136"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0136"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0157",
+            "RD-0159"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0157",
+            "RD-0161"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0159",
+            "RD-0161"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0120",
+          "RD-0136"
+        ],
+        [
+          "RD-0121",
+          "RD-0132"
+        ],
+        [
+          "RD-0132",
+          "RD-0137"
+        ],
+        [
+          "RD-0135",
+          "RD-0136"
+        ],
+        [
+          "RD-0135",
+          "RD-0161"
+        ],
+        [
+          "RD-0137",
+          "RD-0157"
+        ],
+        [
+          "RD-0157",
+          "RD-0162"
+        ],
+        [
+          "RD-0160",
+          "RD-0161"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:quad:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0158"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0133",
+            "RD-0183"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0160"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0135",
+            "RD-0185"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0158",
+            "RD-0183"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0160",
+            "RD-0185"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0133",
+          "RD-0181"
+        ],
+        [
+          "RD-0133",
+          "RD-0182"
+        ],
+        [
+          "RD-0135",
+          "RD-0182"
+        ],
+        [
+          "RD-0135",
+          "RD-0184"
+        ],
+        [
+          "RD-0156",
+          "RD-0183"
+        ],
+        [
+          "RD-0157",
+          "RD-0183"
+        ],
+        [
+          "RD-0157",
+          "RD-0185"
+        ],
+        [
+          "RD-0159",
+          "RD-0185"
+        ]
+      ]
+    },
+    {
+      "id": "g:planned-medium:quad:75:x",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "overlaps": [
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0134"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0132",
+            "RD-0136"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0134",
+            "RD-0136"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0157",
+            "RD-0159"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0157",
+            "RD-0161"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        },
+        {
+          "roadIds": [
+            "RD-0159",
+            "RD-0161"
+          ],
+          "reasons": [
+            "overlap-resolution-held"
+          ]
+        }
+      ],
+      "endpoints": [
+        [
+          "RD-0120",
+          "RD-0136"
+        ],
+        [
+          "RD-0121",
+          "RD-0132"
+        ],
+        [
+          "RD-0132",
+          "RD-0137"
+        ],
+        [
+          "RD-0135",
+          "RD-0136"
+        ],
+        [
+          "RD-0135",
+          "RD-0161"
+        ],
+        [
+          "RD-0137",
+          "RD-0157"
+        ],
+        [
+          "RD-0157",
+          "RD-0162"
+        ],
+        [
+          "RD-0160",
+          "RD-0161"
+        ]
+      ]
+    }
+  ]
+}

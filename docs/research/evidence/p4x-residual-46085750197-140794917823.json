@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "source": "622557611eed91640d2e9bf6d5ffa4d8d2e010ac",
+  "run": 46085750197,
+  "attempt": 1,
+  "aggregate": 140796732755,
+  "job": 140794917823,
+  "rows": [
+    {
+      "id": "radial-small:eight-loop:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 4,
+      "minimum": null,
+      "category": "search-refused",
+      "termination": "candidate-limit",
+      "attempts": 256,
+      "stats": {
+        "work": 1823473,
+        "expansions": 256,
+        "remainingWork": 6176527,
+        "remainingExpansions": 32512
+      },
+      "hybrid": {
+        "baselinePairs": 0,
+        "subsets": 0,
+        "coveringGroups": 0,
+        "connectedGroups": 2,
+        "connectorGroups": 0,
+        "enumerationLimit": false,
+        "groupLimit": false,
+        "seedProposals": 0,
+        "feedbackProposals": 0,
+        "duplicates": 129,
+        "feedbackEvaluations": 256,
+        "bestConflictCount": 1,
+        "attempted": {
+          "residual-seed-replay": 2,
+          "residual-repair": 254
+        },
+        "failures": {
+          "unnormalized-crossing": 256
+        },
+        "approvedCap": 4,
+        "orientationChoices": 0,
+        "alternateSigns": 0,
+        "explore": 0,
+        "exploit": 0,
+        "seedCount": 2,
+        "seedValidated": 2,
+        "cacheHits": 23100,
+        "cacheMisses": 6916,
+        "cacheInvalidations": 6864,
+        "cacheEvictions": 0,
+        "guardProjections": 836,
+        "preservationRejected": 12,
+        "preservedPromotions": 91
+      },
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 0,
+        "firstScore": null,
+        "bestScore": null,
+        "bestAttempt": null
+      }
+    }
+  ]
+}

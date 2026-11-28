@@ -1,0 +1,6866 @@
+{
+  "version": 1,
+  "source": "0327d329fc01a6be818404af8df1916830ba81a6",
+  "run": 45983786171,
+  "attempt": 1,
+  "aggregate": 140456342387,
+  "jobs": [
+    140454292885,
+    140454292909,
+    140454292939,
+    140454292944,
+    140454292978,
+    140454293018,
+    140454293150,
+    140454293404
+  ],
+  "rows": [
+    {
+      "job": 140454292885,
+      "id": "organic-large:eight-chain:50:x",
+      "city": "organic-large",
+      "group": "eight-chain",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166",
+        "RD-0170",
+        "RD-0183",
+        "RD-0185"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1175704,
+        "expansions": 0,
+        "remainingWork": 6824296,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 3422.489432,
+      "audit": {
+        "version": 1,
+        "caseId": "g:organic-large:eight-chain:50:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0145",
+          "RD-0147",
+          "RD-0149",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0164",
+          "RD-0165",
+          "RD-0166",
+          "RD-0167",
+          "RD-0168",
+          "RD-0169",
+          "RD-0170",
+          "RD-0182",
+          "RD-0183",
+          "RD-0184",
+          "RD-0185",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188"
+        ],
+        "finalChecked": 69,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 1309501,
+          "expansions": 0,
+          "remainingWork": 6690499,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 2970.632066,
+      "witness": null
+    },
+    {
+      "job": 140454292885,
+      "id": "organic-large:eight-chain:50:y",
+      "city": "organic-large",
+      "group": "eight-chain",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166",
+        "RD-0170",
+        "RD-0183",
+        "RD-0185"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1175704,
+        "expansions": 0,
+        "remainingWork": 6824296,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 2161.5253490000005,
+      "audit": {
+        "version": 1,
+        "caseId": "g:organic-large:eight-chain:50:y",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0145",
+          "RD-0147",
+          "RD-0149",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0164",
+          "RD-0165",
+          "RD-0166",
+          "RD-0167",
+          "RD-0168",
+          "RD-0169",
+          "RD-0170",
+          "RD-0182",
+          "RD-0183",
+          "RD-0184",
+          "RD-0185",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188"
+        ],
+        "finalChecked": 69,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 1309501,
+          "expansions": 0,
+          "remainingWork": 6690499,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1814.4479040000006,
+      "witness": null
+    },
+    {
+      "job": 140454292885,
+      "id": "organic-large:eight-chain:50:diagonal",
+      "city": "organic-large",
+      "group": "eight-chain",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166",
+        "RD-0170",
+        "RD-0183",
+        "RD-0185"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1175569,
+        "expansions": 0,
+        "remainingWork": 6824431,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1798.6767949999994,
+      "audit": {
+        "version": 1,
+        "caseId": "g:organic-large:eight-chain:50:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0145",
+          "RD-0147",
+          "RD-0149",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0164",
+          "RD-0165",
+          "RD-0166",
+          "RD-0167",
+          "RD-0168",
+          "RD-0169",
+          "RD-0170",
+          "RD-0182",
+          "RD-0183",
+          "RD-0184",
+          "RD-0185",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188"
+        ],
+        "finalChecked": 69,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 1309366,
+          "expansions": 0,
+          "remainingWork": 6690634,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1583.2161719999986,
+      "witness": null
+    },
+    {
+      "job": 140454292885,
+      "id": "organic-large:eight-chain:75:x",
+      "city": "organic-large",
+      "group": "eight-chain",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166",
+        "RD-0170",
+        "RD-0183",
+        "RD-0185"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1144263,
+        "expansions": 0,
+        "remainingWork": 6855737,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1783.7537109999994
+    },
+    {
+      "job": 140454292885,
+      "id": "organic-large:eight-chain:75:y",
+      "city": "organic-large",
+      "group": "eight-chain",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166",
+        "RD-0170",
+        "RD-0183",
+        "RD-0185"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 1551824,
+        "expansions": 32,
+        "remainingWork": 6448176,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 1763.1528580000013
+    },
+    {
+      "job": 140454292885,
+      "id": "organic-large:eight-chain:75:diagonal",
+      "city": "organic-large",
+      "group": "eight-chain",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166",
+        "RD-0170",
+        "RD-0183",
+        "RD-0185"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 3,
+      "searchStats": {
+        "work": 1215592,
+        "expansions": 3,
+        "remainingWork": 6784408,
+        "remainingExpansions": 32765
+      },
+      "searchMs": 1755.733268,
+      "audit": {
+        "version": 1,
+        "caseId": "g:organic-large:eight-chain:75:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0145",
+          "RD-0147",
+          "RD-0149",
+          "RD-0150",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0164",
+          "RD-0165",
+          "RD-0166",
+          "RD-0167",
+          "RD-0168",
+          "RD-0169",
+          "RD-0170",
+          "RD-0171",
+          "RD-0172",
+          "RD-0182",
+          "RD-0183",
+          "RD-0184",
+          "RD-0185",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188"
+        ],
+        "finalChecked": 84,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 1312745,
+          "expansions": 0,
+          "remainingWork": 6687255,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1477.6248049999995,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0148",
+            "old": {
+              "x": -38.38233897256955,
+              "y": -557.1135608405
+            },
+            "point": {
+              "x": -31.753212898945666,
+              "y": -550.4844347668761
+            }
+          },
+          {
+            "id": "N-0153",
+            "old": {
+              "x": -47.635585762310704,
+              "y": -469.8642227982541
+            },
+            "point": {
+              "x": -41.00645968868682,
+              "y": -463.23509672463024
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0145",
+            "point": {
+              "x": -59.85425731826351,
+              "y": -569.0178822278314
+            }
+          },
+          {
+            "id": "N-0146",
+            "point": {
+              "x": -129.3616882269038,
+              "y": -516.9081716615848
+            }
+          },
+          {
+            "id": "N-0147",
+            "point": {
+              "x": -38.247700010052725,
+              "y": -505.50817248365854
+            }
+          },
+          {
+            "id": "N-0148",
+            "point": {
+              "x": -31.753212898945666,
+              "y": -550.4844347668761
+            }
+          },
+          {
+            "id": "N-0150",
+            "point": {
+              "x": -219.90036294052814,
+              "y": -410.0056098771587
+            }
+          },
+          {
+            "id": "N-0151",
+            "point": {
+              "x": -137.44842547979763,
+              "y": -427.3341345450639
+            }
+          },
+          {
+            "id": "N-0152",
+            "point": {
+              "x": -54.89314749575493,
+              "y": -409.0533837076382
+            }
+          },
+          {
+            "id": "N-0153",
+            "point": {
+              "x": -41.00645968868682,
+              "y": -463.23509672463024
+            }
+          },
+          {
+            "id": "N-0157",
+            "point": {
+              "x": -216.42530913033303,
+              "y": -348.14079293154373
+            }
+          },
+          {
+            "id": "N-0158",
+            "point": {
+              "x": -123.20529682866794,
+              "y": -355.16701078941526
+            }
+          },
+          {
+            "id": "N-0159",
+            "point": {
+              "x": -61.4744212665902,
+              "y": -342.45869024711396
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0145",
+          "RD-0147",
+          "RD-0149",
+          "RD-0150",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0164",
+          "RD-0165",
+          "RD-0166",
+          "RD-0167",
+          "RD-0168",
+          "RD-0169",
+          "RD-0170",
+          "RD-0171",
+          "RD-0172",
+          "RD-0182",
+          "RD-0183",
+          "RD-0184",
+          "RD-0185",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188"
+        ],
+        "displacement": 18.74999999999998
+      }
+    },
+    {
+      "job": 140454292885,
+      "id": "organic-large:eight-chain:100:x",
+      "city": "organic-large",
+      "group": "eight-chain",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166",
+        "RD-0170",
+        "RD-0183",
+        "RD-0185"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1145522,
+        "expansions": 0,
+        "remainingWork": 6854478,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1615.4893469999988
+    },
+    {
+      "job": 140454292885,
+      "id": "organic-large:eight-chain:100:y",
+      "city": "organic-large",
+      "group": "eight-chain",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166",
+        "RD-0170",
+        "RD-0183",
+        "RD-0185"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 1552020,
+        "expansions": 32,
+        "remainingWork": 6447980,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 1829.0286090000009
+    },
+    {
+      "job": 140454292885,
+      "id": "organic-large:eight-chain:100:diagonal",
+      "city": "organic-large",
+      "group": "eight-chain",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0149",
+        "RD-0154",
+        "RD-0155",
+        "RD-0165",
+        "RD-0166",
+        "RD-0170",
+        "RD-0183",
+        "RD-0185"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 1560846,
+        "expansions": 32,
+        "remainingWork": 6439154,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 1760.661387
+    },
+    {
+      "job": 140454292909,
+      "id": "organic-large:eight-loop:50:x",
+      "city": "organic-large",
+      "group": "eight-loop",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0158",
+        "RD-0161",
+        "RD-0167",
+        "RD-0169",
+        "RD-0171"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1175323,
+        "expansions": 0,
+        "remainingWork": 6824677,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 2872.001251,
+      "audit": {
+        "version": 1,
+        "caseId": "g:organic-large:eight-loop:50:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0147",
+          "RD-0149",
+          "RD-0150",
+          "RD-0151",
+          "RD-0152",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0165",
+          "RD-0167",
+          "RD-0168",
+          "RD-0169",
+          "RD-0170",
+          "RD-0171",
+          "RD-0172",
+          "RD-0173",
+          "RD-0174"
+        ],
+        "finalChecked": 66,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 1309057,
+          "expansions": 0,
+          "remainingWork": 6690943,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 2305.8659100000004,
+      "witness": null
+    },
+    {
+      "job": 140454292909,
+      "id": "organic-large:eight-loop:50:y",
+      "city": "organic-large",
+      "group": "eight-loop",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0158",
+        "RD-0161",
+        "RD-0167",
+        "RD-0169",
+        "RD-0171"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1175254,
+        "expansions": 0,
+        "remainingWork": 6824746,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 2232.0495650000003,
+      "audit": {
+        "version": 1,
+        "caseId": "g:organic-large:eight-loop:50:y",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0147",
+          "RD-0149",
+          "RD-0150",
+          "RD-0151",
+          "RD-0152",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0165",
+          "RD-0167",
+          "RD-0168",
+          "RD-0169",
+          "RD-0170",
+          "RD-0171",
+          "RD-0172",
+          "RD-0173",
+          "RD-0174"
+        ],
+        "finalChecked": 66,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 1308988,
+          "expansions": 0,
+          "remainingWork": 6691012,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 2339.512527,
+      "witness": null
+    },
+    {
+      "job": 140454292909,
+      "id": "organic-large:eight-loop:50:diagonal",
+      "city": "organic-large",
+      "group": "eight-loop",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0158",
+        "RD-0161",
+        "RD-0167",
+        "RD-0169",
+        "RD-0171"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1175164,
+        "expansions": 0,
+        "remainingWork": 6824836,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 2249.415191,
+      "audit": {
+        "version": 1,
+        "caseId": "g:organic-large:eight-loop:50:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0147",
+          "RD-0149",
+          "RD-0150",
+          "RD-0151",
+          "RD-0152",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0165",
+          "RD-0167",
+          "RD-0168",
+          "RD-0169",
+          "RD-0170",
+          "RD-0171",
+          "RD-0172",
+          "RD-0173",
+          "RD-0174"
+        ],
+        "finalChecked": 66,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 1308898,
+          "expansions": 0,
+          "remainingWork": 6691102,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 2227.94593,
+      "witness": null
+    },
+    {
+      "job": 140454292909,
+      "id": "organic-large:eight-loop:75:x",
+      "city": "organic-large",
+      "group": "eight-loop",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0158",
+        "RD-0161",
+        "RD-0167",
+        "RD-0169",
+        "RD-0171"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1143749,
+        "expansions": 0,
+        "remainingWork": 6856251,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 2155.8643300000003
+    },
+    {
+      "job": 140454292909,
+      "id": "organic-large:eight-loop:75:y",
+      "city": "organic-large",
+      "group": "eight-loop",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0158",
+        "RD-0161",
+        "RD-0167",
+        "RD-0169",
+        "RD-0171"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 1551211,
+        "expansions": 32,
+        "remainingWork": 6448789,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 2282.5269780000017
+    },
+    {
+      "job": 140454292909,
+      "id": "organic-large:eight-loop:75:diagonal",
+      "city": "organic-large",
+      "group": "eight-loop",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0158",
+        "RD-0161",
+        "RD-0167",
+        "RD-0169",
+        "RD-0171"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1175329,
+        "expansions": 0,
+        "remainingWork": 6824671,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1975.2438860000002,
+      "audit": {
+        "version": 1,
+        "caseId": "g:organic-large:eight-loop:75:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0147",
+          "RD-0149",
+          "RD-0150",
+          "RD-0151",
+          "RD-0152",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0165",
+          "RD-0167",
+          "RD-0168",
+          "RD-0169",
+          "RD-0170",
+          "RD-0171",
+          "RD-0172",
+          "RD-0173",
+          "RD-0174"
+        ],
+        "finalChecked": 66,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 1309063,
+          "expansions": 0,
+          "remainingWork": 6690937,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 2085.0128939999995,
+      "witness": null
+    },
+    {
+      "job": 140454292909,
+      "id": "organic-large:eight-loop:100:x",
+      "city": "organic-large",
+      "group": "eight-loop",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0158",
+        "RD-0161",
+        "RD-0167",
+        "RD-0169",
+        "RD-0171"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1144158,
+        "expansions": 0,
+        "remainingWork": 6855842,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 2087.9555120000005
+    },
+    {
+      "job": 140454292909,
+      "id": "organic-large:eight-loop:100:y",
+      "city": "organic-large",
+      "group": "eight-loop",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0158",
+        "RD-0161",
+        "RD-0167",
+        "RD-0169",
+        "RD-0171"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 1553180,
+        "expansions": 32,
+        "remainingWork": 6446820,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 2108.151135
+    },
+    {
+      "job": 140454292909,
+      "id": "organic-large:eight-loop:100:diagonal",
+      "city": "organic-large",
+      "group": "eight-loop",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0155",
+        "RD-0156",
+        "RD-0158",
+        "RD-0161",
+        "RD-0167",
+        "RD-0169",
+        "RD-0171"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 1560742,
+        "expansions": 32,
+        "remainingWork": 6439258,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 1972.1679610000028
+    },
+    {
+      "job": 140454292939,
+      "id": "planned-medium:five-chain:50:x",
+      "city": "planned-medium",
+      "group": "five-chain",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 599986,
+        "expansions": 0,
+        "remainingWork": 7400014,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1851.330358,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-chain:50:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143"
+        ],
+        "finalChecked": 57,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 667998,
+          "expansions": 0,
+          "remainingWork": 7332002,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1196.338122,
+      "witness": null
+    },
+    {
+      "job": 140454292939,
+      "id": "planned-medium:five-chain:50:y",
+      "city": "planned-medium",
+      "group": "five-chain",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 600175,
+        "expansions": 0,
+        "remainingWork": 7399825,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1131.5007379999997,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-chain:50:y",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143"
+        ],
+        "finalChecked": 57,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 668187,
+          "expansions": 0,
+          "remainingWork": 7331813,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 991.2625699999999,
+      "witness": null
+    },
+    {
+      "job": 140454292939,
+      "id": "planned-medium:five-chain:50:diagonal",
+      "city": "planned-medium",
+      "group": "five-chain",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 599974,
+        "expansions": 0,
+        "remainingWork": 7400026,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1109.8201169999993,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-chain:50:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143"
+        ],
+        "finalChecked": 57,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 667986,
+          "expansions": 0,
+          "remainingWork": 7332014,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1030.8813899999996,
+      "witness": null
+    },
+    {
+      "job": 140454292939,
+      "id": "planned-medium:five-chain:75:x",
+      "city": "planned-medium",
+      "group": "five-chain",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 5,
+      "searchStats": {
+        "work": 640370,
+        "expansions": 5,
+        "remainingWork": 7359630,
+        "remainingExpansions": 32763
+      },
+      "searchMs": 1112.2222089999996,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-chain:75:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0125",
+          "RD-0126",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147"
+        ],
+        "finalChecked": 75,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 673649,
+          "expansions": 0,
+          "remainingWork": 7326351,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1091.3503579999997,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0125",
+            "old": {
+              "x": 68.33982310246894,
+              "y": -219.8388696366834
+            },
+            "point": {
+              "x": 87.08982310246894,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0126",
+            "old": {
+              "x": 125.46612773268637,
+              "y": -219.8388696366834
+            },
+            "point": {
+              "x": 144.21612773268637,
+              "y": -219.8388696366834
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0119",
+            "point": {
+              "x": -278.1884551741125,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0120",
+            "point": {
+              "x": -217.02599286563242,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0121",
+            "point": {
+              "x": -144.36420637056335,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0122",
+            "point": {
+              "x": -72.94827203831198,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0123",
+            "point": {
+              "x": 4.695434549098238,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0124",
+            "point": {
+              "x": 78.81402229307298,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0125",
+            "point": {
+              "x": 87.08982310246894,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0126",
+            "point": {
+              "x": 144.21612773268637,
+              "y": -219.8388696366834
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0125",
+          "RD-0126",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147"
+        ],
+        "displacement": 37.5
+      }
+    },
+    {
+      "job": 140454292939,
+      "id": "planned-medium:five-chain:75:y",
+      "city": "planned-medium",
+      "group": "five-chain",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 818042,
+        "expansions": 32,
+        "remainingWork": 7181958,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 1272.3731610000013
+    },
+    {
+      "job": 140454292939,
+      "id": "planned-medium:five-chain:75:diagonal",
+      "city": "planned-medium",
+      "group": "five-chain",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 600016,
+        "expansions": 0,
+        "remainingWork": 7399984,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1138.4455400000006,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-chain:75:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143"
+        ],
+        "finalChecked": 57,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 668028,
+          "expansions": 0,
+          "remainingWork": 7331972,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1139.647176999999,
+      "witness": null
+    },
+    {
+      "job": 140454292939,
+      "id": "planned-medium:five-chain:100:x",
+      "city": "planned-medium",
+      "group": "five-chain",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 7,
+      "searchStats": {
+        "work": 654506,
+        "expansions": 7,
+        "remainingWork": 7345494,
+        "remainingExpansions": 32761
+      },
+      "searchMs": 1141.932852,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-chain:100:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0125",
+          "RD-0126",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147"
+        ],
+        "finalChecked": 75,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 673819,
+          "expansions": 0,
+          "remainingWork": 7326181,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 932.934432,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0125",
+            "old": {
+              "x": 68.33982310246894,
+              "y": -219.8388696366834
+            },
+            "point": {
+              "x": 118.33982310246894,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0126",
+            "old": {
+              "x": 125.46612773268637,
+              "y": -219.8388696366834
+            },
+            "point": {
+              "x": 175.46612773268637,
+              "y": -219.8388696366834
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0119",
+            "point": {
+              "x": -253.1884551741125,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0120",
+            "point": {
+              "x": -192.02599286563242,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0121",
+            "point": {
+              "x": -119.36420637056335,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0122",
+            "point": {
+              "x": -47.948272038311984,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0123",
+            "point": {
+              "x": 29.695434549098238,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0124",
+            "point": {
+              "x": 103.81402229307298,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0125",
+            "point": {
+              "x": 118.33982310246894,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0126",
+            "point": {
+              "x": 175.46612773268637,
+              "y": -219.8388696366834
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0125",
+          "RD-0126",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147"
+        ],
+        "displacement": 100
+      }
+    },
+    {
+      "job": 140454292939,
+      "id": "planned-medium:five-chain:100:y",
+      "city": "planned-medium",
+      "group": "five-chain",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 818042,
+        "expansions": 32,
+        "remainingWork": 7181958,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 1138.6533070000005
+    },
+    {
+      "job": 140454292939,
+      "id": "planned-medium:five-chain:100:diagonal",
+      "city": "planned-medium",
+      "group": "five-chain",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 814686,
+        "expansions": 32,
+        "remainingWork": 7185314,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 1083.3866479999997
+    },
+    {
+      "job": 140454292944,
+      "id": "linear-medium:quad:50:x",
+      "city": "linear-medium",
+      "group": "quad",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0141",
+        "RD-0153"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 553420,
+        "expansions": 0,
+        "remainingWork": 7446580,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1258.274443,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:quad:50:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "finalChecked": 36,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 616134,
+          "expansions": 0,
+          "remainingWork": 7383866,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 920.7077429999999,
+      "witness": null
+    },
+    {
+      "job": 140454292944,
+      "id": "linear-medium:quad:50:y",
+      "city": "linear-medium",
+      "group": "quad",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0141",
+        "RD-0153"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 553444,
+        "expansions": 0,
+        "remainingWork": 7446556,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 889.0135679999999,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:quad:50:y",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "finalChecked": 36,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 616158,
+          "expansions": 0,
+          "remainingWork": 7383842,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 906.8018929999998,
+      "witness": null
+    },
+    {
+      "job": 140454292944,
+      "id": "linear-medium:quad:50:diagonal",
+      "city": "linear-medium",
+      "group": "quad",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0141",
+        "RD-0153"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 553414,
+        "expansions": 0,
+        "remainingWork": 7446586,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 825.8965209999997,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:quad:50:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "finalChecked": 36,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 616128,
+          "expansions": 0,
+          "remainingWork": 7383872,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 905.8919859999996,
+      "witness": null
+    },
+    {
+      "job": 140454292944,
+      "id": "linear-medium:quad:75:x",
+      "city": "linear-medium",
+      "group": "quad",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0141",
+        "RD-0153"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 553453,
+        "expansions": 0,
+        "remainingWork": 7446547,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 762.5546649999997,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:quad:75:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "finalChecked": 36,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 616167,
+          "expansions": 0,
+          "remainingWork": 7383833,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 705.8035490000002,
+      "witness": null
+    },
+    {
+      "job": 140454292944,
+      "id": "linear-medium:quad:75:y",
+      "city": "linear-medium",
+      "group": "quad",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0141",
+        "RD-0153"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 769396,
+        "expansions": 32,
+        "remainingWork": 7230604,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 807.0370220000004
+    },
+    {
+      "job": 140454292944,
+      "id": "linear-medium:quad:75:diagonal",
+      "city": "linear-medium",
+      "group": "quad",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0141",
+        "RD-0153"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 553420,
+        "expansions": 0,
+        "remainingWork": 7446580,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 795.3002239999996,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:quad:75:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "finalChecked": 36,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 616134,
+          "expansions": 0,
+          "remainingWork": 7383866,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 729.2579409999998,
+      "witness": null
+    },
+    {
+      "job": 140454292944,
+      "id": "linear-medium:quad:100:x",
+      "city": "linear-medium",
+      "group": "quad",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0141",
+        "RD-0153"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 553525,
+        "expansions": 0,
+        "remainingWork": 7446475,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 804.078775,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:quad:100:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "finalChecked": 36,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 616239,
+          "expansions": 0,
+          "remainingWork": 7383761,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 576.3768139999993,
+      "witness": null
+    },
+    {
+      "job": 140454292944,
+      "id": "linear-medium:quad:100:y",
+      "city": "linear-medium",
+      "group": "quad",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0141",
+        "RD-0153"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 539892,
+        "expansions": 0,
+        "remainingWork": 7460108,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 669.2800549999993
+    },
+    {
+      "job": 140454292944,
+      "id": "linear-medium:quad:100:diagonal",
+      "city": "linear-medium",
+      "group": "quad",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0141",
+        "RD-0153"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 767311,
+        "expansions": 32,
+        "remainingWork": 7232689,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 760.5221129999991
+    },
+    {
+      "job": 140454292944,
+      "id": "planned-medium:five-branch:50:x",
+      "city": "planned-medium",
+      "group": "five-branch",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0136"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 598245,
+        "expansions": 0,
+        "remainingWork": 7401755,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 740.2446680000012,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-branch:50:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160"
+        ],
+        "finalChecked": 54,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 666168,
+          "expansions": 0,
+          "remainingWork": 7333832,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 923.5992099999985,
+      "witness": null
+    },
+    {
+      "job": 140454292944,
+      "id": "planned-medium:five-branch:50:y",
+      "city": "planned-medium",
+      "group": "five-branch",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0136"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 598533,
+        "expansions": 0,
+        "remainingWork": 7401467,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 791.0184559999998,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-branch:50:y",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160"
+        ],
+        "finalChecked": 54,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 666456,
+          "expansions": 0,
+          "remainingWork": 7333544,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 890.6149079999996,
+      "witness": null
+    },
+    {
+      "job": 140454292944,
+      "id": "planned-medium:five-branch:50:diagonal",
+      "city": "planned-medium",
+      "group": "five-branch",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0136"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 598233,
+        "expansions": 0,
+        "remainingWork": 7401767,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 721.463260999999,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-branch:50:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160"
+        ],
+        "finalChecked": 54,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 666156,
+          "expansions": 0,
+          "remainingWork": 7333844,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 974.6437809999989,
+      "witness": null
+    },
+    {
+      "job": 140454292944,
+      "id": "planned-medium:five-branch:75:x",
+      "city": "planned-medium",
+      "group": "five-branch",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0136"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 1,
+      "searchStats": {
+        "work": 609584,
+        "expansions": 1,
+        "remainingWork": 7390416,
+        "remainingExpansions": 32767
+      },
+      "searchMs": 805.0787149999996,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-branch:75:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162",
+          "RD-0163",
+          "RD-0164"
+        ],
+        "finalChecked": 66,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 669934,
+          "expansions": 0,
+          "remainingWork": 7330066,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 677.7417610000011,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0133",
+            "old": {
+              "x": -219.36420637056335,
+              "y": -155.9567425640241
+            },
+            "point": {
+              "x": -214.67670637056335,
+              "y": -155.9567425640241
+            }
+          },
+          {
+            "id": "N-0134",
+            "old": {
+              "x": -147.94827203831198,
+              "y": -155.9567425640241
+            },
+            "point": {
+              "x": -143.26077203831198,
+              "y": -155.9567425640241
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0119",
+            "point": {
+              "x": -278.1884551741125,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0120",
+            "point": {
+              "x": -217.02599286563242,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0121",
+            "point": {
+              "x": -144.36420637056335,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0122",
+            "point": {
+              "x": -72.94827203831198,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0131",
+            "point": {
+              "x": -278.1884551741125,
+              "y": -155.9567425640241
+            }
+          },
+          {
+            "id": "N-0132",
+            "point": {
+              "x": -217.02599286563242,
+              "y": -155.9567425640241
+            }
+          },
+          {
+            "id": "N-0133",
+            "point": {
+              "x": -214.67670637056335,
+              "y": -155.9567425640241
+            }
+          },
+          {
+            "id": "N-0134",
+            "point": {
+              "x": -143.26077203831198,
+              "y": -155.9567425640241
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162",
+          "RD-0163",
+          "RD-0164"
+        ],
+        "displacement": 9.375
+      }
+    },
+    {
+      "job": 140454292944,
+      "id": "planned-medium:five-branch:75:y",
+      "city": "planned-medium",
+      "group": "five-branch",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0136"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 23,
+      "searchStats": {
+        "work": 759485,
+        "expansions": 23,
+        "remainingWork": 7240515,
+        "remainingExpansions": 32745
+      },
+      "searchMs": 835.8308289999986,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-branch:75:y",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162",
+          "RD-0163",
+          "RD-0164"
+        ],
+        "finalChecked": 75,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 673000,
+          "expansions": 0,
+          "remainingWork": 7327000,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 801.2724729999973,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0123",
+            "old": {
+              "x": -70.30456545090176,
+              "y": -219.8388696366834
+            },
+            "point": {
+              "x": -70.30456545090176,
+              "y": -201.0888696366834
+            }
+          },
+          {
+            "id": "N-0133",
+            "old": {
+              "x": -219.36420637056335,
+              "y": -155.9567425640241
+            },
+            "point": {
+              "x": -219.36420637056335,
+              "y": -137.2067425640241
+            }
+          },
+          {
+            "id": "N-0134",
+            "old": {
+              "x": -147.94827203831198,
+              "y": -155.9567425640241
+            },
+            "point": {
+              "x": -147.94827203831198,
+              "y": -137.2067425640241
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0119",
+            "point": {
+              "x": -353.1884551741125,
+              "y": -144.8388696366834
+            }
+          },
+          {
+            "id": "N-0120",
+            "point": {
+              "x": -292.0259928656324,
+              "y": -144.8388696366834
+            }
+          },
+          {
+            "id": "N-0121",
+            "point": {
+              "x": -219.36420637056335,
+              "y": -144.8388696366834
+            }
+          },
+          {
+            "id": "N-0122",
+            "point": {
+              "x": -147.94827203831198,
+              "y": -144.8388696366834
+            }
+          },
+          {
+            "id": "N-0123",
+            "point": {
+              "x": -70.30456545090176,
+              "y": -201.0888696366834
+            }
+          },
+          {
+            "id": "N-0131",
+            "point": {
+              "x": -353.1884551741125,
+              "y": -80.9567425640241
+            }
+          },
+          {
+            "id": "N-0132",
+            "point": {
+              "x": -292.0259928656324,
+              "y": -80.9567425640241
+            }
+          },
+          {
+            "id": "N-0133",
+            "point": {
+              "x": -219.36420637056335,
+              "y": -137.2067425640241
+            }
+          },
+          {
+            "id": "N-0134",
+            "point": {
+              "x": -147.94827203831198,
+              "y": -137.2067425640241
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162",
+          "RD-0163",
+          "RD-0164"
+        ],
+        "displacement": 56.25
+      }
+    },
+    {
+      "job": 140454292944,
+      "id": "planned-medium:five-branch:75:diagonal",
+      "city": "planned-medium",
+      "group": "five-branch",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0136"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 598245,
+        "expansions": 0,
+        "remainingWork": 7401755,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 834.2883370000018,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-branch:75:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160"
+        ],
+        "finalChecked": 54,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 666168,
+          "expansions": 0,
+          "remainingWork": 7333832,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 771.6569920000002,
+      "witness": null
+    },
+    {
+      "job": 140454292944,
+      "id": "planned-medium:five-branch:100:x",
+      "city": "planned-medium",
+      "group": "five-branch",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0136"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 25,
+      "searchStats": {
+        "work": 775951,
+        "expansions": 25,
+        "remainingWork": 7224049,
+        "remainingExpansions": 32743
+      },
+      "searchMs": 743.1527889999998,
+      "audit": {
+        "version": 1,
+        "caseId": "g:planned-medium:five-branch:100:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162"
+        ],
+        "finalChecked": 78,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 674231,
+          "expansions": 0,
+          "remainingWork": 7325769,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 917.2816869999988,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0123",
+            "old": {
+              "x": -70.30456545090176,
+              "y": -219.8388696366834
+            },
+            "point": {
+              "x": -20.304565450901762,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0124",
+            "old": {
+              "x": 3.8140222930729806,
+              "y": -219.8388696366834
+            },
+            "point": {
+              "x": 53.81402229307298,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0133",
+            "old": {
+              "x": -219.36420637056335,
+              "y": -155.9567425640241
+            },
+            "point": {
+              "x": -169.36420637056335,
+              "y": -155.9567425640241
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0119",
+            "point": {
+              "x": -253.1884551741125,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0120",
+            "point": {
+              "x": -192.02599286563242,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0121",
+            "point": {
+              "x": -119.36420637056335,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0122",
+            "point": {
+              "x": -47.948272038311984,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0123",
+            "point": {
+              "x": -20.304565450901762,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0124",
+            "point": {
+              "x": 53.81402229307298,
+              "y": -219.8388696366834
+            }
+          },
+          {
+            "id": "N-0131",
+            "point": {
+              "x": -253.1884551741125,
+              "y": -155.9567425640241
+            }
+          },
+          {
+            "id": "N-0132",
+            "point": {
+              "x": -192.02599286563242,
+              "y": -155.9567425640241
+            }
+          },
+          {
+            "id": "N-0133",
+            "point": {
+              "x": -169.36420637056335,
+              "y": -155.9567425640241
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162"
+        ],
+        "displacement": 150
+      }
+    },
+    {
+      "job": 140454292944,
+      "id": "planned-medium:five-branch:100:y",
+      "city": "planned-medium",
+      "group": "five-branch",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0136"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 814358,
+        "expansions": 32,
+        "remainingWork": 7185642,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 871.788112000002
+    },
+    {
+      "job": 140454292944,
+      "id": "planned-medium:five-branch:100:diagonal",
+      "city": "planned-medium",
+      "group": "five-branch",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0136"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 806220,
+        "expansions": 32,
+        "remainingWork": 7193780,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 866.4775950000003
+    },
+    {
+      "job": 140454292978,
+      "id": "radial-small:eight-loop:50:x",
+      "city": "radial-small",
+      "group": "eight-loop",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 253691,
+        "expansions": 0,
+        "remainingWork": 7746309,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1307.926572,
+      "audit": {
+        "version": 1,
+        "caseId": "g:radial-small:eight-loop:50:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0099",
+          "RD-0100",
+          "RD-0101",
+          "RD-0104",
+          "RD-0105",
+          "RD-0106",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0187",
+          "RD-0188",
+          "RD-0189",
+          "RD-0190",
+          "RD-0191",
+          "RD-0223"
+        ],
+        "finalChecked": 48,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 281011,
+          "expansions": 0,
+          "remainingWork": 7718989,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 800.7145770000002,
+      "witness": null
+    },
+    {
+      "job": 140454292978,
+      "id": "radial-small:eight-loop:50:y",
+      "city": "radial-small",
+      "group": "eight-loop",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 366185,
+        "expansions": 32,
+        "remainingWork": 7633815,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 977.6747230000001
+    },
+    {
+      "job": 140454292978,
+      "id": "radial-small:eight-loop:50:diagonal",
+      "city": "radial-small",
+      "group": "eight-loop",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 253640,
+        "expansions": 0,
+        "remainingWork": 7746360,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 861.9699460000002,
+      "audit": {
+        "version": 1,
+        "caseId": "g:radial-small:eight-loop:50:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0099",
+          "RD-0100",
+          "RD-0101",
+          "RD-0104",
+          "RD-0105",
+          "RD-0106",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0187",
+          "RD-0188",
+          "RD-0189",
+          "RD-0190",
+          "RD-0191",
+          "RD-0223"
+        ],
+        "finalChecked": 48,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 280960,
+          "expansions": 0,
+          "remainingWork": 7719040,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 693.7186780000002,
+      "witness": null
+    },
+    {
+      "job": 140454292978,
+      "id": "radial-small:eight-loop:75:x",
+      "city": "radial-small",
+      "group": "eight-loop",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 370357,
+        "expansions": 32,
+        "remainingWork": 7629643,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 876.0590549999997
+    },
+    {
+      "job": 140454292978,
+      "id": "radial-small:eight-loop:75:y",
+      "city": "radial-small",
+      "group": "eight-loop",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 367738,
+        "expansions": 32,
+        "remainingWork": 7632262,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 589.125223
+    },
+    {
+      "job": 140454292978,
+      "id": "radial-small:eight-loop:75:diagonal",
+      "city": "radial-small",
+      "group": "eight-loop",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 368958,
+        "expansions": 32,
+        "remainingWork": 7631042,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 756.8053609999997
+    },
+    {
+      "job": 140454292978,
+      "id": "radial-small:eight-loop:100:x",
+      "city": "radial-small",
+      "group": "eight-loop",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 372305,
+        "expansions": 32,
+        "remainingWork": 7627695,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 736.6888020000006
+    },
+    {
+      "job": 140454292978,
+      "id": "radial-small:eight-loop:100:y",
+      "city": "radial-small",
+      "group": "eight-loop",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 369718,
+        "expansions": 32,
+        "remainingWork": 7630282,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 657.3281830000005
+    },
+    {
+      "job": 140454292978,
+      "id": "radial-small:eight-loop:100:diagonal",
+      "city": "radial-small",
+      "group": "eight-loop",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0105",
+        "RD-0152",
+        "RD-0153",
+        "RD-0154",
+        "RD-0188",
+        "RD-0189",
+        "RD-0190"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 370909,
+        "expansions": 32,
+        "remainingWork": 7629091,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 615.6266860000014
+    },
+    {
+      "job": 140454293018,
+      "id": "linear-medium:five-branch:50:x",
+      "city": "linear-medium",
+      "group": "five-branch",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 556549,
+        "expansions": 0,
+        "remainingWork": 7443451,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1325.761937,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:five-branch:50:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "finalChecked": 54,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 619413,
+          "expansions": 0,
+          "remainingWork": 7380587,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 874.8113619999999,
+      "witness": null
+    },
+    {
+      "job": 140454293018,
+      "id": "linear-medium:five-branch:50:y",
+      "city": "linear-medium",
+      "group": "five-branch",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 23,
+      "searchStats": {
+        "work": 719442,
+        "expansions": 23,
+        "remainingWork": 7280558,
+        "remainingExpansions": 32745
+      },
+      "searchMs": 873.9822089999998,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:five-branch:50:y",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160"
+        ],
+        "finalChecked": 75,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 626191,
+          "expansions": 0,
+          "remainingWork": 7373809,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 886.3361210000003,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0135",
+            "old": {
+              "x": -307.73458841138165,
+              "y": -216.0894095860934
+            },
+            "point": {
+              "x": -307.73458841138165,
+              "y": -203.5894095860934
+            }
+          },
+          {
+            "id": "N-0139",
+            "old": {
+              "x": -535.5149547392919,
+              "y": -172.47612244508377
+            },
+            "point": {
+              "x": -535.5149547392919,
+              "y": -159.97612244508377
+            }
+          },
+          {
+            "id": "N-0140",
+            "old": {
+              "x": -427.8180850553594,
+              "y": -172.47612244508377
+            },
+            "point": {
+              "x": -427.8180850553594,
+              "y": -159.97612244508377
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0131",
+            "point": {
+              "x": -743.4930322835667,
+              "y": -166.0894095860934
+            }
+          },
+          {
+            "id": "N-0132",
+            "point": {
+              "x": -646.6194967913682,
+              "y": -166.0894095860934
+            }
+          },
+          {
+            "id": "N-0133",
+            "point": {
+              "x": -535.5149547392919,
+              "y": -166.0894095860934
+            }
+          },
+          {
+            "id": "N-0134",
+            "point": {
+              "x": -427.8180850553594,
+              "y": -166.0894095860934
+            }
+          },
+          {
+            "id": "N-0135",
+            "point": {
+              "x": -307.73458841138165,
+              "y": -203.5894095860934
+            }
+          },
+          {
+            "id": "N-0137",
+            "point": {
+              "x": -743.4930322835667,
+              "y": -122.47612244508377
+            }
+          },
+          {
+            "id": "N-0138",
+            "point": {
+              "x": -646.6194967913682,
+              "y": -122.47612244508377
+            }
+          },
+          {
+            "id": "N-0139",
+            "point": {
+              "x": -535.5149547392919,
+              "y": -159.97612244508377
+            }
+          },
+          {
+            "id": "N-0140",
+            "point": {
+              "x": -427.8180850553594,
+              "y": -159.97612244508377
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160"
+        ],
+        "displacement": 37.5
+      }
+    },
+    {
+      "job": 140454293018,
+      "id": "linear-medium:five-branch:50:diagonal",
+      "city": "linear-medium",
+      "group": "five-branch",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 556537,
+        "expansions": 0,
+        "remainingWork": 7443463,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 831.7621650000001,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:five-branch:50:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "finalChecked": 54,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 619401,
+          "expansions": 0,
+          "remainingWork": 7380599,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 795.9134139999996,
+      "witness": null
+    },
+    {
+      "job": 140454293018,
+      "id": "linear-medium:five-branch:75:x",
+      "city": "linear-medium",
+      "group": "five-branch",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 556594,
+        "expansions": 0,
+        "remainingWork": 7443406,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 732.5786619999999,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:five-branch:75:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "finalChecked": 54,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 619458,
+          "expansions": 0,
+          "remainingWork": 7380542,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 657.432624,
+      "witness": null
+    },
+    {
+      "job": 140454293018,
+      "id": "linear-medium:five-branch:75:y",
+      "city": "linear-medium",
+      "group": "five-branch",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 774271,
+        "expansions": 32,
+        "remainingWork": 7225729,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 857.1987939999999
+    },
+    {
+      "job": 140454293018,
+      "id": "linear-medium:five-branch:75:diagonal",
+      "city": "linear-medium",
+      "group": "five-branch",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 25,
+      "searchStats": {
+        "work": 729973,
+        "expansions": 25,
+        "remainingWork": 7270027,
+        "remainingExpansions": 32743
+      },
+      "searchMs": 1061.1290869999993,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:five-branch:75:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160"
+        ],
+        "finalChecked": 75,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 624484,
+          "expansions": 0,
+          "remainingWork": 7375516,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 907.5535650000002,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0135",
+            "old": {
+              "x": -307.73458841138165,
+              "y": -216.0894095860934
+            },
+            "point": {
+              "x": -281.21808411688613,
+              "y": -189.57290529159786
+            }
+          },
+          {
+            "id": "N-0139",
+            "old": {
+              "x": -535.5149547392919,
+              "y": -172.47612244508377
+            },
+            "point": {
+              "x": -508.99845044479633,
+              "y": -145.95961815058826
+            }
+          },
+          {
+            "id": "N-0140",
+            "old": {
+              "x": -427.8180850553594,
+              "y": -172.47612244508377
+            },
+            "point": {
+              "x": -401.3015807608639,
+              "y": -145.95961815058826
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0131",
+            "point": {
+              "x": -690.4600236945756,
+              "y": -163.05640099710234
+            }
+          },
+          {
+            "id": "N-0132",
+            "point": {
+              "x": -593.5864882023772,
+              "y": -163.05640099710234
+            }
+          },
+          {
+            "id": "N-0133",
+            "point": {
+              "x": -482.4819461503008,
+              "y": -163.05640099710234
+            }
+          },
+          {
+            "id": "N-0134",
+            "point": {
+              "x": -374.7850764663683,
+              "y": -163.05640099710234
+            }
+          },
+          {
+            "id": "N-0135",
+            "point": {
+              "x": -281.21808411688613,
+              "y": -189.57290529159786
+            }
+          },
+          {
+            "id": "N-0137",
+            "point": {
+              "x": -690.4600236945756,
+              "y": -119.44311385609271
+            }
+          },
+          {
+            "id": "N-0138",
+            "point": {
+              "x": -593.5864882023772,
+              "y": -119.44311385609271
+            }
+          },
+          {
+            "id": "N-0139",
+            "point": {
+              "x": -508.99845044479633,
+              "y": -145.95961815058826
+            }
+          },
+          {
+            "id": "N-0140",
+            "point": {
+              "x": -401.3015807608639,
+              "y": -145.95961815058826
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160"
+        ],
+        "displacement": 112.49999999999997
+      }
+    },
+    {
+      "job": 140454293018,
+      "id": "linear-medium:five-branch:100:x",
+      "city": "linear-medium",
+      "group": "five-branch",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 556672,
+        "expansions": 0,
+        "remainingWork": 7443328,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 780.8092960000013,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:five-branch:100:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "finalChecked": 54,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 619536,
+          "expansions": 0,
+          "remainingWork": 7380464,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 906.7170380000007,
+      "witness": null
+    },
+    {
+      "job": 140454293018,
+      "id": "linear-medium:five-branch:100:y",
+      "city": "linear-medium",
+      "group": "five-branch",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 546567,
+        "expansions": 0,
+        "remainingWork": 7453433,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 724.7086959999997
+    },
+    {
+      "job": 140454293018,
+      "id": "linear-medium:five-branch:100:diagonal",
+      "city": "linear-medium",
+      "group": "five-branch",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 769832,
+        "expansions": 32,
+        "remainingWork": 7230168,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 783.4467800000002
+    },
+    {
+      "job": 140454293150,
+      "id": "radial-small:eight-chain:50:x",
+      "city": "radial-small",
+      "group": "eight-chain",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0102",
+        "RD-0106",
+        "RD-0107",
+        "RD-0260",
+        "RD-0261",
+        "RD-0262"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 240941,
+        "expansions": 0,
+        "remainingWork": 7759059,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 582.499235
+    },
+    {
+      "job": 140454293150,
+      "id": "radial-small:eight-chain:50:y",
+      "city": "radial-small",
+      "group": "eight-chain",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0102",
+        "RD-0106",
+        "RD-0107",
+        "RD-0260",
+        "RD-0261",
+        "RD-0262"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 243404,
+        "expansions": 0,
+        "remainingWork": 7756596,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 420.9570899999999
+    },
+    {
+      "job": 140454293150,
+      "id": "radial-small:eight-chain:50:diagonal",
+      "city": "radial-small",
+      "group": "eight-chain",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0102",
+        "RD-0106",
+        "RD-0107",
+        "RD-0260",
+        "RD-0261",
+        "RD-0262"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 241442,
+        "expansions": 0,
+        "remainingWork": 7758558,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 354.54946399999994
+    },
+    {
+      "job": 140454293150,
+      "id": "radial-small:eight-chain:75:x",
+      "city": "radial-small",
+      "group": "eight-chain",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0102",
+        "RD-0106",
+        "RD-0107",
+        "RD-0260",
+        "RD-0261",
+        "RD-0262"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 242594,
+        "expansions": 0,
+        "remainingWork": 7757406,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 357.18446100000006
+    },
+    {
+      "job": 140454293150,
+      "id": "radial-small:eight-chain:75:y",
+      "city": "radial-small",
+      "group": "eight-chain",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0102",
+        "RD-0106",
+        "RD-0107",
+        "RD-0260",
+        "RD-0261",
+        "RD-0262"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 244069,
+        "expansions": 0,
+        "remainingWork": 7755931,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 308.6165430000001
+    },
+    {
+      "job": 140454293150,
+      "id": "radial-small:eight-chain:75:diagonal",
+      "city": "radial-small",
+      "group": "eight-chain",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0102",
+        "RD-0106",
+        "RD-0107",
+        "RD-0260",
+        "RD-0261",
+        "RD-0262"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 241580,
+        "expansions": 0,
+        "remainingWork": 7758420,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 312.8226090000003
+    },
+    {
+      "job": 140454293150,
+      "id": "radial-small:eight-chain:100:x",
+      "city": "radial-small",
+      "group": "eight-chain",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0102",
+        "RD-0106",
+        "RD-0107",
+        "RD-0260",
+        "RD-0261",
+        "RD-0262"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 242287,
+        "expansions": 0,
+        "remainingWork": 7757713,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 333.19659299999967
+    },
+    {
+      "job": 140454293150,
+      "id": "radial-small:eight-chain:100:y",
+      "city": "radial-small",
+      "group": "eight-chain",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0102",
+        "RD-0106",
+        "RD-0107",
+        "RD-0260",
+        "RD-0261",
+        "RD-0262"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 245200,
+        "expansions": 0,
+        "remainingWork": 7754800,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 370.70913999999993
+    },
+    {
+      "job": 140454293150,
+      "id": "radial-small:eight-chain:100:diagonal",
+      "city": "radial-small",
+      "group": "eight-chain",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0102",
+        "RD-0106",
+        "RD-0107",
+        "RD-0260",
+        "RD-0261",
+        "RD-0262"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 243537,
+        "expansions": 0,
+        "remainingWork": 7756463,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 366.3196640000001
+    },
+    {
+      "job": 140454293404,
+      "id": "linear-medium:eight-chain:50:x",
+      "city": "linear-medium",
+      "group": "eight-chain",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 561114,
+        "expansions": 0,
+        "remainingWork": 7438886,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1442.761984,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:eight-chain:50:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147",
+          "RD-0153",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162"
+        ],
+        "finalChecked": 75,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 624115,
+          "expansions": 0,
+          "remainingWork": 7375885,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1293.65132,
+      "witness": null
+    },
+    {
+      "job": 140454293404,
+      "id": "linear-medium:eight-chain:50:y",
+      "city": "linear-medium",
+      "group": "eight-chain",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 5,
+      "searchStats": {
+        "work": 599843,
+        "expansions": 5,
+        "remainingWork": 7400157,
+        "remainingExpansions": 32763
+      },
+      "searchMs": 1128.5604040000003,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:eight-chain:50:y",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147",
+          "RD-0150",
+          "RD-0151",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162"
+        ],
+        "finalChecked": 90,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 628180,
+          "expansions": 0,
+          "remainingWork": 7371820,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1082.4886270000002,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0136",
+            "old": {
+              "x": -851.6240919062055,
+              "y": -172.47612244508377
+            },
+            "point": {
+              "x": -851.6240919062055,
+              "y": -159.97612244508377
+            }
+          },
+          {
+            "id": "N-0137",
+            "old": {
+              "x": -743.4930322835667,
+              "y": -172.47612244508377
+            },
+            "point": {
+              "x": -743.4930322835667,
+              "y": -159.97612244508377
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0131",
+            "point": {
+              "x": -743.4930322835667,
+              "y": -166.0894095860934
+            }
+          },
+          {
+            "id": "N-0132",
+            "point": {
+              "x": -646.6194967913682,
+              "y": -166.0894095860934
+            }
+          },
+          {
+            "id": "N-0133",
+            "point": {
+              "x": -535.5149547392919,
+              "y": -166.0894095860934
+            }
+          },
+          {
+            "id": "N-0134",
+            "point": {
+              "x": -427.8180850553594,
+              "y": -166.0894095860934
+            }
+          },
+          {
+            "id": "N-0135",
+            "point": {
+              "x": -307.73458841138165,
+              "y": -166.0894095860934
+            }
+          },
+          {
+            "id": "N-0136",
+            "point": {
+              "x": -851.6240919062055,
+              "y": -159.97612244508377
+            }
+          },
+          {
+            "id": "N-0137",
+            "point": {
+              "x": -743.4930322835667,
+              "y": -159.97612244508377
+            }
+          },
+          {
+            "id": "N-0138",
+            "point": {
+              "x": -646.6194967913682,
+              "y": -122.47612244508377
+            }
+          },
+          {
+            "id": "N-0139",
+            "point": {
+              "x": -535.5149547392919,
+              "y": -122.47612244508377
+            }
+          },
+          {
+            "id": "N-0140",
+            "point": {
+              "x": -427.8180850553594,
+              "y": -122.47612244508377
+            }
+          },
+          {
+            "id": "N-0141",
+            "point": {
+              "x": -307.73458841138165,
+              "y": -122.47612244508377
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147",
+          "RD-0150",
+          "RD-0151",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162"
+        ],
+        "displacement": 25
+      }
+    },
+    {
+      "job": 140454293404,
+      "id": "linear-medium:eight-chain:50:diagonal",
+      "city": "linear-medium",
+      "group": "eight-chain",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 561096,
+        "expansions": 0,
+        "remainingWork": 7438904,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1031.5390480000005,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:eight-chain:50:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147",
+          "RD-0153",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162"
+        ],
+        "finalChecked": 75,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 624097,
+          "expansions": 0,
+          "remainingWork": 7375903,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1019.4201840000005,
+      "witness": null
+    },
+    {
+      "job": 140454293404,
+      "id": "linear-medium:eight-chain:75:x",
+      "city": "linear-medium",
+      "group": "eight-chain",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 537530,
+        "expansions": 0,
+        "remainingWork": 7462470,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 649.4291599999997
+    },
+    {
+      "job": 140454293404,
+      "id": "linear-medium:eight-chain:75:y",
+      "city": "linear-medium",
+      "group": "eight-chain",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 779565,
+        "expansions": 32,
+        "remainingWork": 7220435,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 905.9233290000011
+    },
+    {
+      "job": 140454293404,
+      "id": "linear-medium:eight-chain:75:diagonal",
+      "city": "linear-medium",
+      "group": "eight-chain",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 561120,
+        "expansions": 0,
+        "remainingWork": 7438880,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 885.7834470000016,
+      "audit": {
+        "version": 1,
+        "caseId": "g:linear-medium:eight-chain:75:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145",
+          "RD-0146",
+          "RD-0147",
+          "RD-0153",
+          "RD-0155",
+          "RD-0156",
+          "RD-0157",
+          "RD-0158",
+          "RD-0159",
+          "RD-0160",
+          "RD-0161",
+          "RD-0162"
+        ],
+        "finalChecked": 75,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 624121,
+          "expansions": 0,
+          "remainingWork": 7375879,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 927.8102789999994,
+      "witness": null
+    },
+    {
+      "job": 140454293404,
+      "id": "linear-medium:eight-chain:100:x",
+      "city": "linear-medium",
+      "group": "eight-chain",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ],
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 537389,
+        "expansions": 0,
+        "remainingWork": 7462611,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 732.4693500000012
+    },
+    {
+      "job": 140454293404,
+      "id": "linear-medium:eight-chain:100:y",
+      "city": "linear-medium",
+      "group": "eight-chain",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 785584,
+        "expansions": 32,
+        "remainingWork": 7214416,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 1028.5351809999993
+    },
+    {
+      "job": 140454293404,
+      "id": "linear-medium:eight-chain:100:diagonal",
+      "city": "linear-medium",
+      "group": "eight-chain",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [
+        "RD-0138",
+        "RD-0140",
+        "RD-0142",
+        "RD-0144",
+        "RD-0147",
+        "RD-0155",
+        "RD-0157",
+        "RD-0159"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 770570,
+        "expansions": 32,
+        "remainingWork": 7229430,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 890.5494749999998
+    },
+    {
+      "job": 140454293404,
+      "id": "radial-small:five-branch:50:x",
+      "city": "radial-small",
+      "group": "five-branch",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ],
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 251787,
+        "expansions": 0,
+        "remainingWork": 7748213,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 689.614124,
+      "audit": {
+        "version": 1,
+        "caseId": "g:radial-small:five-branch:50:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0099",
+          "RD-0100",
+          "RD-0101",
+          "RD-0102",
+          "RD-0152",
+          "RD-0153",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188",
+          "RD-0189",
+          "RD-0223",
+          "RD-0224",
+          "RD-0259"
+        ],
+        "finalChecked": 39,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 279106,
+          "expansions": 0,
+          "remainingWork": 7720894,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 516.3533080000001,
+      "witness": null
+    },
+    {
+      "job": 140454293404,
+      "id": "radial-small:five-branch:50:y",
+      "city": "radial-small",
+      "group": "five-branch",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 366646,
+        "expansions": 32,
+        "remainingWork": 7633354,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 560.4491480000002
+    },
+    {
+      "job": 140454293404,
+      "id": "radial-small:five-branch:50:diagonal",
+      "city": "radial-small",
+      "group": "five-branch",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 3,
+      "searchStats": {
+        "work": 264622,
+        "expansions": 3,
+        "remainingWork": 7735378,
+        "remainingExpansions": 32765
+      },
+      "searchMs": 399.973984,
+      "audit": {
+        "version": 1,
+        "caseId": "g:radial-small:five-branch:50:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0099",
+          "RD-0100",
+          "RD-0101",
+          "RD-0102",
+          "RD-0152",
+          "RD-0153",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188",
+          "RD-0189",
+          "RD-0223",
+          "RD-0224",
+          "RD-0225",
+          "RD-0226",
+          "RD-0259"
+        ],
+        "finalChecked": 45,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 280337,
+          "expansions": 0,
+          "remainingWork": 7719663,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 326.41764200000034,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0188",
+            "old": {
+              "x": 183.16942981039716,
+              "y": 18.01557475060811
+            },
+            "point": {
+              "x": 187.5888471928131,
+              "y": 22.434992133024032
+            }
+          },
+          {
+            "id": "N-0189",
+            "old": {
+              "x": 175.7905795608349,
+              "y": 50.59296274953966
+            },
+            "point": {
+              "x": 180.20999694325084,
+              "y": 55.01238013195558
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0099",
+            "point": {
+              "x": 92.48131750646534,
+              "y": 24.99523232288324
+            }
+          },
+          {
+            "id": "N-0100",
+            "point": {
+              "x": 156.30791562555592,
+              "y": 22.50117897973521
+            }
+          },
+          {
+            "id": "N-0101",
+            "point": {
+              "x": 220.13451374464654,
+              "y": 20.007125636587183
+            }
+          },
+          {
+            "id": "N-0140",
+            "point": {
+              "x": 91.94473588149137,
+              "y": 36.11649504733268
+            }
+          },
+          {
+            "id": "N-0163",
+            "point": {
+              "x": 91.0785602454078,
+              "y": 13.949750147213443
+            }
+          },
+          {
+            "id": "N-0164",
+            "point": {
+              "x": 155.23475237560797,
+              "y": 44.74370442863408
+            }
+          },
+          {
+            "id": "N-0188",
+            "point": {
+              "x": 187.5888471928131,
+              "y": 22.434992133024032
+            }
+          },
+          {
+            "id": "N-0189",
+            "point": {
+              "x": 180.20999694325084,
+              "y": 55.01238013195558
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0099",
+          "RD-0100",
+          "RD-0101",
+          "RD-0102",
+          "RD-0152",
+          "RD-0153",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188",
+          "RD-0189",
+          "RD-0223",
+          "RD-0224",
+          "RD-0225",
+          "RD-0226",
+          "RD-0259"
+        ],
+        "displacement": 12.500000000000012
+      }
+    },
+    {
+      "job": 140454293404,
+      "id": "radial-small:five-branch:75:x",
+      "city": "radial-small",
+      "group": "five-branch",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ],
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "first-valid-adjustment",
+      "attempts": 23,
+      "searchStats": {
+        "work": 341438,
+        "expansions": 23,
+        "remainingWork": 7658562,
+        "remainingExpansions": 32745
+      },
+      "searchMs": 465.1844530000003,
+      "audit": {
+        "version": 1,
+        "caseId": "g:radial-small:five-branch:75:x",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0099",
+          "RD-0100",
+          "RD-0101",
+          "RD-0102",
+          "RD-0103",
+          "RD-0152",
+          "RD-0153",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188",
+          "RD-0189",
+          "RD-0223",
+          "RD-0224",
+          "RD-0225",
+          "RD-0258",
+          "RD-0259",
+          "RD-0260",
+          "RD-0274"
+        ],
+        "finalChecked": 54,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 282087,
+          "expansions": 0,
+          "remainingWork": 7717913,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 397.873525,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0102",
+            "old": {
+              "x": 248.6057728044097,
+              "y": -17.84226676588822
+            },
+            "point": {
+              "x": 267.3557728044097,
+              "y": -17.84226676588822
+            }
+          },
+          {
+            "id": "N-0188",
+            "old": {
+              "x": 183.16942981039716,
+              "y": 18.01557475060811
+            },
+            "point": {
+              "x": 201.91942981039716,
+              "y": 18.01557475060811
+            }
+          },
+          {
+            "id": "N-0211",
+            "old": {
+              "x": 180.5709029021465,
+              "y": -48.48465994974958
+            },
+            "point": {
+              "x": 199.3209029021465,
+              "y": -48.48465994974958
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0099",
+            "point": {
+              "x": 132.12597844713798,
+              "y": -10.36010673644414
+            }
+          },
+          {
+            "id": "N-0100",
+            "point": {
+              "x": 195.95257656622854,
+              "y": -12.854160079592166
+            }
+          },
+          {
+            "id": "N-0101",
+            "point": {
+              "x": 259.77917468531916,
+              "y": -15.348213422740196
+            }
+          },
+          {
+            "id": "N-0102",
+            "point": {
+              "x": 267.3557728044097,
+              "y": -17.84226676588822
+            }
+          },
+          {
+            "id": "N-0140",
+            "point": {
+              "x": 131.589396822164,
+              "y": 0.7611559880052958
+            }
+          },
+          {
+            "id": "N-0163",
+            "point": {
+              "x": 130.72322118608042,
+              "y": -21.405588912113934
+            }
+          },
+          {
+            "id": "N-0164",
+            "point": {
+              "x": 194.8794133162806,
+              "y": 9.388365369306705
+            }
+          },
+          {
+            "id": "N-0188",
+            "point": {
+              "x": 201.91942981039716,
+              "y": 18.01557475060811
+            }
+          },
+          {
+            "id": "N-0211",
+            "point": {
+              "x": 199.3209029021465,
+              "y": -48.48465994974958
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0099",
+          "RD-0100",
+          "RD-0101",
+          "RD-0102",
+          "RD-0103",
+          "RD-0152",
+          "RD-0153",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188",
+          "RD-0189",
+          "RD-0223",
+          "RD-0224",
+          "RD-0225",
+          "RD-0258",
+          "RD-0259",
+          "RD-0260",
+          "RD-0274"
+        ],
+        "displacement": 56.25
+      }
+    },
+    {
+      "job": 140454293404,
+      "id": "radial-small:five-branch:75:y",
+      "city": "radial-small",
+      "group": "five-branch",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 367672,
+        "expansions": 32,
+        "remainingWork": 7632328,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 483.92943000000014
+    },
+    {
+      "job": 140454293404,
+      "id": "radial-small:five-branch:75:diagonal",
+      "city": "radial-small",
+      "group": "five-branch",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 370085,
+        "expansions": 32,
+        "remainingWork": 7629915,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 499.1957590000002
+    },
+    {
+      "job": 140454293404,
+      "id": "radial-small:five-branch:100:x",
+      "city": "radial-small",
+      "group": "five-branch",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 370931,
+        "expansions": 32,
+        "remainingWork": 7629069,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 356.4284379999999
+    },
+    {
+      "job": 140454293404,
+      "id": "radial-small:five-branch:100:y",
+      "city": "radial-small",
+      "group": "five-branch",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 368991,
+        "expansions": 32,
+        "remainingWork": 7631009,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 454.7794760000006
+    },
+    {
+      "job": 140454293404,
+      "id": "radial-small:five-branch:100:diagonal",
+      "city": "radial-small",
+      "group": "five-branch",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [
+        "RD-0100",
+        "RD-0101",
+        "RD-0152",
+        "RD-0187",
+        "RD-0188"
+      ],
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 32,
+      "searchStats": {
+        "work": 372616,
+        "expansions": 32,
+        "remainingWork": 7627384,
+        "remainingExpansions": 32736
+      },
+      "searchMs": 509.09237200000007
+    }
+  ],
+  "omitted": [
+    {
+      "id": "radial-small:quad:50:x",
+      "city": "radial-small",
+      "group": "quad",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:quad:50:y",
+      "city": "radial-small",
+      "group": "quad",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:quad:50:diagonal",
+      "city": "radial-small",
+      "group": "quad",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:quad:75:x",
+      "city": "radial-small",
+      "group": "quad",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:quad:75:y",
+      "city": "radial-small",
+      "group": "quad",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:quad:75:diagonal",
+      "city": "radial-small",
+      "group": "quad",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:quad:100:x",
+      "city": "radial-small",
+      "group": "quad",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:quad:100:y",
+      "city": "radial-small",
+      "group": "quad",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:quad:100:diagonal",
+      "city": "radial-small",
+      "group": "quad",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:pentagon:50:x",
+      "city": "radial-small",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:pentagon:50:y",
+      "city": "radial-small",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:pentagon:50:diagonal",
+      "city": "radial-small",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:pentagon:75:x",
+      "city": "radial-small",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:pentagon:75:y",
+      "city": "radial-small",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:pentagon:75:diagonal",
+      "city": "radial-small",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:pentagon:100:x",
+      "city": "radial-small",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:pentagon:100:y",
+      "city": "radial-small",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "radial-small:pentagon:100:diagonal",
+      "city": "radial-small",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "organic-large:pentagon:50:x",
+      "city": "organic-large",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [],
+      "category": "selection-limit"
+    },
+    {
+      "id": "organic-large:pentagon:50:y",
+      "city": "organic-large",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [],
+      "category": "selection-limit"
+    },
+    {
+      "id": "organic-large:pentagon:50:diagonal",
+      "city": "organic-large",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [],
+      "category": "selection-limit"
+    },
+    {
+      "id": "organic-large:pentagon:75:x",
+      "city": "organic-large",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [],
+      "category": "selection-limit"
+    },
+    {
+      "id": "organic-large:pentagon:75:y",
+      "city": "organic-large",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [],
+      "category": "selection-limit"
+    },
+    {
+      "id": "organic-large:pentagon:75:diagonal",
+      "city": "organic-large",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [],
+      "category": "selection-limit"
+    },
+    {
+      "id": "organic-large:pentagon:100:x",
+      "city": "organic-large",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [],
+      "category": "selection-limit"
+    },
+    {
+      "id": "organic-large:pentagon:100:y",
+      "city": "organic-large",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [],
+      "category": "selection-limit"
+    },
+    {
+      "id": "organic-large:pentagon:100:diagonal",
+      "city": "organic-large",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "selectedRoadIds": [],
+      "category": "selection-limit"
+    },
+    {
+      "id": "linear-medium:pentagon:50:x",
+      "city": "linear-medium",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "linear-medium:pentagon:50:y",
+      "city": "linear-medium",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "linear-medium:pentagon:50:diagonal",
+      "city": "linear-medium",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "linear-medium:pentagon:75:x",
+      "city": "linear-medium",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "linear-medium:pentagon:75:y",
+      "city": "linear-medium",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "linear-medium:pentagon:75:diagonal",
+      "city": "linear-medium",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "linear-medium:pentagon:100:x",
+      "city": "linear-medium",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "linear-medium:pentagon:100:y",
+      "city": "linear-medium",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "linear-medium:pentagon:100:diagonal",
+      "city": "linear-medium",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "planned-medium:pentagon:50:x",
+      "city": "planned-medium",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "x",
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "planned-medium:pentagon:50:y",
+      "city": "planned-medium",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "planned-medium:pentagon:50:diagonal",
+      "city": "planned-medium",
+      "group": "pentagon",
+      "magnitude": 50,
+      "direction": "diagonal",
+      "offset": {
+        "x": 35.35533905932738,
+        "y": 35.35533905932738
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "planned-medium:pentagon:75:x",
+      "city": "planned-medium",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "x",
+      "offset": {
+        "x": 75,
+        "y": 0
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "planned-medium:pentagon:75:y",
+      "city": "planned-medium",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "planned-medium:pentagon:75:diagonal",
+      "city": "planned-medium",
+      "group": "pentagon",
+      "magnitude": 75,
+      "direction": "diagonal",
+      "offset": {
+        "x": 53.033008588991066,
+        "y": 53.033008588991066
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "planned-medium:pentagon:100:x",
+      "city": "planned-medium",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "x",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "planned-medium:pentagon:100:y",
+      "city": "planned-medium",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "y",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    },
+    {
+      "id": "planned-medium:pentagon:100:diagonal",
+      "city": "planned-medium",
+      "group": "pentagon",
+      "magnitude": 100,
+      "direction": "diagonal",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "selectedRoadIds": [],
+      "category": "selection-unavailable"
+    }
+  ]
+}

@@ -1,0 +1,1314 @@
+{
+  "version": 1,
+  "appVersion": "0.2.25-dev",
+  "schemaVersion": 11,
+  "morphologies": [
+    "radial",
+    "organic",
+    "linear",
+    "planned"
+  ],
+  "selection": "nearest safe junction then bounded nearest-neighbor simple chain; no fallback",
+  "rows": [
+    {
+      "id": "radial-01",
+      "seed": "sqtrial-v1-radial-01",
+      "morphology": "radial",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 0,
+      "count": 4,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-02",
+      "seed": "sqtrial-v1-radial-02",
+      "morphology": "radial",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 0,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": -25
+      }
+    },
+    {
+      "id": "radial-03",
+      "seed": "sqtrial-v1-radial-03",
+      "morphology": "radial",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 1,
+      "count": 4,
+      "offset": {
+        "x": 35,
+        "y": 25
+      }
+    },
+    {
+      "id": "radial-04",
+      "seed": "sqtrial-v1-radial-04",
+      "morphology": "radial",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 1,
+      "count": 5,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-05",
+      "seed": "sqtrial-v1-radial-05",
+      "morphology": "radial",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 2,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "id": "radial-06",
+      "seed": "sqtrial-v1-radial-06",
+      "morphology": "radial",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 2,
+      "count": 5,
+      "offset": {
+        "x": -70,
+        "y": -40
+      }
+    },
+    {
+      "id": "radial-07",
+      "seed": "sqtrial-v1-radial-07",
+      "morphology": "radial",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 3,
+      "count": 4,
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-08",
+      "seed": "sqtrial-v1-radial-08",
+      "morphology": "radial",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 3,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "radial-09",
+      "seed": "sqtrial-v1-radial-09",
+      "morphology": "radial",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 4,
+      "count": 4,
+      "offset": {
+        "x": -100,
+        "y": 60
+      }
+    },
+    {
+      "id": "radial-10",
+      "seed": "sqtrial-v1-radial-10",
+      "morphology": "radial",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 4,
+      "count": 5,
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "radial-11",
+      "seed": "sqtrial-v1-radial-11",
+      "morphology": "radial",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 5,
+      "count": 4,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-12",
+      "seed": "sqtrial-v1-radial-12",
+      "morphology": "radial",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 5,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": -25
+      }
+    },
+    {
+      "id": "radial-13",
+      "seed": "sqtrial-v1-radial-13",
+      "morphology": "radial",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 6,
+      "count": 4,
+      "offset": {
+        "x": 35,
+        "y": 25
+      }
+    },
+    {
+      "id": "radial-14",
+      "seed": "sqtrial-v1-radial-14",
+      "morphology": "radial",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 6,
+      "count": 5,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-15",
+      "seed": "sqtrial-v1-radial-15",
+      "morphology": "radial",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 7,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "id": "radial-16",
+      "seed": "sqtrial-v1-radial-16",
+      "morphology": "radial",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 7,
+      "count": 5,
+      "offset": {
+        "x": -70,
+        "y": -40
+      }
+    },
+    {
+      "id": "radial-17",
+      "seed": "sqtrial-v1-radial-17",
+      "morphology": "radial",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 0,
+      "count": 4,
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-18",
+      "seed": "sqtrial-v1-radial-18",
+      "morphology": "radial",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 0,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "radial-19",
+      "seed": "sqtrial-v1-radial-19",
+      "morphology": "radial",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 1,
+      "count": 4,
+      "offset": {
+        "x": -100,
+        "y": 60
+      }
+    },
+    {
+      "id": "radial-20",
+      "seed": "sqtrial-v1-radial-20",
+      "morphology": "radial",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 1,
+      "count": 5,
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "radial-21",
+      "seed": "sqtrial-v1-radial-21",
+      "morphology": "radial",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 2,
+      "count": 4,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-22",
+      "seed": "sqtrial-v1-radial-22",
+      "morphology": "radial",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 2,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": -25
+      }
+    },
+    {
+      "id": "radial-23",
+      "seed": "sqtrial-v1-radial-23",
+      "morphology": "radial",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 3,
+      "count": 4,
+      "offset": {
+        "x": 35,
+        "y": 25
+      }
+    },
+    {
+      "id": "radial-24",
+      "seed": "sqtrial-v1-radial-24",
+      "morphology": "radial",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 3,
+      "count": 5,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-25",
+      "seed": "sqtrial-v1-radial-25",
+      "morphology": "radial",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 4,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "id": "organic-01",
+      "seed": "sqtrial-v1-organic-01",
+      "morphology": "organic",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 1,
+      "count": 4,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-02",
+      "seed": "sqtrial-v1-organic-02",
+      "morphology": "organic",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 1,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "id": "organic-03",
+      "seed": "sqtrial-v1-organic-03",
+      "morphology": "organic",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 2,
+      "count": 4,
+      "offset": {
+        "x": -70,
+        "y": -40
+      }
+    },
+    {
+      "id": "organic-04",
+      "seed": "sqtrial-v1-organic-04",
+      "morphology": "organic",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 2,
+      "count": 5,
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-05",
+      "seed": "sqtrial-v1-organic-05",
+      "morphology": "organic",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 3,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "organic-06",
+      "seed": "sqtrial-v1-organic-06",
+      "morphology": "organic",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 3,
+      "count": 5,
+      "offset": {
+        "x": -100,
+        "y": 60
+      }
+    },
+    {
+      "id": "organic-07",
+      "seed": "sqtrial-v1-organic-07",
+      "morphology": "organic",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 4,
+      "count": 4,
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "organic-08",
+      "seed": "sqtrial-v1-organic-08",
+      "morphology": "organic",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 4,
+      "count": 5,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-09",
+      "seed": "sqtrial-v1-organic-09",
+      "morphology": "organic",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 5,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": -25
+      }
+    },
+    {
+      "id": "organic-10",
+      "seed": "sqtrial-v1-organic-10",
+      "morphology": "organic",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 5,
+      "count": 5,
+      "offset": {
+        "x": 35,
+        "y": 25
+      }
+    },
+    {
+      "id": "organic-11",
+      "seed": "sqtrial-v1-organic-11",
+      "morphology": "organic",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 6,
+      "count": 4,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-12",
+      "seed": "sqtrial-v1-organic-12",
+      "morphology": "organic",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 6,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "id": "organic-13",
+      "seed": "sqtrial-v1-organic-13",
+      "morphology": "organic",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 7,
+      "count": 4,
+      "offset": {
+        "x": -70,
+        "y": -40
+      }
+    },
+    {
+      "id": "organic-14",
+      "seed": "sqtrial-v1-organic-14",
+      "morphology": "organic",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 7,
+      "count": 5,
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-15",
+      "seed": "sqtrial-v1-organic-15",
+      "morphology": "organic",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 0,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "organic-16",
+      "seed": "sqtrial-v1-organic-16",
+      "morphology": "organic",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 0,
+      "count": 5,
+      "offset": {
+        "x": -100,
+        "y": 60
+      }
+    },
+    {
+      "id": "organic-17",
+      "seed": "sqtrial-v1-organic-17",
+      "morphology": "organic",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 1,
+      "count": 4,
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "organic-18",
+      "seed": "sqtrial-v1-organic-18",
+      "morphology": "organic",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 1,
+      "count": 5,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-19",
+      "seed": "sqtrial-v1-organic-19",
+      "morphology": "organic",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 2,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": -25
+      }
+    },
+    {
+      "id": "organic-20",
+      "seed": "sqtrial-v1-organic-20",
+      "morphology": "organic",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 2,
+      "count": 5,
+      "offset": {
+        "x": 35,
+        "y": 25
+      }
+    },
+    {
+      "id": "organic-21",
+      "seed": "sqtrial-v1-organic-21",
+      "morphology": "organic",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 3,
+      "count": 4,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-22",
+      "seed": "sqtrial-v1-organic-22",
+      "morphology": "organic",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 3,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "id": "organic-23",
+      "seed": "sqtrial-v1-organic-23",
+      "morphology": "organic",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 4,
+      "count": 4,
+      "offset": {
+        "x": -70,
+        "y": -40
+      }
+    },
+    {
+      "id": "organic-24",
+      "seed": "sqtrial-v1-organic-24",
+      "morphology": "organic",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 4,
+      "count": 5,
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-25",
+      "seed": "sqtrial-v1-organic-25",
+      "morphology": "organic",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 5,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "linear-01",
+      "seed": "sqtrial-v1-linear-01",
+      "morphology": "linear",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 2,
+      "count": 4,
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-02",
+      "seed": "sqtrial-v1-linear-02",
+      "morphology": "linear",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 2,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "linear-03",
+      "seed": "sqtrial-v1-linear-03",
+      "morphology": "linear",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 3,
+      "count": 4,
+      "offset": {
+        "x": -100,
+        "y": 60
+      }
+    },
+    {
+      "id": "linear-04",
+      "seed": "sqtrial-v1-linear-04",
+      "morphology": "linear",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 3,
+      "count": 5,
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "linear-05",
+      "seed": "sqtrial-v1-linear-05",
+      "morphology": "linear",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 4,
+      "count": 4,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-06",
+      "seed": "sqtrial-v1-linear-06",
+      "morphology": "linear",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 4,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": -25
+      }
+    },
+    {
+      "id": "linear-07",
+      "seed": "sqtrial-v1-linear-07",
+      "morphology": "linear",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 5,
+      "count": 4,
+      "offset": {
+        "x": 35,
+        "y": 25
+      }
+    },
+    {
+      "id": "linear-08",
+      "seed": "sqtrial-v1-linear-08",
+      "morphology": "linear",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 5,
+      "count": 5,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-09",
+      "seed": "sqtrial-v1-linear-09",
+      "morphology": "linear",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 6,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "id": "linear-10",
+      "seed": "sqtrial-v1-linear-10",
+      "morphology": "linear",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 6,
+      "count": 5,
+      "offset": {
+        "x": -70,
+        "y": -40
+      }
+    },
+    {
+      "id": "linear-11",
+      "seed": "sqtrial-v1-linear-11",
+      "morphology": "linear",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 7,
+      "count": 4,
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-12",
+      "seed": "sqtrial-v1-linear-12",
+      "morphology": "linear",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 7,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "linear-13",
+      "seed": "sqtrial-v1-linear-13",
+      "morphology": "linear",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 0,
+      "count": 4,
+      "offset": {
+        "x": -100,
+        "y": 60
+      }
+    },
+    {
+      "id": "linear-14",
+      "seed": "sqtrial-v1-linear-14",
+      "morphology": "linear",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 0,
+      "count": 5,
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "linear-15",
+      "seed": "sqtrial-v1-linear-15",
+      "morphology": "linear",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 1,
+      "count": 4,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-16",
+      "seed": "sqtrial-v1-linear-16",
+      "morphology": "linear",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 1,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": -25
+      }
+    },
+    {
+      "id": "linear-17",
+      "seed": "sqtrial-v1-linear-17",
+      "morphology": "linear",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 2,
+      "count": 4,
+      "offset": {
+        "x": 35,
+        "y": 25
+      }
+    },
+    {
+      "id": "linear-18",
+      "seed": "sqtrial-v1-linear-18",
+      "morphology": "linear",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 2,
+      "count": 5,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-19",
+      "seed": "sqtrial-v1-linear-19",
+      "morphology": "linear",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 3,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "id": "linear-20",
+      "seed": "sqtrial-v1-linear-20",
+      "morphology": "linear",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 3,
+      "count": 5,
+      "offset": {
+        "x": -70,
+        "y": -40
+      }
+    },
+    {
+      "id": "linear-21",
+      "seed": "sqtrial-v1-linear-21",
+      "morphology": "linear",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 4,
+      "count": 4,
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-22",
+      "seed": "sqtrial-v1-linear-22",
+      "morphology": "linear",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 4,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "linear-23",
+      "seed": "sqtrial-v1-linear-23",
+      "morphology": "linear",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 5,
+      "count": 4,
+      "offset": {
+        "x": -100,
+        "y": 60
+      }
+    },
+    {
+      "id": "linear-24",
+      "seed": "sqtrial-v1-linear-24",
+      "morphology": "linear",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 5,
+      "count": 5,
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "linear-25",
+      "seed": "sqtrial-v1-linear-25",
+      "morphology": "linear",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 6,
+      "count": 4,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-01",
+      "seed": "sqtrial-v1-planned-01",
+      "morphology": "planned",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 3,
+      "count": 4,
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "planned-02",
+      "seed": "sqtrial-v1-planned-02",
+      "morphology": "planned",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 3,
+      "count": 5,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-03",
+      "seed": "sqtrial-v1-planned-03",
+      "morphology": "planned",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 4,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": -25
+      }
+    },
+    {
+      "id": "planned-04",
+      "seed": "sqtrial-v1-planned-04",
+      "morphology": "planned",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 4,
+      "count": 5,
+      "offset": {
+        "x": 35,
+        "y": 25
+      }
+    },
+    {
+      "id": "planned-05",
+      "seed": "sqtrial-v1-planned-05",
+      "morphology": "planned",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 5,
+      "count": 4,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-06",
+      "seed": "sqtrial-v1-planned-06",
+      "morphology": "planned",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 5,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "id": "planned-07",
+      "seed": "sqtrial-v1-planned-07",
+      "morphology": "planned",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 6,
+      "count": 4,
+      "offset": {
+        "x": -70,
+        "y": -40
+      }
+    },
+    {
+      "id": "planned-08",
+      "seed": "sqtrial-v1-planned-08",
+      "morphology": "planned",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 6,
+      "count": 5,
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-09",
+      "seed": "sqtrial-v1-planned-09",
+      "morphology": "planned",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 7,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "planned-10",
+      "seed": "sqtrial-v1-planned-10",
+      "morphology": "planned",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 7,
+      "count": 5,
+      "offset": {
+        "x": -100,
+        "y": 60
+      }
+    },
+    {
+      "id": "planned-11",
+      "seed": "sqtrial-v1-planned-11",
+      "morphology": "planned",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 0,
+      "count": 4,
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "planned-12",
+      "seed": "sqtrial-v1-planned-12",
+      "morphology": "planned",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 0,
+      "count": 5,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-13",
+      "seed": "sqtrial-v1-planned-13",
+      "morphology": "planned",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 1,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": -25
+      }
+    },
+    {
+      "id": "planned-14",
+      "seed": "sqtrial-v1-planned-14",
+      "morphology": "planned",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 1,
+      "count": 5,
+      "offset": {
+        "x": 35,
+        "y": 25
+      }
+    },
+    {
+      "id": "planned-15",
+      "seed": "sqtrial-v1-planned-15",
+      "morphology": "planned",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 2,
+      "count": 4,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-16",
+      "seed": "sqtrial-v1-planned-16",
+      "morphology": "planned",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 2,
+      "count": 5,
+      "offset": {
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "id": "planned-17",
+      "seed": "sqtrial-v1-planned-17",
+      "morphology": "planned",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 3,
+      "count": 4,
+      "offset": {
+        "x": -70,
+        "y": -40
+      }
+    },
+    {
+      "id": "planned-18",
+      "seed": "sqtrial-v1-planned-18",
+      "morphology": "planned",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 3,
+      "count": 5,
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-19",
+      "seed": "sqtrial-v1-planned-19",
+      "morphology": "planned",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 4,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "planned-20",
+      "seed": "sqtrial-v1-planned-20",
+      "morphology": "planned",
+      "size": "medium",
+      "stratum": "middle",
+      "angleIndex": 4,
+      "count": 5,
+      "offset": {
+        "x": -100,
+        "y": 60
+      }
+    },
+    {
+      "id": "planned-21",
+      "seed": "sqtrial-v1-planned-21",
+      "morphology": "planned",
+      "size": "large",
+      "stratum": "central",
+      "angleIndex": 5,
+      "count": 4,
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "planned-22",
+      "seed": "sqtrial-v1-planned-22",
+      "morphology": "planned",
+      "size": "small",
+      "stratum": "middle",
+      "angleIndex": 5,
+      "count": 5,
+      "offset": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-23",
+      "seed": "sqtrial-v1-planned-23",
+      "morphology": "planned",
+      "size": "medium",
+      "stratum": "central",
+      "angleIndex": 6,
+      "count": 4,
+      "offset": {
+        "x": 0,
+        "y": -25
+      }
+    },
+    {
+      "id": "planned-24",
+      "seed": "sqtrial-v1-planned-24",
+      "morphology": "planned",
+      "size": "large",
+      "stratum": "middle",
+      "angleIndex": 6,
+      "count": 5,
+      "offset": {
+        "x": 35,
+        "y": 25
+      }
+    },
+    {
+      "id": "planned-25",
+      "seed": "sqtrial-v1-planned-25",
+      "morphology": "planned",
+      "size": "small",
+      "stratum": "central",
+      "angleIndex": 7,
+      "count": 4,
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    }
+  ]
+}

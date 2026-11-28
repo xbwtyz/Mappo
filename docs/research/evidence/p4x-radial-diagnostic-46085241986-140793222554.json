@@ -1,0 +1,3175 @@
+{
+  "version": 1,
+  "source": "98e99325ac74069d499c6eebe0201700b7d4951c",
+  "run": 46085241986,
+  "attempt": 1,
+  "aggregate": 140793515530,
+  "job": 140793222554,
+  "rows": [
+    {
+      "id": "radial-small:five-branch:100:y:radial",
+      "arm": "radial",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "cap": 10,
+      "category": "work-limit",
+      "termination": "work-limit",
+      "attempts": 195,
+      "stats": {
+        "work": 8000000,
+        "expansions": 1657,
+        "remainingWork": 0,
+        "remainingExpansions": 31111
+      },
+      "hybrid": {
+        "baselinePairs": 16,
+        "subsets": 1462,
+        "coveringGroups": 7,
+        "connectedGroups": 7,
+        "connectorGroups": 7,
+        "enumerationLimit": false,
+        "groupLimit": false,
+        "seedProposals": 49,
+        "feedbackProposals": 147,
+        "duplicates": 0,
+        "feedbackEvaluations": 195,
+        "bestConflictCount": 12,
+        "attempted": {
+          "radial-refinement": 146,
+          "radial-directional-seed": 49
+        },
+        "failures": {
+          "unnormalized-crossing": 195
+        },
+        "approvedMinimum": 10,
+        "seedValidated": true,
+        "approvedCap": 10,
+        "orientationChoices": 15510,
+        "alternateSigns": 6593,
+        "explore": 70,
+        "exploit": 126
+      },
+      "diagnostics": {
+        "version": 1,
+        "completed": 195,
+        "rejected": 195,
+        "pairRejected": 195,
+        "dropped": 0,
+        "phases": {
+          "baseline": 4025,
+          "proposal": 6991159,
+          "evaluation": 728472,
+          "capture": 21885,
+          "other": 254459
+        },
+        "nested": {
+          "orientation-ranking": 2817109,
+          "orientation-recomputation": 2813514,
+          "projection": 6497104
+        },
+        "best": {
+          "attempt": 183,
+          "strategy": "radial-refinement",
+          "score": [
+            0,
+            12
+          ],
+          "issues": [
+            "unnormalized-crossing"
+          ],
+          "pairs": [
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0099",
+                "RD-0153"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0099",
+                "RD-0154"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0099",
+                "RD-0155"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0099",
+                "RD-0157"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0100",
+                "RD-0189"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0100",
+                "RD-0190"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0102",
+                "RD-0225"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0104",
+                "RD-0157"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0105",
+                "RD-0152"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0105",
+                "RD-0153"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0106",
+                "RD-0188"
+              ]
+            },
+            {
+              "code": "unnormalized-crossing",
+              "roadIds": [
+                "RD-0106",
+                "RD-0189"
+              ]
+            }
+          ],
+          "neighbors": [
+            {
+              "id": "N-0103",
+              "old": {
+                "x": 49.82186240789392,
+                "y": 21.88733211268947
+              },
+              "point": {
+                "x": 52.556104948463336,
+                "y": 93.45604275907978
+              }
+            },
+            {
+              "id": "N-0104",
+              "old": {
+                "x": 106.34434448774044,
+                "y": 51.640717618675055
+              },
+              "point": {
+                "x": 115.8536421266628,
+                "y": 90.35672753252159
+              }
+            },
+            {
+              "id": "N-0105",
+              "old": {
+                "x": 162.86682656758697,
+                "y": 81.39410312466063
+              },
+              "point": {
+                "x": 165.01311782849868,
+                "y": 107.30171466056623
+              }
+            },
+            {
+              "id": "N-0107",
+              "old": {
+                "x": 27.372592941152377,
+                "y": 46.162375343402374
+              },
+              "point": {
+                "x": 37.030502766799366,
+                "y": 66.18304090973685
+              }
+            },
+            {
+              "id": "N-0108",
+              "old": {
+                "x": 61.44580555425736,
+                "y": 100.19080408010086
+              },
+              "point": {
+                "x": 58.76305298254904,
+                "y": 125.64614918212253
+              }
+            },
+            {
+              "id": "N-0141",
+              "old": {
+                "x": 54.1297800723099,
+                "y": 11.620285320982479
+              },
+              "point": {
+                "x": 47.18323808383713,
+                "y": 42.29782164656985
+              }
+            },
+            {
+              "id": "N-0165",
+              "old": {
+                "x": 114.9601798165724,
+                "y": 31.10662403526107
+              },
+              "point": {
+                "x": 116.98706585900221,
+                "y": 61.14377959110599
+              }
+            },
+            {
+              "id": "N-0166",
+              "old": {
+                "x": 94.29369512642819,
+                "y": 70.36672807676936
+              },
+              "point": {
+                "x": 94.29369512642819,
+                "y": 95.36672807676936
+              }
+            },
+            {
+              "id": "N-0167",
+              "old": {
+                "x": 79.1743846155563,
+                "y": 86.7156750575933
+              },
+              "point": {
+                "x": 79.1743846155563,
+                "y": 111.7156750575933
+              }
+            },
+            {
+              "id": "N-0189",
+              "old": {
+                "x": 175.7905795608349,
+                "y": 50.59296274953966
+              },
+              "point": {
+                "x": 192.52557556481312,
+                "y": 81.49858830503304
+              }
+            }
+          ]
+        },
+        "recurrence": [
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0226"
+            ],
+            "count": 128
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0104"
+            ],
+            "count": 111
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0189"
+            ],
+            "count": 87
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0186"
+            ],
+            "count": 82
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0223"
+            ],
+            "count": 80
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0191",
+              "RD-0223"
+            ],
+            "count": 80
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0106"
+            ],
+            "count": 78
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0155"
+            ],
+            "count": 72
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0109"
+            ],
+            "count": 70
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0158"
+            ],
+            "count": 70
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0158"
+            ],
+            "count": 69
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0193"
+            ],
+            "count": 68
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0156"
+            ],
+            "count": 66
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0154"
+            ],
+            "count": 65
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0110"
+            ],
+            "count": 60
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0156"
+            ],
+            "count": 58
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0105"
+            ],
+            "count": 53
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0189"
+            ],
+            "count": 53
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0189",
+              "RD-0191"
+            ],
+            "count": 53
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0157"
+            ],
+            "count": 52
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0109"
+            ],
+            "count": 52
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0189"
+            ],
+            "count": 50
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0155",
+              "RD-0186"
+            ],
+            "count": 50
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0193"
+            ],
+            "count": 49
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0109",
+              "RD-0154"
+            ],
+            "count": 49
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0153"
+            ],
+            "count": 48
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0111",
+              "RD-0152"
+            ],
+            "count": 48
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0189"
+            ],
+            "count": 47
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0111",
+              "RD-0153"
+            ],
+            "count": 47
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0152",
+              "RD-0193"
+            ],
+            "count": 47
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0192"
+            ],
+            "count": 46
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0157"
+            ],
+            "count": 46
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0190",
+              "RD-0223"
+            ],
+            "count": 46
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0226",
+              "RD-0259"
+            ],
+            "count": 45
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0227"
+            ],
+            "count": 44
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0158"
+            ],
+            "count": 44
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0158"
+            ],
+            "count": 43
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0109",
+              "RD-0153"
+            ],
+            "count": 43
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0153"
+            ],
+            "count": 41
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0105"
+            ],
+            "count": 41
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0194"
+            ],
+            "count": 41
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0224",
+              "RD-0226"
+            ],
+            "count": 41
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0186"
+            ],
+            "count": 40
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0110",
+              "RD-0153"
+            ],
+            "count": 39
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0190"
+            ],
+            "count": 38
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0107"
+            ],
+            "count": 38
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0155"
+            ],
+            "count": 38
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0223"
+            ],
+            "count": 37
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0187",
+              "RD-0193"
+            ],
+            "count": 37
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0193"
+            ],
+            "count": 35
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0153"
+            ],
+            "count": 35
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0111"
+            ],
+            "count": 31
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0192"
+            ],
+            "count": 29
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0157"
+            ],
+            "count": 29
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0110"
+            ],
+            "count": 28
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0110",
+              "RD-0155"
+            ],
+            "count": 28
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0110",
+              "RD-0187"
+            ],
+            "count": 28
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0156"
+            ],
+            "count": 28
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0190"
+            ],
+            "count": 26
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0157"
+            ],
+            "count": 26
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0153"
+            ],
+            "count": 26
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0110"
+            ],
+            "count": 24
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0187"
+            ],
+            "count": 23
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0186"
+            ],
+            "count": 23
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0193"
+            ],
+            "count": 22
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0189",
+              "RD-0223"
+            ],
+            "count": 22
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0194"
+            ],
+            "count": 21
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0191"
+            ],
+            "count": 21
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0110",
+              "RD-0154"
+            ],
+            "count": 21
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0188",
+              "RD-0190"
+            ],
+            "count": 21
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0106"
+            ],
+            "count": 19
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0225",
+              "RD-0259"
+            ],
+            "count": 19
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0187",
+              "RD-0194"
+            ],
+            "count": 18
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0152",
+              "RD-0194"
+            ],
+            "count": 17
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0110"
+            ],
+            "count": 14
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0102",
+              "RD-0225"
+            ],
+            "count": 14
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0188"
+            ],
+            "count": 14
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0110",
+              "RD-0152"
+            ],
+            "count": 14
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0148",
+              "RD-0155"
+            ],
+            "count": 14
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0188",
+              "RD-0227"
+            ],
+            "count": 14
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0154"
+            ],
+            "count": 13
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0152"
+            ],
+            "count": 13
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0188"
+            ],
+            "count": 13
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0107",
+              "RD-0188"
+            ],
+            "count": 13
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0187"
+            ],
+            "count": 13
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0155",
+              "RD-0157"
+            ],
+            "count": 13
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0188",
+              "RD-0191"
+            ],
+            "count": 13
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0111"
+            ],
+            "count": 12
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0156"
+            ],
+            "count": 11
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0107",
+              "RD-0189"
+            ],
+            "count": 10
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0109",
+              "RD-0155"
+            ],
+            "count": 10
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0188",
+              "RD-0226"
+            ],
+            "count": 10
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0189",
+              "RD-0227"
+            ],
+            "count": 10
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0091",
+              "RD-0104"
+            ],
+            "count": 9
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0156"
+            ],
+            "count": 9
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0110",
+              "RD-0186"
+            ],
+            "count": 9
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0155"
+            ],
+            "count": 8
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0102",
+              "RD-0226"
+            ],
+            "count": 8
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0148"
+            ],
+            "count": 8
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0149"
+            ],
+            "count": 8
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0194"
+            ],
+            "count": 8
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0111",
+              "RD-0187"
+            ],
+            "count": 8
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0148",
+              "RD-0154"
+            ],
+            "count": 8
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0189",
+              "RD-0226"
+            ],
+            "count": 8
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0104"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0184"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0187"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0153"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0224"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0259"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0109",
+              "RD-0156"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0190"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0191"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0184"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0192"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0155",
+              "RD-0184"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0224",
+              "RD-0227"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0227",
+              "RD-0259"
+            ],
+            "count": 7
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0086",
+              "RD-0154"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0086",
+              "RD-0155"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0087",
+              "RD-0155"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0088",
+              "RD-0154"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0194"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0144"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0148"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0185"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0111",
+              "RD-0154"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0144",
+              "RD-0154"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0144",
+              "RD-0155"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0152",
+              "RD-0154"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0186"
+            ],
+            "count": 6
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0111"
+            ],
+            "count": 5
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0191"
+            ],
+            "count": 5
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0194"
+            ],
+            "count": 5
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0193"
+            ],
+            "count": 5
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0194"
+            ],
+            "count": 5
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0191",
+              "RD-0193"
+            ],
+            "count": 5
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0102",
+              "RD-0107"
+            ],
+            "count": 4
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0160"
+            ],
+            "count": 4
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0111"
+            ],
+            "count": 4
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0152"
+            ],
+            "count": 4
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0192"
+            ],
+            "count": 4
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0111",
+              "RD-0190"
+            ],
+            "count": 4
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0111",
+              "RD-0191"
+            ],
+            "count": 4
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0152",
+              "RD-0190"
+            ],
+            "count": 4
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0155",
+              "RD-0193"
+            ],
+            "count": 4
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0223",
+              "RD-0226"
+            ],
+            "count": 4
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0085",
+              "RD-0104"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0086",
+              "RD-0104"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0090",
+              "RD-0155"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0106"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0190"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0227"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0102",
+              "RD-0106"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0102",
+              "RD-0227"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0140"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0144"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0152"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0140"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0159"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0228"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0110",
+              "RD-0156"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0111",
+              "RD-0155"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0140",
+              "RD-0154"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0140",
+              "RD-0155"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0153",
+              "RD-0192"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0155",
+              "RD-0194"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0156",
+              "RD-0186"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0187",
+              "RD-0191"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0190",
+              "RD-0192"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0190",
+              "RD-0193"
+            ],
+            "count": 3
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0091",
+              "RD-0105"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0092",
+              "RD-0153"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0107"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0225"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0160"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0228"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0187"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0193"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0194"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0152",
+              "RD-0155"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0152",
+              "RD-0191"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0159"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0187"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0155",
+              "RD-0158"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0186",
+              "RD-0191"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0187",
+              "RD-0190"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0190",
+              "RD-0194"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0190",
+              "RD-0226"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0190",
+              "RD-0228"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0191",
+              "RD-0194"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0191",
+              "RD-0228"
+            ],
+            "count": 2
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0089",
+              "RD-0105"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0089",
+              "RD-0155"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0091",
+              "RD-0154"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0091",
+              "RD-0155"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0226"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0105"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0191"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0113"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0145"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0182"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0193"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0113"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0145"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0186"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0107",
+              "RD-0223"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0113",
+              "RD-0154"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0113",
+              "RD-0155"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0145",
+              "RD-0154"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0145",
+              "RD-0155"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0154",
+              "RD-0182"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0155",
+              "RD-0182"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0155",
+              "RD-0187"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0186",
+              "RD-0190"
+            ],
+            "count": 1
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0186",
+              "RD-0193"
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "audit": {
+        "status": "diagnostic-verified",
+        "reason": null,
+        "bounds": [
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0153"
+            ],
+            "eligibleEndpoints": [
+              "N-0141"
+            ],
+            "groupEndpoints": [
+              "N-0141"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": 563.6225225488594,
+                  "hi": 563.6225245794216
+                },
+                {
+                  "lo": -14132.056935203926,
+                  "hi": 7551.861641848633
+                },
+                {
+                  "lo": -15616.523989925143,
+                  "hi": 8059.454444062951
+                },
+                {
+                  "lo": -1038.2345802924378,
+                  "hi": 1188.605374913819
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": 563.6225225488594,
+                  "hi": 563.6225245794216
+                },
+                {
+                  "lo": -14132.056935203926,
+                  "hi": 7551.861641848633
+                },
+                {
+                  "lo": -15616.523989925143,
+                  "hi": 8059.454444062951
+                },
+                {
+                  "lo": -1038.2345802924378,
+                  "hi": 1188.605374913819
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0154"
+            ],
+            "eligibleEndpoints": [
+              "N-0103",
+              "N-0141"
+            ],
+            "groupEndpoints": [
+              "N-0103",
+              "N-0141"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -14132.056935203926,
+                  "hi": 7551.861641848633
+                },
+                {
+                  "lo": -13237.31502685604,
+                  "hi": 8446.603550196518
+                },
+                {
+                  "lo": -19136.91589714139,
+                  "hi": 20192.671401560725
+                },
+                {
+                  "lo": -24989.089672257705,
+                  "hi": 24255.36135998127
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -14132.056935203926,
+                  "hi": 7551.861641848633
+                },
+                {
+                  "lo": -13237.31502685604,
+                  "hi": 8446.603550196518
+                },
+                {
+                  "lo": -19136.91589714139,
+                  "hi": 20192.671401560725
+                },
+                {
+                  "lo": -24989.089672257705,
+                  "hi": 24255.36135998127
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0155"
+            ],
+            "eligibleEndpoints": [
+              "N-0103",
+              "N-0142"
+            ],
+            "groupEndpoints": [
+              "N-0103"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -13237.31502685604,
+                  "hi": 8446.603550196518
+                },
+                {
+                  "lo": -12215.448517279721,
+                  "hi": 9468.470059772837
+                },
+                {
+                  "lo": -19520.945225613315,
+                  "hi": 20611.43893366798
+                },
+                {
+                  "lo": -23280.302074112748,
+                  "hi": 22327.062763014772
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -13237.31502685604,
+                  "hi": 8446.603550196518
+                },
+                {
+                  "lo": -1373.4892295569725,
+                  "hi": -1373.4892279499104
+                },
+                {
+                  "lo": -4601.404494631982,
+                  "hi": 5691.898202686646
+                },
+                {
+                  "lo": -6465.788405760008,
+                  "hi": 5512.549094662032
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0157"
+            ],
+            "eligibleEndpoints": [
+              "N-0107",
+              "N-0143"
+            ],
+            "groupEndpoints": [
+              "N-0107"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -11097.506303279039,
+                  "hi": 10586.41227377352
+                },
+                {
+                  "lo": -9917.456493320353,
+                  "hi": 11766.462083732205
+                },
+                {
+                  "lo": -20526.478782699276,
+                  "hi": 21714.853080230605
+                },
+                {
+                  "lo": -21292.885673972567,
+                  "hi": 20121.16035158652
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -255.54701555629137,
+                  "hi": -255.5470139492293
+                },
+                {
+                  "lo": -9917.456493320353,
+                  "hi": 11766.462083732205
+                },
+                {
+                  "lo": -4819.349528208559,
+                  "hi": 6007.723825739889
+                },
+                {
+                  "lo": -6024.528706601182,
+                  "hi": 4852.803384215138
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0189"
+            ],
+            "eligibleEndpoints": [
+              "N-0165"
+            ],
+            "groupEndpoints": [
+              "N-0165"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": 1416.9882051262844,
+                  "hi": 1416.9882080521893
+                },
+                {
+                  "lo": -9979.268636504821,
+                  "hi": 2795.7928997904846
+                },
+                {
+                  "lo": -11394.051254573187,
+                  "hi": 1763.4496331763048
+                },
+                {
+                  "lo": -2033.4146903906822,
+                  "hi": 2420.265218886613
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": 1416.9882051262844,
+                  "hi": 1416.9882080521893
+                },
+                {
+                  "lo": -9979.268636504821,
+                  "hi": 2795.7928997904846
+                },
+                {
+                  "lo": -11394.051254573187,
+                  "hi": 1763.4496331763048
+                },
+                {
+                  "lo": -2033.4146903906822,
+                  "hi": 2420.265218886613
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0100",
+              "RD-0190"
+            ],
+            "eligibleEndpoints": [
+              "N-0104",
+              "N-0165"
+            ],
+            "groupEndpoints": [
+              "N-0104",
+              "N-0165"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -9979.268636504821,
+                  "hi": 2795.7928997904846
+                },
+                {
+                  "lo": -8690.135650522348,
+                  "hi": 4084.925885772959
+                },
+                {
+                  "lo": -23763.337478668185,
+                  "hi": 25129.857267293784
+                },
+                {
+                  "lo": -20081.031820442553,
+                  "hi": 18869.285637103207
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -9979.268636504821,
+                  "hi": 2795.7928997904846
+                },
+                {
+                  "lo": -8690.135650522348,
+                  "hi": 4084.925885772959
+                },
+                {
+                  "lo": -23763.337478668185,
+                  "hi": 25129.857267293784
+                },
+                {
+                  "lo": -20081.031820442553,
+                  "hi": 18869.285637103207
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0102",
+              "RD-0225"
+            ],
+            "eligibleEndpoints": [
+              "N-0102",
+              "N-0188",
+              "N-0189"
+            ],
+            "groupEndpoints": [
+              "N-0189"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -33158.01457061445,
+                  "hi": 24321.71059157965
+                },
+                {
+                  "lo": -28691.930476106463,
+                  "hi": 22501.657658047166
+                },
+                {
+                  "lo": -20732.201893481415,
+                  "hi": 19643.92207020822
+                },
+                {
+                  "lo": -52661.831349653214,
+                  "hi": 48927.52036540451
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -4418.151995697883,
+                  "hi": -4418.151983336917
+                },
+                {
+                  "lo": -15169.433743901336,
+                  "hi": 8979.160925842043
+                },
+                {
+                  "lo": -7209.705161276289,
+                  "hi": 6121.425338003094
+                },
+                {
+                  "lo": -9328.857571325587,
+                  "hi": 5594.546587076888
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0104",
+              "RD-0157"
+            ],
+            "eligibleEndpoints": [
+              "N-0103",
+              "N-0107",
+              "N-0143"
+            ],
+            "groupEndpoints": [
+              "N-0103",
+              "N-0107"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -17953.633539244012,
+                  "hi": 19861.439994012606
+                },
+                {
+                  "lo": -17717.83626851435,
+                  "hi": 20506.862722070327
+                },
+                {
+                  "lo": -18782.626867392377,
+                  "hi": 19791.70208678652
+                },
+                {
+                  "lo": -36574.287749329575,
+                  "hi": 36702.14296993634
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -3587.2726473284124,
+                  "hi": 5495.079102097005
+                },
+                {
+                  "lo": -17717.83626851435,
+                  "hi": 20506.862722070327
+                },
+                {
+                  "lo": -4036.6382650156365,
+                  "hi": 5045.713484409781
+                },
+                {
+                  "lo": -13267.858522136965,
+                  "hi": 13395.713742743726
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0152"
+            ],
+            "eligibleEndpoints": [
+              "N-0103",
+              "N-0104"
+            ],
+            "groupEndpoints": [
+              "N-0103",
+              "N-0104"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -19420.319064356336,
+                  "hi": 26644.76055079128
+                },
+                {
+                  "lo": -20651.264877397523,
+                  "hi": 29164.839349814938
+                },
+                {
+                  "lo": -995.8342048023493,
+                  "hi": 1231.0057504039078
+                },
+                {
+                  "lo": -1640.4006979092178,
+                  "hi": 586.439257528301
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -19420.319064356336,
+                  "hi": 26644.76055079128
+                },
+                {
+                  "lo": -20651.264877397523,
+                  "hi": 29164.839349814938
+                },
+                {
+                  "lo": -995.8342048023493,
+                  "hi": 1231.0057504039078
+                },
+                {
+                  "lo": -1640.4006979092178,
+                  "hi": 586.439257528301
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0153"
+            ],
+            "eligibleEndpoints": [
+              "N-0103",
+              "N-0104",
+              "N-0141"
+            ],
+            "groupEndpoints": [
+              "N-0103",
+              "N-0104",
+              "N-0141"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -20651.264877397523,
+                  "hi": 29164.839349814938
+                },
+                {
+                  "lo": -44788.195290135714,
+                  "hi": 43371.207083546484
+                },
+                {
+                  "lo": -27243.106856584753,
+                  "hi": 26424.577793328142
+                },
+                {
+                  "lo": -21353.152513934823,
+                  "hi": 30465.186129684866
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -20651.264877397523,
+                  "hi": 29164.839349814938
+                },
+                {
+                  "lo": -44788.195290135714,
+                  "hi": 43371.207083546484
+                },
+                {
+                  "lo": -27243.106856584753,
+                  "hi": 26424.577793328142
+                },
+                {
+                  "lo": -21353.152513934823,
+                  "hi": 30465.186129684866
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0188"
+            ],
+            "eligibleEndpoints": [
+              "N-0104",
+              "N-0105"
+            ],
+            "groupEndpoints": [
+              "N-0104",
+              "N-0105"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -16497.801334811662,
+                  "hi": 19642.18789171224
+                },
+                {
+                  "lo": -18199.846226445916,
+                  "hi": 23922.49875531144
+                },
+                {
+                  "lo": -1863.8131884303275,
+                  "hi": 2589.866720846968
+                },
+                {
+                  "lo": -3152.94617560241,
+                  "hi": 1300.7337360541003
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -16497.801334811662,
+                  "hi": 19642.18789171224
+                },
+                {
+                  "lo": -18199.846226445916,
+                  "hi": 23922.49875531144
+                },
+                {
+                  "lo": -1863.8131884303275,
+                  "hi": 2589.866720846968
+                },
+                {
+                  "lo": -3152.94617560241,
+                  "hi": 1300.7337360541003
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0106",
+              "RD-0189"
+            ],
+            "eligibleEndpoints": [
+              "N-0104",
+              "N-0105",
+              "N-0165"
+            ],
+            "groupEndpoints": [
+              "N-0104",
+              "N-0105",
+              "N-0165"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -18199.846226445916,
+                  "hi": 23922.49875531144
+                },
+                {
+                  "lo": -46976.77278004966,
+                  "hi": 44142.79636687118
+                },
+                {
+                  "lo": -24550.35346020492,
+                  "hi": 22999.404272944863
+                },
+                {
+                  "lo": -19470.684076886944,
+                  "hi": 26476.36383167089
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -18199.846226445916,
+                  "hi": 23922.49875531144
+                },
+                {
+                  "lo": -46976.77278004966,
+                  "hi": 44142.79636687118
+                },
+                {
+                  "lo": -24550.35346020492,
+                  "hi": 22999.404272944863
+                },
+                {
+                  "lo": -19470.684076886944,
+                  "hi": 26476.36383167089
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0226"
+            ],
+            "eligibleEndpoints": [
+              "N-0105",
+              "N-0189"
+            ],
+            "groupEndpoints": [
+              "N-0105",
+              "N-0189"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -8583.807666680264,
+                  "hi": 4191.253873517815
+                },
+                {
+                  "lo": -6650.108187706552,
+                  "hi": 6124.953352491528
+                },
+                {
+                  "lo": -19604.41922873094,
+                  "hi": 22037.76457348963
+                },
+                {
+                  "lo": -16454.84180718169,
+                  "hi": 15020.788193992948
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -8583.807666680264,
+                  "hi": 4191.253873517815
+                },
+                {
+                  "lo": -6650.108187706552,
+                  "hi": 6124.953352491528
+                },
+                {
+                  "lo": -19604.41922873094,
+                  "hi": 22037.76457348963
+                },
+                {
+                  "lo": -16454.84180718169,
+                  "hi": 15020.788193992948
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0099",
+              "RD-0104"
+            ],
+            "eligibleEndpoints": [
+              "N-0103"
+            ],
+            "groupEndpoints": [
+              "N-0103"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": 464.6323149840778,
+                  "hi": 464.63231659113995
+                },
+                {
+                  "lo": -13237.31502685604,
+                  "hi": 8446.603550196518
+                },
+                {
+                  "lo": -1402.1178582857867,
+                  "hi": 620.5944831209445
+                },
+                {
+                  "lo": -7465.908937037249,
+                  "hi": 12404.361670107148
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": 464.6323149840778,
+                  "hi": 464.63231659113995
+                },
+                {
+                  "lo": -13237.31502685604,
+                  "hi": 8446.603550196518
+                },
+                {
+                  "lo": -1402.1178582857867,
+                  "hi": 620.5944831209445
+                },
+                {
+                  "lo": -7465.908937037249,
+                  "hi": 12404.361670107148
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0189"
+            ],
+            "eligibleEndpoints": [
+              "N-0165"
+            ],
+            "groupEndpoints": [
+              "N-0165"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": 1416.9882031749034,
+                  "hi": 1416.988210003572
+                },
+                {
+                  "lo": -9979.268638456211,
+                  "hi": 2795.7929017418687
+                },
+                {
+                  "lo": -2033.4146903906822,
+                  "hi": 2420.265218886613
+                },
+                {
+                  "lo": -1743.262515167431,
+                  "hi": 12147.56519355618
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": 1416.9882031749034,
+                  "hi": 1416.988210003572
+                },
+                {
+                  "lo": -9979.268638456211,
+                  "hi": 2795.7929017418687
+                },
+                {
+                  "lo": -2033.4146903906822,
+                  "hi": 2420.265218886613
+                },
+                {
+                  "lo": -1743.262515167431,
+                  "hi": 12147.56519355618
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0186"
+            ],
+            "eligibleEndpoints": [
+              "N-0103",
+              "N-0104",
+              "N-0162"
+            ],
+            "groupEndpoints": [
+              "N-0103",
+              "N-0104"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -54866.826213987435,
+                  "hi": 48615.819401207445
+                },
+                {
+                  "lo": -18406.672845907022,
+                  "hi": 24465.95175078597
+                },
+                {
+                  "lo": -26303.872231150137,
+                  "hi": 27235.44807617879
+                },
+                {
+                  "lo": -32492.663064759967,
+                  "hi": 21113.953192129688
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -28479.29544730274,
+                  "hi": 22228.28863452275
+                },
+                {
+                  "lo": -18406.672845907022,
+                  "hi": 24465.95175078597
+                },
+                {
+                  "lo": -10602.54006986707,
+                  "hi": 11534.115914895725
+                },
+                {
+                  "lo": -16757.68292882745,
+                  "hi": 5378.973056197166
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0105",
+              "RD-0223"
+            ],
+            "eligibleEndpoints": [
+              "N-0103",
+              "N-0104",
+              "N-0187"
+            ],
+            "groupEndpoints": [
+              "N-0103",
+              "N-0104"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -59258.62114443,
+                  "hi": 48768.18612224929
+                },
+                {
+                  "lo": -21920.204921116263,
+                  "hi": 25064.591478016842
+                },
+                {
+                  "lo": -23364.094596782896,
+                  "hi": 40366.76218727179
+                },
+                {
+                  "lo": -24367.685583001017,
+                  "hi": 27735.531594408625
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -32871.0903777453,
+                  "hi": 22380.655355564595
+                },
+                {
+                  "lo": -21920.204921116263,
+                  "hi": 25064.591478016842
+                },
+                {
+                  "lo": -3710.985596069837,
+                  "hi": 20713.653186558728
+                },
+                {
+                  "lo": -10528.396385610478,
+                  "hi": 13896.242397018086
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0191",
+              "RD-0223"
+            ],
+            "eligibleEndpoints": [
+              "N-0104",
+              "N-0166",
+              "N-0187"
+            ],
+            "groupEndpoints": [
+              "N-0104",
+              "N-0166"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -50941.04749577296,
+                  "hi": 52585.84311537136
+                },
+                {
+                  "lo": -17690.678367176235,
+                  "hi": 16287.850995046781
+                },
+                {
+                  "lo": -24367.685583001017,
+                  "hi": 27735.531594408625
+                },
+                {
+                  "lo": -22154.560372004562,
+                  "hi": 28570.029375140024
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -28714.20754259726,
+                  "hi": 30359.00316219567
+                },
+                {
+                  "lo": -17690.678367176235,
+                  "hi": 16287.850995046781
+                },
+                {
+                  "lo": -10528.396385610478,
+                  "hi": 13896.242397018086
+                },
+                {
+                  "lo": -9004.58488974655,
+                  "hi": 15420.053892882015
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          },
+          {
+            "code": "unnormalized-crossing",
+            "roadIds": [
+              "RD-0101",
+              "RD-0106"
+            ],
+            "eligibleEndpoints": [
+              "N-0104",
+              "N-0105"
+            ],
+            "groupEndpoints": [
+              "N-0104",
+              "N-0105"
+            ],
+            "sharedEndpoint": false,
+            "allEligibleRelaxation": {
+              "intervals": [
+                {
+                  "lo": -8690.135652473735,
+                  "hi": 4084.925887724344
+                },
+                {
+                  "lo": -6650.108187706552,
+                  "hi": 6124.953352491528
+                },
+                {
+                  "lo": -16497.801334811662,
+                  "hi": 19642.18789171224
+                },
+                {
+                  "lo": -21193.001608421757,
+                  "hi": 20257.33323578797
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "bestGroup": {
+              "intervals": [
+                {
+                  "lo": -8690.135652473735,
+                  "hi": 4084.925887724344
+                },
+                {
+                  "lo": -6650.108187706552,
+                  "hi": 6124.953352491528
+                },
+                {
+                  "lo": -16497.801334811662,
+                  "hi": 19642.18789171224
+                },
+                {
+                  "lo": -21193.001608421757,
+                  "hi": 20257.33323578797
+                }
+              ],
+              "inevitableProperCrossing": false
+            },
+            "interpretation": "inconclusive"
+          }
+        ],
+        "replay": {
+          "attempt": 183,
+          "actual": [
+            "[\"unnormalized-crossing\",[\"RD-0099\",\"RD-0153\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0099\",\"RD-0154\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0099\",\"RD-0155\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0099\",\"RD-0157\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0100\",\"RD-0189\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0100\",\"RD-0190\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0102\",\"RD-0225\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0104\",\"RD-0157\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0105\",\"RD-0152\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0105\",\"RD-0153\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0106\",\"RD-0188\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0106\",\"RD-0189\"]]"
+          ],
+          "expected": [
+            "[\"unnormalized-crossing\",[\"RD-0099\",\"RD-0153\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0099\",\"RD-0154\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0099\",\"RD-0155\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0099\",\"RD-0157\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0100\",\"RD-0189\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0100\",\"RD-0190\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0102\",\"RD-0225\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0104\",\"RD-0157\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0105\",\"RD-0152\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0105\",\"RD-0153\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0106\",\"RD-0188\"]]",
+            "[\"unnormalized-crossing\",[\"RD-0106\",\"RD-0189\"]]"
+          ],
+          "matches": true
+        },
+        "stats": {
+          "work": 78896,
+          "expansions": 0,
+          "remainingWork": 7921104,
+          "remainingExpansions": 32768
+        }
+      },
+      "caseId": "radial-small:five-branch:100:y"
+    }
+  ]
+}

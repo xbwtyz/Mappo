@@ -1,0 +1,419 @@
+{
+  "version": 1,
+  "source": "0f6c99ccc330753392f8db650dd7a32f67740ed5",
+  "run": 46079959187,
+  "method": "Read-only post-CI analysis of independently audited observed pairs. Exhaustively enumerate endpoint subsets of size zero through four, stopping at first covering set. Cross-checked with a separate bounded branching cover computation. Necessary only: each fixed-topology baseline conflicting pair must have at least one endpoint change; selected coordinates and ineligible nodes fixed. Not geometric feasibility, not solver tests, no scope expansion.",
+  "rows": [
+    {
+      "id": "linear-medium:eight-chain:100:diagonal",
+      "pairCount": 9,
+      "eligibleEndpointCount": 10,
+      "minimumWithinFour": 3,
+      "exampleCoverageSet": [
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ],
+      "combinationsExamined": 142
+    },
+    {
+      "id": "linear-medium:eight-chain:100:y",
+      "pairCount": 71,
+      "eligibleEndpointCount": 13,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 1093
+    },
+    {
+      "id": "linear-medium:eight-chain:75:y",
+      "pairCount": 39,
+      "eligibleEndpointCount": 13,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 1093
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "pairCount": 9,
+      "eligibleEndpointCount": 10,
+      "minimumWithinFour": 3,
+      "exampleCoverageSet": [
+        "N-0145",
+        "N-0146",
+        "N-0147"
+      ],
+      "combinationsExamined": 142
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "pairCount": 30,
+      "eligibleEndpointCount": 10,
+      "minimumWithinFour": 4,
+      "exampleCoverageSet": [
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147"
+      ],
+      "combinationsExamined": 317
+    },
+    {
+      "id": "linear-medium:five-branch:100:diagonal",
+      "pairCount": 11,
+      "eligibleEndpointCount": 10,
+      "minimumWithinFour": 3,
+      "exampleCoverageSet": [
+        "N-0139",
+        "N-0140",
+        "N-0145"
+      ],
+      "combinationsExamined": 123
+    },
+    {
+      "id": "linear-medium:five-branch:75:y",
+      "pairCount": 32,
+      "eligibleEndpointCount": 10,
+      "minimumWithinFour": 4,
+      "exampleCoverageSet": [
+        "N-0139",
+        "N-0140",
+        "N-0144",
+        "N-0145"
+      ],
+      "combinationsExamined": 322
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "pairCount": 12,
+      "eligibleEndpointCount": 10,
+      "minimumWithinFour": 4,
+      "exampleCoverageSet": [
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0148"
+      ],
+      "combinationsExamined": 265
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "pairCount": 71,
+      "eligibleEndpointCount": 16,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 2517
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "pairCount": 30,
+      "eligibleEndpointCount": 9,
+      "minimumWithinFour": 4,
+      "exampleCoverageSet": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140"
+      ],
+      "combinationsExamined": 187
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "pairCount": 39,
+      "eligibleEndpointCount": 13,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 1093
+    },
+    {
+      "id": "organic-large:eight-chain:100:diagonal",
+      "pairCount": 11,
+      "eligibleEndpointCount": 9,
+      "minimumWithinFour": 3,
+      "exampleCoverageSet": [
+        "N-0153",
+        "N-0160",
+        "N-0168"
+      ],
+      "combinationsExamined": 82
+    },
+    {
+      "id": "organic-large:eight-loop:100:y",
+      "pairCount": 10,
+      "eligibleEndpointCount": 12,
+      "minimumWithinFour": 4,
+      "exampleCoverageSet": [
+        "N-0155",
+        "N-0158",
+        "N-0159",
+        "N-0160"
+      ],
+      "combinationsExamined": 501
+    },
+    {
+      "id": "organic-large:five-branch:100:y",
+      "pairCount": 10,
+      "eligibleEndpointCount": 10,
+      "minimumWithinFour": 3,
+      "exampleCoverageSet": [
+        "N-0153",
+        "N-0158",
+        "N-0159"
+      ],
+      "combinationsExamined": 132
+    },
+    {
+      "id": "organic-large:five-branch:75:y",
+      "pairCount": 6,
+      "eligibleEndpointCount": 8,
+      "minimumWithinFour": 2,
+      "exampleCoverageSet": [
+        "N-0158",
+        "N-0159"
+      ],
+      "combinationsExamined": 28
+    },
+    {
+      "id": "organic-large:five-chain:100:diagonal",
+      "pairCount": 9,
+      "eligibleEndpointCount": 7,
+      "minimumWithinFour": 3,
+      "exampleCoverageSet": [
+        "N-0148",
+        "N-0158",
+        "N-0167"
+      ],
+      "combinationsExamined": 40
+    },
+    {
+      "id": "organic-large:five-chain:100:y",
+      "pairCount": 11,
+      "eligibleEndpointCount": 7,
+      "minimumWithinFour": 3,
+      "exampleCoverageSet": [
+        "N-0152",
+        "N-0158",
+        "N-0167"
+      ],
+      "combinationsExamined": 50
+    },
+    {
+      "id": "organic-large:quad:100:y",
+      "pairCount": 6,
+      "eligibleEndpointCount": 8,
+      "minimumWithinFour": 2,
+      "exampleCoverageSet": [
+        "N-0158",
+        "N-0159"
+      ],
+      "combinationsExamined": 28
+    },
+    {
+      "id": "organic-large:quad:75:y",
+      "pairCount": 6,
+      "eligibleEndpointCount": 8,
+      "minimumWithinFour": 2,
+      "exampleCoverageSet": [
+        "N-0158",
+        "N-0159"
+      ],
+      "combinationsExamined": 28
+    },
+    {
+      "id": "planned-medium:eight-chain:100:diagonal",
+      "pairCount": 30,
+      "eligibleEndpointCount": 21,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 7547
+    },
+    {
+      "id": "planned-medium:eight-chain:100:y",
+      "pairCount": 65,
+      "eligibleEndpointCount": 20,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 6196
+    },
+    {
+      "id": "planned-medium:eight-chain:75:y",
+      "pairCount": 65,
+      "eligibleEndpointCount": 20,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 6196
+    },
+    {
+      "id": "planned-medium:eight-loop:100:y",
+      "pairCount": 30,
+      "eligibleEndpointCount": 10,
+      "minimumWithinFour": 4,
+      "exampleCoverageSet": [
+        "N-0143",
+        "N-0144",
+        "N-0145",
+        "N-0146"
+      ],
+      "combinationsExamined": 261
+    },
+    {
+      "id": "planned-medium:five-branch:100:y",
+      "pairCount": 32,
+      "eligibleEndpointCount": 10,
+      "minimumWithinFour": 4,
+      "exampleCoverageSet": [
+        "N-0133",
+        "N-0134",
+        "N-0143",
+        "N-0144"
+      ],
+      "combinationsExamined": 267
+    },
+    {
+      "id": "planned-medium:five-chain:100:diagonal",
+      "pairCount": 18,
+      "eligibleEndpointCount": 15,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 1941
+    },
+    {
+      "id": "planned-medium:five-chain:100:y",
+      "pairCount": 44,
+      "eligibleEndpointCount": 14,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 1471
+    },
+    {
+      "id": "planned-medium:five-chain:75:y",
+      "pairCount": 44,
+      "eligibleEndpointCount": 14,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 1471
+    },
+    {
+      "id": "radial-small:eight-loop:100:diagonal",
+      "pairCount": 8,
+      "eligibleEndpointCount": 9,
+      "minimumWithinFour": 3,
+      "exampleCoverageSet": [
+        "N-0105",
+        "N-0166",
+        "N-0187"
+      ],
+      "combinationsExamined": 61
+    },
+    {
+      "id": "radial-small:eight-loop:100:x",
+      "pairCount": 5,
+      "eligibleEndpointCount": 8,
+      "minimumWithinFour": 2,
+      "exampleCoverageSet": [
+        "N-0101",
+        "N-0189"
+      ],
+      "combinationsExamined": 15
+    },
+    {
+      "id": "radial-small:eight-loop:100:y",
+      "pairCount": 16,
+      "eligibleEndpointCount": 11,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 562
+    },
+    {
+      "id": "radial-small:eight-loop:50:y",
+      "pairCount": 2,
+      "eligibleEndpointCount": 4,
+      "minimumWithinFour": 2,
+      "exampleCoverageSet": [
+        "N-0107",
+        "N-0108"
+      ],
+      "combinationsExamined": 6
+    },
+    {
+      "id": "radial-small:eight-loop:75:x",
+      "pairCount": 5,
+      "eligibleEndpointCount": 8,
+      "minimumWithinFour": 2,
+      "exampleCoverageSet": [
+        "N-0101",
+        "N-0189"
+      ],
+      "combinationsExamined": 15
+    },
+    {
+      "id": "radial-small:eight-loop:75:y",
+      "pairCount": 8,
+      "eligibleEndpointCount": 6,
+      "minimumWithinFour": 3,
+      "exampleCoverageSet": [
+        "N-0107",
+        "N-0108",
+        "N-0142"
+      ],
+      "combinationsExamined": 24
+    },
+    {
+      "id": "radial-small:five-branch:100:diagonal",
+      "pairCount": 14,
+      "eligibleEndpointCount": 13,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 1093
+    },
+    {
+      "id": "radial-small:five-branch:100:y",
+      "pairCount": 16,
+      "eligibleEndpointCount": 16,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 2517
+    },
+    {
+      "id": "radial-small:five-branch:50:y",
+      "pairCount": 11,
+      "eligibleEndpointCount": 9,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 256
+    },
+    {
+      "id": "radial-small:five-branch:75:diagonal",
+      "pairCount": 11,
+      "eligibleEndpointCount": 7,
+      "minimumWithinFour": 4,
+      "exampleCoverageSet": [
+        "N-0104",
+        "N-0141",
+        "N-0165",
+        "N-0189"
+      ],
+      "combinationsExamined": 92
+    },
+    {
+      "id": "radial-small:five-branch:75:y",
+      "pairCount": 14,
+      "eligibleEndpointCount": 13,
+      "minimumWithinFour": null,
+      "exampleCoverageSet": null,
+      "combinationsExamined": 1093
+    },
+    {
+      "id": "radial-small:five-chain:50:y",
+      "pairCount": 9,
+      "eligibleEndpointCount": 11,
+      "minimumWithinFour": 4,
+      "exampleCoverageSet": [
+        "N-0103",
+        "N-0140",
+        "N-0165",
+        "N-0188"
+      ],
+      "combinationsExamined": 292
+    }
+  ]
+}

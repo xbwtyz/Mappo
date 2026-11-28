@@ -1,0 +1,4223 @@
+{
+  "version": 1,
+  "source": "257d5fe5d4413fbbcf35b758c6054aff2dc276fd",
+  "run": 46118234203,
+  "aggregate": 140897095354,
+  "rows": [
+    {
+      "id": "sq:tournament:linear-01:control",
+      "source": "3924c028d51ecc543fd53d4bbf15b5da034b3ac53aa88755f5e1f798acbe5ce8",
+      "city": "linear-01",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 296043,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 9
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:linear-01:experimental",
+      "source": "1bb26121f31224779616fac7a32c415edd43fd7be9dea2ffff60a093602928a3",
+      "city": "linear-01",
+      "arm": "experimental",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 675200,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 373845,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-02:control",
+      "source": "0e1bdb3a1c0baa14f4461a02a11fcd0a23aa8d67a1f5f9c2cef3a28f8efa4a19",
+      "city": "linear-02",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": -100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 1983132,
+      "expansions": 287,
+      "minimum": {
+        "status": "exact",
+        "minimum": 7,
+        "lower": 7,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:linear-03:control",
+      "source": "db5e6a6998a7b27e0a65239c6e38c393a6e714ebb41f5fe52ca5623410673f2b",
+      "city": "linear-03",
+      "arm": "control",
+      "offset": {
+        "x": -100,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 2,
+      "localProbes": 0,
+      "work": 3190633,
+      "expansions": 41,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 3,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1705072,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-03:experimental",
+      "source": "ac4869ce50a1af6887f2e58c53339a9d7ad44fe4d01e39de887ce6026f5a9678",
+      "city": "linear-03",
+      "arm": "experimental",
+      "offset": {
+        "x": -100,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 15,
+      "localProbes": 24,
+      "work": 3602623,
+      "expansions": 282,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": 8,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1700077,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-05:control",
+      "source": "dc9d89f6ecc428dfeb100168b3b8863efe67b10ba8a285e9b26fc20c3292049c",
+      "city": "linear-05",
+      "arm": "control",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1426482,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 786394,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-05:experimental",
+      "source": "657c8a2bf40a3bd3ded15823ca0526b3752f0a35df16d77213bc3140bc8b2acf",
+      "city": "linear-05",
+      "arm": "experimental",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1399897,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 768403,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-08:control",
+      "source": "b6a457c339a1f26e05c70640e46715e17e259658b8fc0329a4544b39998b175c",
+      "city": "linear-08",
+      "arm": "control",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1467782,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 804030,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-09:control",
+      "source": "55ca184e52c810b47f020a796f96a59fb198c0721572e1e3b0ee2b7ee6fb3d37",
+      "city": "linear-09",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 13,
+      "localProbes": 0,
+      "work": 3351119,
+      "expansions": 51,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": 2,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1682923,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-09:experimental",
+      "source": "64b405eba7902e9a52f901ab99d2e3cdc0617a33d363035854491feb2145626d",
+      "city": "linear-09",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 25,
+      "localProbes": 48,
+      "work": 3640770,
+      "expansions": 113,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": 2,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1628650,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-10:control",
+      "source": "e82e75836c1abdc2ed597460b94df4fc30e41baa4f75352bb3dfd733b79eff10",
+      "city": "linear-10",
+      "arm": "control",
+      "offset": {
+        "x": -70,
+        "y": -40
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "boundary-refused",
+      "directIssues": [],
+      "status": "boundary-refused",
+      "reason": "fixed-boundary",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 285628,
+      "expansions": 0,
+      "minimum": null,
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:linear-11:control",
+      "source": "6247a2e43254117c392af1867ac61ccb537a3f7bab85645908b16c3831d667d0",
+      "city": "linear-11",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 591987,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 9
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:linear-11:experimental",
+      "source": "b49a2f159df2248d5cea28e00922f8463f95c0415db3c51ed3b436b25a3269f6",
+      "city": "linear-11",
+      "arm": "experimental",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1426380,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 781598,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-13:control",
+      "source": "cc2edac9dc18115b2bb01c489974102c4cb873e603671be23c8eb851952acdca",
+      "city": "linear-13",
+      "arm": "control",
+      "offset": {
+        "x": -100,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "boundary-refused",
+      "directIssues": [],
+      "status": "boundary-refused",
+      "reason": "fixed-boundary",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 289524,
+      "expansions": 0,
+      "minimum": null,
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:linear-13:experimental",
+      "source": "cb086ee1595d86cfc55c98480f975366d64fd51f290d79ee6e69555408f0cba0",
+      "city": "linear-13",
+      "arm": "experimental",
+      "offset": {
+        "x": -100,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 680751,
+      "expansions": 37,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 1,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 362427,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-16:control",
+      "source": "98ab781495bbf9d2d8d554a3e940022cae64d02e109bf9834aed3b04a4ed1dee",
+      "city": "linear-16",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": -25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 192,
+      "work": 1031661,
+      "expansions": 274,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:linear-17:control",
+      "source": "89a21c01df1fc49c78cb8a20f1a88449691e5a943e4f796240ae273922bea047",
+      "city": "linear-17",
+      "arm": "control",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 612071,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 4
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:linear-17:experimental",
+      "source": "fb3ffdff392e0d6ea771a0308766d15743fdbbac56dd1f2ac7e35ffc5eecf380",
+      "city": "linear-17",
+      "arm": "experimental",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1461481,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 796543,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-18:control",
+      "source": "2e0c19e5e0b12cbf60ecc74d14d40a0ef4a70b0d7afa81c84800a78d6d213b21",
+      "city": "linear-18",
+      "arm": "control",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 3106796,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1671989,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-19:control",
+      "source": "39000b88ef5a61997506cbd1b68685fb30cd2d79c458ef5eba9c7539411866ea",
+      "city": "linear-19",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "boundary-refused",
+      "directIssues": [],
+      "status": "boundary-refused",
+      "reason": "fixed-boundary",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 300028,
+      "expansions": 0,
+      "minimum": null,
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:linear-19:experimental",
+      "source": "ddda4a031b19177783e891eeb9c8ffea9bd9f9181ace341a1635081eda4cccb7",
+      "city": "linear-19",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "boundary-refused",
+      "directIssues": [],
+      "status": "boundary-refused",
+      "reason": "fixed-boundary",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 303794,
+      "expansions": 0,
+      "minimum": null,
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:linear-21:control",
+      "source": "7056c698d50f50ffff2818c645b9b43fd0d1b4c84c8b7d67b3a2fbb2faa8001c",
+      "city": "linear-21",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 3032041,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1650111,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-21:experimental",
+      "source": "55e2a0aa6a9be39ac7c59142b8d389688c84d5c9599133182e022f9cd56194a8",
+      "city": "linear-21",
+      "arm": "experimental",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 3065122,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1659777,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-24:control",
+      "source": "9adf2f2e0fd9db57151c13937d865c315aed3e6eb5208db88dd80f32242e89e2",
+      "city": "linear-24",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 1230187,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 2
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:linear-25:control",
+      "source": "d6f6e0e4f36bed3b2002e2e7c25abd7e4e49d7033f96018544a9ead1d9a1d28b",
+      "city": "linear-25",
+      "arm": "control",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 662689,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 375300,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:linear-25:experimental",
+      "source": "8c6afb9a9f30e15d3353781c0073c6ff69511dc2e4de7b4a3696c7816ea3e60e",
+      "city": "linear-25",
+      "arm": "experimental",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 659469,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 370109,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-01:control",
+      "source": "9c7f07b8c2e4ac6a82e3b44a1eb99b60f35e4d5abb389317748128f8ee371b5a",
+      "city": "organic-01",
+      "arm": "control",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 628541,
+      "expansions": 37,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 1,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 335650,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-02:control",
+      "source": "587c30e36130fd93ceb89c6989fecc15705c5c8a4b54a3597d4ddeca9f79dc90",
+      "city": "organic-02",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1336239,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 730698,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-02:experimental",
+      "source": "ba076630e111a8d03b8301e4ee337aadcc0da73452c82ca3208a3ac748e30ee9",
+      "city": "organic-02",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1288794,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 702881,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-04:control",
+      "source": "cba5f98e23fd1b174741678871660f171df71a516c2e39f1089e446e6b91d7b1",
+      "city": "organic-04",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 1106557,
+      "expansions": 214,
+      "minimum": {
+        "status": "exact",
+        "minimum": 3,
+        "lower": 3,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:organic-04:experimental",
+      "source": "8efb0c1e0a145631f07a7fda1a8f54913efb37e092592a887e9d1af5301fef9e",
+      "city": "organic-04",
+      "arm": "experimental",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 25,
+      "localProbes": 48,
+      "work": 1067311,
+      "expansions": 113,
+      "minimum": {
+        "status": "exact",
+        "minimum": 3,
+        "lower": 3,
+        "emptyClauses": 0
+      },
+      "neighbors": 3,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 341431,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-07:control",
+      "source": "7beea98a8a6a5a4223fed999fd33bb8573f9e58fab6fb078fd1e0e3a70a791e4",
+      "city": "organic-07",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 192,
+      "work": 1158188,
+      "expansions": 276,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:organic-08:control",
+      "source": "76379e81050e6c7b157adbea97a0865174f44f64fcac3450f871efe045c2edeb",
+      "city": "organic-08",
+      "arm": "control",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1407148,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 774681,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-08:experimental",
+      "source": "931c8c49e09c0e4acd779bab03699ff2001872c95851e8532f081012facdeca8",
+      "city": "organic-08",
+      "arm": "experimental",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1414298,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 773533,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-09:control",
+      "source": "912c66a60c8f11ee8f1249da33c2e4b25b67ad14603195f063f41a00ce64cabe",
+      "city": "organic-09",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": -25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2784487,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1529223,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-10:control",
+      "source": "539acad1e175ef9f0c04fde5332c630b928f0b107e8075e5d0dcda85bdb2c474",
+      "city": "organic-10",
+      "arm": "control",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 260263,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 3
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:organic-10:experimental",
+      "source": "2393b2b1aad1871543041ee719f6331aaa6e9fe87aaa2c65b772b991680e122c",
+      "city": "organic-10",
+      "arm": "experimental",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 192,
+      "work": 1036465,
+      "expansions": 276,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:organic-12:control",
+      "source": "5a37d2c0ddbdfe0e2805e17760191b9094bee98b67e549d0439a2dfb682dfce5",
+      "city": "organic-12",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2831585,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1539002,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-12:experimental",
+      "source": "e9ec74b08f05f99657ed1d9cf881c409d9b8859724081f1de20c2cbe5e5f133b",
+      "city": "organic-12",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2762223,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1498694,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-15:control",
+      "source": "bfe7880e20d7c45b57e3568d397675876dc2e29e502e734052a8be9afbc8e9ae",
+      "city": "organic-15",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": -100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 7,
+      "localProbes": 0,
+      "work": 2915650,
+      "expansions": 43,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 1,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1483613,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-16:control",
+      "source": "280d7c42896e342452e98d001ab9654c23dd7c60b00c6f5367485d6683000f48",
+      "city": "organic-16",
+      "arm": "control",
+      "offset": {
+        "x": -100,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 253030,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 4
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:organic-16:experimental",
+      "source": "c512c6fd21b5fcf63b60e0907f07748053563a13cdecb0fc62c1452b3191d5ab",
+      "city": "organic-16",
+      "arm": "experimental",
+      "offset": {
+        "x": -100,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 1091096,
+      "expansions": 225,
+      "minimum": {
+        "status": "exact",
+        "minimum": 3,
+        "lower": 3,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:organic-17:control",
+      "source": "c45771651d5a8b9b36dcc232208fd758f4919b6ecf696560bb645d77683b1814",
+      "city": "organic-17",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 569829,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 4
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:organic-18:control",
+      "source": "edbb38504fcb9c94372a3acad4b0254dd0c3c70b59cafb3c6695091c4bbb892e",
+      "city": "organic-18",
+      "arm": "control",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2790906,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1516743,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-18:experimental",
+      "source": "b2a156a8f5d868b869f8c63444a99980c6c89c8f3d7f082097e9da6fabfc005a",
+      "city": "organic-18",
+      "arm": "experimental",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2824829,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1527524,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-20:control",
+      "source": "95785867924907e3706e2dbdfc7bfce84a9781166b3c9aae512dae6ec89919b5",
+      "city": "organic-20",
+      "arm": "control",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1370859,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 748639,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-20:experimental",
+      "source": "3b874cbce4e71a1e7902d3fb8a7319b7600903d3b81a4f6f469ac312e75bb776",
+      "city": "organic-20",
+      "arm": "experimental",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1348316,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 734589,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:organic-23:control",
+      "source": "ed6c2ee9020f0e0a0615ffa714545756db1f53d6ef8a96947c017f550c3951a9",
+      "city": "organic-23",
+      "arm": "control",
+      "offset": {
+        "x": -70,
+        "y": -40
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 565013,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 6
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:organic-24:control",
+      "source": "9a4be37d6e6543f830a1d1b7662d6734f654505628375c058147045ff4a054b5",
+      "city": "organic-24",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 2584906,
+      "expansions": 214,
+      "minimum": {
+        "status": "exact",
+        "minimum": 3,
+        "lower": 3,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:organic-24:experimental",
+      "source": "5176fb6c1dc4df8945afce47b7882937b42a98f75f05ddeb53a4f22128ff86e8",
+      "city": "organic-24",
+      "arm": "experimental",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 2600940,
+      "expansions": 214,
+      "minimum": {
+        "status": "exact",
+        "minimum": 3,
+        "lower": 3,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:organic-25:control",
+      "source": "aa89553e343f4a7f28f983f989f2692ae1a0f9c4d88fca9e558d63acc44f0cb2",
+      "city": "organic-25",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": -100
+      },
+      "matched": false,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 25,
+      "localProbes": 48,
+      "work": 929244,
+      "expansions": 111,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": 3,
+      "contacts": 3,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 342603,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-01:control",
+      "source": "1d97de4b1ddd122c594800633bc8189152d3de854f841c8887bd9e8336ac6105",
+      "city": "planned-01",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 268578,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 2
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:planned-01:experimental",
+      "source": "602cbc041cfeb71aa9a8f0c945b8dc9866f430aaa151b57c7c7ab68518fdfa69",
+      "city": "planned-01",
+      "arm": "experimental",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 1224165,
+      "expansions": 310,
+      "minimum": {
+        "status": "exact",
+        "minimum": 3,
+        "lower": 3,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:planned-03:control",
+      "source": "cf9a1807e16943649b072d82e5541b75ec33b23ab4a9a53d335e2456f36c4e86",
+      "city": "planned-03",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": -25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 3038412,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1609994,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-03:experimental",
+      "source": "2a71a788e8f84dd427a98f3891d87970197a7c30b6c9f3e3e90289fd182dde7e",
+      "city": "planned-03",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": -25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2990679,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1581976,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-06:control",
+      "source": "8db88516789ffb73510e9b9b755c878b0f2dd693dc648672313b632a9f977d46",
+      "city": "planned-06",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 3122301,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1665423,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-07:control",
+      "source": "f7ee813476b9dcb3f301d792735cdf37fe7249a1dc94696f5df1978dcc393ec5",
+      "city": "planned-07",
+      "arm": "control",
+      "offset": {
+        "x": -70,
+        "y": -40
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 272735,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 2
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:planned-07:experimental",
+      "source": "bafb4c55c896f16efc08bb516ab7389423893d519f3024db67734dd7ebe39755",
+      "city": "planned-07",
+      "arm": "experimental",
+      "offset": {
+        "x": -70,
+        "y": -40
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 636332,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 348428,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-08:control",
+      "source": "ff7eb130a8f31d2bd17c853591733cbc9b826cc2eac2df3961fbb428b7c210e1",
+      "city": "planned-08",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 25,
+      "localProbes": 48,
+      "work": 1955353,
+      "expansions": 111,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": 2,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 774606,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-09:control",
+      "source": "3ab229cd88f0174d29c47e6dd556fb353f68124dbeddd4c637e462d377df3991",
+      "city": "planned-09",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": -100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 1253124,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 5
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:planned-09:experimental",
+      "source": "262d78224ccb8794e471d59c7b38513a913db410bdea0d9ea1a2b6f082904d10",
+      "city": "planned-09",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": -100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 25,
+      "localProbes": 48,
+      "work": 3724039,
+      "expansions": 111,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": 2,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1612143,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-11:control",
+      "source": "3c84eb817a5d7488b983f9f73f30710a0419b1351dfc178200af1e4b408eeb2e",
+      "city": "planned-11",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 635247,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 2
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:planned-11:experimental",
+      "source": "6b807e987fb12c68e4c6e772332d6952729ad42d791b703a4d2a048ccbe9b1a6",
+      "city": "planned-11",
+      "arm": "experimental",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 192,
+      "work": 1695214,
+      "expansions": 276,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:planned-14:control",
+      "source": "efa7e00f3fb57e3a2bbf4df4e3fea7f05aa9f42d0b6a4d324fbd73db572f54f9",
+      "city": "planned-14",
+      "arm": "control",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1452113,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 783949,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-15:control",
+      "source": "8d35a2094e4bb0222a8cc4ffdbdeffe17734921d2f2d03a372c86f4649048aee",
+      "city": "planned-15",
+      "arm": "control",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2990458,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1585726,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-15:experimental",
+      "source": "7a43e6a1817efcaa07b548e8df0bdb71908d920d5459b7474993deb0f9f0867a",
+      "city": "planned-15",
+      "arm": "experimental",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2998312,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1584099,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-16:control",
+      "source": "0955ce474a41316645e985e1dc6a460034c22aa5475fbab503def047d20c9015",
+      "city": "planned-16",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "boundary-refused",
+      "directIssues": [],
+      "status": "boundary-refused",
+      "reason": "fixed-boundary",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 287341,
+      "expansions": 0,
+      "minimum": null,
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:planned-17:control",
+      "source": "aa8b37f7b94ec2c0adef3ac63102c40962fac5e198c6f79cbbac36b96e33548b",
+      "city": "planned-17",
+      "arm": "control",
+      "offset": {
+        "x": -70,
+        "y": -40
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 629196,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 2
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:planned-17:experimental",
+      "source": "e8153bb4272d52a3b4fbe12080058ecab2c36623915c840a7e04e71bc9d71f92",
+      "city": "planned-17",
+      "arm": "experimental",
+      "offset": {
+        "x": -70,
+        "y": -40
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 1569388,
+      "expansions": 212,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:planned-19:control",
+      "source": "93feb8e54fa54ad36e6166dc0550f2b3c5c4c62134b6267c681b980832b084ea",
+      "city": "planned-19",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": -100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 13,
+      "localProbes": 0,
+      "work": 920580,
+      "expansions": 51,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": 2,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 358568,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-19:experimental",
+      "source": "a084f31155a93a053eac26abfdd06c3a8f823610d98c65bc43755acfd2abe834",
+      "city": "planned-19",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": -100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 7,
+      "localProbes": 0,
+      "work": 848184,
+      "expansions": 45,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": 2,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 366236,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-22:control",
+      "source": "5e6b774e54f59d7dfc03d1b6d049b407cc55bb7f296763b7f05452844641ca09",
+      "city": "planned-22",
+      "arm": "control",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 657582,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 361344,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-23:control",
+      "source": "0ee2e2ac37ad96d27b16881792dd7319bbce09b70921edf53990b65afc2fbbfb",
+      "city": "planned-23",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": -25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1520287,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 816715,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-23:experimental",
+      "source": "2b3d716fa09c07560a8bc8c6140625e65934022ec7cb46bc90e133c1e9560758",
+      "city": "planned-23",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": -25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1515424,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 810633,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-24:control",
+      "source": "9b2ab815c9fd089c29a5e0328882b2c96a961bc6aa9776d33c2c1867de114750",
+      "city": "planned-24",
+      "arm": "control",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2992835,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1604191,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:planned-25:control",
+      "source": "327d7044c9e16a77ede6be0f90cdf0f9d25df0731555a8a516a8141b2af11e98",
+      "city": "planned-25",
+      "arm": "control",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 259491,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 2
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:planned-25:experimental",
+      "source": "d7e3abc2b08f03c5275c6ed564759c88c2105b0cce3f0e4fe65c1b7e7a281f4b",
+      "city": "planned-25",
+      "arm": "experimental",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": null,
+      "adaptiveMatchedExperimental": null,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 620846,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 342729,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:radial-01:experimental",
+      "source": "04f4c6b5542a853affd9fe0e2beb6e832cda46af27577e6438793ae5b31272a2",
+      "city": "radial-01",
+      "arm": "experimental",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 607069,
+      "expansions": 37,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 1,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 336258,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:radial-02:adaptive",
+      "source": "eb1570fb55b9f148456c9da74ff8b7b330dd7546386a3a3cd87dad161f268148",
+      "city": "radial-02",
+      "arm": "adaptive",
+      "offset": {
+        "x": 0,
+        "y": -25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1310379,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 953569,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": {
+          "status": "hub-verified",
+          "authority": "none",
+          "oldArea": 1410.8921455354457,
+          "area": 1410.8921455354457,
+          "vertices": 20,
+          "perimeterRoads": 20,
+          "landVerified": false
+        }
+      }
+    },
+    {
+      "id": "sq:tournament:radial-03:experimental",
+      "source": "9fa12d14d826c14ca85c9dee94ecb65b15a76329fe2f1642e5849775e0ed6e58",
+      "city": "radial-03",
+      "arm": "experimental",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 2926256,
+      "expansions": 212,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-04:control",
+      "source": "ab46411fdfb4f72022453ba4ef99a056d2962db53fedc3c0b7def0d19dc3da0c",
+      "city": "radial-04",
+      "arm": "control",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 248207,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 2
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-04:experimental",
+      "source": "77dd03b174105a49baff94d9a8f525711615b5c4f99e34453ce05170812aaa4c",
+      "city": "radial-04",
+      "arm": "experimental",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 192,
+      "work": 1033273,
+      "expansions": 276,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-05:adaptive",
+      "source": "ed2de521b71f5114a39449ba1693d31cf1ec1f2172ae1080c708c8b79d272415",
+      "city": "radial-05",
+      "arm": "adaptive",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "unverified",
+      "reason": "adaptive-hub:hub-collapse-or-winding",
+      "authority": "none",
+      "attempts": 7,
+      "localProbes": 0,
+      "work": 1439876,
+      "expansions": 43,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 1,
+      "contacts": 17,
+      "audit": {
+        "status": "rejected",
+        "reason": "adaptive-hub:hub-collapse-or-winding",
+        "work": 699130,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": {
+          "status": "rejected",
+          "reason": "hub-collapse-or-winding",
+          "authority": "none"
+        }
+      }
+    },
+    {
+      "id": "sq:tournament:radial-05:experimental",
+      "source": "7340d7923e17a1a1e0b3f087d10b48e44bfa2e59af04e418e65ca9ebe809b764",
+      "city": "radial-05",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 192,
+      "work": 1842794,
+      "expansions": 276,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-06:adaptive",
+      "source": "42574977c47230de315764f4c58b94f91ba671d6e377febe20a43e1b19809343",
+      "city": "radial-06",
+      "arm": "adaptive",
+      "offset": {
+        "x": -70,
+        "y": -40
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 176,
+      "work": 2314088,
+      "expansions": 260,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-07:adaptive",
+      "source": "6fd727ab47efcc843c8867a2d519efd0ec399e160c0f00846516def23070277a",
+      "city": "radial-07",
+      "arm": "adaptive",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "unverified",
+      "reason": "adaptive-hub:hub-collapse-or-winding",
+      "authority": "none",
+      "attempts": 8,
+      "localProbes": 8,
+      "work": 741041,
+      "expansions": 52,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 1,
+      "contacts": 19,
+      "audit": {
+        "status": "rejected",
+        "reason": "adaptive-hub:hub-collapse-or-winding",
+        "work": 329523,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": {
+          "status": "rejected",
+          "reason": "hub-collapse-or-winding",
+          "authority": "none"
+        }
+      }
+    },
+    {
+      "id": "sq:tournament:radial-07:control",
+      "source": "2d1717260dd1ebd9962274704759134a71e055628239f69210a498dfc265b4c1",
+      "city": "radial-07",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 25,
+      "localProbes": 48,
+      "work": 831326,
+      "expansions": 109,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 1,
+      "contacts": 10,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 362482,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:radial-09:adaptive",
+      "source": "99d99bf418c15e8500ee41a3709cd4b9fda5dcfd82b150b11ea60d45c830a055",
+      "city": "radial-09",
+      "arm": "adaptive",
+      "offset": {
+        "x": -100,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "unverified",
+      "reason": "adaptive-hub:hub-collapse-or-winding",
+      "authority": "none",
+      "attempts": 11,
+      "localProbes": 16,
+      "work": 2989984,
+      "expansions": 63,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 2,
+      "contacts": 42,
+      "audit": {
+        "status": "rejected",
+        "reason": "adaptive-hub:hub-collapse-or-winding",
+        "work": 1508490,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": {
+          "status": "rejected",
+          "reason": "hub-collapse-or-winding",
+          "authority": "none"
+        }
+      }
+    },
+    {
+      "id": "sq:tournament:radial-09:experimental",
+      "source": "bcd0d436d62062ddcda96fb7d1583104751c333ea3abc9dd7b2b5a4e40bf4b24",
+      "city": "radial-09",
+      "arm": "experimental",
+      "offset": {
+        "x": -100,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 3529965,
+      "expansions": 222,
+      "minimum": {
+        "status": "exact",
+        "minimum": 7,
+        "lower": 7,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-10:adaptive",
+      "source": "77973a90b8e7b0894aaf7023192878f77a77f5f01252a51cc835f04597797bb4",
+      "city": "radial-10",
+      "arm": "adaptive",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 144,
+      "work": 819409,
+      "expansions": 228,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-10:control",
+      "source": "62e7e8dca764609341e725a88c73dbca6afd5505d72f9bff6e08362398a246b7",
+      "city": "radial-10",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "necessary-cover-not-established",
+      "authority": "none",
+      "attempts": 0,
+      "localProbes": 0,
+      "work": 257606,
+      "expansions": 0,
+      "minimum": {
+        "status": "no-endpoint-cover",
+        "minimum": null,
+        "lower": null,
+        "emptyClauses": 4
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-11:adaptive",
+      "source": "55524afdfcba80a4b8489c1f2978f730f52d07973730b22064e71428018c8c76",
+      "city": "radial-11",
+      "arm": "adaptive",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1291870,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 935251,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": {
+          "status": "hub-verified",
+          "authority": "none",
+          "oldArea": 1409.6065999137302,
+          "area": 1792.527886446039,
+          "vertices": 20,
+          "perimeterRoads": 20,
+          "landVerified": false
+        }
+      }
+    },
+    {
+      "id": "sq:tournament:radial-11:control",
+      "source": "08049537c072d79fa796e79508471b10afe88e328f3e46010d8eda876865eaef",
+      "city": "radial-11",
+      "arm": "control",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1285868,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 754016,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:radial-12:control",
+      "source": "990069c1629a475b9d9009167df763cb47dd082bd1de28bd0902f86f36bdeddb",
+      "city": "radial-12",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": -25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2478772,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1528724,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:radial-12:experimental",
+      "source": "c0f4c497d07c9ba3325300ebdb30d336a332814da715293184b89bdf53f4490b",
+      "city": "radial-12",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": -25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2566146,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1547227,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:radial-14:control",
+      "source": "0479e821f08cf2fe4e423b49c76b9a5839cfec08c1d6c5e33e0dd8c695f207b1",
+      "city": "radial-14",
+      "arm": "control",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 25,
+      "localProbes": 56,
+      "work": 1655660,
+      "expansions": 117,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 2,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 759386,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:radial-15:adaptive",
+      "source": "6179fb8b14088b81f9b346eeeb2b08a27d91c48a71188b83a1a6e6529d8c99ba",
+      "city": "radial-15",
+      "arm": "adaptive",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "unverified",
+      "reason": "adaptive-hub:hub-parent-changed",
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2610523,
+      "expansions": 37,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 1,
+      "contacts": 21,
+      "audit": {
+        "status": "rejected",
+        "reason": "adaptive-hub:hub-parent-changed",
+        "work": 1439424,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": {
+          "status": "rejected",
+          "reason": "hub-parent-changed",
+          "authority": "none"
+        }
+      }
+    },
+    {
+      "id": "sq:tournament:radial-15:control",
+      "source": "675fc5ca9cee2408921ff4deac54c5fb4357ec167b7e18c33313e334cb5b3c0a",
+      "city": "radial-15",
+      "arm": "control",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 2540134,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 1546021,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:radial-15:experimental",
+      "source": "0c6e23f9e2e4a07b652b2f45bde6b6d4973966b243252635705bc2fe40b88489",
+      "city": "radial-15",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 192,
+      "work": 3381955,
+      "expansions": 274,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-16:control",
+      "source": "a3ae2265a357b302178abdb274a65abe31479ef32c1c49df76a4e0ce50060ab4",
+      "city": "radial-16",
+      "arm": "control",
+      "offset": {
+        "x": -70,
+        "y": -40
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 7,
+      "localProbes": 0,
+      "work": 701239,
+      "expansions": 45,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": 2,
+      "contacts": 14,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 375965,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:radial-16:experimental",
+      "source": "e06acd0876fc41e180c53d65abfa68e17d22a8703e3eedff8d6ae2d1e2257794",
+      "city": "radial-16",
+      "arm": "experimental",
+      "offset": {
+        "x": -70,
+        "y": -40
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 1078225,
+      "expansions": 212,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-17:experimental",
+      "source": "ec8264c00529d0ac905472c9de2dca718b887ed807cc75321ee7e5c2173c2835",
+      "city": "radial-17",
+      "arm": "experimental",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 2030414,
+      "expansions": 218,
+      "minimum": {
+        "status": "exact",
+        "minimum": 5,
+        "lower": 5,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-18:adaptive",
+      "source": "42b470d58b74abab7a3e68081784cf5a2327a4eec39a38b722cafa3dc2fc0ff3",
+      "city": "radial-18",
+      "arm": "adaptive",
+      "offset": {
+        "x": 0,
+        "y": -100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 144,
+      "work": 2319908,
+      "expansions": 228,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-19:experimental",
+      "source": "18f63ed5b9fe576971b38d9ecad3d40466b1e1a37aa331e065b5db6c843c1be4",
+      "city": "radial-19",
+      "arm": "experimental",
+      "offset": {
+        "x": -100,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": false,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 128,
+      "work": 1355401,
+      "expansions": 218,
+      "minimum": {
+        "status": "exact",
+        "minimum": 5,
+        "lower": 5,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-20:control",
+      "source": "7905096c4ffaf4b960aa27c8273ed34173553efa5c1b3abeecb7bb2d0b349361",
+      "city": "radial-20",
+      "arm": "control",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 144,
+      "work": 1378268,
+      "expansions": 235,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-20:experimental",
+      "source": "a88cfd53df0b362aa970d7415bce8a3e5a4a743786b69d9b530d1c1d68f3aa57",
+      "city": "radial-20",
+      "arm": "experimental",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 160,
+      "work": 1763406,
+      "expansions": 251,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-21:adaptive",
+      "source": "bed0a6dc900747d69afbe2db1d1f76ac2ea1c4764f53372bb199f0eaead26513",
+      "city": "radial-21",
+      "arm": "adaptive",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "unverified",
+      "reason": "adaptive-hub:hub-parent-changed",
+      "authority": "none",
+      "attempts": 8,
+      "localProbes": 8,
+      "work": 2787670,
+      "expansions": 54,
+      "minimum": {
+        "status": "exact",
+        "minimum": 2,
+        "lower": 2,
+        "emptyClauses": 0
+      },
+      "neighbors": 2,
+      "contacts": 4,
+      "audit": {
+        "status": "rejected",
+        "reason": "adaptive-hub:hub-parent-changed",
+        "work": 1422074,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": {
+          "status": "rejected",
+          "reason": "hub-parent-changed",
+          "authority": "none"
+        }
+      }
+    },
+    {
+      "id": "sq:tournament:radial-21:experimental",
+      "source": "f1a86491c40258a46b1a3ea381e1d7ac859e84b02b9fb384a703c323fa4da858",
+      "city": "radial-21",
+      "arm": "experimental",
+      "offset": {
+        "x": 15,
+        "y": 0
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "refused",
+      "reason": "no-geometric-seed",
+      "authority": "none",
+      "attempts": 47,
+      "localProbes": 192,
+      "work": 3369669,
+      "expansions": 274,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": null,
+      "contacts": null,
+      "audit": null
+    },
+    {
+      "id": "sq:tournament:radial-22:adaptive",
+      "source": "58ab7dccd5ae8a4ef45a9173c7db323f1e5e5a2f9f8136477a2272b5e4df685e",
+      "city": "radial-22",
+      "arm": "adaptive",
+      "offset": {
+        "x": 0,
+        "y": -25
+      },
+      "matched": true,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 583833,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 428393,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": {
+          "status": "hub-verified",
+          "authority": "none",
+          "oldArea": 1279.0490650460877,
+          "area": 1279.0490650460877,
+          "vertices": 16,
+          "perimeterRoads": 16,
+          "landVerified": false
+        }
+      }
+    },
+    {
+      "id": "sq:tournament:radial-23:adaptive",
+      "source": "fcead1b985d3233892e54dde345725c23bb9516c37f05417da3d59885bde551b",
+      "city": "radial-23",
+      "arm": "adaptive",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "unnormalized-crossing"
+      ],
+      "status": "unverified",
+      "reason": "adaptive-hub:hub-parent-changed",
+      "authority": "none",
+      "attempts": 17,
+      "localProbes": 32,
+      "work": 1576538,
+      "expansions": 85,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 4,
+      "contacts": 10,
+      "audit": {
+        "status": "rejected",
+        "reason": "adaptive-hub:hub-parent-changed",
+        "work": 702112,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": {
+          "status": "rejected",
+          "reason": "hub-parent-changed",
+          "authority": "none"
+        }
+      }
+    },
+    {
+      "id": "sq:tournament:radial-23:control",
+      "source": "5281451072c0af81d8a7652aff2583d451929090d7ea17e63ce098dec23b7155",
+      "city": "radial-23",
+      "arm": "control",
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 1307879,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 763110,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    },
+    {
+      "id": "sq:tournament:radial-25:adaptive",
+      "source": "8aef2df98712150089175be2b6bfb65e30e5a6e7c84adccdcb9b71fdc50087b8",
+      "city": "radial-25",
+      "arm": "adaptive",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "graph-refused",
+      "directIssues": [
+        "overlapping-roads",
+        "unnormalized-crossing"
+      ],
+      "status": "unverified",
+      "reason": "adaptive-hub:hub-parent-changed",
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 613423,
+      "expansions": 37,
+      "minimum": {
+        "status": "exact",
+        "minimum": 1,
+        "lower": 1,
+        "emptyClauses": 0
+      },
+      "neighbors": 1,
+      "contacts": 13,
+      "audit": {
+        "status": "rejected",
+        "reason": "adaptive-hub:hub-parent-changed",
+        "work": 314393,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": {
+          "status": "rejected",
+          "reason": "hub-parent-changed",
+          "authority": "none"
+        }
+      }
+    },
+    {
+      "id": "sq:tournament:radial-25:experimental",
+      "source": "15847bf46c1d5da65bfc2500d99b1a3b70892dc96ac45c06c76ec4ae87ea7995",
+      "city": "radial-25",
+      "arm": "experimental",
+      "offset": {
+        "x": 0,
+        "y": 60
+      },
+      "matched": false,
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "direct": "direct-road-valid",
+      "directIssues": [],
+      "status": "verified",
+      "reason": null,
+      "authority": "none",
+      "attempts": 1,
+      "localProbes": 0,
+      "work": 587101,
+      "expansions": 2,
+      "minimum": {
+        "status": "exact",
+        "minimum": 0,
+        "lower": 0,
+        "emptyClauses": 0
+      },
+      "neighbors": 0,
+      "contacts": 0,
+      "audit": {
+        "status": "topology-final-verified",
+        "reason": null,
+        "work": 339437,
+        "expansions": 0,
+        "sweptUnresolved": 0,
+        "finalBlockers": 0,
+        "hub": null
+      }
+    }
+  ]
+}

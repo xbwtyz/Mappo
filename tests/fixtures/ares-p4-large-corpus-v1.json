@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "protocol": "ares-p4-g-large-movement-v1",
+  "appVersion": "0.2.25-dev",
+  "schemaVersion": 11,
+  "frozenBeforeSearch": "ca9b205f40227823e2f93411c591aa912f2513ca",
+  "cities": [
+    {
+      "id": "radial-small",
+      "options": {
+        "seed": "ares-p3-reserved-radial-01",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      }
+    },
+    {
+      "id": "organic-large",
+      "options": {
+        "seed": "mappo-001",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      }
+    },
+    {
+      "id": "linear-medium",
+      "options": {
+        "seed": "ares-p3-reserved-linear-01",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      }
+    },
+    {
+      "id": "planned-medium",
+      "options": {
+        "seed": "sre-owner-motion-planned-01",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "quad",
+      "count": 4,
+      "shape": "loop"
+    },
+    {
+      "id": "pentagon",
+      "count": 5,
+      "shape": "loop"
+    },
+    {
+      "id": "five-chain",
+      "count": 5,
+      "shape": "chain"
+    },
+    {
+      "id": "five-branch",
+      "count": 5,
+      "shape": "branch"
+    },
+    {
+      "id": "eight-chain",
+      "count": 8,
+      "shape": "chain"
+    },
+    {
+      "id": "eight-loop",
+      "count": 8,
+      "shape": "loop"
+    }
+  ],
+  "magnitudes": [
+    50,
+    75,
+    100
+  ],
+  "directions": [
+    {
+      "id": "x",
+      "x": 1,
+      "y": 0
+    },
+    {
+      "id": "y",
+      "x": 0,
+      "y": 1
+    },
+    {
+      "id": "diagonal",
+      "x": 0.7071067811865476,
+      "y": 0.7071067811865476
+    }
+  ],
+  "selection": {
+    "maxVisitsPerGroup": 20000,
+    "order": "lexical junction IDs, lexical incident road IDs; first eligible matching group; selection independent of movement and recovery"
+  },
+  "permissions": {
+    "alternativeFrontage": true,
+    "uniformScaling": true,
+    "maxLinearReduction": 0.2,
+    "destruction": false,
+    "regeneration": false
+  },
+  "search": {
+    "mode": "adaptive",
+    "maxObjects": 10000,
+    "maxHops": 6,
+    "maxCandidates": 32,
+    "maxNeighbors": 4,
+    "root": {
+      "work": 8000000,
+      "stateExpansions": 32768
+    }
+  },
+  "audit": {
+    "root": {
+      "work": 8000000,
+      "stateExpansions": 32768
+    }
+  },
+  "reporting": {
+    "plannedSlots": 216,
+    "baseline": "exact requested position with no neighbor changes under identical final graph and provider predicates",
+    "categories": [
+      "selection-unavailable",
+      "selection-limit",
+      "preflight-refused",
+      "baseline-valid",
+      "geometry-recovered",
+      "search-refused",
+      "work-limit",
+      "unverified",
+      "error"
+    ],
+    "dedup": "source fingerprint + sorted selected road IDs + exact offset; report duplicate slots, never count repeated strategies or duplicate intents as new recovery",
+    "feasibility": "unknown unless independently established exact-intent witness; observed rescue count is not a feasible-case recovery rate",
+    "notes": "dry exploratory corpus; city size varied, density measured rather than controlled; no population inference or final P9 qualification. Retain historical mixed and known controls separately."
+  }
+}

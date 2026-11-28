@@ -1,0 +1,1603 @@
+{
+  "run": 46097554296,
+  "attempt": 1,
+  "source": "fc95f913c7fda5da78767617f603c7605b0fd065",
+  "rows": [
+    {
+      "job": 140832428723,
+      "row": {
+        "id": "radial-01",
+        "source": "fb2d08108c1adea4d47ae17ccbfd32ff8c38ce3e9a13a4da21d96d5117fb7d60",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-01",
+          "size": "small",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": -100,
+          "y": -100
+        },
+        "preferredGroup": "quad",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0100",
+          "RD-0101",
+          "RD-0104",
+          "RD-0105",
+          "RD-0154",
+          "RD-0224",
+          "RD-0225",
+          "RD-0226"
+        ],
+        "nodeCount": 221,
+        "roadCount": 276,
+        "propertyCount": 157,
+        "attempts": [
+          {
+            "id": "quad",
+            "count": 4,
+            "shape": "loop",
+            "status": "selection-unavailable",
+            "visits": 1743,
+            "selectedRoadIds": []
+          },
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 9,
+            "selectedRoadIds": [
+              "RD-0100",
+              "RD-0101",
+              "RD-0104",
+              "RD-0105",
+              "RD-0154",
+              "RD-0224",
+              "RD-0225",
+              "RD-0226"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428723,
+      "row": {
+        "id": "radial-02",
+        "source": "1b4d71b915a69d6c6b1abecaa49e51e2adff964ac553135ba66b597663d5e4fd",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-02",
+          "size": "medium",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": -100,
+          "y": -50
+        },
+        "preferredGroup": "pentagon",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0112",
+          "RD-0113",
+          "RD-0114",
+          "RD-0115",
+          "RD-0116",
+          "RD-0434",
+          "RD-0435",
+          "RD-0436"
+        ],
+        "nodeCount": 353,
+        "roadCount": 454,
+        "propertyCount": 393,
+        "attempts": [
+          {
+            "id": "pentagon",
+            "count": 5,
+            "shape": "loop",
+            "status": "selection-unavailable",
+            "visits": 6833,
+            "selectedRoadIds": []
+          },
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 9,
+            "selectedRoadIds": [
+              "RD-0112",
+              "RD-0113",
+              "RD-0114",
+              "RD-0115",
+              "RD-0116",
+              "RD-0434",
+              "RD-0435",
+              "RD-0436"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428723,
+      "row": {
+        "id": "radial-03",
+        "source": "6a46a46303983c06455323ffd9683ec3dd3b537dbba9b583cbd5887e606425bc",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-03",
+          "size": "large",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": -100,
+          "y": 0
+        },
+        "preferredGroup": "five-chain",
+        "group": "five-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0126",
+          "RD-0127",
+          "RD-0128",
+          "RD-0129",
+          "RD-0130"
+        ],
+        "nodeCount": 575,
+        "roadCount": 752,
+        "propertyCount": 785,
+        "attempts": [
+          {
+            "id": "five-chain",
+            "count": 5,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 6,
+            "selectedRoadIds": [
+              "RD-0126",
+              "RD-0127",
+              "RD-0128",
+              "RD-0129",
+              "RD-0130"
+            ],
+            "nodeCount": 6,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428723,
+      "row": {
+        "id": "radial-04",
+        "source": "d313d658dae135063907170bcedbfd36c95e9c11a63c1bf2300885049ae5a1ac",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-04",
+          "size": "small",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": -100,
+          "y": 50
+        },
+        "preferredGroup": "five-branch",
+        "group": "five-branch",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0100",
+          "RD-0101",
+          "RD-0152",
+          "RD-0187",
+          "RD-0188"
+        ],
+        "nodeCount": 223,
+        "roadCount": 279,
+        "propertyCount": 164,
+        "attempts": [
+          {
+            "id": "five-branch",
+            "count": 5,
+            "shape": "branch",
+            "status": "selected",
+            "visits": 4,
+            "selectedRoadIds": [
+              "RD-0100",
+              "RD-0101",
+              "RD-0152",
+              "RD-0187",
+              "RD-0188"
+            ],
+            "nodeCount": 6,
+            "degreeSequence": [
+              1,
+              1,
+              1,
+              1,
+              3,
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428723,
+      "row": {
+        "id": "radial-05",
+        "source": "dc4c20c2ef5941e4d42869e92e32a526aaab8d33504b91aa514b93231477d017",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-05",
+          "size": "medium",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": -100,
+          "y": 100
+        },
+        "preferredGroup": "eight-chain",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0112",
+          "RD-0113",
+          "RD-0114",
+          "RD-0115",
+          "RD-0121",
+          "RD-0398",
+          "RD-0399",
+          "RD-0400"
+        ],
+        "nodeCount": 348,
+        "roadCount": 447,
+        "propertyCount": 373,
+        "attempts": [
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 9,
+            "selectedRoadIds": [
+              "RD-0112",
+              "RD-0113",
+              "RD-0114",
+              "RD-0115",
+              "RD-0121",
+              "RD-0398",
+              "RD-0399",
+              "RD-0400"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428688,
+      "row": {
+        "id": "radial-06",
+        "source": "d12cf05c571d6ab6ec1cdf13f5eb6d9afcbe90be5540dc7f1fae7a1893e0f7d7",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-06",
+          "size": "large",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": -50,
+          "y": -100
+        },
+        "preferredGroup": "eight-loop",
+        "group": "eight-loop",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0122",
+          "RD-0132",
+          "RD-0292",
+          "RD-0293",
+          "RD-0294",
+          "RD-0358",
+          "RD-0359",
+          "RD-0360"
+        ],
+        "nodeCount": 567,
+        "roadCount": 742,
+        "propertyCount": 791,
+        "attempts": [
+          {
+            "id": "eight-loop",
+            "count": 8,
+            "shape": "loop",
+            "status": "selected",
+            "visits": 64,
+            "selectedRoadIds": [
+              "RD-0122",
+              "RD-0132",
+              "RD-0292",
+              "RD-0293",
+              "RD-0294",
+              "RD-0358",
+              "RD-0359",
+              "RD-0360"
+            ],
+            "nodeCount": 8,
+            "degreeSequence": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428688,
+      "row": {
+        "id": "radial-07",
+        "source": "928947575b39af9b9cb7bdfa927ec07c899ac22225d85e51189f56f3001656eb",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-07",
+          "size": "small",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": -50,
+          "y": -50
+        },
+        "preferredGroup": "quad",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0100",
+          "RD-0101",
+          "RD-0102",
+          "RD-0149",
+          "RD-0150",
+          "RD-0273",
+          "RD-0274",
+          "RD-0275"
+        ],
+        "nodeCount": 221,
+        "roadCount": 276,
+        "propertyCount": 165,
+        "attempts": [
+          {
+            "id": "quad",
+            "count": 4,
+            "shape": "loop",
+            "status": "selection-unavailable",
+            "visits": 1743,
+            "selectedRoadIds": []
+          },
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 10,
+            "selectedRoadIds": [
+              "RD-0100",
+              "RD-0101",
+              "RD-0102",
+              "RD-0149",
+              "RD-0150",
+              "RD-0273",
+              "RD-0274",
+              "RD-0275"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428688,
+      "row": {
+        "id": "radial-08",
+        "source": "0777d6fae5dd4509f3123790bddb1f1a3c3ac6c5c306b26f57307584fbf7c397",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-08",
+          "size": "medium",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": -50,
+          "y": 0
+        },
+        "preferredGroup": "pentagon",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0116",
+          "RD-0117",
+          "RD-0118",
+          "RD-0119",
+          "RD-0120",
+          "RD-0447",
+          "RD-0448",
+          "RD-0449"
+        ],
+        "nodeCount": 357,
+        "roadCount": 461,
+        "propertyCount": 378,
+        "attempts": [
+          {
+            "id": "pentagon",
+            "count": 5,
+            "shape": "loop",
+            "status": "selection-unavailable",
+            "visits": 6819,
+            "selectedRoadIds": []
+          },
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 11,
+            "selectedRoadIds": [
+              "RD-0116",
+              "RD-0117",
+              "RD-0118",
+              "RD-0119",
+              "RD-0120",
+              "RD-0447",
+              "RD-0448",
+              "RD-0449"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428688,
+      "row": {
+        "id": "radial-09",
+        "source": "78842385150292a3d6d44f4502a6f589931a8c118a1ab74db76612cf4b365b6b",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-09",
+          "size": "large",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": -50,
+          "y": 50
+        },
+        "preferredGroup": "five-chain",
+        "group": "five-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0125",
+          "RD-0126"
+        ],
+        "nodeCount": 568,
+        "roadCount": 744,
+        "propertyCount": 796,
+        "attempts": [
+          {
+            "id": "five-chain",
+            "count": 5,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 6,
+            "selectedRoadIds": [
+              "RD-0122",
+              "RD-0123",
+              "RD-0124",
+              "RD-0125",
+              "RD-0126"
+            ],
+            "nodeCount": 6,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428688,
+      "row": {
+        "id": "radial-10",
+        "source": "109e43d36fc4ca756c59e901e241c7e58da01c8dc5cd49c7d0d8f2a7a64edc88",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-10",
+          "size": "small",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": -50,
+          "y": 100
+        },
+        "preferredGroup": "five-branch",
+        "group": "five-branch",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0100",
+          "RD-0101",
+          "RD-0152",
+          "RD-0187",
+          "RD-0188"
+        ],
+        "nodeCount": 220,
+        "roadCount": 275,
+        "propertyCount": 163,
+        "attempts": [
+          {
+            "id": "five-branch",
+            "count": 5,
+            "shape": "branch",
+            "status": "selected",
+            "visits": 4,
+            "selectedRoadIds": [
+              "RD-0100",
+              "RD-0101",
+              "RD-0152",
+              "RD-0187",
+              "RD-0188"
+            ],
+            "nodeCount": 6,
+            "degreeSequence": [
+              1,
+              1,
+              1,
+              1,
+              3,
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428700,
+      "row": {
+        "id": "radial-11",
+        "source": "c9fb77ee2ba57ac88a8484cf2022cc16c9c8b1b33d0928dbbafbd75104e5cf00",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-11",
+          "size": "medium",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 0,
+          "y": -100
+        },
+        "preferredGroup": "eight-chain",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0114",
+          "RD-0115",
+          "RD-0116",
+          "RD-0117",
+          "RD-0118",
+          "RD-0454",
+          "RD-0455",
+          "RD-0456"
+        ],
+        "nodeCount": 355,
+        "roadCount": 456,
+        "propertyCount": 398,
+        "attempts": [
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 9,
+            "selectedRoadIds": [
+              "RD-0114",
+              "RD-0115",
+              "RD-0116",
+              "RD-0117",
+              "RD-0118",
+              "RD-0454",
+              "RD-0455",
+              "RD-0456"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428700,
+      "row": {
+        "id": "radial-12",
+        "source": "ab67ca25f87420cf23abde7aa3a2a68c673bcf9866a6c4d504ecac79a4249c83",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-12",
+          "size": "large",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 0,
+          "y": -50
+        },
+        "preferredGroup": "eight-loop",
+        "group": "eight-loop",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0126",
+          "RD-0137",
+          "RD-0296",
+          "RD-0297",
+          "RD-0298",
+          "RD-0362",
+          "RD-0363",
+          "RD-0364"
+        ],
+        "nodeCount": 569,
+        "roadCount": 744,
+        "propertyCount": 802,
+        "attempts": [
+          {
+            "id": "eight-loop",
+            "count": 8,
+            "shape": "loop",
+            "status": "selected",
+            "visits": 64,
+            "selectedRoadIds": [
+              "RD-0126",
+              "RD-0137",
+              "RD-0296",
+              "RD-0297",
+              "RD-0298",
+              "RD-0362",
+              "RD-0363",
+              "RD-0364"
+            ],
+            "nodeCount": 8,
+            "degreeSequence": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428700,
+      "row": {
+        "id": "radial-13",
+        "source": "44e8975c122e13c467c96cb33da4e21d065206a1bf6207a74d69929f79fc5151",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-13",
+          "size": "small",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 75,
+          "y": -25
+        },
+        "preferredGroup": "quad",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0098",
+          "RD-0099",
+          "RD-0100",
+          "RD-0147",
+          "RD-0148",
+          "RD-0271",
+          "RD-0272",
+          "RD-0273"
+        ],
+        "nodeCount": 218,
+        "roadCount": 272,
+        "propertyCount": 155,
+        "attempts": [
+          {
+            "id": "quad",
+            "count": 4,
+            "shape": "loop",
+            "status": "selection-unavailable",
+            "visits": 1748,
+            "selectedRoadIds": []
+          },
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 10,
+            "selectedRoadIds": [
+              "RD-0098",
+              "RD-0099",
+              "RD-0100",
+              "RD-0147",
+              "RD-0148",
+              "RD-0271",
+              "RD-0272",
+              "RD-0273"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428700,
+      "row": {
+        "id": "radial-14",
+        "source": "4521ee3533840ebe8c5f520a60ca957aa42b701a71e9a8a02838496a9df6cb0f",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-14",
+          "size": "medium",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 0,
+          "y": 50
+        },
+        "preferredGroup": "pentagon",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0114",
+          "RD-0115",
+          "RD-0116",
+          "RD-0120",
+          "RD-0121",
+          "RD-0352",
+          "RD-0353",
+          "RD-0354"
+        ],
+        "nodeCount": 351,
+        "roadCount": 449,
+        "propertyCount": 395,
+        "attempts": [
+          {
+            "id": "pentagon",
+            "count": 5,
+            "shape": "loop",
+            "status": "selection-unavailable",
+            "visits": 6657,
+            "selectedRoadIds": []
+          },
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 9,
+            "selectedRoadIds": [
+              "RD-0114",
+              "RD-0115",
+              "RD-0116",
+              "RD-0120",
+              "RD-0121",
+              "RD-0352",
+              "RD-0353",
+              "RD-0354"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428700,
+      "row": {
+        "id": "radial-15",
+        "source": "5b98bd1fe26380ea851ce6f6dc733729bc25d50f01f918f1a86ebc1586329c96",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-15",
+          "size": "large",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 0,
+          "y": 100
+        },
+        "preferredGroup": "five-chain",
+        "group": "five-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0122",
+          "RD-0123",
+          "RD-0124",
+          "RD-0125",
+          "RD-0126"
+        ],
+        "nodeCount": 567,
+        "roadCount": 741,
+        "propertyCount": 809,
+        "attempts": [
+          {
+            "id": "five-chain",
+            "count": 5,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 6,
+            "selectedRoadIds": [
+              "RD-0122",
+              "RD-0123",
+              "RD-0124",
+              "RD-0125",
+              "RD-0126"
+            ],
+            "nodeCount": 6,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428741,
+      "row": {
+        "id": "radial-16",
+        "source": "8686cbe092b8656271b616c77a1507f64277a1b899049c7a4444537b0dab0173",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-16",
+          "size": "small",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 50,
+          "y": -100
+        },
+        "preferredGroup": "five-branch",
+        "group": "five-branch",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0100",
+          "RD-0101",
+          "RD-0152",
+          "RD-0187",
+          "RD-0188"
+        ],
+        "nodeCount": 221,
+        "roadCount": 275,
+        "propertyCount": 166,
+        "attempts": [
+          {
+            "id": "five-branch",
+            "count": 5,
+            "shape": "branch",
+            "status": "selected",
+            "visits": 4,
+            "selectedRoadIds": [
+              "RD-0100",
+              "RD-0101",
+              "RD-0152",
+              "RD-0187",
+              "RD-0188"
+            ],
+            "nodeCount": 6,
+            "degreeSequence": [
+              1,
+              1,
+              1,
+              1,
+              3,
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428741,
+      "row": {
+        "id": "radial-17",
+        "source": "56d7a82c9920ae6abc46abbb0fe175609bb78bb66047bf3df2dbc45da39888a1",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-17",
+          "size": "medium",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 50,
+          "y": -50
+        },
+        "preferredGroup": "eight-chain",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0112",
+          "RD-0113",
+          "RD-0114",
+          "RD-0118",
+          "RD-0119",
+          "RD-0351",
+          "RD-0352",
+          "RD-0353"
+        ],
+        "nodeCount": 352,
+        "roadCount": 452,
+        "propertyCount": 410,
+        "attempts": [
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 9,
+            "selectedRoadIds": [
+              "RD-0112",
+              "RD-0113",
+              "RD-0114",
+              "RD-0118",
+              "RD-0119",
+              "RD-0351",
+              "RD-0352",
+              "RD-0353"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428741,
+      "row": {
+        "id": "radial-18",
+        "source": "fc9c37714b0cef3a8842107b67b4ff1127396f919c6147e9dfe2b214484c88a5",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-18",
+          "size": "large",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 50,
+          "y": 0
+        },
+        "preferredGroup": "eight-loop",
+        "group": "eight-loop",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0122",
+          "RD-0131",
+          "RD-0293",
+          "RD-0294",
+          "RD-0295",
+          "RD-0359",
+          "RD-0360",
+          "RD-0361"
+        ],
+        "nodeCount": 569,
+        "roadCount": 743,
+        "propertyCount": 808,
+        "attempts": [
+          {
+            "id": "eight-loop",
+            "count": 8,
+            "shape": "loop",
+            "status": "selected",
+            "visits": 64,
+            "selectedRoadIds": [
+              "RD-0122",
+              "RD-0131",
+              "RD-0293",
+              "RD-0294",
+              "RD-0295",
+              "RD-0359",
+              "RD-0360",
+              "RD-0361"
+            ],
+            "nodeCount": 8,
+            "degreeSequence": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428741,
+      "row": {
+        "id": "radial-19",
+        "source": "0e3211d2a19d82181911094a6d42fcc395358cf4a7cb93746b685d3ec6047ab2",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-19",
+          "size": "small",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 50,
+          "y": 50
+        },
+        "preferredGroup": "quad",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0098",
+          "RD-0099",
+          "RD-0102",
+          "RD-0103",
+          "RD-0151",
+          "RD-0221",
+          "RD-0222",
+          "RD-0223"
+        ],
+        "nodeCount": 217,
+        "roadCount": 271,
+        "propertyCount": 158,
+        "attempts": [
+          {
+            "id": "quad",
+            "count": 4,
+            "shape": "loop",
+            "status": "selection-unavailable",
+            "visits": 1713,
+            "selectedRoadIds": []
+          },
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 9,
+            "selectedRoadIds": [
+              "RD-0098",
+              "RD-0099",
+              "RD-0102",
+              "RD-0103",
+              "RD-0151",
+              "RD-0221",
+              "RD-0222",
+              "RD-0223"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428741,
+      "row": {
+        "id": "radial-20",
+        "source": "c074fc553161db0d66e39b0fbf72e1516edde4059ed44e1205432e0427cc445a",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-20",
+          "size": "medium",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 50,
+          "y": 100
+        },
+        "preferredGroup": "pentagon",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0110",
+          "RD-0111",
+          "RD-0112",
+          "RD-0113",
+          "RD-0114",
+          "RD-0434",
+          "RD-0435",
+          "RD-0436"
+        ],
+        "nodeCount": 350,
+        "roadCount": 450,
+        "propertyCount": 393,
+        "attempts": [
+          {
+            "id": "pentagon",
+            "count": 5,
+            "shape": "loop",
+            "status": "selection-unavailable",
+            "visits": 6866,
+            "selectedRoadIds": []
+          },
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 9,
+            "selectedRoadIds": [
+              "RD-0110",
+              "RD-0111",
+              "RD-0112",
+              "RD-0113",
+              "RD-0114",
+              "RD-0434",
+              "RD-0435",
+              "RD-0436"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428755,
+      "row": {
+        "id": "radial-21",
+        "source": "c49f840acd08854ce46cf364d4fc2698a7a071c6d2c24547918eb2297dc08fae",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-21",
+          "size": "large",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 100,
+          "y": -100
+        },
+        "preferredGroup": "five-chain",
+        "group": "five-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0124",
+          "RD-0125",
+          "RD-0126",
+          "RD-0127",
+          "RD-0128"
+        ],
+        "nodeCount": 570,
+        "roadCount": 745,
+        "propertyCount": 845,
+        "attempts": [
+          {
+            "id": "five-chain",
+            "count": 5,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 6,
+            "selectedRoadIds": [
+              "RD-0124",
+              "RD-0125",
+              "RD-0126",
+              "RD-0127",
+              "RD-0128"
+            ],
+            "nodeCount": 6,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428755,
+      "row": {
+        "id": "radial-22",
+        "source": "1b926955628e6440ea190527017906a9d0e4822479d3a937ed033c157880e5d5",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-22",
+          "size": "small",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 100,
+          "y": -50
+        },
+        "preferredGroup": "five-branch",
+        "group": "five-branch",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0100",
+          "RD-0101",
+          "RD-0153",
+          "RD-0188",
+          "RD-0189"
+        ],
+        "nodeCount": 224,
+        "roadCount": 279,
+        "propertyCount": 159,
+        "attempts": [
+          {
+            "id": "five-branch",
+            "count": 5,
+            "shape": "branch",
+            "status": "selected",
+            "visits": 4,
+            "selectedRoadIds": [
+              "RD-0100",
+              "RD-0101",
+              "RD-0153",
+              "RD-0188",
+              "RD-0189"
+            ],
+            "nodeCount": 6,
+            "degreeSequence": [
+              1,
+              1,
+              1,
+              1,
+              3,
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428755,
+      "row": {
+        "id": "radial-23",
+        "source": "a080b8fb9a6ff25dfef9c88701b773d006481e09849ac25f3a294aabf8ae8fd5",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-23",
+          "size": "medium",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 100,
+          "y": 0
+        },
+        "preferredGroup": "eight-chain",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0112",
+          "RD-0113",
+          "RD-0114",
+          "RD-0118",
+          "RD-0119",
+          "RD-0351",
+          "RD-0352",
+          "RD-0353"
+        ],
+        "nodeCount": 350,
+        "roadCount": 449,
+        "propertyCount": 380,
+        "attempts": [
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 9,
+            "selectedRoadIds": [
+              "RD-0112",
+              "RD-0113",
+              "RD-0114",
+              "RD-0118",
+              "RD-0119",
+              "RD-0351",
+              "RD-0352",
+              "RD-0353"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428755,
+      "row": {
+        "id": "radial-24",
+        "source": "9c29fdee0492eaee1fbc7889a7c8808302093708caee8f76bb415719444f6c73",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-24",
+          "size": "large",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 100,
+          "y": 50
+        },
+        "preferredGroup": "eight-loop",
+        "group": "eight-loop",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0124",
+          "RD-0134",
+          "RD-0295",
+          "RD-0296",
+          "RD-0297",
+          "RD-0361",
+          "RD-0362",
+          "RD-0363"
+        ],
+        "nodeCount": 569,
+        "roadCount": 742,
+        "propertyCount": 817,
+        "attempts": [
+          {
+            "id": "eight-loop",
+            "count": 8,
+            "shape": "loop",
+            "status": "selected",
+            "visits": 64,
+            "selectedRoadIds": [
+              "RD-0124",
+              "RD-0134",
+              "RD-0295",
+              "RD-0296",
+              "RD-0297",
+              "RD-0361",
+              "RD-0362",
+              "RD-0363"
+            ],
+            "nodeCount": 8,
+            "degreeSequence": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "job": 140832428755,
+      "row": {
+        "id": "radial-25",
+        "source": "fdd323af1375784cbefde9b3d3c3cdfb764b2a08958d2ded1ae02ad48714825d",
+        "options": {
+          "seed": "ares-holdout-v1-95a62cd3-radial-25",
+          "size": "small",
+          "morphology": "radial",
+          "irregularProperties": false
+        },
+        "offset": {
+          "x": 100,
+          "y": 100
+        },
+        "preferredGroup": "quad",
+        "group": "eight-chain",
+        "selection": "selected",
+        "selectedRoadIds": [
+          "RD-0100",
+          "RD-0101",
+          "RD-0102",
+          "RD-0107",
+          "RD-0108",
+          "RD-0261",
+          "RD-0262",
+          "RD-0263"
+        ],
+        "nodeCount": 223,
+        "roadCount": 280,
+        "propertyCount": 156,
+        "attempts": [
+          {
+            "id": "quad",
+            "count": 4,
+            "shape": "loop",
+            "status": "selection-unavailable",
+            "visits": 1785,
+            "selectedRoadIds": []
+          },
+          {
+            "id": "eight-chain",
+            "count": 8,
+            "shape": "chain",
+            "status": "selected",
+            "visits": 12,
+            "selectedRoadIds": [
+              "RD-0100",
+              "RD-0101",
+              "RD-0102",
+              "RD-0107",
+              "RD-0108",
+              "RD-0261",
+              "RD-0262",
+              "RD-0263"
+            ],
+            "nodeCount": 9,
+            "degreeSequence": [
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

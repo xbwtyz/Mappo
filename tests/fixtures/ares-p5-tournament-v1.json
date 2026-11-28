@@ -1,0 +1,1418 @@
+{
+  "version": 1,
+  "protocol": "ares-p5-tournament-v1",
+  "reference": "89bdbd6a8c3aa85c61c7cd674efc64e115678c17",
+  "appVersion": "0.2.25-dev",
+  "schemaVersion": 11,
+  "morphologies": [
+    "radial",
+    "organic",
+    "linear",
+    "planned"
+  ],
+  "perMorphology": 25,
+  "selection": "Existing bounded G selection, preferred group then eight-chain then five-chain then five-branch then quad then eight-loop then pentagon; choose first available independently of movement or recovery. Retain every unavailable slot; never replace seed after observing recovery.",
+  "offsets": "Same signed Cartesian 5x5 grid per morphology, replacing zero-zero with +75,-25; axis cap 100, vector cap sqrt(20000).",
+  "rows": [
+    {
+      "id": "t-radial-01",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-01",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -100,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-radial-02",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-02",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -100,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-radial-03",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-03",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -100,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-radial-04",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-04",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -100,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-radial-05",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-05",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": -100,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-radial-06",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-06",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": -50,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-radial-07",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-07",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -50,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-radial-08",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-08",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-radial-09",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-09",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -50,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-radial-10",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-10",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -50,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-radial-11",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-11",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-radial-12",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-12",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 0,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-radial-13",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-13",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 75,
+        "y": -25
+      }
+    },
+    {
+      "id": "t-radial-14",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-14",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 0,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-radial-15",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-15",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-radial-16",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-16",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 50,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-radial-17",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-17",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 50,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-radial-18",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-18",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 50,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-radial-19",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-19",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-radial-20",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-20",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 50,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-radial-21",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-21",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 100,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-radial-22",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-22",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 100,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-radial-23",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-23",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-radial-24",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-24",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-radial-25",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-radial-25",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-organic-01",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-01",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -100,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-organic-02",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-02",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -100,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-organic-03",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-03",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -100,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-organic-04",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-04",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -100,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-organic-05",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-05",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": -100,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-organic-06",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-06",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": -50,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-organic-07",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-07",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -50,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-organic-08",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-08",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-organic-09",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-09",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -50,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-organic-10",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-10",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -50,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-organic-11",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-11",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-organic-12",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-12",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 0,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-organic-13",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-13",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 75,
+        "y": -25
+      }
+    },
+    {
+      "id": "t-organic-14",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-14",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 0,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-organic-15",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-15",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-organic-16",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-16",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 50,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-organic-17",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-17",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 50,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-organic-18",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-18",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 50,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-organic-19",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-19",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-organic-20",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-20",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 50,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-organic-21",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-21",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 100,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-organic-22",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-22",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 100,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-organic-23",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-23",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-organic-24",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-24",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-organic-25",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-organic-25",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-linear-01",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-01",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -100,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-linear-02",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-02",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -100,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-linear-03",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-03",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -100,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-linear-04",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-04",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -100,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-linear-05",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-05",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": -100,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-linear-06",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-06",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": -50,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-linear-07",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-07",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -50,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-linear-08",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-08",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-linear-09",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-09",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -50,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-linear-10",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-10",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -50,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-linear-11",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-11",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-linear-12",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-12",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 0,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-linear-13",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-13",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 75,
+        "y": -25
+      }
+    },
+    {
+      "id": "t-linear-14",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-14",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 0,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-linear-15",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-15",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-linear-16",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-16",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 50,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-linear-17",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-17",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 50,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-linear-18",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-18",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 50,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-linear-19",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-19",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-linear-20",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-20",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 50,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-linear-21",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-21",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 100,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-linear-22",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-22",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 100,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-linear-23",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-23",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-linear-24",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-24",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-linear-25",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-linear-25",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-planned-01",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-01",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -100,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-planned-02",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-02",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -100,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-planned-03",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-03",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -100,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-planned-04",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-04",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -100,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-planned-05",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-05",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": -100,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-planned-06",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-06",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": -50,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-planned-07",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-07",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -50,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-planned-08",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-08",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-planned-09",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-09",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -50,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-planned-10",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-10",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -50,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-planned-11",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-11",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-planned-12",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-12",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 0,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-planned-13",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-13",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 75,
+        "y": -25
+      }
+    },
+    {
+      "id": "t-planned-14",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-14",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 0,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-planned-15",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-15",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-planned-16",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-16",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 50,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-planned-17",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-17",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 50,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-planned-18",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-18",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 50,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-planned-19",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-19",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-planned-20",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-20",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 50,
+        "y": 100
+      }
+    },
+    {
+      "id": "t-planned-21",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-21",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 100,
+        "y": -100
+      }
+    },
+    {
+      "id": "t-planned-22",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-22",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 100,
+        "y": -50
+      }
+    },
+    {
+      "id": "t-planned-23",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-23",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "t-planned-24",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-24",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    {
+      "id": "t-planned-25",
+      "options": {
+        "seed": "ares-tournament-v1-89bdbd6a-planned-25",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    }
+  ]
+}

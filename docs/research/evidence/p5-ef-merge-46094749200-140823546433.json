@@ -1,0 +1,256 @@
+{
+  "run": 46094749200,
+  "attempt": 1,
+  "job": 140823546433,
+  "source": "f01835a11368c19b8d452a06887da57e8ea51d4e",
+  "rows": [
+    {
+      "version": 1,
+      "id": "exact",
+      "source": "d2bee2fe2de1ed8e084bcc8daf61e6caeb481e0544529d1e8b9c30728bc089c8",
+      "status": "graph-control-verified",
+      "reason": null,
+      "authority": "none",
+      "cityRecovery": false,
+      "contacts": 4,
+      "retainedRoads": 7,
+      "retiredJunctions": 1,
+      "identityLedger": {
+        "status": "complete",
+        "kind": "synthetic-merge",
+        "nodes": {
+          "retained": [
+            "B",
+            "L",
+            "R",
+            "U",
+            "V"
+          ],
+          "created": [],
+          "retired": [
+            "A"
+          ]
+        },
+        "roads": {
+          "retained": [
+            "R1",
+            "R2",
+            "R3",
+            "R4",
+            "R5",
+            "R6",
+            "R7"
+          ],
+          "created": [],
+          "retired": []
+        },
+        "splitChains": [],
+        "junctionAliases": [
+          {
+            "retired": "A",
+            "survives": "B",
+            "point": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ],
+        "redirectedRoadIds": [
+          "R1",
+          "R3"
+        ],
+        "authority": "none"
+      },
+      "stats": {
+        "work": 901,
+        "expansions": 0,
+        "remainingWork": 7999099,
+        "remainingExpansions": 32768
+      }
+    },
+    {
+      "version": 1,
+      "id": "exact-reversed",
+      "source": "ea2d55996e0684a353a6ad87115da06ca47d1b2153bad0a22929af6e983ed852",
+      "status": "graph-control-verified",
+      "reason": null,
+      "authority": "none",
+      "cityRecovery": false,
+      "contacts": 4,
+      "retainedRoads": 7,
+      "retiredJunctions": 1,
+      "identityLedger": {
+        "status": "complete",
+        "kind": "synthetic-merge",
+        "nodes": {
+          "retained": [
+            "A",
+            "L",
+            "R",
+            "U",
+            "V"
+          ],
+          "created": [],
+          "retired": [
+            "B"
+          ]
+        },
+        "roads": {
+          "retained": [
+            "R1",
+            "R2",
+            "R3",
+            "R4",
+            "R5",
+            "R6",
+            "R7"
+          ],
+          "created": [],
+          "retired": []
+        },
+        "splitChains": [],
+        "junctionAliases": [
+          {
+            "retired": "B",
+            "survives": "A",
+            "point": {
+              "x": 2,
+              "y": 0
+            }
+          }
+        ],
+        "redirectedRoadIds": [
+          "R4",
+          "R6"
+        ],
+        "authority": "none"
+      },
+      "stats": {
+        "work": 901,
+        "expansions": 0,
+        "remainingWork": 7999099,
+        "remainingExpansions": 32768
+      }
+    },
+    {
+      "version": 1,
+      "id": "near",
+      "source": "4a0f0c980a9183a93a1a1057fbecf44ad152c1133a7b325c1a3a6257336067b7",
+      "status": "rejected",
+      "reason": "not-exact-coincidence",
+      "authority": "none",
+      "cityRecovery": false,
+      "stats": {
+        "work": 150,
+        "expansions": 0,
+        "remainingWork": 7999850,
+        "remainingExpansions": 32768
+      }
+    },
+    {
+      "version": 1,
+      "id": "protected",
+      "source": "760d4c74ea749fa7d34aee78dca6065184695a0fb06fe1833e2a9953525d4b20",
+      "status": "rejected",
+      "reason": "protected-road",
+      "authority": "none",
+      "cityRecovery": false,
+      "stats": {
+        "work": 159,
+        "expansions": 0,
+        "remainingWork": 7999841,
+        "remainingExpansions": 32768
+      }
+    },
+    {
+      "version": 1,
+      "id": "unknown",
+      "source": "3480060e1d5726a11f199ff86529347c976ab9f321914b62437c919a5df4f23f",
+      "status": "rejected",
+      "reason": "unknown-authorship",
+      "authority": "none",
+      "cityRecovery": false,
+      "stats": {
+        "work": 149,
+        "expansions": 0,
+        "remainingWork": 7999851,
+        "remainingExpansions": 32768
+      }
+    },
+    {
+      "version": 1,
+      "id": "opaque",
+      "source": "b7e3ca6ef14e1e4f11a6651f1dfc4f781d448c976c4d45f6ff1efaa81bbd4907",
+      "status": "rejected",
+      "reason": "opaque-node",
+      "authority": "none",
+      "cityRecovery": false,
+      "stats": {
+        "work": 159,
+        "expansions": 0,
+        "remainingWork": 7999841,
+        "remainingExpansions": 32768
+      }
+    },
+    {
+      "version": 1,
+      "id": "collapse",
+      "source": "1b50b7947904ceccf560c35a162f1948d3c25f3a0cb7cbb88e1c0d6e3adf11e6",
+      "status": "rejected",
+      "reason": "would-collapse-road",
+      "authority": "none",
+      "cityRecovery": false,
+      "stats": {
+        "work": 207,
+        "expansions": 0,
+        "remainingWork": 7999793,
+        "remainingExpansions": 32768
+      }
+    },
+    {
+      "version": 1,
+      "id": "duplicate",
+      "source": "937264cb0dc78532556c9bbd85e3ca88407782385e749dc0ba65817f0e33a886",
+      "status": "rejected",
+      "reason": "would-duplicate-edge",
+      "authority": "none",
+      "cityRecovery": false,
+      "stats": {
+        "work": 167,
+        "expansions": 0,
+        "remainingWork": 7999833,
+        "remainingExpansions": 32768
+      }
+    },
+    {
+      "version": 1,
+      "id": "dependency",
+      "source": "ea0527ae1526c36d09b2d69e056e3671d37bd237171a2024a12174f42dbc117f",
+      "status": "rejected",
+      "reason": "external-dependency",
+      "authority": "none",
+      "cityRecovery": false,
+      "stats": {
+        "work": 157,
+        "expansions": 0,
+        "remainingWork": 7999843,
+        "remainingExpansions": 32768
+      }
+    },
+    {
+      "version": 1,
+      "id": "scope",
+      "source": "e65819bd2e42d4aff8b6299502feb5b0057ec3bee0797d3801ae519c15e659b6",
+      "status": "rejected",
+      "reason": "outside-scope",
+      "authority": "none",
+      "cityRecovery": false,
+      "stats": {
+        "work": 156,
+        "expansions": 0,
+        "remainingWork": 7999844,
+        "remainingExpansions": 32768
+      }
+    }
+  ]
+}

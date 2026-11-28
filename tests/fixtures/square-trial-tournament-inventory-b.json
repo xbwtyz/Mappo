@@ -1,0 +1,4525 @@
+{
+  "version": 1,
+  "source": "ccd4a2a7e56182de84f0b12ccfb88856808805da",
+  "run": 46117157086,
+  "aggregate": 140893788456,
+  "rows": [
+    {
+      "id": "linear-08",
+      "recipe": {
+        "id": "linear-08",
+        "seed": "sqtrial-v1-linear-08",
+        "morphology": "linear",
+        "size": "medium",
+        "stratum": "middle",
+        "angleIndex": 5,
+        "count": 5,
+        "offset": {
+          "x": -50,
+          "y": 0
+        }
+      },
+      "survey": "f465261155b2022dccc85945376e43e1f367e8724a6843ba68a85d15f27a29ce",
+      "target": {
+        "x": -10.834748633979629,
+        "y": -117.69992295978129
+      },
+      "matched": true,
+      "separation": 20.407785025459027,
+      "control": {
+        "status": "selected",
+        "source": "b6a457c339a1f26e05c70640e46715e17e259658b8fc0329a4544b39998b175c",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0163",
+            "RD-0192",
+            "RD-0230",
+            "RD-0231",
+            "RD-0271"
+          ],
+          "centroid": {
+            "x": -30.24495696988916,
+            "y": -38.22765612162285
+          },
+          "distance": 81.80829654771496,
+          "length": 195.76102067166522,
+          "anchor": "N-0139"
+        },
+        "nodes": 242,
+        "roads": 382,
+        "blocks": 140,
+        "properties": 460,
+        "buildings": 519,
+        "protectedRoads": 130,
+        "protectedNodes": 130,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "75722d0193c40d77768fb482ee63a293bc245b912f74011d98075b5d8d9474b7",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0153",
+            "RD-0182",
+            "RD-0220",
+            "RD-0221",
+            "RD-0261"
+          ],
+          "centroid": {
+            "x": -11.83817121720181,
+            "y": -47.04059705527353
+          },
+          "distance": 70.66645027281307,
+          "length": 253.32408958588525,
+          "anchor": "N-0129"
+        },
+        "nodes": 234,
+        "roads": 373,
+        "blocks": 140,
+        "properties": 467,
+        "buildings": 513,
+        "protectedRoads": 120,
+        "protectedNodes": 120,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-09",
+      "recipe": {
+        "id": "linear-09",
+        "seed": "sqtrial-v1-linear-09",
+        "morphology": "linear",
+        "size": "large",
+        "stratum": "central",
+        "angleIndex": 6,
+        "count": 4,
+        "offset": {
+          "x": 0,
+          "y": 60
+        }
+      },
+      "survey": "4df0d68f56fe6d91e982fd7f76f217bba323050f27f1ae22240e1a8741227381",
+      "target": {
+        "x": 1.9685619489221153,
+        "y": 2.240521026313388
+      },
+      "matched": false,
+      "separation": 159.48281045349069,
+      "control": {
+        "status": "selected",
+        "source": "55ca184e52c810b47f020a796f96a59fb198c0721572e1e3b0ee2b7ee6fb3d37",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0385",
+            "RD-0417",
+            "RD-0419",
+            "RD-0448"
+          ],
+          "centroid": {
+            "x": -31.414249141233437,
+            "y": 97.78565929161903
+          },
+          "distance": 101.20911778302083,
+          "length": 254.70793731448998,
+          "anchor": "N-0253"
+        },
+        "nodes": 352,
+        "roads": 588,
+        "blocks": 236,
+        "properties": 1025,
+        "buildings": 1142,
+        "protectedRoads": 154,
+        "protectedNodes": 154,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "64b405eba7902e9a52f901ab99d2e3cdc0617a33d363035854491feb2145626d",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0256",
+            "RD-0259",
+            "RD-0292",
+            "RD-0333"
+          ],
+          "centroid": {
+            "x": -7.306072491212089,
+            "y": -59.8644680434244
+          },
+          "distance": 62.793698022575285,
+          "length": 232.37297651383727,
+          "anchor": "N-0244"
+        },
+        "nodes": 344,
+        "roads": 579,
+        "blocks": 236,
+        "properties": 980,
+        "buildings": 1098,
+        "protectedRoads": 144,
+        "protectedNodes": 144,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-10",
+      "recipe": {
+        "id": "linear-10",
+        "seed": "sqtrial-v1-linear-10",
+        "morphology": "linear",
+        "size": "small",
+        "stratum": "middle",
+        "angleIndex": 6,
+        "count": 5,
+        "offset": {
+          "x": -70,
+          "y": -40
+        }
+      },
+      "survey": "1754badfeba1d93365071b19a270362ebe2365657c878dc03585db979db3c082",
+      "target": {
+        "x": 11.321028024602906,
+        "y": -98.22041995402489
+      },
+      "matched": true,
+      "separation": 14.501653336548761,
+      "control": {
+        "status": "selected",
+        "source": "e82e75836c1abdc2ed597460b94df4fc30e41baa4f75352bb3dfd733b79eff10",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0130",
+            "RD-0133",
+            "RD-0154",
+            "RD-0155",
+            "RD-0190"
+          ],
+          "centroid": {
+            "x": 2.5362979301753654,
+            "y": -48.339264373732625
+          },
+          "distance": 50.648802205553324,
+          "length": 261.5991390401651,
+          "anchor": "N-0116"
+        },
+        "nodes": 182,
+        "roads": 271,
+        "blocks": 89,
+        "properties": 169,
+        "buildings": 193,
+        "protectedRoads": 112,
+        "protectedNodes": 112,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "537c47df0a6fb2aa64a9aba1addb49c5b2a3e0e12a52e824cc116d3b9d982cf7",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0122",
+            "RD-0125",
+            "RD-0146",
+            "RD-0147",
+            "RD-0180"
+          ],
+          "centroid": {
+            "x": 16.900691521617915,
+            "y": -50.329778438882634
+          },
+          "distance": 48.2145848211077,
+          "length": 335.84241619792033,
+          "anchor": "N-0108"
+        },
+        "nodes": 174,
+        "roads": 261,
+        "blocks": 88,
+        "properties": 174,
+        "buildings": 197,
+        "protectedRoads": 104,
+        "protectedNodes": 104,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-11",
+      "recipe": {
+        "id": "linear-11",
+        "seed": "sqtrial-v1-linear-11",
+        "morphology": "linear",
+        "size": "medium",
+        "stratum": "central",
+        "angleIndex": 7,
+        "count": 4,
+        "offset": {
+          "x": 100,
+          "y": 0
+        }
+      },
+      "survey": "d46557edda1991e07e9da27adbc14c38f88c1e5d6f7bcec87aeb6832ff297c6d",
+      "target": {
+        "x": 6.837835346640645,
+        "y": 1.3024238800902026
+      },
+      "matched": true,
+      "separation": 36.00853519433607,
+      "control": {
+        "status": "selected",
+        "source": "6247a2e43254117c392af1867ac61ccb537a3f7bab85645908b16c3831d667d0",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0207",
+            "RD-0208",
+            "RD-0210",
+            "RD-0246"
+          ],
+          "centroid": {
+            "x": 2.8365263870607977,
+            "y": -30.917844797160463
+          },
+          "distance": 32.467771513059446,
+          "length": 195.43202319002074,
+          "anchor": "N-0193"
+        },
+        "nodes": 246,
+        "roads": 390,
+        "blocks": 144,
+        "properties": 426,
+        "buildings": 477,
+        "protectedRoads": 128,
+        "protectedNodes": 128,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "b49a2f159df2248d5cea28e00922f8463f95c0415db3c51ed3b436b25a3269f6",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0236",
+            "RD-0237",
+            "RD-0240",
+            "RD-0241"
+          ],
+          "centroid": {
+            "x": 21.51854927298014,
+            "y": -0.1347873185452954
+          },
+          "distance": 14.750896156386624,
+          "length": 164.99663793752495,
+          "anchor": "N-0185"
+        },
+        "nodes": 238,
+        "roads": 380,
+        "blocks": 143,
+        "properties": 443,
+        "buildings": 500,
+        "protectedRoads": 120,
+        "protectedNodes": 120,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-12",
+      "recipe": {
+        "id": "linear-12",
+        "seed": "sqtrial-v1-linear-12",
+        "morphology": "linear",
+        "size": "large",
+        "stratum": "middle",
+        "angleIndex": 7,
+        "count": 5,
+        "offset": {
+          "x": 0,
+          "y": -100
+        }
+      },
+      "survey": "ecc9e6207f2b3b789223a48c29b3e3f2324d9b369c6c8508b3c6f871ebbe0e20",
+      "target": {
+        "x": 251.62988691322332,
+        "y": -129.28667291278117
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "c1e31bf444a066358ee490a9a71a55f168ccbb69a0ef0bf580497d4ce867449c",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0236",
+            "RD-0237",
+            "RD-0239",
+            "RD-0271",
+            "RD-0307"
+          ],
+          "centroid": {
+            "x": 197.34315640973455,
+            "y": -106.92603523255771
+          },
+          "distance": 58.711559562190544,
+          "length": 361.2472090962282,
+          "anchor": "N-0200"
+        },
+        "nodes": 339,
+        "roads": 563,
+        "blocks": 224,
+        "properties": 985,
+        "buildings": 1079,
+        "protectedRoads": 150,
+        "protectedNodes": 150,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "a4d54961e472c15d4840ddb0e2d2942203daf5b4dc33670f05b41d9a989c736a",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0228",
+            "RD-0229",
+            "RD-0231",
+            "RD-0263",
+            "RD-0299"
+          ],
+          "centroid": {
+            "x": 197.34315640973455,
+            "y": -106.92603523255771
+          },
+          "distance": 58.711559562190544,
+          "length": 361.2472090962282,
+          "anchor": "N-0192"
+        },
+        "nodes": 331,
+        "roads": 553,
+        "blocks": 223,
+        "properties": 999,
+        "buildings": 1102,
+        "protectedRoads": 142,
+        "protectedNodes": 142,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-13",
+      "recipe": {
+        "id": "linear-13",
+        "seed": "sqtrial-v1-linear-13",
+        "morphology": "linear",
+        "size": "small",
+        "stratum": "central",
+        "angleIndex": 0,
+        "count": 4,
+        "offset": {
+          "x": -100,
+          "y": 60
+        }
+      },
+      "survey": "5d4fadf3ee1126ee24979549cd58159cace91de250e1940defce3f15d6621eec",
+      "target": {
+        "x": 34.04740845010315,
+        "y": 2.8352284677367123
+      },
+      "matched": false,
+      "separation": 105.40845506557746,
+      "control": {
+        "status": "selected",
+        "source": "cc2edac9dc18115b2bb01c489974102c4cb873e603671be23c8eb851952acdca",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0179",
+            "RD-0202",
+            "RD-0204",
+            "RD-0220"
+          ],
+          "centroid": {
+            "x": 90.94925178461503,
+            "y": 47.82624432233878
+          },
+          "distance": 72.53972210102813,
+          "length": 214.09658649630822,
+          "anchor": "N-0147"
+        },
+        "nodes": 166,
+        "roads": 241,
+        "blocks": 75,
+        "properties": 181,
+        "buildings": 206,
+        "protectedRoads": 110,
+        "protectedNodes": 110,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "cb086ee1595d86cfc55c98480f975366d64fd51f290d79ee6e69555408f0cba0",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0118",
+            "RD-0119",
+            "RD-0138",
+            "RD-0166"
+          ],
+          "centroid": {
+            "x": 53.64029141979955,
+            "y": -50.75866261482116
+          },
+          "distance": 57.06300223816914,
+          "length": 192.0486881869924,
+          "anchor": "N-0138"
+        },
+        "nodes": 158,
+        "roads": 232,
+        "blocks": 75,
+        "properties": 188,
+        "buildings": 208,
+        "protectedRoads": 100,
+        "protectedNodes": 100,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-20",
+      "recipe": {
+        "id": "linear-20",
+        "seed": "sqtrial-v1-linear-20",
+        "morphology": "linear",
+        "size": "medium",
+        "stratum": "middle",
+        "angleIndex": 3,
+        "count": 5,
+        "offset": {
+          "x": -70,
+          "y": -40
+        }
+      },
+      "survey": "d49bfaeb01f2c301a01d67724a029f6c0cbb64442844353da419c0896622a7f1",
+      "target": {
+        "x": -5.425384268984274,
+        "y": 108.67119621555594
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "e81efda4908bfe7ca9486f8ff9076b22fddd6fb17d71d579ce8c9b8ce6db915b",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0292",
+            "RD-0295",
+            "RD-0324",
+            "RD-0326",
+            "RD-0348"
+          ],
+          "centroid": {
+            "x": 49.51024375880828,
+            "y": 86.09810594887644
+          },
+          "distance": 59.3924880013933,
+          "length": 357.3944314619911,
+          "anchor": "N-0221"
+        },
+        "nodes": 241,
+        "roads": 382,
+        "blocks": 141,
+        "properties": 450,
+        "buildings": 495,
+        "protectedRoads": 128,
+        "protectedNodes": 128,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "38038c963443f50f5f87cc054644096f92b8d223b26f39481672133c8c4fd0db",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0283",
+            "RD-0286",
+            "RD-0315",
+            "RD-0317",
+            "RD-0339"
+          ],
+          "centroid": {
+            "x": 49.51024375880828,
+            "y": 86.09810594887644
+          },
+          "distance": 59.3924880013933,
+          "length": 357.3944314619911,
+          "anchor": "N-0213"
+        },
+        "nodes": 233,
+        "roads": 373,
+        "blocks": 141,
+        "properties": 451,
+        "buildings": 491,
+        "protectedRoads": 118,
+        "protectedNodes": 118,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-21",
+      "recipe": {
+        "id": "linear-21",
+        "seed": "sqtrial-v1-linear-21",
+        "morphology": "linear",
+        "size": "large",
+        "stratum": "central",
+        "angleIndex": 4,
+        "count": 4,
+        "offset": {
+          "x": 100,
+          "y": 0
+        }
+      },
+      "survey": "7f2db5da6d504d69d8246dbe3b07c6b95ad0144b4e024a43a12c6e3312dd72fe",
+      "target": {
+        "x": -32.5648181309391,
+        "y": -8.836913197268245
+      },
+      "matched": false,
+      "separation": 145.05117993251793,
+      "control": {
+        "status": "selected",
+        "source": "7056c698d50f50ffff2818c645b9b43fd0d1b4c84c8b7d67b3a2fbb2faa8001c",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0218",
+            "RD-0221",
+            "RD-0256",
+            "RD-0302"
+          ],
+          "centroid": {
+            "x": -35.84382839692349,
+            "y": -92.37596805736294
+          },
+          "distance": 83.60338267822864,
+          "length": 274.48198455018337,
+          "anchor": "N-0233"
+        },
+        "nodes": 342,
+        "roads": 575,
+        "blocks": 233,
+        "properties": 1011,
+        "buildings": 1117,
+        "protectedRoads": 144,
+        "protectedNodes": 144,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "55e2a0aa6a9be39ac7c59142b8d389688c84d5c9599133182e022f9cd56194a8",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0295",
+            "RD-0346",
+            "RD-0384",
+            "RD-0418"
+          ],
+          "centroid": {
+            "x": -35.84382839692349,
+            "y": 52.67521187515499
+          },
+          "distance": 61.599459731801794,
+          "length": 251.37254453606172,
+          "anchor": "N-0225"
+        },
+        "nodes": 334,
+        "roads": 566,
+        "blocks": 233,
+        "properties": 1030,
+        "buildings": 1129,
+        "protectedRoads": 136,
+        "protectedNodes": 136,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-22",
+      "recipe": {
+        "id": "linear-22",
+        "seed": "sqtrial-v1-linear-22",
+        "morphology": "linear",
+        "size": "small",
+        "stratum": "middle",
+        "angleIndex": 4,
+        "count": 5,
+        "offset": {
+          "x": 0,
+          "y": -100
+        }
+      },
+      "survey": "6af1c373f192d394a914a46dd4646ad0fc3544787ebf9b6d02aeffa6fb8ccd3b",
+      "target": {
+        "x": -87.04601556086531,
+        "y": -0.061548137528136926
+      },
+      "matched": true,
+      "separation": 7.105427357601002e-15,
+      "control": {
+        "status": "selected",
+        "source": "46624e896bcf90e880ce6cb64b8638b76a68adf97dcb65a9abb90ef622edb508",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0152",
+            "RD-0153",
+            "RD-0155",
+            "RD-0170",
+            "RD-0173"
+          ],
+          "centroid": {
+            "x": -109.9390444907441,
+            "y": -28.284950718563042
+          },
+          "distance": 36.34076535841581,
+          "length": 216.32755478405974,
+          "anchor": "N-0145"
+        },
+        "nodes": 172,
+        "roads": 250,
+        "blocks": 78,
+        "properties": 145,
+        "buildings": 156,
+        "protectedRoads": 114,
+        "protectedNodes": 114,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "ac5a05b71ad24ded0bc2aed25de663a59462ff765e96c955bfa8e6b1e3acadc5",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0146",
+            "RD-0147",
+            "RD-0149",
+            "RD-0164",
+            "RD-0167"
+          ],
+          "centroid": {
+            "x": -109.9390444907441,
+            "y": -28.28495071856305
+          },
+          "distance": 36.340765358415815,
+          "length": 216.32755478405974,
+          "anchor": "N-0139"
+        },
+        "nodes": 166,
+        "roads": 243,
+        "blocks": 78,
+        "properties": 147,
+        "buildings": 160,
+        "protectedRoads": 108,
+        "protectedNodes": 108,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-23",
+      "recipe": {
+        "id": "linear-23",
+        "seed": "sqtrial-v1-linear-23",
+        "morphology": "linear",
+        "size": "medium",
+        "stratum": "central",
+        "angleIndex": 5,
+        "count": 4,
+        "offset": {
+          "x": -100,
+          "y": 60
+        }
+      },
+      "survey": "b0b318f39504e24892a9e7e9311ed56b37373590990fb57fc24684b2941d5d23",
+      "target": {
+        "x": 18.169324894999022,
+        "y": 0.8683201962697638
+      },
+      "matched": true,
+      "separation": 39.423918834040556,
+      "control": {
+        "status": "selected",
+        "source": "4045f80b7ca21c2e4eb403fa9d44bef74bb07f9a9cc2cbaac391b96d1dab5301",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0236",
+            "RD-0283",
+            "RD-0285",
+            "RD-0321"
+          ],
+          "centroid": {
+            "x": 23.806047364264707,
+            "y": 34.77401981587389
+          },
+          "distance": 34.371050418780456,
+          "length": 222.16792628977703,
+          "anchor": "N-0193"
+        },
+        "nodes": 249,
+        "roads": 398,
+        "blocks": 149,
+        "properties": 439,
+        "buildings": 492,
+        "protectedRoads": 126,
+        "protectedNodes": 126,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "26a36c88c72b934e53b8d71eff44335714d929e71a488a095db522d4f6b778b9",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0224",
+            "RD-0225",
+            "RD-0228",
+            "RD-0273"
+          ],
+          "centroid": {
+            "x": 1.422571054056283,
+            "y": 2.320586029857412
+          },
+          "distance": 16.809605595032156,
+          "length": 183.69332352881827,
+          "anchor": "N-0185"
+        },
+        "nodes": 241,
+        "roads": 388,
+        "blocks": 148,
+        "properties": 415,
+        "buildings": 462,
+        "protectedRoads": 118,
+        "protectedNodes": 118,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-24",
+      "recipe": {
+        "id": "linear-24",
+        "seed": "sqtrial-v1-linear-24",
+        "morphology": "linear",
+        "size": "large",
+        "stratum": "middle",
+        "angleIndex": 5,
+        "count": 5,
+        "offset": {
+          "x": 100,
+          "y": 100
+        }
+      },
+      "survey": "13af8e4c042eca1580bdb3c9637993aa2c330df8d81b4681c58a787e7ac833ab",
+      "target": {
+        "x": -70.2468835868811,
+        "y": -151.2748769885558
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "9adf2f2e0fd9db57151c13937d865c315aed3e6eb5208db88dd80f32242e89e2",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0168",
+            "RD-0169",
+            "RD-0207",
+            "RD-0209",
+            "RD-0250"
+          ],
+          "centroid": {
+            "x": -88.27655932948988,
+            "y": -154.4460106421205
+          },
+          "distance": 18.306427724501205,
+          "length": 390.1729667347736,
+          "anchor": "N-0164"
+        },
+        "nodes": 343,
+        "roads": 577,
+        "blocks": 234,
+        "properties": 960,
+        "buildings": 1076,
+        "protectedRoads": 142,
+        "protectedNodes": 142,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "539fed86321ee771d1ee0678c797a2d275e55f1bfb0e397a09db3c54eaa728a7",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0158",
+            "RD-0159",
+            "RD-0197",
+            "RD-0199",
+            "RD-0240"
+          ],
+          "centroid": {
+            "x": -88.27655932948988,
+            "y": -154.4460106421205
+          },
+          "distance": 18.306427724501205,
+          "length": 390.1729667347736,
+          "anchor": "N-0154"
+        },
+        "nodes": 335,
+        "roads": 568,
+        "blocks": 234,
+        "properties": 953,
+        "buildings": 1088,
+        "protectedRoads": 132,
+        "protectedNodes": 132,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "linear-25",
+      "recipe": {
+        "id": "linear-25",
+        "seed": "sqtrial-v1-linear-25",
+        "morphology": "linear",
+        "size": "small",
+        "stratum": "central",
+        "angleIndex": 6,
+        "count": 4,
+        "offset": {
+          "x": 15,
+          "y": 0
+        }
+      },
+      "survey": "c17f64d2770d8840ac0239452ff620cd7c121efe1b062d1655376fc68e22fa8b",
+      "target": {
+        "x": 52.766914845585916,
+        "y": 7.004289933549231
+      },
+      "matched": false,
+      "separation": 68.1072663549233,
+      "control": {
+        "status": "selected",
+        "source": "d6f6e0e4f36bed3b2002e2e7c25abd7e4e49d7033f96018544a9ead1d9a1d28b",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0153",
+            "RD-0154",
+            "RD-0156",
+            "RD-0179"
+          ],
+          "centroid": {
+            "x": 13.362427065165644,
+            "y": -33.439880330544575
+          },
+          "distance": 56.46631354700163,
+          "length": 193.78175924483608,
+          "anchor": "N-0139"
+        },
+        "nodes": 179,
+        "roads": 265,
+        "blocks": 86,
+        "properties": 185,
+        "buildings": 206,
+        "protectedRoads": 116,
+        "protectedNodes": 116,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "8c6afb9a9f30e15d3353781c0073c6ff69511dc2e4de7b4a3696c7816ea3e60e",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0173",
+            "RD-0198",
+            "RD-0200",
+            "RD-0217"
+          ],
+          "centroid": {
+            "x": 30.679126856285695,
+            "y": 32.42916884040284
+          },
+          "distance": 33.679294020042114,
+          "length": 185.43774407387406,
+          "anchor": "N-0144"
+        },
+        "nodes": 171,
+        "roads": 256,
+        "blocks": 86,
+        "properties": 184,
+        "buildings": 209,
+        "protectedRoads": 106,
+        "protectedNodes": 106,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-14",
+      "recipe": {
+        "id": "organic-14",
+        "seed": "sqtrial-v1-organic-14",
+        "morphology": "organic",
+        "size": "medium",
+        "stratum": "middle",
+        "angleIndex": 7,
+        "count": 5,
+        "offset": {
+          "x": 100,
+          "y": 0
+        }
+      },
+      "survey": "220bf722edbe5ece2ee772395a177d7fb01cdd2b581f2fda1c466844b02109dd",
+      "target": {
+        "x": 129.6150014437041,
+        "y": -98.94939609792958
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "82e58f896a566f90eae096d7ed44a542cc2cf092586f8e962f49f16b60c55984",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0194",
+            "RD-0195",
+            "RD-0217",
+            "RD-0219",
+            "RD-0244"
+          ],
+          "centroid": {
+            "x": 93.49339259986289,
+            "y": -113.69710489672734
+          },
+          "distance": 39.016221501852336,
+          "length": 308.841783486594,
+          "anchor": "N-0166"
+        },
+        "nodes": 242,
+        "roads": 382,
+        "blocks": 140,
+        "properties": 443,
+        "buildings": 501,
+        "protectedRoads": 130,
+        "protectedNodes": 130,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "b43156669f0bc20dbf65afe1e2b39a867495b3acf80294936d26bb2b3530fa0b",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0186",
+            "RD-0187",
+            "RD-0209",
+            "RD-0211",
+            "RD-0236"
+          ],
+          "centroid": {
+            "x": 93.49339259986289,
+            "y": -113.69710489672734
+          },
+          "distance": 39.016221501852336,
+          "length": 308.841783486594,
+          "anchor": "N-0158"
+        },
+        "nodes": 234,
+        "roads": 372,
+        "blocks": 139,
+        "properties": 444,
+        "buildings": 480,
+        "protectedRoads": 122,
+        "protectedNodes": 122,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-15",
+      "recipe": {
+        "id": "organic-15",
+        "seed": "sqtrial-v1-organic-15",
+        "morphology": "organic",
+        "size": "large",
+        "stratum": "central",
+        "angleIndex": 0,
+        "count": 4,
+        "offset": {
+          "x": 0,
+          "y": -100
+        }
+      },
+      "survey": "7d5130559d9d361edfb726e29ae5f896fa3ed58b3ac49d657360f4e408aa0c45",
+      "target": {
+        "x": -54.19036068707999,
+        "y": 87.92676483405432
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "bfe7880e20d7c45b57e3568d397675876dc2e29e502e734052a8be9afbc8e9ae",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0340",
+            "RD-0341",
+            "RD-0343",
+            "RD-0383"
+          ],
+          "centroid": {
+            "x": -45.957598425330204,
+            "y": 46.09956439360592
+          },
+          "distance": 42.6297205144948,
+          "length": 252.7629004947833,
+          "anchor": "N-0267"
+        },
+        "nodes": 326,
+        "roads": 545,
+        "blocks": 219,
+        "properties": 894,
+        "buildings": 980,
+        "protectedRoads": 142,
+        "protectedNodes": 142,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "77968d53c0e024a55501c33608f66ab80186ac3b3b41cabd62740b2c6bbee6da",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0334",
+            "RD-0335",
+            "RD-0337",
+            "RD-0377"
+          ],
+          "centroid": {
+            "x": -45.957598425330204,
+            "y": 46.09956439360592
+          },
+          "distance": 42.6297205144948,
+          "length": 252.7629004947833,
+          "anchor": "N-0261"
+        },
+        "nodes": 320,
+        "roads": 538,
+        "blocks": 219,
+        "properties": 880,
+        "buildings": 985,
+        "protectedRoads": 136,
+        "protectedNodes": 136,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-16",
+      "recipe": {
+        "id": "organic-16",
+        "seed": "sqtrial-v1-organic-16",
+        "morphology": "organic",
+        "size": "small",
+        "stratum": "middle",
+        "angleIndex": 0,
+        "count": 5,
+        "offset": {
+          "x": -100,
+          "y": 60
+        }
+      },
+      "survey": "c437fdd95bc7447adb63e6867458e40e00a91ec73f49c479d20b21c2b65c675a",
+      "target": {
+        "x": 77.29705308590376,
+        "y": -54.94002633847762
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "280d7c42896e342452e98d001ab9654c23dd7c60b00c6f5367485d6683000f48",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0147",
+            "RD-0148",
+            "RD-0151",
+            "RD-0173",
+            "RD-0261"
+          ],
+          "centroid": {
+            "x": 76.1876100471259,
+            "y": -78.28981299203599
+          },
+          "distance": 23.3761288630728,
+          "length": 195.1963155479274,
+          "anchor": "N-0147"
+        },
+        "nodes": 178,
+        "roads": 257,
+        "blocks": 79,
+        "properties": 158,
+        "buildings": 163,
+        "protectedRoads": 114,
+        "protectedNodes": 114,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "c512c6fd21b5fcf63b60e0907f07748053563a13cdecb0fc62c1452b3191d5ab",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0138",
+            "RD-0139",
+            "RD-0142",
+            "RD-0164",
+            "RD-0252"
+          ],
+          "centroid": {
+            "x": 76.1876100471259,
+            "y": -78.28981299203599
+          },
+          "distance": 23.3761288630728,
+          "length": 195.19631554792744,
+          "anchor": "N-0139"
+        },
+        "nodes": 170,
+        "roads": 249,
+        "blocks": 80,
+        "properties": 165,
+        "buildings": 175,
+        "protectedRoads": 104,
+        "protectedNodes": 104,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-17",
+      "recipe": {
+        "id": "organic-17",
+        "seed": "sqtrial-v1-organic-17",
+        "morphology": "organic",
+        "size": "medium",
+        "stratum": "central",
+        "angleIndex": 1,
+        "count": 4,
+        "offset": {
+          "x": 100,
+          "y": 100
+        }
+      },
+      "survey": "333e6df6a96bb52c7fd0cc4920bf9be0bccc10cfd481a8e26c26dfc5c5a7a824",
+      "target": {
+        "x": -24.31712831138435,
+        "y": 9.898710043221058
+      },
+      "matched": true,
+      "separation": 11.928844525300907,
+      "control": {
+        "status": "selected",
+        "source": "c45771651d5a8b9b36dcc232208fd758f4919b6ecf696560bb645d77683b1814",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0231",
+            "RD-0265",
+            "RD-0266",
+            "RD-0303"
+          ],
+          "centroid": {
+            "x": -69.86817212954246,
+            "y": 18.4255916043845
+          },
+          "distance": 46.34226259130934,
+          "length": 199.04295018194978,
+          "anchor": "N-0207"
+        },
+        "nodes": 255,
+        "roads": 404,
+        "blocks": 149,
+        "properties": 406,
+        "buildings": 438,
+        "protectedRoads": 134,
+        "protectedNodes": 134,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "4e096f65716b04cc4ad0db52d397102b5f79f3558f9abf79a24f42045d6ca84d",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0254",
+            "RD-0255",
+            "RD-0256",
+            "RD-0258"
+          ],
+          "centroid": {
+            "x": -57.98385005479895,
+            "y": 17.39592149577421
+          },
+          "distance": 34.49139505025564,
+          "length": 142.330463988763,
+          "anchor": "N-0198"
+        },
+        "nodes": 247,
+        "roads": 395,
+        "blocks": 149,
+        "properties": 426,
+        "buildings": 457,
+        "protectedRoads": 124,
+        "protectedNodes": 124,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-18",
+      "recipe": {
+        "id": "organic-18",
+        "seed": "sqtrial-v1-organic-18",
+        "morphology": "organic",
+        "size": "large",
+        "stratum": "middle",
+        "angleIndex": 1,
+        "count": 5,
+        "offset": {
+          "x": 15,
+          "y": 0
+        }
+      },
+      "survey": "63ca4836cbdb893f7a2b3e19fa7a81681762effd11e9a57bbba22bd0a22d26e0",
+      "target": {
+        "x": 145.03331571220056,
+        "y": 92.2211781181918
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "edbb38504fcb9c94372a3acad4b0254dd0c3c70b59cafb3c6695091c4bbb892e",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0366",
+            "RD-0367",
+            "RD-0370",
+            "RD-0402",
+            "RD-0404"
+          ],
+          "centroid": {
+            "x": 117.43532027457555,
+            "y": 93.7719875237175
+          },
+          "distance": 27.641533278518367,
+          "length": 344.7870131617201,
+          "anchor": "N-0249"
+        },
+        "nodes": 327,
+        "roads": 542,
+        "blocks": 215,
+        "properties": 935,
+        "buildings": 1007,
+        "protectedRoads": 144,
+        "protectedNodes": 144,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "b2a156a8f5d868b869f8c63444a99980c6c89c8f3d7f082097e9da6fabfc005a",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0358",
+            "RD-0359",
+            "RD-0362",
+            "RD-0394",
+            "RD-0396"
+          ],
+          "centroid": {
+            "x": 117.43532027457555,
+            "y": 93.7719875237175
+          },
+          "distance": 27.641533278518367,
+          "length": 344.7870131617201,
+          "anchor": "N-0242"
+        },
+        "nodes": 320,
+        "roads": 534,
+        "blocks": 215,
+        "properties": 949,
+        "buildings": 1031,
+        "protectedRoads": 136,
+        "protectedNodes": 136,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-19",
+      "recipe": {
+        "id": "organic-19",
+        "seed": "sqtrial-v1-organic-19",
+        "morphology": "organic",
+        "size": "small",
+        "stratum": "central",
+        "angleIndex": 2,
+        "count": 4,
+        "offset": {
+          "x": 0,
+          "y": -25
+        }
+      },
+      "survey": "ad7c1785cbf7b9bb1d1a935362f0c7ae6c89bbd78a6d7ca91886df1cb721b753",
+      "target": {
+        "x": -33.44763183974834,
+        "y": 16.91035280421778
+      },
+      "matched": false,
+      "separation": 73.20493660561661,
+      "control": {
+        "status": "selected",
+        "source": "b0541142f5428df00b6f6db6db979447f2a79dcf584d78c4ce1afe53f6dacf74",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0157",
+            "RD-0158",
+            "RD-0159",
+            "RD-0162"
+          ],
+          "centroid": {
+            "x": -91.45062418089873,
+            "y": 24.21729490178884
+          },
+          "distance": 58.461427654007956,
+          "length": 109.99595708372576,
+          "anchor": "N-0136"
+        },
+        "nodes": 154,
+        "roads": 219,
+        "blocks": 65,
+        "properties": 175,
+        "buildings": 199,
+        "protectedRoads": 104,
+        "protectedNodes": 104,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "c1088aa9cc789a648cfcaadbc1ba829d2a307f1ccdbbd06d96597f47a10fdaf1",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0152",
+            "RD-0153",
+            "RD-0156",
+            "RD-0157"
+          ],
+          "centroid": {
+            "x": -18.25215534861972,
+            "y": 23.2442049561894
+          },
+          "distance": 16.46269081515771,
+          "length": 129.50205127179976,
+          "anchor": "N-0128"
+        },
+        "nodes": 146,
+        "roads": 210,
+        "blocks": 65,
+        "properties": 169,
+        "buildings": 190,
+        "protectedRoads": 96,
+        "protectedNodes": 96,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-20",
+      "recipe": {
+        "id": "organic-20",
+        "seed": "sqtrial-v1-organic-20",
+        "morphology": "organic",
+        "size": "medium",
+        "stratum": "middle",
+        "angleIndex": 2,
+        "count": 5,
+        "offset": {
+          "x": 35,
+          "y": 25
+        }
+      },
+      "survey": "63dc613d03c0b6f2a3baa038927d7a0f23cbc9d5c3c06a556012905e53bcf58b",
+      "target": {
+        "x": 45.82644926257701,
+        "y": 130.24861111097
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "95785867924907e3706e2dbdfc7bfce84a9781166b3c9aae512dae6ec89919b5",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0283",
+            "RD-0284",
+            "RD-0287",
+            "RD-0305",
+            "RD-0307"
+          ],
+          "centroid": {
+            "x": 18.40976538719197,
+            "y": 132.97660215572725
+          },
+          "distance": 27.55206870387546,
+          "length": 358.7357798880464,
+          "anchor": "N-0200"
+        },
+        "nodes": 234,
+        "roads": 363,
+        "blocks": 129,
+        "properties": 424,
+        "buildings": 473,
+        "protectedRoads": 126,
+        "protectedNodes": 126,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "3b874cbce4e71a1e7902d3fb8a7319b7600903d3b81a4f6f469ac312e75bb776",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0277",
+            "RD-0278",
+            "RD-0281",
+            "RD-0299",
+            "RD-0301"
+          ],
+          "centroid": {
+            "x": 18.40976538719197,
+            "y": 132.97660215572725
+          },
+          "distance": 27.55206870387546,
+          "length": 358.7357798880464,
+          "anchor": "N-0194"
+        },
+        "nodes": 228,
+        "roads": 356,
+        "blocks": 129,
+        "properties": 418,
+        "buildings": 462,
+        "protectedRoads": 120,
+        "protectedNodes": 120,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-21",
+      "recipe": {
+        "id": "organic-21",
+        "seed": "sqtrial-v1-organic-21",
+        "morphology": "organic",
+        "size": "large",
+        "stratum": "central",
+        "angleIndex": 3,
+        "count": 4,
+        "offset": {
+          "x": -50,
+          "y": 0
+        }
+      },
+      "survey": "c804be63965b78c7ec5ee9dca60beeb9f7c0b6a4b7b2c3357116511675b3183f",
+      "target": {
+        "x": -32.72443354774657,
+        "y": 17.68179043626128
+      },
+      "matched": true,
+      "separation": 19.586280640261315,
+      "control": {
+        "status": "selected",
+        "source": "9fb9c378770b7c33aa3630bdc40dc11bdd3be10653ad2aaab7c531db2bd2cb87",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0301",
+            "RD-0302",
+            "RD-0304",
+            "RD-0343"
+          ],
+          "centroid": {
+            "x": -33.89956605673237,
+            "y": -30.529891435056555
+          },
+          "distance": 48.22600134030222,
+          "length": 258.052275843326,
+          "anchor": "N-0248"
+        },
+        "nodes": 327,
+        "roads": 545,
+        "blocks": 218,
+        "properties": 917,
+        "buildings": 993,
+        "protectedRoads": 144,
+        "protectedNodes": 144,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "e8b08cfc5d0f56afc715774508701c46ebfc7fafc6dcf3934fb9e75a3bbada52",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0292",
+            "RD-0331",
+            "RD-0335",
+            "RD-0525"
+          ],
+          "centroid": {
+            "x": -39.30680086849137,
+            "y": -11.704796454962123
+          },
+          "distance": 30.114764629009343,
+          "length": 198.8001719560437,
+          "anchor": "N-0238"
+        },
+        "nodes": 317,
+        "roads": 533,
+        "blocks": 217,
+        "properties": 895,
+        "buildings": 1007,
+        "protectedRoads": 134,
+        "protectedNodes": 134,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-22",
+      "recipe": {
+        "id": "organic-22",
+        "seed": "sqtrial-v1-organic-22",
+        "morphology": "organic",
+        "size": "small",
+        "stratum": "middle",
+        "angleIndex": 3,
+        "count": 5,
+        "offset": {
+          "x": 0,
+          "y": 60
+        }
+      },
+      "survey": "de40f6fec4932f6642a4e9db5a89d2cec8d7f1a2027a8132f5b218011a741d4f",
+      "target": {
+        "x": -59.5356482797778,
+        "y": 79.22887029796989
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "5d187a5c9fe9e0ad0b75c0944cc88fbed91efc0aded9c752550f8739a90dd84d",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0202",
+            "RD-0203",
+            "RD-0207",
+            "RD-0219",
+            "RD-0221"
+          ],
+          "centroid": {
+            "x": -41.0225190614703,
+            "y": 107.16832044996538
+          },
+          "distance": 33.516396409065095,
+          "length": 340.7174398990861,
+          "anchor": "N-0152"
+        },
+        "nodes": 166,
+        "roads": 241,
+        "blocks": 75,
+        "properties": 179,
+        "buildings": 186,
+        "protectedRoads": 108,
+        "protectedNodes": 108,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "11147fa9b2673b5ca2b6a26c78bcbc8e8854889fedcfef1a45a42522fdceaae3",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0193",
+            "RD-0194",
+            "RD-0198",
+            "RD-0210",
+            "RD-0212"
+          ],
+          "centroid": {
+            "x": -41.0225190614703,
+            "y": 107.16832044996538
+          },
+          "distance": 33.516396409065095,
+          "length": 340.7174398990861,
+          "anchor": "N-0144"
+        },
+        "nodes": 158,
+        "roads": 231,
+        "blocks": 74,
+        "properties": 182,
+        "buildings": 204,
+        "protectedRoads": 100,
+        "protectedNodes": 100,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-23",
+      "recipe": {
+        "id": "organic-23",
+        "seed": "sqtrial-v1-organic-23",
+        "morphology": "organic",
+        "size": "medium",
+        "stratum": "central",
+        "angleIndex": 4,
+        "count": 4,
+        "offset": {
+          "x": -70,
+          "y": -40
+        }
+      },
+      "survey": "3fc316a6dda626c9953bcf7e0f7859526d974e3c01572801f639326addbbbec2",
+      "target": {
+        "x": -22.12399916534872,
+        "y": -78.78308800921559
+      },
+      "matched": true,
+      "separation": 8.117372752598047,
+      "control": {
+        "status": "selected",
+        "source": "ed6c2ee9020f0e0a0615ffa714545756db1f53d6ef8a96947c017f550c3951a9",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0205",
+            "RD-0209",
+            "RD-0210",
+            "RD-0232"
+          ],
+          "centroid": {
+            "x": 1.4323744060300556,
+            "y": -85.7829143375868
+          },
+          "distance": 24.574383094224594,
+          "length": 204.45486293873168,
+          "anchor": "N-0170"
+        },
+        "nodes": 232,
+        "roads": 363,
+        "blocks": 131,
+        "properties": 413,
+        "buildings": 451,
+        "protectedRoads": 126,
+        "protectedNodes": 126,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "533493e4554de9c586fc5eee9887c12e2504eb5ad84fba5717e215704b019e4b",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0199",
+            "RD-0201",
+            "RD-0202",
+            "RD-0224"
+          ],
+          "centroid": {
+            "x": 2.7178290054861294,
+            "y": -77.7679691177267
+          },
+          "distance": 24.86256006997553,
+          "length": 183.08477238387556,
+          "anchor": "N-0162"
+        },
+        "nodes": 225,
+        "roads": 355,
+        "blocks": 131,
+        "properties": 419,
+        "buildings": 455,
+        "protectedRoads": 118,
+        "protectedNodes": 118,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-24",
+      "recipe": {
+        "id": "organic-24",
+        "seed": "sqtrial-v1-organic-24",
+        "morphology": "organic",
+        "size": "large",
+        "stratum": "middle",
+        "angleIndex": 4,
+        "count": 5,
+        "offset": {
+          "x": 100,
+          "y": 0
+        }
+      },
+      "survey": "711572e6303c57c0f4c7951da5793c7d78e813dfee1e012e172c1e02c3c4d81d",
+      "target": {
+        "x": -164.6259797406454,
+        "y": 38.56704412128127
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "9a4be37d6e6543f830a1d1b7662d6734f654505628375c058147045ff4a054b5",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0356",
+            "RD-0357",
+            "RD-0360",
+            "RD-0361",
+            "RD-0392"
+          ],
+          "centroid": {
+            "x": -142.41690823983564,
+            "y": 50.649999982972446
+          },
+          "distance": 25.28320943400298,
+          "length": 223.34096978210096,
+          "anchor": "N-0254"
+        },
+        "nodes": 344,
+        "roads": 573,
+        "blocks": 229,
+        "properties": 941,
+        "buildings": 1024,
+        "protectedRoads": 146,
+        "protectedNodes": 146,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "5176fb6c1dc4df8945afce47b7882937b42a98f75f05ddeb53a4f22128ff86e8",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0346",
+            "RD-0347",
+            "RD-0350",
+            "RD-0351",
+            "RD-0383"
+          ],
+          "centroid": {
+            "x": -142.41690823983564,
+            "y": 50.649999982972446
+          },
+          "distance": 25.28320943400298,
+          "length": 223.34096978210096,
+          "anchor": "N-0245"
+        },
+        "nodes": 336,
+        "roads": 564,
+        "blocks": 229,
+        "properties": 958,
+        "buildings": 1042,
+        "protectedRoads": 136,
+        "protectedNodes": 136,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "organic-25",
+      "recipe": {
+        "id": "organic-25",
+        "seed": "sqtrial-v1-organic-25",
+        "morphology": "organic",
+        "size": "small",
+        "stratum": "central",
+        "angleIndex": 5,
+        "count": 4,
+        "offset": {
+          "x": 0,
+          "y": -100
+        }
+      },
+      "survey": "1e9900b5a725b3ff85c5d04c6f37682afdc12562f57306d5f09fc75a25f8245a",
+      "target": {
+        "x": -12.953116793244476,
+        "y": 9.733221012632498
+      },
+      "matched": false,
+      "separation": 20.442992999522176,
+      "control": {
+        "status": "selected",
+        "source": "aa89553e343f4a7f28f983f989f2692ae1a0f9c4d88fca9e558d63acc44f0cb2",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0155",
+            "RD-0156",
+            "RD-0158",
+            "RD-0176"
+          ],
+          "centroid": {
+            "x": -27.46703894276039,
+            "y": -25.14547278423883
+          },
+          "distance": 37.77799911506854,
+          "length": 257.4011389197131,
+          "anchor": "N-0138"
+        },
+        "nodes": 173,
+        "roads": 240,
+        "blocks": 67,
+        "properties": 166,
+        "buildings": 183,
+        "protectedRoads": 114,
+        "protectedNodes": 114,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "771673c7fcf2dff99b3aaeee1c8f88039adea9c25f5d5b2631363ec10c61f770",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0148",
+            "RD-0171",
+            "RD-0174",
+            "RD-0240"
+          ],
+          "centroid": {
+            "x": -17.389897845427907,
+            "y": -7.358758920150126
+          },
+          "distance": 17.65844851983486,
+          "length": 115.15468162654477,
+          "anchor": "N-0130"
+        },
+        "nodes": 165,
+        "roads": 232,
+        "blocks": 68,
+        "properties": 173,
+        "buildings": 192,
+        "protectedRoads": 106,
+        "protectedNodes": 106,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-08",
+      "recipe": {
+        "id": "planned-08",
+        "seed": "sqtrial-v1-planned-08",
+        "morphology": "planned",
+        "size": "medium",
+        "stratum": "middle",
+        "angleIndex": 6,
+        "count": 5,
+        "offset": {
+          "x": 100,
+          "y": 0
+        }
+      },
+      "survey": "d7f0d3d89cc5ff2c70e6beb3d67bd0bdb1e0afb37aecba7faa520e41fb23fb32",
+      "target": {
+        "x": -2.7223898345045657e-14,
+        "y": -148.2
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "ff7eb130a8f31d2bd17c853591733cbc9b826cc2eac2df3961fbb428b7c210e1",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0161",
+            "RD-0162",
+            "RD-0166",
+            "RD-0186",
+            "RD-0188"
+          ],
+          "centroid": {
+            "x": 30.736066717966555,
+            "y": -123.71542695554353
+          },
+          "distance": 39.29631171574015,
+          "length": 373.2725311581184,
+          "anchor": "N-0132"
+        },
+        "nodes": 220,
+        "roads": 348,
+        "blocks": 128,
+        "properties": 454,
+        "buildings": 496,
+        "protectedRoads": 114,
+        "protectedNodes": 114,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "68ee6d2e9f8d0bcb718db087d63e20d10b8a6c9fc34e0b1effc4e9b27f30d08b",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0153",
+            "RD-0154",
+            "RD-0158",
+            "RD-0178",
+            "RD-0180"
+          ],
+          "centroid": {
+            "x": 30.736066717966555,
+            "y": -123.71542695554353
+          },
+          "distance": 39.29631171574015,
+          "length": 373.2725311581184,
+          "anchor": "N-0124"
+        },
+        "nodes": 212,
+        "roads": 338,
+        "blocks": 127,
+        "properties": 441,
+        "buildings": 488,
+        "protectedRoads": 106,
+        "protectedNodes": 106,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-09",
+      "recipe": {
+        "id": "planned-09",
+        "seed": "sqtrial-v1-planned-09",
+        "morphology": "planned",
+        "size": "large",
+        "stratum": "central",
+        "angleIndex": 7,
+        "count": 4,
+        "offset": {
+          "x": 0,
+          "y": -100
+        }
+      },
+      "survey": "1f8f23822138ce73ebcc2ef60080805931292f66ab28c37e6ce822165b047608",
+      "target": {
+        "x": 0,
+        "y": 0
+      },
+      "matched": true,
+      "separation": 11.8759290658904,
+      "control": {
+        "status": "selected",
+        "source": "3ab229cd88f0174d29c47e6dd556fb353f68124dbeddd4c637e462d377df3991",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0303",
+            "RD-0304",
+            "RD-0305",
+            "RD-0346"
+          ],
+          "centroid": {
+            "x": -44.290227759318405,
+            "y": -14.186271687657836
+          },
+          "distance": 46.506715422273594,
+          "length": 249.5395541229591,
+          "anchor": "N-0227"
+        },
+        "nodes": 322,
+        "roads": 544,
+        "blocks": 222,
+        "properties": 982,
+        "buildings": 1075,
+        "protectedRoads": 130,
+        "protectedNodes": 130,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "262d78224ccb8794e471d59c7b38513a913db410bdea0d9ea1a2b6f082904d10",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0296",
+            "RD-0297",
+            "RD-0300",
+            "RD-0338"
+          ],
+          "centroid": {
+            "x": -44.29022775931841,
+            "y": -2.310342621767435
+          },
+          "distance": 44.350444845596016,
+          "length": 190.33054889166664,
+          "anchor": "N-0219"
+        },
+        "nodes": 315,
+        "roads": 536,
+        "blocks": 222,
+        "properties": 997,
+        "buildings": 1092,
+        "protectedRoads": 122,
+        "protectedNodes": 122,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-10",
+      "recipe": {
+        "id": "planned-10",
+        "seed": "sqtrial-v1-planned-10",
+        "morphology": "planned",
+        "size": "small",
+        "stratum": "middle",
+        "angleIndex": 7,
+        "count": 5,
+        "offset": {
+          "x": -100,
+          "y": 60
+        }
+      },
+      "survey": "2e2fd806c4ee6f0e89780ab4f7d990a6b3c894ad2445f387c606f9ff555a4508",
+      "target": {
+        "x": 69.86214998123087,
+        "y": -69.86214998123091
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "2df6d940902467e44290a8f6f4a0b53eea2e07dd9efe443f970049deb5c751aa",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0137",
+            "RD-0138",
+            "RD-0139",
+            "RD-0142",
+            "RD-0163"
+          ],
+          "centroid": {
+            "x": 95.37312709458797,
+            "y": -84.27429735138388
+          },
+          "distance": 29.300511004029207,
+          "length": 293.83877068582075,
+          "anchor": "N-0127"
+        },
+        "nodes": 168,
+        "roads": 243,
+        "blocks": 75,
+        "properties": 192,
+        "buildings": 203,
+        "protectedRoads": 106,
+        "protectedNodes": 106,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "c4796d41da20deacfe196a93c47fa725d3eb8d21d0bc762911d1995ecb4b955c",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0129",
+            "RD-0130",
+            "RD-0131",
+            "RD-0134",
+            "RD-0155"
+          ],
+          "centroid": {
+            "x": 95.37312709458797,
+            "y": -84.27429735138388
+          },
+          "distance": 29.300511004029207,
+          "length": 293.83877068582075,
+          "anchor": "N-0119"
+        },
+        "nodes": 160,
+        "roads": 233,
+        "blocks": 74,
+        "properties": 210,
+        "buildings": 222,
+        "protectedRoads": 98,
+        "protectedNodes": 98,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-11",
+      "recipe": {
+        "id": "planned-11",
+        "seed": "sqtrial-v1-planned-11",
+        "morphology": "planned",
+        "size": "medium",
+        "stratum": "central",
+        "angleIndex": 0,
+        "count": 4,
+        "offset": {
+          "x": 100,
+          "y": 100
+        }
+      },
+      "survey": "8a7cc6d228afe111ba59f1d16dc7c40ccc7665178edde3c771df11e89969a3c5",
+      "target": {
+        "x": 5.684341886080802e-14,
+        "y": 0
+      },
+      "matched": true,
+      "separation": 31.415583702029608,
+      "control": {
+        "status": "selected",
+        "source": "3c84eb817a5d7488b983f9f73f30710a0419b1351dfc178200af1e4b408eeb2e",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0225",
+            "RD-0226",
+            "RD-0227",
+            "RD-0229"
+          ],
+          "centroid": {
+            "x": -7.186134135113261,
+            "y": 0.251786941821328
+          },
+          "distance": 7.190543823099375,
+          "length": 163.83298632595285,
+          "anchor": "N-0178"
+        },
+        "nodes": 224,
+        "roads": 355,
+        "blocks": 131,
+        "properties": 476,
+        "buildings": 515,
+        "protectedRoads": 114,
+        "protectedNodes": 114,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "6b807e987fb12c68e4c6e772332d6952729ad42d791b703a4d2a048ccbe9b1a6",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0192",
+            "RD-0219",
+            "RD-0220",
+            "RD-0344"
+          ],
+          "centroid": {
+            "x": 4.347126992101406,
+            "y": -28.970170335382186
+          },
+          "distance": 29.29450942320957,
+          "length": 207.72958995867117,
+          "anchor": "N-0172"
+        },
+        "nodes": 218,
+        "roads": 348,
+        "blocks": 131,
+        "properties": 471,
+        "buildings": 510,
+        "protectedRoads": 108,
+        "protectedNodes": 108,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-12",
+      "recipe": {
+        "id": "planned-12",
+        "seed": "sqtrial-v1-planned-12",
+        "morphology": "planned",
+        "size": "large",
+        "stratum": "middle",
+        "angleIndex": 0,
+        "count": 5,
+        "offset": {
+          "x": 15,
+          "y": 0
+        }
+      },
+      "survey": "8270a55f4412d771bb617266b018054315a09425fdede2e8a5bbf250bfd52a62",
+      "target": {
+        "x": 212.8,
+        "y": 0
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "86b4943010ebe0eaf6107f26d5ceed3e4352bc46d790316bcede33602836f46c",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0321",
+            "RD-0322",
+            "RD-0323",
+            "RD-0325",
+            "RD-0360"
+          ],
+          "centroid": {
+            "x": 178.140569857631,
+            "y": 2.507420266705523
+          },
+          "distance": 34.75001085161908,
+          "length": 276.95718444797,
+          "anchor": "N-0236"
+        },
+        "nodes": 307,
+        "roads": 513,
+        "blocks": 206,
+        "properties": 1020,
+        "buildings": 1116,
+        "protectedRoads": 126,
+        "protectedNodes": 126,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "a176c963100c94c83c5aa60b5e4d39b6cfd745473909a7669fb7d4d3e0853729",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0315",
+            "RD-0316",
+            "RD-0317",
+            "RD-0319",
+            "RD-0354"
+          ],
+          "centroid": {
+            "x": 178.140569857631,
+            "y": 2.507420266705523
+          },
+          "distance": 34.75001085161908,
+          "length": 276.95718444797,
+          "anchor": "N-0230"
+        },
+        "nodes": 301,
+        "roads": 506,
+        "blocks": 206,
+        "properties": 1036,
+        "buildings": 1137,
+        "protectedRoads": 120,
+        "protectedNodes": 120,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-13",
+      "recipe": {
+        "id": "planned-13",
+        "seed": "sqtrial-v1-planned-13",
+        "morphology": "planned",
+        "size": "small",
+        "stratum": "central",
+        "angleIndex": 1,
+        "count": 4,
+        "offset": {
+          "x": 0,
+          "y": -25
+        }
+      },
+      "survey": "806faad3cda89df39ceb12c67280e8079b3b5315f0b631c4ce78df8b15c27580",
+      "target": {
+        "x": 0,
+        "y": 0
+      },
+      "matched": true,
+      "separation": 2.886579864025407e-15,
+      "control": {
+        "status": "selected",
+        "source": "1b7924bd51d22f8068d35ee4a2b35a7e92be80be316f45bb3aa83060b68992ae",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0146",
+            "RD-0147",
+            "RD-0150",
+            "RD-0167"
+          ],
+          "centroid": {
+            "x": -24.867085587270783,
+            "y": 1.8489816828908403
+          },
+          "distance": 24.93573096719477,
+          "length": 172.57106762288237,
+          "anchor": "N-0129"
+        },
+        "nodes": 152,
+        "roads": 219,
+        "blocks": 67,
+        "properties": 192,
+        "buildings": 220,
+        "protectedRoads": 100,
+        "protectedNodes": 100,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "d91a06569b7230e0a744df3b46a24f6bc4664b30c990174595cc4d93ece11792",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0140",
+            "RD-0141",
+            "RD-0144",
+            "RD-0161"
+          ],
+          "centroid": {
+            "x": -24.867085587270783,
+            "y": 1.8489816828908374
+          },
+          "distance": 24.93573096719477,
+          "length": 172.57106762288237,
+          "anchor": "N-0123"
+        },
+        "nodes": 146,
+        "roads": 212,
+        "blocks": 67,
+        "properties": 195,
+        "buildings": 219,
+        "protectedRoads": 94,
+        "protectedNodes": 94,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-14",
+      "recipe": {
+        "id": "planned-14",
+        "seed": "sqtrial-v1-planned-14",
+        "morphology": "planned",
+        "size": "medium",
+        "stratum": "middle",
+        "angleIndex": 1,
+        "count": 5,
+        "offset": {
+          "x": 35,
+          "y": 25
+        }
+      },
+      "survey": "849a845ac629e21dd7514f62054f4aad3cff2c7b7a0dbf5123b6da779433714a",
+      "target": {
+        "x": 104.7932249718464,
+        "y": 104.79322497184633
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "efa7e00f3fb57e3a2bbf4df4e3fea7f05aa9f42d0b6a4d324fbd73db572f54f9",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0283",
+            "RD-0284",
+            "RD-0288",
+            "RD-0310",
+            "RD-0312"
+          ],
+          "centroid": {
+            "x": 125.42437670831596,
+            "y": 137.57840980048078
+          },
+          "distance": 38.7364526798848,
+          "length": 365.38212638024424,
+          "anchor": "N-0197"
+        },
+        "nodes": 225,
+        "roads": 357,
+        "blocks": 132,
+        "properties": 462,
+        "buildings": 504,
+        "protectedRoads": 116,
+        "protectedNodes": 116,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "3efbeff09a2c112db1113fd3e4cecd5d87844f955e53224bc74692ac60d6d044",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0275",
+            "RD-0276",
+            "RD-0280",
+            "RD-0302",
+            "RD-0304"
+          ],
+          "centroid": {
+            "x": 125.42437670831596,
+            "y": 137.57840980048078
+          },
+          "distance": 38.7364526798848,
+          "length": 365.38212638024424,
+          "anchor": "N-0190"
+        },
+        "nodes": 218,
+        "roads": 349,
+        "blocks": 132,
+        "properties": 458,
+        "buildings": 496,
+        "protectedRoads": 108,
+        "protectedNodes": 108,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-15",
+      "recipe": {
+        "id": "planned-15",
+        "seed": "sqtrial-v1-planned-15",
+        "morphology": "planned",
+        "size": "large",
+        "stratum": "central",
+        "angleIndex": 2,
+        "count": 4,
+        "offset": {
+          "x": -50,
+          "y": 0
+        }
+      },
+      "survey": "26195fa9eaf19160cdf2c2e2ae6fc0690977600e223833e2d21eada6d038b4f9",
+      "target": {
+        "x": 0,
+        "y": 0
+      },
+      "matched": true,
+      "separation": 9.218827878953178,
+      "control": {
+        "status": "selected",
+        "source": "8d35a2094e4bb0222a8cc4ffdbdeffe17734921d2f2d03a372c86f4649048aee",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0297",
+            "RD-0298",
+            "RD-0299",
+            "RD-0340"
+          ],
+          "centroid": {
+            "x": -41.179887638381445,
+            "y": -2.450336824600049
+          },
+          "distance": 41.25272471563196,
+          "length": 263.6120591952193,
+          "anchor": "N-0223"
+        },
+        "nodes": 302,
+        "roads": 504,
+        "blocks": 202,
+        "properties": 1014,
+        "buildings": 1106,
+        "protectedRoads": 128,
+        "protectedNodes": 128,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "7a43e6a1817efcaa07b548e8df0bdb71908d920d5459b7474993deb0f9f0867a",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0290",
+            "RD-0291",
+            "RD-0294",
+            "RD-0332"
+          ],
+          "centroid": {
+            "x": -41.179887638381445,
+            "y": 6.768491054353129
+          },
+          "distance": 41.732428842119646,
+          "length": 214.80554529489123,
+          "anchor": "N-0215"
+        },
+        "nodes": 295,
+        "roads": 496,
+        "blocks": 202,
+        "properties": 1024,
+        "buildings": 1103,
+        "protectedRoads": 120,
+        "protectedNodes": 120,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-16",
+      "recipe": {
+        "id": "planned-16",
+        "seed": "sqtrial-v1-planned-16",
+        "morphology": "planned",
+        "size": "small",
+        "stratum": "middle",
+        "angleIndex": 2,
+        "count": 5,
+        "offset": {
+          "x": 0,
+          "y": 60
+        }
+      },
+      "survey": "6e6a3d35d57a7dd027fd447ef9dec8f0f62dddf19d798eba6b675b2333586b3d",
+      "target": {
+        "x": 6.049755187787924e-15,
+        "y": 98.8
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "0955ce474a41316645e985e1dc6a460034c22aa5475fbab503def047d20c9015",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0181",
+            "RD-0182",
+            "RD-0184",
+            "RD-0199",
+            "RD-0215"
+          ],
+          "centroid": {
+            "x": -30.07437864294657,
+            "y": 117.52771565610139
+          },
+          "distance": 35.42873952676142,
+          "length": 354.54222990507253,
+          "anchor": "N-0149"
+        },
+        "nodes": 159,
+        "roads": 229,
+        "blocks": 70,
+        "properties": 180,
+        "buildings": 206,
+        "protectedRoads": 104,
+        "protectedNodes": 104,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "70d10b38c84ae3997d25c23f88e447072450943fac968f94b1808f8592a2e051",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0173",
+            "RD-0174",
+            "RD-0176",
+            "RD-0191",
+            "RD-0207"
+          ],
+          "centroid": {
+            "x": -30.07437864294657,
+            "y": 117.52771565610139
+          },
+          "distance": 35.42873952676142,
+          "length": 354.54222990507253,
+          "anchor": "N-0142"
+        },
+        "nodes": 152,
+        "roads": 221,
+        "blocks": 70,
+        "properties": 179,
+        "buildings": 205,
+        "protectedRoads": 96,
+        "protectedNodes": 96,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-17",
+      "recipe": {
+        "id": "planned-17",
+        "seed": "sqtrial-v1-planned-17",
+        "morphology": "planned",
+        "size": "medium",
+        "stratum": "central",
+        "angleIndex": 3,
+        "count": 4,
+        "offset": {
+          "x": -70,
+          "y": -40
+        }
+      },
+      "survey": "3488eab205e1f49bf0ecbc62d8b6cb02c0b1f6892a1e35c278976f553ee0250f",
+      "target": {
+        "x": 0,
+        "y": 0
+      },
+      "matched": true,
+      "separation": 15.265808352391092,
+      "control": {
+        "status": "selected",
+        "source": "aa8b37f7b94ec2c0adef3ac63102c40962fac5e198c6f79cbbac36b96e33548b",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0212",
+            "RD-0213",
+            "RD-0214",
+            "RD-0216"
+          ],
+          "centroid": {
+            "x": -21.197207214083267,
+            "y": -22.54220699521236
+          },
+          "distance": 30.9430556004378,
+          "length": 211.80186708539287,
+          "anchor": "N-0173"
+        },
+        "nodes": 223,
+        "roads": 350,
+        "blocks": 127,
+        "properties": 479,
+        "buildings": 522,
+        "protectedRoads": 116,
+        "protectedNodes": 116,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "e8153bb4272d52a3b4fbe12080058ecab2c36623915c840a7e04e71bc9d71f92",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0205",
+            "RD-0206",
+            "RD-0209",
+            "RD-0236"
+          ],
+          "centroid": {
+            "x": -21.197207214083267,
+            "y": -7.276398642821269
+          },
+          "distance": 22.41132684349668,
+          "length": 162.10419102200353,
+          "anchor": "N-0165"
+        },
+        "nodes": 215,
+        "roads": 341,
+        "blocks": 127,
+        "properties": 486,
+        "buildings": 528,
+        "protectedRoads": 108,
+        "protectedNodes": 108,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-18",
+      "recipe": {
+        "id": "planned-18",
+        "seed": "sqtrial-v1-planned-18",
+        "morphology": "planned",
+        "size": "large",
+        "stratum": "middle",
+        "angleIndex": 3,
+        "count": 5,
+        "offset": {
+          "x": 100,
+          "y": 0
+        }
+      },
+      "survey": "d98d1c1e37183af5eb1583cb781734ed2c20ed44b9b325a8cbdbe925c3dbb532",
+      "target": {
+        "x": -150.4723230364973,
+        "y": 150.47232303649727
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "103f61c693a9094700ec07142e616590f6ca9a9fedc63b72f9d40e3ee82eb240",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0333",
+            "RD-0334",
+            "RD-0366",
+            "RD-0368",
+            "RD-0398"
+          ],
+          "centroid": {
+            "x": -179.34956775018154,
+            "y": 130.21568972028984
+          },
+          "distance": 35.273594310210136,
+          "length": 419.9771861219688,
+          "anchor": "N-0243"
+        },
+        "nodes": 296,
+        "roads": 489,
+        "blocks": 193,
+        "properties": 1041,
+        "buildings": 1136,
+        "protectedRoads": 128,
+        "protectedNodes": 128,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "0a9eca0ded5661c24957975bf5eb4fdbd4ed8c179a98e83e5f19a8cfd4543cb6",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0327",
+            "RD-0328",
+            "RD-0360",
+            "RD-0362",
+            "RD-0392"
+          ],
+          "centroid": {
+            "x": -179.34956775018154,
+            "y": 130.21568972028984
+          },
+          "distance": 35.273594310210136,
+          "length": 419.9771861219688,
+          "anchor": "N-0237"
+        },
+        "nodes": 290,
+        "roads": 482,
+        "blocks": 193,
+        "properties": 1021,
+        "buildings": 1110,
+        "protectedRoads": 122,
+        "protectedNodes": 122,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-19",
+      "recipe": {
+        "id": "planned-19",
+        "seed": "sqtrial-v1-planned-19",
+        "morphology": "planned",
+        "size": "small",
+        "stratum": "central",
+        "angleIndex": 4,
+        "count": 4,
+        "offset": {
+          "x": 0,
+          "y": -100
+        }
+      },
+      "survey": "312bbb7a5b5ae5e76e8d43cef616fa94c5464c90355010eda171aa9c221ebfdd",
+      "target": {
+        "x": 0,
+        "y": 0
+      },
+      "matched": true,
+      "separation": 43.491793703297155,
+      "control": {
+        "status": "selected",
+        "source": "93feb8e54fa54ad36e6166dc0550f2b3c5c4c62134b6267c681b980832b084ea",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0146",
+            "RD-0147",
+            "RD-0149",
+            "RD-0168"
+          ],
+          "centroid": {
+            "x": -2.750721303942444,
+            "y": -29.07807491580876
+          },
+          "distance": 29.207891202573144,
+          "length": 205.66333477149553,
+          "anchor": "N-0139"
+        },
+        "nodes": 160,
+        "roads": 229,
+        "blocks": 69,
+        "properties": 185,
+        "buildings": 203,
+        "protectedRoads": 104,
+        "protectedNodes": 104,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "a084f31155a93a053eac26abfdd06c3a8f823610d98c65bc43755acfd2abe834",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0158",
+            "RD-0159",
+            "RD-0162",
+            "RD-0163"
+          ],
+          "centroid": {
+            "x": 10.461092032977508,
+            "y": 12.358432030126513
+          },
+          "distance": 16.191519038239818,
+          "length": 135.5660354914297,
+          "anchor": "N-0131"
+        },
+        "nodes": 152,
+        "roads": 221,
+        "blocks": 70,
+        "properties": 191,
+        "buildings": 211,
+        "protectedRoads": 96,
+        "protectedNodes": 96,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-20",
+      "recipe": {
+        "id": "planned-20",
+        "seed": "sqtrial-v1-planned-20",
+        "morphology": "planned",
+        "size": "medium",
+        "stratum": "middle",
+        "angleIndex": 4,
+        "count": 5,
+        "offset": {
+          "x": -100,
+          "y": 60
+        }
+      },
+      "survey": "000df852076f5d53cb1b1711fe18ca98343edde2e69945ff237de40fb64fe1f6",
+      "target": {
+        "x": -148.2,
+        "y": 1.8149265563363772e-14
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "0d4e339b73f254570aeef3a55baace041eb44dd9c4b7bc2de0f6d0add982e201",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0184",
+            "RD-0187",
+            "RD-0212",
+            "RD-0213",
+            "RD-0339"
+          ],
+          "centroid": {
+            "x": -153.39257507035228,
+            "y": -35.822493162312504
+          },
+          "distance": 36.19687627717579,
+          "length": 261.02133886452884,
+          "anchor": "N-0171"
+        },
+        "nodes": 219,
+        "roads": 347,
+        "blocks": 128,
+        "properties": 479,
+        "buildings": 510,
+        "protectedRoads": 114,
+        "protectedNodes": 114,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "dec10397b8006b9bf7781b0a1a9d8e8042f85323dfbdde10ad95d670207c628b",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0176",
+            "RD-0179",
+            "RD-0204",
+            "RD-0205",
+            "RD-0331"
+          ],
+          "centroid": {
+            "x": -153.39257507035228,
+            "y": -35.822493162312504
+          },
+          "distance": 36.19687627717579,
+          "length": 261.02133886452884,
+          "anchor": "N-0163"
+        },
+        "nodes": 212,
+        "roads": 339,
+        "blocks": 128,
+        "properties": 478,
+        "buildings": 510,
+        "protectedRoads": 106,
+        "protectedNodes": 106,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-21",
+      "recipe": {
+        "id": "planned-21",
+        "seed": "sqtrial-v1-planned-21",
+        "morphology": "planned",
+        "size": "large",
+        "stratum": "central",
+        "angleIndex": 5,
+        "count": 4,
+        "offset": {
+          "x": 100,
+          "y": 100
+        }
+      },
+      "survey": "9032c25ffa886e56a8621cb15d95c99385df8c932d2da15619ac3cdd3e683161",
+      "target": {
+        "x": 0,
+        "y": 0
+      },
+      "matched": true,
+      "separation": 31.97381150121776,
+      "control": {
+        "status": "selected",
+        "source": "c117a9f1c5ef8a765efd8b9730ba8dabf9cae8794542008ffa5c60dd81a3eb59",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0317",
+            "RD-0318",
+            "RD-0321",
+            "RD-0322"
+          ],
+          "centroid": {
+            "x": 11.869269611978021,
+            "y": -7.489339914921945
+          },
+          "distance": 14.034592031230117,
+          "length": 195.42157447511605,
+          "anchor": "N-0231"
+        },
+        "nodes": 311,
+        "roads": 520,
+        "blocks": 209,
+        "properties": 1019,
+        "buildings": 1115,
+        "protectedRoads": 128,
+        "protectedNodes": 128,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "e8827afb109220fa6c54fbf6497cebd148a5d0e08779c0e7b3399cab508b073b",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0308",
+            "RD-0311",
+            "RD-0315",
+            "RD-0509"
+          ],
+          "centroid": {
+            "x": -14.860489391950699,
+            "y": -25.034840919660933
+          },
+          "distance": 29.1131826642332,
+          "length": 241.34286447106467,
+          "anchor": "N-0225"
+        },
+        "nodes": 305,
+        "roads": 513,
+        "blocks": 209,
+        "properties": 1026,
+        "buildings": 1121,
+        "protectedRoads": 122,
+        "protectedNodes": 122,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-22",
+      "recipe": {
+        "id": "planned-22",
+        "seed": "sqtrial-v1-planned-22",
+        "morphology": "planned",
+        "size": "small",
+        "stratum": "middle",
+        "angleIndex": 5,
+        "count": 5,
+        "offset": {
+          "x": 15,
+          "y": 0
+        }
+      },
+      "survey": "243f5523619d2c2cb592ab1420012e4444513cb7145f9be2e836a9a6022d2d4a",
+      "target": {
+        "x": -69.86214998123091,
+        "y": -69.86214998123086
+      },
+      "matched": true,
+      "separation": 40.57499647560534,
+      "control": {
+        "status": "selected",
+        "source": "5e6b774e54f59d7dfc03d1b6d049b407cc55bb7f296763b7f05452844641ca09",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0128",
+            "RD-0129",
+            "RD-0131",
+            "RD-0133",
+            "RD-0153"
+          ],
+          "centroid": {
+            "x": -23.24802390389175,
+            "y": -81.19951491647183
+          },
+          "distance": 47.97304027919122,
+          "length": 343.5206398705577,
+          "anchor": "N-0120"
+        },
+        "nodes": 158,
+        "roads": 229,
+        "blocks": 71,
+        "properties": 191,
+        "buildings": 209,
+        "protectedRoads": 104,
+        "protectedNodes": 104,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "4a4f1b0f34e47d49206a1d89a123c544b26f4cb14272b44216482540993b5873",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0120",
+            "RD-0121",
+            "RD-0123",
+            "RD-0146",
+            "RD-0217"
+          ],
+          "centroid": {
+            "x": -53.47606796214288,
+            "y": -54.13300994431455
+          },
+          "distance": 22.713641941291662,
+          "length": 330.538687472873,
+          "anchor": "N-0112"
+        },
+        "nodes": 151,
+        "roads": 221,
+        "blocks": 71,
+        "properties": 198,
+        "buildings": 220,
+        "protectedRoads": 96,
+        "protectedNodes": 96,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-23",
+      "recipe": {
+        "id": "planned-23",
+        "seed": "sqtrial-v1-planned-23",
+        "morphology": "planned",
+        "size": "medium",
+        "stratum": "central",
+        "angleIndex": 6,
+        "count": 4,
+        "offset": {
+          "x": 0,
+          "y": -25
+        }
+      },
+      "survey": "5ce521dc63153a90853060500056531854a360a06dec78fa47693b463655cc78",
+      "target": {
+        "x": -5.684341886080802e-14,
+        "y": 0
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "0ee2e2ac37ad96d27b16881792dd7319bbce09b70921edf53990b65afc2fbbfb",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0225",
+            "RD-0226",
+            "RD-0229",
+            "RD-0230"
+          ],
+          "centroid": {
+            "x": 16.142176994618605,
+            "y": -5.557128591228323
+          },
+          "distance": 17.071952328455094,
+          "length": 170.93934027081798,
+          "anchor": "N-0177"
+        },
+        "nodes": 228,
+        "roads": 359,
+        "blocks": 131,
+        "properties": 495,
+        "buildings": 527,
+        "protectedRoads": 116,
+        "protectedNodes": 116,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "2b3d716fa09c07560a8bc8c6140625e65934022ec7cb46bc90e133c1e9560758",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0219",
+            "RD-0220",
+            "RD-0223",
+            "RD-0224"
+          ],
+          "centroid": {
+            "x": 16.142176994618605,
+            "y": -5.557128591228323
+          },
+          "distance": 17.071952328455094,
+          "length": 170.93934027081798,
+          "anchor": "N-0171"
+        },
+        "nodes": 222,
+        "roads": 352,
+        "blocks": 131,
+        "properties": 493,
+        "buildings": 525,
+        "protectedRoads": 110,
+        "protectedNodes": 110,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-24",
+      "recipe": {
+        "id": "planned-24",
+        "seed": "sqtrial-v1-planned-24",
+        "morphology": "planned",
+        "size": "large",
+        "stratum": "middle",
+        "angleIndex": 6,
+        "count": 5,
+        "offset": {
+          "x": 35,
+          "y": 25
+        }
+      },
+      "survey": "7271bb5607ef703a89e1156fdef8a82541766b813b641f610bf9918e82764109",
+      "target": {
+        "x": -3.909072582878351e-14,
+        "y": -212.8
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "9b2ab815c9fd089c29a5e0328882b2c96a961bc6aa9776d33c2c1867de114750",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0193",
+            "RD-0194",
+            "RD-0195",
+            "RD-0198",
+            "RD-0227"
+          ],
+          "centroid": {
+            "x": 15.222130951260056,
+            "y": -230.82059328414553
+          },
+          "distance": 23.589299544706726,
+          "length": 340.84651384217614,
+          "anchor": "N-0170"
+        },
+        "nodes": 317,
+        "roads": 532,
+        "blocks": 215,
+        "properties": 1014,
+        "buildings": 1090,
+        "protectedRoads": 130,
+        "protectedNodes": 130,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "90b2ba8d84bb029cb43cec549895850da2e1cfada374482e9b62865d16ed4d87",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0185",
+            "RD-0186",
+            "RD-0187",
+            "RD-0190",
+            "RD-0219"
+          ],
+          "centroid": {
+            "x": 15.222130951260056,
+            "y": -230.82059328414553
+          },
+          "distance": 23.589299544706726,
+          "length": 340.84651384217614,
+          "anchor": "N-0162"
+        },
+        "nodes": 310,
+        "roads": 524,
+        "blocks": 215,
+        "properties": 1031,
+        "buildings": 1112,
+        "protectedRoads": 122,
+        "protectedNodes": 122,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "planned-25",
+      "recipe": {
+        "id": "planned-25",
+        "seed": "sqtrial-v1-planned-25",
+        "morphology": "planned",
+        "size": "small",
+        "stratum": "central",
+        "angleIndex": 7,
+        "count": 4,
+        "offset": {
+          "x": -50,
+          "y": 0
+        }
+      },
+      "survey": "ee4716a4a52909822afe022a4acda567e852a6006201b6a9abe7b6d22c545dce",
+      "target": {
+        "x": 0,
+        "y": -2.842170943040401e-14
+      },
+      "matched": true,
+      "separation": 46.00465648018047,
+      "control": {
+        "status": "selected",
+        "source": "327d7044c9e16a77ede6be0f90cdf0f9d25df0731555a8a516a8141b2af11e98",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0149",
+            "RD-0150",
+            "RD-0152",
+            "RD-0174"
+          ],
+          "centroid": {
+            "x": -1.8503936297867654,
+            "y": -37.68548272465053
+          },
+          "distance": 37.73088343486124,
+          "length": 212.9845843079695,
+          "anchor": "N-0144"
+        },
+        "nodes": 166,
+        "roads": 240,
+        "blocks": 74,
+        "properties": 174,
+        "buildings": 183,
+        "protectedRoads": 108,
+        "protectedNodes": 108,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "d7e3abc2b08f03c5275c6ed564759c88c2105b0cce3f0e4fe65c1b7e7a281f4b",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0164",
+            "RD-0165",
+            "RD-0168",
+            "RD-0169"
+          ],
+          "centroid": {
+            "x": 10.404953351132747,
+            "y": 6.6567644921592946
+          },
+          "distance": 12.352148304781714,
+          "length": 143.5199763252349,
+          "anchor": "N-0136"
+        },
+        "nodes": 158,
+        "roads": 230,
+        "blocks": 73,
+        "properties": 179,
+        "buildings": 191,
+        "protectedRoads": 100,
+        "protectedNodes": 100,
+        "maxDegree": 4
+      },
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "radial-20",
+      "recipe": {
+        "id": "radial-20",
+        "seed": "sqtrial-v1-radial-20",
+        "morphology": "radial",
+        "size": "medium",
+        "stratum": "middle",
+        "angleIndex": 1,
+        "count": 5,
+        "offset": {
+          "x": 100,
+          "y": 100
+        }
+      },
+      "survey": "cab617290dc2d99eb03b295328d049ed672e9b89a22d32554be42b529d0ad521",
+      "target": {
+        "x": 44.83289659432191,
+        "y": 109.49442972810353
+      },
+      "matched": true,
+      "separation": 2.220446049250313e-15,
+      "control": {
+        "status": "selected",
+        "source": "7905096c4ffaf4b960aa27c8273ed34173553efa5c1b3abeecb7bb2d0b349361",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0258",
+            "RD-0259",
+            "RD-0260",
+            "RD-0261",
+            "RD-0262"
+          ],
+          "centroid": {
+            "x": 2.289184001893576,
+            "y": 119.70749850109253
+          },
+          "distance": 43.75241998917258,
+          "length": 87.70515190381742,
+          "anchor": "N-0123"
+        },
+        "nodes": 347,
+        "roads": 446,
+        "blocks": 99,
+        "properties": 385,
+        "buildings": 403,
+        "protectedRoads": 108,
+        "protectedNodes": 108,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "a88cfd53df0b362aa970d7415bce8a3e5a4a743786b69d9b530d1c1d68f3aa57",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0238",
+            "RD-0239",
+            "RD-0240",
+            "RD-0241",
+            "RD-0242"
+          ],
+          "centroid": {
+            "x": 2.289184001893574,
+            "y": 119.70749850109253
+          },
+          "distance": 43.75241998917258,
+          "length": 87.7051519038174,
+          "anchor": "N-0104"
+        },
+        "nodes": 328,
+        "roads": 426,
+        "blocks": 99,
+        "properties": 387,
+        "buildings": 398,
+        "protectedRoads": 88,
+        "protectedNodes": 88,
+        "maxDegree": 16
+      },
+      "adaptive": {
+        "status": "selected",
+        "source": "fd2c72fb7aaee63c19a5e014dcacb1188753d0ad64e99cb4a20534be3d8a304a",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0258",
+            "RD-0259",
+            "RD-0260",
+            "RD-0261",
+            "RD-0262"
+          ],
+          "centroid": {
+            "x": 2.289184001893576,
+            "y": 119.70749850109253
+          },
+          "distance": 43.75241998917258,
+          "length": 87.70515190381742,
+          "anchor": "N-0123"
+        },
+        "hub": {
+          "id": "BLK-TRIAL-HUB",
+          "vertices": [
+            "N-0089",
+            "N-0090",
+            "N-0091",
+            "N-0092",
+            "N-0093",
+            "N-0094",
+            "N-0095",
+            "N-0096",
+            "N-0097",
+            "N-0098",
+            "N-0099",
+            "N-0100",
+            "N-0101",
+            "N-0102",
+            "N-0103",
+            "N-0104",
+            "N-0105",
+            "N-0106",
+            "N-0107",
+            "N-0108"
+          ],
+          "area": 1409.84,
+          "roadIds": [
+            "RD-0089",
+            "RD-0090",
+            "RD-0091",
+            "RD-0092",
+            "RD-0093",
+            "RD-0094",
+            "RD-0095",
+            "RD-0096",
+            "RD-0097",
+            "RD-0098",
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0103",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0107",
+            "RD-0108"
+          ]
+        },
+        "nodes": 347,
+        "roads": 446,
+        "blocks": 100,
+        "properties": 385,
+        "buildings": 403,
+        "protectedRoads": 88,
+        "protectedNodes": 88,
+        "maxDegree": 4
+      },
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "radial-21",
+      "recipe": {
+        "id": "radial-21",
+        "seed": "sqtrial-v1-radial-21",
+        "morphology": "radial",
+        "size": "large",
+        "stratum": "central",
+        "angleIndex": 2,
+        "count": 4,
+        "offset": {
+          "x": 15,
+          "y": 0
+        }
+      },
+      "survey": "0f68787ee1ce0b61cb09e567aa77c27f63b95c0f82b3d0819b0fb4fa53a68d68",
+      "target": {
+        "x": 125.35260617581298,
+        "y": -7.071731422784751
+      },
+      "matched": false,
+      "separation": 14.812703061141645,
+      "control": {
+        "status": "selected",
+        "source": "ec5e3d4de675ee36e980f18d9790878f0d6693678745a36f3e8e59ce57ac2a43",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0301",
+            "RD-0302",
+            "RD-0303",
+            "RD-0304"
+          ],
+          "centroid": {
+            "x": 182.29825930657668,
+            "y": 39.230231285969566
+          },
+          "distance": 73.3939994902317,
+          "length": 28.192671607093295,
+          "anchor": "N-0135"
+        },
+        "nodes": 571,
+        "roads": 746,
+        "blocks": 175,
+        "properties": 791,
+        "buildings": 864,
+        "protectedRoads": 122,
+        "protectedNodes": 122,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "f1a86491c40258a46b1a3ea381e1d7ac859e84b02b9fb384a703c323fa4da858",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0111",
+            "RD-0275",
+            "RD-0276",
+            "RD-0277"
+          ],
+          "centroid": {
+            "x": 172.78145638076867,
+            "y": 27.879168161799775
+          },
+          "distance": 58.91571278984781,
+          "length": 95.20801901102821,
+          "anchor": "N-0097"
+        },
+        "nodes": 546,
+        "roads": 720,
+        "blocks": 175,
+        "properties": 786,
+        "buildings": 849,
+        "protectedRoads": 96,
+        "protectedNodes": 96,
+        "maxDegree": 22
+      },
+      "adaptive": {
+        "status": "selected",
+        "source": "bed0a6dc900747d69afbe2db1d1f76ac2ea1c4764f53372bb199f0eaead26513",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0097",
+            "RD-0098",
+            "RD-0099",
+            "RD-0122"
+          ],
+          "centroid": {
+            "x": 114.08235077542115,
+            "y": -27.74754926115032
+          },
+          "distance": 23.547995670021198,
+          "length": 22.37401603372065,
+          "anchor": "N-0100"
+        },
+        "hub": {
+          "id": "BLK-TRIAL-HUB",
+          "vertices": [
+            "N-0097",
+            "N-0098",
+            "N-0099",
+            "N-0100",
+            "N-0101",
+            "N-0102",
+            "N-0103",
+            "N-0104",
+            "N-0105",
+            "N-0106",
+            "N-0107",
+            "N-0108",
+            "N-0109",
+            "N-0110",
+            "N-0111",
+            "N-0112",
+            "N-0113",
+            "N-0114",
+            "N-0115",
+            "N-0116",
+            "N-0117",
+            "N-0118",
+            "N-0119",
+            "N-0120",
+            "N-0121",
+            "N-0122"
+          ],
+          "area": 1720.22,
+          "roadIds": [
+            "RD-0097",
+            "RD-0098",
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0103",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0107",
+            "RD-0108",
+            "RD-0109",
+            "RD-0110",
+            "RD-0111",
+            "RD-0112",
+            "RD-0113",
+            "RD-0114",
+            "RD-0115",
+            "RD-0116",
+            "RD-0117",
+            "RD-0118",
+            "RD-0119",
+            "RD-0120",
+            "RD-0121",
+            "RD-0122"
+          ]
+        },
+        "nodes": 571,
+        "roads": 746,
+        "blocks": 176,
+        "properties": 791,
+        "buildings": 864,
+        "protectedRoads": 96,
+        "protectedNodes": 96,
+        "maxDegree": 4
+      },
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "radial-22",
+      "recipe": {
+        "id": "radial-22",
+        "seed": "sqtrial-v1-radial-22",
+        "morphology": "radial",
+        "size": "small",
+        "stratum": "middle",
+        "angleIndex": 2,
+        "count": 5,
+        "offset": {
+          "x": 0,
+          "y": -25
+        }
+      },
+      "survey": "b2dba1b7d2d78de3170fbc1b3050b1444b364e12660ce9318137c5f696c22ba4",
+      "target": {
+        "x": -28.944032419038017,
+        "y": 95.08983659004225
+      },
+      "matched": true,
+      "separation": 0,
+      "control": {
+        "status": "selected",
+        "source": "c9038e4da7dbc28ee4dd2397aadbca9a0bd556abc705dadda5470b74a8a5be39",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0117",
+            "RD-0160",
+            "RD-0161",
+            "RD-0162",
+            "RD-0198"
+          ],
+          "centroid": {
+            "x": -24.235701935217573,
+            "y": 80.02073985994859
+          },
+          "distance": 15.787528375454862,
+          "length": 119.52499466193372,
+          "anchor": "N-0171"
+        },
+        "nodes": 220,
+        "roads": 276,
+        "blocks": 56,
+        "properties": 165,
+        "buildings": 171,
+        "protectedRoads": 100,
+        "protectedNodes": 100,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "e3a937f200c485c6279d92b4a373ee72a418de1953348daf36b8fbce08177d51",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0101",
+            "RD-0144",
+            "RD-0145",
+            "RD-0146",
+            "RD-0182"
+          ],
+          "centroid": {
+            "x": -24.235701935217573,
+            "y": 80.02073985994859
+          },
+          "distance": 15.787528375454862,
+          "length": 119.5249946619337,
+          "anchor": "N-0156"
+        },
+        "nodes": 205,
+        "roads": 260,
+        "blocks": 56,
+        "properties": 167,
+        "buildings": 173,
+        "protectedRoads": 84,
+        "protectedNodes": 84,
+        "maxDegree": 12
+      },
+      "adaptive": {
+        "status": "selected",
+        "source": "58ab7dccd5ae8a4ef45a9173c7db323f1e5e5a2f9f8136477a2272b5e4df685e",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0117",
+            "RD-0160",
+            "RD-0161",
+            "RD-0162",
+            "RD-0198"
+          ],
+          "centroid": {
+            "x": -24.235701935217573,
+            "y": 80.02073985994859
+          },
+          "distance": 15.787528375454862,
+          "length": 119.52499466193372,
+          "anchor": "N-0171"
+        },
+        "hub": {
+          "id": "BLK-TRIAL-HUB",
+          "vertices": [
+            "N-0085",
+            "N-0086",
+            "N-0087",
+            "N-0088",
+            "N-0089",
+            "N-0090",
+            "N-0091",
+            "N-0092",
+            "N-0093",
+            "N-0094",
+            "N-0095",
+            "N-0096",
+            "N-0097",
+            "N-0098",
+            "N-0099",
+            "N-0100"
+          ],
+          "area": 1279.05,
+          "roadIds": [
+            "RD-0085",
+            "RD-0086",
+            "RD-0087",
+            "RD-0088",
+            "RD-0089",
+            "RD-0090",
+            "RD-0091",
+            "RD-0092",
+            "RD-0093",
+            "RD-0094",
+            "RD-0095",
+            "RD-0096",
+            "RD-0097",
+            "RD-0098",
+            "RD-0099",
+            "RD-0100"
+          ]
+        },
+        "nodes": 220,
+        "roads": 276,
+        "blocks": 57,
+        "properties": 165,
+        "buildings": 171,
+        "protectedRoads": 84,
+        "protectedNodes": 84,
+        "maxDegree": 4
+      },
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "radial-23",
+      "recipe": {
+        "id": "radial-23",
+        "seed": "sqtrial-v1-radial-23",
+        "morphology": "radial",
+        "size": "medium",
+        "stratum": "central",
+        "angleIndex": 3,
+        "count": 4,
+        "offset": {
+          "x": 35,
+          "y": 25
+        }
+      },
+      "survey": "fda26ff9c1c94f7c06aa367961b3c3b0219503b89f823ac3653ded993fc24709",
+      "target": {
+        "x": 58.88341168331306,
+        "y": 7.547748566902214
+      },
+      "matched": false,
+      "separation": 70.08392940132626,
+      "control": {
+        "status": "selected",
+        "source": "5281451072c0af81d8a7652aff2583d451929090d7ea17e63ce098dec23b7155",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0213",
+            "RD-0214",
+            "RD-0215",
+            "RD-0216"
+          ],
+          "centroid": {
+            "x": 105.54920110113274,
+            "y": 54.09174628181428
+          },
+          "distance": 65.9093288182639,
+          "length": 35.083647508407786,
+          "anchor": "N-0125"
+        },
+        "nodes": 352,
+        "roads": 453,
+        "blocks": 101,
+        "properties": 401,
+        "buildings": 427,
+        "protectedRoads": 110,
+        "protectedNodes": 110,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "bf0abce4c2821fc9c8c74f56d51cbb35041dc5260bda2988ae887e65bab1b8bf",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0124",
+            "RD-0203",
+            "RD-0204",
+            "RD-0205"
+          ],
+          "centroid": {
+            "x": 35.473641512451266,
+            "y": 55.17484769130148
+          },
+          "distance": 53.06936885302033,
+          "length": 93.36542852493274,
+          "anchor": "N-0091"
+        },
+        "nodes": 333,
+        "roads": 433,
+        "blocks": 101,
+        "properties": 402,
+        "buildings": 429,
+        "protectedRoads": 90,
+        "protectedNodes": 90,
+        "maxDegree": 16
+      },
+      "adaptive": {
+        "status": "selected",
+        "source": "fcead1b985d3233892e54dde345725c23bb9516c37f05417da3d59885bde551b",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0093",
+            "RD-0094",
+            "RD-0095",
+            "RD-0096"
+          ],
+          "centroid": {
+            "x": 69.76833930791449,
+            "y": -9.6465232652367
+          },
+          "distance": 20.350052413453316,
+          "length": 29.173869505038738,
+          "anchor": "N-0093"
+        },
+        "hub": {
+          "id": "BLK-TRIAL-HUB",
+          "vertices": [
+            "N-0091",
+            "N-0092",
+            "N-0093",
+            "N-0094",
+            "N-0095",
+            "N-0096",
+            "N-0097",
+            "N-0098",
+            "N-0099",
+            "N-0100",
+            "N-0101",
+            "N-0102",
+            "N-0103",
+            "N-0104",
+            "N-0105",
+            "N-0106",
+            "N-0107",
+            "N-0108",
+            "N-0109",
+            "N-0110"
+          ],
+          "area": 1409.97,
+          "roadIds": [
+            "RD-0091",
+            "RD-0092",
+            "RD-0093",
+            "RD-0094",
+            "RD-0095",
+            "RD-0096",
+            "RD-0097",
+            "RD-0098",
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0103",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0107",
+            "RD-0108",
+            "RD-0109",
+            "RD-0110"
+          ]
+        },
+        "nodes": 352,
+        "roads": 453,
+        "blocks": 102,
+        "properties": 401,
+        "buildings": 427,
+        "protectedRoads": 90,
+        "protectedNodes": 90,
+        "maxDegree": 4
+      },
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "radial-24",
+      "recipe": {
+        "id": "radial-24",
+        "seed": "sqtrial-v1-radial-24",
+        "morphology": "radial",
+        "size": "large",
+        "stratum": "middle",
+        "angleIndex": 3,
+        "count": 5,
+        "offset": {
+          "x": -50,
+          "y": 0
+        }
+      },
+      "survey": "ed42dbb87b41f4eb893f6b1fe35f38ab99811bf2f2e817f8a0029301a3dba695",
+      "target": {
+        "x": -180.75745062257192,
+        "y": 162.67554441776113
+      },
+      "matched": true,
+      "separation": 2.842170943040401e-14,
+      "control": {
+        "status": "selected",
+        "source": "ceb424af79edcc6ca85ae3804ba13bc58e27a67c9859d989b0cfa1d655486c9c",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0179",
+            "RD-0447",
+            "RD-0448",
+            "RD-0449",
+            "RD-0450"
+          ],
+          "centroid": {
+            "x": -147.75966128291248,
+            "y": 183.54856998115648
+          },
+          "distance": 39.04532363132233,
+          "length": 158.61816687504637,
+          "anchor": "N-0376"
+        },
+        "nodes": 569,
+        "roads": 742,
+        "blocks": 173,
+        "properties": 780,
+        "buildings": 849,
+        "protectedRoads": 122,
+        "protectedNodes": 122,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "09d36d54e271c42ebacd1b3c301ad6390a38de2805713724d712b7507414ff31",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0153",
+            "RD-0421",
+            "RD-0422",
+            "RD-0423",
+            "RD-0424"
+          ],
+          "centroid": {
+            "x": -147.75966128291245,
+            "y": 183.54856998115648
+          },
+          "distance": 39.045323631322354,
+          "length": 158.6181668750463,
+          "anchor": "N-0351"
+        },
+        "nodes": 544,
+        "roads": 716,
+        "blocks": 173,
+        "properties": 805,
+        "buildings": 883,
+        "protectedRoads": 96,
+        "protectedNodes": 96,
+        "maxDegree": 22
+      },
+      "adaptive": {
+        "status": "selected",
+        "source": "6efe19888e68533444b4d1fd12f85b273ec303c4f9bd5868a56ee12d9b110572",
+        "selection": {
+          "status": "selected",
+          "visits": 6,
+          "ids": [
+            "RD-0179",
+            "RD-0447",
+            "RD-0448",
+            "RD-0449",
+            "RD-0450"
+          ],
+          "centroid": {
+            "x": -147.75966128291248,
+            "y": 183.54856998115648
+          },
+          "distance": 39.04532363132233,
+          "length": 158.61816687504637,
+          "anchor": "N-0376"
+        },
+        "hub": {
+          "id": "BLK-TRIAL-HUB",
+          "vertices": [
+            "N-0097",
+            "N-0098",
+            "N-0099",
+            "N-0100",
+            "N-0101",
+            "N-0102",
+            "N-0103",
+            "N-0104",
+            "N-0105",
+            "N-0106",
+            "N-0107",
+            "N-0108",
+            "N-0109",
+            "N-0110",
+            "N-0111",
+            "N-0112",
+            "N-0113",
+            "N-0114",
+            "N-0115",
+            "N-0116",
+            "N-0117",
+            "N-0118",
+            "N-0119",
+            "N-0120",
+            "N-0121",
+            "N-0122"
+          ],
+          "area": 1719.72,
+          "roadIds": [
+            "RD-0097",
+            "RD-0098",
+            "RD-0099",
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0103",
+            "RD-0104",
+            "RD-0105",
+            "RD-0106",
+            "RD-0107",
+            "RD-0108",
+            "RD-0109",
+            "RD-0110",
+            "RD-0111",
+            "RD-0112",
+            "RD-0113",
+            "RD-0114",
+            "RD-0115",
+            "RD-0116",
+            "RD-0117",
+            "RD-0118",
+            "RD-0119",
+            "RD-0120",
+            "RD-0121",
+            "RD-0122"
+          ]
+        },
+        "nodes": 569,
+        "roads": 742,
+        "blocks": 174,
+        "properties": 780,
+        "buildings": 849,
+        "protectedRoads": 96,
+        "protectedNodes": 96,
+        "maxDegree": 4
+      },
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": true,
+      "authority": "none",
+      "recovery": "not-run"
+    },
+    {
+      "id": "radial-25",
+      "recipe": {
+        "id": "radial-25",
+        "seed": "sqtrial-v1-radial-25",
+        "morphology": "radial",
+        "size": "small",
+        "stratum": "central",
+        "angleIndex": 4,
+        "count": 4,
+        "offset": {
+          "x": 0,
+          "y": 60
+        }
+      },
+      "survey": "86c2765a5007bfe77902436dbdc02ed5d6dfaee06dbe4f04f43d1a095874d258",
+      "target": {
+        "x": -32.29189435699146,
+        "y": -4.337138663266188
+      },
+      "matched": false,
+      "separation": 61.0248624080846,
+      "control": {
+        "status": "selected",
+        "source": "550671e11593cbdd733009067bbf998a935b5fd5e4bd4f93c2518be6c259e44a",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156"
+          ],
+          "centroid": {
+            "x": 16.251135447551103,
+            "y": 34.1231641116135
+          },
+          "distance": 61.93238758630355,
+          "length": 44.526808892705844,
+          "anchor": "N-0108"
+        },
+        "nodes": 219,
+        "roads": 274,
+        "blocks": 55,
+        "properties": 160,
+        "buildings": 164,
+        "protectedRoads": 98,
+        "protectedNodes": 98,
+        "maxDegree": 4
+      },
+      "experimental": {
+        "status": "selected",
+        "source": "15847bf46c1d5da65bfc2500d99b1a3b70892dc96ac45c06c76ec4ae87ea7995",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0098",
+            "RD-0144",
+            "RD-0145",
+            "RD-0146"
+          ],
+          "centroid": {
+            "x": -43.89846956400155,
+            "y": 44.42165181029321
+          },
+          "distance": 50.121175529714456,
+          "length": 97.25608629198553,
+          "anchor": "N-0083"
+        },
+        "nodes": 204,
+        "roads": 258,
+        "blocks": 55,
+        "properties": 162,
+        "buildings": 168,
+        "protectedRoads": 82,
+        "protectedNodes": 82,
+        "maxDegree": 12
+      },
+      "adaptive": {
+        "status": "selected",
+        "source": "8aef2df98712150089175be2b6bfb65e30e5a6e7c84adccdcb9b71fdc50087b8",
+        "selection": {
+          "status": "selected",
+          "visits": 5,
+          "ids": [
+            "RD-0085",
+            "RD-0086",
+            "RD-0087",
+            "RD-0088"
+          ],
+          "centroid": {
+            "x": -19.730987549655275,
+            "y": -17.367331647329898
+          },
+          "distance": 18.098682521789474,
+          "length": 35.76214858857546,
+          "anchor": "N-0085"
+        },
+        "hub": {
+          "id": "BLK-TRIAL-HUB",
+          "vertices": [
+            "N-0083",
+            "N-0084",
+            "N-0085",
+            "N-0086",
+            "N-0087",
+            "N-0088",
+            "N-0089",
+            "N-0090",
+            "N-0091",
+            "N-0092",
+            "N-0093",
+            "N-0094",
+            "N-0095",
+            "N-0096",
+            "N-0097",
+            "N-0098"
+          ],
+          "area": 1278.93,
+          "roadIds": [
+            "RD-0083",
+            "RD-0084",
+            "RD-0085",
+            "RD-0086",
+            "RD-0087",
+            "RD-0088",
+            "RD-0089",
+            "RD-0090",
+            "RD-0091",
+            "RD-0092",
+            "RD-0093",
+            "RD-0094",
+            "RD-0095",
+            "RD-0096",
+            "RD-0097",
+            "RD-0098"
+          ]
+        },
+        "nodes": 219,
+        "roads": 274,
+        "blocks": 56,
+        "properties": 160,
+        "buildings": 164,
+        "protectedRoads": 82,
+        "protectedNodes": 82,
+        "maxDegree": 4
+      },
+      "adaptiveMatchedControl": true,
+      "adaptiveMatchedExperimental": false,
+      "authority": "none",
+      "recovery": "not-run"
+    }
+  ]
+}

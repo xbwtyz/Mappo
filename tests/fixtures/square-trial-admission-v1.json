@@ -1,0 +1,167 @@
+{
+  "version": 1,
+  "generation": {
+    "source": "5f07ce29c46cb2c7d1ccad3710cf32249dd6b19c",
+    "run": 46114917704,
+    "aggregate": 140886768584
+  },
+  "movement": {
+    "source": "f5e6798cda546a778ea06f9319043ca86711e070",
+    "run": 46115161509,
+    "aggregate": 140887646594
+  },
+  "rows": [
+    {
+      "id": "radial-medium:central:control",
+      "pilot": "radial-medium",
+      "arm": "control",
+      "rawSource": "5cf076f4dc4916665e893d5c761e15cee95841966880b4d8bb5a8ebe86fbcae9",
+      "survey": "a3531ca912311aa681a4a6cf752192276308cb4607666615e16e2fd39cec385d",
+      "selected": [
+        "RD-0212",
+        "RD-0213",
+        "RD-0214",
+        "RD-0215"
+      ],
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "direct": "direct-road-valid",
+      "matched": false
+    },
+    {
+      "id": "radial-medium:central:experimental",
+      "pilot": "radial-medium",
+      "arm": "experimental",
+      "rawSource": "ec81a67071d275dea5bc35483bdf76cbfd1639c21219086c9a131353229d6cf5",
+      "survey": "a3531ca912311aa681a4a6cf752192276308cb4607666615e16e2fd39cec385d",
+      "selected": [
+        "RD-0138",
+        "RD-0211",
+        "RD-0212",
+        "RD-0213"
+      ],
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "direct": "graph-refused",
+      "matched": false
+    },
+    {
+      "id": "organic-small:central:control",
+      "pilot": "organic-small",
+      "arm": "control",
+      "rawSource": "b2f75101015a05aefd23e5c3150e238faf4c5c54392ccfd88d22727b7a7a610a",
+      "survey": "c9b4e9eaf965edeedd56314a31553f84ec074dc80b4e325a75525a5e1c51e47a",
+      "selected": [
+        "RD-0154",
+        "RD-0156",
+        "RD-0157",
+        "RD-0179"
+      ],
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "direct": "graph-refused",
+      "matched": true
+    },
+    {
+      "id": "organic-small:central:experimental",
+      "pilot": "organic-small",
+      "arm": "experimental",
+      "rawSource": "11e8c5f20ec12787a44dce3e63c146027c9b030dad89b7b2d2815fb5b4fc2094",
+      "survey": "c9b4e9eaf965edeedd56314a31553f84ec074dc80b4e325a75525a5e1c51e47a",
+      "selected": [
+        "RD-0148",
+        "RD-0150",
+        "RD-0151",
+        "RD-0173"
+      ],
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "direct": "direct-road-valid",
+      "matched": true
+    },
+    {
+      "id": "linear-small:central:control",
+      "pilot": "linear-small",
+      "arm": "control",
+      "rawSource": "2fab5e5f14c5ef8fa4501f0d85949d9de71ac2e01eedfd1fa82bc84305bc54b4",
+      "survey": "6e38d22405be614ad24c8253c58477bb58dc764db88941eba6010d8349e339db",
+      "selected": [
+        "RD-0182",
+        "RD-0215",
+        "RD-0217",
+        "RD-0239"
+      ],
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "direct": "boundary-refused",
+      "matched": false
+    },
+    {
+      "id": "linear-small:central:experimental",
+      "pilot": "linear-small",
+      "arm": "experimental",
+      "rawSource": "e161155f5ecaa899483f07921a2e653389a177bdfbbb47a02be9ee06878ae645",
+      "survey": "6e38d22405be614ad24c8253c58477bb58dc764db88941eba6010d8349e339db",
+      "selected": [
+        "RD-0116",
+        "RD-0117",
+        "RD-0141",
+        "RD-0174"
+      ],
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "direct": "direct-road-valid",
+      "matched": false
+    },
+    {
+      "id": "planned-medium:central:control",
+      "pilot": "planned-medium",
+      "arm": "control",
+      "rawSource": "4006f6189eb83a6c6651108e1d289fabbef35ecb6d333c260f94d5a8390a3384",
+      "survey": "7aa4b27060b60003ffe285a8f9b51e8bf638170e3c216800ba8e517c29777ed9",
+      "selected": [
+        "RD-0224",
+        "RD-0256",
+        "RD-0278",
+        "RD-0280"
+      ],
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "direct": "direct-road-valid",
+      "matched": true
+    },
+    {
+      "id": "planned-medium:central:experimental",
+      "pilot": "planned-medium",
+      "arm": "experimental",
+      "rawSource": "9c2561059bd1355b5c8a1d6a6987b6f93d3927d568495298124872cde730f15e",
+      "survey": "7aa4b27060b60003ffe285a8f9b51e8bf638170e3c216800ba8e517c29777ed9",
+      "selected": [
+        "RD-0212",
+        "RD-0214",
+        "RD-0215",
+        "RD-0244"
+      ],
+      "offset": {
+        "x": 35,
+        "y": 25
+      },
+      "direct": "direct-road-valid",
+      "matched": true
+    }
+  ]
+}

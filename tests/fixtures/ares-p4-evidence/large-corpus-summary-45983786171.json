@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "source": "0327d329fc01a6be818404af8df1916830ba81a6",
+  "run": 45983786171,
+  "planned": 216,
+  "attempted": 171,
+  "categories": {
+    "baseline-valid": 67,
+    "geometry-recovered": 23,
+    "search-refused": 50,
+    "preflight-refused": 31,
+    "selection-unavailable": 36,
+    "selection-limit": 9
+  },
+  "byCity": {
+    "organic-large": {
+      "baseline-valid": 17,
+      "geometry-recovered": 7,
+      "search-refused": 13,
+      "preflight-refused": 8
+    },
+    "planned-medium": {
+      "baseline-valid": 25,
+      "geometry-recovered": 11,
+      "search-refused": 9
+    },
+    "linear-medium": {
+      "baseline-valid": 21,
+      "search-refused": 14,
+      "preflight-refused": 7,
+      "geometry-recovered": 3
+    },
+    "radial-small": {
+      "baseline-valid": 4,
+      "search-refused": 14,
+      "preflight-refused": 16,
+      "geometry-recovered": 2
+    }
+  },
+  "byGroup": {
+    "quad": {
+      "baseline-valid": 15,
+      "geometry-recovered": 6,
+      "search-refused": 5,
+      "preflight-refused": 1
+    },
+    "eight-loop": {
+      "baseline-valid": 19,
+      "search-refused": 13,
+      "preflight-refused": 3,
+      "geometry-recovered": 1
+    },
+    "five-chain": {
+      "baseline-valid": 11,
+      "search-refused": 11,
+      "preflight-refused": 11,
+      "geometry-recovered": 3
+    },
+    "eight-chain": {
+      "baseline-valid": 10,
+      "geometry-recovered": 4,
+      "search-refused": 9,
+      "preflight-refused": 13
+    },
+    "five-branch": {
+      "baseline-valid": 12,
+      "preflight-refused": 3,
+      "search-refused": 12,
+      "geometry-recovered": 9
+    }
+  },
+  "byDistance": {
+    "50": {
+      "baseline-valid": 46,
+      "search-refused": 4,
+      "preflight-refused": 4,
+      "geometry-recovered": 3
+    },
+    "75": {
+      "geometry-recovered": 12,
+      "search-refused": 17,
+      "baseline-valid": 16,
+      "preflight-refused": 12
+    },
+    "100": {
+      "geometry-recovered": 8,
+      "search-refused": 29,
+      "baseline-valid": 5,
+      "preflight-refused": 15
+    }
+  },
+  "byDirection": {
+    "x": {
+      "baseline-valid": 25,
+      "geometry-recovered": 12,
+      "preflight-refused": 17,
+      "search-refused": 3
+    },
+    "y": {
+      "baseline-valid": 15,
+      "search-refused": 30,
+      "geometry-recovered": 4,
+      "preflight-refused": 8
+    },
+    "diagonal": {
+      "baseline-valid": 27,
+      "geometry-recovered": 7,
+      "search-refused": 17,
+      "preflight-refused": 6
+    }
+  },
+  "verified": 90,
+  "repeatMatches": 18,
+  "maxWork": 1560846,
+  "maxSearchMs": 4119.6140700000005,
+  "minRefusalRemainingWork": 6439154,
+  "allCandidateLimit": true
+}

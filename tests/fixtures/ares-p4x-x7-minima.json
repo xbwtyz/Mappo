@@ -1,0 +1,259 @@
+{
+  "version": 1,
+  "analysisRevision": "1d6b25319acbe0123d59b200066765dc7c86f89e",
+  "analysisEvidence": "docs/research/evidence/p4x-x7-connected-minimum-46079959187.json",
+  "rows": [
+    {
+      "id": "linear-medium:eight-chain:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "minimum": 6,
+      "conflicts": 71,
+      "witness": [
+        "N-0137",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ]
+    },
+    {
+      "id": "linear-medium:eight-chain:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "minimum": 5,
+      "conflicts": 39,
+      "witness": [
+        "N-0137",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ]
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "minimum": 9,
+      "conflicts": 71,
+      "witness": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148"
+      ]
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "minimum": 5,
+      "conflicts": 39,
+      "witness": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0148"
+      ]
+    },
+    {
+      "id": "planned-medium:eight-chain:100:diagonal",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "minimum": 9,
+      "conflicts": 30,
+      "witness": [
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140"
+      ]
+    },
+    {
+      "id": "planned-medium:eight-chain:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "minimum": 9,
+      "conflicts": 65,
+      "witness": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139"
+      ]
+    },
+    {
+      "id": "planned-medium:eight-chain:75:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "minimum": 9,
+      "conflicts": 65,
+      "witness": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139"
+      ]
+    },
+    {
+      "id": "planned-medium:five-chain:100:diagonal",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "minimum": 6,
+      "conflicts": 18,
+      "witness": [
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137"
+      ]
+    },
+    {
+      "id": "planned-medium:five-chain:100:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "minimum": 6,
+      "conflicts": 44,
+      "witness": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136"
+      ]
+    },
+    {
+      "id": "planned-medium:five-chain:75:y",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "minimum": 6,
+      "conflicts": 44,
+      "witness": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136"
+      ]
+    },
+    {
+      "id": "radial-small:eight-loop:100:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "minimum": 6,
+      "conflicts": 16,
+      "witness": [
+        "N-0107",
+        "N-0108",
+        "N-0109",
+        "N-0142",
+        "N-0143",
+        "N-0166"
+      ]
+    },
+    {
+      "id": "radial-small:five-branch:100:diagonal",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "minimum": 7,
+      "conflicts": 14,
+      "witness": [
+        "N-0102",
+        "N-0104",
+        "N-0105",
+        "N-0141",
+        "N-0165",
+        "N-0187",
+        "N-0212"
+      ]
+    },
+    {
+      "id": "radial-small:five-branch:100:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "minimum": 10,
+      "conflicts": 16,
+      "witness": [
+        "N-0103",
+        "N-0104",
+        "N-0105",
+        "N-0107",
+        "N-0108",
+        "N-0141",
+        "N-0142",
+        "N-0143",
+        "N-0165",
+        "N-0188"
+      ]
+    },
+    {
+      "id": "radial-small:five-branch:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "minimum": 5,
+      "conflicts": 11,
+      "witness": [
+        "N-0103",
+        "N-0104",
+        "N-0141",
+        "N-0165",
+        "N-0188"
+      ]
+    },
+    {
+      "id": "radial-small:five-branch:75:diagonal",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "minimum": 5,
+      "conflicts": 11,
+      "witness": [
+        "N-0104",
+        "N-0105",
+        "N-0141",
+        "N-0165",
+        "N-0188"
+      ]
+    },
+    {
+      "id": "radial-small:five-branch:75:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "minimum": 7,
+      "conflicts": 14,
+      "witness": [
+        "N-0103",
+        "N-0104",
+        "N-0105",
+        "N-0141",
+        "N-0142",
+        "N-0165",
+        "N-0188"
+      ]
+    },
+    {
+      "id": "radial-small:five-chain:50:y",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "minimum": 6,
+      "conflicts": 9,
+      "witness": [
+        "N-0103",
+        "N-0104",
+        "N-0140",
+        "N-0141",
+        "N-0164",
+        "N-0188"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4243 @@
+{
+  "version": 1,
+  "source": "8f5fcef4f3bec174d04588acb632923c9954765b",
+  "run": 45978603404,
+  "attempt": 1,
+  "aggregate": 140437247340,
+  "rows": [
+    {
+      "job": 140436677503,
+      "version": 1,
+      "caseId": "holdout-linear",
+      "context": {
+        "version": 1,
+        "sessionId": "ares-p3-holdout-linear",
+        "sourceVersion": "0.2.25-dev",
+        "operation": {
+          "version": 1,
+          "family": "road",
+          "operation": "translate-road-group",
+          "projectId": "city-ares-p3-reserved-linear-",
+          "revision": 1,
+          "editedRefs": [
+            {
+              "collection": "roads",
+              "id": "RD-0138"
+            },
+            {
+              "collection": "roads",
+              "id": "RD-0139"
+            }
+          ],
+          "permissions": {
+            "alternativeFrontage": true,
+            "uniformScaling": true,
+            "maxLinearReduction": 0.2,
+            "destruction": true,
+            "regeneration": false
+          },
+          "geometry": {
+            "offset": {
+              "x": 100,
+              "y": 0
+            }
+          }
+        }
+      },
+      "snapshotFingerprint": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "limits": {
+        "maxObjects": 10000,
+        "maxHops": 6
+      },
+      "maxCandidates": 32,
+      "maxNeighbors": 4,
+      "eligibilityStatus": "research-eligible",
+      "status": "geometry-recovered",
+      "baseline": {
+        "valid": false,
+        "issues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "blockingRoadIds": [
+          "RD-0139",
+          "RD-0141",
+          "RD-0151",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "blockingNodeIds": [],
+        "geometryValid": false,
+        "constraints": {
+          "changedRoadIds": [
+            "RD-0131",
+            "RD-0132",
+            "RD-0136",
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0151",
+            "RD-0153",
+            "RD-0154"
+          ],
+          "finalChecked": 30,
+          "finalBlockers": [],
+          "sweptUnresolved": []
+        }
+      },
+      "attempts": 1,
+      "adjustedWitness": {
+        "kind": "geometry-with-final-constraints",
+        "neighbors": [
+          {
+            "id": "N-0136",
+            "old": {
+              "x": -851.6240919062055,
+              "y": -172.47612244508377
+            },
+            "point": {
+              "x": -845.3740919062055,
+              "y": -172.47612244508377
+            }
+          },
+          {
+            "id": "N-0138",
+            "old": {
+              "x": -646.6194967913682,
+              "y": -172.47612244508377
+            },
+            "point": {
+              "x": -640.3694967913682,
+              "y": -172.47612244508377
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0131",
+            "point": {
+              "x": -643.4930322835667,
+              "y": -216.0894095860934
+            }
+          },
+          {
+            "id": "N-0132",
+            "point": {
+              "x": -546.6194967913682,
+              "y": -216.0894095860934
+            }
+          },
+          {
+            "id": "N-0136",
+            "point": {
+              "x": -845.3740919062055,
+              "y": -172.47612244508377
+            }
+          },
+          {
+            "id": "N-0137",
+            "point": {
+              "x": -643.4930322835667,
+              "y": -172.47612244508377
+            }
+          },
+          {
+            "id": "N-0138",
+            "point": {
+              "x": -640.3694967913682,
+              "y": -172.47612244508377
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0131",
+          "RD-0132",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0150",
+          "RD-0151",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0155",
+          "RD-0156"
+        ],
+        "displacement": 12.5,
+        "stencil": {
+          "factor": 0.0625,
+          "taper": false
+        },
+        "constraints": {
+          "changedRoadIds": [
+            "RD-0131",
+            "RD-0132",
+            "RD-0136",
+            "RD-0137",
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0150",
+            "RD-0151",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156"
+          ],
+          "finalChecked": 45,
+          "finalBlockers": [],
+          "sweptUnresolved": []
+        }
+      },
+      "termination": "first-valid-adjustment",
+      "constraintMode": "final-landscape-defense",
+      "constraintRejected": 0,
+      "stats": {
+        "work": 564616,
+        "expansions": 1,
+        "remainingWork": 31435384,
+        "remainingExpansions": 131071
+      },
+      "elapsedMs": 1018.4198970000001,
+      "geometry": {
+        "nodes": [
+          {
+            "id": "N-0061",
+            "role": "stationary",
+            "before": {
+              "x": -851.6240919062055,
+              "y": -133.9673970528519
+            },
+            "after": {
+              "x": -851.6240919062055,
+              "y": -133.9673970528519
+            }
+          },
+          {
+            "id": "N-0065",
+            "role": "stationary",
+            "before": {
+              "x": -877.6943477370381,
+              "y": -172.47612244508377
+            },
+            "after": {
+              "x": -877.6943477370381,
+              "y": -172.47612244508377
+            }
+          },
+          {
+            "id": "N-0068",
+            "role": "stationary",
+            "before": {
+              "x": -851.6240919062055,
+              "y": -199.96655266258009
+            },
+            "after": {
+              "x": -851.6240919062055,
+              "y": -199.96655266258009
+            }
+          },
+          {
+            "id": "N-0071",
+            "role": "stationary",
+            "before": {
+              "x": -818.4095861112189,
+              "y": -216.0894095860934
+            },
+            "after": {
+              "x": -818.4095861112189,
+              "y": -216.0894095860934
+            }
+          },
+          {
+            "id": "N-0074",
+            "role": "stationary",
+            "before": {
+              "x": -743.4930322835667,
+              "y": -231.3371475470404
+            },
+            "after": {
+              "x": -743.4930322835667,
+              "y": -231.3371475470404
+            }
+          },
+          {
+            "id": "N-0077",
+            "role": "stationary",
+            "before": {
+              "x": -646.6194967913682,
+              "y": -234.71795273274003
+            },
+            "after": {
+              "x": -646.6194967913682,
+              "y": -234.71795273274003
+            }
+          },
+          {
+            "id": "N-0131",
+            "role": "selected",
+            "before": {
+              "x": -743.4930322835667,
+              "y": -216.0894095860934
+            },
+            "after": {
+              "x": -643.4930322835667,
+              "y": -216.0894095860934
+            }
+          },
+          {
+            "id": "N-0132",
+            "role": "selected",
+            "before": {
+              "x": -646.6194967913682,
+              "y": -216.0894095860934
+            },
+            "after": {
+              "x": -546.6194967913682,
+              "y": -216.0894095860934
+            }
+          },
+          {
+            "id": "N-0133",
+            "role": "stationary",
+            "before": {
+              "x": -535.5149547392919,
+              "y": -216.0894095860934
+            },
+            "after": {
+              "x": -535.5149547392919,
+              "y": -216.0894095860934
+            }
+          },
+          {
+            "id": "N-0136",
+            "role": "adjusted",
+            "before": {
+              "x": -851.6240919062055,
+              "y": -172.47612244508377
+            },
+            "after": {
+              "x": -845.3740919062055,
+              "y": -172.47612244508377
+            }
+          },
+          {
+            "id": "N-0137",
+            "role": "selected",
+            "before": {
+              "x": -743.4930322835667,
+              "y": -172.47612244508377
+            },
+            "after": {
+              "x": -643.4930322835667,
+              "y": -172.47612244508377
+            }
+          },
+          {
+            "id": "N-0138",
+            "role": "adjusted",
+            "before": {
+              "x": -646.6194967913682,
+              "y": -172.47612244508377
+            },
+            "after": {
+              "x": -640.3694967913682,
+              "y": -172.47612244508377
+            }
+          },
+          {
+            "id": "N-0139",
+            "role": "stationary",
+            "before": {
+              "x": -535.5149547392919,
+              "y": -172.47612244508377
+            },
+            "after": {
+              "x": -535.5149547392919,
+              "y": -172.47612244508377
+            }
+          },
+          {
+            "id": "N-0144",
+            "role": "stationary",
+            "before": {
+              "x": -743.4930322835667,
+              "y": -118.72655254292746
+            },
+            "after": {
+              "x": -743.4930322835667,
+              "y": -118.72655254292746
+            }
+          },
+          {
+            "id": "N-0145",
+            "role": "stationary",
+            "before": {
+              "x": -646.6194967913682,
+              "y": -118.72655254292746
+            },
+            "after": {
+              "x": -646.6194967913682,
+              "y": -118.72655254292746
+            }
+          }
+        ],
+        "roads": [
+          {
+            "id": "RD-0131",
+            "a": "N-0074",
+            "b": "N-0131",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0132",
+            "a": "N-0077",
+            "b": "N-0132",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0136",
+            "a": "N-0071",
+            "b": "N-0131",
+            "kind": "secondary",
+            "selected": false
+          },
+          {
+            "id": "RD-0137",
+            "a": "N-0068",
+            "b": "N-0136",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0138",
+            "a": "N-0131",
+            "b": "N-0132",
+            "kind": "secondary",
+            "selected": true
+          },
+          {
+            "id": "RD-0139",
+            "a": "N-0131",
+            "b": "N-0137",
+            "kind": "lane",
+            "selected": true
+          },
+          {
+            "id": "RD-0140",
+            "a": "N-0132",
+            "b": "N-0133",
+            "kind": "secondary",
+            "selected": false
+          },
+          {
+            "id": "RD-0141",
+            "a": "N-0132",
+            "b": "N-0138",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0150",
+            "a": "N-0065",
+            "b": "N-0136",
+            "kind": "secondary",
+            "selected": false
+          },
+          {
+            "id": "RD-0151",
+            "a": "N-0136",
+            "b": "N-0137",
+            "kind": "secondary",
+            "selected": false
+          },
+          {
+            "id": "RD-0152",
+            "a": "N-0136",
+            "b": "N-0061",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0153",
+            "a": "N-0137",
+            "b": "N-0138",
+            "kind": "secondary",
+            "selected": false
+          },
+          {
+            "id": "RD-0154",
+            "a": "N-0137",
+            "b": "N-0144",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0155",
+            "a": "N-0138",
+            "b": "N-0139",
+            "kind": "secondary",
+            "selected": false
+          },
+          {
+            "id": "RD-0156",
+            "a": "N-0138",
+            "b": "N-0145",
+            "kind": "lane",
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "job": 140436677503,
+      "version": 1,
+      "caseId": "mixed-small",
+      "context": {
+        "version": 1,
+        "sessionId": "ares-p3-mixed-small",
+        "sourceVersion": "0.2.25-dev",
+        "operation": {
+          "version": 1,
+          "family": "road",
+          "operation": "translate-road-group",
+          "projectId": "city-mountains",
+          "revision": 1,
+          "editedRefs": [
+            {
+              "collection": "roads",
+              "id": "RD-0133"
+            },
+            {
+              "collection": "roads",
+              "id": "RD-0134"
+            }
+          ],
+          "permissions": {
+            "alternativeFrontage": true,
+            "uniformScaling": true,
+            "maxLinearReduction": 0.2,
+            "destruction": false,
+            "regeneration": false
+          },
+          "geometry": {
+            "offset": {
+              "x": 0.001,
+              "y": 0
+            }
+          }
+        }
+      },
+      "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+      "limits": {
+        "maxObjects": 10000,
+        "maxHops": 6
+      },
+      "maxCandidates": 4,
+      "maxNeighbors": 4,
+      "eligibilityStatus": "research-eligible",
+      "status": "baseline-valid",
+      "baseline": {
+        "valid": true,
+        "issues": [],
+        "geometryValid": true,
+        "constraints": {
+          "changedRoadIds": [
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0432",
+            "RD-0568",
+            "RD-0569"
+          ],
+          "finalChecked": 21,
+          "finalBlockers": [],
+          "sweptUnresolved": [
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-small",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": false,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 0.001,
+                        "y": 0
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c075905ab85837c2c0565610a45109b8c07455ed37c8c524c0565600420336c6c075905ab85837c2c0565610a45109b8c07455ed37c8c524",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": -89.34376573861945
+                  },
+                  "y": {
+                    "min": -345.02214846096115,
+                    "max": -325.37041452813924
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0569"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0569"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            }
+          ]
+        },
+        "blockingRoadIds": []
+      },
+      "attempts": 1,
+      "adjustedWitness": {
+        "kind": "geometry-with-final-constraints",
+        "neighbors": [
+          {
+            "id": "N-0129",
+            "old": {
+              "x": -136.62335623384456,
+              "y": -340.11141888048326
+            },
+            "point": {
+              "x": -136.62329373384455,
+              "y": -340.11141888048326
+            }
+          },
+          {
+            "id": "N-0131",
+            "old": {
+              "x": -72.20653436844316,
+              "y": -346.82225025597484
+            },
+            "point": {
+              "x": -72.20647186844316,
+              "y": -346.82225025597484
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0129",
+            "point": {
+              "x": -136.62329373384455,
+              "y": -340.11141888048326
+            }
+          },
+          {
+            "id": "N-0130",
+            "point": {
+              "x": -136.61725285874937,
+              "y": -340.0568117711095
+            }
+          },
+          {
+            "id": "N-0131",
+            "point": {
+              "x": -72.20647186844316,
+              "y": -346.82225025597484
+            }
+          },
+          {
+            "id": "N-0132",
+            "point": {
+              "x": -136.62235623384456,
+              "y": -340.0579357524736
+            }
+          },
+          {
+            "id": "N-0133",
+            "point": {
+              "x": -89.34376573861945,
+              "y": -345.02214846096115
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0129",
+          "RD-0131",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0140",
+          "RD-0142",
+          "RD-0432",
+          "RD-0568",
+          "RD-0569"
+        ],
+        "displacement": 0.000125000000011255,
+        "stencil": {
+          "factor": 0.0625,
+          "taper": false
+        },
+        "constraints": {
+          "changedRoadIds": [
+            "RD-0129",
+            "RD-0131",
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0140",
+            "RD-0142",
+            "RD-0432",
+            "RD-0568",
+            "RD-0569"
+          ],
+          "finalChecked": 33,
+          "finalBlockers": [],
+          "sweptUnresolved": [
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-small",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": false,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 0.001,
+                        "y": 0
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0520d37dbed7da8c075ad27efe268a2c05106b2181e8e04c0742f1bc3deb7ddc0520d36d5c8a079c075ad27efe268a2c05106b2181e8e04c0742f1bc3deb7dd",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -72.20653436844316,
+                    "max": -68.10462000831473
+                  },
+                  "y": {
+                    "min": -346.82225025597484,
+                    "max": -322.9442785930567
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0142"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0142"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-small",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": false,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 0.001,
+                        "y": 0
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c075905ab85837c2c0565610a45109b8c07455ed37c8c524c0565600420336c6c075905ab85837c2c0565610a45109b8c07455ed37c8c524",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": -89.34376573861945
+                  },
+                  "y": {
+                    "min": -345.02214846096115,
+                    "max": -325.37041452813924
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0569"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0569"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            }
+          ]
+        }
+      },
+      "termination": "first-valid-adjustment",
+      "constraintMode": "final-landscape-defense",
+      "constraintRejected": 0,
+      "stats": {
+        "work": 507238,
+        "expansions": 1,
+        "remainingWork": 7492762,
+        "remainingExpansions": 32767
+      },
+      "elapsedMs": 2878.026851,
+      "geometry": {
+        "nodes": [
+          {
+            "id": "N-0089",
+            "role": "stationary",
+            "before": {
+              "x": -137.18207274449648,
+              "y": -346.089794570494
+            },
+            "after": {
+              "x": -137.18207274449648,
+              "y": -346.089794570494
+            }
+          },
+          {
+            "id": "N-0093",
+            "role": "stationary",
+            "before": {
+              "x": -89.34476573861946,
+              "y": -361.9715409139052
+            },
+            "after": {
+              "x": -89.34476573861946,
+              "y": -361.9715409139052
+            }
+          },
+          {
+            "id": "N-0094",
+            "role": "stationary",
+            "before": {
+              "x": -74.82992541279901,
+              "y": -362.2982598803597
+            },
+            "after": {
+              "x": -74.82992541279901,
+              "y": -362.2982598803597
+            }
+          },
+          {
+            "id": "N-0129",
+            "role": "adjusted",
+            "before": {
+              "x": -136.62335623384456,
+              "y": -340.11141888048326
+            },
+            "after": {
+              "x": -136.62329373384455,
+              "y": -340.11141888048326
+            }
+          },
+          {
+            "id": "N-0130",
+            "role": "selected",
+            "before": {
+              "x": -136.61825285874937,
+              "y": -340.0568117711095
+            },
+            "after": {
+              "x": -136.61725285874937,
+              "y": -340.0568117711095
+            }
+          },
+          {
+            "id": "N-0131",
+            "role": "adjusted",
+            "before": {
+              "x": -72.20653436844316,
+              "y": -346.82225025597484
+            },
+            "after": {
+              "x": -72.20647186844316,
+              "y": -346.82225025597484
+            }
+          },
+          {
+            "id": "N-0132",
+            "role": "selected",
+            "before": {
+              "x": -136.62335623384456,
+              "y": -340.0579357524736
+            },
+            "after": {
+              "x": -136.62235623384456,
+              "y": -340.0579357524736
+            }
+          },
+          {
+            "id": "N-0133",
+            "role": "selected",
+            "before": {
+              "x": -89.34476573861946,
+              "y": -345.02214846096115
+            },
+            "after": {
+              "x": -89.34376573861945,
+              "y": -345.02214846096115
+            }
+          },
+          {
+            "id": "N-0134",
+            "role": "stationary",
+            "before": {
+              "x": -136.62335623384456,
+              "y": -336.6744068492571
+            },
+            "after": {
+              "x": -136.62335623384456,
+              "y": -336.6744068492571
+            }
+          },
+          {
+            "id": "N-0139",
+            "role": "stationary",
+            "before": {
+              "x": -52.37533866401297,
+              "y": -346.44920030787165
+            },
+            "after": {
+              "x": -52.37533866401297,
+              "y": -346.44920030787165
+            }
+          },
+          {
+            "id": "N-0140",
+            "role": "stationary",
+            "before": {
+              "x": -68.10462000831473,
+              "y": -322.9442785930567
+            },
+            "after": {
+              "x": -68.10462000831473,
+              "y": -322.9442785930567
+            }
+          },
+          {
+            "id": "N-0382",
+            "role": "stationary",
+            "before": {
+              "x": -89.34476573861946,
+              "y": -325.37041452813924
+            },
+            "after": {
+              "x": -89.34476573861946,
+              "y": -325.37041452813924
+            }
+          }
+        ],
+        "roads": [
+          {
+            "id": "RD-0129",
+            "a": "N-0089",
+            "b": "N-0129",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0131",
+            "a": "N-0094",
+            "b": "N-0131",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0133",
+            "a": "N-0132",
+            "b": "N-0130",
+            "kind": "secondary",
+            "selected": true
+          },
+          {
+            "id": "RD-0134",
+            "a": "N-0130",
+            "b": "N-0133",
+            "kind": "secondary",
+            "selected": true
+          },
+          {
+            "id": "RD-0135",
+            "a": "N-0133",
+            "b": "N-0131",
+            "kind": "secondary",
+            "selected": false
+          },
+          {
+            "id": "RD-0136",
+            "a": "N-0130",
+            "b": "N-0134",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0140",
+            "a": "N-0131",
+            "b": "N-0139",
+            "kind": "secondary",
+            "selected": false
+          },
+          {
+            "id": "RD-0142",
+            "a": "N-0131",
+            "b": "N-0140",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0432",
+            "a": "N-0129",
+            "b": "N-0132",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0568",
+            "a": "N-0093",
+            "b": "N-0133",
+            "kind": "lane",
+            "selected": false
+          },
+          {
+            "id": "RD-0569",
+            "a": "N-0133",
+            "b": "N-0382",
+            "kind": "lane",
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "job": 140436677503,
+      "version": 1,
+      "caseId": "mixed-river",
+      "context": {
+        "version": 1,
+        "sessionId": "ares-p3-mixed-river",
+        "sourceVersion": "0.2.25-dev",
+        "operation": {
+          "version": 1,
+          "family": "road",
+          "operation": "translate-road-group",
+          "projectId": "city-mountains",
+          "revision": 1,
+          "editedRefs": [
+            {
+              "collection": "roads",
+              "id": "RD-0133"
+            },
+            {
+              "collection": "roads",
+              "id": "RD-0134"
+            }
+          ],
+          "permissions": {
+            "alternativeFrontage": true,
+            "uniformScaling": true,
+            "maxLinearReduction": 0.2,
+            "destruction": true,
+            "regeneration": false
+          },
+          "geometry": {
+            "offset": {
+              "x": 103.15404603689191,
+              "y": 459.0383763985676
+            }
+          }
+        }
+      },
+      "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+      "limits": {
+        "maxObjects": 10000,
+        "maxHops": 6
+      },
+      "maxCandidates": 4,
+      "maxNeighbors": 4,
+      "eligibilityStatus": "research-eligible",
+      "status": "search-refused",
+      "baseline": {
+        "valid": false,
+        "issues": [
+          "unnormalized-crossing",
+          "final-constraint-blocked"
+        ],
+        "blockingRoadIds": [
+          "RD-0126",
+          "RD-0127",
+          "RD-0128",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0153",
+          "RD-0156",
+          "RD-0172",
+          "RD-0176",
+          "RD-0197",
+          "RD-0200",
+          "RD-0202",
+          "RD-0229",
+          "RD-0266",
+          "RD-0304",
+          "RD-0412",
+          "RD-0424",
+          "RD-0425",
+          "RD-0432",
+          "RD-0480",
+          "RD-0481",
+          "RD-0568",
+          "RD-0569",
+          "RD-0572",
+          "RD-0582",
+          "RD-0583",
+          "RD-0588",
+          "RD-0596",
+          "RD-0599",
+          "RD-0602",
+          "RD-0608",
+          "RD-0610",
+          "RD-0611"
+        ],
+        "blockingNodeIds": [],
+        "geometryValid": false,
+        "constraints": {
+          "changedRoadIds": [
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0432",
+            "RD-0568",
+            "RD-0569"
+          ],
+          "finalChecked": 21,
+          "finalBlockers": [
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c06113f288c5c3d8c07540ed4e0a224bc06113c8ba381f96c07540e8b375af17c040bc125b45cba4405dbebf8a1fa924c040bb6b210f3a9c405dbed1f47175f4",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -33.46931019695265,
+                    "max": -33.46420682185746
+                  },
+                  "y": {
+                    "min": 118.980440646094,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0133"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0133"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c06113c8ba381f96c07540e8b375af17c0565610a45109b8c075905ab85837c2c040bb6b210f3a9c405dbed1f47175f4402b9e59fcbcc130405c8109e0e75348",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -33.46420682185746,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": 114.01622793760646,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0134"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0134"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c0565610a45109b8c075905ab85837c2c0520d37dbed7da8c075ad27efe268a2402b9e59fcbcc130405c8109e0e75348c0520d37dbed7da8c075ad27efe268a2",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -72.20653436844316,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -346.82225025597484,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0135"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0135"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c0565610a45109b8c075905ab85837c2c0520d37dbed7da8c075ad27efe268a2402b9e59fcbcc130405c8109e0e75348c0520d37dbed7da8c075ad27efe268a2",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -72.20653436844316,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -346.82225025597484,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0135"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0135"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c06113c8ba381f96c07540e8b375af17c06113f288c5c3d8c0750aca5ed61c1fc040bb6b210f3a9c405dbed1f47175f4c06113f288c5c3d8c0750aca5ed61c1f",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.62335623384456,
+                    "max": -33.46420682185746
+                  },
+                  "y": {
+                    "min": -336.6744068492571,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0136"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0136"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c06113c8ba381f96c07540e8b375af17c06113f288c5c3d8c0750aca5ed61c1fc040bb6b210f3a9c405dbed1f47175f4c06113f288c5c3d8c0750aca5ed61c1f",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.62335623384456,
+                    "max": -33.46420682185746
+                  },
+                  "y": {
+                    "min": -336.6744068492571,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0136"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0136"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c06113f288c5c3d8c07541c85f29fd52c06113f288c5c3d8c07540ed4e0a224bc06113f288c5c3d8c07541c85f29fd52c040bc125b45cba4405dbebf8a1fa924",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.62335623384456,
+                    "max": -33.46931019695265
+                  },
+                  "y": {
+                    "min": -340.11141888048326,
+                    "max": 118.980440646094
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0432"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0432"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c06113f288c5c3d8c07541c85f29fd52c06113f288c5c3d8c07540ed4e0a224bc06113f288c5c3d8c07541c85f29fd52c040bc125b45cba4405dbebf8a1fa924",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.62335623384456,
+                    "max": -33.46931019695265
+                  },
+                  "y": {
+                    "min": -340.11141888048326,
+                    "max": 118.980440646094
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0432"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0432"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c0565610a45109b8c0769f8b6e7c3f2ec0565610a45109b8c075905ab85837c2c0565610a45109b8c0769f8b6e7c3f2e402b9e59fcbcc130405c8109e0e75348",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -361.9715409139052,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0568"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0568"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c0565610a45109b8c0769f8b6e7c3f2ec0565610a45109b8c075905ab85837c2c0565610a45109b8c0769f8b6e7c3f2e402b9e59fcbcc130405c8109e0e75348",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -361.9715409139052,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0568"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0568"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c0565610a45109b8c075905ab85837c2c0565610a45109b8c07455ed37c8c524402b9e59fcbcc130405c8109e0e75348c0565610a45109b8c07455ed37c8c524",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -325.37041452813924,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0569"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0569"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "final:c0565610a45109b8c075905ab85837c2c0565610a45109b8c07455ed37c8c524402b9e59fcbcc130405c8109e0e75348c0565610a45109b8c07455ed37c8c524",
+                "capability": "road-corridor-2d",
+                "phase": "final",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -325.37041452813924,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0569"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "corridor-contact-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "violated",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0569"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Ordinary road centerline enters the reserved landscape corridor."
+                }
+              ],
+              "summary": "blocked"
+            }
+          ],
+          "sweptUnresolved": [
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c06113f288c5c3d8c07540ed4e0a224bc06113c8ba381f96c07540e8b375af17c040bc125b45cba4405dbebf8a1fa924c040bb6b210f3a9c405dbed1f47175f4",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.62335623384456,
+                    "max": -33.46420682185746
+                  },
+                  "y": {
+                    "min": -340.0579357524736,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0133"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0133"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "LAKE-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                },
+                {
+                  "id": "swept-candidate-1",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0133"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c06113f288c5c3d8c07540ed4e0a224bc06113c8ba381f96c07540e8b375af17c040bc125b45cba4405dbebf8a1fa924c040bb6b210f3a9c405dbed1f47175f4",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.62335623384456,
+                    "max": -33.46420682185746
+                  },
+                  "y": {
+                    "min": -340.0579357524736,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0133"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0133"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c06113c8ba381f96c07540e8b375af17c0565610a45109b8c075905ab85837c2c040bb6b210f3a9c405dbed1f47175f4402b9e59fcbcc130405c8109e0e75348",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.61825285874937,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -345.02214846096115,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0134"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0134"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "LAKE-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                },
+                {
+                  "id": "swept-candidate-1",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0134"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c06113c8ba381f96c07540e8b375af17c0565610a45109b8c075905ab85837c2c040bb6b210f3a9c405dbed1f47175f4402b9e59fcbcc130405c8109e0e75348",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.61825285874937,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -345.02214846096115,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0134"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0134"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c06113c8ba381f96c07540e8b375af17c0565610a45109b8c075905ab85837c2c040bb6b210f3a9c405dbed1f47175f4402b9e59fcbcc130405c8109e0e75348",
+                "capability": "road-defense-clearance-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.61825285874937,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -345.02214846096115,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0134"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-defense",
+                "version": 1,
+                "capabilities": [
+                  "road-defense-clearance-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-defense-23",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0134"
+                    },
+                    {
+                      "collection": "walls",
+                      "id": "WALL-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept envelope may overlap the existing defense clearance; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c075905ab85837c2c0520d37dbed7da8c075ad27efe268a2402b9e59fcbcc130405c8109e0e75348c0520d37dbed7da8c075ad27efe268a2",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -346.82225025597484,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0135"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0135"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c075905ab85837c2c0520d37dbed7da8c075ad27efe268a2402b9e59fcbcc130405c8109e0e75348c0520d37dbed7da8c075ad27efe268a2",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -346.82225025597484,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0135"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0135"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c075905ab85837c2c0520d37dbed7da8c075ad27efe268a2402b9e59fcbcc130405c8109e0e75348c0520d37dbed7da8c075ad27efe268a2",
+                "capability": "road-defense-clearance-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -346.82225025597484,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0135"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-defense",
+                "version": 1,
+                "capabilities": [
+                  "road-defense-clearance-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-defense-23",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0135"
+                    },
+                    {
+                      "collection": "walls",
+                      "id": "WALL-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept envelope may overlap the existing defense clearance; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c06113c8ba381f96c07540e8b375af17c06113f288c5c3d8c0750aca5ed61c1fc040bb6b210f3a9c405dbed1f47175f4c06113f288c5c3d8c0750aca5ed61c1f",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.62335623384456,
+                    "max": -33.46420682185746
+                  },
+                  "y": {
+                    "min": -340.0568117711095,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0136"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0136"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "LAKE-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                },
+                {
+                  "id": "swept-candidate-1",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0136"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c06113c8ba381f96c07540e8b375af17c06113f288c5c3d8c0750aca5ed61c1fc040bb6b210f3a9c405dbed1f47175f4c06113f288c5c3d8c0750aca5ed61c1f",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.62335623384456,
+                    "max": -33.46420682185746
+                  },
+                  "y": {
+                    "min": -340.0568117711095,
+                    "max": 118.98156462745811
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0136"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0136"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c06113f288c5c3d8c07541c85f29fd52c06113f288c5c3d8c07540ed4e0a224bc06113f288c5c3d8c07541c85f29fd52c040bc125b45cba4405dbebf8a1fa924",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.62335623384456,
+                    "max": -33.46931019695265
+                  },
+                  "y": {
+                    "min": -340.11141888048326,
+                    "max": 118.980440646094
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0432"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0432"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "LAKE-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                },
+                {
+                  "id": "swept-candidate-1",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0432"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c06113f288c5c3d8c07541c85f29fd52c06113f288c5c3d8c07540ed4e0a224bc06113f288c5c3d8c07541c85f29fd52c040bc125b45cba4405dbebf8a1fa924",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -136.62335623384456,
+                    "max": -33.46931019695265
+                  },
+                  "y": {
+                    "min": -340.11141888048326,
+                    "max": 118.980440646094
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0432"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0432"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c0769f8b6e7c3f2ec0565610a45109b8c075905ab85837c2c0565610a45109b8c0769f8b6e7c3f2e402b9e59fcbcc130405c8109e0e75348",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -361.9715409139052,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0568"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0568"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c0769f8b6e7c3f2ec0565610a45109b8c075905ab85837c2c0565610a45109b8c0769f8b6e7c3f2e402b9e59fcbcc130405c8109e0e75348",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -361.9715409139052,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0568"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0568"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c0769f8b6e7c3f2ec0565610a45109b8c075905ab85837c2c0565610a45109b8c0769f8b6e7c3f2e402b9e59fcbcc130405c8109e0e75348",
+                "capability": "road-defense-clearance-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -361.9715409139052,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0568"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-defense",
+                "version": 1,
+                "capabilities": [
+                  "road-defense-clearance-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-defense-23",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0568"
+                    },
+                    {
+                      "collection": "walls",
+                      "id": "WALL-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept envelope may overlap the existing defense clearance; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c075905ab85837c2c0565610a45109b8c07455ed37c8c524402b9e59fcbcc130405c8109e0e75348c0565610a45109b8c07455ed37c8c524",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -345.02214846096115,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0569"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-water",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0569"
+                    },
+                    {
+                      "collection": "waterFeatures",
+                      "id": "WATER-RIVER-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c075905ab85837c2c0565610a45109b8c07455ed37c8c524402b9e59fcbcc130405c8109e0e75348c0565610a45109b8c07455ed37c8c524",
+                "capability": "road-corridor-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -345.02214846096115,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0569"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-terrain",
+                "version": 1,
+                "capabilities": [
+                  "road-corridor-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-candidate-0",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0569"
+                    },
+                    {
+                      "collection": "terrainFeatures",
+                      "id": "MTN-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept endpoint envelope overlaps this reserved corridor; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            },
+            {
+              "version": 1,
+              "query": {
+                "version": 1,
+                "context": {
+                  "version": 1,
+                  "sessionId": "ares-p3-mixed-river",
+                  "sourceVersion": "0.2.25-dev",
+                  "operation": {
+                    "version": 1,
+                    "family": "road",
+                    "operation": "translate-road-group",
+                    "projectId": "city-mountains",
+                    "revision": 1,
+                    "editedRefs": [
+                      {
+                        "collection": "roads",
+                        "id": "RD-0133"
+                      },
+                      {
+                        "collection": "roads",
+                        "id": "RD-0134"
+                      }
+                    ],
+                    "permissions": {
+                      "alternativeFrontage": true,
+                      "uniformScaling": true,
+                      "maxLinearReduction": 0.2,
+                      "destruction": true,
+                      "regeneration": false
+                    },
+                    "geometry": {
+                      "offset": {
+                        "x": 103.15404603689191,
+                        "y": 459.0383763985676
+                      }
+                    }
+                  }
+                },
+                "snapshotFingerprint": "8234eec645c3d81b7778e4db01bce0c20af4111d135b966d67272a28ba962dcf",
+                "geometryFingerprint": "swept:c0565610a45109b8c075905ab85837c2c0565610a45109b8c07455ed37c8c524402b9e59fcbcc130405c8109e0e75348c0565610a45109b8c07455ed37c8c524",
+                "capability": "road-defense-clearance-2d",
+                "phase": "swept",
+                "frame": {
+                  "horizontal": "city-map-unit",
+                  "vertical": null
+                },
+                "bounds": {
+                  "x": {
+                    "min": -89.34476573861946,
+                    "max": 13.809280298272455
+                  },
+                  "y": {
+                    "min": -345.02214846096115,
+                    "max": 114.01622793760646
+                  },
+                  "z": null
+                },
+                "refs": [
+                  {
+                    "collection": "roads",
+                    "id": "RD-0569"
+                  }
+                ]
+              },
+              "provider": {
+                "id": "ares-defense",
+                "version": 1,
+                "capabilities": [
+                  "road-defense-clearance-2d"
+                ]
+              },
+              "status": "observed",
+              "rows": [
+                {
+                  "id": "swept-defense-23",
+                  "ruleVersion": "1",
+                  "kind": "hard-domain",
+                  "outcome": "unknown",
+                  "refs": [
+                    {
+                      "collection": "roads",
+                      "id": "RD-0569"
+                    },
+                    {
+                      "collection": "walls",
+                      "id": "WALL-001"
+                    }
+                  ],
+                  "anchorRefs": [],
+                  "detail": "Swept envelope may overlap the existing defense clearance; exact swept contact is unresolved."
+                }
+              ],
+              "summary": "unresolved"
+            }
+          ]
+        }
+      },
+      "attempts": 0,
+      "adjustedWitness": null,
+      "termination": "fixed-selected-constraint",
+      "constraintMode": "final-landscape-defense",
+      "constraintRejected": 0,
+      "stats": {
+        "work": 614799,
+        "expansions": 0,
+        "remainingWork": 31385201,
+        "remainingExpansions": 131072
+      },
+      "elapsedMs": 1939.8486920000005,
+      "geometry": null
+    }
+  ]
+}

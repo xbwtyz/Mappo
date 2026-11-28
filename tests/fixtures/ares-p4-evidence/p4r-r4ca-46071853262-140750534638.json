@@ -1,0 +1,1661 @@
+{
+  "version": 1,
+  "source": "0cc3d0182717c7ff441485ae0429465fd78c8126",
+  "run": 46071853262,
+  "attempt": 1,
+  "aggregate": 140751762054,
+  "job": 140750534638,
+  "rows": [
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "cap": 64,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 985071,
+      "result": {
+        "id": "linear-medium:five-chain:100:diagonal",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 985721,
+          "expansions": 64,
+          "remainingWork": 7014279,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1566.374204
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "cap": 128,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1413954,
+      "result": {
+        "id": "linear-medium:five-chain:100:diagonal",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1414453,
+          "expansions": 128,
+          "remainingWork": 6585547,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1258.9786980000001
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "cap": 256,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2271102,
+      "result": {
+        "id": "linear-medium:five-chain:100:diagonal",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2272239,
+          "expansions": 256,
+          "remainingWork": 5727761,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1680.7502309999995
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "cap": 64,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 985071,
+      "result": {
+        "id": "linear-medium:five-chain:100:diagonal",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 985174,
+          "expansions": 64,
+          "remainingWork": 7014826,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1171.1294820000003
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "cap": 128,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1413954,
+      "result": {
+        "id": "linear-medium:five-chain:100:diagonal",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1414864,
+          "expansions": 128,
+          "remainingWork": 6585136,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1380.2635140000002
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "cap": 256,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2271102,
+      "result": {
+        "id": "linear-medium:five-chain:100:diagonal",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2273255,
+          "expansions": 256,
+          "remainingWork": 5726745,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1991.2145999999993
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "cap": 64,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 999237,
+      "result": {
+        "id": "linear-medium:five-chain:100:y",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 998762,
+          "expansions": 64,
+          "remainingWork": 7001238,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1183.505099
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "cap": 128,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1431592,
+      "result": {
+        "id": "linear-medium:five-chain:100:y",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1430243,
+          "expansions": 128,
+          "remainingWork": 6569757,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1032.6619760000012
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "cap": 256,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2296251,
+      "result": {
+        "id": "linear-medium:five-chain:100:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2293901,
+          "expansions": 256,
+          "remainingWork": 5706099,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1705.8290859999997
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "cap": 64,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 999237,
+      "result": {
+        "id": "linear-medium:five-chain:100:y",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 999291,
+          "expansions": 64,
+          "remainingWork": 7000709,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1061.0225549999996
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "cap": 128,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1431592,
+      "result": {
+        "id": "linear-medium:five-chain:100:y",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1431547,
+          "expansions": 128,
+          "remainingWork": 6568453,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1021.1904969999996
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "cap": 256,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2296251,
+      "result": {
+        "id": "linear-medium:five-chain:100:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2295550,
+          "expansions": 256,
+          "remainingWork": 5704450,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1648.0142419999993
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "cap": 64,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 990883,
+      "result": {
+        "id": "linear-medium:five-chain:50:y",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 990388,
+          "expansions": 64,
+          "remainingWork": 7009612,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 962.1167339999993
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "cap": 128,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1423238,
+      "result": {
+        "id": "linear-medium:five-chain:50:y",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1421804,
+          "expansions": 128,
+          "remainingWork": 6578196,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1134.0537430000004
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "cap": 256,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2287869,
+      "result": {
+        "id": "linear-medium:five-chain:50:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2284923,
+          "expansions": 256,
+          "remainingWork": 5715077,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1467.610660000002
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "cap": 64,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 990883,
+      "result": {
+        "id": "linear-medium:five-chain:50:y",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 990937,
+          "expansions": 64,
+          "remainingWork": 7009063,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 923.7429740000007
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "cap": 128,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1423238,
+      "result": {
+        "id": "linear-medium:five-chain:50:y",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1422876,
+          "expansions": 128,
+          "remainingWork": 6577124,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1242.5735339999992
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "cap": 256,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2287869,
+      "result": {
+        "id": "linear-medium:five-chain:50:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2285906,
+          "expansions": 256,
+          "remainingWork": 5714094,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1576.7133620000022
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:diagonal",
+      "cap": 64,
+      "kind": "breadth-directional",
+      "referenceCategory": "geometry-recovered",
+      "referenceAttempts": 41,
+      "referenceWork": 838448,
+      "result": {
+        "id": "linear-medium:five-chain:75:diagonal",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 983879,
+          "expansions": 64,
+          "remainingWork": 7016121,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 1014.222770999997
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:diagonal",
+      "cap": 128,
+      "kind": "breadth-directional",
+      "referenceCategory": "geometry-recovered",
+      "referenceAttempts": 41,
+      "referenceWork": 838448,
+      "result": {
+        "id": "linear-medium:five-chain:75:diagonal",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1412393,
+          "expansions": 128,
+          "remainingWork": 6587607,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1213.4613250000002
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:diagonal",
+      "cap": 256,
+      "kind": "breadth-directional",
+      "referenceCategory": "geometry-recovered",
+      "referenceAttempts": 41,
+      "referenceWork": 838448,
+      "result": {
+        "id": "linear-medium:five-chain:75:diagonal",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "geometry-recovered",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "first-valid-adjustment",
+        "attempts": 131,
+        "stats": {
+          "work": 1441668,
+          "expansions": 131,
+          "remainingWork": 6558332,
+          "remainingExpansions": 32637
+        },
+        "elapsedMs": 1188.865980999999,
+        "audit": {
+          "version": 1,
+          "caseId": "g:linear-medium:five-chain:75:diagonal",
+          "status": "geometry-verified",
+          "reason": null,
+          "changedRoadIds": [
+            "RD-0131",
+            "RD-0132",
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0142",
+            "RD-0143",
+            "RD-0144",
+            "RD-0145",
+            "RD-0146",
+            "RD-0147",
+            "RD-0151",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0159",
+            "RD-0160",
+            "RD-0161",
+            "RD-0162"
+          ],
+          "finalChecked": 81,
+          "sweptUnresolved": 0,
+          "stats": {
+            "work": 626026,
+            "expansions": 0,
+            "remainingWork": 7373974,
+            "remainingExpansions": 32768
+          }
+        },
+        "auditMs": 772.9617150000013,
+        "witness": {
+          "neighbors": [
+            {
+              "id": "N-0137",
+              "old": {
+                "x": -743.4930322835667,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -730.2347801363189,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0138",
+              "old": {
+                "x": -646.6194967913682,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -633.3612446441205,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0139",
+              "old": {
+                "x": -535.5149547392919,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -522.2567025920441,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0140",
+              "old": {
+                "x": -427.8180850553594,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -414.5598329081116,
+                "y": -159.21787029783601
+              }
+            }
+          ],
+          "updates": [
+            {
+              "id": "N-0131",
+              "point": {
+                "x": -690.4600236945756,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0132",
+              "point": {
+                "x": -593.5864882023772,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0133",
+              "point": {
+                "x": -482.4819461503008,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0134",
+              "point": {
+                "x": -374.7850764663683,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0135",
+              "point": {
+                "x": -254.70157982239058,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0137",
+              "point": {
+                "x": -730.2347801363189,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0138",
+              "point": {
+                "x": -633.3612446441205,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0139",
+              "point": {
+                "x": -522.2567025920441,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0140",
+              "point": {
+                "x": -414.5598329081116,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0141",
+              "point": {
+                "x": -254.70157982239058,
+                "y": -119.44311385609271
+              }
+            }
+          ],
+          "changedRoadIds": [
+            "RD-0131",
+            "RD-0132",
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0142",
+            "RD-0143",
+            "RD-0144",
+            "RD-0145",
+            "RD-0146",
+            "RD-0147",
+            "RD-0151",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0159",
+            "RD-0160",
+            "RD-0161",
+            "RD-0162"
+          ],
+          "displacement": 74.99999999999993
+        },
+        "stencil": {
+          "factor": 0.25,
+          "taper": false,
+          "direction": "parallel"
+        }
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:diagonal",
+      "cap": 64,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "geometry-recovered",
+      "referenceAttempts": 41,
+      "referenceWork": 838448,
+      "result": {
+        "id": "linear-medium:five-chain:75:diagonal",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "geometry-recovered",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "first-valid-adjustment",
+        "attempts": 41,
+        "stats": {
+          "work": 838448,
+          "expansions": 41,
+          "remainingWork": 7161552,
+          "remainingExpansions": 32727
+        },
+        "elapsedMs": 915.3824109999987,
+        "audit": {
+          "version": 1,
+          "caseId": "g:linear-medium:five-chain:75:diagonal",
+          "status": "geometry-verified",
+          "reason": null,
+          "changedRoadIds": [
+            "RD-0131",
+            "RD-0132",
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0142",
+            "RD-0143",
+            "RD-0144",
+            "RD-0145",
+            "RD-0146",
+            "RD-0147",
+            "RD-0151",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0159",
+            "RD-0160",
+            "RD-0161",
+            "RD-0162"
+          ],
+          "finalChecked": 81,
+          "sweptUnresolved": 0,
+          "stats": {
+            "work": 626026,
+            "expansions": 0,
+            "remainingWork": 7373974,
+            "remainingExpansions": 32768
+          }
+        },
+        "auditMs": 760.4760749999987,
+        "witness": {
+          "neighbors": [
+            {
+              "id": "N-0137",
+              "old": {
+                "x": -743.4930322835667,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -730.2347801363189,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0138",
+              "old": {
+                "x": -646.6194967913682,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -633.3612446441205,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0139",
+              "old": {
+                "x": -535.5149547392919,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -522.2567025920441,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0140",
+              "old": {
+                "x": -427.8180850553594,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -414.5598329081116,
+                "y": -159.21787029783601
+              }
+            }
+          ],
+          "updates": [
+            {
+              "id": "N-0131",
+              "point": {
+                "x": -690.4600236945756,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0132",
+              "point": {
+                "x": -593.5864882023772,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0133",
+              "point": {
+                "x": -482.4819461503008,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0134",
+              "point": {
+                "x": -374.7850764663683,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0135",
+              "point": {
+                "x": -254.70157982239058,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0137",
+              "point": {
+                "x": -730.2347801363189,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0138",
+              "point": {
+                "x": -633.3612446441205,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0139",
+              "point": {
+                "x": -522.2567025920441,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0140",
+              "point": {
+                "x": -414.5598329081116,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0141",
+              "point": {
+                "x": -254.70157982239058,
+                "y": -119.44311385609271
+              }
+            }
+          ],
+          "changedRoadIds": [
+            "RD-0131",
+            "RD-0132",
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0142",
+            "RD-0143",
+            "RD-0144",
+            "RD-0145",
+            "RD-0146",
+            "RD-0147",
+            "RD-0151",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0159",
+            "RD-0160",
+            "RD-0161",
+            "RD-0162"
+          ],
+          "displacement": 74.99999999999993
+        },
+        "stencil": {
+          "factor": 0.25,
+          "taper": false
+        }
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:diagonal",
+      "cap": 128,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "geometry-recovered",
+      "referenceAttempts": 41,
+      "referenceWork": 838448,
+      "result": {
+        "id": "linear-medium:five-chain:75:diagonal",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "geometry-recovered",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "first-valid-adjustment",
+        "attempts": 41,
+        "stats": {
+          "work": 838448,
+          "expansions": 41,
+          "remainingWork": 7161552,
+          "remainingExpansions": 32727
+        },
+        "elapsedMs": 982.5684479999982,
+        "audit": {
+          "version": 1,
+          "caseId": "g:linear-medium:five-chain:75:diagonal",
+          "status": "geometry-verified",
+          "reason": null,
+          "changedRoadIds": [
+            "RD-0131",
+            "RD-0132",
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0142",
+            "RD-0143",
+            "RD-0144",
+            "RD-0145",
+            "RD-0146",
+            "RD-0147",
+            "RD-0151",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0159",
+            "RD-0160",
+            "RD-0161",
+            "RD-0162"
+          ],
+          "finalChecked": 81,
+          "sweptUnresolved": 0,
+          "stats": {
+            "work": 626026,
+            "expansions": 0,
+            "remainingWork": 7373974,
+            "remainingExpansions": 32768
+          }
+        },
+        "auditMs": 752.2569250000015,
+        "witness": {
+          "neighbors": [
+            {
+              "id": "N-0137",
+              "old": {
+                "x": -743.4930322835667,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -730.2347801363189,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0138",
+              "old": {
+                "x": -646.6194967913682,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -633.3612446441205,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0139",
+              "old": {
+                "x": -535.5149547392919,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -522.2567025920441,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0140",
+              "old": {
+                "x": -427.8180850553594,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -414.5598329081116,
+                "y": -159.21787029783601
+              }
+            }
+          ],
+          "updates": [
+            {
+              "id": "N-0131",
+              "point": {
+                "x": -690.4600236945756,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0132",
+              "point": {
+                "x": -593.5864882023772,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0133",
+              "point": {
+                "x": -482.4819461503008,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0134",
+              "point": {
+                "x": -374.7850764663683,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0135",
+              "point": {
+                "x": -254.70157982239058,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0137",
+              "point": {
+                "x": -730.2347801363189,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0138",
+              "point": {
+                "x": -633.3612446441205,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0139",
+              "point": {
+                "x": -522.2567025920441,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0140",
+              "point": {
+                "x": -414.5598329081116,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0141",
+              "point": {
+                "x": -254.70157982239058,
+                "y": -119.44311385609271
+              }
+            }
+          ],
+          "changedRoadIds": [
+            "RD-0131",
+            "RD-0132",
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0142",
+            "RD-0143",
+            "RD-0144",
+            "RD-0145",
+            "RD-0146",
+            "RD-0147",
+            "RD-0151",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0159",
+            "RD-0160",
+            "RD-0161",
+            "RD-0162"
+          ],
+          "displacement": 74.99999999999993
+        },
+        "stencil": {
+          "factor": 0.25,
+          "taper": false
+        }
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:diagonal",
+      "cap": 256,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "geometry-recovered",
+      "referenceAttempts": 41,
+      "referenceWork": 838448,
+      "result": {
+        "id": "linear-medium:five-chain:75:diagonal",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "geometry-recovered",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "unnormalized-crossing"
+        ],
+        "termination": "first-valid-adjustment",
+        "attempts": 41,
+        "stats": {
+          "work": 838448,
+          "expansions": 41,
+          "remainingWork": 7161552,
+          "remainingExpansions": 32727
+        },
+        "elapsedMs": 962.5574350000024,
+        "audit": {
+          "version": 1,
+          "caseId": "g:linear-medium:five-chain:75:diagonal",
+          "status": "geometry-verified",
+          "reason": null,
+          "changedRoadIds": [
+            "RD-0131",
+            "RD-0132",
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0142",
+            "RD-0143",
+            "RD-0144",
+            "RD-0145",
+            "RD-0146",
+            "RD-0147",
+            "RD-0151",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0159",
+            "RD-0160",
+            "RD-0161",
+            "RD-0162"
+          ],
+          "finalChecked": 81,
+          "sweptUnresolved": 0,
+          "stats": {
+            "work": 626026,
+            "expansions": 0,
+            "remainingWork": 7373974,
+            "remainingExpansions": 32768
+          }
+        },
+        "auditMs": 819.7053510000042,
+        "witness": {
+          "neighbors": [
+            {
+              "id": "N-0137",
+              "old": {
+                "x": -743.4930322835667,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -730.2347801363189,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0138",
+              "old": {
+                "x": -646.6194967913682,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -633.3612446441205,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0139",
+              "old": {
+                "x": -535.5149547392919,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -522.2567025920441,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0140",
+              "old": {
+                "x": -427.8180850553594,
+                "y": -172.47612244508377
+              },
+              "point": {
+                "x": -414.5598329081116,
+                "y": -159.21787029783601
+              }
+            }
+          ],
+          "updates": [
+            {
+              "id": "N-0131",
+              "point": {
+                "x": -690.4600236945756,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0132",
+              "point": {
+                "x": -593.5864882023772,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0133",
+              "point": {
+                "x": -482.4819461503008,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0134",
+              "point": {
+                "x": -374.7850764663683,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0135",
+              "point": {
+                "x": -254.70157982239058,
+                "y": -163.05640099710234
+              }
+            },
+            {
+              "id": "N-0137",
+              "point": {
+                "x": -730.2347801363189,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0138",
+              "point": {
+                "x": -633.3612446441205,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0139",
+              "point": {
+                "x": -522.2567025920441,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0140",
+              "point": {
+                "x": -414.5598329081116,
+                "y": -159.21787029783601
+              }
+            },
+            {
+              "id": "N-0141",
+              "point": {
+                "x": -254.70157982239058,
+                "y": -119.44311385609271
+              }
+            }
+          ],
+          "changedRoadIds": [
+            "RD-0131",
+            "RD-0132",
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136",
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0142",
+            "RD-0143",
+            "RD-0144",
+            "RD-0145",
+            "RD-0146",
+            "RD-0147",
+            "RD-0151",
+            "RD-0153",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157",
+            "RD-0158",
+            "RD-0159",
+            "RD-0160",
+            "RD-0161",
+            "RD-0162"
+          ],
+          "displacement": 74.99999999999993
+        },
+        "stencil": {
+          "factor": 0.25,
+          "taper": false
+        }
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "cap": 64,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 993528,
+      "result": {
+        "id": "linear-medium:five-chain:75:y",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 993053,
+          "expansions": 64,
+          "remainingWork": 7006947,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 955.4060020000034
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "cap": 128,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1425883,
+      "result": {
+        "id": "linear-medium:five-chain:75:y",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1424514,
+          "expansions": 128,
+          "remainingWork": 6575486,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1217.8999939999994
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "cap": 256,
+      "kind": "breadth-directional",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2290542,
+      "result": {
+        "id": "linear-medium:five-chain:75:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2287896,
+          "expansions": 256,
+          "remainingWork": 5712104,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1671.188605999996
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "cap": 64,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 64,
+      "referenceWork": 993528,
+      "result": {
+        "id": "linear-medium:five-chain:75:y",
+        "cap": 64,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 64,
+        "stats": {
+          "work": 993582,
+          "expansions": 64,
+          "remainingWork": 7006418,
+          "remainingExpansions": 32704
+        },
+        "elapsedMs": 919.992631000001
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "cap": 128,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 128,
+      "referenceWork": 1425883,
+      "result": {
+        "id": "linear-medium:five-chain:75:y",
+        "cap": 128,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 128,
+        "stats": {
+          "work": 1425672,
+          "expansions": 128,
+          "remainingWork": 6574328,
+          "remainingExpansions": 32640
+        },
+        "elapsedMs": 1222.2532130000036
+      }
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "cap": 256,
+      "kind": "original-directional-fallback",
+      "referenceCategory": "search-refused",
+      "referenceAttempts": 256,
+      "referenceWork": 2290542,
+      "result": {
+        "id": "linear-medium:five-chain:75:y",
+        "cap": 256,
+        "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+        "category": "search-refused",
+        "eligibilityStatus": "research-eligible",
+        "baselineValid": false,
+        "baselineIssues": [
+          "overlapping-roads",
+          "unnormalized-crossing"
+        ],
+        "termination": "candidate-limit",
+        "attempts": 256,
+        "stats": {
+          "work": 2289143,
+          "expansions": 256,
+          "remainingWork": 5710857,
+          "remainingExpansions": 32512
+        },
+        "elapsedMs": 1608.424454
+      }
+    }
+  ]
+}

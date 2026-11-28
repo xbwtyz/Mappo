@@ -1,0 +1,7351 @@
+{
+  "version": 1,
+  "source": "7cf74bddb304c584fb38c09423b1ec5040f207b7",
+  "run": 46070711669,
+  "attempt": 1,
+  "aggregate": 140748525697,
+  "job": 140746878186,
+  "rows": [
+    {
+      "id": "linear-medium:eight-chain:100:diagonal",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 135,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 18,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0137",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 452216,
+        "expansions": 0,
+        "remainingWork": 7547784,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 452267,
+        "expansions": 0,
+        "remainingWork": 7547733,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 29,
+        "expectedEntries": 135,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116562,
+        "expansions": 0,
+        "remainingWork": 7883438,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 1139.2727120000002
+    },
+    {
+      "id": "linear-medium:eight-chain:100:diagonal",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 158,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 21,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0137",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 453841,
+        "expansions": 0,
+        "remainingWork": 7546159,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 453895,
+        "expansions": 0,
+        "remainingWork": 7546105,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 29,
+        "expectedEntries": 158,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116683,
+        "expansions": 0,
+        "remainingWork": 7883317,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 880.3031199999998
+    },
+    {
+      "id": "linear-medium:eight-chain:100:diagonal",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 178,
+      "omitted": 8,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0152",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0159",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0167",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0176",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0178",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0179",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 25,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0137",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 455318,
+        "expansions": 0,
+        "remainingWork": 7544682,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 455375,
+        "expansions": 0,
+        "remainingWork": 7544625,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 29,
+        "expectedEntries": 178,
+        "expectedOmitted": 8,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116783,
+        "expansions": 0,
+        "remainingWork": 7883217,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 943.834766
+    },
+    {
+      "id": "linear-medium:eight-chain:100:y",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 135,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 18,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0085",
+        "N-0087",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 464045,
+        "expansions": 0,
+        "remainingWork": 7535955,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 464282,
+        "expansions": 0,
+        "remainingWork": 7535718,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 47,
+        "expectedEntries": 135,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 120606,
+        "expansions": 0,
+        "remainingWork": 7879394,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 987.6441250000003
+    },
+    {
+      "id": "linear-medium:eight-chain:100:y",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 158,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 21,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0085",
+        "N-0087",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 465670,
+        "expansions": 0,
+        "remainingWork": 7534330,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 465910,
+        "expansions": 0,
+        "remainingWork": 7534090,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 47,
+        "expectedEntries": 158,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 120727,
+        "expansions": 0,
+        "remainingWork": 7879273,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 901.427612
+    },
+    {
+      "id": "linear-medium:eight-chain:100:y",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 178,
+      "omitted": 8,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0152",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0159",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0167",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0176",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0178",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0179",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 25,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0085",
+        "N-0087",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 467147,
+        "expansions": 0,
+        "remainingWork": 7532853,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 467390,
+        "expansions": 0,
+        "remainingWork": 7532610,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 47,
+        "expectedEntries": 178,
+        "expectedOmitted": 8,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 120827,
+        "expansions": 0,
+        "remainingWork": 7879173,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 823.5034719999994
+    },
+    {
+      "id": "linear-medium:eight-chain:75:y",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 135,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 18,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 458036,
+        "expansions": 0,
+        "remainingWork": 7541964,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 458177,
+        "expansions": 0,
+        "remainingWork": 7541823,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 40,
+        "expectedEntries": 135,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 118558,
+        "expansions": 0,
+        "remainingWork": 7881442,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 836.4224840000006
+    },
+    {
+      "id": "linear-medium:eight-chain:75:y",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 158,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 21,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 459661,
+        "expansions": 0,
+        "remainingWork": 7540339,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 459805,
+        "expansions": 0,
+        "remainingWork": 7540195,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 40,
+        "expectedEntries": 158,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 118679,
+        "expansions": 0,
+        "remainingWork": 7881321,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 832.560297
+    },
+    {
+      "id": "linear-medium:eight-chain:75:y",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 178,
+      "omitted": 8,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0152",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0159",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0167",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0176",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0178",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0179",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 25,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 461138,
+        "expansions": 0,
+        "remainingWork": 7538862,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 461285,
+        "expansions": 0,
+        "remainingWork": 7538715,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 40,
+        "expectedEntries": 178,
+        "expectedOmitted": 8,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 118779,
+        "expansions": 0,
+        "remainingWork": 7881221,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 700.5913229999996
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 120,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 16,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "observationWork": {
+        "work": 451058,
+        "expansions": 0,
+        "remainingWork": 7548942,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 451107,
+        "expansions": 0,
+        "remainingWork": 7548893,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 27,
+        "expectedEntries": 120,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116428,
+        "expansions": 0,
+        "remainingWork": 7883572,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 676.6787759999997
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 141,
+      "omitted": 8,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 20,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "observationWork": {
+        "work": 452572,
+        "expansions": 0,
+        "remainingWork": 7547428,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 452624,
+        "expansions": 0,
+        "remainingWork": 7547376,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 27,
+        "expectedEntries": 141,
+        "expectedOmitted": 8,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116533,
+        "expansions": 0,
+        "remainingWork": 7883467,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 682.3470799999996
+    },
+    {
+      "id": "linear-medium:eight-loop:100:diagonal",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 160,
+      "omitted": 7,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0176",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 23,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "observationWork": {
+        "work": 453934,
+        "expansions": 0,
+        "remainingWork": 7546066,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 453989,
+        "expansions": 0,
+        "remainingWork": 7546011,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 27,
+        "expectedEntries": 160,
+        "expectedOmitted": 7,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116630,
+        "expansions": 0,
+        "remainingWork": 7883370,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 554.0607179999988
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 120,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 16,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "observationWork": {
+        "work": 455114,
+        "expansions": 0,
+        "remainingWork": 7544886,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 455226,
+        "expansions": 0,
+        "remainingWork": 7544774,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 33,
+        "expectedEntries": 120,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 117822,
+        "expansions": 0,
+        "remainingWork": 7882178,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 608.6588090000005
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 141,
+      "omitted": 8,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 20,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "observationWork": {
+        "work": 456628,
+        "expansions": 0,
+        "remainingWork": 7543372,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 456743,
+        "expansions": 0,
+        "remainingWork": 7543257,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 33,
+        "expectedEntries": 141,
+        "expectedOmitted": 8,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 117927,
+        "expansions": 0,
+        "remainingWork": 7882073,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 680.5419170000005
+    },
+    {
+      "id": "linear-medium:eight-loop:75:y",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 160,
+      "omitted": 7,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0176",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 23,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0153",
+        "N-0154",
+        "N-0155"
+      ],
+      "observationWork": {
+        "work": 457990,
+        "expansions": 0,
+        "remainingWork": 7542010,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 458108,
+        "expansions": 0,
+        "remainingWork": 7541892,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 33,
+        "expectedEntries": 160,
+        "expectedOmitted": 7,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 118024,
+        "expansions": 0,
+        "remainingWork": 7881976,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 700.9021090000006
+    },
+    {
+      "id": "linear-medium:five-branch:100:diagonal",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 103,
+      "omitted": 8,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 15,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0135",
+        "N-0136",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "observationWork": {
+        "work": 449719,
+        "expansions": 0,
+        "remainingWork": 7550281,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 449772,
+        "expansions": 0,
+        "remainingWork": 7550228,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 24,
+        "expectedEntries": 103,
+        "expectedOmitted": 8,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116230,
+        "expansions": 0,
+        "remainingWork": 7883770,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 722.8011619999997
+    },
+    {
+      "id": "linear-medium:five-branch:100:diagonal",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 122,
+      "omitted": 7,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 18,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0135",
+        "N-0136",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "observationWork": {
+        "work": 451081,
+        "expansions": 0,
+        "remainingWork": 7548919,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 451137,
+        "expansions": 0,
+        "remainingWork": 7548863,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 24,
+        "expectedEntries": 122,
+        "expectedOmitted": 7,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116327,
+        "expansions": 0,
+        "remainingWork": 7883673,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 668.2990069999996
+    },
+    {
+      "id": "linear-medium:five-branch:100:diagonal",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 141,
+      "omitted": 8,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 20,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0135",
+        "N-0136",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "observationWork": {
+        "work": 452415,
+        "expansions": 0,
+        "remainingWork": 7547585,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 452473,
+        "expansions": 0,
+        "remainingWork": 7547527,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 24,
+        "expectedEntries": 141,
+        "expectedOmitted": 8,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116430,
+        "expansions": 0,
+        "remainingWork": 7883570,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 718.8064869999998
+    },
+    {
+      "id": "linear-medium:five-branch:75:y",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 103,
+      "omitted": 8,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 15,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0135",
+        "N-0136",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "observationWork": {
+        "work": 453136,
+        "expansions": 0,
+        "remainingWork": 7546864,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 453252,
+        "expansions": 0,
+        "remainingWork": 7546748,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 30,
+        "expectedEntries": 103,
+        "expectedOmitted": 8,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 117399,
+        "expansions": 0,
+        "remainingWork": 7882601,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 681.956780999999
+    },
+    {
+      "id": "linear-medium:five-branch:75:y",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 122,
+      "omitted": 7,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 18,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0135",
+        "N-0136",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "observationWork": {
+        "work": 454498,
+        "expansions": 0,
+        "remainingWork": 7545502,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 454617,
+        "expansions": 0,
+        "remainingWork": 7545383,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 30,
+        "expectedEntries": 122,
+        "expectedOmitted": 7,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 117496,
+        "expansions": 0,
+        "remainingWork": 7882504,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 698.1323139999986
+    },
+    {
+      "id": "linear-medium:five-branch:75:y",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 141,
+      "omitted": 8,
+      "eligible": [
+        {
+          "id": "N-0135",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0141",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 20,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0135",
+        "N-0136",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0153"
+      ],
+      "observationWork": {
+        "work": 455832,
+        "expansions": 0,
+        "remainingWork": 7544168,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 455953,
+        "expansions": 0,
+        "remainingWork": 7544047,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 30,
+        "expectedEntries": 141,
+        "expectedOmitted": 8,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 117599,
+        "expansions": 0,
+        "remainingWork": 7882401,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 733.4874609999988
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 124,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 17,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149"
+      ],
+      "observationWork": {
+        "work": 451338,
+        "expansions": 0,
+        "remainingWork": 7548662,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 451397,
+        "expansions": 0,
+        "remainingWork": 7548603,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 25,
+        "expectedEntries": 124,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116385,
+        "expansions": 0,
+        "remainingWork": 7883615,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 658.0609989999994
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 149,
+      "omitted": 10,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 19,
+        "incomplete-incident-scope": 7
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149"
+      ],
+      "observationWork": {
+        "work": 453074,
+        "expansions": 0,
+        "remainingWork": 7546926,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 453136,
+        "expansions": 0,
+        "remainingWork": 7546864,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 25,
+        "expectedEntries": 149,
+        "expectedOmitted": 10,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116522,
+        "expansions": 0,
+        "remainingWork": 7883478,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 559.6608440000018
+    },
+    {
+      "id": "linear-medium:five-chain:100:diagonal",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 70.71067811865476,
+        "y": 70.71067811865476
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 172,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0152",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0159",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0167",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0179",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 23,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0142",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149"
+      ],
+      "observationWork": {
+        "work": 454768,
+        "expansions": 0,
+        "remainingWork": 7545232,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 454833,
+        "expansions": 0,
+        "remainingWork": 7545167,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 25,
+        "expectedEntries": 172,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 116639,
+        "expansions": 0,
+        "remainingWork": 7883361,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 566.5726930000019
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 135,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 18,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0085",
+        "N-0087",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 461702,
+        "expansions": 0,
+        "remainingWork": 7538298,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 461939,
+        "expansions": 0,
+        "remainingWork": 7538061,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 44,
+        "expectedEntries": 135,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 119721,
+        "expansions": 0,
+        "remainingWork": 7880279,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 693.699437000003
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 158,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 21,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0085",
+        "N-0087",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 463327,
+        "expansions": 0,
+        "remainingWork": 7536673,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 463567,
+        "expansions": 0,
+        "remainingWork": 7536433,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 44,
+        "expectedEntries": 158,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 119842,
+        "expansions": 0,
+        "remainingWork": 7880158,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 702.9440020000002
+    },
+    {
+      "id": "linear-medium:five-chain:100:y",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 178,
+      "omitted": 8,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0152",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0159",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0167",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0176",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0178",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0179",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 25,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0057",
+        "N-0060",
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0085",
+        "N-0087",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0153",
+        "N-0154",
+        "N-0155",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 464804,
+        "expansions": 0,
+        "remainingWork": 7535196,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 465047,
+        "expansions": 0,
+        "remainingWork": 7534953,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 44,
+        "expectedEntries": 178,
+        "expectedOmitted": 8,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 119942,
+        "expansions": 0,
+        "remainingWork": 7880058,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 632.783954999999
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 108,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 4,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 4,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 4,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 17,
+        "incomplete-incident-scope": 5
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147"
+      ],
+      "observationWork": {
+        "work": 453421,
+        "expansions": 0,
+        "remainingWork": 7546579,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 453533,
+        "expansions": 0,
+        "remainingWork": 7546467,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 29,
+        "expectedEntries": 108,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 117321,
+        "expansions": 0,
+        "remainingWork": 7882679,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 572.9158439999992
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 126,
+      "omitted": 12,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 4,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 4,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 6,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 4,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 6,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 6,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 18,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147"
+      ],
+      "observationWork": {
+        "work": 454764,
+        "expansions": 0,
+        "remainingWork": 7545236,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 454878,
+        "expansions": 0,
+        "remainingWork": 7545122,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 29,
+        "expectedEntries": 126,
+        "expectedOmitted": 12,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 117427,
+        "expansions": 0,
+        "remainingWork": 7882573,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 550.763758000001
+    },
+    {
+      "id": "linear-medium:five-chain:50:y",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 147,
+      "omitted": 13,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 4,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 2,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 4,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 6,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 8,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 4,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 6,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 8,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 6,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 8,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 8,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 21,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147"
+      ],
+      "observationWork": {
+        "work": 456324,
+        "expansions": 0,
+        "remainingWork": 7543676,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 456441,
+        "expansions": 0,
+        "remainingWork": 7543559,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 29,
+        "expectedEntries": 147,
+        "expectedOmitted": 13,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 117540,
+        "expansions": 0,
+        "remainingWork": 7882460,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 723.4328099999984
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "hops": 6,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 128,
+      "omitted": 9,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 17,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 456022,
+        "expansions": 0,
+        "remainingWork": 7543978,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 456162,
+        "expansions": 0,
+        "remainingWork": 7543838,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 34,
+        "expectedEntries": 128,
+        "expectedOmitted": 9,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 117924,
+        "expansions": 0,
+        "remainingWork": 7882076,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 666.4059629999974
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "hops": 8,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 153,
+      "omitted": 10,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0177",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 19,
+        "incomplete-incident-scope": 7
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 457758,
+        "expansions": 0,
+        "remainingWork": 7542242,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 457901,
+        "expansions": 0,
+        "remainingWork": 7542099,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 34,
+        "expectedEntries": 153,
+        "expectedOmitted": 10,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 118061,
+        "expansions": 0,
+        "remainingWork": 7881939,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 629.212008999999
+    },
+    {
+      "id": "linear-medium:five-chain:75:y",
+      "hops": 10,
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "status": "research-eligible",
+      "observationStatus": "scope-limited",
+      "admitted": 176,
+      "omitted": 10,
+      "eligible": [
+        {
+          "id": "N-0136",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0137",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0138",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0139",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0140",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0142",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0143",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0144",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0145",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0146",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0147",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0148",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0149",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0150",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0151",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0152",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0153",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0154",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0155",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0156",
+          "depth": 1,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0157",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0158",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0159",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0163",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0164",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0165",
+          "depth": 3,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0166",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0167",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 0
+        },
+        {
+          "id": "N-0174",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0175",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0177",
+          "depth": 5,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0178",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        },
+        {
+          "id": "N-0179",
+          "depth": 7,
+          "incidentCount": 9,
+          "primaryIncidentCount": 2
+        }
+      ],
+      "excluded": {
+        "protected-anchor": 23,
+        "incomplete-incident-scope": 6
+      },
+      "blockerNodes": [
+        "N-0071",
+        "N-0074",
+        "N-0077",
+        "N-0080",
+        "N-0082",
+        "N-0131",
+        "N-0132",
+        "N-0133",
+        "N-0134",
+        "N-0135",
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0141",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0156"
+      ],
+      "eligibleBlockerNodes": [
+        "N-0136",
+        "N-0137",
+        "N-0138",
+        "N-0139",
+        "N-0140",
+        "N-0142",
+        "N-0144",
+        "N-0145",
+        "N-0146",
+        "N-0147",
+        "N-0148",
+        "N-0149",
+        "N-0156"
+      ],
+      "observationWork": {
+        "work": 459461,
+        "expansions": 0,
+        "remainingWork": 7540539,
+        "remainingExpansions": 32768
+      },
+      "stats": {
+        "work": 459607,
+        "expansions": 0,
+        "remainingWork": 7540393,
+        "remainingExpansions": 32768
+      },
+      "audit": {
+        "roots": 34,
+        "expectedEntries": 176,
+        "expectedOmitted": 10,
+        "mismatches": []
+      },
+      "auditStats": {
+        "work": 118180,
+        "expansions": 0,
+        "remainingWork": 7881820,
+        "remainingExpansions": 32768
+      },
+      "elapsedMs": 715.8314059999975
+    }
+  ]
+}

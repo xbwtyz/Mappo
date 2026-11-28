@@ -1,0 +1,265 @@
+{
+  "version": 1,
+  "source": "329166808a5df8bcca5ace840493ae6930f2eb64",
+  "run": 46084010041,
+  "attempt": 1,
+  "aggregate": 140790866102,
+  "job": 140789354620,
+  "rows": [
+    {
+      "id": "radial-small:five-branch:75:diagonal",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "minimum": 5,
+      "category": "geometry-recovered",
+      "termination": "hybrid-stream-exhausted",
+      "attempts": 153,
+      "stats": {
+        "work": 1633480,
+        "expansions": 176,
+        "remainingWork": 6366520,
+        "remainingExpansions": 32592
+      },
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "hybrid": {
+        "baselinePairs": 11,
+        "subsets": 23,
+        "coveringGroups": 4,
+        "connectedGroups": 4,
+        "connectorGroups": 0,
+        "enumerationLimit": false,
+        "groupLimit": false,
+        "seedProposals": 64,
+        "feedbackProposals": 128,
+        "duplicates": 39,
+        "feedbackEvaluations": 153,
+        "bestConflictCount": 0,
+        "attempted": {
+          "hybrid-refinement": 89,
+          "hybrid-directional-seed": 64
+        },
+        "failures": {
+          "unnormalized-crossing": 121
+        },
+        "approvedMinimum": 5,
+        "seedValidated": true
+      },
+      "ranking": {
+        "profile": "research-major-roads-neighbors-displacement-v1",
+        "verifiedCount": 32,
+        "firstScore": [
+          0,
+          5,
+          50.93124332499765
+        ],
+        "bestScore": [
+          0,
+          5,
+          49.14160680681188
+        ],
+        "bestAttempt": 7
+      },
+      "audit": {
+        "version": 1,
+        "caseId": "g:radial-small:five-branch:75:diagonal",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0099",
+          "RD-0100",
+          "RD-0101",
+          "RD-0102",
+          "RD-0105",
+          "RD-0106",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188",
+          "RD-0189",
+          "RD-0190",
+          "RD-0191",
+          "RD-0223",
+          "RD-0224",
+          "RD-0225",
+          "RD-0226",
+          "RD-0259"
+        ],
+        "finalChecked": 60,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 284387,
+          "expansions": 0,
+          "remainingWork": 7715613,
+          "remainingExpansions": 32768
+        }
+      },
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0104",
+            "old": {
+              "x": 106.34434448774044,
+              "y": 51.640717618675055
+            },
+            "point": {
+              "x": 109.65890752455239,
+              "y": 54.955280655486995
+            }
+          },
+          {
+            "id": "N-0141",
+            "old": {
+              "x": 54.1297800723099,
+              "y": 11.620285320982479
+            },
+            "point": {
+              "x": 57.146571373023946,
+              "y": 15.51004482444366
+            }
+          },
+          {
+            "id": "N-0165",
+            "old": {
+              "x": 114.9601798165724,
+              "y": 31.10662403526107
+            },
+            "point": {
+              "x": 118.58545712992576,
+              "y": 42.372835465302636
+            }
+          },
+          {
+            "id": "N-0188",
+            "old": {
+              "x": 183.16942981039716,
+              "y": 18.01557475060811
+            },
+            "point": {
+              "x": 187.23938295769105,
+              "y": 40.661713488207276
+            }
+          },
+          {
+            "id": "N-0189",
+            "old": {
+              "x": 175.7905795608349,
+              "y": 50.59296274953966
+            },
+            "point": {
+              "x": 179.10514259764685,
+              "y": 53.9075257863516
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0099",
+            "point": {
+              "x": 110.15898703612903,
+              "y": 42.67290185254693
+            }
+          },
+          {
+            "id": "N-0100",
+            "point": {
+              "x": 173.9855851552196,
+              "y": 40.178848509398904
+            }
+          },
+          {
+            "id": "N-0101",
+            "point": {
+              "x": 237.81218327431023,
+              "y": 37.68479516625087
+            }
+          },
+          {
+            "id": "N-0104",
+            "point": {
+              "x": 109.65890752455239,
+              "y": 54.955280655486995
+            }
+          },
+          {
+            "id": "N-0140",
+            "point": {
+              "x": 109.62240541115506,
+              "y": 53.794164576996366
+            }
+          },
+          {
+            "id": "N-0141",
+            "point": {
+              "x": 57.146571373023946,
+              "y": 15.51004482444366
+            }
+          },
+          {
+            "id": "N-0163",
+            "point": {
+              "x": 108.75622977507149,
+              "y": 31.627419676877132
+            }
+          },
+          {
+            "id": "N-0164",
+            "point": {
+              "x": 172.91242190527163,
+              "y": 62.42137395829777
+            }
+          },
+          {
+            "id": "N-0165",
+            "point": {
+              "x": 118.58545712992576,
+              "y": 42.372835465302636
+            }
+          },
+          {
+            "id": "N-0188",
+            "point": {
+              "x": 187.23938295769105,
+              "y": 40.661713488207276
+            }
+          },
+          {
+            "id": "N-0189",
+            "point": {
+              "x": 179.10514259764685,
+              "y": 53.9075257863516
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0099",
+          "RD-0100",
+          "RD-0101",
+          "RD-0102",
+          "RD-0105",
+          "RD-0106",
+          "RD-0152",
+          "RD-0153",
+          "RD-0154",
+          "RD-0186",
+          "RD-0187",
+          "RD-0188",
+          "RD-0189",
+          "RD-0190",
+          "RD-0191",
+          "RD-0223",
+          "RD-0224",
+          "RD-0225",
+          "RD-0226",
+          "RD-0259"
+        ],
+        "displacement": 49.14160680681188,
+        "stencil": {
+          "strategy": "hybrid-refinement"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,558 @@
+{
+  "version": 1,
+  "source": "8fecf1756771e995b0839751355f2be225674dff",
+  "run": 45982174551,
+  "attempt": 1,
+  "job": 140448752477,
+  "aggregate": 140450374145,
+  "rows": [
+    {
+      "id": "radial-small",
+      "source": "82d75cb2bbf157e6c273f5acb8687908494b30d0073fc1b8078aa57afd60b3ed",
+      "nodeCount": 220,
+      "roadCount": 275,
+      "propertyCount": 168,
+      "groups": [
+        {
+          "id": "quad",
+          "count": 4,
+          "shape": "loop",
+          "status": "selection-unavailable",
+          "visits": 1734,
+          "selectedRoadIds": []
+        },
+        {
+          "id": "pentagon",
+          "count": 5,
+          "shape": "loop",
+          "status": "selection-unavailable",
+          "visits": 2916,
+          "selectedRoadIds": []
+        },
+        {
+          "id": "five-chain",
+          "count": 5,
+          "shape": "chain",
+          "status": "selected",
+          "visits": 6,
+          "selectedRoadIds": [
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0260",
+            "RD-0261"
+          ],
+          "nodeCount": 6,
+          "degreeSequence": [
+            1,
+            1,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "five-branch",
+          "count": 5,
+          "shape": "branch",
+          "status": "selected",
+          "visits": 4,
+          "selectedRoadIds": [
+            "RD-0100",
+            "RD-0101",
+            "RD-0152",
+            "RD-0187",
+            "RD-0188"
+          ],
+          "nodeCount": 6,
+          "degreeSequence": [
+            1,
+            1,
+            1,
+            1,
+            3,
+            3
+          ]
+        },
+        {
+          "id": "eight-chain",
+          "count": 8,
+          "shape": "chain",
+          "status": "selected",
+          "visits": 9,
+          "selectedRoadIds": [
+            "RD-0100",
+            "RD-0101",
+            "RD-0102",
+            "RD-0106",
+            "RD-0107",
+            "RD-0260",
+            "RD-0261",
+            "RD-0262"
+          ],
+          "nodeCount": 9,
+          "degreeSequence": [
+            1,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "eight-loop",
+          "count": 8,
+          "shape": "loop",
+          "status": "selected",
+          "visits": 37,
+          "selectedRoadIds": [
+            "RD-0100",
+            "RD-0105",
+            "RD-0152",
+            "RD-0153",
+            "RD-0154",
+            "RD-0188",
+            "RD-0189",
+            "RD-0190"
+          ],
+          "nodeCount": 8,
+          "degreeSequence": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "organic-large",
+      "source": "a48d7abfbc95e397201c2180b3fd3a560e85951d0d6999ed7a3c601c341ea602",
+      "nodeCount": 329,
+      "roadCount": 546,
+      "propertyCount": 925,
+      "groups": [
+        {
+          "id": "quad",
+          "count": 4,
+          "shape": "loop",
+          "status": "selected",
+          "visits": 19,
+          "selectedRoadIds": [
+            "RD-0154",
+            "RD-0155",
+            "RD-0157",
+            "RD-0167"
+          ],
+          "nodeCount": 4,
+          "degreeSequence": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "pentagon",
+          "count": 5,
+          "shape": "loop",
+          "status": "selection-limit",
+          "visits": 20000,
+          "selectedRoadIds": []
+        },
+        {
+          "id": "five-chain",
+          "count": 5,
+          "shape": "chain",
+          "status": "selected",
+          "visits": 6,
+          "selectedRoadIds": [
+            "RD-0149",
+            "RD-0154",
+            "RD-0155",
+            "RD-0165",
+            "RD-0166"
+          ],
+          "nodeCount": 6,
+          "degreeSequence": [
+            1,
+            1,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "five-branch",
+          "count": 5,
+          "shape": "branch",
+          "status": "selected",
+          "visits": 4,
+          "selectedRoadIds": [
+            "RD-0149",
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0157"
+          ],
+          "nodeCount": 6,
+          "degreeSequence": [
+            1,
+            1,
+            1,
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "id": "eight-chain",
+          "count": 8,
+          "shape": "chain",
+          "status": "selected",
+          "visits": 9,
+          "selectedRoadIds": [
+            "RD-0149",
+            "RD-0154",
+            "RD-0155",
+            "RD-0165",
+            "RD-0166",
+            "RD-0170",
+            "RD-0183",
+            "RD-0185"
+          ],
+          "nodeCount": 9,
+          "degreeSequence": [
+            1,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "eight-loop",
+          "count": 8,
+          "shape": "loop",
+          "status": "selected",
+          "visits": 379,
+          "selectedRoadIds": [
+            "RD-0154",
+            "RD-0155",
+            "RD-0156",
+            "RD-0158",
+            "RD-0161",
+            "RD-0167",
+            "RD-0169",
+            "RD-0171"
+          ],
+          "nodeCount": 8,
+          "degreeSequence": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "linear-medium",
+      "source": "5840e843844bc04766bd6ad7d0312d4f1b72174996b5dff25778e74d54c300ad",
+      "nodeCount": 242,
+      "roadCount": 383,
+      "propertyCount": 398,
+      "groups": [
+        {
+          "id": "quad",
+          "count": 4,
+          "shape": "loop",
+          "status": "selected",
+          "visits": 7,
+          "selectedRoadIds": [
+            "RD-0138",
+            "RD-0139",
+            "RD-0141",
+            "RD-0153"
+          ],
+          "nodeCount": 4,
+          "degreeSequence": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "pentagon",
+          "count": 5,
+          "shape": "loop",
+          "status": "selection-unavailable",
+          "visits": 10812,
+          "selectedRoadIds": []
+        },
+        {
+          "id": "five-chain",
+          "count": 5,
+          "shape": "chain",
+          "status": "selected",
+          "visits": 6,
+          "selectedRoadIds": [
+            "RD-0138",
+            "RD-0140",
+            "RD-0142",
+            "RD-0144",
+            "RD-0147"
+          ],
+          "nodeCount": 6,
+          "degreeSequence": [
+            1,
+            1,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "five-branch",
+          "count": 5,
+          "shape": "branch",
+          "status": "selected",
+          "visits": 4,
+          "selectedRoadIds": [
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0141",
+            "RD-0142"
+          ],
+          "nodeCount": 6,
+          "degreeSequence": [
+            1,
+            1,
+            1,
+            2,
+            2,
+            3
+          ]
+        },
+        {
+          "id": "eight-chain",
+          "count": 8,
+          "shape": "chain",
+          "status": "selected",
+          "visits": 9,
+          "selectedRoadIds": [
+            "RD-0138",
+            "RD-0140",
+            "RD-0142",
+            "RD-0144",
+            "RD-0147",
+            "RD-0155",
+            "RD-0157",
+            "RD-0159"
+          ],
+          "nodeCount": 9,
+          "degreeSequence": [
+            1,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "eight-loop",
+          "count": 8,
+          "shape": "loop",
+          "status": "selected",
+          "visits": 20,
+          "selectedRoadIds": [
+            "RD-0138",
+            "RD-0139",
+            "RD-0140",
+            "RD-0142",
+            "RD-0145",
+            "RD-0153",
+            "RD-0155",
+            "RD-0157"
+          ],
+          "nodeCount": 8,
+          "degreeSequence": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "planned-medium",
+      "source": "c6d1664bdf8eb943e1067ac5a736da6f911b25aca4f30104fda2aee7910a9fda",
+      "nodeCount": 218,
+      "roadCount": 339,
+      "propertyCount": 454,
+      "groups": [
+        {
+          "id": "quad",
+          "count": 4,
+          "shape": "loop",
+          "status": "selected",
+          "visits": 7,
+          "selectedRoadIds": [
+            "RD-0132",
+            "RD-0133",
+            "RD-0135",
+            "RD-0157"
+          ],
+          "nodeCount": 4,
+          "degreeSequence": [
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "pentagon",
+          "count": 5,
+          "shape": "loop",
+          "status": "selection-unavailable",
+          "visits": 9724,
+          "selectedRoadIds": []
+        },
+        {
+          "id": "five-chain",
+          "count": 5,
+          "shape": "chain",
+          "status": "selected",
+          "visits": 6,
+          "selectedRoadIds": [
+            "RD-0132",
+            "RD-0134",
+            "RD-0136",
+            "RD-0138",
+            "RD-0140"
+          ],
+          "nodeCount": 6,
+          "degreeSequence": [
+            1,
+            1,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "five-branch",
+          "count": 5,
+          "shape": "branch",
+          "status": "selected",
+          "visits": 4,
+          "selectedRoadIds": [
+            "RD-0132",
+            "RD-0133",
+            "RD-0134",
+            "RD-0135",
+            "RD-0136"
+          ],
+          "nodeCount": 6,
+          "degreeSequence": [
+            1,
+            1,
+            1,
+            2,
+            2,
+            3
+          ]
+        },
+        {
+          "id": "eight-chain",
+          "count": 8,
+          "shape": "chain",
+          "status": "selected",
+          "visits": 9,
+          "selectedRoadIds": [
+            "RD-0132",
+            "RD-0134",
+            "RD-0136",
+            "RD-0138",
+            "RD-0140",
+            "RD-0142",
+            "RD-0144",
+            "RD-0146"
+          ],
+          "nodeCount": 9,
+          "degreeSequence": [
+            1,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "id": "eight-loop",
+          "count": 8,
+          "shape": "loop",
+          "status": "selected",
+          "visits": 29,
+          "selectedRoadIds": [
+            "RD-0132",
+            "RD-0133",
+            "RD-0134",
+            "RD-0136",
+            "RD-0139",
+            "RD-0157",
+            "RD-0159",
+            "RD-0161"
+          ],
+          "nodeCount": 8,
+          "degreeSequence": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ]
+    }
+  ]
+}

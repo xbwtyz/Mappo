@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "source": "3515cccaaf3170c09c67596f57b99c6b458de782",
+  "run": 45979504125,
+  "attempt": 1,
+  "aggregate": 140441606607,
+  "rows": [
+    {
+      "job": 140439715362,
+      "id": "holdout-linear",
+      "mode": "adaptive",
+      "reference": {
+        "work": 564616,
+        "expansions": 1,
+        "remainingWork": 31435384,
+        "remainingExpansions": 131071
+      },
+      "optimized": {
+        "work": 563316,
+        "expansions": 1,
+        "remainingWork": 31436684,
+        "remainingExpansions": 131071
+      },
+      "referenceMs": 1246.687054,
+      "optimizedMs": 894.7453370000001,
+      "status": "geometry-recovered"
+    },
+    {
+      "job": 140439715362,
+      "id": "mixed-small",
+      "mode": "adaptive",
+      "reference": {
+        "work": 507238,
+        "expansions": 1,
+        "remainingWork": 7492762,
+        "remainingExpansions": 32767
+      },
+      "optimized": {
+        "work": 505678,
+        "expansions": 1,
+        "remainingWork": 7494322,
+        "remainingExpansions": 32767
+      },
+      "referenceMs": 2699.255905,
+      "optimizedMs": 2694.6380470000004,
+      "status": "baseline-valid"
+    },
+    {
+      "job": 140439715362,
+      "id": "mixed-river",
+      "mode": "adaptive",
+      "reference": {
+        "work": 614799,
+        "expansions": 0,
+        "remainingWork": 31385201,
+        "remainingExpansions": 131072
+      },
+      "optimized": {
+        "work": 614799,
+        "expansions": 0,
+        "remainingWork": 31385201,
+        "remainingExpansions": 131072
+      },
+      "referenceMs": 2815.059203,
+      "optimizedMs": 2573.5645879999993,
+      "status": "search-refused"
+    },
+    {
+      "job": 140439715362,
+      "id": "dry-positive",
+      "mode": "strict",
+      "reference": {
+        "work": 545967,
+        "expansions": 0,
+        "remainingWork": 7454033,
+        "remainingExpansions": 32768
+      },
+      "optimized": {
+        "work": 545447,
+        "expansions": 0,
+        "remainingWork": 7454553,
+        "remainingExpansions": 32768
+      },
+      "referenceMs": 788.2142869999989,
+      "optimizedMs": 794.395364,
+      "status": "baseline-valid"
+    }
+  ]
+}

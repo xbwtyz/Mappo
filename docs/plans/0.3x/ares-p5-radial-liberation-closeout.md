@@ -1,0 +1,26 @@
+# ARES P5 — Operation Radial Liberation closeout
+
+Status: detached research campaign complete; final draft regression requested, not yet qualified. P6 implementation held pending separate authorization. Owner directed closeout and continuation toward land reconciliation after tournament discussion. No authority to expand budgets, change protected or unknown-authorship content, relax cyclic ordering, remove roads, change Schema 11, integrate live, merge, publish or change final targets.
+
+## Verified evidence
+Exact source 82f28f31758c042ae59bf27f67540d706eb532ba, [Fast Checks 46110819768](https://github.com/xbwtyz/Mappo/actions/runs/46110819768), attempt 1, 18/18 jobs, completion 140875497212, 4347 tests across 829 files; 462s wall from run start to updated time. Cumulative measured holdout research CI 1h08m51s (excluding archival-only checks). All 100 locked new sources returned a distinct row; 15 source Node shard evidence files retain complete raw witnesses, budgets, refusal and independent audit results. Prior 49 rematch rows and new inventory locks retained in their original files.
+
+| Cohort | Attempted | Fixed boundary | Boundary-compliant | Verified | Unresolved | Verified / boundary-compliant |
+|---|---:|---:|---:|---:|---:|---:|
+| Original frozen diversified | 100 | 51 | 49 | 22 | 27 | 44.9% |
+| New frozen diversified | 100 | 52 | 48 | 27 | 21 | 56.25% |
+| Combined | 200 | 103 | 97 | 49 | 48 | 50.5% |
+
+Original 51 boundary refusals come from the previously verified cohort classification, not another execution in the 49-case rematch. Boundary-compliant is not proof of independent feasibility; no claims that every one of the unresolved cases has an admissible solution. Original historical union 27/49 includes other strategies and is not one bounded engine. New cohort used the frozen diversified search without tuning. New morphology results: radial 4/17, organic 8/10, linear 5/10, planned 10/11. No preflight disagreement, work-limit or unverified construction results in new cohort. 13 geometry refusals (10 cyclic-only, 3 combined contacts/rotation); six radial empty endpoint-cover clauses; two linear exact minimum covers of 12 and 13, exceeding eight. Four new radial near misses have one cyclic violation and no blocked contacts. All 13 geometry refusals used 47 full evaluations; none exhausted the 8M work ceiling. Successful new candidates: 24 zero-contact translations and three radial normalization cases (25, 12, 41 contacts), including a verified eight-neighbor translation. All successes retain independent final/swept provider checks, exact selected intent, protected plaza geometry and cyclic order; not full-city land/access or continuous-motion certification.
+
+## Disposition
+Freeze the second cohort and published result. Future research after exposure must not claim it remains untouched held-out validation; use a new independently frozen cohort for changed strategies. Preserve all historical routes, P4/SRE fallback, negative controls and prior evidence. This is sufficient evidence to end this bounded research campaign, not to claim general P5 topology recovery or final P9 qualification. Existing DS-10/P9 thresholds (99/95/90% independently feasible small/moderate/large, 85% topology restructure, >=10000 scenarios, zero unsafe accepted cities) remain unchanged and not demonstrated by this experiment. Whole-city reconciliation, general overlap/endpoint consolidation, authorized road retirement, persistent trusted provenance and runtime integration remain open. No unsafe escalation.
+
+## Next opportunities (planning, not authorization)
+- P6 ownership: deterministic affected-face correspondence and stable lineage, frontage/access and parcel/building reconciliation, district/defense/water/terrain constraints, independent whole-city audit and persistence. Consume qualified road evidence without treating it as Apply authority.
+- P7 obstruction-directed portfolio under one shared search root; historical union is opportunity, not a dispatch guarantee. Retain verified incumbent, deterministic fallback, no automatic permission escalation.
+- Separately approved topology research: cyclic-only near misses, coupled conflicts, larger cluster trade-off, and explicit generated-road reconstruction. Six no-cover cases are structural under current eligibility, not proof that destruction alone solves them. Expanding the eight-neighbor authority or changing cyclic/road retirement permissions requires explicit approval and independent qualification. Preserve protected anchors and exact requested position; no guaranteed 100%.
+- P8 host integration needs trusted persistent road/junction provenance, stale/cancel/Review/Apply and atomic history. If existing Schema 11 cannot represent necessary ownership/provenance, stop for explicit schema decision.
+
+## Qualification and rollback
+Request exact-head full draft regression via existing [full-ci] marker. Verify mandatory 22 jobs and aggregate, not merely the workflow status; preserve old fixtures, runtime/compiled parity and all regression gates. This evidence-only commit contains no source, test, schema, CI or artifact modifications. If correction is needed, append corrected evidence without rewriting history. P6 remains held until full regression and separate explicit owner phase approval.

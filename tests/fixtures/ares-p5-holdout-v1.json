@@ -1,0 +1,1418 @@
+{
+  "version": 1,
+  "protocol": "ares-p5-holdout-v1",
+  "reference": "95a62cd3f63e8016f123ce0983214bbf77039cf1",
+  "appVersion": "0.2.25-dev",
+  "schemaVersion": 11,
+  "morphologies": [
+    "radial",
+    "organic",
+    "linear",
+    "planned"
+  ],
+  "perMorphology": 25,
+  "selection": "Existing bounded G selection, preferred group then eight-chain then five-chain then five-branch then quad then eight-loop then pentagon; choose first available independently of movement or recovery. Retain every unavailable slot; never replace seed after observing recovery.",
+  "offsets": "Same signed Cartesian 5x5 grid per morphology, replacing zero-zero with +75,-25; axis cap 100, vector cap sqrt(20000).",
+  "rows": [
+    {
+      "id": "radial-01",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-01",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -100,
+        "y": -100
+      }
+    },
+    {
+      "id": "radial-02",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-02",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -100,
+        "y": -50
+      }
+    },
+    {
+      "id": "radial-03",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-03",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -100,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-04",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-04",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -100,
+        "y": 50
+      }
+    },
+    {
+      "id": "radial-05",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-05",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": -100,
+        "y": 100
+      }
+    },
+    {
+      "id": "radial-06",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-06",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": -50,
+        "y": -100
+      }
+    },
+    {
+      "id": "radial-07",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-07",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -50,
+        "y": -50
+      }
+    },
+    {
+      "id": "radial-08",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-08",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-09",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-09",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -50,
+        "y": 50
+      }
+    },
+    {
+      "id": "radial-10",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-10",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -50,
+        "y": 100
+      }
+    },
+    {
+      "id": "radial-11",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-11",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "radial-12",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-12",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 0,
+        "y": -50
+      }
+    },
+    {
+      "id": "radial-13",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-13",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 75,
+        "y": -25
+      }
+    },
+    {
+      "id": "radial-14",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-14",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 0,
+        "y": 50
+      }
+    },
+    {
+      "id": "radial-15",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-15",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "radial-16",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-16",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 50,
+        "y": -100
+      }
+    },
+    {
+      "id": "radial-17",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-17",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 50,
+        "y": -50
+      }
+    },
+    {
+      "id": "radial-18",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-18",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 50,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-19",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-19",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    {
+      "id": "radial-20",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-20",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 50,
+        "y": 100
+      }
+    },
+    {
+      "id": "radial-21",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-21",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 100,
+        "y": -100
+      }
+    },
+    {
+      "id": "radial-22",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-22",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 100,
+        "y": -50
+      }
+    },
+    {
+      "id": "radial-23",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-23",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "radial-24",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-24",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    {
+      "id": "radial-25",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-25",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "organic-01",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-01",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -100,
+        "y": -100
+      }
+    },
+    {
+      "id": "organic-02",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-02",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -100,
+        "y": -50
+      }
+    },
+    {
+      "id": "organic-03",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-03",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -100,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-04",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-04",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -100,
+        "y": 50
+      }
+    },
+    {
+      "id": "organic-05",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-05",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": -100,
+        "y": 100
+      }
+    },
+    {
+      "id": "organic-06",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-06",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": -50,
+        "y": -100
+      }
+    },
+    {
+      "id": "organic-07",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-07",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -50,
+        "y": -50
+      }
+    },
+    {
+      "id": "organic-08",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-08",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-09",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-09",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -50,
+        "y": 50
+      }
+    },
+    {
+      "id": "organic-10",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-10",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -50,
+        "y": 100
+      }
+    },
+    {
+      "id": "organic-11",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-11",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "organic-12",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-12",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 0,
+        "y": -50
+      }
+    },
+    {
+      "id": "organic-13",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-13",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 75,
+        "y": -25
+      }
+    },
+    {
+      "id": "organic-14",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-14",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 0,
+        "y": 50
+      }
+    },
+    {
+      "id": "organic-15",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-15",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "organic-16",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-16",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 50,
+        "y": -100
+      }
+    },
+    {
+      "id": "organic-17",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-17",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 50,
+        "y": -50
+      }
+    },
+    {
+      "id": "organic-18",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-18",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 50,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-19",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-19",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    {
+      "id": "organic-20",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-20",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 50,
+        "y": 100
+      }
+    },
+    {
+      "id": "organic-21",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-21",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 100,
+        "y": -100
+      }
+    },
+    {
+      "id": "organic-22",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-22",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 100,
+        "y": -50
+      }
+    },
+    {
+      "id": "organic-23",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-23",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "organic-24",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-24",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    {
+      "id": "organic-25",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-25",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "linear-01",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-01",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -100,
+        "y": -100
+      }
+    },
+    {
+      "id": "linear-02",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-02",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -100,
+        "y": -50
+      }
+    },
+    {
+      "id": "linear-03",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-03",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -100,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-04",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-04",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -100,
+        "y": 50
+      }
+    },
+    {
+      "id": "linear-05",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-05",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": -100,
+        "y": 100
+      }
+    },
+    {
+      "id": "linear-06",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-06",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": -50,
+        "y": -100
+      }
+    },
+    {
+      "id": "linear-07",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-07",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -50,
+        "y": -50
+      }
+    },
+    {
+      "id": "linear-08",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-08",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-09",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-09",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -50,
+        "y": 50
+      }
+    },
+    {
+      "id": "linear-10",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-10",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -50,
+        "y": 100
+      }
+    },
+    {
+      "id": "linear-11",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-11",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "linear-12",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-12",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 0,
+        "y": -50
+      }
+    },
+    {
+      "id": "linear-13",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-13",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 75,
+        "y": -25
+      }
+    },
+    {
+      "id": "linear-14",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-14",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 0,
+        "y": 50
+      }
+    },
+    {
+      "id": "linear-15",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-15",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "linear-16",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-16",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 50,
+        "y": -100
+      }
+    },
+    {
+      "id": "linear-17",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-17",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 50,
+        "y": -50
+      }
+    },
+    {
+      "id": "linear-18",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-18",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 50,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-19",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-19",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    {
+      "id": "linear-20",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-20",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 50,
+        "y": 100
+      }
+    },
+    {
+      "id": "linear-21",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-21",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 100,
+        "y": -100
+      }
+    },
+    {
+      "id": "linear-22",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-22",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 100,
+        "y": -50
+      }
+    },
+    {
+      "id": "linear-23",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-23",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "linear-24",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-24",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    {
+      "id": "linear-25",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-25",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "planned-01",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-01",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -100,
+        "y": -100
+      }
+    },
+    {
+      "id": "planned-02",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-02",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -100,
+        "y": -50
+      }
+    },
+    {
+      "id": "planned-03",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-03",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -100,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-04",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-04",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -100,
+        "y": 50
+      }
+    },
+    {
+      "id": "planned-05",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-05",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": -100,
+        "y": 100
+      }
+    },
+    {
+      "id": "planned-06",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-06",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": -50,
+        "y": -100
+      }
+    },
+    {
+      "id": "planned-07",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-07",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": -50,
+        "y": -50
+      }
+    },
+    {
+      "id": "planned-08",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-08",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": -50,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-09",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-09",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": -50,
+        "y": 50
+      }
+    },
+    {
+      "id": "planned-10",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-10",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": -50,
+        "y": 100
+      }
+    },
+    {
+      "id": "planned-11",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-11",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 0,
+        "y": -100
+      }
+    },
+    {
+      "id": "planned-12",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-12",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 0,
+        "y": -50
+      }
+    },
+    {
+      "id": "planned-13",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-13",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 75,
+        "y": -25
+      }
+    },
+    {
+      "id": "planned-14",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-14",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 0,
+        "y": 50
+      }
+    },
+    {
+      "id": "planned-15",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-15",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "planned-16",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-16",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 50,
+        "y": -100
+      }
+    },
+    {
+      "id": "planned-17",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-17",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 50,
+        "y": -50
+      }
+    },
+    {
+      "id": "planned-18",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-18",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 50,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-19",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-19",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    {
+      "id": "planned-20",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-20",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "pentagon",
+      "offset": {
+        "x": 50,
+        "y": 100
+      }
+    },
+    {
+      "id": "planned-21",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-21",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-chain",
+      "offset": {
+        "x": 100,
+        "y": -100
+      }
+    },
+    {
+      "id": "planned-22",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-22",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "five-branch",
+      "offset": {
+        "x": 100,
+        "y": -50
+      }
+    },
+    {
+      "id": "planned-23",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-23",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-chain",
+      "offset": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    {
+      "id": "planned-24",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-24",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "eight-loop",
+      "offset": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    {
+      "id": "planned-25",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-25",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "preferredGroup": "quad",
+      "offset": {
+        "x": 100,
+        "y": 100
+      }
+    }
+  ]
+}

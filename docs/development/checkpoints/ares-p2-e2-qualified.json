@@ -1,0 +1,75 @@
+{
+  "version": 2,
+  "repository": "xbwtyz/Mappo",
+  "milestone": "ARES P2 E2 historical focused-qualified checkpoint; E3 full draft gate pending",
+  "appVersion": "0.2.25-dev",
+  "targetVersion": "0.3.0",
+  "state": "active",
+  "source": {
+    "branch": "feature/ares-p1-diagnostics",
+    "sha": "5d171b8ed2245458073aa5449628cd8e637444a5",
+    "baseSha": "0c068b4a42389164618aac8f42e2f018cc9edaed",
+    "pr": 164
+  },
+  "scope": {
+    "approved": [
+      "P2 only on PR164 after full P1 qualification, all consolidated architecture and SAFE-01–15."
+    ],
+    "prohibited": [
+      "P3–P9, schema/permission/CI policy changes, merge or publishing without separate approval."
+    ],
+    "stopConditions": [
+      "Stop at P2 exit for explicit P3 authorization; stop for safety, schema, policy or qualification failure."
+    ]
+  },
+  "completed": [
+    "A–D3 detached discovery and integrated bounded scope passed exact-head focused checks.",
+    "E1 exact historical replay passed; E2 old observable / new review-candidate scope proof for all six historical blocker instances, independent positive control and negative preservation/cap checks.",
+    "Exact E2 Fast Checks 45958111920: 18/18, 1487 tests / 210 files, 36 new P2 tests, 205s.",
+    "Production closure and compiled HTML pair remain unchanged."
+  ],
+  "pending": [
+    "E3 full exact draft qualification: verify all 22 mandatory jobs and aggregate.",
+    "Explicit P3 authorization; separate review-ready and merge gates."
+  ],
+  "decisions": [
+    "Keep draft for planned P1–P3 grouping; existing full draft marker, no duplicate focused runs.",
+    "Schema 11, portable/workspace 1; no live editing or additional authority.",
+    "Historical checkpoint points to E2 source, not subsequent documentation commit."
+  ],
+  "blockers": [
+    "No actual geometric solution for the three historical refusals; review admission only.",
+    "Exact swept collision, general graph/land containment discovery, full road-width landscape semantics, optimization, future vertical/crossing capabilities and independent candidate/host integration remain unqualified."
+  ],
+  "evidence": {
+    "qualification": "focused-only",
+    "fast": {
+      "runId": 45958111920,
+      "attempt": 1,
+      "head": "5d171b8ed2245458073aa5449628cd8e637444a5",
+      "jobId": 140369225669,
+      "completionJobId": 140370369184,
+      "shards": 16,
+      "tests": 1487,
+      "passed": 1487,
+      "failed": 0,
+      "durationSeconds": 205,
+      "files": 210
+    },
+    "artifacts": [
+      {
+        "path": "index.html",
+        "blob": "a228c29cc8c9267918898538f2b245559e9f25fd"
+      },
+      {
+        "path": "dist/mappo-0.2.25-dev.html",
+        "blob": "a228c29cc8c9267918898538f2b245559e9f25fd"
+      }
+    ]
+  },
+  "rollback": {
+    "sourceSha": "b2cad803151421c9d91a02d95fc5253afcbfb6cd",
+    "policy": "Reviewed revert only; preserve historical evidence."
+  },
+  "nextAction": "Verify subsequent E3 exact full draft CI, then stop for explicit P3 authorization."
+}

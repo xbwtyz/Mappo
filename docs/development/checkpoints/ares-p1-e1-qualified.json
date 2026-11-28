@@ -1,0 +1,74 @@
+{
+  "version": 2,
+  "repository": "xbwtyz/Mappo",
+  "milestone": "ARES P1 E1 historical focused-qualified checkpoint; E2 full draft gate pending",
+  "appVersion": "0.2.25-dev",
+  "targetVersion": "0.3.0",
+  "state": "active",
+  "source": {
+    "branch": "feature/ares-p1-diagnostics",
+    "sha": "e37bd664dd572887f5e0bcb0ce40ef26664f4dde",
+    "baseSha": "0c068b4a42389164618aac8f42e2f018cc9edaed",
+    "pr": 164
+  },
+  "scope": {
+    "approved": [
+      "P1 only, explicitly authorized 2026-11-26 Pacific, consolidated architecture and SAFE-01–15."
+    ],
+    "prohibited": [
+      "P2–P9, schema or permission changes, merge and publishing without separate approval."
+    ],
+    "stopConditions": [
+      "Stop at P1 exit for P2 authorization; stop on safety, schema, CI policy or qualification failure."
+    ]
+  },
+  "completed": [
+    "A–D focused qualification passed, runs 45948382535, 45948967357, 45949672924, 45950186291.",
+    "E1 exact focused CI 45950818586: 18/18, 1451 tests / 203 files, 38 new ARES tests, 289s.",
+    "Unchanged production closure and compiled pair."
+  ],
+  "pending": [
+    "E2 full exact draft qualification; verify 22 mandatory jobs and aggregate.",
+    "P2 approval; separate review-ready CI and merge gate if merging."
+  ],
+  "decisions": [
+    "Schema 11; portable/workspace 1; no new authority or user-facing changes.",
+    "Keep draft for possible P1–P3 grouping; use existing full draft CI marker.",
+    "Historical checkpoint points to E1 source, not subsequent documentation commit."
+  ],
+  "blockers": [
+    "High/controlled/regeneration replay unsupported; live capture/host binding and real landscape providers deferred.",
+    "Three historical setback failures remain for P2; final corpus not run."
+  ],
+  "evidence": {
+    "qualification": "focused-only",
+    "fast": {
+      "runId": 45950818586,
+      "attempt": 1,
+      "head": "e37bd664dd572887f5e0bcb0ce40ef26664f4dde",
+      "jobId": 140345986619,
+      "completionJobId": 140347484453,
+      "shards": 16,
+      "tests": 1451,
+      "passed": 1451,
+      "failed": 0,
+      "durationSeconds": 289,
+      "files": 203
+    },
+    "artifacts": [
+      {
+        "path": "index.html",
+        "blob": "a228c29cc8c9267918898538f2b245559e9f25fd"
+      },
+      {
+        "path": "dist/mappo-0.2.25-dev.html",
+        "blob": "a228c29cc8c9267918898538f2b245559e9f25fd"
+      }
+    ]
+  },
+  "rollback": {
+    "sourceSha": "0c068b4a42389164618aac8f42e2f018cc9edaed",
+    "policy": "Reviewed revert only; preserve historical evidence."
+  },
+  "nextAction": "Verify subsequent E2 exact full draft CI, then stop for explicit P2 authorization."
+}

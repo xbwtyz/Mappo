@@ -47,21 +47,28 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/ci-trigger.mjs fast
 
+      - name: Validate eligible archival-only push
+        id: archive
+        if: steps.gate.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/ci-archive.mjs
+
       - name: Select exact-push incremental checks
         id: plan
-        if: steps.gate.outputs.run == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.archive.outputs.archive != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/ci-focused.mjs plan
 
       - name: Check changed JavaScript syntax
-        if: steps.gate.outputs.run == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.archive.outputs.archive != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/ci-focused.mjs syntax
 
       - name: Build and verify offline standalone parity
-        if: steps.gate.outputs.run == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.archive.outputs.archive != 'true'
         shell: bash
         run: |
           npm run build
@@ -74,13 +81,13 @@ jobs:
 
       - name: Run smoke tests and directly modified Node tests
         # Baseline includes tests/ci-trigger.test.js; profiles are incremental only.
-        if: steps.gate.outputs.run == 'true' && steps.plan.outputs.parallel == 'false'
+        if: steps.gate.outputs.run == 'true' && steps.archive.outputs.archive != 'true' && steps.plan.outputs.parallel == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/ci-focused.mjs test
 
       - name: Retain exact focused execution plan
-        if: steps.gate.outputs.run == 'true' && steps.plan.outputs.parallel == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.archive.outputs.archive != 'true' && steps.plan.outputs.parallel == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: focused-plan-${{ github.run_id }}-${{ github.run_attempt }}
@@ -89,13 +96,13 @@ jobs:
           retention-days: 14
 
       - name: Prepare exact-candidate manual acceptance package
-        if: steps.gate.outputs.run == 'true' && contains(github.event.head_commit.message, '[acceptance-package]')
+        if: steps.gate.outputs.run == 'true' && steps.archive.outputs.archive != 'true' && contains(github.event.head_commit.message, '[acceptance-package]')
         env:
           EXPECTED_SOURCE: ${{ github.sha }}
         run: node scripts/development/manual-acceptance.mjs
 
       - name: Upload manual acceptance package
-        if: steps.gate.outputs.run == 'true' && contains(github.event.head_commit.message, '[acceptance-package]')
+        if: steps.gate.outputs.run == 'true' && steps.archive.outputs.archive != 'true' && contains(github.event.head_commit.message, '[acceptance-package]')
         uses: actions/upload-artifact@v4
         with:
           name: mappo-manual-acceptance-${{ github.run_id }}-${{ github.run_attempt }}

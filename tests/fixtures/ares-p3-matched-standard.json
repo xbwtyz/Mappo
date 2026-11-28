@@ -1,0 +1,466 @@
+{
+  "version": 1,
+  "protocol": "ares-p3-matched-standard-v1",
+  "frozenImplementation": "c6d0bb265a06e1cc89b364562b27a9c2a85c55cd",
+  "baselineMain": "0c068b4a42389164618aac8f42e2f018cc9edaed",
+  "appVersion": "0.2.25-dev",
+  "schemaVersion": 11,
+  "rootLimits": {
+    "preservation": {
+      "work": 8000000,
+      "stateExpansions": 32768
+    },
+    "destruction": {
+      "work": 32000000,
+      "stateExpansions": 131072
+    }
+  },
+  "policy": {
+    "verificationReserveWork": 2000000,
+    "verificationReserveExpansions": 32,
+    "maxStagnantTasks": 4
+  },
+  "profile": {
+    "id": "p3-research-preservation-v1",
+    "version": 1,
+    "criteria": [
+      {
+        "metric": "retiredProperties",
+        "direction": "min"
+      },
+      {
+        "metric": "retiredPlots",
+        "direction": "min"
+      },
+      {
+        "metric": "retiredBuildings",
+        "direction": "min"
+      },
+      {
+        "metric": "demolishedFootprint",
+        "direction": "min"
+      },
+      {
+        "metric": "survivingFootprintLoss",
+        "direction": "min"
+      },
+      {
+        "metric": "buildingFrontageChanges",
+        "direction": "min"
+      },
+      {
+        "metric": "primaryRoadChanges",
+        "direction": "min"
+      },
+      {
+        "metric": "otherRoadChanges",
+        "direction": "min"
+      },
+      {
+        "metric": "modifiedRecords",
+        "direction": "min"
+      }
+    ]
+  },
+  "capacity": 3,
+  "arms": [
+    {
+      "id": "sre-reference",
+      "kind": "direct-standard-baseline",
+      "reserveVerification": true
+    },
+    {
+      "id": "ares-single",
+      "kind": "serial",
+      "tasks": [
+        {
+          "taskId": "baseline",
+          "strategyId": "sre-baseline",
+          "limits": {
+            "work": 32000000,
+            "stateExpansions": 131072
+          }
+        }
+      ]
+    },
+    {
+      "id": "ares-portfolio",
+      "kind": "serial",
+      "tasks": [
+        {
+          "taskId": "baseline",
+          "strategyId": "sre-baseline",
+          "limits": {
+            "work": 8000000,
+            "stateExpansions": 32768
+          }
+        },
+        {
+          "taskId": "grouped",
+          "strategyId": "sre-grouped-first",
+          "limits": {
+            "work": 10000000,
+            "stateExpansions": 65536
+          }
+        },
+        {
+          "taskId": "area",
+          "strategyId": "sre-area-deficit-direct",
+          "limits": {
+            "work": 28000000,
+            "stateExpansions": 131072
+          }
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "dry-positive",
+      "split": "known",
+      "stratum": "nondestructive-control",
+      "recipe": "dry",
+      "options": {
+        "seed": "mappo-001",
+        "size": "medium",
+        "morphology": "organic",
+        "shapeOptions": {
+          "profile": "balanced",
+          "stretch": 30,
+          "asymmetry": 58,
+          "bend": 44
+        },
+        "irregularProperties": false
+      },
+      "selection": {
+        "ids": [
+          "RD-0184",
+          "RD-0186"
+        ]
+      },
+      "offset": {
+        "x": -0.07513185180304553,
+        "y": -0.9349740283911147
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": false,
+        "regeneration": false
+      },
+      "reference": "prior-verified-witness"
+    },
+    {
+      "id": "dry-permission-off",
+      "split": "known",
+      "stratum": "permission-off-control",
+      "recipe": "dry",
+      "options": {
+        "seed": "mappo-001",
+        "size": "medium",
+        "morphology": "organic",
+        "shapeOptions": {
+          "profile": "balanced",
+          "stretch": 30,
+          "asymmetry": 58,
+          "bend": 44
+        },
+        "irregularProperties": false
+      },
+      "selection": {
+        "ids": [
+          "RD-0184",
+          "RD-0186"
+        ]
+      },
+      "offset": {
+        "x": 1.5026370360609105,
+        "y": 18.69948056782229
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": false,
+        "regeneration": false
+      },
+      "reference": "prior-bounded-refusal"
+    },
+    {
+      "id": "dry-retirement",
+      "split": "known",
+      "stratum": "retirement-control",
+      "recipe": "dry",
+      "options": {
+        "seed": "mappo-001",
+        "size": "medium",
+        "morphology": "organic",
+        "shapeOptions": {
+          "profile": "balanced",
+          "stretch": 30,
+          "asymmetry": 58,
+          "bend": 44
+        },
+        "irregularProperties": false
+      },
+      "selection": {
+        "ids": [
+          "RD-0184",
+          "RD-0186"
+        ]
+      },
+      "offset": {
+        "x": 1.5026370360609105,
+        "y": 18.69948056782229
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": true,
+        "regeneration": false
+      },
+      "reference": "prior-verified-witness"
+    },
+    {
+      "id": "historical-five-chain",
+      "split": "known",
+      "stratum": "historical-setback",
+      "recipe": "dry",
+      "options": {
+        "seed": "sre-owner-motion-planned-01",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "selection": {
+        "ids": [
+          "RD-0220",
+          "RD-0221",
+          "RD-0226",
+          "RD-0252",
+          "RD-0254"
+        ]
+      },
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": true,
+        "regeneration": false
+      },
+      "reference": "prior-bounded-refusal"
+    },
+    {
+      "id": "historical-five-branch",
+      "split": "known",
+      "stratum": "historical-setback",
+      "recipe": "dry",
+      "options": {
+        "seed": "sre-owner-motion-planned-01",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "selection": {
+        "ids": [
+          "RD-0221",
+          "RD-0226",
+          "RD-0252",
+          "RD-0254",
+          "RD-0256"
+        ]
+      },
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": true,
+        "regeneration": false
+      },
+      "reference": "prior-bounded-refusal"
+    },
+    {
+      "id": "historical-three-junction",
+      "split": "known",
+      "stratum": "historical-setback",
+      "recipe": "dry",
+      "options": {
+        "seed": "sre-owner-motion-planned-01",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "selection": {
+        "ids": [
+          "RD-0226",
+          "RD-0254",
+          "RD-0256"
+        ]
+      },
+      "offset": {
+        "x": 0,
+        "y": 75
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": true,
+        "regeneration": false
+      },
+      "reference": "prior-bounded-refusal"
+    },
+    {
+      "id": "historical-quad-control",
+      "split": "known",
+      "stratum": "historical-setback",
+      "recipe": "dry",
+      "options": {
+        "seed": "sre-owner-motion-planned-01",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "selection": {
+        "ids": [
+          "RD-0224",
+          "RD-0225",
+          "RD-0228",
+          "RD-0338"
+        ]
+      },
+      "offset": {
+        "x": 50,
+        "y": 0
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": true,
+        "regeneration": false
+      },
+      "reference": "prior-verified-diagnostic-witness"
+    },
+    {
+      "id": "mixed-small",
+      "split": "known",
+      "stratum": "mixed-landscape",
+      "recipe": "mixed",
+      "options": {
+        "seed": "mountains",
+        "morphology": "organic"
+      },
+      "selection": {
+        "firstEligiblePair": true
+      },
+      "offset": {
+        "x": 0.001,
+        "y": 0
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": false,
+        "regeneration": false
+      },
+      "reference": "unknown"
+    },
+    {
+      "id": "mixed-river",
+      "split": "known",
+      "stratum": "mixed-landscape",
+      "recipe": "mixed",
+      "options": {
+        "seed": "mountains",
+        "morphology": "organic"
+      },
+      "selection": {
+        "firstEligiblePair": true
+      },
+      "offset": {
+        "towardRiverMidpoint": true
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": true,
+        "regeneration": false
+      },
+      "reference": "unknown"
+    },
+    {
+      "id": "holdout-radial",
+      "split": "reserved",
+      "stratum": "dry-small",
+      "recipe": "dry",
+      "options": {
+        "seed": "ares-p3-reserved-radial-01",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "selection": {
+        "firstEligiblePair": true
+      },
+      "offset": {
+        "x": 1,
+        "y": 0
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": false,
+        "regeneration": false
+      },
+      "reference": "unknown"
+    },
+    {
+      "id": "holdout-linear",
+      "split": "reserved",
+      "stratum": "dry-large-movement",
+      "recipe": "dry",
+      "options": {
+        "seed": "ares-p3-reserved-linear-01",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "selection": {
+        "firstEligiblePair": true
+      },
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "permissions": {
+        "alternativeFrontage": true,
+        "uniformScaling": true,
+        "maxLinearReduction": 0.2,
+        "destruction": true,
+        "regeneration": false
+      },
+      "reference": "unknown"
+    }
+  ],
+  "reporting": {
+    "initialDiagnostics": "none; existing refusal feedback only",
+    "denominator": "all frozen case-arm attempts; independently feasible denominator only for independently verified reference witness under exact same intent and permissions; historical diagnostic witness is a separate label, not automatic feasibility",
+    "holdout": "reserved seeds are not used to tune schedules or allocations; not claimed statistically representative or final P9 held-out corpus",
+    "timing": "same runner sequential case arms; report order, wall time, first externally verified incumbent when observable, logical work, expansions, heap sample not peak, verification and overhead when measurable; missing metrics explicit",
+    "failure": "invalid verification or runtime error is failure, never refusal; retain all rows; no post-hoc case removal"
+  }
+}
