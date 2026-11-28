@@ -8,6 +8,7 @@ import {validateP6BudgetedDefenses} from './ares-p6-budgeted-defenses.mjs';
 import {observeP6UnmatchedGeometry,observeP6SmallFaceGeometry} from './ares-p6-refusal-geometry.mjs';
 import {observeP6TopologyIdentity} from './ares-p6-topology-identity.mjs';
 import {observeP6BlockCapacity} from './ares-p6-block-capacity.mjs';
+import {observeP6SameFrontageAccess} from './ares-p6-same-frontage-access.mjs';
 import {observeP6CooperativeParcels} from './ares-p6-cooperative-parcels.mjs';
 import {observeP6ParcelConflicts} from './ares-p6-parcel-conflicts.mjs';
 import {observeP6ParcelReshapes} from './ares-p6-parcel-reshapes.mjs';
@@ -70,6 +71,8 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  if(parcelConflicts.status!=='parcel-conflicts-observed')return refuse('parcel-conflict-observation-refused',{reason:parcelConflicts.reason});
  const cooperativeParcels=stage('cooperative-parcel-observation',()=>observeP6CooperativeParcels(parcelReshapes,parcelConflicts,budget));
  if(cooperativeParcels.status!=='cooperative-parcels-observed')return refuse('cooperative-parcel-observation-refused',{reason:cooperativeParcels.reason});
+ const sameFrontageAccess=stage('same-frontage-access-observation',()=>observeP6SameFrontageAccess(source,extraction,parcelReshapes,cooperativeParcels,budget));
+ if(sameFrontageAccess.status!=='same-frontage-access-observed')return refuse('same-frontage-access-observation-refused',{reason:sameFrontageAccess.reason});
  // This is only the legacy mapped-block snapshot, NOT rebuilt land.
  const snapshot=stage('diagnostic-snapshot',()=>{
   budget.spend(Math.max(1,identity.preserved.length+identity.changed.length+candidate.nodesById.size+candidate.roadsById.size));
@@ -85,6 +88,6 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  }
  const districts=check('district-diagnostic',!!source.districtState,validateP6BudgetedDistricts);
  const defenses=check('defense-diagnostic',!!source.fortificationState,validateP6BudgetedDefenses);
- return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,blockOwnership,blockLabels,affectedProperties,propertyAudit,propertyFit,parcelReshapes,parcelConflicts,cooperativeParcels,districts,defenses,
+ return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,blockOwnership,blockLabels,affectedProperties,propertyAudit,propertyFit,parcelReshapes,parcelConflicts,cooperativeParcels,sameFrontageAccess,districts,defenses,
   limitations:['no-independent-road-authorization','no-rebuilt-land','no-mixed-landscape','no-apply']};
 }

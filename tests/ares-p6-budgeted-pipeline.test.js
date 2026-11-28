@@ -9,6 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {observeP6SameFrontageAccess} from '../scripts/development/research/ares-p6-same-frontage-access.mjs';
 import {observeP6CooperativeParcels} from '../scripts/development/research/ares-p6-cooperative-parcels.mjs';
 import {observeP6ParcelConflicts} from '../scripts/development/research/ares-p6-parcel-conflicts.mjs';
 import {observeP6ParcelReshapes} from '../scripts/development/research/ares-p6-parcel-reshapes.mjs';
@@ -62,7 +63,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,17);
+ assert.equal(result.ledger.length,18);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -230,6 +231,14 @@ function verify(source,candidate,legacy,extraction,label){
  }else assert.equal(cooperative.selected.length,0);
  assert.throws(()=>observeP6CooperativeParcels(reshapes,conflicts,root(1)),LareBudgetExceeded);
  console.log('P6_COOPERATIVE_PARCELS '+JSON.stringify({label,selection:cooperative.selection,selected:cooperative.selected.length,unresolved:cooperative.unresolved.length,reason:cooperative.reason,attempts:cooperative.attempts,authority:'none'}));
+ const access=result.sameFrontageAccess;
+ assert.equal(access.status,'same-frontage-access-observed');assert.equal(access.authority,'none');assert.equal(access.landVerified,false);
+ assert.deepEqual(access.unresolvedProperties,cooperative.unresolved);
+ const selectedIds=new Set(cooperative.selected.map(r=>r.id));
+ assert.deepEqual(access.rows.map(r=>r.id).sort(),source.buildings.filter(b=>selectedIds.has(b.propertyId)).map(b=>b.id).sort());
+ for(const row of access.rows)if(row.route){const building=source.buildings.find(b=>b.id===row.id);assert.deepEqual(row.route.entrance,building.entrance);assert.equal(row.route.frontageRoadId,building.frontageRoadId);if(row.classification==='retained')assert.deepEqual(row.route.accessPath,building.accessPath);}
+ assert.throws(()=>observeP6SameFrontageAccess(source,extraction,reshapes,cooperative,root(1)),LareBudgetExceeded);
+ console.log('P6_SAME_FRONTAGE_ACCESS '+JSON.stringify({label,counts:access.counts,unknown:access.unknown.length,authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
@@ -335,4 +344,28 @@ test('P6 cooperative parcel selection backtracks without dropping any candidate-
  assert.equal(observeP6CooperativeParcels(reshapes,blocked,root(8000000)).reason,'blocked-owner');
  assert.equal(observeP6CooperativeParcels(reshapes,{...conflicts,unknown:[{id:'z'}]},root(8000000)).reason,'unknown-context');
  assert.equal(observeP6CooperativeParcels(reshapes,{...conflicts,rows:conflicts.rows.slice(1)},root(8000000)).reason,'missing-compatibility-row');
+});
+
+test('P6 same-frontage routes keep the original door, repair generated paths, protect authored access',()=>{
+ const rect=(x,y,w,d)=>[{x,y},{x:x+w,y},{x:x+w,y:y+d},{x,y:y+d}];
+ const p={id:'p',blockId:'old',plotIds:['q'],buildingIds:['b'],frontageRoadId:'r',boundary:rect(5,5,30,25)};
+ const q={id:'q',propertyId:'p',blockId:'old',frontageRoadId:'r',boundary:p.boundary};
+ stampRoadGenerated(p,[q]);
+ const door={x:15,y:10};
+ const building={id:'b',blockId:'old',propertyId:'p',plotIds:['q'],frontageRoadId:'r',geometry:{version:1,regions:[{id:'reg',parentId:null,kind:'solid',componentId:'comp',ring:rect(12,10,6,6)}]},components:[{id:'comp',parentId:null,name:'Main'}],entrance:door,orientation:0,accessPath:[door,{x:15,y:0}]};
+ stampRoadGenerated(building);
+ const face={key:'face',kind:'block',roadIds:['r']};
+ const extraction={valid:true,faces:[face],graph:{roadsById:new Map([['r',{id:'r',a:'a',b:'c'}]]),nodesById:new Map([['a',{x:0,y:0}],['c',{x:40,y:0}]])}};
+ const reshapes={status:'parcel-reshape-observed',authority:'none',rows:[{id:'p',options:[{key:'face',authority:'none',frontageRoadId:'r',boundary:p.boundary}]}]};
+ const cooperative={status:'cooperative-parcels-observed',authority:'none',selected:[{id:'p',index:0,key:'face'}],unresolved:[]};
+ const source={properties:[p],plots:[q],buildings:[building]},before=JSON.stringify(source);
+ const run=(city,graph=extraction)=>observeP6SameFrontageAccess(city,graph,reshapes,cooperative,root(8000000));
+ assert.equal(run(source).rows[0].classification,'retained');
+ const moved={...extraction,graph:{...extraction.graph,nodesById:new Map([['a',{x:0,y:1}],['c',{x:40,y:1}]])}};
+ const repaired=run(source,moved).rows[0];assert.equal(repaired.classification,'repaired');assert.deepEqual(repaired.route.entrance,door);assert.equal(repaired.route.accessPath.at(-1).y,1);
+ const authored={...source,buildings:[{...building,roadProvenance:undefined}]};
+ assert.equal(run(authored,moved).rows[0].classification,'protected');
+ const blocked={...source,properties:[p,{id:'obstruction',boundary:rect(0,1.5,40,3)}]};
+ assert.equal(run(blocked,moved).rows[0].classification,'blocked');
+ assert.equal(JSON.stringify(source),before);
 });

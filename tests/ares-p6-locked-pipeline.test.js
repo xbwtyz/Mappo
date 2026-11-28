@@ -106,6 +106,16 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
   assert.equal(cooperative.allObservedOwnersCovered,false);
   assert.equal(cooperative.selection,'compatible-candidate-bearing-subset');
   console.log('P6_LOCKED_COOPERATIVE_PARCELS '+JSON.stringify({id,selected:cooperative.selected.length,unresolved:cooperative.unresolved.length,attempts:cooperative.attempts,authority:'none'}));
+  const access=r.pipeline.sameFrontageAccess;
+  assert.equal(access.status,'same-frontage-access-observed');assert.equal(access.authority,'none');
+  assert.deepEqual(access.unresolvedProperties,cooperative.unresolved);
+  const selectedIds=new Set(cooperative.selected.map(row=>row.id));
+  assert.deepEqual(access.rows.map(row=>row.id).sort(),source.buildings.filter(b=>selectedIds.has(b.propertyId)).map(b=>b.id).sort());
+  for(const row of access.rows)if(row.route){
+   const original=source.buildings.find(b=>b.id===row.id);
+   assert.deepEqual(row.route.entrance,original.entrance);assert.equal(row.route.frontageRoadId,original.frontageRoadId);
+  }
+  console.log('P6_LOCKED_SAME_FRONTAGE_ACCESS '+JSON.stringify({id,counts:access.counts,unknown:access.unknown.length,authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
   assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);
