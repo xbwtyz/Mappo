@@ -9,6 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {planP6BlockRecords} from '../scripts/development/research/ares-p6-block-record-plan.mjs';
 import {observeP6DryPipeline} from '../scripts/development/research/ares-p6-budgeted-pipeline.mjs';
 import {buildP6BudgetedLineage} from '../scripts/development/research/ares-p6-budgeted-lineage.mjs';
 import {generateFortifications} from '../src/generators/fortifications.js';
@@ -49,7 +50,27 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,8);
+ assert.equal(result.ledger.length,9);
+ const plan=result.blockPlan;
+ assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
+ assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
+ assert.equal(plan.rows.length,extraction.faces.filter(f=>f.kind==='block').length);
+ assert.deepEqual(plan.reverse,old.reverse);
+ assert.equal(plan.retained,legacy.preserved.filter(r=>r.kind==='block').length+legacy.changed.filter(r=>r.kind==='block').length);
+ const matches=new Map([...legacy.preserved,...legacy.changed].map(r=>[r.candidateKey,r]));
+ const faces=new Map(extraction.faces.map(f=>[f.key,f]));
+ for(const row of plan.rows){
+  if(row.status==='retained-record-proposal')assert.deepEqual(row.record,matches.get(row.key).record);
+  else{
+   assert.equal(row.status,'unallocated-structural-shell');assert.equal(row.record,undefined);assert.equal(row.geometry.id,undefined);
+   assert.deepEqual(row.geometry.vertices,faces.get(row.key).vertices);
+   assert.equal(row.geometry.area,Math.round(faces.get(row.key).area*100)/100);
+  }
+ }
+ assert.equal(plan.structural>0,label!=='fortified-unchanged');
+ assert.equal(planP6BlockRecords(source,extraction,result.identity,{...result.lineage,faces:result.lineage.faces.slice(1)},root(8000000)).status,'refused');
+ assert.equal(planP6BlockRecords(source,extraction,result.identity,{...result.lineage,reverse:[]},root(8000000)).reason,'reverse-lineage-mismatch');
+ console.log('P6_BLOCK_RECORD_PLAN '+JSON.stringify({label,retained:plan.retained,structural:plan.structural,sourceBlocks:source.blocks.length,successorBlocks:plan.rows.length,authority:'none'}));
  assert.deepEqual(observeP6DryPipeline(source,candidate,b),result);
  assert.equal(b.snapshot().work,7+2*used);
  assert.throws(()=>observeP6DryPipeline(source,candidate,root(used-1)),LareBudgetExceeded);
