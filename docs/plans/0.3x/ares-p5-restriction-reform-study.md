@@ -35,3 +35,7 @@ No new seeds after 432 full evaluations and 1728 probes. Two radial cases pass r
 
 ## Campaign II-A findings; concurrent II-B and precision pilot
 Single reordered junction changes three or four original closed walks, and all angular witnesses remain graph-invalid. Radial-16 has one blocked crossing at an ordinary road incident to a stationary protected anchor; no relaxation of that split guard. Target that crossing by moving existing eligible neighbors only, plus read-only original block/frontage/land exposure mapping. No ownership or access certification, no reordered-face acceptance. Both investigations share CI but have separate existing roots. Strict and expanded benchmarks unchanged.
+
+
+## II-B exposure and precision result
+All nine dependency cases diagnosed; 114 blocks, 330 properties, 458 plots, 361 buildings exposed across nine angular witnesses, no unresolved original block edges. Exposure is not loss, actual movement, ownership or access certification. Retain the original cyclic gate pending separate downstream reconciliation decision. Radial-16 targeted one eligible endpoint, kept protected anchor fixed and produced two strict-cyclic split seeds under approved eight-neighbor/100% arm. Freeze first qualifying seed for independent construction and audit (separate existing roots); no retry. No benchmark increment until independently verified. Next diagnostics may investigate Radial-12 protected-anchor contacts without changing protection; no live/P6 approval inferred.

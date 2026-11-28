@@ -1,4 +1,5 @@
 import {holdoutLockedRow,HOLDOUT_SPLIT_PERMISSIONS} from './ares-p5-holdout-lock.mjs';
+import {holdoutPrecisionSeed} from './ares-p5-holdout-precision-audit-lock.mjs';
 import {holdoutEBSeed} from './ares-p5-holdout-eb-lock.mjs';
 import {g2Seed} from './ares-p5-topology-g2-lock.mjs';
 import {createHash} from 'node:crypto';
@@ -114,6 +115,9 @@ export async function constructP5HoldoutSplit(caseId){
 }
 export async function constructP5HoldoutCombinedSplit(caseId){
  return constructSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,holdoutEBSeed(caseId));
+}
+export async function constructP5HoldoutPrecisionSplit(caseId){
+ return constructSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,holdoutPrecisionSeed(caseId));
 }
 async function constructSplit(caseId,input,combined){
   const permissions=p5Permissions(input),budget=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});

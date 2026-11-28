@@ -1,4 +1,5 @@
 import {holdoutLockedRow,HOLDOUT_SPLIT_PERMISSIONS} from './ares-p5-holdout-lock.mjs';
+import {holdoutPrecisionSeed} from './ares-p5-holdout-precision-audit-lock.mjs';
 import {holdoutEBSeed} from './ares-p5-holdout-eb-lock.mjs';
 import {g2Seed} from './ares-p5-topology-g2-lock.mjs';
 import {inspectP5IdentityLedger} from './ares-p5-topology-lineage.mjs';
@@ -74,6 +75,9 @@ export async function auditP5HoldoutSplit(caseId,evidence){
 }
 export async function auditP5HoldoutCombinedSplit(caseId,evidence){
  return auditSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,evidence,holdoutEBSeed(caseId),true);
+}
+export async function auditP5HoldoutPrecisionSplit(caseId,evidence){
+ return auditSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,evidence,holdoutPrecisionSeed(caseId),true);
 }
 async function auditSplit(caseId,permissions,evidence,combined,holdout=false){
   // No caller-supplied budget or scope, no search retry. This root is
